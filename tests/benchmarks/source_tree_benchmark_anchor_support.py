@@ -143,9 +143,7 @@ SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES = (
     | frozenset({"_is_module_workflow_compiled_pattern_wrong_text_model_workload"})
 )
 
-SOURCE_TREE_LOCAL_CONTRACT_BUILDER_CONSTANT_NAMES = (
-    "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
-)
+SOURCE_TREE_LOCAL_CONTRACT_BUILDER_CONSTANT_NAMES = ()
 
 SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES = (
     "OPTIONAL_GROUP_MANIFEST_PATH",
@@ -170,6 +168,8 @@ SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES = (
     "live_manifest_workloads",
     "published_case_ids_by_signature",
     "published_cases_by_id",
+    "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
+    "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
     "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
 )
 
@@ -234,6 +234,8 @@ SOURCE_TREE_COMBINED_RETIRED_OWNER_NAMES = frozenset(
         "_module_workflow_compiled_pattern_workload_signature",
         "_pattern_bounded_wildcard_correctness_case_signature",
         "_pattern_bounded_wildcard_workload_signature",
+        "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
+        "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
         "_pattern_boundary_wrong_text_model_correctness_case_signature",
         "_pattern_boundary_wrong_text_model_workload_signature",
         "_pattern_keyword_window_correctness_case_signature",
@@ -428,29 +430,6 @@ def _compiled_pattern_wrong_text_model_source_workloads(
         spec["manifest_path"],
         include_workload=spec["include_workload"],
     )
-
-_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
-    "collection-replacement-boundary": benchmark_test_support._SourceTreeContractBuilderSpec(
-        manifest_id="collection-replacement-boundary",
-        excluded_fields=(
-            benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
-        ),
-        timing_scope="module-helper-call",
-        notes=(
-            "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument wrong-text-model collection/replacement rows unresolved until helper invocation.",
-        ),
-    ),
-    "module-boundary": benchmark_test_support._SourceTreeContractBuilderSpec(
-        manifest_id="module-boundary",
-        excluded_fields=(
-            benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
-        ),
-        timing_scope="module-helper-call",
-        notes=(
-            "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument wrong-text-model module-boundary rows unresolved until helper invocation.",
-        ),
-    ),
-}
 _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
     "module-search-on-bytes-string-warm-str-compiled-pattern",
     "module-match-on-str-string-purged-bytes-compiled-pattern",
@@ -470,17 +449,6 @@ def _is_module_workflow_compiled_pattern_wrong_text_model_workload(
         and workload.expected_exception is not None
         and workload.expected_exception.get("type") == "TypeError"
     )
-
-
-_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = benchmark_test_support._SourceTreeContractBuilderSpec(
-    manifest_id="pattern-boundary",
-    excluded_fields=(
-        benchmark_test_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS
-    ),
-    timing_scope="pattern-helper-call",
-)
-
-
 def _assert_zero_gap_manifest_state(
     testcase: Any,
     manifest_id: str,

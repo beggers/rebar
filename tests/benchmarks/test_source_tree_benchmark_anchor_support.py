@@ -1417,7 +1417,7 @@ def test_compiled_pattern_wrong_text_model_contract_specs_track_manifest_family(
     contract_manifest_id: str,
     expected_note_fragment: str,
 ) -> None:
-    spec = support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
+    spec = benchmark_test_support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
         contract_manifest_id
     ]
 
@@ -2856,15 +2856,21 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
         "expected_source_tree_names",
         "forbidden_local_names",
         "expected_benchmark_support_names",
+        "expected_source_tree_package_imports",
     ),
     (
         pytest.param(
             "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support",
-            frozenset({"_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC"}),
+            frozenset(),
             frozenset(),
             frozenset(
-                {"_source_tree_contract_manifest", "_source_tree_contract_workload"}
+                {
+                    "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                }
             ),
+            frozenset(),
             id="pattern-boundary",
         ),
         pytest.param(
@@ -2874,6 +2880,7 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
             frozenset(
                 {"_source_tree_contract_manifest", "_source_tree_contract_workload"}
             ),
+            frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")}),
             id="collection-replacement",
         ),
         pytest.param(
@@ -2885,23 +2892,24 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
                     "_compiled_pattern_wrong_text_model_specs",
                     "_compiled_pattern_wrong_text_model_source_workloads",
-                    "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
                 }
             ),
             frozenset(
                 {
-                    "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
                     "_compiled_pattern_module_helper_keyword_contract_surface",
                     "_compiled_pattern_module_helper_keyword_contract_spec",
                 }
             ),
             frozenset(
                 {
+                    "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
+                    "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
                     "_assert_wrong_text_model_payload_round_trip",
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
                 }
             ),
+            frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")}),
             id="manifest-validation",
         ),
         pytest.param(
@@ -2920,8 +2928,13 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                 }
             ),
             frozenset(
-                {"_source_tree_contract_manifest", "_source_tree_contract_workload"}
+                {
+                    "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                }
             ),
+            frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")}),
             id="source-tree-combined",
         ),
     ),
@@ -2931,6 +2944,7 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
     expected_source_tree_names: frozenset[str],
     forbidden_local_names: frozenset[str],
     expected_benchmark_support_names: frozenset[str],
+    expected_source_tree_package_imports: frozenset[tuple[str, str | None]],
 ) -> None:
     module = importlib.import_module(module_name)
     module_ast = benchmark_test_support._parsed_module_ast(module)
@@ -2973,9 +2987,7 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         "tests.benchmarks.benchmark_test_support"
         not in benchmark_test_support._module_import_targets(module)
     )
-    assert package_imports == {
-        ("source_tree_benchmark_anchor_support", "source_tree_support")
-    }
+    assert package_imports == expected_source_tree_package_imports
     assert direct_benchmark_support_imports == frozenset()
     assert benchmark_support_local_aliases == frozenset()
     assert forbidden_local_names.isdisjoint(local_names)

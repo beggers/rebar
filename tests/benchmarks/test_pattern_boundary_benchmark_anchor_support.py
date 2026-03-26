@@ -15,7 +15,6 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks import benchmark_test_support as support
-from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 from tests.python.fixture_parity_support import IndexLike
 
 def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(
@@ -37,7 +36,7 @@ def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned
             "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         ),
         extra_owner_name="_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
-        extra_owner_module=source_tree_support,
+        extra_owner_module=support,
     )
 
 
@@ -519,7 +518,7 @@ def test_standard_benchmark_manifest_preserves_pattern_boundary_wrong_text_model
     source_workloads = support._pattern_boundary_wrong_text_model_source_workloads()
     manifest = support._source_tree_contract_manifest(
         source_workloads,
-        spec=source_tree_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+        spec=support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
     manifest_path = support._write_test_manifest(
         tmp_path,
@@ -584,7 +583,7 @@ def test_run_internal_workload_probe_measures_pattern_boundary_wrong_text_model_
 ) -> None:
     workload = support._source_tree_contract_workload(
         source_workload,
-        spec=source_tree_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+        spec=support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -630,7 +629,7 @@ def test_pattern_boundary_wrong_text_model_callbacks_preserve_precompile_contrac
         "re",
         support._source_tree_contract_workload(
             source_workload,
-            spec=source_tree_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+            spec=support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
         ),
     )
 

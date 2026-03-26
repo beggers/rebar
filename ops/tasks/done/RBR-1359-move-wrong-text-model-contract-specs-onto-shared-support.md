@@ -1,6 +1,6 @@
 ## RBR-1359: Move wrong-text-model contract specs onto shared support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -60,3 +60,17 @@ Created: 2026-03-26
   - `rg -n '^(_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS|_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC)\\b' tests/benchmarks/benchmark_test_support.py` currently fails because the shared benchmark support module does not yet define those contract specs, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n '^(_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS|_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"` currently fails because both contract-spec definitions still live on the source-tree owner module, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n 'source_tree_support\\.(_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS|_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC)\\b' tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_manifest_validation.py"` currently fails because those suites still route the shared contract specs through `source_tree_support`, and that failure belongs exactly to this cleanup
+
+## Completion
+- Moved `_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS` and `_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC` into `tests/benchmarks/benchmark_test_support.py` and deleted the duplicate source-tree definitions from `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Rerouted the touched consumer suites to use `tests.benchmarks.benchmark_test_support` for those shared contract specs, and updated the source-tree owner-surface tests so the names are treated as shared-support owned rather than source-tree routed.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py -k 'test_standard_benchmark_manifest_preserves_pattern_boundary_wrong_text_model_rows_until_helper_invocation or test_run_internal_workload_probe_measures_pattern_boundary_wrong_text_model_contract_workloads or test_pattern_boundary_wrong_text_model_callbacks_preserve_precompile_contract'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'test_run_internal_workload_probe_measures_compiled_pattern_wrong_text_model_contract_workloads or test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contract'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_manifest_validation.py -k 'test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation or test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'test_compiled_pattern_wrong_text_model_contract_specs_track_manifest_family or test_source_tree_contract_builder_consumers_route_owner_surface_through_package_alias or test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally or test_source_tree_owner_retired_shared_support_names_stay_out_of_top_level_namespace'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'test_pattern_boundary_benchmark_support_routes_shared_helpers_through_support_alias or test_source_tree_combined_suite_deletes_manifest_contract_wrapper_methods or test_benchmark_manifest_validation_routes_owner_surface_through_benchmark_test_support or test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_surfaces'`
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py`
+  - `rg -n '^(_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS|_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC)\\b' tests/benchmarks/benchmark_test_support.py`
+  - `bash -lc "! rg -n '^(_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS|_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"`
+  - `bash -lc "! rg -n 'source_tree_support\\.(_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS|_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC)\\b' tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_manifest_validation.py"`

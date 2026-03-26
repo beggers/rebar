@@ -4252,7 +4252,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_wrong_text_model_
     ):
         workload = benchmark_test_support._source_tree_contract_workload(
             source_workload,
-            spec=source_tree_support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
+            spec=benchmark_test_support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
                 str(spec["contract_manifest_id"])
             ],
         )
@@ -4304,7 +4304,7 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
             "re",
             benchmark_test_support._source_tree_contract_workload(
                 source_workload,
-                spec=source_tree_support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
+                spec=benchmark_test_support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
                     str(spec["contract_manifest_id"])
                 ],
             ),

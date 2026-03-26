@@ -1423,8 +1423,7 @@ def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_suppor
         support._parsed_module_ast(module),
         module_name="tests.benchmarks",
         imported_names=frozenset({"source_tree_benchmark_anchor_support"}),
-    ) == frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")})
-    assert getattr(module, "source_tree_support") is anchor_support
+    ) == frozenset()
     assert {
         "synthetic_workload",
         "STANDARD_BENCHMARK_DEFINITIONS",
@@ -1446,6 +1445,10 @@ def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_suppor
         assert not hasattr(module, shared_name)
     assert {"_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC"}.isdisjoint(
         definition_names | assignment_names
+    )
+    assert (
+        module.support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC
+        is support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC
     )
 
 

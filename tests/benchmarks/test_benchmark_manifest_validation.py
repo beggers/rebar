@@ -970,7 +970,7 @@ def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_pres
     )
     manifest = benchmark_test_support._source_tree_contract_manifest(
         source_workloads,
-        spec=source_tree_support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
+        spec=benchmark_test_support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
             str(spec["contract_manifest_id"])
         ],
     )
@@ -1547,7 +1547,7 @@ def test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern
 ) -> None:
     manifest = benchmark_test_support._source_tree_contract_manifest(
         (source_workload,),
-        spec=source_tree_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+        spec=benchmark_test_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
     manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,

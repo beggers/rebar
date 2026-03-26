@@ -735,6 +735,29 @@ COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS = (
     }
 )
 
+_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
+    "collection-replacement-boundary": _SourceTreeContractBuilderSpec(
+        manifest_id="collection-replacement-boundary",
+        excluded_fields=COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+        timing_scope="module-helper-call",
+        notes=(
+            "Ensures benchmark manifests keep the bounded "
+            "compiled-pattern-first-argument wrong-text-model "
+            "collection/replacement rows unresolved until helper invocation.",
+        ),
+    ),
+    "module-boundary": _SourceTreeContractBuilderSpec(
+        manifest_id="module-boundary",
+        excluded_fields=COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
+        timing_scope="module-helper-call",
+        notes=(
+            "Ensures benchmark manifests keep the bounded "
+            "compiled-pattern-first-argument wrong-text-model "
+            "module-boundary rows unresolved until helper invocation.",
+        ),
+    ),
+}
+
 COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS = frozenset(
     {
         "manifest_id",
@@ -3619,6 +3642,14 @@ _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
     "pattern-match-on-str-string-purged-bytes",
     "pattern-fullmatch-on-bytes-string-warm-str",
 )
+
+_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = _SourceTreeContractBuilderSpec(
+    manifest_id="pattern-boundary",
+    excluded_fields=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS,
+    timing_scope="pattern-helper-call",
+)
+
+
 def _pattern_boundary_wrong_text_model_source_workloads() -> tuple[Any, ...]:
     return _contract_source_workloads(
         manifest_path=PATTERN_BOUNDARY_MANIFEST_PATH,
