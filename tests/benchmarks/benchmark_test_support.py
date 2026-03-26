@@ -803,7 +803,6 @@ def assert_mixed_owner_surface(
             isinstance(assignment.value, ast.Attribute)
             and isinstance(assignment.value.value, ast.Name)
             and assignment.value.value.id == "benchmark_test_support"
-            and assignment.value.attr == assignment_name
         )
 
     for assignment_name in expected_support_alias_assignment_names:

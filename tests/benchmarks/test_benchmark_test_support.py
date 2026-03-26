@@ -1729,6 +1729,72 @@ def duplicated_name():
         )
 
 
+def test_assert_mixed_owner_surface_rejects_local_assignment_that_aliases_benchmark_support(
+    monkeypatch,
+) -> None:
+    shared_alias = object()
+    caller_module = SimpleNamespace(OWNER_ASSIGNMENT=shared_alias)
+    module_ast = ast.parse(
+        """
+OWNER_ASSIGNMENT = benchmark_test_support.SHARED_ALIAS
+"""
+    )
+
+    monkeypatch.setattr(
+        support,
+        "_parsed_module_ast",
+        lambda module: module_ast,
+    )
+    monkeypatch.setattr(
+        support,
+        "SHARED_ALIAS",
+        shared_alias,
+        raising=False,
+    )
+
+    with pytest.raises(AssertionError):
+        support.assert_mixed_owner_surface(
+            caller_module,
+            local_assignment_names=("OWNER_ASSIGNMENT",),
+        )
+
+
+def test_assert_mixed_owner_surface_rejects_support_alias_with_wrong_attribute_name(
+    monkeypatch,
+) -> None:
+    shared_alias = object()
+    caller_module = SimpleNamespace(SHARED_ALIAS=shared_alias)
+    module_ast = ast.parse(
+        """
+SHARED_ALIAS = benchmark_test_support.OTHER_ALIAS
+"""
+    )
+
+    monkeypatch.setattr(
+        support,
+        "_parsed_module_ast",
+        lambda module: module_ast,
+    )
+    monkeypatch.setattr(
+        support,
+        "SHARED_ALIAS",
+        shared_alias,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        support,
+        "OTHER_ALIAS",
+        shared_alias,
+        raising=False,
+    )
+
+    with pytest.raises(AssertionError):
+        support.assert_mixed_owner_surface(
+            caller_module,
+            support_alias_assignment_names=("SHARED_ALIAS",),
+        )
+
+
 def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_shadow_alias(
 ) -> None:
     module = importlib.import_module(
