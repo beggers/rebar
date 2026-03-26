@@ -3012,39 +3012,6 @@ def source_tree_combined_target_manifest_ids() -> tuple[str, ...]:
     return tuple(target_manifest_ids)
 
 
-def _selected_source_tree_manifests_for_target_manifest(
-    target_manifest_id: str,
-) -> list[BenchmarkManifest]:
-    selected_manifests: list[BenchmarkManifest] = []
-    published_manifests = published_benchmark_manifests()
-    regression_manifest = next(
-        (
-            manifest
-            for manifest in published_manifests
-            if manifest.manifest_id == "regression-matrix"
-        ),
-        None,
-    )
-    for manifest in published_manifests:
-        manifest_id = manifest.manifest_id
-        if manifest_id == "regression-matrix":
-            continue
-        selected_manifests.append(manifest)
-        if manifest_id == target_manifest_id:
-            break
-    else:
-        raise AssertionError(
-            f"target manifest {target_manifest_id!r} is not in the published full-suite selector"
-        )
-    if target_manifest_id != "module-boundary":
-        if regression_manifest is None:
-            raise AssertionError(
-                "the published full-suite selector is missing the regression-matrix manifest"
-            )
-        selected_manifests.append(regression_manifest)
-    return selected_manifests
-
-
 def expected_summary_for_manifests(
     manifests: list[BenchmarkManifest],
     *,
@@ -3099,7 +3066,33 @@ def expected_summary_for_manifests(
 
 
 def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase:
-    manifests = _selected_source_tree_manifests_for_target_manifest(target_manifest_id)
+    manifests: list[BenchmarkManifest] = []
+    published_manifests = published_benchmark_manifests()
+    regression_manifest = next(
+        (
+            manifest
+            for manifest in published_manifests
+            if manifest.manifest_id == "regression-matrix"
+        ),
+        None,
+    )
+    for manifest in published_manifests:
+        manifest_id = manifest.manifest_id
+        if manifest_id == "regression-matrix":
+            continue
+        manifests.append(manifest)
+        if manifest_id == target_manifest_id:
+            break
+    else:
+        raise AssertionError(
+            f"target manifest {target_manifest_id!r} is not in the published full-suite selector"
+        )
+    if target_manifest_id != "module-boundary":
+        if regression_manifest is None:
+            raise AssertionError(
+                "the published full-suite selector is missing the regression-matrix manifest"
+            )
+        manifests.append(regression_manifest)
     workloads = [workload for manifest in manifests for workload in manifest.workloads]
     target_manifest = next(
         manifest for manifest in manifests if manifest.manifest_id == target_manifest_id
