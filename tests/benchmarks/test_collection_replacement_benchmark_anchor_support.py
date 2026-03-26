@@ -2769,7 +2769,7 @@ def test_pattern_wrong_text_model_workloads_keep_scope_and_signature_shapes() ->
 
 
 def test_compiled_pattern_success_workloads_stay_in_scope_and_keep_expected_signature() -> None:
-    owner_support = support.benchmark_test_support
+    owner_support = source_tree_support
     split_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-split-literal-compiled-pattern",
