@@ -61,7 +61,6 @@ SOURCE_TREE_MOVED_CLASS_NAMES = (
 )
 
 SOURCE_TREE_MOVED_FUNCTION_NAMES = (
-    "_source_tree_contract_manifest_payload",
     "_source_tree_contract_workload",
     "_source_tree_contract_manifest",
     "source_tree_scorecard_case_ids",
@@ -196,11 +195,11 @@ class _SourceTreeContractBuilderSpec:
     notes: tuple[str, ...] = ()
 
 
-def _source_tree_contract_manifest_payload(
+def _source_tree_contract_workload(
     source_workload: Workload,
     *,
     spec: _SourceTreeContractBuilderSpec,
-) -> dict[str, object]:
+) -> Workload:
     payload = workload_to_payload(source_workload)
     manifest_payload: dict[str, object] = {
         "id": f"{source_workload.workload_id}-contract",
@@ -214,18 +213,6 @@ def _source_tree_contract_manifest_payload(
         manifest_payload["timing_scope"] = spec.timing_scope
     if spec.notes:
         manifest_payload["notes"] = list(spec.notes)
-    return manifest_payload
-
-
-def _source_tree_contract_workload(
-    source_workload: Workload,
-    *,
-    spec: _SourceTreeContractBuilderSpec,
-) -> Workload:
-    manifest_payload = _source_tree_contract_manifest_payload(
-        source_workload,
-        spec=spec,
-    )
     return workload_from_payload(
         {
             "manifest_id": spec.manifest_id,
@@ -246,6 +233,22 @@ def _source_tree_contract_manifest(
     *,
     spec: _SourceTreeContractBuilderSpec,
 ) -> dict[str, object]:
+    workloads: list[dict[str, object]] = []
+    for source_workload in source_workloads:
+        payload = workload_to_payload(source_workload)
+        manifest_payload: dict[str, object] = {
+            "id": f"{source_workload.workload_id}-contract",
+            **{
+                key: value
+                for key, value in payload.items()
+                if key not in spec.excluded_fields
+            },
+        }
+        if spec.timing_scope is not None:
+            manifest_payload["timing_scope"] = spec.timing_scope
+        if spec.notes:
+            manifest_payload["notes"] = list(spec.notes)
+        workloads.append(manifest_payload)
     return {
         "schema_version": 1,
         "manifest_id": spec.manifest_id,
@@ -254,10 +257,7 @@ def _source_tree_contract_manifest(
             "sample_iterations": 1,
             "timed_samples": spec.manifest_timed_samples,
         },
-        "workloads": [
-            _source_tree_contract_manifest_payload(workload, spec=spec)
-            for workload in source_workloads
-        ],
+        "workloads": workloads,
     }
 
 
