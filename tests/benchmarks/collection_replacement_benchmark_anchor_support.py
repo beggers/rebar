@@ -31,7 +31,6 @@ COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES = frozenset(
         "COLLECTION_REPLACEMENT_MANIFEST_PATH",
         "MODULE_BOUNDARY_MANIFEST_PATH",
         "StandardBenchmarkAnchorContractDefinition",
-        "_SourceTreeContractBuilderSpec",
         "_contract_source_workloads",
         "_definition_anchor_expectations",
         "_is_collection_replacement_compiled_pattern_success_workload",

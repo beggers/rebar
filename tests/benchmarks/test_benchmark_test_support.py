@@ -3433,6 +3433,10 @@ def test_collection_replacement_support_reaches_source_tree_owner_surface_throug
         is anchor_support
     )
     assert (
+        "_SourceTreeContractBuilderSpec"
+        not in collection_replacement_support.COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES
+    )
+    assert (
         collection_replacement_support
         .COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES.isdisjoint(
             definition_names | assignment_names
