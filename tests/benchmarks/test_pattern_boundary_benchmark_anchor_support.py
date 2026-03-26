@@ -33,6 +33,19 @@ def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned
         sys.modules[__name__],
         pattern_boundary_support,
         definition_names=(
+            "_pattern_window_positional_indexlike_correctness_case_signature",
+            "_pattern_window_positional_indexlike_workload_args",
+            "_pattern_window_positional_indexlike_workload_signature",
+            "_is_pattern_window_positional_indexlike_workload",
+            "_pattern_keyword_window_correctness_case_signature",
+            "_pattern_keyword_window_workload_signature",
+            "_is_pattern_keyword_window_workload",
+            "_pattern_bounded_wildcard_correctness_case_signature",
+            "_pattern_bounded_wildcard_workload_signature",
+            "_is_pattern_bounded_wildcard_workload",
+            "_pattern_verbose_regression_correctness_case_signature",
+            "_pattern_verbose_regression_workload_signature",
+            "_is_pattern_verbose_regression_workload",
             "_pattern_boundary_wrong_text_model_source_workloads",
             "_pattern_boundary_wrong_text_model_expected_callback_call",
             "_pattern_boundary_wrong_text_model_correctness_case_signature",
@@ -40,6 +53,15 @@ def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned
             "_is_pattern_boundary_wrong_text_model_workload",
         ),
         assignment_names=(
+            "_PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS",
+            "_PATTERN_BOUNDED_WILDCARD_CASE_IDS",
+            "_PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS",
+            "_PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS",
+            "_PATTERN_SEARCH_VERBOSE_REGRESSION_CASE_IDS",
+            "_PATTERN_FULLMATCH_VERBOSE_REGRESSION_CASE_IDS",
+            "_PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS",
+            "_PATTERN_VERBOSE_REGRESSION_CASE_IDS",
+            "_PATTERN_VERBOSE_REGRESSION_PATTERN",
             "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         ),
         extra_owner_name="_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
@@ -133,7 +155,7 @@ def test_pattern_boundary_standard_definitions_are_reused_by_standard_inventory(
 def test_pattern_bounded_wildcard_selector_and_signature_stay_pinned() -> None:
     workload = support.synthetic_workload(
         manifest_id="pattern-boundary",
-        workload_id=support._PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS[0],
+        workload_id=pattern_boundary_support._PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS[0],
         operation="pattern.search",
         flags=2,
         pattern="a.c",
@@ -143,8 +165,10 @@ def test_pattern_bounded_wildcard_selector_and_signature_stay_pinned() -> None:
         endpos=4,
     )
 
-    assert support._is_pattern_bounded_wildcard_workload(workload)
-    assert support._pattern_bounded_wildcard_workload_signature(workload) == (
+    assert pattern_boundary_support._is_pattern_bounded_wildcard_workload(workload)
+    assert pattern_boundary_support._pattern_bounded_wildcard_workload_signature(
+        workload
+    ) == (
         "pattern.search",
         "a.c",
         ("zabc", 1, 4),
@@ -173,13 +197,20 @@ def test_pattern_window_positional_indexlike_workload_and_case_signatures_stay_p
         flags=0,
     )
 
-    assert support._is_pattern_window_positional_indexlike_workload(workload)
-    assert support._pattern_window_positional_indexlike_workload_args(workload) == (
-        "zabcabc",
-        {"type": "indexlike", "value": 1},
-        {"type": "indexlike", "value": 6},
+    assert pattern_boundary_support._is_pattern_window_positional_indexlike_workload(
+        workload
     )
-    assert support._pattern_window_positional_indexlike_workload_signature(
+    assert (
+        pattern_boundary_support._pattern_window_positional_indexlike_workload_args(
+            workload
+        )
+        == (
+            "zabcabc",
+            {"type": "indexlike", "value": 1},
+            {"type": "indexlike", "value": 6},
+        )
+    )
+    assert pattern_boundary_support._pattern_window_positional_indexlike_workload_signature(
         workload
     ) == (
         "finditer",
@@ -187,13 +218,16 @@ def test_pattern_window_positional_indexlike_workload_and_case_signatures_stay_p
         (("str", "zabcabc"), ("indexlike", 1), ("indexlike", 6)),
         "str",
     )
-    assert support._pattern_window_positional_indexlike_correctness_case_signature(
-        case
-    ) == (
-        "finditer",
-        "abc",
-        (("str", "zabcabc"), ("indexlike", 1), ("indexlike", 6)),
-        "str",
+    assert (
+        pattern_boundary_support._pattern_window_positional_indexlike_correctness_case_signature(
+            case
+        )
+        == (
+            "finditer",
+            "abc",
+            (("str", "zabcabc"), ("indexlike", 1), ("indexlike", 6)),
+            "str",
+        )
     )
 
 
@@ -216,8 +250,10 @@ def test_pattern_keyword_window_workload_and_case_signatures_stay_pinned() -> No
         kwargs={"endpos": True},
     )
 
-    assert support._is_pattern_keyword_window_workload(workload)
-    assert support._pattern_keyword_window_workload_signature(workload) == (
+    assert pattern_boundary_support._is_pattern_keyword_window_workload(workload)
+    assert pattern_boundary_support._pattern_keyword_window_workload_signature(
+        workload
+    ) == (
         "pattern.findall",
         "abc",
         ("zabcabc",),
@@ -225,7 +261,9 @@ def test_pattern_keyword_window_workload_and_case_signatures_stay_pinned() -> No
         0,
         "str",
     )
-    assert support._pattern_keyword_window_correctness_case_signature(case) == (
+    assert pattern_boundary_support._pattern_keyword_window_correctness_case_signature(
+        case
+    ) == (
         "pattern.findall",
         "abc",
         ("zabcabc",),
@@ -238,7 +276,7 @@ def test_pattern_keyword_window_workload_and_case_signatures_stay_pinned() -> No
 def test_pattern_bounded_wildcard_selector_rejects_nonmatching_pattern() -> None:
     workload = support.synthetic_workload(
         manifest_id="pattern-boundary",
-        workload_id=support._PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS[1],
+        workload_id=pattern_boundary_support._PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS[1],
         operation="pattern.match",
         pattern="abc",
         haystack="zabc",
@@ -247,13 +285,17 @@ def test_pattern_bounded_wildcard_selector_rejects_nonmatching_pattern() -> None
         endpos=3,
     )
 
-    assert not support._is_pattern_bounded_wildcard_workload(workload)
+    assert not pattern_boundary_support._is_pattern_bounded_wildcard_workload(
+        workload
+    )
 
 
 def test_pattern_verbose_regression_selector_and_signature_stay_pinned() -> None:
     workload = support.synthetic_workload(
         manifest_id="pattern-boundary",
-        workload_id=support._PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS[0],
+        workload_id=(
+            pattern_boundary_support._PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS[0]
+        ),
         operation="pattern.search",
         pattern=(
             "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $"
@@ -263,8 +305,10 @@ def test_pattern_verbose_regression_selector_and_signature_stay_pinned() -> None
         timing_scope="pattern-helper-call",
     )
 
-    assert support._is_pattern_verbose_regression_workload(workload)
-    assert support._pattern_verbose_regression_workload_signature(workload) == (
+    assert pattern_boundary_support._is_pattern_verbose_regression_workload(workload)
+    assert pattern_boundary_support._pattern_verbose_regression_workload_signature(
+        workload
+    ) == (
         "pattern.search",
         "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
         ("KEY = 42",),
@@ -276,7 +320,9 @@ def test_pattern_verbose_regression_selector_and_signature_stay_pinned() -> None
 
 def test_pattern_verbose_regression_correctness_case_signature_stays_pinned() -> None:
     case = support._module_pattern_case(
-        case_id=support._PATTERN_FULLMATCH_VERBOSE_REGRESSION_CASE_IDS[0],
+        case_id=(
+            pattern_boundary_support._PATTERN_FULLMATCH_VERBOSE_REGRESSION_CASE_IDS[0]
+        ),
         helper="fullmatch",
         operation="pattern_call",
         args=("KEY = ABC",),
@@ -284,13 +330,18 @@ def test_pattern_verbose_regression_correctness_case_signature_stays_pinned() ->
         flags=72,
     )
 
-    assert support._pattern_verbose_regression_correctness_case_signature(case) == (
-        "pattern.fullmatch",
-        "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
-        ("KEY = ABC",),
-        (),
-        72,
-        "str",
+    assert (
+        pattern_boundary_support._pattern_verbose_regression_correctness_case_signature(
+            case
+        )
+        == (
+            "pattern.fullmatch",
+            "^ (?P<key>[A-Z_]+) \\s* = \\s* (?:[A-Z]{2,4}+|\\d{2,3}) $",
+            ("KEY = ABC",),
+            (),
+            72,
+            "str",
+        )
     )
 
 
@@ -505,14 +556,14 @@ def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_meas
         workload.workload_id
         for workload in support.selected_manifest_workloads(
             "pattern_boundary.py",
-            include_workload=support._is_pattern_bounded_wildcard_workload,
+            include_workload=pattern_boundary_support._is_pattern_bounded_wildcard_workload,
         )
     )
     verbose_regression_workload_ids = tuple(
         workload.workload_id
         for workload in support.selected_manifest_workloads(
             "pattern_boundary.py",
-            include_workload=support._is_pattern_verbose_regression_workload,
+            include_workload=pattern_boundary_support._is_pattern_verbose_regression_workload,
         )
     )
     fullmatch_verbose_regression_workload_ids = tuple(
@@ -520,7 +571,9 @@ def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_meas
         for workload in support.selected_manifest_workloads(
             "pattern_boundary.py",
             include_workload=lambda workload: (
-                support._is_pattern_verbose_regression_workload(workload)
+                pattern_boundary_support._is_pattern_verbose_regression_workload(
+                    workload
+                )
                 and workload.operation == "pattern.fullmatch"
             ),
         )
@@ -529,14 +582,16 @@ def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_meas
         workload.workload_id
         for workload in support.selected_manifest_workloads(
             "pattern_boundary.py",
-            include_workload=support._is_pattern_keyword_window_workload,
+            include_workload=pattern_boundary_support._is_pattern_keyword_window_workload,
         )
     )
     positional_workload_ids = tuple(
         workload.workload_id
         for workload in support.selected_manifest_workloads(
             "pattern_boundary.py",
-            include_workload=support._is_pattern_window_positional_indexlike_workload,
+            include_workload=(
+                pattern_boundary_support._is_pattern_window_positional_indexlike_workload
+            ),
         )
     )
 
@@ -548,15 +603,15 @@ def test_pattern_boundary_manifest_keeps_keyword_and_positional_window_rows_meas
     )
     assert (
         bounded_wildcard_workload_ids
-        == support._PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS
+        == pattern_boundary_support._PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS
     )
     assert (
         verbose_regression_workload_ids
-        == support._PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS
+        == pattern_boundary_support._PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS
     )
     assert (
         fullmatch_verbose_regression_workload_ids
-        == support._PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS
+        == pattern_boundary_support._PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS
     )
     assert keyword_workload_ids == (
         "pattern-search-pos-keyword-warm-str",

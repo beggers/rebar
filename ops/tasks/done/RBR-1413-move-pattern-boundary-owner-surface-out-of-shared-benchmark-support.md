@@ -68,3 +68,8 @@ Created: 2026-03-26
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py -q` passed with `210 passed in 0.69s`.
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py` passed.
+
+## Completion
+- Moved the pattern-window, keyword-window, bounded-wildcard, and verbose-regression selector/signature helpers plus their owner-only constant tables from `tests/benchmarks/benchmark_test_support.py` into `tests/benchmarks/pattern_boundary_benchmark_anchor_support.py`.
+- Rewired `PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS` to the owner-local helpers and updated the support/owner tests to assert the new ownership boundary directly.
+- Verification: `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py -q`; `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/pattern_boundary_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py`.

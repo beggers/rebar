@@ -2431,6 +2431,11 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(support)
     )
+    owner_definition_names, owner_assignment_names = (
+        support.top_level_module_definition_and_assignment_names(
+            pattern_boundary_support
+        )
+    )
 
     assert {
         "_pattern_window_positional_indexlike_correctness_case_signature",
@@ -2446,11 +2451,18 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
         "_pattern_verbose_regression_correctness_case_signature",
         "_pattern_verbose_regression_workload_signature",
         "_is_pattern_verbose_regression_workload",
-    }.issubset(definition_names)
+    }.issubset(owner_definition_names)
     assert {
         "_PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS",
+        "_PATTERN_BOUNDED_WILDCARD_CASE_IDS",
+        "_PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS",
+        "_PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS",
+        "_PATTERN_SEARCH_VERBOSE_REGRESSION_CASE_IDS",
+        "_PATTERN_FULLMATCH_VERBOSE_REGRESSION_CASE_IDS",
+        "_PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS",
+        "_PATTERN_VERBOSE_REGRESSION_CASE_IDS",
         "_PATTERN_VERBOSE_REGRESSION_PATTERN",
-    }.issubset(assignment_names)
+    }.issubset(owner_assignment_names)
     assert {
         "_pattern_boundary_wrong_text_model_source_workloads",
         "_pattern_boundary_wrong_text_model_expected_callback_call",
@@ -2460,6 +2472,30 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
         "PATTERN_BOUNDARY_MANIFEST_PATH",
         "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS",
+    }.isdisjoint(definition_names | assignment_names)
+    assert {
+        "_pattern_window_positional_indexlike_correctness_case_signature",
+        "_pattern_window_positional_indexlike_workload_args",
+        "_pattern_window_positional_indexlike_workload_signature",
+        "_is_pattern_window_positional_indexlike_workload",
+        "_pattern_keyword_window_correctness_case_signature",
+        "_pattern_keyword_window_workload_signature",
+        "_is_pattern_keyword_window_workload",
+        "_pattern_bounded_wildcard_correctness_case_signature",
+        "_pattern_bounded_wildcard_workload_signature",
+        "_is_pattern_bounded_wildcard_workload",
+        "_pattern_verbose_regression_correctness_case_signature",
+        "_pattern_verbose_regression_workload_signature",
+        "_is_pattern_verbose_regression_workload",
+        "_PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS",
+        "_PATTERN_BOUNDED_WILDCARD_CASE_IDS",
+        "_PATTERN_SEARCH_VERBOSE_REGRESSION_WORKLOAD_IDS",
+        "_PATTERN_FULLMATCH_VERBOSE_REGRESSION_WORKLOAD_IDS",
+        "_PATTERN_SEARCH_VERBOSE_REGRESSION_CASE_IDS",
+        "_PATTERN_FULLMATCH_VERBOSE_REGRESSION_CASE_IDS",
+        "_PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS",
+        "_PATTERN_VERBOSE_REGRESSION_CASE_IDS",
+        "_PATTERN_VERBOSE_REGRESSION_PATTERN",
     }.isdisjoint(definition_names | assignment_names)
 
 
