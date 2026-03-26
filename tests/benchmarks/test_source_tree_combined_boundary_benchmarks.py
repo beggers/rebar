@@ -20,7 +20,9 @@ from tests.benchmarks import benchmark_test_support
 from tests.benchmarks import (
     collection_replacement_benchmark_anchor_support as collection_replacement_support,
 )
-from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
+from tests.benchmarks import (
+    source_tree_benchmark_anchor_support as source_tree_owner_support,
+)
 from tests.conftest import (
     REPO_ROOT,
     records_by_string_id,
@@ -38,6 +40,68 @@ from tests.python.fixture_parity_support import (
 TRACKED_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
 
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
+
+
+def _combined_suite_slice_expectations(
+) -> tuple[source_tree_owner_support.SourceTreeCombinedSliceExpectation, ...]:
+    return (
+        source_tree_owner_support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+        + collection_replacement_support.COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS
+    )
+
+
+def _combined_manifest_representative_measured_workload_ids(
+    manifest_id: str,
+) -> tuple[str, ...]:
+    manifest_expectation = (
+        source_tree_owner_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(
+            manifest_id
+        )
+    )
+    if manifest_expectation is None:
+        raise AssertionError(
+            f"unknown source-tree combined manifest expectation {manifest_id!r}"
+        )
+
+    explicit_workload_ids = manifest_expectation.representative_measured_workload_ids
+    if explicit_workload_ids is not None:
+        return explicit_workload_ids
+
+    representative_ids: list[str] = []
+    shape_expectation = manifest_expectation.shape_expectation
+    if shape_expectation is not None:
+        for workload_id in shape_expectation.representative_measured_workload_ids:
+            normalized_workload_id = str(workload_id)
+            if normalized_workload_id not in representative_ids:
+                representative_ids.append(normalized_workload_id)
+    for expectation in _combined_suite_slice_expectations():
+        if expectation.manifest_id != manifest_id:
+            continue
+        for workload_id in expectation.expected_workload_ids:
+            normalized_workload_id = str(workload_id)
+            if normalized_workload_id not in representative_ids:
+                representative_ids.append(normalized_workload_id)
+    return tuple(representative_ids)
+
+
+class _CombinedSourceTreeSupport:
+    def __getattr__(self, name: str) -> object:
+        return getattr(source_tree_owner_support, name)
+
+    @property
+    def SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS(
+        self,
+    ) -> tuple[source_tree_owner_support.SourceTreeCombinedSliceExpectation, ...]:
+        return _combined_suite_slice_expectations()
+
+    def source_tree_combined_manifest_representative_measured_workload_ids(
+        self,
+        manifest_id: str,
+    ) -> tuple[str, ...]:
+        return _combined_manifest_representative_measured_workload_ids(manifest_id)
+
+
+source_tree_support = _CombinedSourceTreeSupport()
 
 
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):

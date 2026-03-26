@@ -21,9 +21,6 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks import benchmark_test_support
-from tests.benchmarks import (
-    collection_replacement_benchmark_anchor_support as collection_support,
-)
 from tests.conftest import manifest_records_by_id
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
@@ -2765,11 +2762,6 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
     ),
 )
 
-SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS = (
-    SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
-    + collection_support.COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS
-)
-
 def ordered_operations(workloads: list[Workload]) -> list[str]:
     operations: list[str] = []
     for workload in workloads:
@@ -2799,7 +2791,7 @@ def _filter_manifest_workload_ids(
     )
 
 
-def source_tree_combined_manifest_representative_measured_workload_ids(
+def _representative_measured_workload_ids_for_source_tree_combined_manifest(
     manifest_id: str,
 ) -> tuple[str, ...]:
     manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
@@ -2819,7 +2811,7 @@ def source_tree_combined_manifest_representative_measured_workload_ids(
             normalized_workload_id = str(workload_id)
             if normalized_workload_id not in representative_ids:
                 representative_ids.append(normalized_workload_id)
-    for expectation in SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS:
+    for expectation in SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS:
         if expectation.manifest_id != manifest_id:
             continue
         for workload_id in expectation.expected_workload_ids:
@@ -2951,7 +2943,7 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
         manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_ids[0]]
         if not representative_measured_workload_ids:
             representative_measured_workload_ids = (
-                source_tree_combined_manifest_representative_measured_workload_ids(
+                _representative_measured_workload_ids_for_source_tree_combined_manifest(
                     manifest_ids[0]
                 )
             )

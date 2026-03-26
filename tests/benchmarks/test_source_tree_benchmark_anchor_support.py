@@ -239,78 +239,16 @@ def test_workload_case_pair_anchor_expectations_wrap_each_case_id() -> None:
 
 
 def test_source_tree_combined_representative_workload_ids_prefer_explicit_manifest_contract(
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    manifest_id = "synthetic-boundary"
-    monkeypatch.setattr(
+    assert not hasattr(
         support,
-        "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
-        {
-            manifest_id: support.SourceTreeCombinedManifestExpectationDefinition(
-                representative_measured_workload_ids=("explicit-a", "explicit-b"),
-                shape_expectation=support.SourceTreeCombinedManifestShapeExpectation(
-                    representative_measured_workload_ids=("shape-a",),
-                ),
-            ),
-        },
+        "source_tree_combined_manifest_representative_measured_workload_ids",
     )
-    monkeypatch.setattr(
-        support,
-        "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS",
-        (
-            support.SourceTreeCombinedSliceExpectation(
-                manifest_id=manifest_id,
-                slice_id="slice-a",
-                expected_workload_ids=("slice-a", "slice-b"),
-            ),
-        ),
-    )
-
-    assert support.source_tree_combined_manifest_representative_measured_workload_ids(
-        manifest_id
-    ) == ("explicit-a", "explicit-b")
 
 
 def test_source_tree_combined_representative_workload_ids_derive_unique_shape_and_slice_rows(
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    manifest_id = "synthetic-boundary"
-    monkeypatch.setattr(
-        support,
-        "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
-        {
-            manifest_id: support.SourceTreeCombinedManifestExpectationDefinition(
-                shape_expectation=support.SourceTreeCombinedManifestShapeExpectation(
-                    representative_measured_workload_ids=("shape-a", "shared"),
-                ),
-            ),
-        },
-    )
-    monkeypatch.setattr(
-        support,
-        "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS",
-        (
-            support.SourceTreeCombinedSliceExpectation(
-                manifest_id=manifest_id,
-                slice_id="slice-a",
-                expected_workload_ids=("shared", "slice-a"),
-            ),
-            support.SourceTreeCombinedSliceExpectation(
-                manifest_id="other-boundary",
-                slice_id="ignored",
-                expected_workload_ids=("other",),
-            ),
-            support.SourceTreeCombinedSliceExpectation(
-                manifest_id=manifest_id,
-                slice_id="slice-b",
-                expected_workload_ids=("slice-a", "slice-b", "shape-a"),
-            ),
-        ),
-    )
-
-    assert support.source_tree_combined_manifest_representative_measured_workload_ids(
-        manifest_id
-    ) == ("shape-a", "shared", "slice-a", "slice-b")
+    assert not hasattr(support, "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS")
 
 
 def test_deleted_zero_gap_representative_helpers_are_absent_from_support_module(
@@ -339,17 +277,6 @@ def test_source_tree_combined_manifest_representative_workload_ids_restore_zero_
             ),
         },
     )
-    monkeypatch.setattr(
-        support,
-        "source_tree_combined_manifest_representative_measured_workload_ids",
-        lambda observed_manifest_id: (
-            "bytes-a",
-            "bytes-b",
-            "other-representative",
-        )
-        if observed_manifest_id == manifest_id
-        else (),
-    )
     manifest_definition = support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
         manifest_id
     ]
@@ -357,11 +284,9 @@ def test_source_tree_combined_manifest_representative_workload_ids_restore_zero_
     assert expected_workload_ids in (
         manifest_definition.zero_gap_bytes_representative_subsets
     )
-    assert (
-        support.source_tree_combined_manifest_representative_measured_workload_ids(
-            manifest_id
-        )
-        == ("bytes-a", "bytes-b", "other-representative")
+    assert not hasattr(
+        support,
+        "source_tree_combined_manifest_representative_measured_workload_ids",
     )
 
 
@@ -1181,7 +1106,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "source_tree_scorecard_case",
         "source_tree_combined_target_manifest_ids",
         "source_tree_combined_case",
-        "source_tree_combined_manifest_representative_measured_workload_ids",
         "expected_summary_for_manifests",
         "select_source_tree_combined_slice_rows",
     ):
@@ -1710,8 +1634,8 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
         support,
         "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS",
     )
-    assert hasattr(support, "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS")
-    assert "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS" in local_assignment_names
+    assert not hasattr(support, "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS")
+    assert "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS" not in local_assignment_names
 
 
 def test_source_tree_support_module_no_longer_exposes_collection_owned_signature_helpers(
@@ -1745,7 +1669,7 @@ def test_source_tree_support_module_exports_combined_slice_owner_group() -> None
         )
     )
     assert "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS" in local_assignment_names
-    assert "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS" in local_assignment_names
+    assert "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS" not in local_assignment_names
 
     _, collection_local_assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(
@@ -1791,7 +1715,6 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
         "source_tree_scorecard_case",
         "source_tree_combined_target_manifest_ids",
         "source_tree_combined_case",
-        "source_tree_combined_manifest_representative_measured_workload_ids",
         "expected_summary_for_manifests",
         "select_source_tree_combined_slice_rows",
     ):
@@ -2403,10 +2326,6 @@ def test_source_tree_combined_slice_expectations_keep_collection_owned_block_out
         expectation.slice_id
         for expectation in support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
     }
-    routed_combined_slice_ids = {
-        expectation.slice_id
-        for expectation in support.SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS
-    }
     collection_owned_slice_ids = {
         expectation.slice_id
         for expectation in (
@@ -2416,9 +2335,10 @@ def test_source_tree_combined_slice_expectations_keep_collection_owned_block_out
 
     assert collection_owned_slice_ids
     assert combined_slice_ids.isdisjoint(collection_owned_slice_ids)
-    assert collection_owned_slice_ids.issubset(routed_combined_slice_ids)
+    assert not hasattr(support, "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS")
     assert "former-gap-callable-replacement-rows" in combined_slice_ids
-    assert "quantified-alternation-heavy-constant-replacement-rows" in combined_slice_ids
+    assert "minimal-template-replacement-rows" not in combined_slice_ids
+    assert "nested-callable-replacement-str-rows" not in combined_slice_ids
 
 
 def test_source_tree_owner_inventory_constants_are_not_mirrored_back_into_this_test_module(
