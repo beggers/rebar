@@ -198,37 +198,6 @@ def _inline_standard_definition_assignments(
     )
 
 
-def _assert_method_routes_through_source_tree_support(
-    class_name: str,
-    method_name: str,
-    *,
-    expected_helper_name: str,
-) -> None:
-    method_definition = _class_method_definition(
-        _module_class_definition(support, class_name),
-        method_name,
-    )
-
-    assert not any(
-        isinstance(node, ast.ImportFrom) for node in ast.walk(method_definition)
-    )
-    return_statement = next(
-        node for node in method_definition.body if isinstance(node, ast.Return)
-    )
-    assert isinstance(return_statement.value, ast.Call)
-    assert isinstance(return_statement.value.func, ast.Attribute)
-    assert isinstance(return_statement.value.func.value, ast.Name)
-    assert return_statement.value.func.value.id == "source_tree_support"
-    assert return_statement.value.func.attr == expected_helper_name
-    assert not any(
-        isinstance(node, ast.Attribute)
-        and isinstance(node.value, ast.Name)
-        and node.value.id == "source_tree_support"
-        and node.attr == "_SourceTreeContractBuilderSpec"
-        for node in ast.walk(method_definition)
-    )
-
-
 def test_write_test_manifest_dedents_and_writes_utf8_text(tmp_path) -> None:
     manifest_path = support._write_test_manifest(
         tmp_path,
@@ -2815,9 +2784,9 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
     }.issubset(assignment_names)
-    assert (
-        support.CompiledPatternModuleSuccessOwnerSpec.contract_builder_spec.__name__
-        == "contract_builder_spec"
+    assert not hasattr(
+        support.CompiledPatternModuleSuccessOwnerSpec,
+        "contract_builder_spec",
     )
     assert (
         support.CompiledPatternModuleSuccessOwnerSpec.source_workloads.__name__
@@ -2837,24 +2806,44 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
     )
 
 
-def test_compiled_pattern_contract_builder_methods_route_through_owner_module_alias(
+def test_compiled_pattern_contract_builder_helpers_live_only_in_source_tree_owner_module(
 ) -> None:
-    _assert_method_routes_through_source_tree_support(
+    for class_name in (
         "CompiledPatternModuleCompileContractCase",
-        "contract_builder_spec",
-        expected_helper_name="compiled_pattern_module_compile_contract_builder_spec",
-    )
-    _assert_method_routes_through_source_tree_support(
         "CompiledPatternModuleSuccessOwnerSpec",
-        "contract_builder_spec",
-        expected_helper_name="compiled_pattern_module_success_contract_builder_spec",
-    )
-    _assert_method_routes_through_source_tree_support(
         "_CompiledPatternModuleHelperKeywordContractSpec",
+    ):
+        class_definition = _module_class_definition(support, class_name)
+        assert {
+            node.name
+            for node in class_definition.body
+            if isinstance(node, ast.FunctionDef)
+        }.isdisjoint({"contract_builder_spec"})
+
+    assert not hasattr(
+        support.CompiledPatternModuleCompileContractCase,
         "contract_builder_spec",
-        expected_helper_name=(
-            "compiled_pattern_module_helper_keyword_contract_builder_spec"
-        ),
+    )
+    assert not hasattr(
+        support.CompiledPatternModuleSuccessOwnerSpec,
+        "contract_builder_spec",
+    )
+    assert not hasattr(
+        support._CompiledPatternModuleHelperKeywordContractSpec,
+        "contract_builder_spec",
+    )
+
+    assert hasattr(
+        anchor_support,
+        "compiled_pattern_module_compile_contract_builder_spec",
+    )
+    assert hasattr(
+        anchor_support,
+        "compiled_pattern_module_success_contract_builder_spec",
+    )
+    assert hasattr(
+        anchor_support,
+        "compiled_pattern_module_helper_keyword_contract_builder_spec",
     )
 
 

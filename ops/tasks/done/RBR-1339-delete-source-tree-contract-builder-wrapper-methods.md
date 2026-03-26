@@ -1,6 +1,6 @@
 ## RBR-1339: Delete source-tree contract-builder wrapper methods
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -55,3 +55,14 @@ Created: 2026-03-26
   - `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -q` passed with `279 passed, 1821 subtests passed in 12.46s`
   - `bash -lc "! rg -n 'def contract_builder_spec\\(' tests/benchmarks/benchmark_test_support.py"` currently fails because the three source-tree-only wrapper methods still live in the generic support module, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n '\\.contract_builder_spec\\(' tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` currently fails because those two benchmark suites still route through the wrapper methods, and that failure belongs exactly to this cleanup
+
+## Completion
+- Deleted the three source-tree-only `contract_builder_spec()` wrapper methods from `tests/benchmarks/benchmark_test_support.py`.
+- Updated the manifest-validation and combined-boundary benchmark suites to call the source-tree owner helpers directly for compiled-pattern compile/success/helper-keyword contract specs.
+- Replaced the wrapper-route assertions in `tests/benchmarks/test_benchmark_test_support.py` with ownership checks that the generic support classes no longer define `contract_builder_spec` while the owner-module helper functions remain present.
+- Verified with:
+  - `./.venv/bin/python -m pytest tests/benchmarks/test_benchmark_test_support.py -q` -> `133 passed in 0.55s`
+  - `./.venv/bin/python -m pytest tests/benchmarks/test_benchmark_manifest_validation.py -q` -> `64 passed in 0.20s`
+  - `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -q` -> `279 passed, 1821 subtests passed in 12.50s`
+  - `bash -lc "! rg -n 'def contract_builder_spec\\(' tests/benchmarks/benchmark_test_support.py"` -> passed
+  - `bash -lc "! rg -n '\\.contract_builder_spec\\(' tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` -> passed

@@ -1570,11 +1570,6 @@ class CompiledPatternModuleCompileContractCase:
     allowed_patterns: tuple[str, ...] = ()
     expected_exception: dict[str, str] | None = None
 
-    def contract_builder_spec(self) -> Any:
-        return source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
-            self
-        )
-
     def expected_source_workload_ids(self) -> tuple[str, ...]:
         return tuple(
             workload_id.removesuffix("-contract")
@@ -1891,7 +1886,11 @@ def build_compiled_pattern_module_contract_anchor_lanes(
             case_id=contract_case.case_id,
             contract_filename=contract_case.anchor_contract_filename,
             source_workloads=source_workloads,
-            contract_builder_spec=contract_case.contract_builder_spec,
+            contract_builder_spec=lambda contract_case=contract_case: (
+                source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
+                    contract_case
+                )
+            ),
             expected_anchor_case_ids=contract_case.expected_anchor_case_ids,
             anchor_case_ids=published_case_ids_by_signature(
                 contract_case.correctness_case_signature
@@ -3140,11 +3139,6 @@ class CompiledPatternModuleSuccessOwnerSpec:
     preserved_payload_fields: tuple[str, ...]
     preserve_replacement_payload_typing: bool
 
-    def contract_builder_spec(self) -> Any:
-        return source_tree_support.compiled_pattern_module_success_contract_builder_spec(
-            self
-        )
-
     def source_workloads(self) -> tuple[Workload, ...]:
         return _contract_source_workloads(
             manifest_path=self.manifest_path,
@@ -3479,13 +3473,6 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
     materializes_positional_keyword_field: bool
     notes: tuple[str, ...] = ()
     precompile_anchor_ids: tuple[str, ...] = ()
-
-    def contract_builder_spec(self) -> Any:
-        return (
-            source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
-                self
-            )
-        )
 
     def expected_materialized_field_names(
         self,
