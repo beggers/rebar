@@ -22,9 +22,6 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks import benchmark_test_support
-from tests.benchmarks import (
-    source_tree_benchmark_anchor_support as source_tree_support,
-)
 from tests.conftest import (
     REPO_ROOT,
     records_by_string_id,
@@ -39,6 +36,9 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     callable_match_group_signature,
 )
+
+source_tree_support = benchmark_test_support
+
 TRACKED_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
 
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"

@@ -44,3 +44,11 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed with `671 passed, 1573 subtests passed in 14.16s`.
   - `python3 -m py_compile tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed.
   - `bash -lc "rg -n 'source_tree_benchmark_anchor_support' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py | wc -l"` returned `67`, confirming the remaining coupling is concentrated in this support/test layer rather than spread across the wider repo.
+
+## Completion
+- Completed 2026-03-26.
+- Merged the deleted source-tree benchmark helper surface into `tests/benchmarks/benchmark_test_support.py`, rewired `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to use the shared support alias, updated `tests/benchmarks/test_benchmark_test_support.py` for the merged layout, and deleted both `tests/benchmarks/source_tree_benchmark_anchor_support.py` and `tests/benchmarks/test_source_tree_benchmark_anchor_support.py`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `bash -lc "! test -e tests/benchmarks/source_tree_benchmark_anchor_support.py && ! test -e tests/benchmarks/test_source_tree_benchmark_anchor_support.py && ! rg -n 'source_tree_benchmark_anchor_support|test_source_tree_benchmark_anchor_support' tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`

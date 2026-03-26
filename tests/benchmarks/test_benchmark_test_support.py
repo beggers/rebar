@@ -13,7 +13,6 @@ import pytest
 
 from rebar_harness import benchmarks
 from tests.benchmarks import benchmark_test_support as support
-from tests.benchmarks import source_tree_benchmark_anchor_support as anchor_support
 from tests.benchmarks import (
     test_benchmark_publication_runtime_contracts as publication_runtime_contracts,
 )
@@ -22,7 +21,8 @@ from tests.python.fixture_parity_support import IndexLike
 
 # Pytest fixture discovery needs a module-level binding for this shared fixture.
 anchor_support_cache_guard = support.anchor_support_cache_guard
-collection_replacement_support = anchor_support
+anchor_support = support
+collection_replacement_support = support
 
 
 def _assert_owner_module_routes_through_package_import(
@@ -473,20 +473,20 @@ def test_clear_anchor_support_caches_clears_cacheable_objects_from_owner_modules
         def cache_clear(self) -> None:
             self.calls += 1
 
-    source_tree_cache = _CacheRecorder()
+    combined_suite_cache = _CacheRecorder()
 
     monkeypatch.setitem(
         support.sys.modules,
-        "tests.benchmarks.source_tree_benchmark_anchor_support",
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
         SimpleNamespace(
-            cached_source_tree_helper=source_tree_cache,
+            cached_source_tree_helper=combined_suite_cache,
             uncached_helper=object(),
         ),
     )
 
     support._clear_anchor_support_caches()
 
-    assert source_tree_cache.calls == 1
+    assert combined_suite_cache.calls == 1
 
 
 def test_clear_anchor_support_caches_resets_shared_ast_import_helpers(
@@ -574,7 +574,7 @@ def test_source_tree_contract_manifest_workload_payload_drops_fields_and_injects
     assert payload["notes"] == ["keeps helper invocation unresolved"]
     for field_name in spec.excluded_fields - {"notes"}:
         assert field_name not in payload
-    assert not hasattr(support, "_source_tree_contract_manifest")
+    assert support._source_tree_contract_manifest is anchor_support._source_tree_contract_manifest
 
 
 def test_source_tree_contract_workload_reconstructs_contract_workload_with_defaults(
@@ -1144,36 +1144,22 @@ def test_standard_benchmark_definitions_keep_owner_blocks_in_order(
         assert standard_names[next_index] == following_definition_name
 
 
-def test_benchmark_test_support_owns_compiled_pattern_module_compile_standard_definitions_on_source_tree_support(
+def test_benchmark_test_support_owns_compiled_pattern_module_compile_standard_definitions(
 ) -> None:
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(support)
     )
-    source_tree_definition_names, source_tree_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(anchor_support)
-    )
     source = (
         REPO_ROOT / "tests" / "benchmarks" / "benchmark_test_support.py"
-    ).read_text(encoding="utf-8")
-    source_tree_source = (
-        REPO_ROOT / "tests" / "benchmarks" / "source_tree_benchmark_anchor_support.py"
     ).read_text(encoding="utf-8")
 
     assert (
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
-        not in definition_names
+        in definition_names
     )
     assert (
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
-        not in assignment_names
-    )
-    assert (
-        "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
-        in source_tree_definition_names
-    )
-    assert (
-        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
-        in source_tree_assignment_names
+        in assignment_names
     )
     assert (
         re.search(
@@ -1182,17 +1168,11 @@ def test_benchmark_test_support_owns_compiled_pattern_module_compile_standard_de
             source,
             re.MULTILINE,
         )
-        is None
+        is not None
     )
-    assert re.search(
-        r"^def _build_compiled_pattern_module_compile_standard_benchmark_definitions\b|"
-        r"^COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS\b",
-        source_tree_source,
-        re.MULTILINE,
-    ) is not None
 
 
-def test_benchmark_test_support_no_longer_exports_compiled_pattern_module_compile_helper_surface(
+def test_benchmark_test_support_exports_compiled_pattern_module_compile_helper_surface(
 ) -> None:
     helper_names = {
         "_compiled_pattern_module_compile_keyword_kwargs_signature",
@@ -1212,15 +1192,9 @@ def test_benchmark_test_support_no_longer_exports_compiled_pattern_module_compil
     shared_definition_names, _ = support.top_level_module_definition_and_assignment_names(
         support
     )
-    owner_definition_names, _ = support.top_level_module_definition_and_assignment_names(
-        anchor_support
-    )
-
-    assert helper_names.isdisjoint(shared_definition_names)
-    assert helper_names.issubset(owner_definition_names)
+    assert helper_names.issubset(shared_definition_names)
     for helper_name in helper_names:
-        assert not hasattr(support, helper_name)
-        assert hasattr(anchor_support, helper_name)
+        assert getattr(support, helper_name) is getattr(anchor_support, helper_name)
 
 
 def test_module_keyword_flags_workload_stays_pinned() -> None:
@@ -1398,16 +1372,6 @@ def test_inline_standard_definition_exports_reuse_named_manifest_path_constants(
     ("module_name", "module_constant_name"),
     (
         pytest.param(
-            "tests.benchmarks.source_tree_benchmark_anchor_support",
-            "MODULE_BOUNDARY_MANIFEST_PATH",
-            id="source-tree-support",
-        ),
-        pytest.param(
-            "tests.benchmarks.test_source_tree_benchmark_anchor_support",
-            "MODULE_BOUNDARY_MANIFEST_PATH",
-            id="source-tree-contract-suite",
-        ),
-        pytest.param(
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
             None,
             id="source-tree-combined-suite",
@@ -1419,44 +1383,18 @@ def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_b
     module_constant_name: str | None,
 ) -> None:
     module = importlib.import_module(module_name)
-    _, assignment_names = support.top_level_module_definition_and_assignment_names(
-        module
+    _assert_owner_module_routes_through_package_import(
+        module,
+        owner_module="tests.benchmarks.benchmark_test_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
-
-    if module_name in {
-        "tests.benchmarks.source_tree_benchmark_anchor_support",
-        "tests.benchmarks.test_source_tree_benchmark_anchor_support",
-        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
-    }:
-        _assert_owner_module_routes_through_package_import(
-            module,
-            owner_module="tests.benchmarks.benchmark_test_support",
-            package_module="tests.benchmarks",
-            expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
-        )
-        assert getattr(module, "benchmark_test_support") is support
-        assert (
-            module.benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH
-            is support.MODULE_BOUNDARY_MANIFEST_PATH
-        )
-        if module_constant_name is not None:
-            assert not hasattr(module, module_constant_name)
-    else:
-        assert "MODULE_BOUNDARY_MANIFEST_PATH" in support._module_imported_names(
-            module,
-            "tests.benchmarks.benchmark_test_support",
-        )
-        assert not {
-            imported_name
-            for imported_name in support._module_imported_names(
-                module,
-                "tests.benchmarks.benchmark_test_support",
-            )
-            if imported_name.startswith("SHARED_")
-        }
-        assert module_constant_name is not None
-        assert getattr(module, module_constant_name) is support.MODULE_BOUNDARY_MANIFEST_PATH
+    assert getattr(module, "benchmark_test_support") is support
+    assert module.benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH is support.MODULE_BOUNDARY_MANIFEST_PATH
     if module_constant_name is not None:
+        _, assignment_names = support.top_level_module_definition_and_assignment_names(
+            module
+        )
         assert module_constant_name not in assignment_names
 
 
@@ -1476,22 +1414,7 @@ def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_b
 def test_source_tree_manifest_path_consumers_reuse_support_constants_by_identity(
     manifest_path_name: str,
 ) -> None:
-    _, assignment_names = support.top_level_module_definition_and_assignment_names(
-        anchor_support
-    )
-
-    _assert_owner_module_routes_through_package_import(
-        anchor_support,
-        owner_module="tests.benchmarks.benchmark_test_support",
-        package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
-    )
-    assert manifest_path_name not in assignment_names
-    assert not hasattr(anchor_support, manifest_path_name)
-    assert getattr(anchor_support.benchmark_test_support, manifest_path_name) is getattr(
-        support,
-        manifest_path_name,
-    )
+    assert getattr(anchor_support, manifest_path_name) is getattr(support, manifest_path_name)
 
 
 def test_shared_source_tree_manifest_path_constants_point_to_current_workload_files() -> None:
@@ -1596,7 +1519,7 @@ def test_benchmark_test_support_owns_only_shared_collection_replacement_classifi
         "_is_collection_replacement_compiled_pattern_module_helper_keyword_workload",
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
         "_is_collection_replacement_wrong_text_model_workload",
-    }.isdisjoint(definition_names)
+    }.issubset(definition_names)
 
 
 def test_collection_replacement_benchmark_support_owns_keyword_classifier_helpers_and_routes_shared_ones_through_support_alias(
@@ -1607,11 +1530,6 @@ def test_collection_replacement_benchmark_support_owns_keyword_classifier_helper
         )
     )
 
-    assert support._top_level_import_from_alias_pairs(
-        support._parsed_module_ast(collection_replacement_support),
-        module_name="tests.benchmarks",
-        imported_names=frozenset({"benchmark_test_support"}),
-    ) == frozenset({("benchmark_test_support", None)})
     assert {
         "_collection_replacement_keyword_parameter_name",
         "_collection_replacement_positional_keyword_field",
@@ -1630,6 +1548,7 @@ def test_collection_replacement_benchmark_support_owns_keyword_classifier_helper
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
         "_is_collection_replacement_wrong_text_model_workload",
     }.isdisjoint(assignment_names)
+    assert collection_replacement_support is support
 
 
 @pytest.mark.parametrize(
@@ -2183,117 +2102,44 @@ OWNER_ASSIGNMENT: object = shared_support.SHARED_ALIAS
         )
 
 
-def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_shadow_alias(
-) -> None:
-    module = importlib.import_module(
-        "tests.benchmarks.test_source_tree_benchmark_anchor_support"
+def test_deleted_source_tree_support_modules_stay_unimportable_and_unreferenced() -> None:
+    deleted_owner_module = ".".join(
+        ("tests", "benchmarks", "source_tree" + "_benchmark_anchor_support")
     )
-    definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(module)
+    deleted_owner_test_module = ".".join(
+        ("tests", "benchmarks", "test_" + "source_tree" + "_benchmark_anchor_support")
     )
-    module_ast = support._parsed_module_ast(module)
-    benchmark_support_imports = {
-        (alias.name, alias.asname)
-        for node in module_ast.body
-        if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
-        for alias in node.names
-        if alias.name == "benchmark_test_support"
-    }
-    retired_owner_names = {
-        "MODULE_BOUNDARY_MANIFEST_PATH",
-        "EXACT_REPEAT_MANIFEST_PATH",
-        "GROUPED_ALTERNATION_MANIFEST_PATH",
-        "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
-        "NESTED_GROUP_MANIFEST_PATH",
-        "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
-        "OPEN_ENDED_MANIFEST_PATH",
-        "OPTIONAL_GROUP_MANIFEST_PATH",
-        "RANGED_REPEAT_MANIFEST_PATH",
-        "_module_imported_names",
-        "_module_pattern_case",
-        "_owner_definition_manifest_path_names",
-        "_parsed_module_ast",
-        "_synthetic_case",
-        "_synthetic_manifest",
-        "live_manifest_workload",
-        "synthetic_workload",
-    }
-
-    assert benchmark_support_imports == {("benchmark_test_support", None)}
-    assert not any(
-        isinstance(node, ast.ImportFrom)
-        and node.module == "tests.benchmarks.benchmark_test_support"
-        for node in module_ast.body
-    )
-    assert retired_owner_names.isdisjoint(definition_names | assignment_names)
-
-
-def test_source_tree_anchor_support_routes_owner_imports_through_package_modules(
-) -> None:
-    definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(anchor_support)
-    )
-
-    assert support._top_level_import_from_alias_pairs(
-        support._parsed_module_ast(anchor_support),
-        module_name="tests.benchmarks",
-        imported_names=frozenset(
-            {
-                "benchmark_test_support",
-            }
+    _assert_deleted_benchmark_module_stays_absent(
+        deleted_module_name=deleted_owner_module,
+        deleted_path=(
+            REPO_ROOT
+            / "tests"
+            / "benchmarks"
+            / ("source_tree" + "_benchmark_anchor_support.py")
         ),
-    ) == frozenset({("benchmark_test_support", None)})
-    assert not any(
-        isinstance(node, ast.ImportFrom)
-        and node.module == "tests.benchmarks.benchmark_test_support"
-        for node in support._parsed_module_ast(anchor_support).body
     )
-    assert {
-        "MODULE_BOUNDARY_MANIFEST_PATH",
-        "EXACT_REPEAT_MANIFEST_PATH",
-        "GROUPED_ALTERNATION_MANIFEST_PATH",
-        "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
-        "NESTED_GROUP_MANIFEST_PATH",
-        "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
-        "OPEN_ENDED_MANIFEST_PATH",
-        "OPTIONAL_GROUP_MANIFEST_PATH",
-        "RANGED_REPEAT_MANIFEST_PATH",
-        "StandardBenchmarkAnchorContractDefinition",
-        "_definition_anchor_expectations",
-        "_workload_case_pair_anchor_expectations",
-        "freeze_signature_value",
-        "live_manifest_workloads",
-        "published_case_ids_by_signature",
-        "published_cases_by_id",
-    }.isdisjoint(definition_names | assignment_names)
-
-
-def test_benchmark_test_support_routes_owner_definition_imports_through_package_modules(
-) -> None:
-    definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(support)
-    )
-
-    assert support._top_level_import_from_alias_pairs(
-        support._parsed_module_ast(support),
-        module_name="tests.benchmarks",
-        imported_names=frozenset(
-            {
-                "source_tree_benchmark_anchor_support",
-            }
+    _assert_deleted_benchmark_module_stays_absent(
+        deleted_module_name=deleted_owner_test_module,
+        deleted_path=(
+            REPO_ROOT
+            / "tests"
+            / "benchmarks"
+            / ("test_" + "source_tree" + "_benchmark_anchor_support.py")
         ),
-    ) == frozenset()
-    assert not any(
-        isinstance(node, ast.ImportFrom)
-        and node.module == "tests.benchmarks.source_tree_benchmark_anchor_support"
-        for node in support._parsed_module_ast(support).body
     )
-    assert {
-        "COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS",
-        "SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS",
-    }.isdisjoint(definition_names | assignment_names)
-    assert not hasattr(support, "collection_replacement_support")
-    assert not hasattr(support, "source_tree_support")
+
+
+def test_benchmark_test_support_no_longer_imports_deleted_source_tree_modules() -> None:
+    import_targets = support._module_import_targets(support)
+    deleted_owner_module = ".".join(
+        ("tests", "benchmarks", "source_tree" + "_benchmark_anchor_support")
+    )
+    deleted_owner_test_module = ".".join(
+        ("tests", "benchmarks", "test_" + "source_tree" + "_benchmark_anchor_support")
+    )
+
+    assert deleted_owner_module not in import_targets
+    assert deleted_owner_test_module not in import_targets
 
 
 def test_deleted_collection_replacement_anchor_suite_stays_unimportable_and_unreferenced(
@@ -2345,12 +2191,6 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(support)
     )
-    owner_definition_names, owner_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(
-            anchor_support
-        )
-    )
-
     assert {
         "_pattern_window_positional_indexlike_correctness_case_signature",
         "_pattern_window_positional_indexlike_workload_args",
@@ -2365,7 +2205,7 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
         "_pattern_verbose_regression_correctness_case_signature",
         "_pattern_verbose_regression_workload_signature",
         "_is_pattern_verbose_regression_workload",
-    }.issubset(owner_definition_names)
+    }.issubset(definition_names)
     assert {
         "_PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS",
         "_PATTERN_BOUNDED_WILDCARD_CASE_IDS",
@@ -2376,7 +2216,7 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
         "_PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS",
         "_PATTERN_VERBOSE_REGRESSION_CASE_IDS",
         "_PATTERN_VERBOSE_REGRESSION_PATTERN",
-    }.issubset(owner_assignment_names)
+    }.issubset(assignment_names)
     assert {
         "_pattern_boundary_wrong_text_model_source_workloads",
         "_pattern_boundary_wrong_text_model_expected_callback_call",
@@ -2386,7 +2226,7 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
         "PATTERN_BOUNDARY_MANIFEST_PATH",
         "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS",
-    }.isdisjoint(definition_names | assignment_names)
+    }.issubset(definition_names | assignment_names)
     assert {
         "_pattern_window_positional_indexlike_correctness_case_signature",
         "_pattern_window_positional_indexlike_workload_args",
@@ -2410,7 +2250,7 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
         "_PATTERN_VERBOSE_REGRESSION_WORKLOAD_IDS",
         "_PATTERN_VERBOSE_REGRESSION_CASE_IDS",
         "_PATTERN_VERBOSE_REGRESSION_PATTERN",
-    }.isdisjoint(definition_names | assignment_names)
+    }.issubset(definition_names | assignment_names)
 
 
 def test_benchmark_test_support_defines_shared_manifest_workload_contract_helper(
@@ -2717,10 +2557,6 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(support)
     )
-    owner_definition_names, owner_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(anchor_support)
-    )
-
     assert {
         "_compiled_pattern_module_helper_route",
         "_is_module_workflow_compiled_pattern_workload",
@@ -2729,23 +2565,7 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_is_module_workflow_compiled_pattern_literal_success_workload",
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
         "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
-    }.isdisjoint(definition_names)
-    assert {
-        "_compiled_pattern_module_helper_route",
-        "_is_module_workflow_compiled_pattern_workload",
-        "_module_workflow_compiled_pattern_success_correctness_case_signature",
-        "_module_workflow_compiled_pattern_success_workload_signature",
-        "_is_module_workflow_compiled_pattern_literal_success_workload",
-        "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
-        "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
-    }.issubset(owner_definition_names)
-    assert {
-        "_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
-        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
-        "_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS",
-        "_VERBOSE_REGRESSION_PATTERN",
-        "_VERBOSE_REGRESSION_FLAGS",
-    }.isdisjoint(assignment_names)
+    }.issubset(definition_names)
     assert {
         "_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
@@ -2753,32 +2573,15 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_VERBOSE_REGRESSION_PATTERN",
         "_VERBOSE_REGRESSION_FLAGS",
         "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
-    }.issubset(owner_assignment_names)
+    }.issubset(assignment_names)
     assert {
         "COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS",
         "COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
     }.issubset(assignment_names)
-    assert not hasattr(support, "_compiled_pattern_wrong_text_model_specs")
-    assert not hasattr(support, "_compiled_pattern_wrong_text_model_source_workloads")
-    assert not hasattr(support, "_collection_replacement_owner_support")
-    assert not hasattr(support, "_source_tree_benchmark_anchor_support_module")
-    assert not hasattr(
-        support,
-        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
-    )
-    assert not hasattr(
-        support,
-        "_run_cpython_compiled_pattern_module_helper_workload",
-    )
-    assert not hasattr(support, "_assert_wrong_text_model_payload_round_trip")
-    assert not hasattr(
-        support,
-        "_module_workflow_compiled_pattern_correctness_case_signature",
-    )
-    assert not hasattr(
-        support,
-        "_module_workflow_compiled_pattern_workload_signature",
-    )
+    assert hasattr(support, "_compiled_pattern_wrong_text_model_source_workloads")
+    assert hasattr(support, "_is_module_workflow_compiled_pattern_wrong_text_model_workload")
+    assert hasattr(support, "_run_cpython_compiled_pattern_module_helper_workload")
+    assert hasattr(support, "_assert_wrong_text_model_payload_round_trip")
 
 
 def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> None:
@@ -2796,47 +2599,13 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
     )
 
 
-def test_source_tree_owner_module_owns_source_tree_combined_routing_helpers(
-) -> None:
+def test_source_tree_combined_routing_helpers_live_on_shared_support() -> None:
     definition_names, _ = support.top_level_module_definition_and_assignment_names(
-        anchor_support
-    )
-
-    moved_helper_names = {
-        "_assert_source_tree_combined_routes_owner_names_through_module_alias",
-    }
-
-    assert moved_helper_names.issubset(definition_names)
-    for helper_name in moved_helper_names:
-        assert not hasattr(support, helper_name)
-        assert hasattr(anchor_support, helper_name)
-    assert not hasattr(anchor_support, "_source_tree_combined_suite_module")
-    assert "_module_alias_names" not in definition_names
-
-
-def test_source_tree_combined_routing_helpers_move_out_of_shared_support_scope() -> None:
-    source_tree_suite = importlib.import_module(
-        "tests.benchmarks.test_source_tree_benchmark_anchor_support"
-    )
-    helper_names = {
-        "_assert_source_tree_combined_routes_owner_names_through_module_alias",
-    }
-
-    owner_definition_names, _ = support.top_level_module_definition_and_assignment_names(
-        anchor_support
-    )
-    assert helper_names.issubset(owner_definition_names)
-    shared_definition_names, _ = support.top_level_module_definition_and_assignment_names(
         support
     )
-    assert helper_names.isdisjoint(shared_definition_names)
-    for helper_name in helper_names:
-        assert not hasattr(support, helper_name)
 
-    definition_names, _ = support.top_level_module_definition_and_assignment_names(
-        source_tree_suite
-    )
-    assert helper_names.isdisjoint(definition_names)
+    assert "_assert_source_tree_combined_routes_owner_names_through_module_alias" in definition_names
+    assert hasattr(support, "_assert_source_tree_combined_routes_owner_names_through_module_alias")
 
 
 @pytest.mark.parametrize(
@@ -2868,14 +2637,14 @@ def test_source_tree_combined_routing_helpers_move_out_of_shared_support_scope()
         pytest.param(
             "\n".join(
                 (
-                    "import tests.benchmarks.source_tree_benchmark_anchor_support as source_tree_support",
+                    "import tests.benchmarks.benchmark_test_support as source_tree_support",
                     "",
                     "source_tree_support_alias = source_tree_support",
                     "source_tree_support_final: object = source_tree_support_alias",
                 )
             ),
-            "source_tree_benchmark_anchor_support",
-            "tests.benchmarks.source_tree_benchmark_anchor_support",
+            "benchmark_test_support",
+            "tests.benchmarks.benchmark_test_support",
             {
                 "source_tree_support",
                 "source_tree_support_alias",
@@ -2998,7 +2767,7 @@ def test_source_tree_combined_route_helper_allows_expected_benchmark_test_suppor
     owner_surface = object()
     owner_contract_surface = object()
     owner_module = SimpleNamespace(
-        __name__="tests.benchmarks.source_tree_benchmark_anchor_support",
+        __name__="tests.benchmarks.benchmark_test_support",
         SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS=owner_surface,
         assert_source_tree_benchmark_contract=owner_contract_surface,
     )
@@ -3010,7 +2779,7 @@ def test_source_tree_combined_route_helper_allows_expected_benchmark_test_suppor
         "\n".join(
             (
                 "from tests.benchmarks import benchmark_test_support",
-                "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
+                "source_tree_support = benchmark_test_support",
                 "",
                 "source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
                 "source_tree_support.assert_source_tree_benchmark_contract",
@@ -3033,6 +2802,12 @@ def test_source_tree_combined_route_helper_allows_expected_benchmark_test_suppor
                 "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
                 "assert_source_tree_benchmark_contract",
             ),
+            expected_direct_benchmark_test_support_refs=frozenset(
+                {
+                    "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+                    "assert_source_tree_benchmark_contract",
+                }
+            ),
         )
         is combined_suite
     )
@@ -3044,7 +2819,7 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
     owner_surface = object()
     owner_contract_surface = object()
     owner_module = SimpleNamespace(
-        __name__="tests.benchmarks.source_tree_benchmark_anchor_support",
+        __name__="tests.benchmarks.benchmark_test_support",
         SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS=owner_surface,
         assert_source_tree_benchmark_contract=owner_contract_surface,
     )
@@ -3055,7 +2830,7 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
     combined_suite_ast = ast.parse(
         "\n".join(
             (
-                "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
+                "from tests.benchmarks import benchmark_test_support as source_tree_support",
                 "",
                 "source_tree_support_alias = source_tree_support",
                 "source_tree_combined_manifest_expectations_alias = source_tree_support_alias.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
@@ -3092,8 +2867,8 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
         pytest.param(
             "\n".join(
                 (
-                    "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
-                    "from tests.benchmarks.source_tree_benchmark_anchor_support import SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+                    "from tests.benchmarks import benchmark_test_support as source_tree_support",
+                    "from tests.benchmarks.benchmark_test_support import SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
                 )
             ),
             set(),
@@ -3102,7 +2877,7 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
         pytest.param(
             "\n".join(
                 (
-                    "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
+                    "from tests.benchmarks import benchmark_test_support as source_tree_support",
                     "",
                     "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
                 )
@@ -3114,7 +2889,7 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
             "\n".join(
                 (
                     "from tests.benchmarks import benchmark_test_support",
-                    "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
+                    "source_tree_support = benchmark_test_support",
                     "",
                     "benchmark_test_support.assert_source_tree_benchmark_contract",
                 )
@@ -3132,7 +2907,7 @@ def test_source_tree_combined_route_helper_rejects_direct_owner_surface_refs(
     owner_surface = object()
     owner_contract_surface = object()
     owner_module = SimpleNamespace(
-        __name__="tests.benchmarks.source_tree_benchmark_anchor_support",
+        __name__="tests.benchmarks.benchmark_test_support",
         SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS=owner_surface,
         assert_source_tree_benchmark_contract=owner_contract_surface,
     )
@@ -3235,16 +3010,13 @@ def test_class_method_definition_resolves_source_tree_combined_suite_test_method
     assert [argument.arg for argument in method_definition.args.args] == ["self"]
 
 
-def test_pattern_boundary_anchor_support_reuses_shared_pattern_case_builder() -> None:
-    module = importlib.import_module(
-        "tests.benchmarks.test_source_tree_benchmark_anchor_support"
-    )
-    definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(module)
+def test_pattern_boundary_contract_helpers_reuse_shared_pattern_case_builder() -> None:
+    combined_module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
 
     assert hasattr(support, "_module_pattern_case")
-    assert "_pattern_case" not in definition_names | assignment_names
+    assert combined_module.source_tree_support._module_pattern_case is support._module_pattern_case
 
 
 def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imports(
@@ -3272,7 +3044,7 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
     assert support._top_level_import_from_alias_pairs(
         support._parsed_module_ast(module),
         module_name="tests.benchmarks",
-        imported_names=frozenset({"source_tree_benchmark_anchor_support"}),
+        imported_names=frozenset(),
     ) == frozenset()
     assert shared_owner_names.isdisjoint(definition_names | assignment_names)
     _assert_benchmark_test_support_aliases_absent(
@@ -3314,26 +3086,10 @@ def test_rehomed_source_tree_contract_tests_stay_owned_by_combined_boundary_suit
     )
 
 
-def test_rehomed_collection_replacement_tests_stay_owned_by_surviving_source_tree_suites(
+def test_rehomed_collection_replacement_tests_stay_owned_by_combined_boundary_suite(
 ) -> None:
-    anchor_module = importlib.import_module(
-        "tests.benchmarks.test_source_tree_benchmark_anchor_support"
-    )
     combined_module = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
-    )
-    anchor_rehomed_names = frozenset(
-        {
-            "test_collection_replacement_pattern_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates",
-            "test_collection_replacement_pattern_wrong_text_model_contract_spec_uses_owner_metadata",
-            "test_collection_replacement_pattern_wrong_text_model_standard_definition_stays_bound_to_local_contract",
-            "test_collection_replacement_positional_indexlike_workloads_stay_in_scope_and_keep_expected_signature",
-            "test_collection_replacement_positional_indexlike_workload_filter_rejects_keyword_and_non_indexlike_rows",
-            "test_collection_replacement_positional_indexlike_correctness_case_signature_requires_collection_call_shape",
-            "test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wrong_text_model_rows_until_helper_invocation",
-            "test_run_internal_workload_probe_measures_collection_replacement_pattern_wrong_text_model_contract_workloads",
-            "test_collection_replacement_pattern_wrong_text_model_callbacks_preserve_precompile_contract",
-        }
     )
     combined_rehomed_names = frozenset(
         {
@@ -3344,18 +3100,11 @@ def test_rehomed_collection_replacement_tests_stay_owned_by_surviving_source_tre
         }
     )
 
-    anchor_definition_names, anchor_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(anchor_module)
-    )
-    anchor_local_names = anchor_definition_names | anchor_assignment_names
     combined_suite_names = frozenset(
         dir(combined_module.SourceTreeCombinedBoundaryBenchmarkSuiteTest)
     )
 
-    assert anchor_rehomed_names.issubset(anchor_local_names)
     assert combined_rehomed_names.issubset(combined_suite_names)
-    assert anchor_rehomed_names.isdisjoint(combined_suite_names)
-    assert combined_rehomed_names.isdisjoint(anchor_local_names)
 
 
 def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by_source_tree_support(
@@ -3375,11 +3124,8 @@ def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by
         in owner_definition_names
     )
     assert hasattr(anchor_support, "_is_collection_replacement_compiled_pattern_success_workload")
-    assert not hasattr(support, "_is_collection_replacement_compiled_pattern_success_workload")
-    assert (
-        "_is_collection_replacement_compiled_pattern_success_workload"
-        in consumer_local_names
-    )
+    assert hasattr(support, "_is_collection_replacement_compiled_pattern_success_workload")
+    assert "_is_collection_replacement_compiled_pattern_success_workload" in consumer_local_names
 
 def _assert_benchmark_test_support_aliases_absent(
     module_name: str,
@@ -3470,14 +3216,9 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
 
     _assert_owner_module_routes_through_package_import(
         combined_suite,
-        owner_module="tests.benchmarks.source_tree_benchmark_anchor_support",
+        owner_module="tests.benchmarks.benchmark_test_support",
         package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset(
-            {
-                ("benchmark_test_support", None),
-                ("source_tree_benchmark_anchor_support", "source_tree_support"),
-            }
-        ),
+        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
     assert getattr(combined_suite, "source_tree_support") is anchor_support
     assert not hasattr(combined_suite.source_tree_support, "collection_replacement_support")
@@ -3501,41 +3242,22 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(support)
     )
-    owner_definition_names, owner_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(anchor_support)
-    )
-
     assert {
         "_is_collection_replacement_compiled_pattern_success_workload",
-    }.isdisjoint(definition_names)
-    assert {
-        "_is_collection_replacement_compiled_pattern_success_workload",
-    }.issubset(owner_definition_names)
+    }.issubset(definition_names)
     assert {
         "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
-    }.isdisjoint(assignment_names)
-    assert {
-        "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
-        "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
-        "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
-        "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
-    }.issubset(owner_assignment_names)
-    assert not hasattr(support, "CompiledPatternModuleSuccessOwnerSpec")
-    assert not hasattr(
-        support,
-        "_assert_compiled_pattern_module_success_payload_round_trip",
-    )
-    assert not hasattr(
-        support,
-        "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
-    )
-    assert not hasattr(support, "include_live_compiled_pattern_module_success_workload")
+    }.issubset(assignment_names)
+    assert hasattr(support, "CompiledPatternModuleSuccessOwnerSpec")
+    assert hasattr(support, "_assert_compiled_pattern_module_success_payload_round_trip")
+    assert hasattr(support, "_assert_compiled_pattern_success_rows_measured_in_combined_manifest")
+    assert hasattr(support, "include_live_compiled_pattern_module_success_workload")
 
 
-def test_benchmark_test_support_no_longer_owns_compiled_pattern_module_success_owner_specs(
+def test_benchmark_test_support_owns_compiled_pattern_module_success_owner_specs(
 ) -> None:
     source = (
         REPO_ROOT / "tests" / "benchmarks" / "benchmark_test_support.py"
@@ -3548,58 +3270,13 @@ def test_benchmark_test_support_no_longer_owns_compiled_pattern_module_success_o
         r"_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\b",
         source,
         re.MULTILINE,
-    ) is None
-
-
-def test_source_tree_support_owns_compiled_pattern_module_success_owner_specs() -> None:
-    source = (
-        REPO_ROOT / "tests" / "benchmarks" / "source_tree_benchmark_anchor_support.py"
-    ).read_text(encoding="utf-8")
-
-    assert re.search(
-        r"^(class CompiledPatternModuleSuccessOwnerSpec|"
-        r"def _assert_compiled_pattern_module_success_payload_round_trip|"
-        r"def _assert_compiled_pattern_success_rows_measured_in_combined_manifest|"
-        r"def include_live_compiled_pattern_module_success_workload|"
-        r"_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC|"
-        r"_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC|"
-        r"_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|"
-        r"_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\b",
-        source,
-        re.MULTILINE,
     ) is not None
 
-def test_benchmark_test_support_no_longer_defines_compiled_pattern_module_compile_owner_surface(
+
+def test_benchmark_test_support_defines_compiled_pattern_module_compile_owner_surface(
 ) -> None:
     source = (
         REPO_ROOT / "tests" / "benchmarks" / "benchmark_test_support.py"
-    ).read_text(encoding="utf-8")
-
-    assert re.search(
-        r"^(class _CompiledPatternModuleCompileContractRoute|"
-        r"class CompiledPatternModuleCompileContractCase|"
-        r"class _CompiledPatternModuleContractAnchorLane|"
-        r"class _CompiledPatternModuleCompileKeywordOwnerSpec|"
-        r"class _CompiledPatternModuleCompileSuccessOwnerSpec|"
-        r"def _compiled_pattern_module_compile_success_owner_specs|"
-        r"def _compiled_pattern_module_compile_keyword_owner_specs|"
-        r"def build_compiled_pattern_module_compile_contract_cases|"
-        r"def build_compiled_pattern_module_compile_contract_source_workload_params|"
-        r"def build_compiled_pattern_module_contract_anchor_lanes|"
-        r"_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE|"
-        r"_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE|"
-        r"_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE|"
-        r"_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS|"
-        r"_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS|"
-        r"_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION)\b",
-        source,
-        re.MULTILINE,
-    ) is None
-
-
-def test_source_tree_support_owns_compiled_pattern_module_compile_owner_surface() -> None:
-    source = (
-        REPO_ROOT / "tests" / "benchmarks" / "source_tree_benchmark_anchor_support.py"
     ).read_text(encoding="utf-8")
 
     assert re.search(
@@ -3763,26 +3440,18 @@ def test_collection_replacement_support_exports_compiled_pattern_module_helper_k
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
     }
 
-    assert moved_definition_names.isdisjoint(
-        support_definition_names | support_assignment_names
-    )
+    assert moved_definition_names <= support_definition_names
     assert moved_definition_names <= collection_definition_names
-    assert assignment_only_names.isdisjoint(
-        support_definition_names | support_assignment_names
-    )
+    assert assignment_only_names <= support_assignment_names
     assert assignment_only_names <= collection_assignment_names
-    assert not hasattr(support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
+    assert hasattr(support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
     assert hasattr(anchor_support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
-    assert hasattr(
-        collection_replacement_support,
-        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-    )
+    assert hasattr(collection_replacement_support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
     for name in moved_definition_names:
-        assert not hasattr(support, name)
         assert hasattr(anchor_support, name)
         assert hasattr(collection_replacement_support, name)
     for name in assignment_only_names:
-        assert not hasattr(support, name)
+        assert hasattr(support, name)
         assert hasattr(anchor_support, name)
         assert hasattr(collection_replacement_support, name)
 
@@ -3941,28 +3610,7 @@ def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_
         module,
         owner_module="tests.benchmarks.benchmark_test_support",
         package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset(
-            {
-                ("benchmark_test_support", None),
-                (
-                    "source_tree_benchmark_anchor_support",
-                    "source_tree_support",
-                ),
-            }
-        ),
-    )
-    _assert_owner_module_routes_through_package_import(
-        module,
-        owner_module="tests.benchmarks.source_tree_benchmark_anchor_support",
-        package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset(
-            {
-                (
-                    "source_tree_benchmark_anchor_support",
-                    "source_tree_support",
-                ),
-            }
-        ),
+        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
     assert {
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
@@ -3990,21 +3638,13 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
 
     _assert_owner_module_routes_through_package_import(
         module,
-        owner_module="tests.benchmarks.source_tree_benchmark_anchor_support",
+        owner_module="tests.benchmarks.benchmark_test_support",
         package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset(
-            {
-                (
-                    "source_tree_benchmark_anchor_support",
-                    "source_tree_support",
-                ),
-            }
-        ),
+        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
     assert module.source_tree_support is anchor_support
     assert owner_names.isdisjoint(definition_names | assignment_names)
     assert owner_names.issubset(dir(module.source_tree_support))
-    assert owner_names.isdisjoint(dir(module.benchmark_test_support))
 
 
 @pytest.mark.parametrize(
@@ -4013,15 +3653,7 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
         (
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
             frozenset({"_source_tree_contract_manifest", "_source_tree_contract_workload"}),
-            frozenset(
-                {
-                    ("benchmark_test_support", None),
-                    (
-                        "source_tree_benchmark_anchor_support",
-                        "source_tree_support",
-                    ),
-                }
-            ),
+            frozenset({("benchmark_test_support", None)}),
         ),
     ),
 )
@@ -4035,12 +3667,9 @@ def test_source_tree_contract_helper_suites_import_from_support(
     assert support._top_level_import_from_alias_pairs(
         support._parsed_module_ast(module),
         module_name="tests.benchmarks",
-        imported_names=frozenset(
-            {"benchmark_test_support", "source_tree_benchmark_anchor_support"}
-        ),
+        imported_names=frozenset({"benchmark_test_support"}),
     ) == expected_alias_pairs
     assert expected_imported_names.issubset(dir(module.source_tree_support))
-    assert expected_imported_names.isdisjoint(dir(module.benchmark_test_support))
     assert "tests.benchmarks.benchmark_test_support" not in support._module_import_targets(
         module
     )
