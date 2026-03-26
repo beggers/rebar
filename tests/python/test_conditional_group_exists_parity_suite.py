@@ -11,6 +11,7 @@ from rebar_harness.correctness import (
     FixtureCase,
 )
 from tests.python.fixture_parity_support import (
+    assert_direct_test_case_id_buckets_cover_selected_frontier,
     CaseIdBoundedPatternCase as BoundedPatternCase,
     FixtureBundle,
     WRAPPER_PAIRS,
@@ -27,6 +28,7 @@ from tests.python.fixture_parity_support import (
     fixture_case_pytest_id,
     fixture_cases_by_id,
     fixture_cases_for_operation,
+    flatten_fixture_bundles,
     generated_spec_by_manifest_id,
     generated_specs_by_manifest_id,
     id_attribute_pytest_id,
@@ -721,6 +723,37 @@ def test_generated_fully_empty_alternation_compile_cases_stay_anchored_to_publis
     assert {case.text_model for case in compile_cases} == {"str"}
     assert len(GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.candidate_texts) == (
         len(WRAPPER_PAIRS) * 8
+    )
+
+
+def test_conditional_group_exists_direct_test_buckets_cover_selected_frontier() -> None:
+    assert_direct_test_case_id_buckets_cover_selected_frontier(
+        {
+            "compile-core": frozenset(
+                case.case_id for case in CORE_CONDITIONAL_COMPILE_CASES
+            ),
+            "compile-nested-or-alternation": frozenset(
+                case.case_id for case in NESTED_OR_ALTERNATION_COMPILE_CASES
+            ),
+            "module-base": frozenset(case.case_id for case in BASE_MODULE_CASES),
+            "module-quantified": frozenset(
+                case.case_id for case in QUANTIFIED_MODULE_CASES
+            ),
+            "module-nested-or-alternation": frozenset(
+                case.case_id for case in NESTED_OR_ALTERNATION_MODULE_CASES
+            ),
+            "pattern-base": frozenset(case.case_id for case in BASE_PATTERN_CASES),
+            "pattern-quantified": frozenset(
+                case.case_id for case in QUANTIFIED_PATTERN_CASES
+            ),
+            "pattern-nested-or-alternation": frozenset(
+                case.case_id for case in NESTED_OR_ALTERNATION_PATTERN_CASES
+            ),
+        },
+        selected_case_ids=(
+            case.case_id for case in flatten_fixture_bundles(FIXTURE_BUNDLES)
+        ),
+        coverage_label="conditional group-exists direct-test case-id buckets",
     )
 
 
