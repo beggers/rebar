@@ -4623,7 +4623,7 @@ def test_grouped_quantified_bytes_surface_spec_rejects_direct_follow_on_surface_
         match=re.escape(
             "open-ended-quantified-group-alternation-workflows grouped quantified "
             "direct-bytes surface drifted; "
-            "b'a(bc|de){1,}d' search matches drifted"
+            "b'a(bc|de){1,}d' search texts drifted"
         ),
     ):
         fixture_parity_support.assert_grouped_quantified_direct_bytes_surface_spec(

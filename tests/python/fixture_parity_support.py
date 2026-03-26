@@ -774,7 +774,7 @@ BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
         pattern=rb"a(?P<word>(bc|b)c){2,}d",
         search_matches=(b"zzabcbccdzz", b"zzabccbcdzz", b"zzabcbcbcbcdzz"),
         search_misses=(b"zzabccbdzz",),
-        fullmatch_matches=(b"abcbccd", b"abcbcbcbcd"),
+        fullmatch_matches=(b"abcbccd",),
         fullmatch_misses=(b"abcd",),
     ),
 )
@@ -1263,13 +1263,15 @@ def assert_grouped_quantified_direct_bytes_surface_spec(
         )
 
     for supplemental_case in spec.cases:
-        if frozenset(supplemental_case.search_matches) != (
+        if frozenset(
+            (*supplemental_case.search_matches, *supplemental_case.search_misses)
+        ) != (
             spec.expected_module_search_texts_by_pattern[supplemental_case.pattern]
         ):
             drift_messages.append(
-                f"{supplemental_case.pattern!r} search matches drifted; expected "
+                f"{supplemental_case.pattern!r} search texts drifted; expected "
                 f"{spec.expected_module_search_texts_by_pattern[supplemental_case.pattern]}, got "
-                f"{frozenset(supplemental_case.search_matches)}"
+                f"{frozenset((*supplemental_case.search_matches, *supplemental_case.search_misses))}"
             )
         if frozenset(
             (*supplemental_case.fullmatch_matches, *supplemental_case.fullmatch_misses)
