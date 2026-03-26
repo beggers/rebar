@@ -1543,6 +1543,103 @@ def test_shared_publication_runtime_manifest_path_constants_point_to_current_wor
     )
 
 
+def test_summary_contract_workload_payload_defaults_follow_family_shape() -> None:
+    parser_payload = support._summary_contract_workload_payload(
+        manifest_id="compile-matrix",
+        workload_id="parser-cold",
+        family="parser",
+        cache_mode="cold",
+        smoke=True,
+    )
+    module_payload = support._summary_contract_workload_payload(
+        manifest_id="module-boundary",
+        workload_id="module-fullmatch-warm",
+        operation="module.fullmatch",
+    )
+
+    assert parser_payload == {
+        "manifest_id": "compile-matrix",
+        "workload_id": "parser-cold",
+        "bucket": "parser-cold",
+        "family": "parser",
+        "operation": "compile",
+        "pattern": "abc",
+        "haystack": None,
+        "replacement": None,
+        "expected_exception": None,
+        "flags": 0,
+        "use_compiled_pattern": False,
+        "count": 0,
+        "maxsplit": 0,
+        "pos": None,
+        "endpos": None,
+        "kwargs": {},
+        "text_model": "str",
+        "haystack_text_model": None,
+        "cache_mode": "cold",
+        "timing_scope": "compile-call",
+        "warmup_iterations": 1,
+        "sample_iterations": 1,
+        "timed_samples": 1,
+        "notes": [],
+        "categories": [],
+        "syntax_features": [],
+        "smoke": True,
+    }
+    assert module_payload["operation"] == "module.fullmatch"
+    assert module_payload["haystack"] == "abc"
+    assert module_payload["timing_scope"] == "module-helper-call"
+    assert module_payload["smoke"] is False
+
+
+def test_summary_contract_workload_record_clears_timings_for_known_gaps() -> None:
+    record = support._summary_contract_workload_record(
+        manifest_id="module-boundary",
+        workload_id="module-gap",
+        status="known-gap",
+        baseline_ns=123,
+        implementation_ns=45,
+        speedup_vs_cpython=2.73,
+    )
+
+    assert record == {
+        "manifest_id": "module-boundary",
+        "workload_id": "module-gap",
+        "family": "module",
+        "operation": "module.search",
+        "cache_mode": "warm",
+        "status": "known-gap",
+        "baseline_ns": None,
+        "implementation_ns": None,
+        "speedup_vs_cpython": None,
+    }
+
+
+def test_summary_contract_manifest_preserves_metadata_and_marks_smoke_workloads() -> None:
+    manifest = support._summary_contract_manifest(
+        manifest_id="module-boundary",
+        workload_ids=("search-cold", "search-smoke"),
+        operation="module.match",
+        smoke_workload_ids=("search-smoke",),
+        spec_refs=("docs/spec-a.md",),
+        notes=("shared helper manifest",),
+    )
+
+    assert manifest.manifest_id == "module-boundary"
+    assert manifest.path == pathlib.Path("module-boundary.py")
+    assert manifest.spec_refs == ["docs/spec-a.md"]
+    assert manifest.notes == ["shared helper manifest"]
+    assert [workload.workload_id for workload in manifest.workloads] == [
+        "search-cold",
+        "search-smoke",
+    ]
+    assert [workload.operation for workload in manifest.workloads] == [
+        "module.match",
+        "module.match",
+    ]
+    assert [workload.smoke for workload in manifest.workloads] == [False, True]
+
+
 def test_benchmark_test_support_owns_only_shared_collection_replacement_classifier_helpers(
 ) -> None:
     definition_names, _ = support.top_level_module_definition_and_assignment_names(
