@@ -460,6 +460,43 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     )
 
 
+def test_clear_anchor_support_caches_clears_cacheable_objects_from_owner_modules(
+    monkeypatch,
+    anchor_support_cache_guard: None,
+) -> None:
+    class _CacheRecorder:
+        def __init__(self) -> None:
+            self.calls = 0
+
+        def cache_clear(self) -> None:
+            self.calls += 1
+
+    source_tree_cache = _CacheRecorder()
+    deleted_collection_cache = _CacheRecorder()
+
+    monkeypatch.setitem(
+        support.sys.modules,
+        "tests.benchmarks.source_tree_benchmark_anchor_support",
+        SimpleNamespace(
+            cached_source_tree_helper=source_tree_cache,
+            uncached_helper=object(),
+        ),
+    )
+    monkeypatch.setitem(
+        support.sys.modules,
+        "tests.benchmarks.collection_replacement_benchmark_anchor_support",
+        SimpleNamespace(
+            cached_deleted_helper=deleted_collection_cache,
+            uncached_helper=object(),
+        ),
+    )
+
+    support._clear_anchor_support_caches()
+
+    assert source_tree_cache.calls == 1
+    assert deleted_collection_cache.calls == 1
+
+
 def test_clear_anchor_support_caches_resets_shared_ast_import_helpers(
     monkeypatch,
     anchor_support_cache_guard: None,
