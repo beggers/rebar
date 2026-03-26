@@ -871,6 +871,63 @@ def test_source_tree_combined_slice_manifest_ids_rejects_expectations_outside_se
         support.source_tree_combined_slice_manifest_ids()
 
 
+def test_source_tree_combined_slice_derived_manifest_ids_keep_only_slice_derived_contracts(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setattr(
+        support,
+        "source_tree_combined_target_manifest_ids",
+        lambda: (
+            "explicit-boundary",
+            "shape-boundary",
+            "slice-derived-boundary",
+        ),
+    )
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+        {
+            "explicit-boundary": (
+                support.SourceTreeCombinedManifestExpectationDefinition(
+                    representative_measured_workload_ids=("explicit-row",),
+                )
+            ),
+            "shape-boundary": (
+                support.SourceTreeCombinedManifestExpectationDefinition(
+                    shape_expectation=support.SourceTreeCombinedManifestShapeExpectation(
+                        representative_measured_workload_ids=("shape-row",),
+                    ),
+                )
+            ),
+            "slice-derived-boundary": (
+                support.SourceTreeCombinedManifestExpectationDefinition()
+            ),
+        },
+    )
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
+        (
+            support.SourceTreeCombinedSliceExpectation(
+                manifest_id="explicit-boundary",
+                slice_id="explicit-slice",
+            ),
+            support.SourceTreeCombinedSliceExpectation(
+                manifest_id="shape-boundary",
+                slice_id="shape-slice",
+            ),
+            support.SourceTreeCombinedSliceExpectation(
+                manifest_id="slice-derived-boundary",
+                slice_id="slice-derived-slice",
+            ),
+        ),
+    )
+
+    assert support.source_tree_combined_slice_derived_manifest_ids() == (
+        "slice-derived-boundary",
+    )
+
+
 @pytest.mark.parametrize(
     ("manifest_expectations", "manifest_id", "message"),
     (
