@@ -19,35 +19,6 @@ from tests.conftest import REPO_ROOT
 anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
 
 
-def _default_source_tree_contract_manifest_timed_samples() -> int:
-    default = support._SourceTreeContractBuilderSpec.__dataclass_fields__[
-        "manifest_timed_samples"
-    ].default
-    assert isinstance(default, int)
-    return default
-
-
-def _compiled_pattern_wrong_text_model_local_function_names() -> frozenset[str]:
-    return frozenset()
-
-
-def _collection_routed_owner_assignment_names() -> frozenset[str]:
-    _, assignment_names = (
-        benchmark_test_support.top_level_module_definition_and_assignment_names(
-            collection_support
-        )
-    )
-    return frozenset(
-        name
-        for name in assignment_names
-        if name == "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS"
-        or (
-            name.startswith("CONDITIONAL_GROUP_EXISTS_")
-            and name.endswith("_WORKLOAD_IDS")
-        )
-    )
-
-
 def _synthetic_report_scorecard(
     *,
     workloads: tuple[dict[str, object], ...],
@@ -1216,7 +1187,7 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         assert not hasattr(support, function_name)
     benchmark_test_support.assert_mixed_owner_surface(
         support,
-        local_function_names=_compiled_pattern_wrong_text_model_local_function_names(),
+        local_function_names=frozenset(),
         local_assignment_names=frozenset(),
         support_alias_assignment_names=frozenset(),
     )
@@ -1295,7 +1266,9 @@ def test_compiled_pattern_module_compile_contract_builder_surface_builds_expecte
     assert contract_case.contract_builder_spec() == support._SourceTreeContractBuilderSpec(
         manifest_id="module-boundary",
         excluded_fields=excluded_fields,
-        manifest_timed_samples=_default_source_tree_contract_manifest_timed_samples(),
+        manifest_timed_samples=support._SourceTreeContractBuilderSpec.__dataclass_fields__[
+            "manifest_timed_samples"
+        ].default,
         timing_scope="module-helper-call",
         notes=(contract_case.note(),),
     )
@@ -1424,7 +1397,9 @@ def test_compiled_pattern_wrong_text_model_contract_specs_track_manifest_family(
         excluded_fields=(
             benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
         ),
-        manifest_timed_samples=_default_source_tree_contract_manifest_timed_samples(),
+        manifest_timed_samples=support._SourceTreeContractBuilderSpec.__dataclass_fields__[
+            "manifest_timed_samples"
+        ].default,
         timing_scope="module-helper-call",
         notes=spec.notes,
     )
@@ -1460,7 +1435,9 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
     )
     assert (
         spec.manifest_timed_samples
-        == _default_source_tree_contract_manifest_timed_samples()
+        == support._SourceTreeContractBuilderSpec.__dataclass_fields__[
+            "manifest_timed_samples"
+        ].default
     )
 
 
@@ -3480,10 +3457,9 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
     owner_assignment_names = frozenset()
     module_ast = benchmark_test_support._parsed_module_ast(support)
 
-    assert _compiled_pattern_wrong_text_model_local_function_names() == frozenset()
     benchmark_test_support.assert_mixed_owner_surface(
         support,
-        local_function_names=_compiled_pattern_wrong_text_model_local_function_names(),
+        local_function_names=frozenset(),
         local_assignment_names=owner_assignment_names,
         support_alias_assignment_names=frozenset(),
     )
@@ -3713,7 +3689,20 @@ def test_source_tree_compiled_pattern_module_compile_standard_definition_helpers
 
 
 def test_source_tree_owner_keeps_collection_routed_names_off_source_tree_module() -> None:
-    routed_names = _collection_routed_owner_assignment_names()
+    _, assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            collection_support
+        )
+    )
+    routed_names = frozenset(
+        name
+        for name in assignment_names
+        if name == "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS"
+        or (
+            name.startswith("CONDITIONAL_GROUP_EXISTS_")
+            and name.endswith("_WORKLOAD_IDS")
+        )
+    )
 
     assert routed_names
     assert (
