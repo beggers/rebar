@@ -835,10 +835,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_b
 ) -> None:
     manifest = benchmark_test_support._source_tree_contract_manifest(
         (source_workload,),
-        spec=benchmark_test_support._compiled_pattern_contract_builder_spec(
-            case_group,
-            source_tree_module=source_tree_support,
-        ),
+        spec=case_group.contract_builder_spec(),
     )
     manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
@@ -868,10 +865,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_contract_rows_preser
     source_workloads = contract_case.source_workloads()
     manifest = benchmark_test_support._source_tree_contract_manifest(
         source_workloads,
-        spec=benchmark_test_support._compiled_pattern_contract_builder_spec(
-            contract_case,
-            source_tree_module=source_tree_support,
-        ),
+        spec=contract_case.contract_builder_spec(),
     )
     manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
@@ -937,10 +931,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_keyword_payload_roun
     source_workload = contract_case.source_workloads()[0]
     manifest = benchmark_test_support._source_tree_contract_manifest(
         (source_workload,),
-        spec=benchmark_test_support._compiled_pattern_contract_builder_spec(
-            contract_case,
-            source_tree_module=source_tree_support,
-        ),
+        spec=contract_case.contract_builder_spec(),
     )
     manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
@@ -1039,10 +1030,7 @@ def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preser
     source_workloads = owner_spec.source_workloads()
     manifest = benchmark_test_support._source_tree_contract_manifest(
         source_workloads,
-        spec=benchmark_test_support._compiled_pattern_contract_builder_spec(
-            owner_spec,
-            source_tree_module=source_tree_support,
-        ),
+        spec=owner_spec.contract_builder_spec(),
     )
     manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
@@ -1098,10 +1086,7 @@ def test_standard_benchmark_compiled_pattern_module_helper_keyword_contract_rows
     source_workloads = contract_surface.source_workloads()
     manifest = benchmark_test_support._source_tree_contract_manifest(
         source_workloads,
-        spec=benchmark_test_support._compiled_pattern_contract_builder_spec(
-            contract_surface.spec,
-            source_tree_module=source_tree_support,
-        ),
+        spec=contract_surface.spec.contract_builder_spec(),
     )
 
     manifest_path = benchmark_test_support._write_test_manifest(
@@ -1169,10 +1154,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
     )
     success_workload = benchmark_test_support._source_tree_contract_workload(
         success_source_workload,
-        spec=benchmark_test_support._compiled_pattern_contract_builder_spec(
-            success_surface.spec,
-            source_tree_module=source_tree_support,
-        ),
+        spec=success_surface.spec.contract_builder_spec(),
     )
     success_payload = workload_to_payload(success_workload)
     success_round_tripped = workload_from_payload(success_payload)
@@ -1195,10 +1177,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
     )
     keyword_error_workload = benchmark_test_support._source_tree_contract_workload(
         keyword_error_source_workload,
-        spec=benchmark_test_support._compiled_pattern_contract_builder_spec(
-            keyword_error_surface.spec,
-            source_tree_module=source_tree_support,
-        ),
+        spec=keyword_error_surface.spec.contract_builder_spec(),
     )
     keyword_error_payload = workload_to_payload(keyword_error_workload)
     keyword_error_round_tripped = workload_from_payload(keyword_error_payload)
@@ -1298,10 +1277,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_o
     )
     success_workload = benchmark_test_support._source_tree_contract_workload(
         success_source_workload,
-        spec=benchmark_test_support._compiled_pattern_contract_builder_spec(
-            success_surface.spec,
-            source_tree_module=source_tree_support,
-        ),
+        spec=success_surface.spec.contract_builder_spec(),
     )
     success_payload = workload_to_payload(success_workload)
     success_round_tripped = workload_from_payload(success_payload)
@@ -1331,10 +1307,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_o
     )
     keyword_error_workload = benchmark_test_support._source_tree_contract_workload(
         keyword_error_source_workload,
-        spec=benchmark_test_support._compiled_pattern_contract_builder_spec(
-            keyword_error_surface.spec,
-            source_tree_module=source_tree_support,
-        ),
+        spec=keyword_error_surface.spec.contract_builder_spec(),
     )
     keyword_error_payload = workload_to_payload(keyword_error_workload)
     keyword_error_round_tripped = workload_from_payload(keyword_error_payload)

@@ -3130,96 +3130,6 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
         )
 
 
-COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES = (
-    (
-        "compiled_pattern_module_compile_contract_builder_spec",
-        CompiledPatternModuleCompileContractCase,
-    ),
-    (
-        "compiled_pattern_module_success_contract_builder_spec",
-        CompiledPatternModuleSuccessOwnerSpec,
-    ),
-    (
-        "compiled_pattern_module_helper_keyword_contract_builder_spec",
-        _CompiledPatternModuleHelperKeywordContractSpec,
-    ),
-)
-
-
-def _compiled_pattern_contract_builder_supports_call(
-    builder: Callable[..., _SourceTreeContractBuilderSpec],
-    /,
-    *args: object,
-) -> bool:
-    try:
-        inspect.signature(builder).bind(*args)
-    except (TypeError, ValueError):
-        return False
-    return True
-
-
-def _compiled_pattern_contract_builder_surface_name(
-    owner: object,
-) -> str | None:
-    return next(
-        (
-            wrapper_name
-            for wrapper_name, owner_type in COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES
-            if isinstance(owner, owner_type)
-        ),
-        None,
-    )
-
-
-def _compiled_pattern_contract_builder_spec(
-    owner: object,
-    *,
-    source_tree_module: object,
-    wrapper_name: str | None = None,
-) -> _SourceTreeContractBuilderSpec:
-    resolved_wrapper_name = wrapper_name
-    if resolved_wrapper_name is None:
-        resolved_wrapper_name = _compiled_pattern_contract_builder_surface_name(owner)
-    if resolved_wrapper_name is None:
-        raise AssertionError(
-            "missing compiled-pattern contract builder route name for "
-            f"{type(owner).__name__}"
-        )
-
-    owner_builder = getattr(owner, "contract_builder_spec", None)
-    source_tree_builder = getattr(source_tree_module, resolved_wrapper_name, None)
-    owner_route_live = callable(owner_builder)
-    source_tree_route_live = callable(source_tree_builder)
-
-    if owner_route_live == source_tree_route_live:
-        raise AssertionError(
-            "expected exactly one compiled-pattern contract builder route for "
-            f"{type(owner).__name__} via {resolved_wrapper_name!r}"
-        )
-
-    if owner_route_live:
-        assert owner_builder is not None
-        return owner_builder()
-
-    assert source_tree_builder is not None
-    zero_arg_supported = _compiled_pattern_contract_builder_supports_call(
-        source_tree_builder
-    )
-    owner_arg_supported = _compiled_pattern_contract_builder_supports_call(
-        source_tree_builder,
-        owner,
-    )
-    if zero_arg_supported == owner_arg_supported:
-        raise AssertionError(
-            "compiled-pattern contract builder wrapper "
-            f"{resolved_wrapper_name!r} must accept exactly zero arguments "
-            "or one owner argument"
-        )
-    if owner_arg_supported:
-        return source_tree_builder(owner)
-    return source_tree_builder()
-
-
 @dataclass(frozen=True, slots=True)
 class _CompiledPatternModuleHelperKeywordContractSurface:
     case_id: str
@@ -4023,7 +3933,6 @@ STANDARD_BENCHMARK_DEFINITIONS = (
 BENCHMARK_MANIFEST_VALIDATION_RETIRED_OWNER_NAMES = frozenset(
     {
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-        "_compiled_pattern_contract_builder_spec",
         "_SourceTreeContractBuilderSpec",
         "_expected_exception_instance",
         "_is_pattern_boundary_wrong_text_model_workload",

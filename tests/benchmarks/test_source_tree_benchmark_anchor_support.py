@@ -1139,10 +1139,20 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     for function_name in support.SOURCE_TREE_MOVED_FUNCTION_NAMES:
         assert hasattr(support, function_name)
         assert function_name in local_function_names
-    for (
-        function_name,
-        owner_type,
-    ) in benchmark_test_support.COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES:
+    for function_name, owner_type in (
+        (
+            "compiled_pattern_module_compile_contract_builder_spec",
+            benchmark_test_support.CompiledPatternModuleCompileContractCase,
+        ),
+        (
+            "compiled_pattern_module_success_contract_builder_spec",
+            benchmark_test_support.CompiledPatternModuleSuccessOwnerSpec,
+        ),
+        (
+            "compiled_pattern_module_helper_keyword_contract_builder_spec",
+            benchmark_test_support._CompiledPatternModuleHelperKeywordContractSpec,
+        ),
+    ):
         local_builder = getattr(support, function_name, None)
         owner_builder = getattr(owner_type, "contract_builder_spec", None)
 
@@ -1256,10 +1266,7 @@ def test_compiled_pattern_module_compile_contract_builder_surface_builds_expecte
     contract_case = support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES[0]
     excluded_fields = contract_case.manifest_excluded_fields()
 
-    assert benchmark_test_support._compiled_pattern_contract_builder_spec(
-        contract_case,
-        source_tree_module=support,
-    ) == benchmark_test_support._SourceTreeContractBuilderSpec(
+    assert contract_case.contract_builder_spec() == benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id="module-boundary",
         excluded_fields=excluded_fields,
         manifest_timed_samples=2,
@@ -1421,10 +1428,7 @@ def test_compiled_pattern_wrong_text_model_contract_specs_track_manifest_family(
 def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metadata(
     owner_spec: object,
 ) -> None:
-    spec = benchmark_test_support._compiled_pattern_contract_builder_spec(
-        owner_spec,
-        source_tree_module=support,
-    )
+    spec = owner_spec.contract_builder_spec()
 
     assert spec.manifest_id == owner_spec.contract_manifest_id
     assert (
@@ -1461,10 +1465,7 @@ def test_compiled_pattern_module_helper_keyword_contract_builder_spec_handles_ex
     spec: benchmark_test_support._CompiledPatternModuleHelperKeywordContractSpec,
     expected_excluded_fields: frozenset[str],
 ) -> None:
-    built_spec = benchmark_test_support._compiled_pattern_contract_builder_spec(
-        spec,
-        source_tree_module=support,
-    )
+    built_spec = spec.contract_builder_spec()
 
     assert built_spec == benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id="collection-replacement-boundary",
