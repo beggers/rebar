@@ -1171,6 +1171,37 @@ def test_benchmark_test_support_owns_compiled_pattern_module_compile_standard_de
     ) is not None
 
 
+def test_benchmark_test_support_no_longer_exports_compiled_pattern_module_compile_helper_surface(
+) -> None:
+    helper_names = {
+        "_compiled_pattern_module_compile_keyword_kwargs_signature",
+        "_module_workflow_compiled_pattern_compile_correctness_case_signature",
+        "_module_workflow_compiled_pattern_compile_workload_signature",
+        "_is_module_workflow_compiled_pattern_compile_workload",
+        "_is_module_workflow_compiled_pattern_compile_success_workload",
+        "_workload_matches_expected_exception",
+        "_module_workflow_compiled_pattern_compile_keyword_correctness_case_signature",
+        "_module_workflow_compiled_pattern_compile_keyword_workload_signature",
+        "_is_module_workflow_compiled_pattern_compile_keyword_workload",
+        "_assert_compiled_pattern_module_compile_contract_payload_round_trip_common",
+        "_assert_compiled_pattern_module_compile_success_payload_round_trip",
+        "_assert_compiled_pattern_module_compile_keyword_payload_round_trip",
+    }
+
+    shared_definition_names, _ = support.top_level_module_definition_and_assignment_names(
+        support
+    )
+    owner_definition_names, _ = support.top_level_module_definition_and_assignment_names(
+        anchor_support
+    )
+
+    assert helper_names.isdisjoint(shared_definition_names)
+    assert helper_names.issubset(owner_definition_names)
+    for helper_name in helper_names:
+        assert not hasattr(support, helper_name)
+        assert hasattr(anchor_support, helper_name)
+
+
 def test_module_keyword_flags_workload_stays_pinned() -> None:
     workload = support.synthetic_workload(
         manifest_id="module-pattern-boundary",

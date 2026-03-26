@@ -60,3 +60,11 @@ Created: 2026-03-26
   - I stopped after this first viable post-JSON candidate because it removes one entire remaining source-tree-owned helper layer from shared benchmark support.
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py -q` passed with `302 passed in 1.20s`.
+
+## Completion Note
+- Completed on 2026-03-26.
+- Moved the compiled-pattern `module.compile` selector/signature/payload-round-trip helper layer out of `tests/benchmarks/benchmark_test_support.py` and into `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Rewired the source-tree contract routes and owner specs to use the owner-local helpers, and updated the focused ownership tests so the shared module no longer claims those helpers.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py -q` passed with `304 passed in 1.55s`.
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed.

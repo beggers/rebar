@@ -3765,6 +3765,40 @@ def test_source_tree_owner_retires_compiled_pattern_module_compile_surface_to_sh
         assert not hasattr(benchmark_test_support, assignment_name)
 
 
+def test_source_tree_owner_keeps_compiled_pattern_module_compile_helpers_local() -> None:
+    moved_helper_names = {
+        "_compiled_pattern_module_compile_keyword_kwargs_signature",
+        "_module_workflow_compiled_pattern_compile_correctness_case_signature",
+        "_module_workflow_compiled_pattern_compile_workload_signature",
+        "_is_module_workflow_compiled_pattern_compile_workload",
+        "_is_module_workflow_compiled_pattern_compile_success_workload",
+        "_workload_matches_expected_exception",
+        "_module_workflow_compiled_pattern_compile_keyword_correctness_case_signature",
+        "_module_workflow_compiled_pattern_compile_keyword_workload_signature",
+        "_is_module_workflow_compiled_pattern_compile_keyword_workload",
+        "_assert_compiled_pattern_module_compile_contract_payload_round_trip_common",
+        "_assert_compiled_pattern_module_compile_success_payload_round_trip",
+        "_assert_compiled_pattern_module_compile_keyword_payload_round_trip",
+    }
+    module_ast = benchmark_test_support._parsed_module_ast(support)
+    local_function_names = {
+        node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
+    }
+    benchmark_support_refs = {
+        node.attr
+        for node in ast.walk(module_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == "benchmark_test_support"
+    }
+
+    assert moved_helper_names.issubset(local_function_names)
+    assert moved_helper_names.isdisjoint(benchmark_support_refs)
+    for helper_name in moved_helper_names:
+        assert hasattr(support, helper_name)
+        assert not hasattr(benchmark_test_support, helper_name)
+
+
 def test_source_tree_owner_keeps_contract_builder_spec_local() -> None:
     local_definition_names, local_assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(
