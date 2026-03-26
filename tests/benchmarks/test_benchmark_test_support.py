@@ -1195,8 +1195,6 @@ def test_benchmark_test_support_exports_compiled_pattern_module_compile_helper_s
         "_module_workflow_compiled_pattern_compile_keyword_workload_signature",
         "_is_module_workflow_compiled_pattern_compile_keyword_workload",
         "_assert_compiled_pattern_module_compile_contract_payload_round_trip_common",
-        "_assert_compiled_pattern_module_compile_success_payload_round_trip",
-        "_assert_compiled_pattern_module_compile_keyword_payload_round_trip",
     }
 
     shared_definition_names, _ = support.top_level_module_definition_and_assignment_names(
@@ -3649,6 +3647,8 @@ def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_
         "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+        "_assert_compiled_pattern_module_compile_success_payload_round_trip",
+        "_assert_compiled_pattern_module_compile_keyword_payload_round_trip",
     }.issubset(definition_names | assignment_names)
     assert {
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
@@ -3657,6 +3657,8 @@ def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_
         "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+        "_assert_compiled_pattern_module_compile_success_payload_round_trip",
+        "_assert_compiled_pattern_module_compile_keyword_payload_round_trip",
     }.isdisjoint(support_definition_names | support_assignment_names)
 
 

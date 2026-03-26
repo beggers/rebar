@@ -3439,44 +3439,6 @@ def _assert_compiled_pattern_module_compile_contract_payload_round_trip_common(
     assert isinstance(round_tripped.pattern_payload(), expected_text_type)
 
 
-def _assert_compiled_pattern_module_compile_success_payload_round_trip(
-    contract_case: Any,
-    source_workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-) -> None:
-    del contract_case
-    _assert_compiled_pattern_module_compile_contract_payload_round_trip_common(
-        source_workload,
-        payload,
-        round_tripped,
-    )
-    assert payload.get("haystack_text_model") == source_workload.haystack_text_model
-    assert round_tripped.haystack_text_model == source_workload.haystack_text_model
-
-
-def _assert_compiled_pattern_module_compile_keyword_payload_round_trip(
-    contract_case: Any,
-    source_workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-) -> None:
-    del contract_case
-    _assert_compiled_pattern_module_compile_contract_payload_round_trip_common(
-        source_workload,
-        payload,
-        round_tripped,
-    )
-    expected_keyword_value = source_workload.keyword_arguments()["flags"]
-
-    assert payload["kwargs"] == source_workload.kwargs
-    assert round_tripped.kwargs == source_workload.kwargs
-    assert type(payload["kwargs"]["flags"]) is type(expected_keyword_value)
-    assert type(round_tripped.kwargs["flags"]) is type(expected_keyword_value)
-    assert payload.get("haystack_text_model") is None
-    assert round_tripped.haystack_text_model is None
-
-
 @cache
 def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
     return (
