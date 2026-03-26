@@ -2143,6 +2143,54 @@ def test_assert_mixed_owner_surface_rejects_support_alias_after_module_alias_reb
         )
 
 
+@pytest.mark.parametrize(
+    "module_source",
+    (
+        pytest.param(
+            """
+SHARED_ALIAS_SOURCE = benchmark_test_support.SHARED_ALIAS
+SHARED_ALIAS = SHARED_ALIAS_SOURCE
+""",
+            id="plain-alias-chain",
+        ),
+        pytest.param(
+            """
+from tests.benchmarks import benchmark_test_support as shared_support
+
+SHARED_ALIAS_SOURCE = shared_support.SHARED_ALIAS
+SHARED_ALIAS: object = SHARED_ALIAS_SOURCE
+""",
+            id="annotated-alias-chain",
+        ),
+    ),
+)
+def test_assert_mixed_owner_surface_rejects_support_alias_through_top_level_alias_chain(
+    monkeypatch,
+    module_source: str,
+) -> None:
+    shared_alias = object()
+    caller_module = SimpleNamespace(SHARED_ALIAS=shared_alias)
+    module_ast = ast.parse(module_source)
+
+    monkeypatch.setattr(
+        support,
+        "_parsed_module_ast",
+        lambda module: module_ast,
+    )
+    monkeypatch.setattr(
+        support,
+        "SHARED_ALIAS",
+        shared_alias,
+        raising=False,
+    )
+
+    with pytest.raises(AssertionError):
+        support.assert_mixed_owner_surface(
+            caller_module,
+            support_alias_assignment_names=("SHARED_ALIAS",),
+        )
+
+
 def test_assert_mixed_owner_surface_rejects_support_alias_with_wrong_attribute_name(
     monkeypatch,
 ) -> None:
