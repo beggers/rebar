@@ -1,6 +1,6 @@
 ## RBR-1352: Extract a shared owner-surface no-local-duplicates helper
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -35,6 +35,8 @@ Created: 2026-03-26
 - Keep the benchmark-owner surface legible: owner modules should still publish the real wrong-text-model names, and the consumer tests should only check that surface through the shared helper instead of reconstructing the same inspection logic.
 
 ## Notes
+- Completed 2026-03-26: added `assert_owner_surface_module_owned_without_local_duplicates()` to `tests/benchmarks/benchmark_test_support.py` and rewired the collection-replacement and pattern-boundary wrong-text-model owner-surface tests to use it, including the second-owner-module contract-spec check.
+- Verified with `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py -k 'owner_module_owned_without_local_duplicates'`, `./.venv/bin/python -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py`, and `bash -lc \"! rg -n 'expected_definition_names = \\{|expected_assignment_names = \\{' tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_pattern_boundary_benchmark_anchor_support.py\"`.
 - ID check in this run:
   - `.rebar/runtime/dashboard.md` reports `ready: 0`, `in_progress: 0`, `blocked: 0`, and `tracked_json_blob_count: 0`
   - `git ls-files '*.json' | wc -l` returned `0`

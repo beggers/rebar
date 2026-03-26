@@ -727,6 +727,36 @@ def top_level_module_definition_and_assignment_names(
     return definition_names, assignment_names
 
 
+def assert_owner_surface_module_owned_without_local_duplicates(
+    caller_module: object,
+    owner_module: object,
+    *,
+    definition_names: Iterable[str] = (),
+    assignment_names: Iterable[str] = (),
+    extra_owner_name: str | None = None,
+    extra_owner_module: object | None = None,
+) -> None:
+    local_definition_names, local_assignment_names = (
+        top_level_module_definition_and_assignment_names(caller_module)
+    )
+    expected_definition_names = set(definition_names)
+    expected_assignment_names = set(assignment_names)
+
+    for name in expected_definition_names | expected_assignment_names:
+        assert hasattr(owner_module, name)
+
+    assert expected_definition_names.isdisjoint(local_definition_names)
+    assert expected_assignment_names.isdisjoint(local_assignment_names)
+
+    if extra_owner_name is None:
+        assert extra_owner_module is None
+        return
+
+    assert extra_owner_module is not None
+    assert hasattr(extra_owner_module, extra_owner_name)
+    assert extra_owner_name not in (local_definition_names | local_assignment_names)
+
+
 def compile_proxy_correctness_case_signature(
     case: Any,
 ) -> tuple[str, str | bytes, tuple[()], tuple[()], int, str] | None:

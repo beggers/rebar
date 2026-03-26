@@ -31,28 +31,22 @@ def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned
 ) -> None:
     import sys
 
-    local_definition_names, local_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(sys.modules[__name__])
-    )
-
-    expected_definition_names = {
-        "_pattern_boundary_wrong_text_model_source_workloads",
-        "_pattern_boundary_wrong_text_model_expected_callback_call",
-        "_run_cpython_pattern_boundary_wrong_text_model_workload",
-        "_pattern_boundary_wrong_text_model_correctness_case_signature",
-        "_pattern_boundary_wrong_text_model_workload_signature",
-        "_is_pattern_boundary_wrong_text_model_workload",
-    }
-    expected_assignment_names = {"_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS"}
-
-    for name in expected_definition_names | expected_assignment_names:
-        assert hasattr(support, name)
-    assert hasattr(source_tree_support, "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC")
-
-    assert expected_definition_names.isdisjoint(local_definition_names)
-    assert expected_assignment_names.isdisjoint(local_assignment_names)
-    assert "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC" not in (
-        local_definition_names | local_assignment_names
+    support.assert_owner_surface_module_owned_without_local_duplicates(
+        sys.modules[__name__],
+        support,
+        definition_names=(
+            "_pattern_boundary_wrong_text_model_source_workloads",
+            "_pattern_boundary_wrong_text_model_expected_callback_call",
+            "_run_cpython_pattern_boundary_wrong_text_model_workload",
+            "_pattern_boundary_wrong_text_model_correctness_case_signature",
+            "_pattern_boundary_wrong_text_model_workload_signature",
+            "_is_pattern_boundary_wrong_text_model_workload",
+        ),
+        assignment_names=(
+            "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+        ),
+        extra_owner_name="_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
+        extra_owner_module=source_tree_support,
     )
 
 
