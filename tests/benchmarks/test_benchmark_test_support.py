@@ -2648,6 +2648,42 @@ def test_source_tree_combined_suite_owns_rehomed_manifest_expectation_surface() 
     )
 
 
+def test_source_tree_support_proxy_prefers_owner_aliases_and_falls_back_to_shared_support(
+    monkeypatch,
+) -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    owner_value = object()
+    shared_value = object()
+    shared_only_value = object()
+
+    monkeypatch.setattr(
+        module,
+        "SOURCE_TREE_PROXY_OWNER_ONLY_SENTINEL",
+        owner_value,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_PROXY_OWNER_ONLY_SENTINEL",
+        shared_value,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_PROXY_SHARED_ONLY_SENTINEL",
+        shared_only_value,
+        raising=False,
+    )
+
+    assert module.source_tree_support.SOURCE_TREE_PROXY_OWNER_ONLY_SENTINEL is owner_value
+    assert (
+        module.source_tree_support.SOURCE_TREE_PROXY_SHARED_ONLY_SENTINEL
+        is shared_only_value
+    )
+
+
 @pytest.mark.parametrize(
     (
         "module_source",
