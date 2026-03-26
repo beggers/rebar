@@ -1383,10 +1383,26 @@ def test_quantified_conditional_callable_combined_slice_expectations_stay_in_syn
     )
     assert (
         expectations_by_slice_id[
-            "quantified-callable-replacement-bytes-rows"
+        "quantified-callable-replacement-bytes-rows"
         ].expected_workload_ids
         == support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
     )
+
+
+def test_conditional_collection_replacement_combined_slice_owner_surface_uses_dataclass_literals(
+) -> None:
+    definition_names, assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            support
+        )
+    )
+
+    assert "_CollectionReplacementCombinedSliceExpectation" in definition_names
+    assert (
+        "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS"
+        in assignment_names
+    )
+    assert "_collection_replacement_combined_slice_expectation" not in definition_names
 
 
 def test_conditional_callable_none_count_workload_id_expansion_preserves_stem_order() -> None:

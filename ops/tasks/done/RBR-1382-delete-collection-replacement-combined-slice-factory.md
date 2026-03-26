@@ -44,3 +44,11 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `152 passed in 1.66s`
   - `python3 -m py_compile tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed
   - `bash -lc "rg -n '_collection_replacement_combined_slice_expectation\\(' tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"` currently fails with the exact helper definition and nine call sites this task is intended to delete
+
+## Completion
+- Deleted `_collection_replacement_combined_slice_expectation(...)` from `tests/benchmarks/collection_replacement_benchmark_anchor_support.py` and rewrote all nine combined-slice entries as direct `_CollectionReplacementCombinedSliceExpectation(...)` literals with explicit tuple and `frozenset(...)` fields.
+- Updated `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` to keep the quantified callable slice workload-id sync assertion and to assert the owner surface now exposes the dataclass plus combined-slice assignment without the deleted helper function.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `153 passed in 1.74s`
+  - `python3 -m py_compile tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed
+  - `bash -lc "! rg -n '_collection_replacement_combined_slice_expectation\\(' tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py"` passed

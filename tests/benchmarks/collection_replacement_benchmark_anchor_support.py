@@ -141,55 +141,6 @@ class _CollectionReplacementCombinedSliceExpectation:
     required_row_categories: tuple[str, ...] = ()
     expected_status: str = "measured"
 
-
-def _collection_replacement_combined_slice_expectation(
-    *,
-    manifest_id: str,
-    slice_id: str,
-    required_syntax_features: tuple[str, ...] = (),
-    excluded_syntax_features: tuple[str, ...] = (),
-    required_categories: tuple[str, ...] = (),
-    excluded_categories: tuple[str, ...] = (),
-    required_id_suffix: str | None = None,
-    expected_workload_ids: tuple[str, ...],
-    expected_patterns: set[str],
-    expected_operations: set[str],
-    expected_haystacks: set[str],
-    required_row_categories: tuple[str, ...],
-    expected_status: str = "measured",
-) -> _CollectionReplacementCombinedSliceExpectation:
-    return _CollectionReplacementCombinedSliceExpectation(
-        manifest_id=manifest_id,
-        slice_id=slice_id,
-        required_syntax_features=tuple(
-            str(feature) for feature in required_syntax_features
-        ),
-        excluded_syntax_features=tuple(
-            str(feature) for feature in excluded_syntax_features
-        ),
-        required_categories=tuple(str(category) for category in required_categories),
-        excluded_categories=tuple(str(category) for category in excluded_categories),
-        required_id_suffix=required_id_suffix,
-        expected_workload_ids=(
-            expected_workload_ids
-            if isinstance(expected_workload_ids, tuple)
-            and all(isinstance(workload_id, str) for workload_id in expected_workload_ids)
-            else tuple(str(workload_id) for workload_id in expected_workload_ids)
-        ),
-        expected_patterns=frozenset(str(pattern) for pattern in expected_patterns),
-        expected_operations=frozenset(
-            str(operation) for operation in expected_operations
-        ),
-        expected_haystacks=frozenset(
-            str(haystack) for haystack in expected_haystacks
-        ),
-        required_row_categories=tuple(
-            str(category) for category in required_row_categories
-        ),
-        expected_status=expected_status,
-    )
-
-
 _COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_CASE_PAIRS = (
     ("pattern-findall-bounded-warm-str", "pattern-findall-str-bounded"),
     (
@@ -2068,7 +2019,7 @@ CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS = _workload_ids_
 )
 
 COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
-    _collection_replacement_combined_slice_expectation(
+    _CollectionReplacementCombinedSliceExpectation(
         manifest_id="conditional-group-exists-boundary",
         slice_id="minimal-template-replacement-rows",
         required_syntax_features=("conditionals", "replacement-template"),
@@ -2106,12 +2057,16 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-sub-template-numbered-conditional-group-exists-replacement-negative-count-purged-bytes",
             "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset(
+            {
             r"a(b)?c(?(1)d|e)",
             r"a(?P<word>b)?c(?(word)d|e)",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabcdzz", "zzacezz", "abcdaceabcd"},
+            }
+        ),
+        expected_operations=frozenset(
+            {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
+        ),
+        expected_haystacks=frozenset({"zzabcdzz", "zzacezz", "abcdaceabcd"}),
         required_row_categories=(
             "grouped",
             "optional-group",
@@ -2121,7 +2076,7 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "template",
         ),
     ),
-    _collection_replacement_combined_slice_expectation(
+    _CollectionReplacementCombinedSliceExpectation(
         manifest_id="conditional-group-exists-boundary",
         slice_id="minimal-callable-replacement-rows",
         required_syntax_features=("conditionals", "callable-replacement"),
@@ -2161,12 +2116,16 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-subn-callable-named-conditional-group-exists-replacement-negative-count-purged-str",
             "pattern-subn-callable-named-conditional-group-exists-replacement-negative-count-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset(
+            {
             r"a(b)?c(?(1)d|e)",
             r"a(?P<word>b)?c(?(word)d|e)",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabcdzz", "zzabcdacezz", "abcdaceabcd"},
+            }
+        ),
+        expected_operations=frozenset(
+            {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
+        ),
+        expected_haystacks=frozenset({"zzabcdzz", "zzabcdacezz", "abcdaceabcd"}),
         required_row_categories=(
             "grouped",
             "optional-group",
@@ -2176,7 +2135,7 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "callable",
         ),
     ),
-    _collection_replacement_combined_slice_expectation(
+    _CollectionReplacementCombinedSliceExpectation(
         manifest_id="conditional-group-exists-boundary",
         slice_id="minimal-callable-replacement-exception-rows",
         required_syntax_features=("conditionals", "callable-replacement"),
@@ -2201,12 +2160,14 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-subn-callable-named-conditional-group-exists-replacement-absent-exception-purged-str",
             "pattern-subn-callable-named-conditional-group-exists-replacement-absent-exception-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset(
+            {
             r"a(b)?c(?(1)d|e)",
             r"a(?P<word>b)?c(?(word)d|e)",
-        },
-        expected_operations={"module.subn", "pattern.subn"},
-        expected_haystacks={"zzacezz"},
+            }
+        ),
+        expected_operations=frozenset({"module.subn", "pattern.subn"}),
+        expected_haystacks=frozenset({"zzacezz"}),
         required_row_categories=(
             "grouped",
             "optional-group",
@@ -2219,7 +2180,7 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "exception",
         ),
     ),
-    _collection_replacement_combined_slice_expectation(
+    _CollectionReplacementCombinedSliceExpectation(
         manifest_id="conditional-group-exists-boundary",
         slice_id="minimal-callable-replacement-none-count-exception-rows",
         required_syntax_features=("conditionals", "callable-replacement"),
@@ -2259,12 +2220,16 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-purged-str",
             "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
         ),
-        expected_patterns={
+        expected_patterns=frozenset(
+            {
             r"a(b)?c(?(1)d|e)",
             r"a(?P<word>b)?c(?(word)d|e)",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabcdzz", "zzacezz", "abcdaceabcd"},
+            }
+        ),
+        expected_operations=frozenset(
+            {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
+        ),
+        expected_haystacks=frozenset({"zzabcdzz", "zzacezz", "abcdaceabcd"}),
         required_row_categories=(
             "grouped",
             "optional-group",
@@ -2277,24 +2242,25 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "exception",
         ),
     ),
-    _collection_replacement_combined_slice_expectation(
+    _CollectionReplacementCombinedSliceExpectation(
         manifest_id="conditional-group-exists-boundary",
         slice_id="alternation-heavy-callable-replacement-rows",
         required_syntax_features=("conditionals", "alternation", "callable-replacement"),
         excluded_syntax_features=("quantifiers",),
         required_categories=("alternation-heavy", "replacement", "callable"),
         expected_workload_ids=CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS,
-        expected_patterns={
+        expected_patterns=frozenset(
+            {
             r"a(b)?c(?(1)(de|df)|(eg|eh))",
             r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={
-            "zzabcdezz",
-            "zzabcdfzz",
-            "zzacegzz",
-            "zzacehzz",
-        },
+            }
+        ),
+        expected_operations=frozenset(
+            {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
+        ),
+        expected_haystacks=frozenset(
+            {"zzabcdezz", "zzabcdfzz", "zzacegzz", "zzacehzz"}
+        ),
         required_row_categories=(
             "grouped",
             "optional-group",
@@ -2305,7 +2271,7 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "callable",
         ),
     ),
-    _collection_replacement_combined_slice_expectation(
+    _CollectionReplacementCombinedSliceExpectation(
         manifest_id="conditional-group-exists-boundary",
         slice_id="nested-callable-replacement-str-rows",
         required_syntax_features=("conditionals", "callable-replacement"),
@@ -2319,12 +2285,16 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "unsupported",
         ),
         expected_workload_ids=CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
-        expected_patterns={
+        expected_patterns=frozenset(
+            {
             r"a(b)?c(?(1)(?(1)d|e)|f)",
             r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabcdzz", "zzabcezz", "zzacezz", "zzacfzz"},
+            }
+        ),
+        expected_operations=frozenset(
+            {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
+        ),
+        expected_haystacks=frozenset({"zzabcdzz", "zzabcezz", "zzacezz", "zzacfzz"}),
         required_row_categories=(
             "grouped",
             "optional-group",
@@ -2335,7 +2305,7 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "callable",
         ),
     ),
-    _collection_replacement_combined_slice_expectation(
+    _CollectionReplacementCombinedSliceExpectation(
         manifest_id="conditional-group-exists-boundary",
         slice_id="nested-callable-replacement-bytes-rows",
         required_syntax_features=(
@@ -2352,12 +2322,16 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "unsupported",
         ),
         expected_workload_ids=CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
-        expected_patterns={
+        expected_patterns=frozenset(
+            {
             r"a(b)?c(?(1)(?(1)d|e)|f)",
             r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabcdzz", "zzabcezz", "zzacezz", "zzacfzz"},
+            }
+        ),
+        expected_operations=frozenset(
+            {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
+        ),
+        expected_haystacks=frozenset({"zzabcdzz", "zzabcezz", "zzacezz", "zzacfzz"}),
         required_row_categories=(
             "grouped",
             "optional-group",
@@ -2369,7 +2343,7 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "bytes",
         ),
     ),
-    _collection_replacement_combined_slice_expectation(
+    _CollectionReplacementCombinedSliceExpectation(
         manifest_id="conditional-group-exists-boundary",
         slice_id="quantified-callable-replacement-str-rows",
         required_syntax_features=(
@@ -2387,12 +2361,16 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "unsupported",
         ),
         expected_workload_ids=CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
-        expected_patterns={
+        expected_patterns=frozenset(
+            {
             r"a(b)?c(?(1)d|e){2}",
             r"a(?P<word>b)?c(?(word)d|e){2}",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabcddzz", "zzaceezz", "zzabcdezz", "zzacedzz"},
+            }
+        ),
+        expected_operations=frozenset(
+            {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
+        ),
+        expected_haystacks=frozenset({"zzabcddzz", "zzaceezz", "zzabcdezz", "zzacedzz"}),
         required_row_categories=(
             "grouped",
             "optional-group",
@@ -2403,7 +2381,7 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "callable",
         ),
     ),
-    _collection_replacement_combined_slice_expectation(
+    _CollectionReplacementCombinedSliceExpectation(
         manifest_id="conditional-group-exists-boundary",
         slice_id="quantified-callable-replacement-bytes-rows",
         required_syntax_features=(
@@ -2421,12 +2399,16 @@ COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
             "unsupported",
         ),
         expected_workload_ids=CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
-        expected_patterns={
+        expected_patterns=frozenset(
+            {
             r"a(b)?c(?(1)d|e){2}",
             r"a(?P<word>b)?c(?(word)d|e){2}",
-        },
-        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
-        expected_haystacks={"zzabcddzz", "zzaceezz", "zzabcdezz", "zzacedzz"},
+            }
+        ),
+        expected_operations=frozenset(
+            {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
+        ),
+        expected_haystacks=frozenset({"zzabcddzz", "zzaceezz", "zzabcdezz", "zzacedzz"}),
         required_row_categories=(
             "grouped",
             "optional-group",
