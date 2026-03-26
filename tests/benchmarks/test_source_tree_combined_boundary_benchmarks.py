@@ -84,24 +84,7 @@ def _combined_manifest_representative_measured_workload_ids(
     return tuple(representative_ids)
 
 
-class _CombinedSourceTreeSupport:
-    def __getattr__(self, name: str) -> object:
-        return getattr(source_tree_owner_support, name)
-
-    @property
-    def SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS(
-        self,
-    ) -> tuple[source_tree_owner_support.SourceTreeCombinedSliceExpectation, ...]:
-        return _combined_suite_slice_expectations()
-
-    def source_tree_combined_manifest_representative_measured_workload_ids(
-        self,
-        manifest_id: str,
-    ) -> tuple[str, ...]:
-        return _combined_manifest_representative_measured_workload_ids(manifest_id)
-
-
-source_tree_support = _CombinedSourceTreeSupport()
+source_tree_support = source_tree_owner_support
 
 
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
@@ -398,7 +381,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                         ]
                     )
                     public_representatives = (
-                        source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                        _combined_manifest_representative_measured_workload_ids(
                             manifest_id
                         )
                     )
@@ -481,7 +464,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.selected_workload_ids_for_manifest(manifest_id)
         )
         public_representatives = (
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 manifest_id
             )
         )
@@ -533,7 +516,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -669,7 +652,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -704,7 +687,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         case = source_tree_support.source_tree_combined_case(manifest_id)
         manifest_expectation = case.manifest_expectation
         public_representatives = (
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 manifest_id
             )
         )
@@ -787,7 +770,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -813,7 +796,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         case = source_tree_support.source_tree_combined_case(manifest_id)
         manifest_expectation = case.manifest_expectation
         public_representatives = (
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 manifest_id
             )
         )
@@ -898,7 +881,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -924,7 +907,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         case = source_tree_support.source_tree_combined_case(manifest_id)
         manifest_expectation = case.manifest_expectation
         public_representatives = (
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 manifest_id
             )
         )
@@ -1615,7 +1598,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.selected_workload_ids_for_manifest(manifest_id)
         )
         public_representatives = (
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 manifest_id
             )
         )
@@ -1716,7 +1699,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -1764,7 +1747,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -1812,7 +1795,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -1860,7 +1843,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -1908,7 +1891,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -1960,7 +1943,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -2008,7 +1991,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -2056,7 +2039,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -2410,7 +2393,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -2458,7 +2441,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -2506,7 +2489,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -2554,7 +2537,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -2602,7 +2585,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             with self.subTest(workload_id=workload_id):
                 self.assertIn(
                     workload_id,
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                 )
@@ -2634,7 +2617,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
         assert shape_expectation is not None
         self.assertIs(manifest_definition.shape_expectation, shape_expectation)
         self.assertEqual(
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "pattern-boundary"
             ),
             shape_expectation.representative_measured_workload_ids,
@@ -2675,7 +2658,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
     def test_source_tree_combined_slice_filters_match_expected_manifest_rows(self) -> None:
         manifest_ids_with_slice_expectations = {
             expectation.manifest_id
-            for expectation in source_tree_support.SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS
+            for expectation in _combined_suite_slice_expectations()
         }
         combined_target_manifest_ids = (
             source_tree_support.source_tree_combined_target_manifest_ids()
@@ -2693,7 +2676,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                 manifest = source_tree_support.source_tree_combined_case(manifest_id).target_manifest
                 for expectation in (
                     expectation
-                    for expectation in source_tree_support.SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS
+                    for expectation in _combined_suite_slice_expectations()
                     if expectation.manifest_id == manifest_id
                 ):
                     with self.subTest(slice_id=expectation.slice_id):
@@ -2711,7 +2694,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
     def test_scoped_manifests_keep_slice_backed_representatives(self) -> None:
         manifest_ids_with_slice_expectations = {
             expectation.manifest_id
-            for expectation in source_tree_support.SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS
+            for expectation in _combined_suite_slice_expectations()
         }
         for manifest_id in (
             manifest_id
@@ -2733,12 +2716,12 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                     (),
                 )
                 self.assertEqual(
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     ),
                     tuple(
                         workload_id
-                        for expectation in source_tree_support.SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS
+                        for expectation in _combined_suite_slice_expectations()
                         if expectation.manifest_id == manifest_id
                         for workload_id in expectation.expected_workload_ids
                     ),
@@ -2798,7 +2781,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                 )
 
                 representative_ids = list(
-                    source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                    _combined_manifest_representative_measured_workload_ids(
                         manifest_id
                     )
                 )
@@ -2856,7 +2839,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
     def test_selected_combined_source_tree_manifest_slices_stay_covered(self) -> None:
         manifest_ids_with_slice_expectations = {
             expectation.manifest_id
-            for expectation in source_tree_support.SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS
+            for expectation in _combined_suite_slice_expectations()
         }
         for manifest_id in (
             manifest_id
@@ -2883,7 +2866,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
 
                 for expectation in (
                     expectation
-                    for expectation in source_tree_support.SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS
+                    for expectation in _combined_suite_slice_expectations()
                     if expectation.manifest_id == manifest_id
                 ):
                     with self.subTest(slice_id=expectation.slice_id):
@@ -3326,7 +3309,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                 with self.subTest(manifest_id=manifest_id):
                     case = source_tree_support.source_tree_combined_case(manifest_id)
                     public_representatives = (
-                        source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                        _combined_manifest_representative_measured_workload_ids(
                             manifest_id
                         )
                     )
@@ -3413,7 +3396,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     case.representative_measured_workload_ids,
                     tuple(
                         workload_id
-                        for expectation in source_tree_support.SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS
+                        for expectation in _combined_suite_slice_expectations()
                         if expectation.manifest_id == case_id
                         for workload_id in expectation.expected_workload_ids
                     ),
@@ -3459,7 +3442,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             for workload in source_tree_support.select_source_tree_combined_slice_rows(manifest, expectation)
         )
         representative_measured_workload_ids = (
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 manifest_id
             )
         )
@@ -3621,7 +3604,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             for workload in source_tree_support.select_source_tree_combined_slice_rows(manifest, expectation)
         )
         representative_measured_workload_ids = (
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 manifest_id
             )
         )
@@ -3740,7 +3723,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         case = source_tree_support.source_tree_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
         representative_measured_workload_ids = (
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 manifest_id
             )
         )
@@ -3835,7 +3818,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         case = source_tree_support.source_tree_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
         representative_measured_workload_ids = (
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 manifest_id
             )
         )
@@ -4175,7 +4158,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         case = source_tree_support.source_tree_scorecard_case(manifest_id)
         manifest = case.manifest_for_id(manifest_id)
         representative_measured_workload_ids = (
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 manifest_id
             )
         )
@@ -4234,7 +4217,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         case = source_tree_support.source_tree_scorecard_case(manifest_id)
         representative_measured_workload_ids = (
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 manifest_id
             )
         )
@@ -4273,7 +4256,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         case = source_tree_support.source_tree_scorecard_case(manifest_id)
         representative_measured_workload_ids = (
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 manifest_id
             )
         )
@@ -4370,7 +4353,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             case.representative_measured_workload_ids,
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "nested-group-callable-replacement-boundary"
             ),
         )
@@ -4400,7 +4383,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             case.representative_measured_workload_ids,
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "nested-group-callable-replacement-boundary"
             ),
         )
@@ -4426,7 +4409,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             case.representative_measured_workload_ids,
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "nested-group-callable-replacement-boundary"
             ),
         )
@@ -4452,7 +4435,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             case.representative_measured_workload_ids,
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "nested-group-callable-replacement-boundary"
             ),
         )
@@ -4478,7 +4461,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             case.representative_measured_workload_ids,
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "nested-group-replacement-boundary"
             ),
         )
@@ -4504,7 +4487,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             case.representative_measured_workload_ids,
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "nested-group-replacement-boundary"
             ),
         )
@@ -4530,7 +4513,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             case.representative_measured_workload_ids,
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "nested-group-callable-replacement-boundary"
             ),
         )
@@ -4556,7 +4539,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             case.representative_measured_workload_ids,
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "nested-group-callable-replacement-boundary"
             ),
         )
@@ -4586,7 +4569,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             case.representative_measured_workload_ids,
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "nested-group-callable-replacement-boundary"
             ),
         )
@@ -4612,7 +4595,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             case.representative_measured_workload_ids,
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "nested-group-callable-replacement-boundary"
             ),
         )
@@ -4638,7 +4621,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             case.representative_measured_workload_ids,
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "nested-group-callable-replacement-boundary"
             ),
         )
@@ -4664,7 +4647,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             case.representative_measured_workload_ids,
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "nested-group-callable-replacement-boundary"
             ),
         )
@@ -4690,7 +4673,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             case.representative_measured_workload_ids,
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "nested-group-callable-replacement-boundary"
             ),
         )
@@ -4716,7 +4699,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
 
         self.assertEqual(
             case.representative_measured_workload_ids,
-            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+            _combined_manifest_representative_measured_workload_ids(
                 "nested-group-replacement-boundary"
             ),
         )

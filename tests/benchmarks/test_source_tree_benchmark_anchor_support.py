@@ -2001,25 +2001,34 @@ def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_loc
 
 
 def test_combined_suite_imports_source_tree_support_through_owner_module_only() -> None:
+    combined_suite_ast = benchmark_test_support._parsed_source_tree_combined_suite_ast()
     direct_owner_imports = [
         node
-        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
+        for node in combined_suite_ast.body
         if isinstance(node, ast.ImportFrom)
         and node.module == "tests.benchmarks.source_tree_benchmark_anchor_support"
     ]
     owner_module_imports = [
         alias
-        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
+        for node in combined_suite_ast.body
         if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
         for alias in node.names
     ]
+    local_assignment_names = {
+        target.id
+        for node in combined_suite_ast.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    }
 
     assert direct_owner_imports == []
     assert any(
         alias.name == "source_tree_benchmark_anchor_support"
-        and alias.asname == "source_tree_support"
+        and alias.asname == "source_tree_owner_support"
         for alias in owner_module_imports
     )
+    assert "source_tree_support" in local_assignment_names
 
 
 def test_combined_suite_imports_and_reads_collection_owner_surface_through_package_alias(
@@ -3206,7 +3215,9 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                     "_source_tree_contract_workload",
                 }
             ),
-            frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")}),
+            frozenset(
+                {("source_tree_benchmark_anchor_support", "source_tree_owner_support")}
+            ),
             id="source-tree-combined",
         ),
     ),
