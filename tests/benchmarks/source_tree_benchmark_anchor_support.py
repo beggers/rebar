@@ -15,6 +15,7 @@ from rebar_harness.benchmarks import (
     determine_runner_version,
     published_benchmark_manifests,
     select_workloads,
+    workload_from_payload,
     workload_to_payload,
 )
 from rebar_harness.scorecard_io import build_cpython_baseline
@@ -44,6 +45,7 @@ _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
 _KNOWN_GAP_STATUSES = {"known-gap", "unimplemented"}
 
 SOURCE_TREE_MOVED_CLASS_NAMES = (
+    "_SourceTreeContractBuilderSpec",
     "SourceTreeBenchmarkCommonCase",
     "SourceTreeManifestExpectation",
     "SourceTreeDeferredExpectation",
@@ -57,6 +59,9 @@ SOURCE_TREE_MOVED_CLASS_NAMES = (
 )
 
 SOURCE_TREE_MOVED_FUNCTION_NAMES = (
+    "_source_tree_contract_manifest_payload",
+    "_source_tree_contract_workload",
+    "_source_tree_contract_manifest",
     "source_tree_scorecard_case_ids",
     "source_tree_scorecard_case",
     "source_tree_combined_target_manifest_ids",
@@ -170,6 +175,89 @@ SOURCE_TREE_ROUTED_SUITE_ASSERTION_HELPER_NAMES = (
     "assert_source_tree_combined_pattern_group",
     "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation",
     "assert_zero_gap_representative_workload_subset",
+)
+
+
+@dataclass(frozen=True, slots=True)
+class _SourceTreeContractBuilderSpec:
+    manifest_id: str
+    excluded_fields: frozenset[str]
+    manifest_timed_samples: int = 2
+    timing_scope: str | None = None
+    notes: tuple[str, ...] = ()
+
+
+def _source_tree_contract_manifest_payload(
+    source_workload: Workload,
+    *,
+    spec: _SourceTreeContractBuilderSpec,
+) -> dict[str, object]:
+    payload = workload_to_payload(source_workload)
+    manifest_payload: dict[str, object] = {
+        "id": f"{source_workload.workload_id}-contract",
+        **{
+            key: value
+            for key, value in payload.items()
+            if key not in spec.excluded_fields
+        },
+    }
+    if spec.timing_scope is not None:
+        manifest_payload["timing_scope"] = spec.timing_scope
+    if spec.notes:
+        manifest_payload["notes"] = list(spec.notes)
+    return manifest_payload
+
+
+def _source_tree_contract_workload(
+    source_workload: Workload,
+    *,
+    spec: _SourceTreeContractBuilderSpec,
+) -> Workload:
+    manifest_payload = _source_tree_contract_manifest_payload(
+        source_workload,
+        spec=spec,
+    )
+    return workload_from_payload(
+        {
+            "manifest_id": spec.manifest_id,
+            "workload_id": str(manifest_payload["id"]),
+            **{key: value for key, value in manifest_payload.items() if key != "id"},
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": 1,
+            "categories": [],
+            "syntax_features": [],
+            "smoke": False,
+        }
+    )
+
+
+def _source_tree_contract_manifest(
+    source_workloads: tuple[Workload, ...],
+    *,
+    spec: _SourceTreeContractBuilderSpec,
+) -> dict[str, object]:
+    return {
+        "schema_version": 1,
+        "manifest_id": spec.manifest_id,
+        "defaults": {
+            "warmup_iterations": 1,
+            "sample_iterations": 1,
+            "timed_samples": spec.manifest_timed_samples,
+        },
+        "workloads": [
+            _source_tree_contract_manifest_payload(workload, spec=spec)
+            for workload in source_workloads
+        ],
+    }
+
+
+_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = _SourceTreeContractBuilderSpec(
+    manifest_id="pattern-boundary",
+    excluded_fields=(
+        benchmark_test_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS
+    ),
+    timing_scope="pattern-helper-call",
 )
 
 

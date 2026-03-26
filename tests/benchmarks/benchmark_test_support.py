@@ -48,15 +48,6 @@ class StandardBenchmarkAnchorContract(Protocol):
 
 
 @dataclass(frozen=True, slots=True)
-class _SourceTreeContractBuilderSpec:
-    manifest_id: str
-    excluded_fields: frozenset[str]
-    manifest_timed_samples: int = 2
-    timing_scope: str | None = None
-    notes: tuple[str, ...] = ()
-
-
-@dataclass(frozen=True, slots=True)
 class StandardBenchmarkAnchorContractDefinition:
     name: str
     manifest_paths: tuple[pathlib.Path, ...]
@@ -378,71 +369,6 @@ def _synthetic_manifest(
     workloads: tuple[object, ...] = (),
 ) -> SimpleNamespace:
     return SimpleNamespace(cases=list(cases), workloads=list(workloads))
-
-
-def _source_tree_contract_manifest_payload(
-    source_workload: Workload,
-    *,
-    spec: _SourceTreeContractBuilderSpec,
-) -> dict[str, object]:
-    payload = workload_to_payload(source_workload)
-    manifest_payload: dict[str, object] = {
-        "id": f"{source_workload.workload_id}-contract",
-        **{
-            key: value
-            for key, value in payload.items()
-            if key not in spec.excluded_fields
-        },
-    }
-    if spec.timing_scope is not None:
-        manifest_payload["timing_scope"] = spec.timing_scope
-    if spec.notes:
-        manifest_payload["notes"] = list(spec.notes)
-    return manifest_payload
-
-
-def _source_tree_contract_workload(
-    source_workload: Workload,
-    *,
-    spec: _SourceTreeContractBuilderSpec,
-) -> Workload:
-    manifest_payload = _source_tree_contract_manifest_payload(
-        source_workload,
-        spec=spec,
-    )
-    return workload_from_payload(
-        {
-            "manifest_id": spec.manifest_id,
-            "workload_id": str(manifest_payload["id"]),
-            **{key: value for key, value in manifest_payload.items() if key != "id"},
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": 1,
-            "categories": [],
-            "syntax_features": [],
-            "smoke": False,
-        }
-    )
-
-
-def _source_tree_contract_manifest(
-    source_workloads: tuple[Workload, ...],
-    *,
-    spec: _SourceTreeContractBuilderSpec,
-) -> dict[str, object]:
-    return {
-        "schema_version": 1,
-        "manifest_id": spec.manifest_id,
-        "defaults": {
-            "warmup_iterations": 1,
-            "sample_iterations": 1,
-            "timed_samples": spec.manifest_timed_samples,
-        },
-        "workloads": [
-            _source_tree_contract_manifest_payload(workload, spec=spec)
-            for workload in source_workloads
-        ],
-    }
 
 
 def _contract_source_workloads(
@@ -1644,8 +1570,12 @@ class CompiledPatternModuleCompileContractCase:
     allowed_patterns: tuple[str, ...] = ()
     expected_exception: dict[str, str] | None = None
 
-    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
-        return _SourceTreeContractBuilderSpec(
+    def contract_builder_spec(self) -> Any:
+        from tests.benchmarks import (
+            source_tree_benchmark_anchor_support as source_tree_support,
+        )
+
+        return source_tree_support._SourceTreeContractBuilderSpec(
             manifest_id="module-boundary",
             excluded_fields=self.manifest_excluded_fields(),
             manifest_timed_samples=2,
@@ -1776,7 +1706,7 @@ class _CompiledPatternModuleContractAnchorLane:
     case_id: str
     contract_filename: str
     source_workloads: tuple[Workload, ...]
-    contract_builder_spec: Callable[[], _SourceTreeContractBuilderSpec]
+    contract_builder_spec: Callable[[], Any]
     expected_anchor_case_ids: Callable[
         [pathlib.Path],
         dict[tuple[str, str], tuple[str, ...]],
@@ -3153,7 +3083,11 @@ def _compiled_pattern_wrong_text_model_source_workloads(
 
 def _compiled_pattern_wrong_text_model_contract_spec(
     spec: dict[str, object],
-) -> _SourceTreeContractBuilderSpec:
+) -> Any:
+    from tests.benchmarks import (
+        source_tree_benchmark_anchor_support as source_tree_support,
+    )
+
     notes: tuple[str, ...]
     if spec["contract_manifest_id"] == "collection-replacement-boundary":
         notes = (
@@ -3163,7 +3097,7 @@ def _compiled_pattern_wrong_text_model_contract_spec(
         notes = (
             "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument wrong-text-model module-boundary rows unresolved until helper invocation.",
         )
-    return _SourceTreeContractBuilderSpec(
+    return source_tree_support._SourceTreeContractBuilderSpec(
         manifest_id=spec["contract_manifest_id"],
         excluded_fields=COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS,
         timing_scope="module-helper-call",
@@ -3238,8 +3172,12 @@ class CompiledPatternModuleSuccessOwnerSpec:
     preserved_payload_fields: tuple[str, ...]
     preserve_replacement_payload_typing: bool
 
-    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
-        return _SourceTreeContractBuilderSpec(
+    def contract_builder_spec(self) -> Any:
+        from tests.benchmarks import (
+            source_tree_benchmark_anchor_support as source_tree_support,
+        )
+
+        return source_tree_support._SourceTreeContractBuilderSpec(
             manifest_id=self.contract_manifest_id,
             excluded_fields=_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS,
             timing_scope="module-helper-call",
@@ -3585,13 +3523,17 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
     notes: tuple[str, ...] = ()
     precompile_anchor_ids: tuple[str, ...] = ()
 
-    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
+    def contract_builder_spec(self) -> Any:
+        from tests.benchmarks import (
+            source_tree_benchmark_anchor_support as source_tree_support,
+        )
+
         excluded_fields = (
             _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
         )
         if not self.preserve_expected_exception:
             excluded_fields = excluded_fields | {"expected_exception"}
-        return _SourceTreeContractBuilderSpec(
+        return source_tree_support._SourceTreeContractBuilderSpec(
             manifest_id="collection-replacement-boundary",
             excluded_fields=excluded_fields,
             manifest_timed_samples=self.manifest_timed_samples,
@@ -4031,13 +3973,6 @@ _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
     "pattern-match-on-str-string-purged-bytes",
     "pattern-fullmatch-on-bytes-string-warm-str",
 )
-_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = _SourceTreeContractBuilderSpec(
-    manifest_id="pattern-boundary",
-    excluded_fields=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS,
-    timing_scope="pattern-helper-call",
-)
-
-
 def _pattern_boundary_wrong_text_model_source_workloads() -> tuple[Any, ...]:
     return _contract_source_workloads(
         manifest_path=PATTERN_BOUNDARY_MANIFEST_PATH,

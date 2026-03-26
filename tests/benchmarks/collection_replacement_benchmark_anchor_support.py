@@ -5,6 +5,7 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from functools import partial
 import re
+from types import SimpleNamespace
 from typing import Any
 
 from rebar_harness import benchmarks
@@ -1229,10 +1230,12 @@ _COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
     "pattern-subn-on-str-string-purged-bytes",
 )
 _COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC = (
-    benchmark_test_support._SourceTreeContractBuilderSpec(
+    SimpleNamespace(
         manifest_id="collection-replacement-boundary",
         excluded_fields=_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS,
+        manifest_timed_samples=2,
         timing_scope="pattern-helper-call",
+        notes=(),
     )
 )
 
