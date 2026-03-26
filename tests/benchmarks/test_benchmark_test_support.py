@@ -2736,8 +2736,8 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     )
     assert {
         "_is_module_workflow_compiled_pattern_workload",
-        "_module_workflow_compiled_pattern_success_correctness_case_signature",
-        "_module_workflow_compiled_pattern_success_workload_signature",
+        "_module_workflow_compiled_pattern_correctness_case_signature",
+        "_module_workflow_compiled_pattern_workload_signature",
         "_is_module_workflow_compiled_pattern_literal_success_workload",
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
         "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
@@ -2751,6 +2751,10 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS",
         "COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
     }.issubset(support_assignment_names)
+    removed_duplicate_names = {
+        "_module_workflow_compiled_pattern_success_correctness_case_signature",
+        "_module_workflow_compiled_pattern_success_workload_signature",
+    }
     moved_owner_names = {
         "compiled_pattern_contract_expected_build_calls",
         "_run_cpython_compiled_pattern_module_helper_workload",
@@ -2762,6 +2766,10 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     assert not hasattr(support, "_compiled_pattern_wrong_text_model_source_workloads")
     assert hasattr(collection_replacement_support, "_compiled_pattern_wrong_text_model_source_workloads")
     assert hasattr(support, "_is_module_workflow_compiled_pattern_wrong_text_model_workload")
+    assert removed_duplicate_names.isdisjoint(
+        support_definition_names | support_assignment_names
+    )
+    assert all(not hasattr(support, name) for name in removed_duplicate_names)
     assert moved_owner_names.isdisjoint(support_definition_names | support_assignment_names)
     assert all(not hasattr(support, name) for name in moved_owner_names)
     assert moved_owner_names.issubset(
@@ -4509,7 +4517,7 @@ def test_module_workflow_compiled_pattern_success_selectors_accept_bounded_workl
         )
     )
     assert (
-        anchor_support._module_workflow_compiled_pattern_success_workload_signature(
+        anchor_support._module_workflow_compiled_pattern_workload_signature(
             literal_workload
         )
         == ("module.search", "abc", ("zzabczz",), True, 0, "str")
@@ -4521,7 +4529,7 @@ def test_module_workflow_compiled_pattern_success_selectors_accept_bounded_workl
         )
     )
     assert (
-        anchor_support._module_workflow_compiled_pattern_success_workload_signature(
+        anchor_support._module_workflow_compiled_pattern_workload_signature(
             wildcard_workload
         )
         == ("module.fullmatch", b"a.c", (b"abc",), True, 0, "bytes")
@@ -4533,7 +4541,7 @@ def test_module_workflow_compiled_pattern_success_selectors_accept_bounded_workl
         )
     )
     assert (
-        anchor_support._module_workflow_compiled_pattern_success_workload_signature(
+        anchor_support._module_workflow_compiled_pattern_workload_signature(
             verbose_workload
         )
         == (

@@ -836,9 +836,9 @@ _COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK = (
         ),
         include_workload=benchmark_test_support._is_module_workflow_compiled_pattern_literal_success_workload,
         correctness_case_signature=(
-            benchmark_test_support._module_workflow_compiled_pattern_success_correctness_case_signature
+            benchmark_test_support._module_workflow_compiled_pattern_correctness_case_signature
         ),
-        workload_signature=benchmark_test_support._module_workflow_compiled_pattern_success_workload_signature,
+        workload_signature=benchmark_test_support._module_workflow_compiled_pattern_workload_signature,
         run_callback_result_parity=True,
     ),
     benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
@@ -862,9 +862,9 @@ _COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK = (
             benchmark_test_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload
         ),
         correctness_case_signature=(
-            benchmark_test_support._module_workflow_compiled_pattern_success_correctness_case_signature
+            benchmark_test_support._module_workflow_compiled_pattern_correctness_case_signature
         ),
-        workload_signature=benchmark_test_support._module_workflow_compiled_pattern_success_workload_signature,
+        workload_signature=benchmark_test_support._module_workflow_compiled_pattern_workload_signature,
         run_callback_result_parity=True,
     ),
     benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
@@ -883,9 +883,9 @@ _COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK = (
         ),
         include_workload=benchmark_test_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
         correctness_case_signature=(
-            benchmark_test_support._module_workflow_compiled_pattern_success_correctness_case_signature
+            benchmark_test_support._module_workflow_compiled_pattern_correctness_case_signature
         ),
-        workload_signature=benchmark_test_support._module_workflow_compiled_pattern_success_workload_signature,
+        workload_signature=benchmark_test_support._module_workflow_compiled_pattern_workload_signature,
         run_callback_result_parity=True,
     ),
 )
