@@ -111,12 +111,6 @@ SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES = (
     "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
 )
 
-SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES = (
-    "_is_module_workflow_compiled_pattern_literal_success_workload",
-    "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
-    "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
-)
-
 SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES = frozenset(
     {
         "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
@@ -5532,15 +5526,6 @@ _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
             benchmark_test_support.published_case_ids_by_signature
         ),
     )
-)
-_is_module_workflow_compiled_pattern_literal_success_workload = (
-    benchmark_test_support._is_module_workflow_compiled_pattern_literal_success_workload
-)
-_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload = (
-    benchmark_test_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload
-)
-_is_module_workflow_compiled_pattern_verbose_bytes_success_workload = (
-    benchmark_test_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload
 )
 _is_collection_replacement_compiled_pattern_success_workload = (
     benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload

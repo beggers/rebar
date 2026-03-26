@@ -1241,15 +1241,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
             and assignment.value.value.id == "benchmark_test_support"
             and assignment.value.attr == constant_name
         )
-    for constant_name in (
-        support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES
-    ):
-        assert hasattr(support, constant_name)
-        assert constant_name in local_assignment_names
-        assert getattr(support, constant_name) is getattr(
-            benchmark_test_support,
-            constant_name,
-        )
     assert not hasattr(
         support,
         "_assert_compiled_pattern_module_success_payload_round_trip",
@@ -1263,6 +1254,10 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
+        "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
+        "_is_module_workflow_compiled_pattern_literal_success_workload",
+        "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
+        "SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES",
         "SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "SOURCE_TREE_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES",
     ):
@@ -2005,13 +2000,6 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
             id="compiled-pattern-module-helper-keyword",
         ),
         pytest.param(
-            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES,
-            frozenset(
-                support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES
-            ),
-            id="compiled-pattern-module-success",
-        ),
-        pytest.param(
             support.SOURCE_TREE_ROUTED_SUITE_ASSERTION_HELPER_NAMES,
             frozenset(),
             id="source-tree-suite-assertion-helpers",
@@ -2105,7 +2093,6 @@ def test_source_tree_owner_inventory_constants_are_not_mirrored_back_into_this_t
     )
     support_inventory_names = frozenset(
         {
-            "SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES",
             "SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES",
             "SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES",
         }
