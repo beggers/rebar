@@ -94,6 +94,22 @@ def _workload_ids_for_declared_slice(
     )
 
 
+def _collection_routed_owner_assignment_names() -> tuple[str, ...]:
+    _, assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            support
+        )
+    )
+    return tuple(
+        sorted(
+            name
+            for name in assignment_names
+            if name.startswith("CONDITIONAL_GROUP_EXISTS_")
+            and name.endswith("_WORKLOAD_IDS")
+        )
+    )
+
+
 def test_collection_replacement_pattern_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(
 ) -> None:
     import sys
@@ -1178,20 +1194,7 @@ def test_moved_collection_replacement_workload_ids_in_combined_suite_use_direct_
     source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="collection_replacement_support",
         owner_module=support,
-        owner_names=(
-            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS",
-        ),
+        owner_names=_collection_routed_owner_assignment_names(),
     )
 
 
@@ -1376,18 +1379,6 @@ def test_quantified_conditional_callable_combined_slice_expectations_stay_in_syn
             "quantified-callable-replacement-bytes-rows"
         ].expected_workload_ids
         == support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
-    )
-
-
-def test_conditional_template_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
-    source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
-        alias_name="collection_replacement_support",
-        owner_module=support,
-        owner_names=(
-            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
-            "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS",
-        ),
     )
 
 
