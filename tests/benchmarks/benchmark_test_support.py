@@ -4528,26 +4528,12 @@ _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS = (
 )
 
 
-def _build_compiled_pattern_module_compile_standard_benchmark_definitions(
-    *,
-    success_owner_specs: Iterable[object] | None = None,
-    keyword_owner_specs: Iterable[object] | None = None,
-) -> tuple[benchmark_test_support.StandardBenchmarkAnchorContractDefinition, ...]:
-    if success_owner_specs is None:
-        success_owner_specs = _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS
-    if keyword_owner_specs is None:
-        keyword_owner_specs = _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS
-    return tuple(
-        owner_spec.anchor_definition()
-        for owner_spec in (
-            *success_owner_specs,
-            *keyword_owner_specs,
-        )
+COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS = tuple(
+    owner_spec.anchor_definition()
+    for owner_spec in (
+        *_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+        *_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
     )
-
-
-COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS = (
-    _build_compiled_pattern_module_compile_standard_benchmark_definitions()
 )
 
 _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES = (

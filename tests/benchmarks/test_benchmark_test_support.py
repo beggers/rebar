@@ -1157,7 +1157,7 @@ def test_benchmark_test_support_owns_compiled_pattern_module_compile_standard_de
 
     assert (
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
-        in definition_names
+        not in definition_names
     )
     assert (
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
@@ -1165,8 +1165,7 @@ def test_benchmark_test_support_owns_compiled_pattern_module_compile_standard_de
     )
     assert (
         re.search(
-            r"^def _build_compiled_pattern_module_compile_standard_benchmark_definitions\b|"
-            r"^COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS\b",
+            r"^COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS\s*=\s*tuple\(",
             source,
             re.MULTILINE,
         )
