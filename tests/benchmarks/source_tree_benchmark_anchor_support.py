@@ -21,9 +21,6 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks import benchmark_test_support
-from tests.benchmarks import (
-    collection_replacement_benchmark_anchor_support as collection_replacement_support,
-)
 from tests.conftest import manifest_records_by_id
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
@@ -2727,7 +2724,6 @@ SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS = (
             "gap",
         ),
     ),
-    *collection_replacement_support.COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS,
     SourceTreeCombinedSliceExpectation(
         manifest_id="conditional-group-exists-boundary",
         slice_id="quantified-alternation-heavy-constant-replacement-rows",
