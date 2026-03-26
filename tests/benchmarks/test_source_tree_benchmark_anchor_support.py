@@ -1185,10 +1185,7 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
             continue
         if constant_name == "_is_collection_replacement_compiled_pattern_keyword_error_workload":
             assert constant_name in local_function_names
-            assert getattr(support, constant_name) is not getattr(
-                benchmark_test_support,
-                constant_name,
-            )
+            assert not hasattr(benchmark_test_support, constant_name)
             continue
         assert constant_name in local_assignment_names
         assignment = _module_assignment(support, constant_name)
