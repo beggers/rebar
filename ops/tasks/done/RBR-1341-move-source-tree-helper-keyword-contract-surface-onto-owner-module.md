@@ -1,6 +1,6 @@
 ## RBR-1341: Move source-tree helper-keyword contract surface onto owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -69,3 +69,16 @@ Created: 2026-03-26
   - `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_contract_builder_consumers_route_owner_surface_through_package_alias or source_tree_support_module_exposes_routed_collection_owner_surface' -q` passed with `5 passed, 85 deselected in 0.20s`
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` passed
   - `bash -lc "! rg -n '^(_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_|def _is_collection_replacement_compiled_pattern_keyword_error_workload\\()' tests/benchmarks/benchmark_test_support.py"` currently fails because the source-tree-only helper-keyword contract block still lives in the generic support module, and that failure belongs exactly to this cleanup
+
+## Completion
+- Moved the compiled-pattern helper-keyword contract payload/spec/workload surface and the keyword-error classifier off `tests/benchmarks/benchmark_test_support.py` and onto `tests/benchmarks/source_tree_benchmark_anchor_support.py`, while keeping the shared contract dataclasses and helper-route primitives in the generic module.
+- Updated `tests/benchmarks/test_benchmark_manifest_validation.py` to consume the owner-module helper-keyword contract surface directly from `source_tree_benchmark_anchor_support`.
+- Tightened ownership checks so `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` now verifies the moved helper-keyword contract names are defined locally on the source-tree owner module rather than re-exported from `benchmark_test_support`, and `tests/benchmarks/test_benchmark_test_support.py` fails if the generic module reintroduces the moved block.
+
+## Verification
+- `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_collection_replacement_keyword_kwargs_materialize_at_callback_time or compiled_pattern_module_helper_keyword_contract_callbacks_precompile_first_argument_before_timing or compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions' -q`
+- `./.venv/bin/python -m pytest tests/benchmarks/test_benchmark_manifest_validation.py -k 'compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_payload_types_field_names_and_bool_count_complements or standard_benchmark_compiled_pattern_module_helper_keyword_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation' -q`
+- `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_contract_builder_consumers_route_owner_surface_through_package_alias or source_tree_support_module_exposes_routed_collection_owner_surface' -q`
+- `./.venv/bin/python -m pytest tests/benchmarks/test_benchmark_test_support.py -k 'benchmark_test_support_drops_source_tree_helper_keyword_contract_surface' -q`
+- `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py`
+- `bash -lc "! rg -n '^(_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_|def _is_collection_replacement_compiled_pattern_keyword_error_workload\\()' tests/benchmarks/benchmark_test_support.py"`

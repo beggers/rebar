@@ -22,6 +22,18 @@ _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS = (
     support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
 )
 
+
+def _module_assignment(module: object, name: str) -> ast.Assign:
+    return next(
+        node
+        for node in benchmark_test_support._parsed_module_ast(module).body
+        if isinstance(node, ast.Assign)
+        and any(
+            isinstance(target, ast.Name) and target.id == name
+            for target in node.targets
+        )
+    )
+
 def _synthetic_report_scorecard(
     *,
     workloads: tuple[dict[str, object], ...],
@@ -1161,10 +1173,44 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES
     ):
         assert hasattr(support, constant_name)
+        if (
+            constant_name
+            == "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call"
+        ):
+            assert constant_name in local_assignment_names
+            assert getattr(support, constant_name) is getattr(
+                benchmark_test_support,
+                constant_name,
+            )
+            continue
+        if constant_name == "_is_collection_replacement_compiled_pattern_keyword_error_workload":
+            assert constant_name in local_function_names
+            assert getattr(support, constant_name) is not getattr(
+                benchmark_test_support,
+                constant_name,
+            )
+            continue
         assert constant_name in local_assignment_names
-        assert getattr(support, constant_name) is getattr(
-            benchmark_test_support,
-            constant_name,
+        assignment = _module_assignment(support, constant_name)
+        assert not (
+            isinstance(assignment.value, ast.Attribute)
+            and isinstance(assignment.value.value, ast.Name)
+            and assignment.value.value.id == "benchmark_test_support"
+            and assignment.value.attr == constant_name
+        )
+    for constant_name in (
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+    ):
+        assert hasattr(support, constant_name)
+        assert constant_name in local_assignment_names
+        assignment = _module_assignment(support, constant_name)
+        assert not (
+            isinstance(assignment.value, ast.Attribute)
+            and isinstance(assignment.value.value, ast.Name)
+            and assignment.value.value.id == "benchmark_test_support"
+            and assignment.value.attr == constant_name
         )
     for constant_name in (
         support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES
@@ -1262,13 +1308,13 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
     (
         pytest.param(
             True,
-            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS,
+            support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS,
             id="preserve-expected-exception",
         ),
         pytest.param(
             False,
             (
-                benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
+                support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
                 | frozenset({"expected_exception"})
             ),
             id="drop-expected-exception",
@@ -2522,6 +2568,9 @@ def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_packa
             "tests.benchmarks.test_benchmark_manifest_validation",
             frozenset(
                 {
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
                     "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
@@ -2534,7 +2583,7 @@ def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_packa
                     "_compiled_pattern_module_helper_keyword_contract_spec",
                 }
             ),
-            frozenset({"_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES"}),
+            frozenset(),
             id="manifest-validation",
         ),
         pytest.param(
