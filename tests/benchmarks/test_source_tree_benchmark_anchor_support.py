@@ -2227,7 +2227,9 @@ def test_moved_conditional_callable_workload_loaders_pin_expected_ids() -> None:
         for workload_id in expectation.expected_workload_ids
     )
     expected_callable_str_workload_ids, expected_callable_bytes_workload_ids = (
-        collection_support._split_workload_ids_by_text_model(expected_callable_workload_ids)
+        benchmark_test_support._split_workload_ids_by_text_model(
+            expected_callable_workload_ids
+        )
     )
 
     callable_str_workloads = collection_support._conditional_group_exists_callable_str_slice_workloads()
@@ -2329,7 +2331,7 @@ def test_moved_conditional_callable_selector_helpers_keep_partition_rules() -> N
         ),
     )
 
-    assert collection_support._split_workload_ids_by_text_model(
+    assert benchmark_test_support._split_workload_ids_by_text_model(
         expected_callable_workload_ids
     ) == (
         tuple(
@@ -2343,12 +2345,12 @@ def test_moved_conditional_callable_selector_helpers_keep_partition_rules() -> N
             if workload_id.endswith("-bytes")
         ),
     )
-    assert collection_support._mirrored_bytes_workload_ids(
+    assert benchmark_test_support._mirrored_bytes_workload_ids(
         collection_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
     ) == (
         collection_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS
     )
-    assert collection_support._selected_workload_ids(
+    assert benchmark_test_support._selected_workload_ids(
         synthetic_workloads,
         text_model="str",
         required_categories=("negative-count",),
@@ -2356,18 +2358,18 @@ def test_moved_conditional_callable_selector_helpers_keep_partition_rules() -> N
         "callable-negative-count-warm-str",
         "callable-negative-none-count-warm-str",
     )
-    assert collection_support._selected_workload_ids(
+    assert benchmark_test_support._selected_workload_ids(
         synthetic_workloads,
         text_model="str",
         required_categories=("negative-count",),
         excluded_categories=("none-count",),
     ) == ("callable-negative-count-warm-str",)
-    assert collection_support._selected_workload_ids(
+    assert benchmark_test_support._selected_workload_ids(
         synthetic_workloads,
         text_model="bytes",
         required_categories=("negative-count",),
     ) == ("callable-negative-count-warm-bytes",)
-    assert collection_support._selected_workload_ids(
+    assert benchmark_test_support._selected_workload_ids(
         synthetic_workloads,
         text_model="str",
         required_categories=("no-match",),

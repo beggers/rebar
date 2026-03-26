@@ -1,6 +1,6 @@
 # RBR-1370: Centralize generic workload-id selection helpers onto benchmark support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -53,3 +53,15 @@ Created: 2026-03-26
   - `rg -n '^def (_split_workload_ids_by_text_model|_selected_workload_ids|_mirrored_bytes_workload_ids)\\b' tests/benchmarks/benchmark_test_support.py` currently fails because the shared support module does not own the helper trio yet, and that failure belongs exactly to this cleanup
   - `bash -lc \"! rg -n '^def (_split_workload_ids_by_text_model|_selected_workload_ids|_mirrored_bytes_workload_ids)\\b' tests/benchmarks/collection_replacement_benchmark_anchor_support.py\"` currently fails because the collection owner module still defines all three helpers, and that failure belongs exactly to this cleanup
   - `bash -lc \"! rg -n 'collection_replacement_support\\._(split_workload_ids_by_text_model|selected_workload_ids|mirrored_bytes_workload_ids)\\b|collection_support\\._(split_workload_ids_by_text_model|selected_workload_ids|mirrored_bytes_workload_ids)\\b' tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_test_support.py\"` currently fails because the touched benchmark tests still route through the collection owner module
+
+## Completion
+- Moved `_split_workload_ids_by_text_model(...)`, `_selected_workload_ids(...)`, and `_mirrored_bytes_workload_ids(...)` onto `tests/benchmarks/benchmark_test_support.py`, deleted their owner-local definitions from `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`, and updated direct benchmark-suite callers to use the shared support module.
+- Trimmed `COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES` so the collection owner contract no longer advertises the generic selector trio, and added a support-contract test that pins the helper ownership on `benchmark_test_support`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'moved_conditional_callable_workload_loaders_pin_expected_ids or split_workload_ids_by_text_model or mirrored_bytes_workload_ids or selected_workload_ids'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'split_workload_ids_by_text_model or mirrored_bytes_workload_ids or selected_workload_ids or conditional_group_exists_nested_callable_str_workloads_round_trip_preserves_outcomes or conditional_group_exists_nested_callable_bytes_workloads_round_trip_preserves_outcomes or conditional_group_exists_quantified_callable_str_workloads_round_trip_preserves_outcomes or conditional_group_exists_quantified_callable_bytes_workloads_round_trip_preserves_outcomes or conditional_group_exists_callable_str_slice_workloads_round_trip_preserves_outcomes or conditional_group_exists_callable_bytes_slice_workloads_round_trip_preserves_outcomes or conditional_group_exists_alternation_callable_bytes_workloads_round_trip_preserves_outcomes'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'generic_workload_id_selector_helpers or collection_replacement_owner_surface_reaches_combined_suite_without_source_tree_workload_id_aliases or source_tree_support_module_exposes_moved_conditional_callable_helpers or source_tree_support_module_exposes_routed_collection_owner_surface'`
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_test_support.py`
+  - `rg -n '^def (_split_workload_ids_by_text_model|_selected_workload_ids|_mirrored_bytes_workload_ids)\\b' tests/benchmarks/benchmark_test_support.py`
+  - `bash -lc \"! rg -n '^def (_split_workload_ids_by_text_model|_selected_workload_ids|_mirrored_bytes_workload_ids)\\b' tests/benchmarks/collection_replacement_benchmark_anchor_support.py\"`
+  - `bash -lc \"! rg -n 'collection_replacement_support\\._(split_workload_ids_by_text_model|selected_workload_ids|mirrored_bytes_workload_ids)\\b|collection_support\\._(split_workload_ids_by_text_model|selected_workload_ids|mirrored_bytes_workload_ids)\\b' tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_test_support.py\"`

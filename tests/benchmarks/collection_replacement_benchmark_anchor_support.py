@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import json
-from collections.abc import Callable, Iterable
+from collections.abc import Callable
 from dataclasses import dataclass
 from functools import cache, partial
 import re
@@ -1884,9 +1884,6 @@ COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES = (
     "_conditional_group_exists_nested_callable_bytes_workloads",
     "_conditional_group_exists_quantified_callable_bytes_workloads",
     "_conditional_group_exists_alternation_callable_bytes_workloads",
-    "_split_workload_ids_by_text_model",
-    "_selected_workload_ids",
-    "_mirrored_bytes_workload_ids",
     "_conditional_group_exists_template_replacement_expectation",
     "_conditional_group_exists_callable_replacement_expectations",
     "_conditional_group_exists_alternation_callable_replacement_expectation",
@@ -1964,45 +1961,6 @@ def _conditional_group_exists_alternation_callable_bytes_workloads() -> tuple[An
     return benchmark_test_support.live_manifest_workloads(
         benchmarks.BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py",
         CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
-    )
-
-
-def _split_workload_ids_by_text_model(
-    workload_ids: tuple[str, ...],
-) -> tuple[tuple[str, ...], tuple[str, ...]]:
-    return (
-        tuple(
-            workload_id
-            for workload_id in workload_ids
-            if not workload_id.endswith("-bytes")
-        ),
-        tuple(
-            workload_id
-            for workload_id in workload_ids
-            if workload_id.endswith("-bytes")
-        ),
-    )
-
-
-def _selected_workload_ids(
-    workloads: Iterable[Any],
-    *,
-    text_model: str,
-    required_categories: tuple[str, ...],
-    excluded_categories: tuple[str, ...] = (),
-) -> tuple[str, ...]:
-    return tuple(
-        workload.workload_id
-        for workload in workloads
-        if workload.text_model == text_model
-        and all(category in workload.categories for category in required_categories)
-        and all(category not in workload.categories for category in excluded_categories)
-    )
-
-
-def _mirrored_bytes_workload_ids(str_workload_ids: tuple[str, ...]) -> tuple[str, ...]:
-    return tuple(
-        f"{workload_id.removesuffix('-str')}-bytes" for workload_id in str_workload_ids
     )
 
 

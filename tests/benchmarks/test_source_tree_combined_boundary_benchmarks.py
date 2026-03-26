@@ -2904,10 +2904,14 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             if workload_id in expected_callable_workload_ids
         )
         expected_str_workload_ids, expected_bytes_workload_ids = (
-            collection_replacement_support._split_workload_ids_by_text_model(expected_callable_workload_ids)
+            benchmark_test_support._split_workload_ids_by_text_model(
+                expected_callable_workload_ids
+            )
         )
         representative_str_workload_ids, representative_bytes_workload_ids = (
-            collection_replacement_support._split_workload_ids_by_text_model(representative_callable_workload_ids)
+            benchmark_test_support._split_workload_ids_by_text_model(
+                representative_callable_workload_ids
+            )
         )
         manifest_negative_count_str_workload_ids = tuple(
             workload.workload_id
@@ -3056,7 +3060,9 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             if workload_id in expected_none_count_workload_ids
         )
         representative_str_workload_ids, representative_bytes_workload_ids = (
-            collection_replacement_support._split_workload_ids_by_text_model(representative_none_count_workload_ids)
+            benchmark_test_support._split_workload_ids_by_text_model(
+                representative_none_count_workload_ids
+            )
         )
         manifest_none_count_str_workload_ids = tuple(
             workload.workload_id
@@ -3170,7 +3176,9 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             )
         )
         representative_str_workload_ids, representative_bytes_workload_ids = (
-            collection_replacement_support._split_workload_ids_by_text_model(representative_nested_workload_ids)
+            benchmark_test_support._split_workload_ids_by_text_model(
+                representative_nested_workload_ids
+            )
         )
 
         def normalized_text_model_payload(value: str | bytes | None) -> str | None:
@@ -3251,45 +3259,47 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             )
         )
         representative_str_workload_ids, representative_bytes_workload_ids = (
-            collection_replacement_support._split_workload_ids_by_text_model(representative_quantified_workload_ids)
+            benchmark_test_support._split_workload_ids_by_text_model(
+                representative_quantified_workload_ids
+            )
         )
-        manifest_negative_count_str_workload_ids = collection_replacement_support._selected_workload_ids(
+        manifest_negative_count_str_workload_ids = benchmark_test_support._selected_workload_ids(
             str_rows,
             text_model="str",
             required_categories=("negative-count",),
         )
-        manifest_negative_count_bytes_workload_ids = collection_replacement_support._selected_workload_ids(
+        manifest_negative_count_bytes_workload_ids = benchmark_test_support._selected_workload_ids(
             bytes_rows,
             text_model="bytes",
             required_categories=("negative-count",),
         )
-        manifest_negative_count_no_match_str_workload_ids = collection_replacement_support._selected_workload_ids(
+        manifest_negative_count_no_match_str_workload_ids = benchmark_test_support._selected_workload_ids(
             str_rows,
             text_model="str",
             required_categories=("negative-count", "no-match"),
         )
-        manifest_negative_count_no_match_bytes_workload_ids = collection_replacement_support._selected_workload_ids(
+        manifest_negative_count_no_match_bytes_workload_ids = benchmark_test_support._selected_workload_ids(
             bytes_rows,
             text_model="bytes",
             required_categories=("negative-count", "no-match"),
         )
-        manifest_none_count_str_workload_ids = collection_replacement_support._selected_workload_ids(
+        manifest_none_count_str_workload_ids = benchmark_test_support._selected_workload_ids(
             str_rows,
             text_model="str",
             required_categories=("none-count",),
         )
-        manifest_none_count_bytes_workload_ids = collection_replacement_support._selected_workload_ids(
+        manifest_none_count_bytes_workload_ids = benchmark_test_support._selected_workload_ids(
             bytes_rows,
             text_model="bytes",
             required_categories=("none-count",),
         )
-        manifest_plain_no_match_str_workload_ids = collection_replacement_support._selected_workload_ids(
+        manifest_plain_no_match_str_workload_ids = benchmark_test_support._selected_workload_ids(
             str_rows,
             text_model="str",
             required_categories=("no-match",),
             excluded_categories=("negative-count",),
         )
-        manifest_plain_no_match_bytes_workload_ids = collection_replacement_support._selected_workload_ids(
+        manifest_plain_no_match_bytes_workload_ids = benchmark_test_support._selected_workload_ids(
             bytes_rows,
             text_model="bytes",
             required_categories=("no-match",),
@@ -3413,21 +3423,27 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         self.assertEqual(len(manifest_plain_no_match_str_workload_ids), 8)
         self.assertEqual(
             manifest_negative_count_bytes_workload_ids,
-            collection_replacement_support._mirrored_bytes_workload_ids(manifest_negative_count_str_workload_ids),
+            benchmark_test_support._mirrored_bytes_workload_ids(
+                manifest_negative_count_str_workload_ids
+            ),
         )
         self.assertEqual(
             manifest_negative_count_no_match_bytes_workload_ids,
-            collection_replacement_support._mirrored_bytes_workload_ids(
+            benchmark_test_support._mirrored_bytes_workload_ids(
                 manifest_negative_count_no_match_str_workload_ids
             ),
         )
         self.assertEqual(
             manifest_none_count_bytes_workload_ids,
-            collection_replacement_support._mirrored_bytes_workload_ids(manifest_none_count_str_workload_ids),
+            benchmark_test_support._mirrored_bytes_workload_ids(
+                manifest_none_count_str_workload_ids
+            ),
         )
         self.assertEqual(
             manifest_plain_no_match_bytes_workload_ids,
-            collection_replacement_support._mirrored_bytes_workload_ids(manifest_plain_no_match_str_workload_ids),
+            benchmark_test_support._mirrored_bytes_workload_ids(
+                manifest_plain_no_match_str_workload_ids
+            ),
         )
         self.assertEqual(
             representative_negative_count_str_workload_ids,
@@ -3435,7 +3451,9 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             representative_negative_count_bytes_workload_ids,
-            collection_replacement_support._mirrored_bytes_workload_ids(representative_negative_count_str_workload_ids),
+            benchmark_test_support._mirrored_bytes_workload_ids(
+                representative_negative_count_str_workload_ids
+            ),
         )
         self.assertEqual(
             representative_negative_count_no_match_str_workload_ids,
@@ -3443,7 +3461,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             representative_negative_count_no_match_bytes_workload_ids,
-            collection_replacement_support._mirrored_bytes_workload_ids(
+            benchmark_test_support._mirrored_bytes_workload_ids(
                 representative_negative_count_no_match_str_workload_ids
             ),
         )
@@ -3453,7 +3471,9 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             representative_none_count_bytes_workload_ids,
-            collection_replacement_support._mirrored_bytes_workload_ids(representative_none_count_str_workload_ids),
+            benchmark_test_support._mirrored_bytes_workload_ids(
+                representative_none_count_str_workload_ids
+            ),
         )
         self.assertEqual(
             representative_plain_no_match_str_workload_ids,
@@ -3461,7 +3481,9 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
         )
         self.assertEqual(
             representative_plain_no_match_bytes_workload_ids,
-            collection_replacement_support._mirrored_bytes_workload_ids(representative_plain_no_match_str_workload_ids),
+            benchmark_test_support._mirrored_bytes_workload_ids(
+                representative_plain_no_match_str_workload_ids
+            ),
         )
         self.assertEqual(
             representative_negative_count_str_workload_ids[
@@ -3645,10 +3667,14 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
             if workload_id in template_expectation.expected_workload_ids
         )
         expected_str_workload_ids, expected_bytes_workload_ids = (
-            collection_replacement_support._split_workload_ids_by_text_model(template_expectation.expected_workload_ids)
+            benchmark_test_support._split_workload_ids_by_text_model(
+                template_expectation.expected_workload_ids
+            )
         )
         representative_str_workload_ids, representative_bytes_workload_ids = (
-            collection_replacement_support._split_workload_ids_by_text_model(representative_template_workload_ids)
+            benchmark_test_support._split_workload_ids_by_text_model(
+                representative_template_workload_ids
+            )
         )
 
         self.assertEqual(
