@@ -2719,6 +2719,63 @@ def test_source_tree_support_proxy_prefers_owner_aliases_and_falls_back_to_share
     )
 
 
+def test_source_tree_support_proxy_dir_tracks_owner_and_shared_surface_without_duplicates(
+    monkeypatch,
+) -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    owner_only_value = object()
+    shared_only_value = object()
+    overlapping_owner_value = object()
+    overlapping_shared_value = object()
+
+    monkeypatch.setattr(
+        module,
+        "SOURCE_TREE_PROXY_DIR_OWNER_ONLY_SENTINEL",
+        owner_only_value,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_PROXY_DIR_SHARED_ONLY_SENTINEL",
+        shared_only_value,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        module,
+        "SOURCE_TREE_PROXY_DIR_OVERLAP_SENTINEL",
+        overlapping_owner_value,
+        raising=False,
+    )
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_PROXY_DIR_OVERLAP_SENTINEL",
+        overlapping_shared_value,
+        raising=False,
+    )
+
+    proxy_dir = dir(module.source_tree_support)
+
+    assert (
+        module.source_tree_support.SOURCE_TREE_PROXY_DIR_OWNER_ONLY_SENTINEL
+        is owner_only_value
+    )
+    assert (
+        module.source_tree_support.SOURCE_TREE_PROXY_DIR_SHARED_ONLY_SENTINEL
+        is shared_only_value
+    )
+    assert (
+        module.source_tree_support.SOURCE_TREE_PROXY_DIR_OVERLAP_SENTINEL
+        is overlapping_owner_value
+    )
+    assert "SOURCE_TREE_PROXY_DIR_OWNER_ONLY_SENTINEL" in proxy_dir
+    assert "SOURCE_TREE_PROXY_DIR_SHARED_ONLY_SENTINEL" in proxy_dir
+    assert "SOURCE_TREE_PROXY_DIR_OVERLAP_SENTINEL" in proxy_dir
+    assert proxy_dir.count("SOURCE_TREE_PROXY_DIR_OVERLAP_SENTINEL") == 1
+    assert proxy_dir == sorted(set(proxy_dir))
+
+
 @pytest.mark.parametrize(
     (
         "module_source",
