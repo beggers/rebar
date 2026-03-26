@@ -1365,7 +1365,7 @@ def test_compiled_pattern_module_compile_contract_builder_surface_builds_expecte
     )
 
 
-def test_compiled_pattern_module_compile_standard_definition_surface_moves_to_shared_support(
+def test_compiled_pattern_module_compile_standard_definition_surface_moves_to_source_tree_support(
 ) -> None:
     definition_names, local_assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(
@@ -1380,30 +1380,40 @@ def test_compiled_pattern_module_compile_standard_definition_surface_moves_to_sh
 
     assert (
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
-        not in definition_names
+        in definition_names
     )
     assert (
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
-        not in local_assignment_names
+        in local_assignment_names
     )
-    assert {
-        "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
-    }.issubset(shared_definition_names)
-    assert {
-        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
-    }.issubset(shared_assignment_names)
-    assert not hasattr(
+    assert (
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
+        not in shared_definition_names
+    )
+    assert (
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
+        not in shared_assignment_names
+    )
+    assert hasattr(
         support,
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
     )
-    assert not hasattr(
+    assert hasattr(
         support,
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     )
     assert hasattr(support, "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES")
+    assert not hasattr(
+        benchmark_test_support,
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
+    )
+    assert not hasattr(
+        benchmark_test_support,
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+    )
 
 
-def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_shared_support_owned(
+def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_source_tree_owned(
 ) -> None:
     expected_definitions = tuple(
         owner_spec.anchor_definition()
@@ -1414,17 +1424,17 @@ def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_shar
     )
 
     first_export = getattr(
-        benchmark_test_support,
+        support,
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     )
     second_export = getattr(
-        benchmark_test_support,
+        support,
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     )
 
     assert first_export is second_export
     assert (
-        benchmark_test_support._build_compiled_pattern_module_compile_standard_benchmark_definitions()
+        support._build_compiled_pattern_module_compile_standard_benchmark_definitions()
         == first_export
     )
     assert first_export == expected_definitions
@@ -1440,14 +1450,14 @@ def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_shar
         "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
     )
     assert (
-        vars(benchmark_test_support)[
+        vars(support)[
             "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
         ]
         is first_export
     )
 
     builder_definition = benchmark_test_support._module_function_definition(
-        benchmark_test_support,
+        support,
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
     )
     assert any(
@@ -4032,7 +4042,7 @@ def test_source_tree_owner_does_not_export_compiled_pattern_module_helper_keywor
     )
 
 
-def test_source_tree_compiled_pattern_module_compile_standard_definition_helpers_stay_shared_support_owned(
+def test_source_tree_compiled_pattern_module_compile_standard_definition_helpers_stay_source_tree_owned(
 ) -> None:
     definition_names, assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(support)
@@ -4045,36 +4055,36 @@ def test_source_tree_compiled_pattern_module_compile_standard_definition_helpers
 
     assert (
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
-        not in definition_names
+        in definition_names
     )
     assert (
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
-        not in assignment_names
+        in assignment_names
     )
     assert "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES" in assignment_names
     assert (
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
-        in shared_definition_names
+        not in shared_definition_names
     )
     assert (
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
-        in shared_assignment_names
+        not in shared_assignment_names
     )
     assert "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES" not in shared_assignment_names
-    assert not hasattr(
+    assert hasattr(
         support,
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
     )
-    assert not hasattr(
+    assert hasattr(
         support,
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     )
     assert hasattr(support, "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES")
-    assert hasattr(
+    assert not hasattr(
         benchmark_test_support,
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
     )
-    assert hasattr(
+    assert not hasattr(
         benchmark_test_support,
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     )
@@ -4129,7 +4139,7 @@ def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() ->
         *benchmark_test_support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
         *collection_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
         *benchmark_test_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
-        *benchmark_test_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+        *support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
         *support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
         *pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
         *support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,

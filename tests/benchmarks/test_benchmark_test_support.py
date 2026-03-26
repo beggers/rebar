@@ -114,7 +114,7 @@ def _explicit_standard_benchmark_definitions(
         *support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
         *collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
         *support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
-        *support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+        *anchor_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
         *anchor_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
         *pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
         *anchor_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
@@ -1092,7 +1092,7 @@ def test_standard_benchmark_param_helpers_require_explicit_definition_inventory(
             id="module-workflow-keyword-after-collection-replacement",
         ),
         pytest.param(
-            support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+            anchor_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
             "module-workflow-keyword-errors",
             "module-workflow-compiled-pattern-literal-success",
             id="compiled-pattern-module-compile-after-module-workflow-keyword",
@@ -1153,25 +1153,50 @@ def test_standard_benchmark_definitions_keep_owner_blocks_in_order(
         assert standard_names[next_index] == following_definition_name
 
 
-def test_benchmark_test_support_owns_compiled_pattern_module_compile_standard_definitions(
+def test_benchmark_test_support_owns_compiled_pattern_module_compile_standard_definitions_on_source_tree_support(
 ) -> None:
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(support)
     )
+    source_tree_definition_names, source_tree_assignment_names = (
+        support.top_level_module_definition_and_assignment_names(anchor_support)
+    )
     source = (
         REPO_ROOT / "tests" / "benchmarks" / "benchmark_test_support.py"
     ).read_text(encoding="utf-8")
+    source_tree_source = (
+        REPO_ROOT / "tests" / "benchmarks" / "source_tree_benchmark_anchor_support.py"
+    ).read_text(encoding="utf-8")
 
-    assert {
-        "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
-    }.issubset(definition_names)
-    assert {
-        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
-    }.issubset(assignment_names)
+    assert (
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
+        not in definition_names
+    )
+    assert (
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
+        not in assignment_names
+    )
+    assert (
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
+        in source_tree_definition_names
+    )
+    assert (
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
+        in source_tree_assignment_names
+    )
+    assert (
+        re.search(
+            r"^def _build_compiled_pattern_module_compile_standard_benchmark_definitions\b|"
+            r"^COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS\b",
+            source,
+            re.MULTILINE,
+        )
+        is None
+    )
     assert re.search(
         r"^def _build_compiled_pattern_module_compile_standard_benchmark_definitions\b|"
         r"^COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS\b",
-        source,
+        source_tree_source,
         re.MULTILINE,
     ) is not None
 

@@ -2425,31 +2425,6 @@ def _compiled_pattern_module_compile_keyword_owner_specs(
     )
 
 
-def _build_compiled_pattern_module_compile_standard_benchmark_definitions(
-    *,
-    success_owner_specs: Iterable[_CompiledPatternModuleCompileSuccessOwnerSpec] | None = None,
-    keyword_owner_specs: Iterable[_CompiledPatternModuleCompileKeywordOwnerSpec] | None = None,
-) -> tuple[
-    StandardBenchmarkAnchorContractDefinition, ...
-]:
-    if success_owner_specs is None:
-        success_owner_specs = _compiled_pattern_module_compile_success_owner_specs()
-    if keyword_owner_specs is None:
-        keyword_owner_specs = _compiled_pattern_module_compile_keyword_owner_specs()
-    return tuple(
-        owner_spec.anchor_definition()
-        for owner_spec in (
-            *success_owner_specs,
-            *keyword_owner_specs,
-        )
-    )
-
-
-COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS = (
-    _build_compiled_pattern_module_compile_standard_benchmark_definitions()
-)
-
-
 def anchored_workload_case_ids(
     manifest_path: pathlib.Path,
     *,
