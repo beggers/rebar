@@ -2618,6 +2618,8 @@ def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_packa
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+                    "_compiled_pattern_wrong_text_model_specs",
+                    "_compiled_pattern_wrong_text_model_source_workloads",
                     "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
@@ -2630,7 +2632,7 @@ def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_packa
                     "_compiled_pattern_module_helper_keyword_contract_spec",
                 }
             ),
-            frozenset(),
+            frozenset({"_assert_wrong_text_model_payload_round_trip"}),
             id="manifest-validation",
         ),
         pytest.param(
@@ -2743,6 +2745,40 @@ def test_source_tree_owner_defines_compiled_pattern_module_compile_surface_local
         and isinstance(node.value, ast.Name)
         and node.value.id == "benchmark_test_support"
         and node.attr in owner_assignment_names
+    } == set()
+
+
+def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally(
+) -> None:
+    owner_definition_names = {
+        "_compiled_pattern_wrong_text_model_specs",
+        "_compiled_pattern_wrong_text_model_source_workloads",
+    }
+    module_ast = benchmark_test_support._parsed_module_ast(support)
+    local_definition_names, local_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            support
+        )
+    )
+
+    assert owner_definition_names.issubset(local_definition_names)
+    assert owner_definition_names.isdisjoint(local_assignment_names)
+
+    for definition_name in owner_definition_names:
+        definition = next(
+            node
+            for node in benchmark_test_support._parsed_module_ast(support).body
+            if isinstance(node, ast.FunctionDef) and node.name == definition_name
+        )
+        assert isinstance(definition, ast.FunctionDef)
+
+    assert {
+        node.attr
+        for node in ast.walk(module_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == "benchmark_test_support"
+        and node.attr in owner_definition_names
     } == set()
 
 

@@ -408,6 +408,48 @@ def compiled_pattern_module_helper_keyword_contract_builder_spec(
     )
 
 
+def _compiled_pattern_wrong_text_model_specs() -> tuple[dict[str, object], ...]:
+    return (
+        {
+            "case_id": "compiled_pattern_module_helper_wrong_text_model",
+            "manifest_path": "collection_replacement_boundary.py",
+            "include_workload": (
+                benchmark_test_support._is_collection_replacement_wrong_text_model_workload
+            ),
+            "contract_manifest_id": "collection-replacement-boundary",
+            "contract_filename": (
+                "python_benchmark_compiled_pattern_collection_replacement_wrong_text_model_contract.py"
+            ),
+            "expected_source_workload_ids": (
+                benchmark_test_support._COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+            ),
+        },
+        {
+            "case_id": "compiled_pattern_module_boundary_wrong_text_model",
+            "manifest_path": "module_boundary.py",
+            "include_workload": (
+                benchmark_test_support._is_module_workflow_compiled_pattern_wrong_text_model_workload
+            ),
+            "contract_manifest_id": "module-boundary",
+            "contract_filename": (
+                "python_benchmark_compiled_pattern_module_boundary_wrong_text_model_contract.py"
+            ),
+            "expected_source_workload_ids": (
+                benchmark_test_support._COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
+            ),
+        },
+    )
+
+
+def _compiled_pattern_wrong_text_model_source_workloads(
+    spec: dict[str, object],
+) -> tuple[Workload, ...]:
+    return benchmark_test_support.selected_manifest_workloads(
+        spec["manifest_path"],
+        include_workload=spec["include_workload"],
+    )
+
+
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS = frozenset(
     {
         "manifest_id",
@@ -6265,12 +6307,6 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS = tupl
 )
 _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call = (
     benchmark_test_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call
-)
-_compiled_pattern_wrong_text_model_specs = (
-    benchmark_test_support._compiled_pattern_wrong_text_model_specs
-)
-_compiled_pattern_wrong_text_model_source_workloads = (
-    benchmark_test_support._compiled_pattern_wrong_text_model_source_workloads
 )
 compiled_pattern_contract_expected_build_calls = (
     benchmark_test_support.compiled_pattern_contract_expected_build_calls

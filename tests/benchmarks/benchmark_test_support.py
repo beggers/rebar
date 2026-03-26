@@ -2607,44 +2607,6 @@ def _is_module_workflow_compiled_pattern_verbose_bytes_success_workload(
     )
 
 
-def _compiled_pattern_wrong_text_model_specs() -> tuple[dict[str, object], ...]:
-    return (
-        {
-            "case_id": "compiled_pattern_module_helper_wrong_text_model",
-            "manifest_path": "collection_replacement_boundary.py",
-            "include_workload": _is_collection_replacement_wrong_text_model_workload,
-            "contract_manifest_id": "collection-replacement-boundary",
-            "contract_filename": (
-                "python_benchmark_compiled_pattern_collection_replacement_wrong_text_model_contract.py"
-            ),
-            "expected_source_workload_ids": (
-                _COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
-            ),
-        },
-        {
-            "case_id": "compiled_pattern_module_boundary_wrong_text_model",
-            "manifest_path": "module_boundary.py",
-            "include_workload": _is_module_workflow_compiled_pattern_wrong_text_model_workload,
-            "contract_manifest_id": "module-boundary",
-            "contract_filename": (
-                "python_benchmark_compiled_pattern_module_boundary_wrong_text_model_contract.py"
-            ),
-            "expected_source_workload_ids": (
-                _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
-            ),
-        },
-    )
-
-
-def _compiled_pattern_wrong_text_model_source_workloads(
-    spec: dict[str, object],
-) -> tuple[Workload, ...]:
-    return selected_manifest_workloads(
-        spec["manifest_path"],
-        include_workload=spec["include_workload"],
-    )
-
-
 def _assert_wrong_text_model_payload_round_trip(
     source_workload: Workload,
     payload: dict[str, object],

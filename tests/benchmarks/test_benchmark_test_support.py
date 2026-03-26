@@ -2228,8 +2228,6 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     assert {
         "_compiled_pattern_module_helper_route",
         "_run_cpython_compiled_pattern_module_helper_workload",
-        "_compiled_pattern_wrong_text_model_specs",
-        "_compiled_pattern_wrong_text_model_source_workloads",
         "_assert_wrong_text_model_payload_round_trip",
         "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
         "_module_workflow_compiled_pattern_correctness_case_signature",
@@ -2252,6 +2250,10 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_VERBOSE_REGRESSION_FLAGS",
         "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
     }.issubset(assignment_names)
+    assert {
+        "_compiled_pattern_wrong_text_model_specs",
+        "_compiled_pattern_wrong_text_model_source_workloads",
+    }.isdisjoint(definition_names | assignment_names)
     assert {
         "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
