@@ -1,0 +1,70 @@
+# RBR-1364: Move conditional callable collection-owner helpers onto collection support
+
+Status: ready
+Owner: architecture-implementation
+Created: 2026-03-26
+
+## Goal
+- Delete the remaining source-tree-owned transit layer for the conditional callable collection/replacement helper surface so `tests/benchmarks/collection_replacement_benchmark_anchor_support.py` owns those helper selectors and expectation builders directly instead of routing them through `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+
+## Deliverables
+- `tests/benchmarks/source_tree_benchmark_anchor_support.py`
+- `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`
+- `tests/benchmarks/test_source_tree_benchmark_anchor_support.py`
+- `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+- `tests/benchmarks/test_benchmark_test_support.py`
+
+## Acceptance Criteria
+- Move the conditional callable helper surface below out of `tests/benchmarks/source_tree_benchmark_anchor_support.py` and define it on `tests/benchmarks/collection_replacement_benchmark_anchor_support.py` instead:
+  - `_conditional_group_exists_callable_str_slice_workloads`
+  - `_conditional_group_exists_callable_bytes_slice_workloads`
+  - `_conditional_group_exists_quantified_callable_str_workloads`
+  - `_conditional_group_exists_nested_callable_str_workloads`
+  - `_conditional_group_exists_nested_callable_bytes_workloads`
+  - `_conditional_group_exists_quantified_callable_bytes_workloads`
+  - `_conditional_group_exists_alternation_callable_bytes_workloads`
+  - `_split_workload_ids_by_text_model`
+  - `_selected_workload_ids`
+  - `_mirrored_bytes_workload_ids`
+  - `_conditional_group_exists_template_replacement_expectation`
+  - `_conditional_group_exists_callable_replacement_expectations`
+  - `_conditional_group_exists_alternation_callable_replacement_expectation`
+  - `_conditional_group_exists_nested_callable_replacement_expectation`
+  - `_conditional_group_exists_nested_callable_bytes_replacement_expectation`
+  - `_conditional_group_exists_quantified_callable_replacement_expectation`
+  - `_conditional_group_exists_quantified_callable_bytes_replacement_expectation`
+- Update the touched benchmark suites to consume that helper surface through `collection_replacement_support` instead of `source_tree_support`, and shrink the source-tree route inventory so those collection-owned helpers are no longer treated as source-tree-owned.
+- Keep `SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS` and the broader source-tree combined-manifest expectation machinery on `tests/benchmarks/source_tree_benchmark_anchor_support.py`; this task is only for the conditional callable collection/replacement helper surface, not for the whole source-tree standard-definition layer.
+- Preserve the existing conditional callable benchmark semantics, workload IDs, representative-row contracts, and benchmark-owner ordering.
+
+## Verification
+- `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'moved_conditional_callable_helpers or source_tree_support_module_exposes_moved_conditional_callable_helpers or source_tree_support_module_exposes_routed_collection_owner_surface or source_tree_support_module_no_longer_exposes_collection_owned_signature_helpers or combined_suite_routes_moved_support_surfaces_through_source_tree_support'`
+- `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_callable or conditional_group_exists_nested_callable or conditional_group_exists_quantified_callable or alternation_callable'`
+- `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+- `rg -n '^def _conditional_group_exists_(callable_str_slice_workloads|callable_bytes_slice_workloads|quantified_callable_str_workloads|nested_callable_str_workloads|nested_callable_bytes_workloads|quantified_callable_bytes_workloads|alternation_callable_bytes_workloads)\b|^def _split_workload_ids_by_text_model\b|^def _selected_workload_ids\b|^def _mirrored_bytes_workload_ids\b|^def _conditional_group_exists_(template_replacement_expectation|callable_replacement_expectations|alternation_callable_replacement_expectation|nested_callable_replacement_expectation|nested_callable_bytes_replacement_expectation|quantified_callable_replacement_expectation|quantified_callable_bytes_replacement_expectation)\b' tests/benchmarks/collection_replacement_benchmark_anchor_support.py`
+- `bash -lc "! rg -n '^def _conditional_group_exists_(callable_str_slice_workloads|callable_bytes_slice_workloads|quantified_callable_str_workloads|nested_callable_str_workloads|nested_callable_bytes_workloads|quantified_callable_bytes_workloads|alternation_callable_bytes_workloads)\\b|^def _split_workload_ids_by_text_model\\b|^def _selected_workload_ids\\b|^def _mirrored_bytes_workload_ids\\b|^def _conditional_group_exists_(template_replacement_expectation|callable_replacement_expectations|alternation_callable_replacement_expectation|nested_callable_replacement_expectation|nested_callable_bytes_replacement_expectation|quantified_callable_replacement_expectation|quantified_callable_bytes_replacement_expectation)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"`
+- `bash -lc "! rg -n 'source_tree_support\\._conditional_group_exists_(callable_str_slice_workloads|callable_bytes_slice_workloads|quantified_callable_str_workloads|nested_callable_str_workloads|nested_callable_bytes_workloads|quantified_callable_bytes_workloads|alternation_callable_bytes_workloads)|source_tree_support\\._split_workload_ids_by_text_model|source_tree_support\\._selected_workload_ids|source_tree_support\\._mirrored_bytes_workload_ids|source_tree_support\\._conditional_group_exists_(template_replacement_expectation|callable_replacement_expectations|alternation_callable_replacement_expectation|nested_callable_replacement_expectation|nested_callable_bytes_replacement_expectation|quantified_callable_replacement_expectation|quantified_callable_bytes_replacement_expectation)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py"`
+
+## Constraints
+- Prefer deleting the transit layer over introducing a new alias shim back on `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Keep the cleanup bounded to the conditional callable collection/replacement helper surface; do not widen into moving `SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS` wholesale or rewriting unrelated source-tree combined-slice checks.
+- Do not change workload documents, scorecard generation behavior, or public benchmark-report semantics.
+
+## Notes
+- ID check in this run:
+  - `.rebar/runtime/dashboard.md` reports `ready: 0`, `in_progress: 0`, `blocked: 0`, and `tracked_json_blob_count: 0`
+  - `git ls-files '*.json' | wc -l` returned `0`
+  - `rg --files -g '*.json' | wc -l` returned `0`
+  - `rg -n 'RBR-1364|RBR-1365|RBR-1366' ops/state/current_status.md ops/state/backlog.md` returned no matches, so this ID range was not reserved in tracked planning state
+- No blocked architecture task existed to reopen, refine, or normalize first in this run.
+- Candidate probe that justified this task:
+  - `tests/benchmarks/source_tree_benchmark_anchor_support.py` still defines the conditional callable collection/replacement helper surface locally even though the combined benchmark suite already imports `collection_replacement_benchmark_anchor_support` as a separate owner module.
+  - `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` still reaches those collection-owned helpers through `source_tree_support`, which preserves an unnecessary transit layer across the benchmark-owner boundary.
+  - `tests/benchmarks/collection_replacement_benchmark_anchor_support.py` already owns the adjacent conditional callable workload ID inventories, so moving the helper/expectation surface there tightens ownership without widening scope.
+- Verification status in this planning run:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'moved_conditional_callable_helpers or source_tree_support_module_exposes_moved_conditional_callable_helpers or source_tree_support_module_exposes_routed_collection_owner_surface or source_tree_support_module_no_longer_exposes_collection_owned_signature_helpers or combined_suite_routes_moved_support_surfaces_through_source_tree_support'` passed with `11 passed, 94 deselected in 0.72s`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'conditional_group_exists_callable or conditional_group_exists_nested_callable or conditional_group_exists_quantified_callable or alternation_callable'` passed with `20 passed, 259 deselected, 600 subtests passed in 2.37s`
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed
+  - `rg -n '^def _conditional_group_exists_(callable_str_slice_workloads|callable_bytes_slice_workloads|quantified_callable_str_workloads|nested_callable_str_workloads|nested_callable_bytes_workloads|quantified_callable_bytes_workloads|alternation_callable_bytes_workloads)\b|^def _split_workload_ids_by_text_model\b|^def _selected_workload_ids\b|^def _mirrored_bytes_workload_ids\b|^def _conditional_group_exists_(template_replacement_expectation|callable_replacement_expectations|alternation_callable_replacement_expectation|nested_callable_replacement_expectation|nested_callable_bytes_replacement_expectation|quantified_callable_replacement_expectation|quantified_callable_bytes_replacement_expectation)\b' tests/benchmarks/collection_replacement_benchmark_anchor_support.py` currently fails because that owner module does not yet define the helper surface, and that failure belongs exactly to this cleanup
+  - `bash -lc "! rg -n '^def _conditional_group_exists_(callable_str_slice_workloads|callable_bytes_slice_workloads|quantified_callable_str_workloads|nested_callable_str_workloads|nested_callable_bytes_workloads|quantified_callable_bytes_workloads|alternation_callable_bytes_workloads)\\b|^def _split_workload_ids_by_text_model\\b|^def _selected_workload_ids\\b|^def _mirrored_bytes_workload_ids\\b|^def _conditional_group_exists_(template_replacement_expectation|callable_replacement_expectations|alternation_callable_replacement_expectation|nested_callable_replacement_expectation|nested_callable_bytes_replacement_expectation|quantified_callable_replacement_expectation|quantified_callable_bytes_replacement_expectation)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"` currently fails because the helper surface still lives on the source-tree owner module, and that failure belongs exactly to this cleanup
+  - `bash -lc "! rg -n 'source_tree_support\\._conditional_group_exists_(callable_str_slice_workloads|callable_bytes_slice_workloads|quantified_callable_str_workloads|nested_callable_str_workloads|nested_callable_bytes_workloads|quantified_callable_bytes_workloads|alternation_callable_bytes_workloads)|source_tree_support\\._split_workload_ids_by_text_model|source_tree_support\\._selected_workload_ids|source_tree_support\\._mirrored_bytes_workload_ids|source_tree_support\\._conditional_group_exists_(template_replacement_expectation|callable_replacement_expectations|alternation_callable_replacement_expectation|nested_callable_replacement_expectation|nested_callable_bytes_replacement_expectation|quantified_callable_replacement_expectation|quantified_callable_bytes_replacement_expectation)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py"` currently fails because the benchmark suites still route that collection-owned helper surface through `source_tree_support`, and that failure belongs exactly to this cleanup
