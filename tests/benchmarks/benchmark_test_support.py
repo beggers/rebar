@@ -3384,27 +3384,6 @@ def _source_tree_benchmark_anchor_support_module() -> Any:
     )
 
 
-def _source_tree_compiled_pattern_wrong_text_model_include_workload(
-    workload: Any,
-) -> bool:
-    return _source_tree_benchmark_anchor_support_module(
-    )._is_module_workflow_compiled_pattern_wrong_text_model_workload(workload)
-
-
-def _source_tree_compiled_pattern_wrong_text_model_correctness_case_signature(
-    case: Any,
-) -> tuple[Any, ...] | None:
-    return _source_tree_benchmark_anchor_support_module(
-    )._module_workflow_compiled_pattern_correctness_case_signature(case)
-
-
-def _source_tree_compiled_pattern_wrong_text_model_workload_signature(
-    workload: Any,
-) -> tuple[Any, ...]:
-    return _source_tree_benchmark_anchor_support_module(
-    )._module_workflow_compiled_pattern_workload_signature(workload)
-
-
 def _is_collection_replacement_compiled_pattern_success_workload(
     workload: Any,
 ) -> bool:
@@ -3732,11 +3711,21 @@ COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
                 ),
             },
         ),
-        include_workload=_source_tree_compiled_pattern_wrong_text_model_include_workload,
-        correctness_case_signature=(
-            _source_tree_compiled_pattern_wrong_text_model_correctness_case_signature
+        include_workload=(
+            lambda workload: _source_tree_benchmark_anchor_support_module()._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+                workload
+            )
         ),
-        workload_signature=_source_tree_compiled_pattern_wrong_text_model_workload_signature,
+        correctness_case_signature=(
+            lambda case: _source_tree_benchmark_anchor_support_module()._module_workflow_compiled_pattern_correctness_case_signature(
+                case
+            )
+        ),
+        workload_signature=(
+            lambda workload: _source_tree_benchmark_anchor_support_module()._module_workflow_compiled_pattern_workload_signature(
+                workload
+            )
+        ),
     ),
 )
 
