@@ -5256,6 +5256,56 @@ def test_collection_replacement_pattern_wrong_text_model_standard_definition_sta
     )
 
 
+def test_collection_replacement_standard_definitions_are_owner_owned_in_exact_order(
+) -> None:
+    definitions = support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS
+    definition_names = tuple(definition.name for definition in definitions)
+
+    assert isinstance(definitions, tuple)
+    assert definition_names == (
+        "collection-replacement-module-positional-indexlike",
+        "collection-replacement-keyword",
+        "collection-replacement-compiled-pattern-literal-success",
+        "collection-replacement-compiled-pattern-wrong-text-model",
+        "pattern-helper-collection-replacement-wrong-text-model",
+        "collection-replacement-pattern-findall-bounded",
+        "collection-replacement-pattern-finditer-bounded",
+        "collection-replacement-pattern-split",
+        "collection-replacement-module-literal-replacement",
+        "collection-replacement-pattern-literal-replacement",
+        "collection-replacement-grouped-callable-replacement",
+    )
+
+
+def test_collection_replacement_standard_definitions_are_reused_by_standard_inventory(
+) -> None:
+    owner_definitions = support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS
+    owner_definition_names = tuple(definition.name for definition in owner_definitions)
+    standard_definitions_by_name = {
+        definition.name: definition
+        for definition in (
+            *benchmark_test_support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
+            *collection_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
+            *benchmark_test_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
+            *support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+            *support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
+            *support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
+            *support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
+        )
+        if definition.name in owner_definition_names
+    }
+
+    assert tuple(standard_definitions_by_name) == owner_definition_names
+    assert tuple(
+        standard_definitions_by_name[definition_name]
+        for definition_name in owner_definition_names
+    ) == owner_definitions
+    assert all(
+        standard_definitions_by_name[definition.name] is definition
+        for definition in owner_definitions
+    )
+
+
 def test_pattern_boundary_standard_definitions_are_owner_owned_in_exact_order() -> None:
     definitions = support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
     definition_names = tuple(definition.name for definition in definitions)
