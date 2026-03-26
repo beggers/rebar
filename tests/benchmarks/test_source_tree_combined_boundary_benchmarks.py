@@ -721,7 +721,560 @@ COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
 
 @cache
 def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
-    return benchmark_test_support._build_source_tree_standard_anchor_contract_definitions()
+    return (
+        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+            name="module-workflow-compiled-pattern-wrong-text-model",
+            manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+                benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+                {
+                    "module-search-on-bytes-string-warm-str-compiled-pattern": (
+                        "workflow-module-search-str-compiled-pattern-on-bytes-string",
+                    ),
+                    "module-match-on-str-string-purged-bytes-compiled-pattern": (
+                        "workflow-module-match-bytes-compiled-pattern-on-str-string",
+                    ),
+                    "module-fullmatch-on-bytes-string-warm-str-compiled-pattern": (
+                        "workflow-module-fullmatch-str-compiled-pattern-on-bytes-string",
+                    ),
+                },
+            ),
+            include_workload=(
+                benchmark_test_support._is_module_workflow_compiled_pattern_wrong_text_model_workload
+            ),
+            correctness_case_signature=(
+                benchmark_test_support._module_workflow_compiled_pattern_correctness_case_signature
+            ),
+            workload_signature=(
+                benchmark_test_support._module_workflow_compiled_pattern_workload_signature
+            ),
+        ),
+        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+            name="optional-group-conditional",
+            manifest_paths=(benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,),
+            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+                benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,
+                {
+                    benchmark_test_support._OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID: (
+                        "optional-group-conditional-module-search-present-str",
+                    ),
+                },
+            ),
+            include_workload=benchmark_test_support._is_optional_group_conditional_workload,
+            correctness_case_signature=benchmark_test_support._optional_group_correctness_case_signature,
+            workload_signature=benchmark_test_support._optional_group_workload_signature,
+            run_callback_result_parity=True,
+        ),
+        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+            name="nested-group",
+            manifest_paths=(benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,),
+            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+                benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,
+                {
+                    "module-compile-nested-group-cold-str": (
+                        "nested-group-compile-metadata-str",
+                    ),
+                    "module-search-nested-group-warm-str": (
+                        "nested-group-module-search-str",
+                    ),
+                    "pattern-fullmatch-nested-group-purged-str": (
+                        "nested-group-pattern-fullmatch-str",
+                    ),
+                    "module-compile-named-nested-group-warm-str": (
+                        "named-nested-group-compile-metadata-str",
+                    ),
+                    "module-search-named-nested-group-warm-str": (
+                        "named-nested-group-module-search-str",
+                    ),
+                    "pattern-fullmatch-named-nested-group-purged-str": (
+                        "named-nested-group-pattern-fullmatch-str",
+                    ),
+                },
+            ),
+            include_workload=lambda _: True,
+            correctness_case_signature=benchmark_test_support._nested_group_correctness_case_signature,
+            workload_signature=benchmark_test_support._nested_group_workload_signature,
+            run_callback_result_parity=True,
+            expected_excluded_workload_ids=frozenset(
+                {
+                    "module-search-triple-nested-group-cold-gap",
+                    "pattern-fullmatch-named-quantified-nested-group-purged-gap",
+                }
+            ),
+        ),
+        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+            name="exact-repeat",
+            manifest_paths=(benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,),
+            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+                benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,
+                {
+                    "module-compile-numbered-exact-repeat-group-cold-str": (
+                        "exact-repeat-numbered-group-compile-metadata-str",
+                    ),
+                    "module-search-numbered-exact-repeat-group-warm-str": (
+                        "exact-repeat-numbered-group-module-search-str",
+                    ),
+                    "pattern-fullmatch-numbered-exact-repeat-group-purged-str": (
+                        "exact-repeat-numbered-group-pattern-fullmatch-str",
+                    ),
+                    "module-compile-named-exact-repeat-group-warm-str": (
+                        "exact-repeat-named-group-compile-metadata-str",
+                    ),
+                    "module-search-named-exact-repeat-group-warm-str": (
+                        "exact-repeat-named-group-module-search-str",
+                    ),
+                    "pattern-fullmatch-named-exact-repeat-group-purged-str": (
+                        "exact-repeat-named-group-pattern-fullmatch-str",
+                    ),
+                    "module-search-numbered-broader-ranged-repeat-group-cold-gap": (
+                        "broader-range-wider-ranged-repeat-numbered-group-module-search-upper-bound-str",
+                    ),
+                },
+            ),
+            include_workload=benchmark_test_support._is_non_alternation_counted_repeat_workload,
+            correctness_case_signature=benchmark_test_support._counted_repeat_correctness_case_signature,
+            workload_signature=benchmark_test_support._counted_repeat_workload_signature,
+            run_callback_result_parity=True,
+        ),
+        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+            name="ranged-repeat",
+            manifest_paths=(benchmark_test_support.RANGED_REPEAT_MANIFEST_PATH,),
+            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+                benchmark_test_support.RANGED_REPEAT_MANIFEST_PATH,
+                {
+                    "module-compile-numbered-ranged-repeat-group-cold-str": (
+                        "ranged-repeat-numbered-group-compile-metadata-str",
+                    ),
+                    "module-search-numbered-ranged-repeat-group-lower-bound-warm-str": (
+                        "ranged-repeat-numbered-group-module-search-lower-bound-str",
+                    ),
+                    "pattern-fullmatch-numbered-ranged-repeat-group-upper-bound-purged-str": (
+                        "ranged-repeat-numbered-group-pattern-fullmatch-upper-bound-str",
+                    ),
+                    "module-compile-named-ranged-repeat-group-warm-str": (
+                        "ranged-repeat-named-group-compile-metadata-str",
+                    ),
+                    "module-search-named-ranged-repeat-group-upper-bound-warm-str": (
+                        "ranged-repeat-named-group-module-search-upper-bound-str",
+                    ),
+                    "pattern-fullmatch-named-ranged-repeat-group-lower-bound-purged-str": (
+                        "ranged-repeat-named-group-pattern-fullmatch-lower-bound-str",
+                    ),
+                    "module-search-numbered-ranged-repeat-group-wider-range-cold-gap": (
+                        "broader-range-wider-ranged-repeat-numbered-group-module-search-upper-bound-str",
+                    ),
+                },
+            ),
+            include_workload=benchmark_test_support._is_non_alternation_counted_repeat_workload,
+            correctness_case_signature=benchmark_test_support._counted_repeat_correctness_case_signature,
+            workload_signature=benchmark_test_support._counted_repeat_workload_signature,
+            run_callback_result_parity=True,
+        ),
+        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+            name="grouped-alternation",
+            manifest_paths=(benchmark_test_support.GROUPED_ALTERNATION_MANIFEST_PATH,),
+            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+                benchmark_test_support.GROUPED_ALTERNATION_MANIFEST_PATH,
+                {
+                    "module-compile-grouped-alternation-cold-str": (
+                        "grouped-alternation-compile-metadata-str",
+                    ),
+                    "module-search-grouped-alternation-warm-str": (
+                        "grouped-alternation-module-search-str",
+                    ),
+                    "pattern-fullmatch-grouped-alternation-purged-str": (
+                        "grouped-alternation-pattern-fullmatch-str",
+                    ),
+                    "module-compile-named-grouped-alternation-warm-str": (
+                        "named-grouped-alternation-compile-metadata-str",
+                    ),
+                    "module-search-named-grouped-alternation-warm-str": (
+                        "named-grouped-alternation-module-search-str",
+                    ),
+                    "pattern-fullmatch-named-grouped-alternation-purged-str": (
+                        "named-grouped-alternation-pattern-fullmatch-str",
+                    ),
+                    "module-sub-template-nested-grouped-alternation-warm-gap": (
+                        "module-sub-template-nested-group-alternation-numbered-wrapper-str",
+                    ),
+                    "pattern-subn-template-named-nested-grouped-alternation-purged-gap": (
+                        "pattern-subn-template-nested-group-alternation-named-wrapper-first-match-only-str",
+                    ),
+                },
+            ),
+            include_workload=lambda _: True,
+            correctness_case_signature=benchmark_test_support._grouped_alternation_correctness_case_signature,
+            workload_signature=benchmark_test_support._grouped_alternation_workload_signature,
+            run_callback_result_parity=True,
+            expected_legacy_workload_ids=frozenset(
+                {
+                    "module-sub-template-nested-grouped-alternation-warm-gap",
+                    "pattern-subn-template-named-nested-grouped-alternation-purged-gap",
+                }
+            ),
+            callback_anchor_workload_ids=frozenset(
+                {
+                    "module-sub-template-nested-grouped-alternation-warm-gap",
+                    "pattern-subn-template-named-nested-grouped-alternation-purged-gap",
+                }
+            ),
+        ),
+        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+            name="grouped-alternation-replacement",
+            manifest_paths=(
+                benchmark_test_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+            ),
+            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+                benchmark_test_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+                {
+                    "module-sub-template-grouped-alternation-warm-str": (
+                        "module-sub-template-grouped-alternation-str",
+                    ),
+                    "module-subn-template-grouped-alternation-warm-str": (
+                        "module-subn-template-grouped-alternation-str",
+                    ),
+                    "pattern-sub-template-grouped-alternation-purged-str": (
+                        "pattern-sub-template-grouped-alternation-str",
+                    ),
+                    "pattern-subn-template-grouped-alternation-purged-str": (
+                        "pattern-subn-template-grouped-alternation-str",
+                    ),
+                    "module-sub-template-named-grouped-alternation-warm-str": (
+                        "module-sub-template-named-grouped-alternation-str",
+                    ),
+                    "module-subn-template-named-grouped-alternation-warm-str": (
+                        "module-subn-template-named-grouped-alternation-str",
+                    ),
+                    "pattern-sub-template-named-grouped-alternation-purged-str": (
+                        "pattern-sub-template-named-grouped-alternation-str",
+                    ),
+                    "pattern-subn-template-named-grouped-alternation-purged-str": (
+                        "pattern-subn-template-named-grouped-alternation-str",
+                    ),
+                    "module-sub-template-nested-grouped-alternation-cold-gap": (
+                        "module-sub-template-nested-group-alternation-numbered-outer-str",
+                    ),
+                    "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap": (
+                        "pattern-subn-template-nested-group-alternation-named-outer-first-match-only-str",
+                    ),
+                },
+            ),
+            include_workload=lambda _: True,
+            correctness_case_signature=(
+                benchmark_test_support._grouped_alternation_replacement_correctness_case_signature
+            ),
+            workload_signature=benchmark_test_support._grouped_alternation_workload_signature,
+            run_callback_result_parity=True,
+            expected_legacy_workload_ids=frozenset(
+                {
+                    "module-sub-template-nested-grouped-alternation-cold-gap",
+                    "pattern-subn-template-named-nested-grouped-alternation-replacement-purged-gap",
+                }
+            ),
+        ),
+        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+            name="nested-group-replacement",
+            manifest_paths=(benchmark_test_support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,),
+            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+                benchmark_test_support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
+                {
+                    "module-sub-template-nested-group-numbered-warm-str": (
+                        "module-sub-template-nested-group-numbered-str",
+                    ),
+                    "module-subn-template-nested-group-numbered-warm-str": (
+                        "module-subn-template-nested-group-numbered-str",
+                    ),
+                    "pattern-sub-template-nested-group-numbered-purged-str": (
+                        "pattern-sub-template-nested-group-numbered-str",
+                    ),
+                    "pattern-subn-template-nested-group-numbered-purged-str": (
+                        "pattern-subn-template-nested-group-numbered-str",
+                    ),
+                    "module-sub-template-nested-group-named-warm-str": (
+                        "module-sub-template-nested-group-named-str",
+                    ),
+                    "module-subn-template-nested-group-named-warm-str": (
+                        "module-subn-template-nested-group-named-str",
+                    ),
+                    "pattern-sub-template-nested-group-named-purged-str": (
+                        "pattern-sub-template-nested-group-named-str",
+                    ),
+                    "pattern-subn-template-nested-group-named-purged-str": (
+                        "pattern-subn-template-nested-group-named-str",
+                    ),
+                    "module-sub-template-numbered-quantified-nested-group-replacement-lower-bound-warm-str": (
+                        "module-sub-template-quantified-nested-group-numbered-lower-bound-str",
+                    ),
+                    "module-subn-template-numbered-quantified-nested-group-replacement-first-match-only-warm-str": (
+                        "module-subn-template-quantified-nested-group-numbered-first-match-only-str",
+                    ),
+                    "pattern-sub-template-named-quantified-nested-group-replacement-repeated-outer-purged-str": (
+                        "pattern-sub-template-quantified-nested-group-named-repeated-outer-capture-str",
+                    ),
+                    "pattern-subn-template-named-quantified-nested-group-replacement-purged-gap": (
+                        "pattern-subn-template-quantified-nested-group-named-first-match-only-str",
+                    ),
+                    "module-sub-template-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str": (
+                        "module-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+                    ),
+                    "module-subn-template-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str": (
+                        "module-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
+                    ),
+                    "pattern-sub-template-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-all-c-purged-str": (
+                        "pattern-sub-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-upper-bound-c-branch-str",
+                    ),
+                    "pattern-subn-template-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-c-branch-first-match-only-purged-str": (
+                        "pattern-subn-template-nested-broader-range-wider-ranged-repeat-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+                    ),
+                    "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-str": (
+                        "module-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+                    ),
+                    "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-str": (
+                        "module-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
+                    ),
+                    "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-lower-bound-c-branch-purged-str": (
+                        "pattern-sub-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
+                    ),
+                    "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-c-branch-first-match-only-purged-str": (
+                        "pattern-subn-template-nested-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+                    ),
+                    "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-b-branch-warm-str": (
+                        "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-lower-bound-b-branch-str",
+                    ),
+                    "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-first-match-only-b-branch-warm-str": (
+                        "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-numbered-first-match-only-b-branch-str",
+                    ),
+                    "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-c-branch-purged-str": (
+                        "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-lower-bound-c-branch-str",
+                    ),
+                    "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-c-branch-first-match-only-purged-str": (
+                        "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-named-c-branch-first-match-only-str",
+                    ),
+                    "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-str": (
+                        "module-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-lower-bound-b-branch-str",
+                    ),
+                    "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-first-match-only-b-branch-warm-str": (
+                        "module-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-numbered-first-match-only-b-branch-str",
+                    ),
+                    "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-purged-str": (
+                        "pattern-sub-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-lower-bound-c-branch-str",
+                    ),
+                    "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-c-branch-first-match-only-purged-str": (
+                        "pattern-subn-template-nested-broader-range-open-ended-quantified-group-alternation-branch-local-backreference-conditional-named-c-branch-first-match-only-str",
+                    ),
+                },
+            ),
+            include_workload=lambda _: True,
+            correctness_case_signature=(
+                benchmark_test_support._grouped_alternation_replacement_correctness_case_signature
+            ),
+            workload_signature=benchmark_test_support._grouped_alternation_workload_signature,
+            run_callback_result_parity=True,
+            expected_special_unanchored_workload_ids=(
+                "module-sub-template-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
+                "module-subn-template-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-bytes",
+                "pattern-sub-template-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-all-c-purged-bytes",
+                "pattern-subn-template-named-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-upper-bound-c-branch-first-match-only-purged-bytes",
+                "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-b-branch-warm-bytes",
+                "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-first-match-only-b-branch-warm-bytes",
+                "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-lower-bound-c-branch-purged-bytes",
+                "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-c-branch-first-match-only-purged-bytes",
+                "module-sub-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-b-branch-warm-bytes",
+                "module-subn-template-numbered-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-first-match-only-b-branch-warm-bytes",
+                "pattern-sub-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-lower-bound-c-branch-purged-bytes",
+                "pattern-subn-template-named-open-ended-quantified-nested-group-alternation-branch-local-backreference-broader-range-conditional-c-branch-first-match-only-purged-bytes",
+            ),
+            run_special_unanchored_result_parity=True,
+        ),
+        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+            name="open-ended-grouped-alternation",
+            manifest_paths=(benchmark_test_support.OPEN_ENDED_MANIFEST_PATH,),
+            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+                benchmark_test_support.OPEN_ENDED_MANIFEST_PATH,
+                {
+                    "module-compile-numbered-open-ended-group-alternation-cold-str": (
+                        "open-ended-quantified-group-alternation-numbered-compile-metadata-str",
+                    ),
+                    "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-str": (
+                        "open-ended-quantified-group-alternation-numbered-module-search-lower-bound-bc-str",
+                    ),
+                    "pattern-fullmatch-numbered-open-ended-group-alternation-third-repetition-mixed-purged-str": (
+                        "open-ended-quantified-group-alternation-numbered-pattern-fullmatch-third-repetition-mixed-str",
+                    ),
+                    "module-compile-named-open-ended-group-alternation-warm-str": (
+                        "open-ended-quantified-group-alternation-named-compile-metadata-str",
+                    ),
+                    "module-search-named-open-ended-group-alternation-lower-bound-de-warm-str": (
+                        "open-ended-quantified-group-alternation-named-module-search-lower-bound-de-str",
+                    ),
+                    "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-str": (
+                        "open-ended-quantified-group-alternation-named-pattern-fullmatch-fourth-repetition-de-str",
+                    ),
+                    "module-compile-numbered-open-ended-group-alternation-cold-bytes": (
+                        "open-ended-quantified-group-alternation-numbered-compile-metadata-bytes",
+                    ),
+                    "module-compile-named-open-ended-group-alternation-warm-bytes": (
+                        "open-ended-quantified-group-alternation-named-compile-metadata-bytes",
+                    ),
+                    "module-compile-numbered-open-ended-group-conditional-cold-str": (
+                        "open-ended-quantified-group-alternation-conditional-numbered-compile-metadata-str",
+                    ),
+                    "module-compile-numbered-open-ended-group-broader-range-cold-str": (
+                        "broader-range-open-ended-quantified-group-alternation-numbered-compile-metadata-str",
+                    ),
+                    "module-search-numbered-open-ended-group-broader-range-cold-gap": (
+                        "broader-range-open-ended-quantified-group-alternation-numbered-module-search-lower-bound-bc-str",
+                    ),
+                    "pattern-fullmatch-numbered-open-ended-group-broader-range-third-repetition-mixed-purged-str": (
+                        "broader-range-open-ended-quantified-group-alternation-numbered-pattern-fullmatch-third-repetition-mixed-str",
+                    ),
+                    "module-compile-named-open-ended-group-broader-range-warm-str": (
+                        "broader-range-open-ended-quantified-group-alternation-named-compile-metadata-str",
+                    ),
+                    "module-search-named-open-ended-group-broader-range-lower-bound-de-warm-str": (
+                        "broader-range-open-ended-quantified-group-alternation-named-module-search-lower-bound-de-str",
+                    ),
+                    "pattern-fullmatch-named-open-ended-group-broader-range-third-repetition-de-purged-str": (
+                        "broader-range-open-ended-quantified-group-alternation-named-pattern-fullmatch-fourth-repetition-de-str",
+                    ),
+                    "module-compile-numbered-open-ended-group-broader-range-cold-bytes": (
+                        "broader-range-open-ended-quantified-group-alternation-numbered-compile-metadata-bytes",
+                    ),
+                    "module-compile-named-open-ended-group-broader-range-warm-bytes": (
+                        "broader-range-open-ended-quantified-group-alternation-named-compile-metadata-bytes",
+                    ),
+                    "module-compile-numbered-open-ended-group-broader-range-conditional-cold-str": (
+                        "broader-range-open-ended-quantified-group-alternation-conditional-numbered-compile-metadata-str",
+                    ),
+                    "module-search-numbered-open-ended-group-broader-range-conditional-warm-gap": (
+                        "broader-range-open-ended-quantified-group-alternation-conditional-numbered-module-search-lower-bound-bc-workflow-str",
+                    ),
+                    "pattern-fullmatch-numbered-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-str": (
+                        "broader-range-open-ended-quantified-group-alternation-conditional-numbered-pattern-fullmatch-third-repetition-mixed-workflow-str",
+                    ),
+                    "module-compile-named-open-ended-group-broader-range-conditional-warm-str": (
+                        "broader-range-open-ended-quantified-group-alternation-conditional-named-compile-metadata-str",
+                    ),
+                    "module-search-named-open-ended-group-broader-range-conditional-fourth-repetition-de-warm-str": (
+                        "broader-range-open-ended-quantified-group-alternation-conditional-named-module-search-fourth-repetition-de-workflow-str",
+                    ),
+                    "pattern-fullmatch-named-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-str": (
+                        "broader-range-open-ended-quantified-group-alternation-conditional-named-pattern-fullmatch-third-repetition-mixed-workflow-str",
+                    ),
+                    "module-compile-numbered-open-ended-group-broader-range-conditional-cold-bytes": (
+                        "broader-range-open-ended-quantified-group-alternation-conditional-numbered-compile-metadata-bytes",
+                    ),
+                    "module-compile-named-open-ended-group-broader-range-conditional-warm-bytes": (
+                        "broader-range-open-ended-quantified-group-alternation-conditional-named-compile-metadata-bytes",
+                    ),
+                    "module-compile-numbered-open-ended-group-broader-range-backtracking-heavy-cold-str": (
+                        "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-str",
+                    ),
+                    "module-search-numbered-open-ended-group-broader-range-backtracking-heavy-lower-bound-b-branch-warm-str": (
+                        "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-short-branch-str",
+                    ),
+                    "pattern-fullmatch-numbered-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-purged-str": (
+                        "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-long-then-short-str",
+                    ),
+                    "module-compile-named-open-ended-group-broader-range-backtracking-heavy-warm-str": (
+                        "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-compile-metadata-str",
+                    ),
+                    "module-search-named-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-warm-str": (
+                        "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-module-search-second-repetition-long-then-short-str",
+                    ),
+                    "module-compile-numbered-open-ended-group-broader-range-backtracking-heavy-cold-bytes": (
+                        "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-bytes",
+                    ),
+                    "module-compile-named-open-ended-group-broader-range-backtracking-heavy-warm-bytes": (
+                        "broader-range-open-ended-quantified-group-alternation-backtracking-heavy-named-compile-metadata-bytes",
+                    ),
+                    "pattern-fullmatch-numbered-open-ended-group-conditional-third-repetition-mixed-purged-str": (
+                        "open-ended-quantified-group-alternation-conditional-numbered-pattern-fullmatch-third-repetition-mixed-workflow-str",
+                    ),
+                    "module-compile-named-open-ended-group-conditional-warm-str": (
+                        "open-ended-quantified-group-alternation-conditional-named-compile-metadata-str",
+                    ),
+                    "module-search-named-open-ended-group-conditional-fourth-repetition-de-warm-str": (
+                        "open-ended-quantified-group-alternation-conditional-named-module-search-fourth-repetition-de-workflow-str",
+                    ),
+                    "pattern-fullmatch-named-open-ended-group-conditional-third-repetition-mixed-purged-str": (
+                        "open-ended-quantified-group-alternation-conditional-named-pattern-fullmatch-third-repetition-mixed-workflow-str",
+                    ),
+                    "module-compile-numbered-open-ended-group-conditional-cold-bytes": (
+                        "open-ended-quantified-group-alternation-conditional-numbered-compile-metadata-bytes",
+                    ),
+                    "module-compile-named-open-ended-group-conditional-warm-bytes": (
+                        "open-ended-quantified-group-alternation-conditional-named-compile-metadata-bytes",
+                    ),
+                    "module-compile-numbered-open-ended-group-backtracking-heavy-cold-str": (
+                        "open-ended-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-str",
+                    ),
+                    "module-search-numbered-open-ended-group-backtracking-heavy-lower-bound-b-branch-warm-str": (
+                        "open-ended-quantified-group-alternation-backtracking-heavy-numbered-module-search-lower-bound-short-branch-str",
+                    ),
+                    "pattern-fullmatch-numbered-open-ended-group-backtracking-heavy-second-repetition-b-then-bc-purged-str": (
+                        "open-ended-quantified-group-alternation-backtracking-heavy-numbered-pattern-fullmatch-second-repetition-short-then-long-str",
+                    ),
+                    "module-compile-named-open-ended-group-backtracking-heavy-warm-str": (
+                        "open-ended-quantified-group-alternation-backtracking-heavy-named-compile-metadata-str",
+                    ),
+                    "module-search-named-open-ended-group-backtracking-heavy-third-repetition-mixed-warm-str": (
+                        "open-ended-quantified-group-alternation-backtracking-heavy-named-module-search-third-repetition-mixed-str",
+                    ),
+                    "pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-gap": (
+                        "open-ended-quantified-group-alternation-backtracking-heavy-named-pattern-fullmatch-fourth-repetition-short-only-str",
+                    ),
+                    "module-compile-numbered-open-ended-group-backtracking-heavy-cold-bytes": (
+                        "open-ended-quantified-group-alternation-backtracking-heavy-numbered-compile-metadata-bytes",
+                    ),
+                    "module-compile-named-open-ended-group-backtracking-heavy-warm-bytes": (
+                        "open-ended-quantified-group-alternation-backtracking-heavy-named-compile-metadata-bytes",
+                    ),
+                },
+            ),
+            include_workload=lambda _: True,
+            correctness_case_signature=benchmark_test_support._counted_repeat_correctness_case_signature,
+            workload_signature=benchmark_test_support._counted_repeat_workload_signature,
+            run_callback_result_parity=True,
+            expected_special_unanchored_workload_ids=(
+                "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-bytes",
+                "pattern-fullmatch-numbered-open-ended-group-alternation-third-repetition-mixed-purged-bytes",
+                "module-search-named-open-ended-group-alternation-lower-bound-de-warm-bytes",
+                "pattern-fullmatch-named-open-ended-group-alternation-fourth-repetition-de-purged-bytes",
+                "module-search-numbered-open-ended-group-broader-range-lower-bound-bc-warm-bytes",
+                "pattern-fullmatch-numbered-open-ended-group-broader-range-third-repetition-mixed-purged-bytes",
+                "module-search-named-open-ended-group-broader-range-lower-bound-de-warm-bytes",
+                "pattern-fullmatch-named-open-ended-group-broader-range-third-repetition-de-purged-bytes",
+                "module-search-numbered-open-ended-group-broader-range-conditional-second-repetition-bc-warm-bytes",
+                "pattern-fullmatch-numbered-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
+                "module-search-named-open-ended-group-broader-range-conditional-fourth-repetition-de-warm-bytes",
+                "pattern-fullmatch-named-open-ended-group-broader-range-conditional-third-repetition-mixed-purged-bytes",
+                "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-str",
+                "module-search-numbered-open-ended-group-broader-range-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+                "pattern-fullmatch-numbered-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-purged-bytes",
+                "module-search-named-open-ended-group-broader-range-backtracking-heavy-second-repetition-bc-then-b-warm-bytes",
+                "pattern-fullmatch-named-open-ended-group-broader-range-backtracking-heavy-purged-bytes",
+                "module-search-numbered-open-ended-group-conditional-warm-gap",
+                "module-search-numbered-open-ended-group-conditional-second-repetition-bc-warm-bytes",
+                "pattern-fullmatch-numbered-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
+                "module-search-named-open-ended-group-conditional-fourth-repetition-de-warm-bytes",
+                "pattern-fullmatch-named-open-ended-group-conditional-third-repetition-mixed-purged-bytes",
+                "module-search-numbered-open-ended-group-backtracking-heavy-lower-bound-b-branch-warm-bytes",
+                "pattern-fullmatch-numbered-open-ended-group-backtracking-heavy-second-repetition-b-then-bc-purged-bytes",
+                "module-search-named-open-ended-group-backtracking-heavy-third-repetition-mixed-warm-bytes",
+                "pattern-fullmatch-named-open-ended-group-backtracking-heavy-purged-bytes",
+            ),
+            direct_parity_supplemental_cases=(
+                *OPEN_ENDED_ALTERNATION_BYTES_CASES,
+                *OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+                *OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+                *BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
+                *BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+                *BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
+            ),
+            run_special_unanchored_result_parity=True,
+        ),
+    )
 
 
 SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS = (

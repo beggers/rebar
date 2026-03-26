@@ -3858,7 +3858,7 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
     )
     assert local_owner_names.issubset(definition_names | assignment_names)
     assert local_owner_names.isdisjoint(support_definition_names | support_assignment_names)
-    assert "_build_source_tree_standard_benchmark_definitions" not in (
+    assert "_build_source_tree_standard_anchor_contract_definitions" not in (
         support_definition_names | support_assignment_names
     )
 
