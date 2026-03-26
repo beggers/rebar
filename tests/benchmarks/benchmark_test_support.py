@@ -1064,16 +1064,17 @@ def _module_alias_names(
     import_name: str,
     dotted_import_name: str,
 ) -> frozenset[str]:
+    module_body = getattr(module_ast, "body", ())
     alias_names = {
         alias.asname or alias.name
-        for node in ast.walk(module_ast)
+        for node in module_body
         if isinstance(node, ast.ImportFrom)
         and node.module == import_from_module
         for alias in node.names
         if alias.name == import_name
     } | {
         alias.asname or alias.name.rsplit(".", 1)[-1]
-        for node in ast.walk(module_ast)
+        for node in module_body
         if isinstance(node, ast.Import)
         for alias in node.names
         if alias.name == dotted_import_name
@@ -1082,7 +1083,7 @@ def _module_alias_names(
     changed = True
     while changed:
         changed = False
-        for node in ast.walk(module_ast):
+        for node in module_body:
             if isinstance(node, ast.Assign):
                 targets = tuple(
                     target.id for target in node.targets if isinstance(target, ast.Name)

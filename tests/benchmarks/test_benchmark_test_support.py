@@ -374,10 +374,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     )
     monkeypatch.setattr(support, "published_cases_by_id", _published_cases_by_id)
     assert anchor_support.benchmark_test_support is support
-    assert (
-        anchor_support.collection_replacement_support
-        is collection_replacement_support
-    )
+    assert not hasattr(anchor_support, "collection_replacement_support")
     monkeypatch.setattr(support, "live_manifest_workloads", _live_manifest_workloads)
 
     support._clear_anchor_support_caches()
@@ -2143,18 +2140,9 @@ def test_source_tree_anchor_support_routes_owner_imports_through_package_modules
         imported_names=frozenset(
             {
                 "benchmark_test_support",
-                "collection_replacement_benchmark_anchor_support",
             }
         ),
-    ) == frozenset(
-        {
-            ("benchmark_test_support", None),
-            (
-                "collection_replacement_benchmark_anchor_support",
-                "collection_replacement_support",
-            ),
-        }
-    )
+    ) == frozenset({("benchmark_test_support", None)})
     assert not any(
         isinstance(node, ast.ImportFrom)
         and node.module
@@ -2855,6 +2843,36 @@ def test_module_alias_names_follow_dotted_import_and_assignment_alias_chains(
     ) == expected_alias_names
 
 
+def test_module_alias_names_ignore_nested_scope_imports_and_assignments() -> None:
+    module_ast = ast.parse(
+        """
+from tests.benchmarks import benchmark_test_support as shared_support
+
+MODULE_ALIAS = shared_support
+
+def helper():
+    import tests.benchmarks.benchmark_test_support as nested_support
+
+    nested_alias = shared_support
+    nested_final = nested_support
+
+class Holder:
+    import tests.benchmarks.benchmark_test_support as class_support
+    CLASS_ALIAS = shared_support
+"""
+    )
+
+    assert support._module_alias_names(
+        module_ast,
+        import_from_module="tests.benchmarks",
+        import_name="benchmark_test_support",
+        dotted_import_name="tests.benchmarks.benchmark_test_support",
+    ) == {
+        "shared_support",
+        "MODULE_ALIAS",
+    }
+
+
 def test_module_attribute_alias_targets_drop_shadowed_top_level_rebindings() -> None:
     module_ast = ast.parse(
         """
@@ -3352,10 +3370,7 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
         getattr(combined_suite, "collection_replacement_support")
         is collection_replacement_support
     )
-    assert (
-        combined_suite.source_tree_support.collection_replacement_support
-        is collection_replacement_support
-    )
+    assert not hasattr(combined_suite.source_tree_support, "collection_replacement_support")
     source_tree_owner_refs = {
         node.attr
         for node in ast.walk(module_ast)
