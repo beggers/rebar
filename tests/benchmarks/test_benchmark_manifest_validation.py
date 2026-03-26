@@ -1046,7 +1046,7 @@ def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preser
         owner_spec.expected_source_workload_ids
     )
     assert all(
-        benchmark_test_support.include_live_compiled_pattern_module_success_workload(
+        source_tree_support.include_live_compiled_pattern_module_success_workload(
             workload
         )
         for workload in source_workloads
@@ -1065,7 +1065,7 @@ def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preser
         payload = workload_to_payload(workload)
         round_tripped = workload_from_payload(payload)
 
-        benchmark_test_support._assert_compiled_pattern_module_success_payload_round_trip(
+        source_tree_support._assert_compiled_pattern_module_success_payload_round_trip(
             source_workload,
             payload,
             round_tripped,

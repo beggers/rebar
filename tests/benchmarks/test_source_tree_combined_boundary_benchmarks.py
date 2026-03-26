@@ -4942,7 +4942,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_success_co
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
 
-    benchmark_test_support._assert_compiled_pattern_module_success_payload_round_trip(
+    source_tree_support._assert_compiled_pattern_module_success_payload_round_trip(
         source_workload,
         payload,
         round_tripped,

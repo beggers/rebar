@@ -2778,10 +2778,6 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_is_module_workflow_compiled_pattern_literal_success_workload",
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
         "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
-        "CompiledPatternModuleSuccessOwnerSpec",
-        "_assert_compiled_pattern_module_success_payload_round_trip",
-        "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
-        "include_live_compiled_pattern_module_success_workload",
     }.issubset(definition_names)
     assert {
         "_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
@@ -3520,11 +3516,7 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
     )
 
     assert {
-        "CompiledPatternModuleSuccessOwnerSpec",
-        "_assert_compiled_pattern_module_success_payload_round_trip",
-        "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
         "_is_collection_replacement_compiled_pattern_success_workload",
-        "include_live_compiled_pattern_module_success_workload",
     }.issubset(definition_names)
     assert {
         "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
@@ -3532,26 +3524,16 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
     }.isdisjoint(assignment_names)
-    assert (
-        support.CompiledPatternModuleSuccessOwnerSpec.source_workloads.__name__
-        == "source_workloads"
+    assert not hasattr(support, "CompiledPatternModuleSuccessOwnerSpec")
+    assert not hasattr(
+        support,
+        "_assert_compiled_pattern_module_success_payload_round_trip",
     )
-    assert (
-        support.CompiledPatternModuleSuccessOwnerSpec.expected_build_calls.__name__
-        == "expected_build_calls"
+    assert not hasattr(
+        support,
+        "_assert_compiled_pattern_success_rows_measured_in_combined_manifest",
     )
-    assert (
-        support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_result.__name__
-        == "expected_callback_result"
-    )
-    assert (
-        support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_call.__name__
-        == "expected_callback_call"
-    )
-    assert (
-        support.CompiledPatternModuleSuccessOwnerSpec.contract_builder_spec.__name__
-        == "contract_builder_spec"
-    )
+    assert not hasattr(support, "include_live_compiled_pattern_module_success_workload")
 
 
 def test_benchmark_test_support_no_longer_owns_compiled_pattern_module_success_owner_specs(
@@ -3576,7 +3558,11 @@ def test_source_tree_support_owns_compiled_pattern_module_success_owner_specs() 
     ).read_text(encoding="utf-8")
 
     assert re.search(
-        r"^(_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC|"
+        r"^(class CompiledPatternModuleSuccessOwnerSpec|"
+        r"def _assert_compiled_pattern_module_success_payload_round_trip|"
+        r"def _assert_compiled_pattern_success_rows_measured_in_combined_manifest|"
+        r"def include_live_compiled_pattern_module_success_workload|"
+        r"_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC|"
         r"_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC|"
         r"_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|"
         r"_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\b",
@@ -3616,15 +3602,20 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
         ),
         (
             "compiled_pattern_module_success_contract_builder_spec",
-            support.CompiledPatternModuleSuccessOwnerSpec,
+            anchor_support.CompiledPatternModuleSuccessOwnerSpec,
         ),
         (
             "compiled_pattern_module_helper_keyword_contract_builder_spec",
             support._CompiledPatternModuleHelperKeywordContractSpec,
         ),
     ):
+        owner_module = (
+            anchor_support
+            if owner_type is anchor_support.CompiledPatternModuleSuccessOwnerSpec
+            else support
+        )
         class_definition = support._module_class_definition(
-            support,
+            owner_module,
             owner_type.__name__,
         )
         class_method_names = {
@@ -3677,7 +3668,7 @@ def test_compiled_pattern_contract_builder_owner_methods_return_live_specs(
     assert built_spec.timing_scope == "module-helper-call"
 
 def test_compiled_pattern_owner_builder_methods_return_shared_specs_directly() -> None:
-    owner_spec = support.CompiledPatternModuleSuccessOwnerSpec(
+    owner_spec = anchor_support.CompiledPatternModuleSuccessOwnerSpec(
         case_id="synthetic-boundary",
         manifest_path=support.MODULE_BOUNDARY_MANIFEST_PATH,
         include_workload_selectors=(),

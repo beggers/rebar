@@ -1192,7 +1192,7 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         ),
         (
             "compiled_pattern_module_success_contract_builder_spec",
-            benchmark_test_support.CompiledPatternModuleSuccessOwnerSpec,
+            support.CompiledPatternModuleSuccessOwnerSpec,
         ),
         (
             "compiled_pattern_module_helper_keyword_contract_builder_spec",
@@ -1261,13 +1261,13 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         collection_support,
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
     )
-    assert not hasattr(
+    assert hasattr(
         support,
         "_assert_compiled_pattern_module_success_payload_round_trip",
     )
     assert (
         "_assert_compiled_pattern_module_success_payload_round_trip"
-        not in local_assignment_names
+        in local_function_names
     )
     assert not hasattr(
         support,
@@ -1278,12 +1278,20 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         not in local_assignment_names
     )
     for constant_name in (
+        "CompiledPatternModuleSuccessOwnerSpec",
         "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
     ):
         assert hasattr(support, constant_name)
+    assert "CompiledPatternModuleSuccessOwnerSpec" in local_function_names
+    for constant_name in (
+        "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
+        "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
+        "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
+        "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
+    ):
         assert constant_name in local_assignment_names
     for constant_name in (
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",

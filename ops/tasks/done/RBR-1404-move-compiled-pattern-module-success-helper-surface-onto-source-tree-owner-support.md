@@ -32,6 +32,17 @@ Created: 2026-03-26
 - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_manifest_validation.py`
 - `bash -lc "! rg -n '^(class CompiledPatternModuleSuccessOwnerSpec|def _assert_compiled_pattern_module_success_payload_round_trip|def _assert_compiled_pattern_success_rows_measured_in_combined_manifest|def include_live_compiled_pattern_module_success_workload)' tests/benchmarks/benchmark_test_support.py"`
 
+## Completion
+- Moved `CompiledPatternModuleSuccessOwnerSpec`, `_assert_compiled_pattern_module_success_payload_round_trip(...)`, `_assert_compiled_pattern_success_rows_measured_in_combined_manifest(...)`, and `include_live_compiled_pattern_module_success_workload(...)` from `tests/benchmarks/benchmark_test_support.py` onto `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Updated the source-tree owner specs to instantiate the local class and updated the benchmark-support, source-tree-support, combined-boundary, and manifest-validation tests to treat the moved surface as source-tree-owned.
+- Verification passed:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_module_success_surface or source_tree_support_owns_compiled_pattern_module_success_owner_specs or compiled_pattern_contract_builder_surface_uses_one_owned_route'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'compiled_pattern_module_success or owner_specs_keep_zero_gap_rows_measured'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_manifest_validation.py -k 'compiled_pattern_module_success'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_success or owner_specs_keep_zero_gap_rows_measured'`
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_manifest_validation.py`
+  - `bash -lc "! rg -n '^(class CompiledPatternModuleSuccessOwnerSpec|def _assert_compiled_pattern_module_success_payload_round_trip|def _assert_compiled_pattern_success_rows_measured_in_combined_manifest|def include_live_compiled_pattern_module_success_workload)' tests/benchmarks/benchmark_test_support.py"`
+
 ## Constraints
 - Prefer moving the existing source-tree-only helper surface onto `tests/benchmarks/source_tree_benchmark_anchor_support.py` over adding another neutral helper module, registry, or wrapper layer.
 - Do not change benchmark workload files, reports, README/status prose, or tracked project-state documents.
