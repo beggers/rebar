@@ -2580,7 +2580,7 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
-    }.isdisjoint(assignment_names)
+    }.issubset(assignment_names)
     assert {"live_compiled_pattern_module_success_surface_ids"}.isdisjoint(
         definition_names | assignment_names
     )
@@ -3110,7 +3110,7 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
-    }.isdisjoint(assignment_names)
+    }.issubset(assignment_names)
     assert {"live_compiled_pattern_module_success_surface_ids"}.isdisjoint(
         definition_names | assignment_names
     )
@@ -3136,7 +3136,7 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
     )
 
 
-def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_success_owner_specs(
+def test_benchmark_test_support_owns_compiled_pattern_module_success_owner_specs(
 ) -> None:
     source = (
         REPO_ROOT / "tests" / "benchmarks" / "benchmark_test_support.py"
@@ -3149,7 +3149,7 @@ def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_suc
         r"_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\b",
         source,
         re.MULTILINE,
-    ) is None
+    ) is not None
 
 
 def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_success_surface_export(
@@ -3231,7 +3231,7 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
     + tuple(
         pytest.param(owner, id=f"module-success-{owner.case_id}")
         for owner in (
-            anchor_support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+            support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
         )
     )
     + (

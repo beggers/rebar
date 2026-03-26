@@ -117,13 +117,6 @@ SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES = (
     "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
 )
 
-SOURCE_TREE_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES = (
-    "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
-    "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
-    "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
-    "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
-)
-
 SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES = frozenset(
     {
         "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
@@ -5536,76 +5529,6 @@ _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
         ),
     )
 )
-_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC = (
-    benchmark_test_support.CompiledPatternModuleSuccessOwnerSpec(
-        case_id="collection-replacement",
-        manifest_path=benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload_selectors=(
-            benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload,
-        ),
-        contract_manifest_id="collection-replacement-boundary",
-        contract_filename=(
-            "python_benchmark_compiled_pattern_collection_replacement_success_contract.py"
-        ),
-        note_surface="collection/replacement",
-        expected_source_workload_ids=(
-            "module-split-literal-warm-str-compiled-pattern",
-            "module-findall-literal-purged-bytes-compiled-pattern",
-            "module-finditer-literal-warm-str-compiled-pattern",
-            "module-sub-literal-warm-str-compiled-pattern",
-            "module-subn-literal-purged-bytes-compiled-pattern",
-        ),
-        preserved_payload_fields=("count", "maxsplit"),
-        preserve_replacement_payload_typing=True,
-    )
-)
-_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC = (
-    benchmark_test_support.CompiledPatternModuleSuccessOwnerSpec(
-        case_id="module-boundary",
-        manifest_path=benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
-        include_workload_selectors=(
-            benchmark_test_support._is_module_workflow_compiled_pattern_literal_success_workload,
-            benchmark_test_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
-            benchmark_test_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
-        ),
-        contract_manifest_id="module-boundary",
-        contract_filename=(
-            "python_benchmark_compiled_pattern_module_boundary_success_contract.py"
-        ),
-        note_surface="module-boundary",
-        expected_source_workload_ids=(
-            "module-search-literal-warm-hit-str-compiled-pattern",
-            "module-match-literal-warm-hit-str-compiled-pattern",
-            "module-fullmatch-literal-purged-hit-bytes-compiled-pattern",
-            "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern",
-            "module-match-bounded-wildcard-warm-hit-str-compiled-pattern",
-            "module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern",
-            "module-search-verbose-regression-warm-hit-bytes-compiled-pattern",
-            "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern",
-        ),
-        preserved_payload_fields=("flags",),
-        preserve_replacement_payload_typing=False,
-    )
-)
-_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS = (
-    _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
-    _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
-)
-SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS = (
-    _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
-    _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
-)
-_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS = (
-    tuple(
-        pytest.param(
-            owner_spec,
-            source_workload,
-            id=f"{owner_spec.case_id}-{source_workload.workload_id}",
-        )
-        for owner_spec in _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
-        for source_workload in owner_spec.source_workloads()
-    )
-)
 _is_module_workflow_compiled_pattern_literal_success_workload = (
     benchmark_test_support._is_module_workflow_compiled_pattern_literal_success_workload
 )
@@ -5907,7 +5830,7 @@ COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
 def live_compiled_pattern_module_success_surface_ids() -> tuple[str, ...]:
     return tuple(
         workload.workload_id
-        for owner_spec in _COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+        for owner_spec in benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
         for workload in benchmark_test_support.selected_manifest_workloads(
             owner_spec.manifest_path,
             include_workload=(

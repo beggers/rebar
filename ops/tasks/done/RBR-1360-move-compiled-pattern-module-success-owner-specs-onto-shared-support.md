@@ -1,6 +1,6 @@
 ## RBR-1360: Move compiled-pattern module-success owner specs onto shared support
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -60,3 +60,18 @@ Created: 2026-03-26
   - `rg -n '^(_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\\b' tests/benchmarks/benchmark_test_support.py` currently fails because the shared benchmark support module does not yet define those four module-success surfaces, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n '^(_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"` currently fails because those four definitions still live on the source-tree owner module, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n 'source_tree_support\\.(_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\\b' tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` currently fails because the benchmark consumer suites still route those shared module-success surfaces through `source_tree_support`, and that failure belongs exactly to this cleanup
+
+## Completion
+- Moved `_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC`, `_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC`, `_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS`, and `_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS` into `tests/benchmarks/benchmark_test_support.py`.
+- Deleted the duplicate source-tree-local module-success owner-spec assignments from `tests/benchmarks/source_tree_benchmark_anchor_support.py`; the remaining source-tree helper now consumes the shared owner specs only for `live_compiled_pattern_module_success_surface_ids()`.
+- Updated `tests/benchmarks/test_benchmark_manifest_validation.py`, `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, `tests/benchmarks/test_source_tree_benchmark_anchor_support.py`, and `tests/benchmarks/test_benchmark_test_support.py` so the four moved names are treated as shared-support owned rather than source-tree-local or source-tree-routed.
+
+## Final Verification
+- `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_manifest_validation.py -k 'test_standard_benchmark_compiled_pattern_module_success_contract_rows_preserve_live_source_selection_and_payload_round_trip_until_helper_invocation'` passed with `2 passed, 62 deselected in 0.15s`
+- `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'test_compiled_pattern_module_helper_owner_specs_keep_zero_gap_rows_measured or test_run_internal_workload_probe_measures_compiled_pattern_module_success_contract_workloads or test_compiled_pattern_module_success_callbacks_precompile_first_argument_before_timing'` passed with `43 passed, 236 deselected in 0.87s`
+- `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_module_success'` passed with `4 passed, 165 deselected in 0.41s`
+- `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'compiled_pattern_module_success or local_owner_surface_names_stay_absent'` passed with `6 passed, 99 deselected in 0.26s`
+- `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
+- `rg -n '^(_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\\b' tests/benchmarks/benchmark_test_support.py` now reports the four moved definitions on the shared support module
+- `bash -lc "! rg -n '^(_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"` passed
+- `bash -lc "! rg -n 'source_tree_support\\.(_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\\b' tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` passed
