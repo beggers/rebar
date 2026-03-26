@@ -17,6 +17,70 @@ from tests.conftest import REPO_ROOT
 
 anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
 
+_MOVED_SOURCE_TREE_CLASS_NAMES = frozenset(
+    {
+        "_SourceTreeContractBuilderSpec",
+        "SourceTreeBenchmarkCommonCase",
+        "SourceTreeManifestExpectation",
+        "SourceTreeDeferredExpectation",
+        "SourceTreeScorecardCase",
+        "SourceTreeCombinedCase",
+        "SourceTreeCombinedPatternGroupExpectation",
+        "SourceTreeCombinedManifestShapeExpectation",
+        "SourceTreeCombinedFullyMeasuredManifestExpectation",
+        "SourceTreeCombinedManifestExpectationDefinition",
+        "SourceTreeCombinedSliceExpectation",
+    }
+)
+
+_MOVED_SOURCE_TREE_FUNCTION_NAMES = frozenset(
+    {
+        "_source_tree_contract_manifest",
+        "_source_tree_contract_workload",
+        "source_tree_scorecard_case_ids",
+        "source_tree_scorecard_case",
+        "source_tree_combined_target_manifest_ids",
+        "source_tree_combined_case",
+        "source_tree_combined_manifest_shape_expectation",
+        "source_tree_combined_slice_manifest_ids",
+        "source_tree_combined_slice_derived_manifest_ids",
+        "source_tree_combined_slice_expectations",
+        "source_tree_combined_fully_measured_manifest_ids",
+        "source_tree_combined_fully_measured_manifest_expectation",
+        "source_tree_combined_manifest_representative_measured_workload_ids",
+        "assert_zero_gap_bytes_representative_subset",
+        "assert_zero_gap_manifest_representative_promotion",
+        "expected_summary_for_manifests",
+        "representative_measured_workload_ids",
+        "select_source_tree_combined_slice_rows",
+        "assert_source_tree_combined_manifest_slice",
+        "assert_source_tree_combined_pattern_group",
+        "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation",
+        "assert_zero_gap_representative_workload_subset",
+    }
+)
+
+_MOVED_SOURCE_TREE_CONSTANT_NAMES = frozenset(
+    {
+        "SOURCE_TREE_SCORECARD_EXPECTATIONS",
+        "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+        "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
+    }
+)
+
+_LOCAL_SOURCE_TREE_CONTRACT_BUILDER_CONSTANT_NAMES = frozenset()
+
+_CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES = (
+    "OPTIONAL_GROUP_MANIFEST_PATH",
+    "NESTED_GROUP_MANIFEST_PATH",
+    "EXACT_REPEAT_MANIFEST_PATH",
+    "RANGED_REPEAT_MANIFEST_PATH",
+    "GROUPED_ALTERNATION_MANIFEST_PATH",
+    "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
+    "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
+    "OPEN_ENDED_MANIFEST_PATH",
+)
+
 
 def _compiled_pattern_wrong_text_model_local_function_names() -> frozenset[str]:
     return frozenset()
@@ -1138,10 +1202,10 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
     }
 
-    for class_name in support.SOURCE_TREE_MOVED_CLASS_NAMES:
+    for class_name in _MOVED_SOURCE_TREE_CLASS_NAMES:
         assert hasattr(support, class_name)
         assert class_name in local_class_names
-    for function_name in support.SOURCE_TREE_MOVED_FUNCTION_NAMES:
+    for function_name in _MOVED_SOURCE_TREE_FUNCTION_NAMES:
         assert hasattr(support, function_name)
         assert function_name in local_function_names
     for function_name, owner_type in (
@@ -1164,10 +1228,10 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         assert local_builder is None
         assert owner_builder is not None
         assert function_name not in local_function_names
-    for constant_name in support.SOURCE_TREE_LOCAL_CONTRACT_BUILDER_CONSTANT_NAMES:
+    for constant_name in _LOCAL_SOURCE_TREE_CONTRACT_BUILDER_CONSTANT_NAMES:
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
-    for constant_name in support.SOURCE_TREE_MOVED_CONSTANT_NAMES:
+    for constant_name in _MOVED_SOURCE_TREE_CONSTANT_NAMES:
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
     for constant_name in (
@@ -1651,9 +1715,9 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
         node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
     }
 
-    for class_name in support.SOURCE_TREE_MOVED_CLASS_NAMES:
+    for class_name in _MOVED_SOURCE_TREE_CLASS_NAMES:
         assert class_name not in local_class_names
-    for function_name in support.SOURCE_TREE_MOVED_FUNCTION_NAMES:
+    for function_name in _MOVED_SOURCE_TREE_FUNCTION_NAMES:
         assert function_name not in local_function_names
 
 
@@ -1730,7 +1794,7 @@ def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
         and isinstance(node.value, ast.Attribute)
         and isinstance(node.value.value, ast.Name)
         and node.value.value.id == "source_tree_support"
-        and node.value.attr in support.SOURCE_TREE_MOVED_CONSTANT_NAMES
+        and node.value.attr in _MOVED_SOURCE_TREE_CONSTANT_NAMES
         for target in node.targets
         if isinstance(target, ast.Name)
     }
@@ -1739,10 +1803,10 @@ def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
         for node in ast.walk(combined_suite_ast)
         if isinstance(node, ast.Name)
         and isinstance(node.ctx, ast.Load)
-        and node.id in support.SOURCE_TREE_MOVED_CONSTANT_NAMES
+        and node.id in _MOVED_SOURCE_TREE_CONSTANT_NAMES
     }
 
-    for constant_name in support.SOURCE_TREE_MOVED_CONSTANT_NAMES:
+    for constant_name in _MOVED_SOURCE_TREE_CONSTANT_NAMES:
         assert constant_name not in direct_import_names
         assert constant_name not in local_assignment_names
         assert constant_name not in local_name_loads
@@ -1784,7 +1848,7 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
             continue
 
         if isinstance(value, ast.Name):
-            if value.id in support.SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES:
+            if value.id in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES:
                 local_constant_alias_names.update(targets)
             continue
 
@@ -1796,7 +1860,7 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
                 "compiled_pattern_module_helper_support",
                 "source_tree_support",
             }
-            and value.attr in support.SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES
+            and value.attr in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES
         ):
             local_constant_alias_names.update(targets)
 
@@ -1805,7 +1869,7 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
         for node in ast.walk(combined_suite_ast)
         if isinstance(node, ast.Name)
         and isinstance(node.ctx, ast.Load)
-        and node.id in support.SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES
+        and node.id in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES
     }
     direct_compiled_pattern_contract_refs = {
         node.attr
@@ -1823,7 +1887,7 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
         }
     }
 
-    for constant_name in support.SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES:
+    for constant_name in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES:
         assert constant_name not in direct_import_names
         assert constant_name not in local_assignment_names
         assert constant_name not in local_name_loads
@@ -3207,7 +3271,7 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
 def test_source_tree_owner_manifest_path_constants_point_to_current_workload_files() -> None:
     manifest_paths = tuple(
         getattr(support.benchmark_test_support, manifest_path_name)
-        for manifest_path_name in support.SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES
+        for manifest_path_name in _CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES
     )
 
     assert support.benchmark_test_support is benchmark_test_support
