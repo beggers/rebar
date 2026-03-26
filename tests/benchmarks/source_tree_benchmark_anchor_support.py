@@ -43,53 +43,6 @@ _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
     "module-search-numbered-optional-group-conditional-cold-gap"
 )
 
-SOURCE_TREE_MOVED_CLASS_NAMES = (
-    "_SourceTreeContractBuilderSpec",
-    "SourceTreeBenchmarkCommonCase",
-    "SourceTreeManifestExpectation",
-    "SourceTreeDeferredExpectation",
-    "SourceTreeScorecardCase",
-    "SourceTreeCombinedCase",
-    "SourceTreeCombinedPatternGroupExpectation",
-    "SourceTreeCombinedManifestShapeExpectation",
-    "SourceTreeCombinedFullyMeasuredManifestExpectation",
-    "SourceTreeCombinedManifestExpectationDefinition",
-    "SourceTreeCombinedSliceExpectation",
-)
-
-SOURCE_TREE_MOVED_FUNCTION_NAMES = (
-    "_source_tree_contract_manifest",
-    "_source_tree_contract_workload",
-    "source_tree_scorecard_case_ids",
-    "source_tree_scorecard_case",
-    "source_tree_combined_target_manifest_ids",
-    "source_tree_combined_case",
-    "source_tree_combined_manifest_shape_expectation",
-    "source_tree_combined_slice_manifest_ids",
-    "source_tree_combined_slice_derived_manifest_ids",
-    "source_tree_combined_slice_expectations",
-    "source_tree_combined_fully_measured_manifest_ids",
-    "source_tree_combined_fully_measured_manifest_expectation",
-    "source_tree_combined_manifest_representative_measured_workload_ids",
-    "assert_zero_gap_bytes_representative_subset",
-    "assert_zero_gap_manifest_representative_promotion",
-    "expected_summary_for_manifests",
-    "representative_measured_workload_ids",
-    "select_source_tree_combined_slice_rows",
-    "assert_source_tree_combined_manifest_slice",
-    "assert_source_tree_combined_pattern_group",
-    "assert_single_manifest_zero_gap_scorecard_case_reuses_shared_expectation",
-    "assert_zero_gap_representative_workload_subset",
-)
-
-SOURCE_TREE_MOVED_CONSTANT_NAMES = (
-    "SOURCE_TREE_SCORECARD_EXPECTATIONS",
-    "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
-    "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
-)
-
-SOURCE_TREE_LOCAL_CONTRACT_BUILDER_CONSTANT_NAMES = ()
-
 
 @dataclass(frozen=True, slots=True)
 class _SourceTreeContractBuilderSpec:
@@ -154,18 +107,6 @@ def _source_tree_contract_manifest(
         },
         "workloads": workloads,
     }
-
-SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES = (
-    "OPTIONAL_GROUP_MANIFEST_PATH",
-    "NESTED_GROUP_MANIFEST_PATH",
-    "EXACT_REPEAT_MANIFEST_PATH",
-    "RANGED_REPEAT_MANIFEST_PATH",
-    "GROUPED_ALTERNATION_MANIFEST_PATH",
-    "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
-    "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
-    "OPEN_ENDED_MANIFEST_PATH",
-)
-
 @cache
 def _source_tree_combined_suite_module() -> object:
     return importlib.import_module(

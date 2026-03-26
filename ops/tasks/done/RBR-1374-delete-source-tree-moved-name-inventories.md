@@ -1,6 +1,6 @@
 ## RBR-1374: Delete source-tree moved-name inventories
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -39,6 +39,19 @@ Created: 2026-03-26
 ## Constraints
 - Prefer deleting the inventories over recreating them under new names, moving them into another owner module, or replacing them with another mirrored test-only list.
 - Keep the run bounded to this single source-tree benchmark-support inventory cleanup and the ownership assertions that currently depend on it.
+
+## Completion Notes
+- Deleted the bookkeeping-only `SOURCE_TREE_*` moved-name and centralized-path inventories from `tests/benchmarks/source_tree_benchmark_anchor_support.py` without adding a replacement registry.
+- Deleted the mirrored `_MOVED_SOURCE_TREE_*`, `_LOCAL_SOURCE_TREE_CONTRACT_BUILDER_CONSTANT_NAMES`, and `_CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES` inventories from `tests/benchmarks/test_source_tree_benchmark_anchor_support.py`.
+- Reworked the affected support-contract assertions to use direct targeted checks that keep the same boundary:
+  - the source-tree owner still defines the live combined-case classes, functions, and scorecard/combined-slice constants it owns locally;
+  - the compiled-pattern module-compile and helper-keyword support surfaces remain owned by `tests.benchmarks.benchmark_test_support`; and
+  - centralized manifest-path constants are still read through `tests.benchmarks.benchmark_test_support` rather than mirrored locally.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` passed with `277 passed in 1.69s`
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
+  - `bash -lc "! rg -n '^SOURCE_TREE_(MOVED_CLASS_NAMES|MOVED_FUNCTION_NAMES|MOVED_CONSTANT_NAMES|LOCAL_CONTRACT_BUILDER_CONSTANT_NAMES|CENTRALIZED_MANIFEST_PATH_NAMES)\\s*=' tests/benchmarks/source_tree_benchmark_anchor_support.py"` passed
+  - `bash -lc "! rg -n '^(_MOVED_SOURCE_TREE_CLASS_NAMES|_MOVED_SOURCE_TREE_FUNCTION_NAMES|_MOVED_SOURCE_TREE_CONSTANT_NAMES|_LOCAL_SOURCE_TREE_CONTRACT_BUILDER_CONSTANT_NAMES|_CENTRALIZED_SOURCE_TREE_MANIFEST_PATH_NAMES)\\s*=' tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` passed
 
 ## Notes
 - ID check in this run:
