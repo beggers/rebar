@@ -1588,16 +1588,6 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
     ) == expected_alias_names
 
 
-def _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_support(
-    routed_names: tuple[str, ...],
-) -> None:
-    benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
-        alias_name="source_tree_support",
-        owner_module=support,
-        owner_names=routed_names,
-    )
-
-
 @pytest.mark.parametrize(
     ("routed_names",),
     [
@@ -1646,8 +1636,10 @@ def _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_sup
 def test_combined_suite_routes_moved_support_surfaces_through_source_tree_support(
     routed_names: tuple[str, ...],
 ) -> None:
-    _assert_combined_suite_routes_moved_support_surfaces_through_source_tree_support(
-        routed_names
+    benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
+        alias_name="source_tree_support",
+        owner_module=support,
+        owner_names=routed_names,
     )
 
 
