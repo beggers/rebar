@@ -33,6 +33,16 @@ Created: 2026-03-26
 - Prefer moving the routing boundary onto `tests/benchmarks/source_tree_benchmark_anchor_support.py`, which already owns the combined source-tree benchmark surface, over inventing another neutral helper layer.
 
 ## Notes
+- Completion (2026-03-26):
+  - Moved the combined-suite routed slice surface into `tests/benchmarks/source_tree_benchmark_anchor_support.py` as `SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS` and made `source_tree_combined_manifest_representative_measured_workload_ids(...)` derive public representative ids from that owner export.
+  - Deleted the combined suite's local `_source_tree_combined_suite_slice_expectations(...)` and `_combined_source_tree_manifest_representative_measured_workload_ids(...)` helpers, then rewired `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to read the routed surface directly from `source_tree_support`.
+  - Updated `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` to assert the new owner export, confirm the pure source-tree inventory still excludes the collection-owned block, and keep the combined suite from reading the collection-owned combined-slice constant directly.
+  - Verification in this run:
+    - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'selected_combined_source_tree_manifest_slices_stay_covered or conditional_group_exists_template_bytes_manifest_promotes_minimal_replacement_rows_to_measured or zero_gap_bytes_manifest_promotions_keep_selected_rows_publicly_measured'` passed with `2 passed, 277 deselected, 217 subtests passed in 4.09s`.
+    - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_support_module_exports_combined_slice_owner_group or source_tree_support_module_exposes_routed_collection_owner_surface or combined_suite_imports_source_tree_support_through_owner_module_only'` passed with `3 passed, 114 deselected in 0.30s`.
+    - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed.
+    - `bash -lc "! rg -n '^def _source_tree_combined_suite_slice_expectations|^def _combined_source_tree_manifest_representative_measured_workload_ids' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` passed.
+
 - Queue and JSON check in this run:
   - `.rebar/runtime/dashboard.md` reports `ready: 0`, `in_progress: 0`, `blocked: 0`, and `tracked_json_blob_count: 0`.
   - `git status --short` was empty in this run, so the runtime counts were not lagging a dirty checkout.

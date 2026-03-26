@@ -269,7 +269,7 @@ def test_source_tree_combined_representative_workload_ids_prefer_explicit_manife
     )
     monkeypatch.setattr(
         support,
-        "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
+        "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS",
         (
             support.SourceTreeCombinedSliceExpectation(
                 manifest_id=manifest_id,
@@ -301,7 +301,7 @@ def test_source_tree_combined_representative_workload_ids_derive_unique_shape_an
     )
     monkeypatch.setattr(
         support,
-        "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
+        "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS",
         (
             support.SourceTreeCombinedSliceExpectation(
                 manifest_id=manifest_id,
@@ -1723,6 +1723,8 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
         support,
         "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS",
     )
+    assert hasattr(support, "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS")
+    assert "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS" in local_assignment_names
 
 
 def test_source_tree_support_module_no_longer_exposes_collection_owned_signature_helpers(
@@ -1756,6 +1758,7 @@ def test_source_tree_support_module_exports_combined_slice_owner_group() -> None
         )
     )
     assert "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS" in local_assignment_names
+    assert "SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS" in local_assignment_names
 
     _, collection_local_assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(
@@ -2142,6 +2145,10 @@ def test_combined_suite_imports_and_reads_collection_owner_surface_through_packa
     ]
     assert direct_collection_owner_imports == []
     assert direct_collection_attribute_reads
+    assert (
+        "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS"
+        not in direct_collection_attribute_reads
+    )
 
 
 def test_source_tree_support_no_longer_defines_combined_route_helpers_locally() -> None:
@@ -2409,6 +2416,10 @@ def test_source_tree_combined_slice_expectations_keep_collection_owned_block_out
         expectation.slice_id
         for expectation in support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
     }
+    routed_combined_slice_ids = {
+        expectation.slice_id
+        for expectation in support.SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS
+    }
     collection_owned_slice_ids = {
         expectation.slice_id
         for expectation in (
@@ -2418,6 +2429,7 @@ def test_source_tree_combined_slice_expectations_keep_collection_owned_block_out
 
     assert collection_owned_slice_ids
     assert combined_slice_ids.isdisjoint(collection_owned_slice_ids)
+    assert collection_owned_slice_ids.issubset(routed_combined_slice_ids)
     assert "former-gap-callable-replacement-rows" in combined_slice_ids
     assert "quantified-alternation-heavy-constant-replacement-rows" in combined_slice_ids
 
