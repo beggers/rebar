@@ -167,6 +167,71 @@ class _CollectionReplacementPatternCollectionRoute:
         )
 
 
+@dataclass(frozen=True, slots=True)
+class _CollectionReplacementCombinedSliceExpectation:
+    manifest_id: str
+    slice_id: str
+    required_syntax_features: tuple[str, ...] = ()
+    excluded_syntax_features: tuple[str, ...] = ()
+    required_categories: tuple[str, ...] = ()
+    excluded_categories: tuple[str, ...] = ()
+    required_id_suffix: str | None = None
+    expected_workload_ids: tuple[str, ...] = ()
+    expected_patterns: frozenset[str] = frozenset()
+    expected_operations: frozenset[str] = frozenset()
+    expected_haystacks: frozenset[str] = frozenset()
+    required_row_categories: tuple[str, ...] = ()
+    expected_status: str = "measured"
+
+
+def _collection_replacement_combined_slice_expectation(
+    *,
+    manifest_id: str,
+    slice_id: str,
+    required_syntax_features: tuple[str, ...] = (),
+    excluded_syntax_features: tuple[str, ...] = (),
+    required_categories: tuple[str, ...] = (),
+    excluded_categories: tuple[str, ...] = (),
+    required_id_suffix: str | None = None,
+    expected_workload_ids: tuple[str, ...],
+    expected_patterns: set[str],
+    expected_operations: set[str],
+    expected_haystacks: set[str],
+    required_row_categories: tuple[str, ...],
+    expected_status: str = "measured",
+) -> _CollectionReplacementCombinedSliceExpectation:
+    return _CollectionReplacementCombinedSliceExpectation(
+        manifest_id=manifest_id,
+        slice_id=slice_id,
+        required_syntax_features=tuple(
+            str(feature) for feature in required_syntax_features
+        ),
+        excluded_syntax_features=tuple(
+            str(feature) for feature in excluded_syntax_features
+        ),
+        required_categories=tuple(str(category) for category in required_categories),
+        excluded_categories=tuple(str(category) for category in excluded_categories),
+        required_id_suffix=required_id_suffix,
+        expected_workload_ids=(
+            expected_workload_ids
+            if isinstance(expected_workload_ids, tuple)
+            and all(isinstance(workload_id, str) for workload_id in expected_workload_ids)
+            else tuple(str(workload_id) for workload_id in expected_workload_ids)
+        ),
+        expected_patterns=frozenset(str(pattern) for pattern in expected_patterns),
+        expected_operations=frozenset(
+            str(operation) for operation in expected_operations
+        ),
+        expected_haystacks=frozenset(
+            str(haystack) for haystack in expected_haystacks
+        ),
+        required_row_categories=tuple(
+            str(category) for category in required_row_categories
+        ),
+        expected_status=expected_status,
+    )
+
+
 _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES = {
     "findall": _CollectionReplacementPatternCollectionRoute(
         workload_case_pairs=(
@@ -1819,18 +1884,6 @@ COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES = (
     "_conditional_group_exists_quantified_callable_replacement_expectation",
     "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
 )
-
-
-def _conditional_group_exists_source_tree_slice_expectations() -> tuple[Any, ...]:
-    from tests.benchmarks import (
-        source_tree_benchmark_anchor_support as source_tree_support,
-    )
-
-    return source_tree_support.source_tree_combined_slice_expectations(
-        "conditional-group-exists-boundary"
-    )
-
-
 @cache
 def _conditional_group_exists_callable_str_slice_workloads() -> tuple[Any, ...]:
     expected_workload_ids = tuple(
@@ -1942,75 +1995,6 @@ def _mirrored_bytes_workload_ids(str_workload_ids: tuple[str, ...]) -> tuple[str
     )
 
 
-def _conditional_group_exists_template_replacement_expectation() -> Any:
-    return next(
-        expectation
-        for expectation in _conditional_group_exists_source_tree_slice_expectations()
-        if expectation.slice_id == "minimal-template-replacement-rows"
-    )
-
-
-def _conditional_group_exists_callable_replacement_expectations() -> tuple[Any, ...]:
-    expected_slice_ids = (
-        "minimal-callable-replacement-rows",
-        "minimal-callable-replacement-exception-rows",
-        "minimal-callable-replacement-none-count-exception-rows",
-        "alternation-heavy-callable-replacement-rows",
-    )
-    expectations = tuple(
-        expectation
-        for expectation in _conditional_group_exists_source_tree_slice_expectations()
-        if expectation.slice_id in expected_slice_ids
-    )
-    actual_slice_ids = tuple(expectation.slice_id for expectation in expectations)
-    if actual_slice_ids != expected_slice_ids:
-        raise AssertionError(
-            "conditional callable replacement slice expectations drifted: "
-            f"expected {expected_slice_ids!r}, got {actual_slice_ids!r}"
-        )
-    return expectations
-
-
-def _conditional_group_exists_alternation_callable_replacement_expectation() -> Any:
-    return next(
-        expectation
-        for expectation in _conditional_group_exists_source_tree_slice_expectations()
-        if expectation.slice_id == "alternation-heavy-callable-replacement-rows"
-    )
-
-
-def _conditional_group_exists_nested_callable_replacement_expectation() -> Any:
-    return next(
-        expectation
-        for expectation in _conditional_group_exists_source_tree_slice_expectations()
-        if expectation.slice_id == "nested-callable-replacement-str-rows"
-    )
-
-
-def _conditional_group_exists_nested_callable_bytes_replacement_expectation() -> Any:
-    return next(
-        expectation
-        for expectation in _conditional_group_exists_source_tree_slice_expectations()
-        if expectation.slice_id == "nested-callable-replacement-bytes-rows"
-    )
-
-
-def _conditional_group_exists_quantified_callable_replacement_expectation() -> Any:
-    return next(
-        expectation
-        for expectation in _conditional_group_exists_source_tree_slice_expectations()
-        if expectation.slice_id == "quantified-callable-replacement-str-rows"
-    )
-
-
-def _conditional_group_exists_quantified_callable_bytes_replacement_expectation() -> Any:
-    return next(
-        expectation
-        for expectation in _conditional_group_exists_source_tree_slice_expectations()
-        if expectation.slice_id == "quantified-callable-replacement-bytes-rows"
-    )
-
-
 CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS = (
     "module-sub-callable-numbered-nested-conditional-group-exists-replacement-warm-str",
     "module-subn-callable-numbered-nested-conditional-group-exists-replacement-absent-exception-warm-str",
@@ -2115,6 +2099,452 @@ CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS = _workload_ids_
     _CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_WORKLOAD_STEMS,
     text_model="bytes",
 )
+
+COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_COMBINED_SLICE_OWNER_NAMES = (
+    "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS",
+)
+
+COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS = (
+    _collection_replacement_combined_slice_expectation(
+        manifest_id="conditional-group-exists-boundary",
+        slice_id="minimal-template-replacement-rows",
+        required_syntax_features=("conditionals", "replacement-template"),
+        excluded_syntax_features=("quantifiers",),
+        excluded_categories=(
+            "alternation-heavy",
+            "nested-group",
+            "quantified",
+            "unsupported",
+            "callable",
+        ),
+        expected_workload_ids=(
+            "module-sub-template-numbered-conditional-group-exists-replacement-warm-gap",
+            "module-subn-template-numbered-conditional-group-exists-replacement-warm-str",
+            "pattern-sub-template-numbered-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-template-numbered-conditional-group-exists-replacement-purged-str",
+            "module-sub-template-numbered-conditional-group-exists-replacement-warm-bytes",
+            "module-subn-template-numbered-conditional-group-exists-replacement-warm-bytes",
+            "pattern-sub-template-numbered-conditional-group-exists-replacement-purged-bytes",
+            "pattern-subn-template-numbered-conditional-group-exists-replacement-purged-bytes",
+            "module-sub-template-named-conditional-group-exists-replacement-warm-str",
+            "module-subn-template-named-conditional-group-exists-replacement-warm-str",
+            "pattern-sub-template-named-conditional-group-exists-replacement-purged-str",
+            "pattern-subn-template-named-conditional-group-exists-replacement-purged-str",
+            "module-sub-template-named-conditional-group-exists-replacement-warm-bytes",
+            "module-subn-template-named-conditional-group-exists-replacement-warm-bytes",
+            "pattern-sub-template-named-conditional-group-exists-replacement-purged-bytes",
+            "pattern-subn-template-named-conditional-group-exists-replacement-purged-bytes",
+            "module-sub-template-numbered-conditional-group-exists-replacement-negative-count-warm-str",
+            "module-subn-template-named-conditional-group-exists-replacement-negative-count-warm-str",
+            "pattern-sub-template-numbered-conditional-group-exists-replacement-negative-count-purged-str",
+            "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-purged-str",
+            "module-sub-template-numbered-conditional-group-exists-replacement-negative-count-warm-bytes",
+            "module-subn-template-named-conditional-group-exists-replacement-negative-count-warm-bytes",
+            "pattern-sub-template-numbered-conditional-group-exists-replacement-negative-count-purged-bytes",
+            "pattern-subn-template-named-conditional-group-exists-replacement-negative-count-purged-bytes",
+        ),
+        expected_patterns={
+            r"a(b)?c(?(1)d|e)",
+            r"a(?P<word>b)?c(?(word)d|e)",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"zzabcdzz", "zzacezz", "abcdaceabcd"},
+        required_row_categories=(
+            "grouped",
+            "optional-group",
+            "conditional",
+            "group-exists",
+            "replacement",
+            "template",
+        ),
+    ),
+    _collection_replacement_combined_slice_expectation(
+        manifest_id="conditional-group-exists-boundary",
+        slice_id="minimal-callable-replacement-rows",
+        required_syntax_features=("conditionals", "callable-replacement"),
+        excluded_syntax_features=("quantifiers",),
+        excluded_categories=(
+            "alternation",
+            "alternation-heavy",
+            "exception",
+            "nested-conditional",
+            "nested-group",
+            "quantified",
+            "unsupported",
+        ),
+        expected_workload_ids=(
+            "module-sub-callable-numbered-conditional-group-exists-replacement-warm-str",
+            "module-sub-callable-numbered-conditional-group-exists-replacement-warm-bytes",
+            "module-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-warm-str",
+            "module-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-warm-bytes",
+            "pattern-sub-callable-numbered-conditional-group-exists-replacement-purged-str",
+            "pattern-sub-callable-numbered-conditional-group-exists-replacement-purged-bytes",
+            "pattern-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-purged-str",
+            "pattern-subn-callable-numbered-conditional-group-exists-replacement-first-match-only-purged-bytes",
+            "module-sub-callable-numbered-conditional-group-exists-replacement-negative-count-warm-str",
+            "module-sub-callable-numbered-conditional-group-exists-replacement-negative-count-warm-bytes",
+            "module-sub-callable-named-conditional-group-exists-replacement-warm-str",
+            "module-sub-callable-named-conditional-group-exists-replacement-warm-bytes",
+            "module-subn-callable-named-conditional-group-exists-replacement-first-match-only-warm-str",
+            "module-subn-callable-named-conditional-group-exists-replacement-first-match-only-warm-bytes",
+            "pattern-sub-callable-named-conditional-group-exists-replacement-purged-str",
+            "pattern-sub-callable-named-conditional-group-exists-replacement-purged-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-purged-gap",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-purged-bytes",
+            "module-subn-callable-named-conditional-group-exists-replacement-negative-count-warm-str",
+            "module-subn-callable-named-conditional-group-exists-replacement-negative-count-warm-bytes",
+            "pattern-sub-callable-numbered-conditional-group-exists-replacement-negative-count-purged-str",
+            "pattern-sub-callable-numbered-conditional-group-exists-replacement-negative-count-purged-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-negative-count-purged-str",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-negative-count-purged-bytes",
+        ),
+        expected_patterns={
+            r"a(b)?c(?(1)d|e)",
+            r"a(?P<word>b)?c(?(word)d|e)",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"zzabcdzz", "zzabcdacezz", "abcdaceabcd"},
+        required_row_categories=(
+            "grouped",
+            "optional-group",
+            "conditional",
+            "group-exists",
+            "replacement",
+            "callable",
+        ),
+    ),
+    _collection_replacement_combined_slice_expectation(
+        manifest_id="conditional-group-exists-boundary",
+        slice_id="minimal-callable-replacement-exception-rows",
+        required_syntax_features=("conditionals", "callable-replacement"),
+        excluded_syntax_features=("quantifiers",),
+        required_categories=("exception",),
+        excluded_categories=(
+            "alternation",
+            "alternation-heavy",
+            "nested-conditional",
+            "nested-group",
+            "none-count",
+            "quantified",
+            "unsupported",
+        ),
+        expected_workload_ids=(
+            "module-subn-callable-numbered-conditional-group-exists-replacement-absent-exception-warm-str",
+            "module-subn-callable-numbered-conditional-group-exists-replacement-absent-exception-warm-bytes",
+            "pattern-subn-callable-numbered-conditional-group-exists-replacement-absent-exception-purged-str",
+            "pattern-subn-callable-numbered-conditional-group-exists-replacement-absent-exception-purged-bytes",
+            "module-subn-callable-named-conditional-group-exists-replacement-absent-exception-warm-str",
+            "module-subn-callable-named-conditional-group-exists-replacement-absent-exception-warm-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-absent-exception-purged-str",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-absent-exception-purged-bytes",
+        ),
+        expected_patterns={
+            r"a(b)?c(?(1)d|e)",
+            r"a(?P<word>b)?c(?(word)d|e)",
+        },
+        expected_operations={"module.subn", "pattern.subn"},
+        expected_haystacks={"zzacezz"},
+        required_row_categories=(
+            "grouped",
+            "optional-group",
+            "conditional",
+            "group-exists",
+            "replacement",
+            "callable",
+            "absent",
+            "count",
+            "exception",
+        ),
+    ),
+    _collection_replacement_combined_slice_expectation(
+        manifest_id="conditional-group-exists-boundary",
+        slice_id="minimal-callable-replacement-none-count-exception-rows",
+        required_syntax_features=("conditionals", "callable-replacement"),
+        excluded_syntax_features=("quantifiers",),
+        required_categories=("none-count", "exception"),
+        excluded_categories=(
+            "alternation",
+            "alternation-heavy",
+            "nested-conditional",
+            "nested-group",
+            "quantified",
+            "unsupported",
+        ),
+        expected_workload_ids=(
+            "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-warm-str",
+            "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-warm-bytes",
+            "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-purged-str",
+            "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-purged-bytes",
+            "module-sub-callable-named-conditional-group-exists-replacement-none-count-warm-str",
+            "module-sub-callable-named-conditional-group-exists-replacement-none-count-warm-bytes",
+            "pattern-sub-callable-named-conditional-group-exists-replacement-none-count-purged-str",
+            "pattern-sub-callable-named-conditional-group-exists-replacement-none-count-purged-bytes",
+            "module-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-warm-str",
+            "module-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-warm-bytes",
+            "pattern-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-purged-str",
+            "pattern-subn-callable-numbered-conditional-group-exists-replacement-none-count-absent-exception-purged-bytes",
+            "module-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-warm-str",
+            "module-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-warm-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-purged-str",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-absent-exception-purged-bytes",
+            "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-warm-str",
+            "module-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-warm-bytes",
+            "module-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-warm-str",
+            "module-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-warm-bytes",
+            "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-purged-str",
+            "pattern-sub-callable-numbered-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-purged-str",
+            "pattern-subn-callable-named-conditional-group-exists-replacement-none-count-negative-count-purged-bytes",
+        ),
+        expected_patterns={
+            r"a(b)?c(?(1)d|e)",
+            r"a(?P<word>b)?c(?(word)d|e)",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"zzabcdzz", "zzacezz", "abcdaceabcd"},
+        required_row_categories=(
+            "grouped",
+            "optional-group",
+            "conditional",
+            "group-exists",
+            "replacement",
+            "callable",
+            "count",
+            "none-count",
+            "exception",
+        ),
+    ),
+    _collection_replacement_combined_slice_expectation(
+        manifest_id="conditional-group-exists-boundary",
+        slice_id="alternation-heavy-callable-replacement-rows",
+        required_syntax_features=("conditionals", "alternation", "callable-replacement"),
+        excluded_syntax_features=("quantifiers",),
+        required_categories=("alternation-heavy", "replacement", "callable"),
+        expected_workload_ids=CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS,
+        expected_patterns={
+            r"a(b)?c(?(1)(de|df)|(eg|eh))",
+            r"a(?P<word>b)?c(?(word)(de|df)|(eg|eh))",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={
+            "zzabcdezz",
+            "zzabcdfzz",
+            "zzacegzz",
+            "zzacehzz",
+        },
+        required_row_categories=(
+            "grouped",
+            "optional-group",
+            "conditional",
+            "group-exists",
+            "alternation-heavy",
+            "replacement",
+            "callable",
+        ),
+    ),
+    _collection_replacement_combined_slice_expectation(
+        manifest_id="conditional-group-exists-boundary",
+        slice_id="nested-callable-replacement-str-rows",
+        required_syntax_features=("conditionals", "callable-replacement"),
+        required_categories=("nested-conditional",),
+        excluded_syntax_features=("quantifiers",),
+        excluded_categories=(
+            "alternation",
+            "alternation-heavy",
+            "bytes",
+            "quantified",
+            "unsupported",
+        ),
+        expected_workload_ids=CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
+        expected_patterns={
+            r"a(b)?c(?(1)(?(1)d|e)|f)",
+            r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"zzabcdzz", "zzabcezz", "zzacezz", "zzacfzz"},
+        required_row_categories=(
+            "grouped",
+            "optional-group",
+            "conditional",
+            "group-exists",
+            "nested-conditional",
+            "replacement",
+            "callable",
+        ),
+    ),
+    _collection_replacement_combined_slice_expectation(
+        manifest_id="conditional-group-exists-boundary",
+        slice_id="nested-callable-replacement-bytes-rows",
+        required_syntax_features=(
+            "pattern-text-model",
+            "conditionals",
+            "callable-replacement",
+        ),
+        required_categories=("nested-conditional", "bytes"),
+        excluded_syntax_features=("quantifiers",),
+        excluded_categories=(
+            "alternation",
+            "alternation-heavy",
+            "nested-group",
+            "unsupported",
+        ),
+        expected_workload_ids=CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
+        expected_patterns={
+            r"a(b)?c(?(1)(?(1)d|e)|f)",
+            r"a(?P<word>b)?c(?(word)(?(word)d|e)|f)",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"zzabcdzz", "zzabcezz", "zzacezz", "zzacfzz"},
+        required_row_categories=(
+            "grouped",
+            "optional-group",
+            "conditional",
+            "group-exists",
+            "nested-conditional",
+            "replacement",
+            "callable",
+            "bytes",
+        ),
+    ),
+    _collection_replacement_combined_slice_expectation(
+        manifest_id="conditional-group-exists-boundary",
+        slice_id="quantified-callable-replacement-str-rows",
+        required_syntax_features=(
+            "conditionals",
+            "quantifiers",
+            "callable-replacement",
+        ),
+        required_categories=("quantified",),
+        excluded_categories=(
+            "alternation",
+            "alternation-heavy",
+            "bytes",
+            "nested-conditional",
+            "nested-group",
+            "unsupported",
+        ),
+        expected_workload_ids=CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
+        expected_patterns={
+            r"a(b)?c(?(1)d|e){2}",
+            r"a(?P<word>b)?c(?(word)d|e){2}",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"zzabcddzz", "zzaceezz", "zzabcdezz", "zzacedzz"},
+        required_row_categories=(
+            "grouped",
+            "optional-group",
+            "conditional",
+            "group-exists",
+            "quantified",
+            "replacement",
+            "callable",
+        ),
+    ),
+    _collection_replacement_combined_slice_expectation(
+        manifest_id="conditional-group-exists-boundary",
+        slice_id="quantified-callable-replacement-bytes-rows",
+        required_syntax_features=(
+            "pattern-text-model",
+            "conditionals",
+            "quantifiers",
+            "callable-replacement",
+        ),
+        required_categories=("quantified", "bytes"),
+        excluded_categories=(
+            "alternation",
+            "alternation-heavy",
+            "nested-conditional",
+            "nested-group",
+            "unsupported",
+        ),
+        expected_workload_ids=CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
+        expected_patterns={
+            r"a(b)?c(?(1)d|e){2}",
+            r"a(?P<word>b)?c(?(word)d|e){2}",
+        },
+        expected_operations={"module.sub", "module.subn", "pattern.sub", "pattern.subn"},
+        expected_haystacks={"zzabcddzz", "zzaceezz", "zzabcdezz", "zzacedzz"},
+        required_row_categories=(
+            "grouped",
+            "optional-group",
+            "conditional",
+            "group-exists",
+            "quantified",
+            "replacement",
+            "callable",
+            "bytes",
+        ),
+    ),
+)
+
+
+def _conditional_group_exists_template_replacement_expectation() -> Any:
+    return next(
+        expectation
+        for expectation in COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS
+        if expectation.slice_id == "minimal-template-replacement-rows"
+    )
+
+
+def _conditional_group_exists_callable_replacement_expectations() -> tuple[Any, ...]:
+    expected_slice_ids = (
+        "minimal-callable-replacement-rows",
+        "minimal-callable-replacement-exception-rows",
+        "minimal-callable-replacement-none-count-exception-rows",
+        "alternation-heavy-callable-replacement-rows",
+    )
+    expectations = tuple(
+        expectation
+        for expectation in COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS
+        if expectation.slice_id in expected_slice_ids
+    )
+    actual_slice_ids = tuple(expectation.slice_id for expectation in expectations)
+    if actual_slice_ids != expected_slice_ids:
+        raise AssertionError(
+            "conditional callable replacement slice expectations drifted: "
+            f"expected {expected_slice_ids!r}, got {actual_slice_ids!r}"
+        )
+    return expectations
+
+
+def _conditional_group_exists_alternation_callable_replacement_expectation() -> Any:
+    return next(
+        expectation
+        for expectation in COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS
+        if expectation.slice_id == "alternation-heavy-callable-replacement-rows"
+    )
+
+
+def _conditional_group_exists_nested_callable_replacement_expectation() -> Any:
+    return next(
+        expectation
+        for expectation in COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS
+        if expectation.slice_id == "nested-callable-replacement-str-rows"
+    )
+
+
+def _conditional_group_exists_nested_callable_bytes_replacement_expectation() -> Any:
+    return next(
+        expectation
+        for expectation in COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS
+        if expectation.slice_id == "nested-callable-replacement-bytes-rows"
+    )
+
+
+def _conditional_group_exists_quantified_callable_replacement_expectation() -> Any:
+    return next(
+        expectation
+        for expectation in COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS
+        if expectation.slice_id == "quantified-callable-replacement-str-rows"
+    )
+
+
+def _conditional_group_exists_quantified_callable_bytes_replacement_expectation() -> Any:
+    return next(
+        expectation
+        for expectation in COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS
+        if expectation.slice_id == "quantified-callable-replacement-bytes-rows"
+    )
 
 
 def _conditional_group_exists_quantified_callable_correctness_case_signature(

@@ -1611,6 +1611,11 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
         assert function_name in local_function_names
 
     collection_module_ast = benchmark_test_support._parsed_module_ast(collection_support)
+    _, collection_local_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            collection_support
+        )
+    )
     collection_function_names = {
         node.name for node in collection_module_ast.body if isinstance(node, ast.FunctionDef)
     }
@@ -1619,6 +1624,11 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
     ):
         assert hasattr(collection_support, function_name)
         assert function_name in collection_function_names
+    for constant_name in (
+        collection_support.COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_COMBINED_SLICE_OWNER_NAMES
+    ):
+        assert hasattr(collection_support, constant_name)
+        assert constant_name in collection_local_assignment_names
 
 
 def test_source_tree_support_module_no_longer_exposes_collection_owned_signature_helpers(
@@ -1644,14 +1654,26 @@ def test_source_tree_support_module_exports_combined_slice_owner_group() -> None
             support
         )
     )
+    assert support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_COMBINED_SLICE_OWNER_NAMES == ()
+    assert "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS" in local_assignment_names
 
-    owner_names = support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_COMBINED_SLICE_OWNER_NAMES
+    _, collection_local_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            collection_support
+        )
+    )
+    owner_names = (
+        collection_support.COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_COMBINED_SLICE_OWNER_NAMES
+    )
 
-    assert "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS" in owner_names
+    assert (
+        "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS"
+        in owner_names
+    )
     assert len(owner_names) == len(set(owner_names))
     for constant_name in owner_names:
-        assert hasattr(support, constant_name)
-        assert constant_name in local_assignment_names
+        assert hasattr(collection_support, constant_name)
+        assert constant_name in collection_local_assignment_names
 
 
 def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally() -> None:
@@ -2061,9 +2083,9 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
             id="collection-owner-routed-constants",
         ),
         pytest.param(
-            "source_tree_support",
-            support,
-            support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_COMBINED_SLICE_OWNER_NAMES,
+            "collection_replacement_support",
+            collection_support,
+            collection_support.COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_COMBINED_SLICE_OWNER_NAMES,
             frozenset(),
             id="collection-owner-combined-slice-owner-names",
         ),

@@ -1209,13 +1209,15 @@ def test_conditional_collection_replacement_slice_expectations_stay_in_sync_with
 def test_quantified_conditional_callable_combined_slice_expectations_stay_in_sync_with_owner_workload_ids(
 ) -> None:
     combined_suite = source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
-        alias_name="source_tree_support",
-        owner_module=source_tree_support,
-        owner_names=source_tree_support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_COMBINED_SLICE_OWNER_NAMES,
+        alias_name="collection_replacement_support",
+        owner_module=support,
+        owner_names=support.COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_COMBINED_SLICE_OWNER_NAMES,
     )
     expectations_by_slice_id = {
         expectation.slice_id: expectation
-        for expectation in combined_suite.source_tree_support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+        for expectation in (
+            combined_suite.collection_replacement_support.COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS
+        )
     }
 
     assert (
