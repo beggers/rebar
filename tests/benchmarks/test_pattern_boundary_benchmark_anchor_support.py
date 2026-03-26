@@ -67,15 +67,10 @@ def test_pattern_boundary_standard_definitions_are_reused_by_standard_inventory(
         if definition.name in _PATTERN_BOUNDARY_STANDARD_DEFINITION_NAMES
     )
 
-    assert tuple(definition.name for definition in standard_definitions) == (
-        _PATTERN_BOUNDARY_STANDARD_DEFINITION_NAMES
-    )
-    assert standard_definitions == owner_definitions
-    assert all(
-        standard_definition is owner_definition
-        for standard_definition, owner_definition in zip(
-            standard_definitions, owner_definitions
-        )
+    support.assert_standard_inventory_reuses_owner_definitions(
+        owner_definitions,
+        standard_definitions,
+        _PATTERN_BOUNDARY_STANDARD_DEFINITION_NAMES,
     )
 
 

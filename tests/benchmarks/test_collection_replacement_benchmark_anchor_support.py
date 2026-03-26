@@ -794,19 +794,10 @@ def test_collection_replacement_standard_definitions_are_reused_by_standard_inve
         if definition.name in _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES
     )
 
-    assert isinstance(owner_definitions, tuple)
-    assert tuple(definition.name for definition in owner_definitions) == (
-        _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES
-    )
-    assert tuple(definition.name for definition in standard_definitions) == (
-        _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES
-    )
-    assert standard_definitions == owner_definitions
-    assert all(
-        standard_definition is owner_definition
-        for standard_definition, owner_definition in zip(
-            standard_definitions, owner_definitions
-        )
+    benchmark_test_support.assert_standard_inventory_reuses_owner_definitions(
+        owner_definitions,
+        standard_definitions,
+        _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES,
     )
 
 

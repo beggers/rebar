@@ -3174,17 +3174,10 @@ def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() ->
         for index, definition in enumerate(standard_definitions)
         if definition.name == definition_names[0]
     )
-    standard_owner_slice = standard_definitions[
-        start_index : start_index + len(owner_definitions)
-    ]
-
-    assert tuple(definition.name for definition in standard_owner_slice) == definition_names
-    assert standard_owner_slice == owner_definitions
-    assert all(
-        standard_definition is owner_definition
-        for standard_definition, owner_definition in zip(
-            standard_owner_slice, owner_definitions, strict=True
-        )
+    benchmark_test_support.assert_standard_inventory_reuses_owner_definitions(
+        owner_definitions,
+        standard_definitions[start_index : start_index + len(owner_definitions)],
+        definition_names,
     )
 
 

@@ -758,6 +758,27 @@ def assert_owner_surface_module_owned_without_local_duplicates(
     assert extra_owner_name not in local_names
 
 
+def assert_standard_inventory_reuses_owner_definitions(
+    owner_definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
+    standard_definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
+    expected_definition_names: tuple[str, ...],
+) -> None:
+    assert isinstance(owner_definitions, tuple)
+    assert tuple(definition.name for definition in owner_definitions) == (
+        expected_definition_names
+    )
+    assert tuple(definition.name for definition in standard_definitions) == (
+        expected_definition_names
+    )
+    assert standard_definitions == owner_definitions
+    assert all(
+        standard_definition is owner_definition
+        for standard_definition, owner_definition in zip(
+            standard_definitions, owner_definitions, strict=True
+        )
+    )
+
+
 def compile_proxy_correctness_case_signature(
     case: Any,
 ) -> tuple[str, str | bytes, tuple[()], tuple[()], int, str] | None:
