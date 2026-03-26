@@ -1446,17 +1446,18 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
 ) -> None:
     spec = owner_spec.contract_builder_spec()
 
-    assert spec.manifest_id == owner_spec.contract_manifest_id
-    assert (
-        spec.excluded_fields
-        == benchmark_test_support.COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
+    assert spec == benchmark_test_support._SourceTreeContractBuilderSpec(
+        manifest_id=owner_spec.contract_manifest_id,
+        excluded_fields=(
+            benchmark_test_support.COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
+        ),
+        timing_scope="module-helper-call",
+        notes=(
+            "Ensures benchmark manifests keep the bounded "
+            "compiled-pattern-first-argument successful "
+            f"{owner_spec.note_surface} rows unresolved until helper invocation.",
+        ),
     )
-    assert spec.manifest_timed_samples == 2
-    assert spec.timing_scope == "module-helper-call"
-    assert spec.notes
-    assert "compiled-pattern-first-argument successful" in spec.notes[0]
-    assert owner_spec.note_surface in spec.notes[0]
-    assert spec.notes[0].endswith("rows unresolved until helper invocation.")
 
 
 @pytest.mark.parametrize(
@@ -1986,49 +1987,65 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
 
 
 @pytest.mark.parametrize(
-    ("routed_names",),
+    ("routed_names", "expected_direct_benchmark_test_support_refs"),
     [
         pytest.param(
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES,
+            frozenset(),
             id="compiled-pattern-module-compile",
         ),
         pytest.param(
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES,
+            frozenset(),
             id="compiled-pattern-wrong-text-model",
         ),
         pytest.param(
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES,
+            frozenset(),
             id="compiled-pattern-module-helper-keyword",
         ),
         pytest.param(
             support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES,
+            frozenset(
+                support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES
+            ),
             id="compiled-pattern-module-success",
         ),
         pytest.param(
             support.SOURCE_TREE_ROUTED_SUITE_ASSERTION_HELPER_NAMES,
+            frozenset(),
             id="source-tree-suite-assertion-helpers",
         ),
         pytest.param(
             support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_CONDITIONAL_CALLABLE_HELPER_NAMES,
+            frozenset(),
             id="conditional-callable-helpers",
         ),
         pytest.param(
             support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES,
+            frozenset(
+                support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES
+            ),
             id="collection-owner-routed-constants",
         ),
         pytest.param(
             support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_COMBINED_SLICE_OWNER_NAMES,
+            frozenset(),
             id="collection-owner-combined-slice-owner-names",
         ),
     ],
 )
 def test_combined_suite_routes_moved_support_surfaces_through_source_tree_support(
     routed_names: tuple[str, ...],
+    expected_direct_benchmark_test_support_refs: frozenset[str],
 ) -> None:
     support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="source_tree_support",
         owner_module=support,
         owner_names=routed_names,
+        expected_direct_benchmark_test_support_refs=(
+            expected_direct_benchmark_test_support_refs
+        ),
     )
 
 

@@ -249,6 +249,7 @@ def _assert_source_tree_combined_routes_owner_names_through_module_alias(
     alias_name: str,
     owner_module: object,
     owner_names: tuple[str, ...],
+    expected_direct_benchmark_test_support_refs: frozenset[str] = frozenset(),
 ) -> object:
     combined_suite = _source_tree_combined_suite_module()
     combined_suite_ast = _parsed_source_tree_combined_suite_ast()
@@ -337,7 +338,10 @@ def _assert_source_tree_combined_routes_owner_names_through_module_alias(
         assert name not in local_assignment_names
         assert name not in local_name_loads
     assert local_alias_names == set()
-    assert direct_benchmark_test_support_refs == set()
+    assert (
+        direct_benchmark_test_support_refs
+        == expected_direct_benchmark_test_support_refs
+    )
     assert aliased_owner_refs == set()
     return combined_suite
 
