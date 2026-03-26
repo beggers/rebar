@@ -986,7 +986,7 @@ def test_standard_benchmark_definitions_are_direct_support_owned_global_tuple() 
             id="compiled-pattern-module-compile-after-module-workflow-keyword",
         ),
         pytest.param(
-            support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
+            anchor_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
             "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
             "pattern-window-positional-indexlike",
             id="compiled-pattern-module-helper-after-module-compile",
@@ -1185,7 +1185,6 @@ def test_inline_standard_definition_exports_reuse_named_manifest_path_constants(
     assert {
         "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS",
         "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
-        "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
         "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS",
     }.issubset(assignment_names)
 
@@ -2153,7 +2152,6 @@ def test_benchmark_test_support_defines_compiled_pattern_module_helper_owner_sur
         "_run_cpython_compiled_pattern_module_helper_workload",
         "_module_workflow_compiled_pattern_correctness_case_signature",
         "_module_workflow_compiled_pattern_workload_signature",
-        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
         "_is_module_workflow_compiled_pattern_literal_success_workload",
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
         "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
@@ -2170,7 +2168,6 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_compiled_pattern_module_helper_route",
         "_run_cpython_compiled_pattern_module_helper_workload",
         "_assert_wrong_text_model_payload_round_trip",
-        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
         "_module_workflow_compiled_pattern_correctness_case_signature",
         "_module_workflow_compiled_pattern_workload_signature",
         "_is_module_workflow_compiled_pattern_workload",
@@ -2183,12 +2180,10 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "include_live_compiled_pattern_module_success_workload",
     }.issubset(definition_names)
     assert {
-        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS",
         "_VERBOSE_REGRESSION_PATTERN",
         "_VERBOSE_REGRESSION_FLAGS",
-        "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
     }.issubset(assignment_names)
     assert {
         "_compiled_pattern_wrong_text_model_specs",
@@ -2203,6 +2198,12 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     assert {"live_compiled_pattern_module_success_surface_ids"}.isdisjoint(
         definition_names | assignment_names
     )
+    assert {
+        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+        "_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
+        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
+        "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
+    }.isdisjoint(definition_names | assignment_names)
 
 
 def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> None:
@@ -3355,10 +3356,8 @@ def test_compiled_pattern_module_helper_wrong_text_model_selector_accepts_bounde
         },
     )
 
-    assert (
-        support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
-            workload
-        )
+    assert anchor_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        workload
     )
 
 
@@ -3405,17 +3404,17 @@ def test_compiled_pattern_module_helper_wrong_text_model_selector_rejects_missin
     )
 
     assert not (
-        support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        anchor_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
             wrong_pattern_argument
         )
     )
     assert not (
-        support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        anchor_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
             missing_haystack_text_model
         )
     )
     assert not (
-        support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
+        anchor_support._is_module_workflow_compiled_pattern_wrong_text_model_workload(
             wrong_exception_type
         )
     )

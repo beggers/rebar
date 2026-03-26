@@ -1429,10 +1429,7 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
     spec = support.compiled_pattern_module_success_contract_builder_spec(owner_spec)
 
     assert spec.manifest_id == owner_spec.contract_manifest_id
-    assert (
-        spec.excluded_fields
-        == benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
-    )
+    assert spec.excluded_fields == support._COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
     assert spec.manifest_timed_samples == 2
     assert spec.timing_scope == "module-helper-call"
     assert spec.notes
@@ -2879,6 +2876,12 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
     owner_definition_names = {
         "_compiled_pattern_wrong_text_model_specs",
         "_compiled_pattern_wrong_text_model_source_workloads",
+        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
+    }
+    owner_assignment_names = {
+        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+        "_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
+        "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
     }
     module_ast = benchmark_test_support._parsed_module_ast(support)
     local_definition_names, local_assignment_names = (
@@ -2889,6 +2892,8 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
 
     assert owner_definition_names.issubset(local_definition_names)
     assert owner_definition_names.isdisjoint(local_assignment_names)
+    assert owner_assignment_names.issubset(local_assignment_names)
+    assert owner_assignment_names.isdisjoint(local_definition_names)
 
     for definition_name in owner_definition_names:
         definition = next(
@@ -2898,13 +2903,17 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
         )
         assert isinstance(definition, ast.FunctionDef)
 
+    for assignment_name in owner_assignment_names:
+        assignment = _module_assignment(support, assignment_name)
+        assert isinstance(assignment, ast.Assign)
+
     assert {
         node.attr
         for node in ast.walk(module_ast)
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
         and node.value.id == "benchmark_test_support"
-        and node.attr in owner_definition_names
+        and node.attr in owner_definition_names | owner_assignment_names
     } == set()
 
 

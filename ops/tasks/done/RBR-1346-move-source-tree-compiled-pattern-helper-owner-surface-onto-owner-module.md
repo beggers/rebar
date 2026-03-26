@@ -1,6 +1,6 @@
 ## RBR-1346: Move source-tree compiled-pattern helper owner surface onto owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -55,3 +55,13 @@ Created: 2026-03-26
   - `./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'compiled_pattern_wrong_text_model_surface_locally or compiled_pattern_module_success_contract_builder_spec_uses_owner_metadata'` passed with `3 passed, 93 deselected in 0.13s`
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
   - `bash -lc "! rg -n '^(_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS|_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS|COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS)\\b|^def _is_module_workflow_compiled_pattern_wrong_text_model_workload\\b' tests/benchmarks/benchmark_test_support.py"` currently fails because that source-tree-only helper owner-surface block still lives in the generic support module, and that failure belongs exactly to this cleanup
+
+## Completion
+- Moved the remaining source-tree-only compiled-pattern helper owner block off `tests/benchmarks/benchmark_test_support.py` and onto `tests/benchmarks/source_tree_benchmark_anchor_support.py`, including the module-boundary wrong-text-model selector/ids, the success-contract excluded-fields constant, and `COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS`.
+- Updated `STANDARD_BENCHMARK_DEFINITIONS` to splice the helper owner block from `source_tree_benchmark_anchor_support`.
+- Tightened the ownership tests so `benchmark_test_support` now fails if that block comes back and `source_tree_benchmark_anchor_support` proves the moved names are defined locally rather than re-exported.
+- Verification on 2026-03-26:
+  - `./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_helper_surface or standard_benchmark_definitions_keep_owner_blocks_in_order or wrong_text_model_selector'`
+  - `./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'compiled_pattern_wrong_text_model_surface_locally or compiled_pattern_module_success_contract_builder_spec_uses_owner_metadata'`
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py`
+  - `bash -lc "! rg -n '^(_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS|_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS|COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS)\\b|^def _is_module_workflow_compiled_pattern_wrong_text_model_workload\\b' tests/benchmarks/benchmark_test_support.py"`

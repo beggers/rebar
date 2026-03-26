@@ -421,9 +421,7 @@ def compiled_pattern_module_success_contract_builder_spec(
 ) -> _SourceTreeContractBuilderSpec:
     return _SourceTreeContractBuilderSpec(
         manifest_id=owner_spec.contract_manifest_id,
-        excluded_fields=(
-            benchmark_test_support._COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
-        ),
+        excluded_fields=_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS,
         timing_scope="module-helper-call",
         notes=(
             "Ensures benchmark manifests keep the bounded "
@@ -469,16 +467,12 @@ def _compiled_pattern_wrong_text_model_specs() -> tuple[dict[str, object], ...]:
         {
             "case_id": "compiled_pattern_module_boundary_wrong_text_model",
             "manifest_path": "module_boundary.py",
-            "include_workload": (
-                benchmark_test_support._is_module_workflow_compiled_pattern_wrong_text_model_workload
-            ),
+            "include_workload": _is_module_workflow_compiled_pattern_wrong_text_model_workload,
             "contract_manifest_id": "module-boundary",
             "contract_filename": (
                 "python_benchmark_compiled_pattern_module_boundary_wrong_text_model_contract.py"
             ),
-            "expected_source_workload_ids": (
-                benchmark_test_support._COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS
-            ),
+            "expected_source_workload_ids": _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS,
         },
     )
 
@@ -530,6 +524,34 @@ _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
         ),
     ),
 }
+_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
+    "module-search-on-bytes-string-warm-str-compiled-pattern",
+    "module-match-on-str-string-purged-bytes-compiled-pattern",
+    "module-fullmatch-on-bytes-string-warm-str-compiled-pattern",
+)
+_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS = (
+    benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
+    | {
+        "categories",
+        "syntax_features",
+        "expected_exception",
+        "haystack_text_model",
+    }
+)
+
+
+def _is_module_workflow_compiled_pattern_wrong_text_model_workload(
+    workload: object,
+) -> bool:
+    return (
+        not workload.kwargs
+        and workload.use_compiled_pattern
+        and workload.operation
+        in benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_OPERATIONS
+        and getattr(workload, "haystack_text_model", None) is not None
+        and workload.expected_exception is not None
+        and workload.expected_exception.get("type") == "TypeError"
+    )
 
 
 _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = _SourceTreeContractBuilderSpec(
@@ -6359,6 +6381,114 @@ _compiled_pattern_module_helper_route = (
 
 COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS = (
     _build_compiled_pattern_module_compile_standard_benchmark_definitions()
+)
+COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
+    benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-compiled-pattern-literal-success",
+        manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-search-literal-warm-hit-str-compiled-pattern": (
+                    "workflow-module-search-str-compiled-pattern",
+                ),
+                "module-match-literal-warm-hit-str-compiled-pattern": (
+                    "workflow-module-match-str-compiled-pattern",
+                ),
+                "module-fullmatch-literal-purged-hit-bytes-compiled-pattern": (
+                    "workflow-module-fullmatch-bytes-compiled-pattern",
+                ),
+            },
+        ),
+        include_workload=(
+            benchmark_test_support._is_module_workflow_compiled_pattern_literal_success_workload
+        ),
+        correctness_case_signature=(
+            benchmark_test_support._module_workflow_compiled_pattern_correctness_case_signature
+        ),
+        workload_signature=(
+            benchmark_test_support._module_workflow_compiled_pattern_workload_signature
+        ),
+        run_callback_result_parity=True,
+    ),
+    benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-compiled-pattern-bounded-wildcard-success",
+        manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern": (
+                    "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
+                ),
+                "module-match-bounded-wildcard-warm-hit-str-compiled-pattern": (
+                    "workflow-module-match-str-bounded-wildcard-compiled-pattern",
+                ),
+                "module-fullmatch-bounded-wildcard-purged-hit-str-compiled-pattern": (
+                    "workflow-module-fullmatch-str-bounded-wildcard-compiled-pattern",
+                ),
+            },
+        ),
+        include_workload=(
+            benchmark_test_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload
+        ),
+        correctness_case_signature=(
+            benchmark_test_support._module_workflow_compiled_pattern_correctness_case_signature
+        ),
+        workload_signature=(
+            benchmark_test_support._module_workflow_compiled_pattern_workload_signature
+        ),
+        run_callback_result_parity=True,
+    ),
+    benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-compiled-pattern-verbose-bytes-success",
+        manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-search-verbose-regression-warm-hit-bytes-compiled-pattern": (
+                    "workflow-module-search-bytes-verbose-regression-compiled-pattern",
+                ),
+                "module-fullmatch-verbose-regression-purged-hit-bytes-compiled-pattern": (
+                    "workflow-module-fullmatch-bytes-verbose-regression-compiled-pattern",
+                ),
+            },
+        ),
+        include_workload=(
+            benchmark_test_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload
+        ),
+        correctness_case_signature=(
+            benchmark_test_support._module_workflow_compiled_pattern_correctness_case_signature
+        ),
+        workload_signature=(
+            benchmark_test_support._module_workflow_compiled_pattern_workload_signature
+        ),
+        run_callback_result_parity=True,
+    ),
+    benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-compiled-pattern-wrong-text-model",
+        manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+            {
+                "module-search-on-bytes-string-warm-str-compiled-pattern": (
+                    "workflow-module-search-str-compiled-pattern-on-bytes-string",
+                ),
+                "module-match-on-str-string-purged-bytes-compiled-pattern": (
+                    "workflow-module-match-bytes-compiled-pattern-on-str-string",
+                ),
+                "module-fullmatch-on-bytes-string-warm-str-compiled-pattern": (
+                    "workflow-module-fullmatch-str-compiled-pattern-on-bytes-string",
+                ),
+            },
+        ),
+        include_workload=_is_module_workflow_compiled_pattern_wrong_text_model_workload,
+        correctness_case_signature=(
+            benchmark_test_support._module_workflow_compiled_pattern_correctness_case_signature
+        ),
+        workload_signature=(
+            benchmark_test_support._module_workflow_compiled_pattern_workload_signature
+        ),
+    ),
 )
 
 
