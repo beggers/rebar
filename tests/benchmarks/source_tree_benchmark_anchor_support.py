@@ -3391,41 +3391,6 @@ def source_tree_combined_fully_measured_manifest_ids(
     )
 
 
-def _source_tree_manifest_known_gap_count(
-    manifest_expectation: SourceTreeCombinedManifestExpectationDefinition,
-    *,
-    selected_workload_ids: Iterable[str] | None = None,
-) -> int:
-    return len(
-        _filter_manifest_workload_ids(
-            manifest_expectation.known_gap_workload_ids,
-            selected_workload_ids=selected_workload_ids,
-        )
-    )
-
-
-def _source_tree_manifest_representative_measured_workload_ids(
-    manifest_expectation: SourceTreeCombinedManifestExpectationDefinition,
-    *,
-    selected_workload_ids: Iterable[str] | None = None,
-) -> tuple[str, ...]:
-    return _filter_manifest_workload_ids(
-        manifest_expectation.representative_measured_workload_ids,
-        selected_workload_ids=selected_workload_ids,
-    )
-
-
-def _source_tree_manifest_representative_known_gap_workload_ids(
-    manifest_expectation: SourceTreeCombinedManifestExpectationDefinition,
-    *,
-    selected_workload_ids: Iterable[str] | None = None,
-) -> tuple[str, ...]:
-    return _filter_manifest_workload_ids(
-        manifest_expectation.representative_known_gap_workload_ids,
-        selected_workload_ids=selected_workload_ids,
-    )
-
-
 def _public_source_tree_manifest_expectation(
     manifest_id: str,
     *,
@@ -3437,21 +3402,19 @@ def _public_source_tree_manifest_expectation(
             f"unknown source-tree combined manifest expectation {manifest_id!r}"
         )
     return SourceTreeManifestExpectation(
-        known_gap_count=_source_tree_manifest_known_gap_count(
-            manifest_expectation,
+        known_gap_count=len(
+            _filter_manifest_workload_ids(
+                manifest_expectation.known_gap_workload_ids,
+                selected_workload_ids=selected_workload_ids,
+            )
+        ),
+        representative_measured_workload_ids=_filter_manifest_workload_ids(
+            manifest_expectation.representative_measured_workload_ids,
             selected_workload_ids=selected_workload_ids,
         ),
-        representative_measured_workload_ids=(
-            _source_tree_manifest_representative_measured_workload_ids(
-                manifest_expectation,
-                selected_workload_ids=selected_workload_ids,
-            )
-        ),
-        representative_known_gap_workload_ids=(
-            _source_tree_manifest_representative_known_gap_workload_ids(
-                manifest_expectation,
-                selected_workload_ids=selected_workload_ids,
-            )
+        representative_known_gap_workload_ids=_filter_manifest_workload_ids(
+            manifest_expectation.representative_known_gap_workload_ids,
+            selected_workload_ids=selected_workload_ids,
         ),
     )
 
@@ -3504,12 +3467,14 @@ def _source_tree_manifest_known_gap_counts(
                 "missing known-gap expectation for source-tree scorecard manifest "
                 f"{manifest_id!r}"
             )
-        known_gap_counts[manifest_id] = _source_tree_manifest_known_gap_count(
-            manifest_expectation,
-            selected_workload_ids=_selected_source_tree_manifest_workload_ids(
-                manifest,
-                selection_mode=selection_mode,
-            ),
+        known_gap_counts[manifest_id] = len(
+            _filter_manifest_workload_ids(
+                manifest_expectation.known_gap_workload_ids,
+                selected_workload_ids=_selected_source_tree_manifest_workload_ids(
+                    manifest,
+                    selection_mode=selection_mode,
+                ),
+            )
         )
     return known_gap_counts
 
@@ -3623,8 +3588,8 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
             )
         if not representative_known_gap_workload_ids:
             representative_known_gap_workload_ids = (
-                _source_tree_manifest_representative_known_gap_workload_ids(
-                    manifest_expectation
+                _filter_manifest_workload_ids(
+                    manifest_expectation.representative_known_gap_workload_ids
                 )
             )
     common_case_kwargs = _source_tree_benchmark_common_case_kwargs(
@@ -3722,12 +3687,16 @@ def expected_summary_for_manifests(
         manifest_known_gap_counts
         if manifest_known_gap_counts is not None
         else {
-            manifest.manifest_id: _source_tree_manifest_known_gap_count(
-                SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest.manifest_id],
-                selected_workload_ids=_selected_source_tree_manifest_workload_ids(
-                    manifest,
-                    selection_mode=selection_mode,
-                ),
+            manifest.manifest_id: len(
+                _filter_manifest_workload_ids(
+                    SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+                        manifest.manifest_id
+                    ].known_gap_workload_ids,
+                    selected_workload_ids=_selected_source_tree_manifest_workload_ids(
+                        manifest,
+                        selection_mode=selection_mode,
+                    ),
+                )
             )
             for manifest in manifests
             if manifest.manifest_id in SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
