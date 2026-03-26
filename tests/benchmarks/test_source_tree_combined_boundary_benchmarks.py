@@ -52,6 +52,15 @@ _is_collection_replacement_wrong_text_model_workload = (
     benchmark_test_support._is_collection_replacement_wrong_text_model_workload
 )
 
+_PATTERN_BOUNDARY_OPERATIONS = frozenset(
+    {"pattern.search", "pattern.match", "pattern.fullmatch"}
+)
+PATTERN_BOUNDARY_MANIFEST_PATH = benchmarks.BENCHMARK_WORKLOADS_ROOT / "pattern_boundary.py"
+_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
+    "pattern-search-on-bytes-string-warm-str",
+    "pattern-match-on-str-string-purged-bytes",
+    "pattern-fullmatch-on-bytes-string-warm-str",
+)
 _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
     "module-search-numbered-optional-group-conditional-cold-gap"
 )
@@ -218,6 +227,91 @@ def _is_non_alternation_counted_repeat_workload(workload: Any) -> bool:
         "module.search",
         "pattern.fullmatch",
     } and "|" not in workload.pattern
+
+
+def _pattern_boundary_wrong_text_model_source_workloads() -> tuple[Any, ...]:
+    return benchmark_test_support._contract_source_workloads(
+        manifest_path=PATTERN_BOUNDARY_MANIFEST_PATH,
+        include_workload_selectors=(_is_pattern_boundary_wrong_text_model_workload,),
+        expected_source_workload_ids=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS,
+        drift_message=(
+            "direct Pattern pattern-boundary wrong-text-model surface drifted "
+            "from the live source workload surface"
+        ),
+    )
+
+
+def _pattern_boundary_wrong_text_model_expected_callback_call(
+    source_workload: Any,
+) -> tuple[object, ...]:
+    if source_workload.operation in _PATTERN_BOUNDARY_OPERATIONS:
+        return (
+            source_workload.operation,
+            source_workload.haystack_payload(),
+            (),
+            {},
+        )
+    raise AssertionError(
+        "unexpected direct Pattern pattern-boundary wrong-text-model "
+        f"workload operation {source_workload.operation!r}"
+    )
+
+
+def _pattern_boundary_wrong_text_model_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.operation != "pattern_call" or case.kwargs:
+        return None
+    if case.helper not in {"search", "match", "fullmatch"}:
+        return None
+    case_args = list(case.args)
+    if len(case_args) != 1:
+        return None
+    haystack = case_args[0]
+    case_text_model = case.text_model or "str"
+    if case_text_model == "str" and not isinstance(haystack, bytes):
+        return None
+    if case_text_model == "bytes" and not isinstance(haystack, str):
+        return None
+    return (
+        f"pattern.{case.helper}",
+        benchmark_test_support.case_pattern(case),
+        benchmark_test_support.freeze_signature_value(case_args),
+        (),
+        case.flags or 0,
+        case_text_model,
+    )
+
+
+def _pattern_boundary_wrong_text_model_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if not _is_pattern_boundary_wrong_text_model_workload(workload):
+        raise AssertionError(
+            "unexpected pattern-boundary wrong-text-model workload "
+            f"{workload.workload_id!r}"
+        )
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        benchmark_test_support.freeze_signature_value([workload.haystack_payload()]),
+        (),
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def _is_pattern_boundary_wrong_text_model_workload(workload: Any) -> bool:
+    return (
+        getattr(workload, "haystack_text_model", None) is not None
+        and not workload.use_compiled_pattern
+        and workload.operation in _PATTERN_BOUNDARY_OPERATIONS
+        and workload.pos is None
+        and workload.endpos is None
+        and not workload.kwargs
+        and workload.expected_exception is not None
+        and workload.expected_exception.get("type") == "TypeError"
+    )
 
 
 _PATTERN_BOUNDED_WILDCARD_WORKLOAD_IDS = (
@@ -1109,9 +1203,9 @@ def _published_benchmark_manifest_ids() -> frozenset[str]:
 _PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK = (
     benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
         name="pattern-window-positional-indexlike",
-        manifest_paths=(benchmark_test_support.PATTERN_BOUNDARY_MANIFEST_PATH,),
+        manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
         expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
-            benchmark_test_support.PATTERN_BOUNDARY_MANIFEST_PATH,
+            PATTERN_BOUNDARY_MANIFEST_PATH,
             {
                 "pattern-search-pos-indexlike-positional-warm-str": (
                     "workflow-pattern-search-str-pos-indexlike-positional",
@@ -1140,9 +1234,9 @@ _PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK = (
     ),
     benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
         name="pattern-window-keyword",
-        manifest_paths=(benchmark_test_support.PATTERN_BOUNDARY_MANIFEST_PATH,),
+        manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
         expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
-            benchmark_test_support.PATTERN_BOUNDARY_MANIFEST_PATH,
+            PATTERN_BOUNDARY_MANIFEST_PATH,
             {
                 "pattern-search-pos-keyword-warm-str": (
                     "workflow-pattern-search-str-pos-keyword",
@@ -1201,9 +1295,9 @@ _PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK = (
     ),
     benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
         name="pattern-boundary-bounded-wildcard",
-        manifest_paths=(benchmark_test_support.PATTERN_BOUNDARY_MANIFEST_PATH,),
+        manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
         expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
-            benchmark_test_support.PATTERN_BOUNDARY_MANIFEST_PATH,
+            PATTERN_BOUNDARY_MANIFEST_PATH,
             {
                 "pattern-search-bounded-wildcard-ignorecase-warm-str": (
                     "workflow-pattern-search-str-bounded-wildcard-ignorecase",
@@ -1232,9 +1326,9 @@ _PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK = (
     ),
     benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
         name="pattern-boundary-verbose-regression",
-        manifest_paths=(benchmark_test_support.PATTERN_BOUNDARY_MANIFEST_PATH,),
+        manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
         expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
-            benchmark_test_support.PATTERN_BOUNDARY_MANIFEST_PATH,
+            PATTERN_BOUNDARY_MANIFEST_PATH,
             {
                 "pattern-search-verbose-regression-warm-str": (
                     "workflow-pattern-search-str-verbose-regression",
@@ -1281,9 +1375,9 @@ _PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK = (
     ),
     benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
         name="pattern-boundary-wrong-text-model",
-        manifest_paths=(benchmark_test_support.PATTERN_BOUNDARY_MANIFEST_PATH,),
+        manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
         expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
-            benchmark_test_support.PATTERN_BOUNDARY_MANIFEST_PATH,
+            PATTERN_BOUNDARY_MANIFEST_PATH,
             {
                 "pattern-search-on-bytes-string-warm-str": (
                     "workflow-pattern-search-str-pattern-on-bytes-string",
@@ -1296,11 +1390,9 @@ _PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK = (
                 ),
             },
         ),
-        include_workload=benchmark_test_support._is_pattern_boundary_wrong_text_model_workload,
-        correctness_case_signature=(
-            benchmark_test_support._pattern_boundary_wrong_text_model_correctness_case_signature
-        ),
-        workload_signature=benchmark_test_support._pattern_boundary_wrong_text_model_workload_signature,
+        include_workload=_is_pattern_boundary_wrong_text_model_workload,
+        correctness_case_signature=_pattern_boundary_wrong_text_model_correctness_case_signature,
+        workload_signature=_pattern_boundary_wrong_text_model_workload_signature,
     ),
 )
 
@@ -14192,10 +14284,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_o
     "source_workload",
     tuple(
         pytest.param(workload, id=workload.workload_id)
-        for workload in benchmark_test_support.selected_manifest_workloads(
-            benchmarks.BENCHMARK_WORKLOADS_ROOT / "pattern_boundary.py",
-            include_workload=benchmark_test_support._is_pattern_boundary_wrong_text_model_workload,
-        )
+        for workload in _pattern_boundary_wrong_text_model_source_workloads()
     ),
 )
 def test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio(

@@ -2354,7 +2354,8 @@ def test_deleted_collection_replacement_owner_module_stays_unimportable_and_unre
     )
 
 
-def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
+def test_benchmark_test_support_owns_pattern_boundary_wrong_text_model_surface(
+) -> None:
     support_definition_names, support_assignment_names = (
         support.top_level_module_definition_and_assignment_names(support)
     )
@@ -2363,7 +2364,7 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
             collection_replacement_support
         )
     )
-    assert {
+    moved_owner_names = {
         "_pattern_boundary_wrong_text_model_source_workloads",
         "_pattern_boundary_wrong_text_model_expected_callback_call",
         "_pattern_boundary_wrong_text_model_correctness_case_signature",
@@ -2371,7 +2372,10 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
         "_is_pattern_boundary_wrong_text_model_workload",
         "PATTERN_BOUNDARY_MANIFEST_PATH",
         "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
-    }.issubset(support_definition_names | support_assignment_names)
+    }
+
+    assert moved_owner_names.isdisjoint(support_definition_names | support_assignment_names)
+    assert moved_owner_names.isdisjoint(dir(support))
     assert {
         "_pattern_window_positional_indexlike_correctness_case_signature",
         "_pattern_window_positional_indexlike_workload_args",
@@ -2432,6 +2436,28 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
     assert "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS" in (
         collection_definition_names | collection_assignment_names
     )
+
+
+def test_source_tree_combined_suite_owns_rehomed_pattern_boundary_wrong_text_model_surface_locally(
+) -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    definition_names, assignment_names = (
+        support.top_level_module_definition_and_assignment_names(module)
+    )
+    moved_owner_names = {
+        "_pattern_boundary_wrong_text_model_source_workloads",
+        "_pattern_boundary_wrong_text_model_expected_callback_call",
+        "_pattern_boundary_wrong_text_model_correctness_case_signature",
+        "_pattern_boundary_wrong_text_model_workload_signature",
+        "_is_pattern_boundary_wrong_text_model_workload",
+        "PATTERN_BOUNDARY_MANIFEST_PATH",
+        "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+    }
+
+    assert moved_owner_names.issubset(definition_names | assignment_names)
+    assert moved_owner_names.isdisjoint(dir(module.benchmark_test_support))
 
 
 def test_benchmark_test_support_defines_shared_manifest_workload_contract_helper(

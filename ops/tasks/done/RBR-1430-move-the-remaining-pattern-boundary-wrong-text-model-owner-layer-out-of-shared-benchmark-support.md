@@ -53,3 +53,6 @@ Created: 2026-03-26
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'pattern_boundary_wrong_text_model or wrong_text_model_payload_round_trip or haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio or source_tree_combined_suite_owns_rehomed_pattern_boundary_wrong_text_model_surface_locally or benchmark_test_support_owns_pattern_boundary_wrong_text_model_surface'` passed with `3 passed, 493 deselected in 0.22s`.
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed.
+
+## Completion
+- Completed 2026-03-26: moved the remaining pattern-boundary wrong-text-model manifest constant and selector/signature helpers out of `tests/benchmarks/benchmark_test_support.py` and into `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, updated the owner meta-tests to assert the tighter boundary, and verified with the scoped pytest target, `python3 -m py_compile`, and the `rg` absence check against shared support.
