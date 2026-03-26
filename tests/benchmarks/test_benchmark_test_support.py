@@ -1543,7 +1543,10 @@ def test_benchmark_test_support_owns_only_shared_collection_replacement_classifi
         support
     )
 
-    assert {"_is_encoded_indexlike_payload"}.issubset(definition_names)
+    assert {
+        "_is_encoded_indexlike_payload",
+        "_is_collection_replacement_wrong_text_model_workload",
+    }.issubset(definition_names)
     assert {
         "_collection_replacement_keyword_parameter_name",
         "_collection_replacement_positional_keyword_field",
@@ -1551,8 +1554,7 @@ def test_benchmark_test_support_owns_only_shared_collection_replacement_classifi
         "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
         "_is_collection_replacement_compiled_pattern_module_helper_keyword_workload",
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-        "_is_collection_replacement_wrong_text_model_workload",
-    }.issubset(definition_names)
+    }.isdisjoint(definition_names)
 
 
 def test_collection_replacement_benchmark_support_owns_keyword_classifier_helpers_and_routes_shared_ones_through_support_alias(
@@ -1570,7 +1572,6 @@ def test_collection_replacement_benchmark_support_owns_keyword_classifier_helper
         "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
         "_is_collection_replacement_compiled_pattern_module_helper_keyword_workload",
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-        "_is_collection_replacement_wrong_text_model_workload",
     }.issubset(definition_names)
     assert {
         "_collection_replacement_keyword_parameter_name",
@@ -1579,9 +1580,19 @@ def test_collection_replacement_benchmark_support_owns_keyword_classifier_helper
         "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
         "_is_collection_replacement_compiled_pattern_module_helper_keyword_workload",
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-        "_is_collection_replacement_wrong_text_model_workload",
     }.isdisjoint(assignment_names)
-    assert collection_replacement_support is support
+    assert "_is_collection_replacement_wrong_text_model_workload" not in definition_names
+    assert "_is_collection_replacement_wrong_text_model_workload" in assignment_names
+    assert collection_replacement_support is not support
+    assert collection_replacement_support.benchmark_test_support is support
+    assert (
+        collection_replacement_support._is_collection_replacement_wrong_text_model_workload
+        is support._is_collection_replacement_wrong_text_model_workload
+    )
+    assert hasattr(
+        collection_replacement_support.benchmark_test_support,
+        "_is_collection_replacement_wrong_text_model_workload",
+    )
 
 
 @pytest.mark.parametrize(
@@ -3745,19 +3756,23 @@ def test_collection_replacement_support_exports_compiled_pattern_module_helper_k
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
     }
 
-    assert moved_definition_names <= support_definition_names
+    assert moved_definition_names.isdisjoint(
+        support_definition_names | support_assignment_names
+    )
     assert moved_definition_names <= collection_definition_names
-    assert assignment_only_names <= support_assignment_names
     assert assignment_only_names <= collection_assignment_names
-    assert hasattr(support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
-    assert hasattr(anchor_support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
+    assert assignment_only_names.isdisjoint(
+        support_definition_names | support_assignment_names
+    )
+    assert not hasattr(support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
+    assert not hasattr(anchor_support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
     assert hasattr(collection_replacement_support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
     for name in moved_definition_names:
-        assert hasattr(anchor_support, name)
+        assert not hasattr(anchor_support, name)
         assert hasattr(collection_replacement_support, name)
     for name in assignment_only_names:
-        assert hasattr(support, name)
-        assert hasattr(anchor_support, name)
+        assert not hasattr(support, name)
+        assert not hasattr(anchor_support, name)
         assert hasattr(collection_replacement_support, name)
 
 
@@ -4332,6 +4347,22 @@ def test_compiled_pattern_module_helper_wrapper_suite_is_deleted_and_unimportabl
         ),
         (
             support.synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id("module.findall"),
+                workload_id="module-findall-success",
+                operation="module.findall",
+                pattern="abc",
+                haystack="abcabc",
+                flags=re.IGNORECASE,
+                use_compiled_pattern=True,
+            ),
+            re.IGNORECASE,
+            "module-result",
+            ("module.findall", "abcabc", re.IGNORECASE),
+            ("abcabc", re.IGNORECASE),
+            False,
+        ),
+        (
+            support.synthetic_workload(
                 manifest_id=_compiled_pattern_module_helper_manifest_id("module.split"),
                 workload_id="module-split-success",
                 operation="module.split",
@@ -4347,12 +4378,32 @@ def test_compiled_pattern_module_helper_wrapper_suite_is_deleted_and_unimportabl
             ("abcabc", 2),
             False,
         ),
+        (
+            support.synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id("module.sub"),
+                workload_id="module-sub-success",
+                operation="module.sub",
+                pattern="abc",
+                haystack="abcabc",
+                replacement="x",
+                count=1,
+                flags=re.DOTALL,
+                use_compiled_pattern=True,
+            ),
+            re.DOTALL,
+            "module-result",
+            ("module.sub", "x", "abcabc", 1, re.DOTALL, {}),
+            ("x", "abcabc", 1),
+            False,
+        ),
     ),
     ids=(
         "module-boundary-search",
         "collection-replacement-subn",
         "wrong-text-model-finditer",
+        "collection-replacement-findall",
         "collection-replacement-split",
+        "collection-replacement-sub",
     ),
 )
 def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
@@ -4375,48 +4426,80 @@ def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
     assert materialize_cpython_result is materialize
 
 
-def test_run_cpython_compiled_pattern_module_helper_workload_materializes_finditer() -> None:
-    workload = support.synthetic_workload(
-        manifest_id=_compiled_pattern_module_helper_manifest_id("module.finditer"),
-        workload_id="module-finditer-runtime",
-        operation="module.finditer",
-        pattern="abc",
-        haystack="abcabc",
-        use_compiled_pattern=True,
-    )
-
-    result = (
-        collection_replacement_support._run_cpython_compiled_pattern_module_helper_workload(
-        workload,
-        collection_replacement_callback_flags=0,
-        )
-    )
-
-    assert isinstance(result, list)
-    assert [match.group(0) for match in result] == ["abc", "abc"]
-
-
-def test_run_cpython_compiled_pattern_module_helper_workload_preserves_scalar_result(
+@pytest.mark.parametrize(
+    ("workload", "expected_result"),
+    (
+        pytest.param(
+            support.synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id("module.finditer"),
+                workload_id="module-finditer-runtime",
+                operation="module.finditer",
+                pattern="abc",
+                haystack="abcabc",
+                use_compiled_pattern=True,
+            ),
+            ["abc", "abc"],
+            id="finditer-materializes-match-iterator",
+        ),
+        pytest.param(
+            support.synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id("module.findall"),
+                workload_id="module-findall-runtime",
+                operation="module.findall",
+                pattern="abc",
+                haystack="abcabc",
+                use_compiled_pattern=True,
+            ),
+            ["abc", "abc"],
+            id="findall-preserves-list-result",
+        ),
+        pytest.param(
+            support.synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id("module.sub"),
+                workload_id="module-sub-runtime",
+                operation="module.sub",
+                pattern="abc",
+                haystack="abcabc",
+                replacement="x",
+                count=1,
+                use_compiled_pattern=True,
+            ),
+            "xabc",
+            id="sub-preserves-string-result",
+        ),
+        pytest.param(
+            support.synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id("module.subn"),
+                workload_id="module-subn-runtime",
+                operation="module.subn",
+                pattern="abc",
+                haystack="abcabc",
+                replacement="x",
+                count=1,
+                use_compiled_pattern=True,
+            ),
+            ("xabc", 1),
+            id="subn-preserves-tuple-result",
+        ),
+    ),
+)
+def test_run_cpython_compiled_pattern_module_helper_workload_preserves_expected_result_shapes(
+    workload: object,
+    expected_result: object,
 ) -> None:
-    workload = support.synthetic_workload(
-        manifest_id=_compiled_pattern_module_helper_manifest_id("module.subn"),
-        workload_id="module-subn-runtime",
-        operation="module.subn",
-        pattern="abc",
-        haystack="abcabc",
-        replacement="x",
-        count=1,
-        use_compiled_pattern=True,
-    )
-
     result = (
         collection_replacement_support._run_cpython_compiled_pattern_module_helper_workload(
-        workload,
-        collection_replacement_callback_flags=0,
+            workload,
+            collection_replacement_callback_flags=0,
         )
     )
 
-    assert result == ("xabc", 1)
+    if workload.operation == "module.finditer":
+        assert isinstance(result, list)
+        assert [match.group(0) for match in result] == expected_result
+        return
+
+    assert result == expected_result
 
 
 def test_compiled_pattern_module_helper_wrong_text_model_selector_accepts_bounded_trio(
