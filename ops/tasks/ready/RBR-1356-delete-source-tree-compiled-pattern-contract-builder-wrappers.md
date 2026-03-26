@@ -45,7 +45,7 @@ Created: 2026-03-26
 
 ## Notes
 - ID check in this run:
-  - `.rebar/runtime/dashboard.md` reports `ready: 0`, `in_progress: 0`, `blocked: 0`, and `tracked_json_blob_count: 0`
+  - `.rebar/runtime/dashboard.md` reports `ready: 1`, `in_progress: 0`, `blocked: 0`, and `tracked_json_blob_count: 0`
   - `git ls-files '*.json' | wc -l` returned `0`
   - `rg --files -g '*.json' | wc -l` returned `0`
   - `rg -n 'RBR-1356|RBR-1357|RBR-1358|RBR-1359|RBR-1360' ops/state/current_status.md ops/state/backlog.md ops/tasks` returned only the historical mention inside `RBR-1355`, so no higher frontier ID in that range was reserved
@@ -58,5 +58,5 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_manifest_validation.py -k 'compiled_pattern_module_compile_contract_rows_preserve_success_and_keyword_payload_round_trip_until_helper_invocation or compiled_pattern_wrong_text_model_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation or haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio'` passed with `12 passed, 52 deselected in 0.20s`
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile_contract_rows_stay_anchored_to_published_correctness_cases or run_internal_workload_probe_measures_compiled_pattern_wrong_text_model_contract_workloads or run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_contract_workloads or compiled_pattern_module_success_rows_measured_in_combined_manifest'` passed with `53 passed, 226 deselected in 0.25s`
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed
-  - `rg -n '^    def contract_builder_spec\(' tests/benchmarks/benchmark_test_support.py` currently fails because the owner/spec dataclasses do not yet provide those builder methods, and that failure belongs exactly to this cleanup
-  - `bash -lc "! rg -n '^def (compiled_pattern_module_compile_contract_builder_spec|compiled_pattern_module_success_contract_builder_spec|compiled_pattern_module_helper_keyword_contract_builder_spec)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"` currently fails because those three wrapper functions still live on the source-tree owner module, and that failure belongs exactly to this cleanup
+  - `rg -n '^    def contract_builder_spec\(' tests/benchmarks/benchmark_test_support.py` still fails because the owner/spec dataclasses do not yet provide those builder methods, and that failure belongs exactly to this cleanup
+  - `bash -lc "! rg -n '^def (compiled_pattern_module_compile_contract_builder_spec|compiled_pattern_module_success_contract_builder_spec|compiled_pattern_module_helper_keyword_contract_builder_spec)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"` still fails because those three wrapper functions still live on the source-tree owner module, and that failure belongs exactly to this cleanup
