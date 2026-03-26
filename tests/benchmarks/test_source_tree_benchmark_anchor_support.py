@@ -27,6 +27,29 @@ _LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES = (
     "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
     "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
 )
+_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES = frozenset(
+    {
+        "_compiled_pattern_wrong_text_model_specs",
+        "_compiled_pattern_wrong_text_model_source_workloads",
+    }
+)
+_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES = frozenset(
+    {
+        "compiled_pattern_contract_expected_build_calls",
+        "_compiled_pattern_module_helper_route",
+    }
+)
+_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES = frozenset(
+    {
+        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+        "_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
+        "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
+    }
+)
+_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES = (
+    _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
+    | frozenset({"_is_module_workflow_compiled_pattern_wrong_text_model_workload"})
+)
 
 
 def _module_assignment(module: object, name: str) -> ast.Assign:
@@ -39,6 +62,62 @@ def _module_assignment(module: object, name: str) -> ast.Assign:
             for target in node.targets
         )
     )
+
+
+def _assert_mixed_owner_surface(
+    owner_module: object,
+    *,
+    local_function_names: frozenset[str],
+    local_assignment_names: frozenset[str],
+    support_alias_assignment_names: frozenset[str],
+) -> None:
+    module_ast = benchmark_test_support._parsed_module_ast(owner_module)
+    parsed_function_names = {
+        node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
+    }
+    _, parsed_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            owner_module
+        )
+    )
+
+    assert local_function_names
+    assert local_function_names.isdisjoint(local_assignment_names)
+    assert local_function_names.isdisjoint(support_alias_assignment_names)
+    assert local_assignment_names.isdisjoint(support_alias_assignment_names)
+
+    for function_name in local_function_names:
+        assert hasattr(owner_module, function_name)
+        assert function_name in parsed_function_names
+        assert function_name not in parsed_assignment_names
+        assert not hasattr(benchmark_test_support, function_name)
+
+    for assignment_name in local_assignment_names:
+        assert hasattr(owner_module, assignment_name)
+        assert assignment_name in parsed_assignment_names
+        assert assignment_name not in parsed_function_names
+        assert not hasattr(benchmark_test_support, assignment_name)
+        assignment = _module_assignment(owner_module, assignment_name)
+        assert not (
+            isinstance(assignment.value, ast.Attribute)
+            and isinstance(assignment.value.value, ast.Name)
+            and assignment.value.value.id == "benchmark_test_support"
+            and assignment.value.attr == assignment_name
+        )
+
+    for assignment_name in support_alias_assignment_names:
+        assert hasattr(owner_module, assignment_name)
+        assert assignment_name in parsed_assignment_names
+        assert assignment_name not in parsed_function_names
+        assignment = _module_assignment(owner_module, assignment_name)
+        assert isinstance(assignment.value, ast.Attribute)
+        assert isinstance(assignment.value.value, ast.Name)
+        assert assignment.value.value.id == "benchmark_test_support"
+        assert assignment.value.attr == assignment_name
+        assert getattr(owner_module, assignment_name) is getattr(
+            benchmark_test_support,
+            assignment_name,
+        )
 
 
 def _module_function_definition(module: object, function_name: str) -> ast.FunctionDef:
@@ -1175,27 +1254,22 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     for constant_name in (
         support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES
     ):
-        assert hasattr(support, constant_name)
-        if constant_name in {
-            "_compiled_pattern_wrong_text_model_specs",
-            "_compiled_pattern_wrong_text_model_source_workloads",
-        }:
-            assert constant_name in local_function_names
-            assert constant_name not in local_assignment_names
-            assert not hasattr(benchmark_test_support, constant_name)
-            continue
-
-        assert constant_name in local_assignment_names
-        assert constant_name not in local_function_names
-        assignment = _module_assignment(support, constant_name)
-        assert isinstance(assignment.value, ast.Attribute)
-        assert isinstance(assignment.value.value, ast.Name)
-        assert assignment.value.value.id == "benchmark_test_support"
-        assert assignment.value.attr == constant_name
-        assert getattr(support, constant_name) is getattr(
-            benchmark_test_support,
-            constant_name,
+        assert constant_name in (
+            _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
+            | _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
         )
+    _assert_mixed_owner_surface(
+        support,
+        local_function_names=(
+            _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
+        ),
+        local_assignment_names=(
+            _LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES
+        ),
+        support_alias_assignment_names=(
+            _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
+        ),
+    )
     for constant_name in (
         support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES
     ):
@@ -2873,27 +2947,24 @@ def test_source_tree_owner_defines_compiled_pattern_module_compile_surface_local
 
 def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally(
 ) -> None:
-    owner_definition_names = {
-        "_compiled_pattern_wrong_text_model_specs",
-        "_compiled_pattern_wrong_text_model_source_workloads",
-        "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
-    }
-    owner_assignment_names = {
-        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
-        "_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
-        "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
-    }
+    owner_definition_names = _LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES
+    owner_assignment_names = _LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES
     module_ast = benchmark_test_support._parsed_module_ast(support)
-    local_definition_names, local_assignment_names = (
-        benchmark_test_support.top_level_module_definition_and_assignment_names(
-            support
-        )
-    )
 
-    assert owner_definition_names.issubset(local_definition_names)
-    assert owner_definition_names.isdisjoint(local_assignment_names)
-    assert owner_assignment_names.issubset(local_assignment_names)
-    assert owner_assignment_names.isdisjoint(local_definition_names)
+    assert set(support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES) == (
+        _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
+        | _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
+    )
+    _assert_mixed_owner_surface(
+        support,
+        local_function_names=(
+            _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
+        ),
+        local_assignment_names=owner_assignment_names,
+        support_alias_assignment_names=(
+            _ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES
+        ),
+    )
 
     for definition_name in owner_definition_names:
         definition = next(
