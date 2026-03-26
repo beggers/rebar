@@ -133,14 +133,6 @@ def _is_pattern_boundary_wrong_text_model_workload(workload: Any) -> bool:
     )
 
 
-PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES = (
-    "pattern-window-positional-indexlike",
-    "pattern-window-keyword",
-    "pattern-boundary-bounded-wildcard",
-    "pattern-boundary-verbose-regression",
-    "pattern-boundary-wrong-text-model",
-)
-
 PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS = (
     benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
         name="pattern-window-positional-indexlike",

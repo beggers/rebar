@@ -63,28 +63,31 @@ def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned
 
 def test_pattern_boundary_standard_definitions_are_owner_owned_in_exact_order() -> None:
     definitions = pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
+    definition_names = tuple(definition.name for definition in definitions)
 
     assert isinstance(definitions, tuple)
-    assert tuple(definition.name for definition in definitions) == (
-        pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
+    assert definition_names == (
+        "pattern-window-positional-indexlike",
+        "pattern-window-keyword",
+        "pattern-boundary-bounded-wildcard",
+        "pattern-boundary-verbose-regression",
+        "pattern-boundary-wrong-text-model",
     )
 
 
 def test_pattern_boundary_standard_definitions_are_reused_by_standard_inventory() -> None:
     owner_definitions = pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
+    owner_definition_names = tuple(definition.name for definition in owner_definitions)
     standard_definitions_by_name = {
         definition.name: definition
         for definition in _explicit_standard_benchmark_definitions()
-        if definition.name
-        in pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
+        if definition.name in owner_definition_names
     }
 
-    assert tuple(standard_definitions_by_name) == (
-        pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
-    )
+    assert tuple(standard_definitions_by_name) == owner_definition_names
     assert tuple(
         standard_definitions_by_name[definition_name]
-        for definition_name in pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
+        for definition_name in owner_definition_names
     ) == owner_definitions
     assert all(
         standard_definitions_by_name[definition.name] is definition
