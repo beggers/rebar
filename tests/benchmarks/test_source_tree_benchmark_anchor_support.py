@@ -1149,6 +1149,9 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES
     ):
         assert hasattr(support, constant_name)
+        if constant_name in support.SOURCE_TREE_LOCAL_CONTRACT_BUILDER_FUNCTION_NAMES:
+            assert constant_name in local_function_names
+            continue
         assert constant_name in local_assignment_names
         assert getattr(support, constant_name) is getattr(
             benchmark_test_support,

@@ -2711,27 +2711,39 @@ def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_sur
     ) == frozenset()
 
 
-def test_collection_replacement_support_through_owner_module_only() -> None:
+def test_collection_replacement_owner_surface_reaches_combined_suite_through_source_tree_support_only(
+) -> None:
     combined_suite = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
-    )
-    _assert_owner_module_routes_through_package_import(
-        combined_suite,
-        owner_module="tests.benchmarks.collection_replacement_benchmark_anchor_support",
-        package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset(
-            {
-                (
-                    "collection_replacement_benchmark_anchor_support",
-                    "collection_replacement_support",
-                )
-            }
-        ),
     )
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(combined_suite)
     )
     local_names = definition_names | assignment_names
+
+    _assert_owner_module_routes_through_package_import(
+        combined_suite,
+        owner_module="tests.benchmarks.source_tree_benchmark_anchor_support",
+        package_module="tests.benchmarks",
+        expected_alias_pairs=frozenset(
+            {
+                ("benchmark_test_support", None),
+                (
+                    "source_tree_benchmark_anchor_support",
+                    "source_tree_support",
+                )
+            }
+        ),
+    )
+    assert getattr(combined_suite, "source_tree_support") is anchor_support
+    assert (
+        "tests.benchmarks.collection_replacement_benchmark_anchor_support"
+        not in support._module_import_targets(combined_suite)
+    )
+    assert (
+        combined_suite.source_tree_support.collection_replacement_support
+        is collection_replacement_support
+    )
     owner_names = frozenset(
         {
             "_COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS",
@@ -2913,7 +2925,7 @@ def test_deleted_pattern_boundary_support_stays_unimportable_and_unreferenced() 
     )
 
 
-def test_collection_replacement_support_routes_benchmark_test_support_owner_imports_through_package_alias(
+def test_collection_replacement_support_reaches_source_tree_owner_surface_through_benchmark_test_support_alias(
 ) -> None:
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(
@@ -2927,11 +2939,16 @@ def test_collection_replacement_support_routes_benchmark_test_support_owner_impo
         package_module="tests.benchmarks",
         expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
-    assert _top_level_package_import_alias_pairs(
-        collection_replacement_support,
-        package_module="tests.benchmarks",
-        imported_names=frozenset({"source_tree_benchmark_anchor_support"}),
-    ) == frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")})
+    assert collection_replacement_support.benchmark_test_support is support
+    assert (
+        "tests.benchmarks.source_tree_benchmark_anchor_support"
+        not in support._module_import_targets(collection_replacement_support)
+    )
+    assert "source_tree_support" not in definition_names | assignment_names
+    assert (
+        collection_replacement_support.benchmark_test_support.source_tree_support
+        is anchor_support
+    )
     assert _COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES.isdisjoint(
         definition_names | assignment_names
     )
