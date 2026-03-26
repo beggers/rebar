@@ -44,19 +44,10 @@ _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
 )
 
 
-@dataclass(frozen=True, slots=True)
-class _SourceTreeContractBuilderSpec:
-    manifest_id: str
-    excluded_fields: frozenset[str]
-    manifest_timed_samples: int = 2
-    timing_scope: str | None = None
-    notes: tuple[str, ...] = ()
-
-
 def _source_tree_contract_workload(
     source_workload: Workload,
     *,
-    spec: _SourceTreeContractBuilderSpec,
+    spec: benchmark_test_support._SourceTreeContractBuilderSpec,
 ) -> Workload:
     manifest_payload = _source_tree_contract_manifest((source_workload,), spec=spec)[
         "workloads"
@@ -79,7 +70,7 @@ def _source_tree_contract_workload(
 def _source_tree_contract_manifest(
     source_workloads: tuple[Workload, ...],
     *,
-    spec: _SourceTreeContractBuilderSpec,
+    spec: benchmark_test_support._SourceTreeContractBuilderSpec,
 ) -> dict[str, object]:
     workloads: list[dict[str, object]] = []
     for source_workload in source_workloads:
@@ -219,7 +210,7 @@ def _assert_source_tree_combined_routes_owner_names_through_module_alias(
 
 
 _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
-    "collection-replacement-boundary": _SourceTreeContractBuilderSpec(
+    "collection-replacement-boundary": benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id="collection-replacement-boundary",
         excluded_fields=(
             benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
@@ -231,7 +222,7 @@ _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
             "collection/replacement rows unresolved until helper invocation.",
         ),
     ),
-    "module-boundary": _SourceTreeContractBuilderSpec(
+    "module-boundary": benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id="module-boundary",
         excluded_fields=(
             benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
@@ -245,12 +236,14 @@ _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
     ),
 }
 
-_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = _SourceTreeContractBuilderSpec(
+_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = (
+    benchmark_test_support._SourceTreeContractBuilderSpec(
     manifest_id="pattern-boundary",
     excluded_fields=(
         benchmark_test_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_EXCLUDED_FIELDS
     ),
     timing_scope="pattern-helper-call",
+)
 )
 
 

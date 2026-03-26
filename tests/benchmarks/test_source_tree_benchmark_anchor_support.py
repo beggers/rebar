@@ -1311,10 +1311,10 @@ def test_compiled_pattern_module_compile_contract_builder_surface_builds_expecte
 ) -> None:
     excluded_fields = contract_case.manifest_excluded_fields()
 
-    assert contract_case.contract_builder_spec() == support._SourceTreeContractBuilderSpec(
+    assert contract_case.contract_builder_spec() == benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id="module-boundary",
         excluded_fields=excluded_fields,
-        manifest_timed_samples=support._SourceTreeContractBuilderSpec.__dataclass_fields__[
+        manifest_timed_samples=benchmark_test_support._SourceTreeContractBuilderSpec.__dataclass_fields__[
             "manifest_timed_samples"
         ].default,
         timing_scope="module-helper-call",
@@ -1440,12 +1440,12 @@ def test_compiled_pattern_wrong_text_model_contract_specs_track_manifest_family(
         contract_manifest_id
     ]
 
-    assert spec == support._SourceTreeContractBuilderSpec(
+    assert spec == benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id=contract_manifest_id,
         excluded_fields=(
             benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
         ),
-        manifest_timed_samples=support._SourceTreeContractBuilderSpec.__dataclass_fields__[
+        manifest_timed_samples=benchmark_test_support._SourceTreeContractBuilderSpec.__dataclass_fields__[
             "manifest_timed_samples"
         ].default,
         timing_scope="module-helper-call",
@@ -1469,7 +1469,7 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
 ) -> None:
     spec = owner_spec.contract_builder_spec()
 
-    assert spec == support._SourceTreeContractBuilderSpec(
+    assert spec == benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id=owner_spec.contract_manifest_id,
         excluded_fields=(
             benchmark_test_support.COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
@@ -1483,7 +1483,7 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
     )
     assert (
         spec.manifest_timed_samples
-        == support._SourceTreeContractBuilderSpec.__dataclass_fields__[
+        == benchmark_test_support._SourceTreeContractBuilderSpec.__dataclass_fields__[
             "manifest_timed_samples"
         ].default
     )
@@ -1513,7 +1513,7 @@ def test_compiled_pattern_module_helper_keyword_contract_builder_spec_handles_ex
 ) -> None:
     built_spec = spec.contract_builder_spec()
 
-    assert built_spec == support._SourceTreeContractBuilderSpec(
+    assert built_spec == benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id="collection-replacement-boundary",
         excluded_fields=expected_excluded_fields,
         manifest_timed_samples=spec.manifest_timed_samples,
@@ -3707,9 +3707,9 @@ def test_source_tree_owner_no_longer_keeps_contract_builder_spec_local() -> None
         )
     )
 
-    assert "_SourceTreeContractBuilderSpec" in local_definition_names
-    assert hasattr(support, "_SourceTreeContractBuilderSpec")
-    assert not hasattr(benchmark_test_support, "_SourceTreeContractBuilderSpec")
+    assert "_SourceTreeContractBuilderSpec" not in local_definition_names | local_assignment_names
+    assert not hasattr(support, "_SourceTreeContractBuilderSpec")
+    assert hasattr(benchmark_test_support, "_SourceTreeContractBuilderSpec")
 
 
 def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally(

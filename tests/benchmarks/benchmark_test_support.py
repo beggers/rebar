@@ -72,6 +72,16 @@ class StandardBenchmarkAnchorContractDefinition:
             and self.include_workload(workload)
         )
 
+
+@dataclass(frozen=True, slots=True)
+class _SourceTreeContractBuilderSpec:
+    manifest_id: str
+    excluded_fields: frozenset[str]
+    manifest_timed_samples: int = 2
+    timing_scope: str | None = None
+    notes: tuple[str, ...] = ()
+
+
 class RecordingBenchmarkCompiledPattern:
     def __init__(self, calls: list[tuple[object, ...]]) -> None:
         self._calls = calls
@@ -1950,11 +1960,7 @@ class CompiledPatternModuleCompileContractCase:
         return self.expected_build_calls_builder(source_workload)
 
     def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
-        from tests.benchmarks import (
-            source_tree_benchmark_anchor_support as source_tree_support,
-        )
-
-        return source_tree_support._SourceTreeContractBuilderSpec(
+        return _SourceTreeContractBuilderSpec(
             manifest_id="module-boundary",
             excluded_fields=self.manifest_excluded_fields(),
             manifest_timed_samples=2,
@@ -3364,11 +3370,7 @@ class CompiledPatternModuleSuccessOwnerSpec:
         return callback_call
 
     def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
-        from tests.benchmarks import (
-            source_tree_benchmark_anchor_support as source_tree_support,
-        )
-
-        return source_tree_support._SourceTreeContractBuilderSpec(
+        return _SourceTreeContractBuilderSpec(
             manifest_id=self.contract_manifest_id,
             excluded_fields=COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS,
             timing_scope="module-helper-call",
@@ -3581,11 +3583,7 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
         excluded_fields = COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
         if not self.preserve_expected_exception:
             excluded_fields = excluded_fields | {"expected_exception"}
-        from tests.benchmarks import (
-            source_tree_benchmark_anchor_support as source_tree_support,
-        )
-
-        return source_tree_support._SourceTreeContractBuilderSpec(
+        return _SourceTreeContractBuilderSpec(
             manifest_id="collection-replacement-boundary",
             excluded_fields=excluded_fields,
             manifest_timed_samples=self.manifest_timed_samples,
