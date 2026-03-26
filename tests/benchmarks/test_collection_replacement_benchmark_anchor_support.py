@@ -1310,7 +1310,7 @@ def test_grouped_callable_workload_signature_rejects_non_pair_and_non_callable_r
 
 def test_moved_collection_replacement_workload_ids_in_combined_suite_use_direct_owner_import(
 ) -> None:
-    benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
+    source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="collection_replacement_support",
         owner_module=support,
         owner_names=_collection_routed_owner_assignment_names(),
@@ -1546,7 +1546,7 @@ def test_conditional_collection_replacement_callable_slice_workload_helpers_matc
 
 def test_quantified_conditional_callable_combined_slice_expectations_stay_in_sync_with_owner_workload_ids(
 ) -> None:
-    combined_suite = benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
+    combined_suite = source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="collection_replacement_support",
         owner_module=support,
         owner_names=(
@@ -2991,7 +2991,7 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wr
     tmp_path: pathlib.Path,
 ) -> None:
     source_workloads = support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOADS
-    manifest = benchmark_test_support._source_tree_contract_manifest(
+    manifest = source_tree_support._source_tree_contract_manifest(
         source_workloads,
         spec=support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
@@ -3068,7 +3068,7 @@ def test_run_internal_workload_probe_measures_collection_replacement_pattern_wro
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = benchmark_test_support._source_tree_contract_workload(
+    workload = source_tree_support._source_tree_contract_workload(
         source_workload,
         spec=support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
@@ -3115,7 +3115,7 @@ def test_collection_replacement_pattern_wrong_text_model_callbacks_preserve_prec
     callback = build_callable(
         module,
         "re",
-        benchmark_test_support._source_tree_contract_workload(
+        source_tree_support._source_tree_contract_workload(
             source_workload,
             spec=support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
         ),
