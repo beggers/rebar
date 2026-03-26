@@ -3938,6 +3938,35 @@ def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() ->
     )
 
 
+def test_source_tree_wrong_text_model_standard_definition_stays_bound_to_local_module_boundary_contract(
+) -> None:
+    definition = support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS[0]
+    selected_workloads = benchmark_test_support.selected_manifest_workloads(
+        benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+        include_workload=definition.includes_workload,
+    )
+
+    assert definition.name == "module-workflow-compiled-pattern-wrong-text-model"
+    assert definition.manifest_paths == (
+        benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+    )
+    assert (
+        definition.include_workload
+        is support._is_module_workflow_compiled_pattern_wrong_text_model_workload
+    )
+    assert (
+        definition.correctness_case_signature
+        is support._module_workflow_compiled_pattern_correctness_case_signature
+    )
+    assert (
+        definition.workload_signature
+        is support._module_workflow_compiled_pattern_workload_signature
+    )
+    assert tuple(workload.workload_id for workload in selected_workloads) == tuple(
+        workload_id for _, workload_id in definition.expected_anchor_case_ids
+    )
+
+
 def test_optional_group_conditional_helpers_stay_on_the_search_anchor() -> None:
     cases = benchmark_test_support.published_cases_by_id()
     workload = benchmark_test_support.live_manifest_workload(
