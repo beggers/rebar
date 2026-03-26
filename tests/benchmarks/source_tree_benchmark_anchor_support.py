@@ -1177,40 +1177,6 @@ def _combined_fully_measured_manifest_expectation(
     )
 
 
-def _combined_manifest_shape(
-    *,
-    representative_measured_workload_ids: tuple[str, ...],
-    pattern_groups: tuple[SourceTreeCombinedPatternGroupExpectation, ...] = (),
-) -> SourceTreeCombinedManifestShapeExpectation:
-    return SourceTreeCombinedManifestShapeExpectation(
-        representative_measured_workload_ids=representative_measured_workload_ids,
-        pattern_groups=pattern_groups,
-    )
-
-
-def _combined_pattern_group(
-    *,
-    slice_id: str,
-    patterns: tuple[str, ...],
-    minimum_rows: int,
-    required_operations: tuple[str, ...],
-    required_categories: tuple[str, ...],
-    search_haystacks: tuple[str, ...] = (),
-    search_haystack_substrings: tuple[str, ...] = (),
-    pattern_haystacks: tuple[str, ...] = (),
-) -> SourceTreeCombinedPatternGroupExpectation:
-    return SourceTreeCombinedPatternGroupExpectation(
-        slice_id=slice_id,
-        patterns=patterns,
-        minimum_rows=minimum_rows,
-        required_operations=required_operations,
-        required_categories=required_categories,
-        search_haystacks=search_haystacks,
-        search_haystack_substrings=search_haystack_substrings,
-        pattern_haystacks=pattern_haystacks,
-    )
-
-
 @cache
 def _published_benchmark_manifest_ids() -> frozenset[str]:
     return frozenset(
@@ -1274,7 +1240,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
         ),
     ),
     "pattern-boundary": _combined_manifest_definition(
-        shape_expectation=_combined_manifest_shape(
+        shape_expectation=SourceTreeCombinedManifestShapeExpectation(
             representative_measured_workload_ids=(
                 "pattern-search-literal-warm-hit",
                 "pattern-fullmatch-bytes-purged-hit",
@@ -1479,7 +1445,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                 "pattern-fullmatch-named-wider-ranged-repeat-group-open-ended-fourth-repetition-de-purged-bytes",
             ),
         ),
-        shape_expectation=_combined_manifest_shape(
+        shape_expectation=SourceTreeCombinedManifestShapeExpectation(
             representative_measured_workload_ids=(
                 "module-search-numbered-wider-ranged-repeat-group-broader-range-cold-gap",
                 "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-upper-bound-mixed-purged-str",
@@ -1488,7 +1454,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                 "pattern-fullmatch-named-wider-ranged-repeat-group-broader-range-backtracking-heavy-fourth-repetition-mixed-purged-str",
             ),
             pattern_groups=(
-                _combined_pattern_group(
+                SourceTreeCombinedPatternGroupExpectation(
                     slice_id="broader-range-grouped-backtracking-heavy",
                     patterns=(
                         "a((bc|b)c){1,4}d",
@@ -1512,12 +1478,13 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                         "zzabcdzz",
                         "zzabccdzz",
                     ),
+                    search_haystack_substrings=(),
                     pattern_haystacks=(
                         "abcbccd",
                         "abcbccbccbcd",
                     ),
                 ),
-                _combined_pattern_group(
+                SourceTreeCombinedPatternGroupExpectation(
                     slice_id="nested-broader-range-grouped-alternation",
                     patterns=(
                         "a((bc|de){1,4})d",
@@ -1536,6 +1503,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                         "broader-range",
                         "counted-repeat",
                     ),
+                    search_haystacks=(),
                     search_haystack_substrings=(
                         "abcd",
                         "aded",
@@ -1545,7 +1513,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                         "adedededed",
                     ),
                 ),
-                _combined_pattern_group(
+                SourceTreeCombinedPatternGroupExpectation(
                     slice_id="nested-broader-range-grouped-conditional",
                     patterns=(
                         "a(((bc|de){1,4})d)?(?(1)e|f)",
@@ -1571,12 +1539,13 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                         "zzabcdezz",
                         "zzadedezz",
                     ),
+                    search_haystack_substrings=(),
                     pattern_haystacks=(
                         "abcbcdede",
                         "adedededede",
                     ),
                 ),
-                _combined_pattern_group(
+                SourceTreeCombinedPatternGroupExpectation(
                     slice_id="nested-broader-range-grouped-backtracking-heavy",
                     patterns=(
                         "a(((bc|b)c){1,4})d",
@@ -1601,6 +1570,7 @@ SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS = _SourceTreeCombinedManifestExpectat
                         "zzabcdzz",
                         "zzabccdzz",
                     ),
+                    search_haystack_substrings=(),
                     pattern_haystacks=(
                         "abcbccd",
                         "abccbcd",
