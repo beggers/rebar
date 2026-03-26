@@ -2043,6 +2043,31 @@ SHARED_ALIAS: object = shared_support.SHARED_ALIAS
     )
 
 
+def test_assert_mixed_owner_surface_accepts_local_assignment_after_module_alias_rebind(
+    monkeypatch,
+) -> None:
+    caller_module = SimpleNamespace(OWNER_ASSIGNMENT=object())
+    module_ast = ast.parse(
+        """
+from tests.benchmarks import benchmark_test_support as shared_support
+
+shared_support = object()
+OWNER_ASSIGNMENT = shared_support.SHARED_ALIAS
+"""
+    )
+
+    monkeypatch.setattr(
+        support,
+        "_parsed_module_ast",
+        lambda module: module_ast,
+    )
+
+    support.assert_mixed_owner_surface(
+        caller_module,
+        local_assignment_names=("OWNER_ASSIGNMENT",),
+    )
+
+
 def test_assert_mixed_owner_surface_rejects_support_alias_with_wrong_attribute_name(
     monkeypatch,
 ) -> None:
@@ -2815,6 +2840,30 @@ class Holder:
     ) == {
         "shared_support",
         "MODULE_ALIAS",
+    }
+
+
+def test_module_alias_names_drop_shadowed_top_level_rebindings() -> None:
+    module_ast = ast.parse(
+        """
+from tests.benchmarks import benchmark_test_support as shared_support
+
+MODULE_ALIAS = shared_support
+shared_support = object()
+OWNER_ASSIGNMENT = shared_support.SHARED_ALIAS
+FOLLOWER_ALIAS = MODULE_ALIAS
+MODULE_ALIAS = None
+FINAL_ALIAS = MODULE_ALIAS
+"""
+    )
+
+    assert support._module_alias_names(
+        module_ast,
+        import_from_module="tests.benchmarks",
+        import_name="benchmark_test_support",
+        dotted_import_name="tests.benchmarks.benchmark_test_support",
+    ) == {
+        "FOLLOWER_ALIAS",
     }
 
 

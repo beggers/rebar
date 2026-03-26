@@ -796,43 +796,42 @@ def _module_alias_names(
     dotted_import_name: str,
 ) -> frozenset[str]:
     module_body = getattr(module_ast, "body", ())
-    alias_names = {
-        alias.asname or alias.name
-        for node in module_body
-        if isinstance(node, ast.ImportFrom)
-        and node.module == import_from_module
-        for alias in node.names
-        if alias.name == import_name
-    } | {
-        alias.asname or alias.name.rsplit(".", 1)[-1]
-        for node in module_body
-        if isinstance(node, ast.Import)
-        for alias in node.names
-        if alias.name == dotted_import_name
-    }
+    alias_names: set[str] = set()
 
-    changed = True
-    while changed:
-        changed = False
-        for node in module_body:
-            if isinstance(node, ast.Assign):
-                targets = tuple(
-                    target.id for target in node.targets if isinstance(target, ast.Name)
-                )
-                value = node.value
-            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
-                targets = (node.target.id,)
-                value = node.value
-            else:
-                continue
+    for node in module_body:
+        if isinstance(node, ast.ImportFrom) and node.module == import_from_module:
+            alias_names.update(
+                alias.asname or alias.name
+                for alias in node.names
+                if alias.name == import_name
+            )
+            continue
 
-            if not isinstance(value, ast.Name) or value.id not in alias_names:
-                continue
+        if isinstance(node, ast.Import):
+            alias_names.update(
+                alias.asname or alias.name.rsplit(".", 1)[-1]
+                for alias in node.names
+                if alias.name == dotted_import_name
+            )
+            continue
 
-            for target in targets:
-                if target not in alias_names:
-                    alias_names.add(target)
-                    changed = True
+        if isinstance(node, ast.Assign):
+            targets = tuple(
+                target.id for target in node.targets if isinstance(target, ast.Name)
+            )
+            value = node.value
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            targets = (node.target.id,)
+            value = node.value
+        else:
+            continue
+
+        if isinstance(value, ast.Name) and value.id in alias_names:
+            alias_names.update(targets)
+            continue
+
+        for target in targets:
+            alias_names.discard(target)
 
     return frozenset(alias_names)
 
