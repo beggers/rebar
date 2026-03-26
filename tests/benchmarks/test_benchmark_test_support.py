@@ -388,7 +388,10 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     )
     monkeypatch.setattr(support, "published_cases_by_id", _published_cases_by_id)
     assert anchor_support.benchmark_test_support is support
-    assert not hasattr(anchor_support, "collection_replacement_support")
+    assert (
+        anchor_support.collection_replacement_support
+        is collection_replacement_support
+    )
     monkeypatch.setattr(support, "live_manifest_workloads", _live_manifest_workloads)
 
     support._clear_anchor_support_caches()
@@ -3000,7 +3003,7 @@ def _patch_source_tree_combined_route_helper_dependencies(
         lambda: combined_suite_ast,
     )
     monkeypatch.setattr(
-        anchor_support,
+        support,
         "top_level_module_definition_and_assignment_names",
         lambda module: (set(), local_assignment_names),
     )
@@ -3420,7 +3423,7 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
                 ),
                 (
                     "source_tree_benchmark_anchor_support",
-                    "source_tree_support",
+                    "source_tree_owner_support",
                 )
             }
         ),
@@ -3430,7 +3433,10 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
         getattr(combined_suite, "collection_replacement_support")
         is collection_replacement_support
     )
-    assert not hasattr(combined_suite.source_tree_support, "collection_replacement_support")
+    assert (
+        combined_suite.source_tree_support.collection_replacement_support
+        is collection_replacement_support
+    )
     source_tree_owner_refs = {
         node.attr
         for node in ast.walk(module_ast)
@@ -3891,7 +3897,10 @@ def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_
         expected_alias_pairs=frozenset(
             {
                 ("benchmark_test_support", None),
-                ("source_tree_benchmark_anchor_support", "source_tree_support"),
+                (
+                    "source_tree_benchmark_anchor_support",
+                    "source_tree_owner_support",
+                ),
             }
         ),
     )

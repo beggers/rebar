@@ -3279,19 +3279,16 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
                     "_compiled_pattern_module_helper_keyword_contract_spec",
                 }
             ),
-            frozenset(
-                {
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-                    "_compiled_pattern_wrong_text_model_specs",
-                    "_compiled_pattern_wrong_text_model_source_workloads",
-                    "_assert_wrong_text_model_payload_round_trip",
-                }
+                frozenset(
+                    {
+                        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+                        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+                        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+                    }
+                ),
+                frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")}),
+                id="manifest-validation",
             ),
-            frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")}),
-            id="manifest-validation",
-        ),
         pytest.param(
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
             frozenset(
@@ -3436,15 +3433,16 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
             frozenset(),
             id="direct-import-asname",
         ),
-        pytest.param(
-            "\n".join(
-                (
-                    "from tests.benchmarks import benchmark_test_support",
-                    "",
+            pytest.param(
+                "\n".join(
                     (
-                        "contract_manifest = "
-                        "source_tree_support._source_tree_contract_manifest"
-                    ),
+                        "from tests.benchmarks import benchmark_test_support",
+                        "from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support",
+                        "",
+                        (
+                            "contract_manifest = "
+                            "source_tree_support._source_tree_contract_manifest"
+                        ),
                 )
             ),
             frozenset(),
