@@ -4,6 +4,7 @@ import json
 from collections.abc import Callable
 from dataclasses import dataclass
 from functools import cache, partial
+import importlib
 import re
 from types import SimpleNamespace
 from typing import Any
@@ -27,6 +28,13 @@ _COLLECTION_REPLACEMENT_SPLIT_OPERATIONS = frozenset(
 _COLLECTION_REPLACEMENT_SUBSTITUTE_OPERATIONS = frozenset(
     {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
 )
+
+
+@cache
+def _source_tree_benchmark_anchor_support() -> object:
+    return importlib.import_module(
+        "tests.benchmarks.source_tree_benchmark_anchor_support"
+    )
 
 
 def _collection_replacement_keyword_parameter_name(
@@ -834,7 +842,7 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
                 },
             ),
             include_workload=(
-                benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload
+                _source_tree_benchmark_anchor_support()._is_collection_replacement_compiled_pattern_success_workload
             ),
             correctness_case_signature=(
                 _collection_replacement_compiled_pattern_success_correctness_case_signature
@@ -1324,7 +1332,7 @@ def _collection_replacement_compiled_pattern_success_correctness_case_signature(
 def _collection_replacement_compiled_pattern_success_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload(
+    if not _source_tree_benchmark_anchor_support()._is_collection_replacement_compiled_pattern_success_workload(
         workload
     ):
         raise AssertionError(

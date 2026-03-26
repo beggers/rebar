@@ -1221,13 +1221,13 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+        "_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS",
+        "_VERBOSE_REGRESSION_PATTERN",
+        "_VERBOSE_REGRESSION_FLAGS",
+        "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
     ):
-        if constant_name == "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS":
-            assert constant_name not in local_assignment_names
-            assert not hasattr(support, constant_name)
-            assert hasattr(benchmark_test_support, constant_name)
-            continue
         assert constant_name in local_assignment_names
         assert hasattr(support, constant_name)
         assert not hasattr(benchmark_test_support, constant_name)
@@ -1239,24 +1239,39 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         assert not hasattr(support, function_name)
     benchmark_test_support.assert_mixed_owner_surface(
         support,
-        local_function_names=frozenset(),
+        local_function_names=frozenset(
+            {
+                "_compiled_pattern_module_helper_route",
+                "_module_workflow_compiled_pattern_success_correctness_case_signature",
+                "_module_workflow_compiled_pattern_workload_args",
+                "_module_workflow_compiled_pattern_success_workload_signature",
+                "_is_module_workflow_compiled_pattern_workload",
+                "_is_module_workflow_compiled_pattern_literal_success_workload",
+                "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
+                "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
+                "_is_collection_replacement_compiled_pattern_success_workload",
+            }
+        ),
         local_assignment_names=frozenset(
             {
+                "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
+                "_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+                "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+                "_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS",
                 "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
                 "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
                 "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
                 "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
                 "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
+                "_VERBOSE_REGRESSION_FLAGS",
+                "_VERBOSE_REGRESSION_PATTERN",
             }
         ),
         support_alias_assignment_names=frozenset(),
     )
-    for removed_name in (
-        "compiled_pattern_contract_expected_build_calls",
-        "_compiled_pattern_module_helper_route",
-    ):
-        assert not hasattr(support, removed_name)
-        assert removed_name not in local_assignment_names
+    assert not hasattr(support, "compiled_pattern_contract_expected_build_calls")
+    assert "compiled_pattern_contract_expected_build_calls" not in local_assignment_names
+    assert hasattr(support, "_compiled_pattern_module_helper_route")
     for constant_name in (
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
@@ -1310,15 +1325,19 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     ):
         assert constant_name in local_assignment_names
     for constant_name in (
-        "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
-        "_is_module_workflow_compiled_pattern_literal_success_workload",
-        "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
         "SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_NAMES",
         "SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "SOURCE_TREE_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES",
     ):
         assert not hasattr(support, constant_name)
         assert constant_name not in local_assignment_names
+    for function_name in (
+        "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
+        "_is_module_workflow_compiled_pattern_literal_success_workload",
+        "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
+    ):
+        assert hasattr(support, function_name)
+        assert function_name in local_function_names
 
 
 @pytest.mark.parametrize(
@@ -3780,16 +3799,34 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
 ) -> None:
     owner_definition_names = frozenset(
         {
+            "_compiled_pattern_module_helper_route",
             "_compiled_pattern_wrong_text_model_specs",
             "_compiled_pattern_wrong_text_model_source_workloads",
             "_run_cpython_compiled_pattern_module_helper_workload",
             "_assert_wrong_text_model_payload_round_trip",
+            "_module_workflow_compiled_pattern_success_correctness_case_signature",
             "_module_workflow_compiled_pattern_correctness_case_signature",
+            "_module_workflow_compiled_pattern_workload_args",
+            "_module_workflow_compiled_pattern_success_workload_signature",
             "_module_workflow_compiled_pattern_workload_signature",
+            "_is_collection_replacement_compiled_pattern_success_workload",
+            "_is_module_workflow_compiled_pattern_workload",
+            "_is_module_workflow_compiled_pattern_literal_success_workload",
+            "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
+            "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
             "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
         }
     )
-    owner_assignment_names = frozenset()
+    owner_assignment_names = frozenset(
+        {
+            "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
+            "_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+            "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+            "_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS",
+            "_VERBOSE_REGRESSION_FLAGS",
+            "_VERBOSE_REGRESSION_PATTERN",
+        }
+    )
     module_ast = benchmark_test_support._parsed_module_ast(support)
 
     benchmark_test_support.assert_mixed_owner_surface(
@@ -3799,7 +3836,7 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
         support_alias_assignment_names=frozenset(),
     )
     assert not hasattr(support, "compiled_pattern_contract_expected_build_calls")
-    assert not hasattr(support, "_compiled_pattern_module_helper_route")
+    assert hasattr(support, "_compiled_pattern_module_helper_route")
     for definition_name in owner_definition_names:
         assert not hasattr(benchmark_test_support, definition_name)
 
@@ -3826,21 +3863,28 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
         and node.value.id == "benchmark_test_support"
         and node.attr in owner_definition_names | owner_assignment_names
     } == set()
-    assert {
+    benchmark_support_refs = {
         node.attr
         for node in ast.walk(module_ast)
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
         and node.value.id == "benchmark_test_support"
-    } >= {
+    }
+    assert {
         "_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "_compiled_pattern_module_helper_route",
-        "_is_collection_replacement_wrong_text_model_workload",
+        "_is_collection_replacement_compiled_pattern_success_workload",
         "_is_module_workflow_compiled_pattern_workload",
+        "_is_module_workflow_compiled_pattern_literal_success_workload",
+        "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
+        "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
+    }.isdisjoint(benchmark_support_refs)
+    assert {
+        "_is_collection_replacement_wrong_text_model_workload",
         "freeze_signature_value",
         "selected_manifest_workloads",
-    }
+    }.issubset(benchmark_support_refs)
 
 
 def test_source_tree_owner_manifest_path_constants_point_to_current_workload_files() -> None:
@@ -4086,7 +4130,7 @@ def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() ->
         *collection_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
         *benchmark_test_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
         *benchmark_test_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
-        *benchmark_test_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
+        *support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
         *pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
         *support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
     )

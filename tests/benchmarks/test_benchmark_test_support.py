@@ -115,7 +115,7 @@ def _explicit_standard_benchmark_definitions(
         *collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
         *support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
         *support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
-        *support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
+        *anchor_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
         *pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
         *anchor_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
     )
@@ -1098,7 +1098,7 @@ def test_standard_benchmark_param_helpers_require_explicit_definition_inventory(
             id="compiled-pattern-module-compile-after-module-workflow-keyword",
         ),
         pytest.param(
-            support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
+            anchor_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
             "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
             "pattern-window-positional-indexlike",
             id="compiled-pattern-module-helper-after-module-compile",
@@ -2771,7 +2771,7 @@ def test_assert_zero_gap_manifest_workloads_measured_routes_through_shared_contr
 def test_benchmark_test_support_defines_compiled_pattern_module_helper_owner_surface(
 ) -> None:
     definition_names, _ = support.top_level_module_definition_and_assignment_names(
-        support
+        anchor_support
     )
 
     assert {
@@ -2782,12 +2782,16 @@ def test_benchmark_test_support_defines_compiled_pattern_module_helper_owner_sur
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
         "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
     }.issubset(definition_names)
+    assert not hasattr(support, "_compiled_pattern_module_helper_route")
 
 
 def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
 ) -> None:
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(support)
+    )
+    owner_definition_names, owner_assignment_names = (
+        support.top_level_module_definition_and_assignment_names(anchor_support)
     )
 
     assert {
@@ -2798,19 +2802,35 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
         "_is_module_workflow_compiled_pattern_literal_success_workload",
         "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
         "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
-    }.issubset(definition_names)
+    }.isdisjoint(definition_names)
+    assert {
+        "_compiled_pattern_module_helper_route",
+        "_is_module_workflow_compiled_pattern_workload",
+        "_module_workflow_compiled_pattern_success_correctness_case_signature",
+        "_module_workflow_compiled_pattern_success_workload_signature",
+        "_is_module_workflow_compiled_pattern_literal_success_workload",
+        "_is_module_workflow_compiled_pattern_bounded_wildcard_success_workload",
+        "_is_module_workflow_compiled_pattern_verbose_bytes_success_workload",
+    }.issubset(owner_definition_names)
     assert {
         "_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS",
-        "COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS",
-        "COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
         "_VERBOSE_REGRESSION_PATTERN",
         "_VERBOSE_REGRESSION_FLAGS",
+    }.isdisjoint(assignment_names)
+    assert {
+        "_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+        "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
+        "_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS",
+        "_VERBOSE_REGRESSION_PATTERN",
+        "_VERBOSE_REGRESSION_FLAGS",
+        "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
+    }.issubset(owner_assignment_names)
+    assert {
+        "COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS",
+        "COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
     }.issubset(assignment_names)
-    assert {"COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS"}.issubset(
-        assignment_names
-    )
     assert not hasattr(support, "_compiled_pattern_wrong_text_model_specs")
     assert not hasattr(support, "_compiled_pattern_wrong_text_model_source_workloads")
     assert not hasattr(support, "_collection_replacement_owner_support")
@@ -3436,10 +3456,10 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
     )
 
 
-def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by_shared_support(
+def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by_source_tree_support(
 ) -> None:
     owner_definition_names, _ = support.top_level_module_definition_and_assignment_names(
-        support
+        anchor_support
     )
     consumer_definition_names, consumer_assignment_names = (
         support.top_level_module_definition_and_assignment_names(
@@ -3452,11 +3472,8 @@ def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by
         "_is_collection_replacement_compiled_pattern_success_workload"
         in owner_definition_names
     )
-    assert (
-        collection_replacement_support.benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload
-        is support._is_collection_replacement_compiled_pattern_success_workload
-    )
-    assert not hasattr(anchor_support, "_is_collection_replacement_compiled_pattern_success_workload")
+    assert hasattr(anchor_support, "_is_collection_replacement_compiled_pattern_success_workload")
+    assert not hasattr(support, "_is_collection_replacement_compiled_pattern_success_workload")
     assert (
         "_is_collection_replacement_compiled_pattern_success_workload"
         not in consumer_local_names
@@ -3606,16 +3623,28 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(support)
     )
+    owner_definition_names, owner_assignment_names = (
+        support.top_level_module_definition_and_assignment_names(anchor_support)
+    )
 
     assert {
         "_is_collection_replacement_compiled_pattern_success_workload",
-    }.issubset(definition_names)
+    }.isdisjoint(definition_names)
+    assert {
+        "_is_collection_replacement_compiled_pattern_success_workload",
+    }.issubset(owner_definition_names)
     assert {
         "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
     }.isdisjoint(assignment_names)
+    assert {
+        "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
+        "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
+        "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
+        "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
+    }.issubset(owner_assignment_names)
     assert not hasattr(support, "CompiledPatternModuleSuccessOwnerSpec")
     assert not hasattr(
         support,
@@ -4277,7 +4306,7 @@ def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
     expected_cpython_args: tuple[object, ...],
     materialize: bool,
 ) -> None:
-    route = support._compiled_pattern_module_helper_route(
+    route = anchor_support._compiled_pattern_module_helper_route(
         workload,
         collection_replacement_callback_flags=callback_flags,
     )
@@ -4443,36 +4472,36 @@ def test_module_workflow_compiled_pattern_success_selectors_accept_bounded_workl
     )
 
     assert (
-        support._is_module_workflow_compiled_pattern_literal_success_workload(
+        anchor_support._is_module_workflow_compiled_pattern_literal_success_workload(
             literal_workload
         )
     )
     assert (
-        support._module_workflow_compiled_pattern_success_workload_signature(
+        anchor_support._module_workflow_compiled_pattern_success_workload_signature(
             literal_workload
         )
         == ("module.search", "abc", ("zzabczz",), True, 0, "str")
     )
 
     assert (
-        support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
+        anchor_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
             wildcard_workload
         )
     )
     assert (
-        support._module_workflow_compiled_pattern_success_workload_signature(
+        anchor_support._module_workflow_compiled_pattern_success_workload_signature(
             wildcard_workload
         )
         == ("module.fullmatch", b"a.c", (b"abc",), True, 0, "bytes")
     )
 
     assert (
-        support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload(
+        anchor_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload(
             verbose_workload
         )
     )
     assert (
-        support._module_workflow_compiled_pattern_success_workload_signature(
+        anchor_support._module_workflow_compiled_pattern_success_workload_signature(
             verbose_workload
         )
         == (
@@ -4507,12 +4536,12 @@ def test_module_workflow_compiled_pattern_success_selectors_reject_non_matching_
     )
 
     assert not (
-        support._is_module_workflow_compiled_pattern_literal_success_workload(
+        anchor_support._is_module_workflow_compiled_pattern_literal_success_workload(
             direct_pattern_workload
         )
     )
     assert not (
-        support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
+        anchor_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
             wrong_haystack_model
         )
     )

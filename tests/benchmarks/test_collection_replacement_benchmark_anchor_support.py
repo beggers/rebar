@@ -36,7 +36,7 @@ def _explicit_standard_benchmark_definitions(
         *support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
         *benchmark_test_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
         *benchmark_test_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
-        *benchmark_test_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
+        *source_tree_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
         *pattern_boundary_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
         *source_tree_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
     )
@@ -2821,19 +2821,23 @@ def test_compiled_pattern_success_workloads_stay_in_scope_and_keep_expected_sign
     )
 
 
-def test_compiled_pattern_success_selector_routes_through_shared_support_without_local_definition(
+def test_compiled_pattern_success_selector_routes_through_source_tree_support_without_local_definition(
 ) -> None:
     local_definition_names, local_assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(
             support
         )
     )
-    owner_support = support.benchmark_test_support
+    owner_support = source_tree_support
 
-    assert owner_support is benchmark_test_support
-    assert (
-        owner_support._is_collection_replacement_compiled_pattern_success_workload
-        is benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload
+    assert owner_support is source_tree_support
+    assert hasattr(
+        owner_support,
+        "_is_collection_replacement_compiled_pattern_success_workload",
+    )
+    assert not hasattr(
+        benchmark_test_support,
+        "_is_collection_replacement_compiled_pattern_success_workload",
     )
     assert not hasattr(support, "_is_collection_replacement_compiled_pattern_success_workload")
     assert (
@@ -2847,7 +2851,7 @@ def test_compiled_pattern_success_selector_routes_through_shared_support_without
 
 
 def test_compiled_pattern_success_workload_filter_rejects_non_matching_rows() -> None:
-    owner_support = support.benchmark_test_support
+    owner_support = source_tree_support
     keyword_workload = benchmark_test_support.synthetic_workload(
         manifest_id="collection-replacement-boundary",
         workload_id="module-split-compiled-pattern-keyword",

@@ -4782,22 +4782,22 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     (
         pytest.param(
             source_tree_support._COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
-            benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload,
+            source_tree_support._is_collection_replacement_compiled_pattern_success_workload,
             id="collection-replacement-success",
         ),
         pytest.param(
             source_tree_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
-            benchmark_test_support._is_module_workflow_compiled_pattern_literal_success_workload,
+            source_tree_support._is_module_workflow_compiled_pattern_literal_success_workload,
             id="module-boundary-literal-success",
         ),
         pytest.param(
             source_tree_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
-            benchmark_test_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+            source_tree_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
             id="module-boundary-bounded-wildcard-success",
         ),
         pytest.param(
             source_tree_support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
-            benchmark_test_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+            source_tree_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
             id="module-boundary-verbose-bytes-success",
         ),
     ),
@@ -4890,7 +4890,7 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
             label="wrong-text-model",
         )
         expected_callback_result, expected_callback_call, _, _ = (
-            benchmark_test_support._compiled_pattern_module_helper_route(
+            source_tree_support._compiled_pattern_module_helper_route(
                 source_workload,
                 collection_replacement_callback_flags=0,
             )

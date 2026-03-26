@@ -69,3 +69,8 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'source_tree_standard_definitions_export_stays_owned_by_source_tree'` -> `1 passed, 119 deselected`
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'owner_surface or wrong_text_model or module_helper_standard_benchmark_definitions or manifest_path'` -> `23 passed, 132 deselected`
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` -> passed
+
+## Completion
+- 2026-03-26: Moved the compiled-pattern module-helper wrong-text-model ids, helper route, success selectors/signatures, and `COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS` off `tests/benchmarks/benchmark_test_support.py` and onto `tests/benchmarks/source_tree_benchmark_anchor_support.py`.
+- Updated the scoped owner/inventory/support consumers so the source-tree owner module now supplies that surface, including the adjacent collection-replacement and combined-suite benchmark consumers that would otherwise import the retired shared names.
+- Verified with the three scoped pytest commands from the task, a `py_compile` pass across the touched support/tests, and the final `rg` ownership check showing the removed names no longer exist in `tests/benchmarks/benchmark_test_support.py`.
