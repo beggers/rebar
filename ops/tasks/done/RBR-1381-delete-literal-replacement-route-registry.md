@@ -48,3 +48,10 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `153 passed in 1.75s`
   - `python3 -m py_compile tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed
   - `bash -lc \"rg -n '_CollectionReplacementLiteralReplacementRoute|_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES' tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py\"` currently fails with the exact class and registry references this task is intended to delete
+
+## Completion
+- Completed 2026-03-26: deleted the literal-replacement route dataclass/registry from `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`, replaced it with explicit module/pattern workload-case-pair tuples plus direct literal-replacement metadata, rewired the selectors and correctness-signature wiring to use that metadata directly, and updated `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` to assert against the plain owner metadata surface.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed with `153 passed in 1.83s`
+  - `python3 -m py_compile tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed
+  - `bash -lc \"! rg -n '_CollectionReplacementLiteralReplacementRoute|_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES' tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py\"` passed

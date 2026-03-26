@@ -560,54 +560,60 @@ def test_collection_replacement_manifest_keeps_positional_indexlike_module_and_p
 
 
 @pytest.mark.parametrize(
-    ("label", "route"),
+    ("label", "workload_case_pairs"),
     (
         (
             "pattern-findall",
-            support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["findall"],
+            support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "findall"
+            ].workload_case_pairs,
         ),
         (
             "pattern-finditer",
-            support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["finditer"],
+            support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "finditer"
+            ].workload_case_pairs,
         ),
         (
             "pattern-split",
-            support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"],
+            support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                "split"
+            ].workload_case_pairs,
         ),
         (
             "pattern-literal-replacement",
-            support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
+            support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS,
         ),
         (
             "module-literal-replacement",
-            support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
+            support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS,
         ),
     ),
     ids=lambda item: item if isinstance(item, str) else None,
 )
 def test_collection_replacement_routes_preserve_declared_workload_case_pair_order_and_anchor_expectations(
     label: str,
-    route: object,
+    workload_case_pairs: tuple[tuple[str, str], ...],
 ) -> None:
     del label
 
     anchor_expectations = benchmark_test_support._workload_case_pair_anchor_expectations(
         benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        route.workload_case_pairs,
+        workload_case_pairs,
     )
 
     assert all(
         isinstance(workload_id, str) and isinstance(case_id, str)
-        for workload_id, case_id in route.workload_case_pairs
+        for workload_id, case_id in workload_case_pairs
     )
     assert tuple(manifest_path for manifest_path, _ in anchor_expectations) == (
         benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH.name,
-    ) * len(route.workload_case_pairs)
+    ) * len(workload_case_pairs)
     assert tuple(workload_id for _, workload_id in anchor_expectations) == tuple(
-        workload_id for workload_id, _ in route.workload_case_pairs
+        workload_id for workload_id, _ in workload_case_pairs
     )
     assert tuple(anchor_expectations.values()) == tuple(
-        (case_id,) for _, case_id in route.workload_case_pairs
+        (case_id,) for _, case_id in workload_case_pairs
     )
 
 
@@ -710,9 +716,9 @@ def test_collection_replacement_manifest_keeps_pattern_replacement_literal_rows_
 
     assert selected_measured_workload_ids == tuple(
         workload_id
-        for workload_id, _ in support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
-            "pattern"
-        ].workload_case_pairs
+        for workload_id, _ in (
+            support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
+        )
     )
     assert len(selected_measured_workload_ids) == 20
     benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
@@ -739,9 +745,9 @@ def test_collection_replacement_manifest_keeps_module_literal_replacement_rows_m
 
     assert expected_measured_workload_ids == tuple(
         workload_id
-        for workload_id, _ in support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
-            "module"
-        ].workload_case_pairs
+        for workload_id, _ in (
+            support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS
+        )
     )
     assert len(expected_measured_workload_ids) == 18
     benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
@@ -773,9 +779,18 @@ def test_collection_replacement_module_literal_replacement_benchmark_gap_stays_e
             signature := (
                 support._collection_replacement_literal_replacement_correctness_case_signature(
                     case,
-                    route=support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
-                        "module"
-                    ],
+                    case_ids=(
+                        support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_CASE_IDS
+                    ),
+                    expected_operation=(
+                        support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_EXPECTED_OPERATION
+                    ),
+                    operation_prefix=(
+                        support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_OPERATION_PREFIX
+                    ),
+                    args_offset=(
+                        support._COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_ARGS_OFFSET
+                    ),
                 )
             )
         )
@@ -806,9 +821,18 @@ def test_collection_replacement_pattern_literal_replacement_benchmark_gap_stays_
             signature := (
                 support._collection_replacement_literal_replacement_correctness_case_signature(
                     case,
-                    route=support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
-                        "pattern"
-                    ],
+                    case_ids=(
+                        support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_CASE_IDS
+                    ),
+                    expected_operation=(
+                        support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_EXPECTED_OPERATION
+                    ),
+                    operation_prefix=(
+                        support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_OPERATION_PREFIX
+                    ),
+                    args_offset=(
+                        support._COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_ARGS_OFFSET
+                    ),
                 )
             )
         )
