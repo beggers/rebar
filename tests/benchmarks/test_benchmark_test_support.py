@@ -1630,61 +1630,6 @@ def test_collection_replacement_benchmark_support_owns_keyword_classifier_helper
     }.isdisjoint(assignment_names)
 
 
-def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_support_alias(
-) -> None:
-    module = importlib.import_module(
-        "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support"
-    )
-    definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(module)
-    )
-
-    _assert_owner_module_routes_through_package_import(
-        module,
-        owner_module="tests.benchmarks.benchmark_test_support",
-        package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset(
-            {
-                ("benchmark_test_support", "support"),
-                ("source_tree_benchmark_anchor_support", "pattern_boundary_support"),
-            }
-        ),
-    )
-    _assert_owner_module_routes_through_package_import(
-        module,
-        owner_module="tests.benchmarks.source_tree_benchmark_anchor_support",
-        package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset(
-            {
-                ("benchmark_test_support", "support"),
-                ("source_tree_benchmark_anchor_support", "pattern_boundary_support"),
-            }
-        ),
-    )
-    assert getattr(module, "support") is support
-    assert getattr(module, "pattern_boundary_support") is anchor_support
-    assert {
-        "synthetic_workload",
-        "_write_test_manifest",
-        "selected_manifest_workloads",
-        "run_benchmark_workload_with_cpython",
-        "compiled_pattern_contract_expected_build_calls",
-        "RecordingBenchmarkModule",
-    }.isdisjoint(definition_names | assignment_names)
-    for shared_name in (
-        "synthetic_workload",
-        "_write_test_manifest",
-        "selected_manifest_workloads",
-        "run_benchmark_workload_with_cpython",
-        "compiled_pattern_contract_expected_build_calls",
-        "RecordingBenchmarkModule",
-    ):
-        assert not hasattr(module, shared_name)
-    assert {"_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC"}.isdisjoint(
-        definition_names | assignment_names
-    )
-
-
 @pytest.mark.parametrize(
     ("module_name", "expected_helper_names"),
     (
@@ -3379,7 +3324,7 @@ def test_class_method_definition_resolves_source_tree_combined_suite_test_method
 
 def test_pattern_boundary_anchor_support_reuses_shared_pattern_case_builder() -> None:
     module = importlib.import_module(
-        "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support"
+        "tests.benchmarks.test_source_tree_benchmark_anchor_support"
     )
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(module)
@@ -3991,12 +3936,12 @@ def test_deleted_compiled_pattern_module_success_wrapper_stays_unimportable_and_
 def test_deleted_pattern_boundary_owner_module_stays_unimportable_and_unreferenced(
 ) -> None:
     _assert_deleted_benchmark_module_stays_absent(
-        deleted_module_name="tests.benchmarks.pattern_boundary_benchmark_anchor_support",
+        deleted_module_name="tests.benchmarks.test_pattern_boundary_benchmark_anchor_support",
         deleted_path=(
             REPO_ROOT
             / "tests"
             / "benchmarks"
-            / "pattern_boundary_benchmark_anchor_support.py"
+            / "test_pattern_boundary_benchmark_anchor_support.py"
         ),
     )
 
