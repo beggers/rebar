@@ -2920,7 +2920,17 @@ def _patch_source_tree_combined_route_helper_dependencies(
     combined_suite_ast: ast.Module,
     local_assignment_names: set[str],
 ) -> None:
-    monkeypatch.setattr(anchor_support, "_source_tree_combined_suite", lambda: combined_suite)
+    original_import_module = anchor_support.importlib.import_module
+    monkeypatch.setattr(
+        anchor_support.importlib,
+        "import_module",
+        lambda module_name: (
+            combined_suite
+            if module_name
+            == "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+            else original_import_module(module_name)
+        ),
+    )
     monkeypatch.setattr(support, "_parsed_module_ast", lambda module: combined_suite_ast)
     monkeypatch.setattr(
         support,
