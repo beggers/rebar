@@ -1761,9 +1761,7 @@ def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_key
     success_source_workload = success_case.source_workloads()[0]
     success_workload = benchmark_test_support._source_tree_contract_workload(
         success_source_workload,
-        spec=source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
-            success_case
-        ),
+        spec=success_case.contract_builder_spec(),
     )
 
     keyword_case = next(
@@ -1774,9 +1772,7 @@ def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_key
     keyword_source_workload = keyword_case.source_workloads()[0]
     keyword_workload = benchmark_test_support._source_tree_contract_workload(
         keyword_source_workload,
-        spec=source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
-            keyword_case
-        ),
+        spec=keyword_case.contract_builder_spec(),
     )
 
     success_result = success_case.run_cpython_workload(success_workload)
@@ -1901,9 +1897,7 @@ def test_compiled_pattern_module_compile_contract_rows_stay_anchored_to_publishe
     )
     manifest = benchmark_test_support._source_tree_contract_manifest(
         anchor_lane.source_workloads,
-        spec=source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
-            contract_case
-        ),
+        spec=contract_case.contract_builder_spec(),
     )
     manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,
@@ -1953,9 +1947,7 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
 ) -> None:
     workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
-        spec=source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
-            case_group
-        ),
+        spec=case_group.contract_builder_spec(),
     )
     observed_field_names = benchmark_test_support._record_numeric_materialization_fields(monkeypatch)
 
@@ -2001,9 +1993,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_su
 ) -> None:
     workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
-        spec=source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
-            contract_case
-        ),
+        spec=contract_case.contract_builder_spec(),
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -2044,9 +2034,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
         "re",
         benchmark_test_support._source_tree_contract_workload(
             source_workload,
-            spec=source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
-                contract_case
-            ),
+            spec=contract_case.contract_builder_spec(),
         ),
     )
 
@@ -4346,9 +4334,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_success_co
 ) -> None:
     workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
-        spec=source_tree_support.compiled_pattern_module_success_contract_builder_spec(
-            owner_spec
-        ),
+        spec=owner_spec.contract_builder_spec(),
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -4386,9 +4372,7 @@ def test_compiled_pattern_module_success_callbacks_precompile_first_argument_bef
         "re",
         benchmark_test_support._source_tree_contract_workload(
             source_workload,
-            spec=source_tree_support.compiled_pattern_module_success_contract_builder_spec(
-                owner_spec
-            ),
+            spec=owner_spec.contract_builder_spec(),
         ),
     )
 
@@ -4451,9 +4435,7 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
 ) -> None:
     workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
-        spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
-            source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC
-        ),
+        spec=source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.contract_builder_spec(),
     )
     source_tree_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
@@ -4486,9 +4468,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
 ) -> None:
     workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
-        spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
-            contract_surface.spec
-        ),
+        spec=contract_surface.spec.contract_builder_spec(),
     )
     payload = workload_to_payload(workload)
     round_tripped = workload_from_payload(payload)
@@ -4525,9 +4505,7 @@ def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_fi
         "re",
         benchmark_test_support._source_tree_contract_workload(
             source_workload,
-            spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
-                contract_surface.spec
-            ),
+            spec=contract_surface.spec.contract_builder_spec(),
         ),
     )
 
@@ -4564,9 +4542,7 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
     )
     workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
-        spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
-            source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC
-        ),
+        spec=source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.contract_builder_spec(),
     )
     observed_field_names = benchmark_test_support._record_numeric_materialization_fields(monkeypatch)
 

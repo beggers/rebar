@@ -1,6 +1,6 @@
 ## RBR-1356: Delete source-tree compiled-pattern contract-builder wrappers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -60,3 +60,16 @@ Created: 2026-03-26
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed
   - `rg -n '^    def contract_builder_spec\(' tests/benchmarks/benchmark_test_support.py` still fails because the owner/spec dataclasses do not yet provide those builder methods, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n '^def (compiled_pattern_module_compile_contract_builder_spec|compiled_pattern_module_success_contract_builder_spec|compiled_pattern_module_helper_keyword_contract_builder_spec)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"` still fails because those three wrapper functions still live on the source-tree owner module, and that failure belongs exactly to this cleanup
+
+## Completion Note
+- Completed 2026-03-26.
+- Moved the three compiled-pattern contract-builder constructors onto `CompiledPatternModuleCompileContractCase`, `CompiledPatternModuleSuccessOwnerSpec`, and `_CompiledPatternModuleHelperKeywordContractSpec`, and moved the shared success/helper excluded-field constants into `tests/benchmarks/benchmark_test_support.py`.
+- Deleted the source-tree wrapper functions and the source-tree-only constants that existed only to support them, updated the source-tree anchor support to call owner methods directly, and flipped the touched benchmark tests to require owner-bound builders and absent wrapper names on the source-tree surface.
+- Verification in this implementation run:
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_manifest_validation.py -k 'compiled_pattern_module_compile_contract_rows_preserve_success_and_keyword_payload_round_trip_until_helper_invocation or compiled_pattern_wrong_text_model_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation or haystack_text_model_validation_accepts_exact_pattern_boundary_wrong_text_model_trio'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile_contract_rows_stay_anchored_to_published_correctness_cases or run_internal_workload_probe_measures_compiled_pattern_wrong_text_model_contract_workloads or run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_contract_workloads or compiled_pattern_module_success_rows_measured_in_combined_manifest'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'compiled_pattern_contract_builder_surface_uses_one_owned_route or benchmark_test_support_owns_compiled_pattern_module_success_surface or benchmark_test_support_owns_compiled_pattern_helper_surface or benchmark_test_support_drops_source_tree_helper_keyword_contract_surface'`
+  - `rg -n '^    def contract_builder_spec\(' tests/benchmarks/benchmark_test_support.py`
+  - `bash -lc "! rg -n '^def (compiled_pattern_module_compile_contract_builder_spec|compiled_pattern_module_success_contract_builder_spec|compiled_pattern_module_helper_keyword_contract_builder_spec)\\b' tests/benchmarks/source_tree_benchmark_anchor_support.py"`

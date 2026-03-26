@@ -207,22 +207,12 @@ def _attribute_alias_pairs(
 
 def _compiled_pattern_contract_builder_spec(
     owner: object,
-    *,
-    wrapper_name: str,
 ) -> benchmark_test_support._SourceTreeContractBuilderSpec:
-    local_builder = getattr(support, wrapper_name, None)
     owner_builder = getattr(owner, "contract_builder_spec", None)
-
-    if local_builder is not None:
-        if owner_builder is not None:
-            raise AssertionError(
-                f"{wrapper_name} is duplicated on the source-tree and owner surfaces"
-            )
-        return local_builder(owner)
-
     if owner_builder is None:
-        raise AssertionError(f"missing compiled-pattern contract builder {wrapper_name}")
-
+        raise AssertionError(
+            f"missing compiled-pattern contract builder on {type(owner).__name__}"
+        )
     return owner_builder()
 
 
@@ -1168,8 +1158,9 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         local_builder = getattr(support, function_name, None)
         owner_builder = getattr(owner_type, "contract_builder_spec", None)
 
-        assert (local_builder is not None) != (owner_builder is not None)
-        assert (function_name in local_function_names) is (local_builder is not None)
+        assert local_builder is None
+        assert owner_builder is not None
+        assert function_name not in local_function_names
     for constant_name in support.SOURCE_TREE_LOCAL_CONTRACT_BUILDER_CONSTANT_NAMES:
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
@@ -1231,7 +1222,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
             and assignment.value.attr == constant_name
         )
     for constant_name in (
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS",
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
     ):
@@ -1280,7 +1270,6 @@ def test_compiled_pattern_module_compile_contract_builder_surface_builds_expecte
 
     assert _compiled_pattern_contract_builder_spec(
         contract_case,
-        wrapper_name="compiled_pattern_module_compile_contract_builder_spec",
     ) == benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id="module-boundary",
         excluded_fields=excluded_fields,
@@ -1445,11 +1434,13 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
 ) -> None:
     spec = _compiled_pattern_contract_builder_spec(
         owner_spec,
-        wrapper_name="compiled_pattern_module_success_contract_builder_spec",
     )
 
     assert spec.manifest_id == owner_spec.contract_manifest_id
-    assert spec.excluded_fields == support._COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
+    assert (
+        spec.excluded_fields
+        == benchmark_test_support.COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
+    )
     assert spec.manifest_timed_samples == 2
     assert spec.timing_scope == "module-helper-call"
     assert spec.notes
@@ -1463,13 +1454,13 @@ def test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metada
     (
         pytest.param(
             support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
-            support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS,
+            benchmark_test_support.COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS,
             id="preserve-expected-exception",
         ),
         pytest.param(
             support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
             (
-                support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
+                benchmark_test_support.COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
                 | frozenset({"expected_exception"})
             ),
             id="drop-expected-exception",
@@ -1482,7 +1473,6 @@ def test_compiled_pattern_module_helper_keyword_contract_builder_spec_handles_ex
 ) -> None:
     built_spec = _compiled_pattern_contract_builder_spec(
         spec,
-        wrapper_name="compiled_pattern_module_helper_keyword_contract_builder_spec",
     )
 
     assert built_spec == benchmark_test_support._SourceTreeContractBuilderSpec(
@@ -2854,8 +2844,6 @@ def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_packa
                     "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-                    "compiled_pattern_module_compile_contract_builder_spec",
-                    "compiled_pattern_module_helper_keyword_contract_builder_spec",
                 }
             ),
             frozenset(

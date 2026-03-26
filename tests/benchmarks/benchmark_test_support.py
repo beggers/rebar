@@ -469,6 +469,31 @@ COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
     }
 )
 
+COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS = (
+    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
+    | {
+        "categories",
+        "syntax_features",
+        "expected_exception",
+        "haystack_text_model",
+    }
+)
+
+COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS = frozenset(
+    {
+        "manifest_id",
+        "workload_id",
+        "warmup_iterations",
+        "sample_iterations",
+        "timed_samples",
+        "notes",
+        "smoke",
+        "categories",
+        "syntax_features",
+        "haystack_text_model",
+    }
+)
+
 
 def compiled_pattern_contract_expected_build_calls(
     source_workload: Workload,
@@ -1825,6 +1850,15 @@ class CompiledPatternModuleCompileContractCase:
     ) -> list[tuple[object, ...]]:
         return self.expected_build_calls_builder(source_workload)
 
+    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
+        return _SourceTreeContractBuilderSpec(
+            manifest_id="module-boundary",
+            excluded_fields=self.manifest_excluded_fields(),
+            manifest_timed_samples=2,
+            timing_scope="module-helper-call",
+            notes=(self.note(),),
+        )
+
 
 _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_ROUTE = (
     _CompiledPatternModuleCompileContractRoute(
@@ -2939,6 +2973,18 @@ class CompiledPatternModuleSuccessOwnerSpec:
         )
         return callback_call
 
+    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
+        return _SourceTreeContractBuilderSpec(
+            manifest_id=self.contract_manifest_id,
+            excluded_fields=COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS,
+            timing_scope="module-helper-call",
+            notes=(
+                "Ensures benchmark manifests keep the bounded "
+                "compiled-pattern-first-argument successful "
+                f"{self.note_surface} rows unresolved until helper invocation.",
+            ),
+        )
+
 
 def _assert_compiled_pattern_module_success_payload_round_trip(
     source_workload: Workload,
@@ -3070,6 +3116,18 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
                 f"{source_workload.workload_id!r}"
             )
         return (f"kwargs.{keyword_parameter}",)
+
+    def contract_builder_spec(self) -> _SourceTreeContractBuilderSpec:
+        excluded_fields = COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
+        if not self.preserve_expected_exception:
+            excluded_fields = excluded_fields | {"expected_exception"}
+        return _SourceTreeContractBuilderSpec(
+            manifest_id="collection-replacement-boundary",
+            excluded_fields=excluded_fields,
+            manifest_timed_samples=self.manifest_timed_samples,
+            timing_scope="module-helper-call",
+            notes=self.notes,
+        )
 
 
 COMPILED_PATTERN_CONTRACT_BUILDER_SURFACES = (

@@ -148,7 +148,6 @@ SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES = fr
 SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES = frozenset(
     {
         "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
-        "_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
         "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
     }
 )
@@ -156,12 +155,6 @@ SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES = frozenset
 SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES = (
     SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
     | frozenset({"_is_module_workflow_compiled_pattern_wrong_text_model_workload"})
-)
-
-SOURCE_TREE_LOCAL_CONTRACT_BUILDER_FUNCTION_NAMES = (
-    "compiled_pattern_module_compile_contract_builder_spec",
-    "compiled_pattern_module_success_contract_builder_spec",
-    "compiled_pattern_module_helper_keyword_contract_builder_spec",
 )
 
 SOURCE_TREE_LOCAL_CONTRACT_BUILDER_CONSTANT_NAMES = (
@@ -390,19 +383,6 @@ def _assert_source_tree_combined_routes_owner_names_through_module_alias(
     assert aliased_owner_refs == set()
     return combined_suite
 
-
-def compiled_pattern_module_compile_contract_builder_spec(
-    contract_case: Any,
-) -> benchmark_test_support._SourceTreeContractBuilderSpec:
-    return benchmark_test_support._SourceTreeContractBuilderSpec(
-        manifest_id="module-boundary",
-        excluded_fields=contract_case.manifest_excluded_fields(),
-        manifest_timed_samples=2,
-        timing_scope="module-helper-call",
-        notes=(contract_case.note(),),
-    )
-
-
 def build_compiled_pattern_module_contract_anchor_lanes(
     *,
     contract_cases: Iterable[benchmark_test_support.CompiledPatternModuleCompileContractCase],
@@ -417,9 +397,7 @@ def build_compiled_pattern_module_contract_anchor_lanes(
             case_id=contract_case.case_id,
             contract_filename=contract_case.anchor_contract_filename,
             source_workloads=source_workloads,
-            contract_builder_spec=lambda contract_case=contract_case: (
-                compiled_pattern_module_compile_contract_builder_spec(contract_case)
-            ),
+            contract_builder_spec=contract_case.contract_builder_spec,
             expected_anchor_case_ids=contract_case.expected_anchor_case_ids,
             anchor_case_ids=published_case_ids_by_signature(
                 contract_case.correctness_case_signature
@@ -443,39 +421,6 @@ def _build_compiled_pattern_module_compile_standard_benchmark_definitions() -> t
             *_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
         )
     )
-
-
-def compiled_pattern_module_success_contract_builder_spec(
-    owner_spec: Any,
-) -> benchmark_test_support._SourceTreeContractBuilderSpec:
-    return benchmark_test_support._SourceTreeContractBuilderSpec(
-        manifest_id=owner_spec.contract_manifest_id,
-        excluded_fields=_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS,
-        timing_scope="module-helper-call",
-        notes=(
-            "Ensures benchmark manifests keep the bounded "
-            "compiled-pattern-first-argument successful "
-            f"{owner_spec.note_surface} rows unresolved until helper invocation.",
-        ),
-    )
-
-
-def compiled_pattern_module_helper_keyword_contract_builder_spec(
-    spec: Any,
-) -> benchmark_test_support._SourceTreeContractBuilderSpec:
-    excluded_fields = (
-        _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
-    )
-    if not spec.preserve_expected_exception:
-        excluded_fields = excluded_fields | {"expected_exception"}
-    return benchmark_test_support._SourceTreeContractBuilderSpec(
-        manifest_id="collection-replacement-boundary",
-        excluded_fields=excluded_fields,
-        manifest_timed_samples=spec.manifest_timed_samples,
-        timing_scope="module-helper-call",
-        notes=spec.notes,
-    )
-
 
 def _compiled_pattern_wrong_text_model_specs() -> tuple[dict[str, object], ...]:
     return (
@@ -514,23 +459,6 @@ def _compiled_pattern_wrong_text_model_source_workloads(
         include_workload=spec["include_workload"],
     )
 
-
-_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS = frozenset(
-    {
-        "manifest_id",
-        "workload_id",
-        "warmup_iterations",
-        "sample_iterations",
-        "timed_samples",
-        "notes",
-        "smoke",
-        "categories",
-        "syntax_features",
-        "haystack_text_model",
-    }
-)
-
-
 _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
     "collection-replacement-boundary": benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id="collection-replacement-boundary",
@@ -557,15 +485,6 @@ _COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
     "module-search-on-bytes-string-warm-str-compiled-pattern",
     "module-match-on-str-string-purged-bytes-compiled-pattern",
     "module-fullmatch-on-bytes-string-warm-str-compiled-pattern",
-)
-_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS = (
-    benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
-    | {
-        "categories",
-        "syntax_features",
-        "expected_exception",
-        "haystack_text_model",
-    }
 )
 
 

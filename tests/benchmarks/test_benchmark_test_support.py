@@ -2495,6 +2495,8 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     assert {
         "_COMPILED_PATTERN_COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
         "_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS",
+        "COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS",
+        "COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
         "_VERBOSE_REGRESSION_PATTERN",
         "_VERBOSE_REGRESSION_FLAGS",
     }.issubset(assignment_names)
@@ -2513,7 +2515,6 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     )
     assert {
         "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
-        "_COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
         "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
         "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
     }.isdisjoint(definition_names | assignment_names)
@@ -3058,6 +3059,10 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
         support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_call.__name__
         == "expected_callback_call"
     )
+    assert (
+        support.CompiledPatternModuleSuccessOwnerSpec.contract_builder_spec.__name__
+        == "contract_builder_spec"
+    )
 
 
 def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_success_owner_specs(
@@ -3127,9 +3132,10 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
         owner_has_builder = hasattr(owner_type, "contract_builder_spec")
         source_tree_has_wrapper = hasattr(anchor_support, wrapper_name)
 
-        assert ("contract_builder_spec" in class_method_names) is owner_has_builder
-        assert (wrapper_name in source_tree_function_names) is source_tree_has_wrapper
-        assert owner_has_builder != source_tree_has_wrapper
+        assert owner_has_builder
+        assert "contract_builder_spec" in class_method_names
+        assert not source_tree_has_wrapper
+        assert wrapper_name not in source_tree_function_names
 
 
 def test_benchmark_test_support_drops_local_wrong_text_model_contract_builder() -> None:
@@ -3147,7 +3153,6 @@ def test_benchmark_test_support_drops_source_tree_helper_keyword_contract_surfac
     )
 
     moved_names = {
-        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS",
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
