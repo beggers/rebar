@@ -1,6 +1,6 @@
 ## RBR-1340: Delete redundant source-tree contract selector wrappers
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -54,3 +54,11 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k source_tree_contract_builder_consumers_route_owner_surface_through_package_alias` passed with `4 passed, 86 deselected in 0.16s`
   - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_benchmark_manifest_validation.py -k 'compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_payload_types_field_names_and_bool_count_complements or standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation'` passed with `3 passed, 61 deselected in 0.16s`
   - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile_contract_rows_stay_anchored_to_published_correctness_cases or run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_contract_workloads or compiled_pattern_module_helper_keyword_contract_callbacks_precompile_first_argument_before_timing'` passed with `7 passed, 272 deselected in 0.18s`
+
+## Completion
+- Removed the remaining local source-tree contract selector/spec wrappers from the two benchmark consumer files and routed those call sites directly to `tests.benchmarks.source_tree_benchmark_anchor_support` and `tests.benchmarks.benchmark_test_support`.
+- Tightened `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` so it now checks top-level definitions and assignments, proving the deleted helper names are not recreated locally while the consumers still import `source_tree_benchmark_anchor_support` through the `tests.benchmarks` package alias.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k source_tree_contract_builder_consumers_route_owner_surface_through_package_alias` -> `4 passed, 86 deselected`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_benchmark_manifest_validation.py -k 'compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_payload_types_field_names_and_bool_count_complements or standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_preserve_source_order_and_payload_round_trip_until_helper_invocation'` -> `3 passed, 61 deselected`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_compile_contract_rows_stay_anchored_to_published_correctness_cases or run_internal_workload_probe_measures_compiled_pattern_module_helper_keyword_contract_workloads or compiled_pattern_module_helper_keyword_contract_callbacks_precompile_first_argument_before_timing'` -> `62 passed, 217 deselected`

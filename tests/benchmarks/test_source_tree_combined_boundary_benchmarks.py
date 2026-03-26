@@ -37,20 +37,6 @@ TRACKED_REPORT_PATH = benchmarks.SCORECARD_REPORT.published_path
 WIDER_RANGED_REPEAT_MANIFEST_ID = "wider-ranged-repeat-quantified-group-boundary"
 
 
-def _compiled_pattern_module_contract_case(case_id: str) -> object:
-    return next(
-        case
-        for case in source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
-        if case.case_id == case_id
-    )
-
-
-def _compiled_pattern_module_helper_keyword_contract_spec(spec: object) -> object:
-    return source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
-        spec
-    )
-
-
 class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     maxDiff = None
 
@@ -1903,10 +1889,15 @@ def test_compiled_pattern_module_compile_contract_rows_stay_anchored_to_publishe
     tmp_path,
     anchor_lane: object,
 ) -> None:
+    contract_case = next(
+        case
+        for case in source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+        if case.case_id == anchor_lane.case_id
+    )
     manifest = source_tree_support._source_tree_contract_manifest(
         anchor_lane.source_workloads,
         spec=source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
-            _compiled_pattern_module_contract_case(anchor_lane.case_id)
+            contract_case
         ),
     )
     manifest_path = benchmark_test_support._write_test_manifest(
@@ -4451,7 +4442,7 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
 ) -> None:
     workload = source_tree_support._source_tree_contract_workload(
         source_workload,
-        spec=_compiled_pattern_module_helper_keyword_contract_spec(
+        spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
             source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC
         ),
     )
@@ -4486,7 +4477,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
 ) -> None:
     workload = source_tree_support._source_tree_contract_workload(
         source_workload,
-        spec=_compiled_pattern_module_helper_keyword_contract_spec(
+        spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
             contract_surface.spec
         ),
     )
@@ -4525,7 +4516,7 @@ def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_fi
         "re",
         source_tree_support._source_tree_contract_workload(
             source_workload,
-            spec=_compiled_pattern_module_helper_keyword_contract_spec(
+            spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
                 contract_surface.spec
             ),
         ),
@@ -4564,7 +4555,7 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
     )
     workload = source_tree_support._source_tree_contract_workload(
         source_workload,
-        spec=_compiled_pattern_module_helper_keyword_contract_spec(
+        spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
             source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC
         ),
     )

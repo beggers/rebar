@@ -51,41 +51,6 @@ def _assert_manifest_and_payload_entry_points_raise(
     with pytest.raises(ValueError, match=error_pattern):
         workload_from_payload(payload)
 
-
-_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC = (
-    source_tree_support._SourceTreeContractBuilderSpec(
-        manifest_id="pattern-boundary",
-        excluded_fields=frozenset(
-            {
-                "manifest_id",
-                "workload_id",
-                "warmup_iterations",
-                "sample_iterations",
-                "timed_samples",
-                "smoke",
-            }
-        ),
-        timing_scope="pattern-helper-call",
-    )
-)
-
-
-def _compiled_pattern_module_helper_keyword_contract_surface(case_id: str) -> object:
-    return next(
-        surface
-        for surface in (
-            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
-        )
-        if surface.case_id == case_id
-    )
-
-
-def _compiled_pattern_module_helper_keyword_contract_spec(spec: object) -> object:
-    return source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
-        spec
-    )
-
-
 def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_aliasing(
     tmp_path: pathlib.Path,
 ) -> None:
@@ -1127,7 +1092,7 @@ def test_standard_benchmark_compiled_pattern_module_helper_keyword_contract_rows
     source_workloads = contract_surface.source_workloads()
     manifest = source_tree_support._source_tree_contract_manifest(
         source_workloads,
-        spec=_compiled_pattern_module_helper_keyword_contract_spec(
+        spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
             contract_surface.spec
         ),
     )
@@ -1174,9 +1139,19 @@ def test_standard_benchmark_compiled_pattern_module_helper_keyword_contract_rows
 
 def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_payload_types_field_names_and_bool_count_complements(
 ) -> None:
-    success_surface = _compiled_pattern_module_helper_keyword_contract_surface("success")
-    keyword_error_surface = _compiled_pattern_module_helper_keyword_contract_surface(
-        "keyword-error"
+    success_surface = next(
+        surface
+        for surface in (
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+        )
+        if surface.case_id == "success"
+    )
+    keyword_error_surface = next(
+        surface
+        for surface in (
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+        )
+        if surface.case_id == "keyword-error"
     )
 
     success_source_workload = next(
@@ -1187,7 +1162,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
     )
     success_workload = source_tree_support._source_tree_contract_workload(
         success_source_workload,
-        spec=_compiled_pattern_module_helper_keyword_contract_spec(
+        spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
             success_surface.spec
         ),
     )
@@ -1212,7 +1187,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
     )
     keyword_error_workload = source_tree_support._source_tree_contract_workload(
         keyword_error_source_workload,
-        spec=_compiled_pattern_module_helper_keyword_contract_spec(
+        spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
             keyword_error_surface.spec
         ),
     )
@@ -1299,7 +1274,13 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
 
 def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_outcomes_across_success_and_error_lanes(
 ) -> None:
-    success_surface = _compiled_pattern_module_helper_keyword_contract_surface("success")
+    success_surface = next(
+        surface
+        for surface in (
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+        )
+        if surface.case_id == "success"
+    )
     success_source_workload = next(
         workload
         for workload in success_surface.source_workloads()
@@ -1308,7 +1289,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_o
     )
     success_workload = source_tree_support._source_tree_contract_workload(
         success_source_workload,
-        spec=_compiled_pattern_module_helper_keyword_contract_spec(
+        spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
             success_surface.spec
         ),
     )
@@ -1325,8 +1306,12 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_o
         1,
     )
 
-    keyword_error_surface = _compiled_pattern_module_helper_keyword_contract_surface(
-        "keyword-error"
+    keyword_error_surface = next(
+        surface
+        for surface in (
+            benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
+        )
+        if surface.case_id == "keyword-error"
     )
     keyword_error_source_workload = next(
         workload
@@ -1336,7 +1321,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_o
     )
     keyword_error_workload = source_tree_support._source_tree_contract_workload(
         keyword_error_source_workload,
-        spec=_compiled_pattern_module_helper_keyword_contract_spec(
+        spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
             keyword_error_surface.spec
         ),
     )
@@ -1578,7 +1563,7 @@ def test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern
 ) -> None:
     manifest = source_tree_support._source_tree_contract_manifest(
         (source_workload,),
-        spec=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
+        spec=source_tree_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
     manifest_path = benchmark_test_support._write_test_manifest(
         tmp_path,

@@ -2486,7 +2486,12 @@ def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_packa
 
 
 @pytest.mark.parametrize(
-    ("module_name", "expected_routed_names"),
+    (
+        "module_name",
+        "expected_source_tree_names",
+        "forbidden_local_names",
+        "expected_benchmark_support_names",
+    ),
     (
         pytest.param(
             "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support",
@@ -2497,6 +2502,8 @@ def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_packa
                     "_source_tree_contract_workload",
                 }
             ),
+            frozenset(),
+            frozenset(),
             id="pattern-boundary",
         ),
         pytest.param(
@@ -2507,42 +2514,67 @@ def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_packa
                     "_source_tree_contract_workload",
                 }
             ),
+            frozenset(),
+            frozenset(),
             id="collection-replacement",
         ),
         pytest.param(
             "tests.benchmarks.test_benchmark_manifest_validation",
             frozenset(
                 {
-                    "_SourceTreeContractBuilderSpec",
+                    "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
                 }
             ),
+            frozenset(
+                {
+                    "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
+                    "_compiled_pattern_module_helper_keyword_contract_surface",
+                    "_compiled_pattern_module_helper_keyword_contract_spec",
+                }
+            ),
+            frozenset({"_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES"}),
             id="manifest-validation",
         ),
         pytest.param(
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
             frozenset(
                 {
+                    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
+                    "compiled_pattern_module_compile_contract_builder_spec",
+                    "compiled_pattern_module_helper_keyword_contract_builder_spec",
                 }
             ),
+            frozenset(
+                {
+                    "_compiled_pattern_module_contract_case",
+                    "_compiled_pattern_module_helper_keyword_contract_spec",
+                }
+            ),
+            frozenset(),
             id="source-tree-combined",
         ),
     ),
 )
 def test_source_tree_contract_builder_consumers_route_owner_surface_through_package_alias(
     module_name: str,
-    expected_routed_names: frozenset[str],
+    expected_source_tree_names: frozenset[str],
+    forbidden_local_names: frozenset[str],
+    expected_benchmark_support_names: frozenset[str],
 ) -> None:
     module = importlib.import_module(module_name)
     module_ast = benchmark_test_support._parsed_module_ast(module)
-    _, local_assignment_names = (
+    local_definition_names, local_assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(
             module
         )
     )
+    local_names = local_definition_names | local_assignment_names
     package_imports = {
         (alias.name, alias.asname)
         for node in module_ast.body
@@ -2559,15 +2591,25 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
     assert package_imports == {
         ("source_tree_benchmark_anchor_support", "source_tree_support")
     }
-    assert expected_routed_names.isdisjoint(local_assignment_names)
+    assert forbidden_local_names.isdisjoint(local_names)
+    assert expected_source_tree_names.isdisjoint(local_names)
+    assert expected_benchmark_support_names.isdisjoint(local_names)
     assert frozenset(
         node.attr
         for node in ast.walk(module_ast)
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
         and node.value.id == "source_tree_support"
-        and node.attr in expected_routed_names
-    ) == expected_routed_names
+        and node.attr in expected_source_tree_names
+    ) == expected_source_tree_names
+    assert frozenset(
+        node.attr
+        for node in ast.walk(module_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == "benchmark_test_support"
+        and node.attr in expected_benchmark_support_names
+    ) == expected_benchmark_support_names
 
 
 def test_source_tree_owner_manifest_path_constants_point_to_current_workload_files() -> None:
