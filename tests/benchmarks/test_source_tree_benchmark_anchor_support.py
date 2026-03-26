@@ -20,6 +20,23 @@ def _compiled_pattern_wrong_text_model_local_function_names() -> frozenset[str]:
     return frozenset()
 
 
+def _collection_routed_owner_assignment_names() -> frozenset[str]:
+    _, assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            collection_support
+        )
+    )
+    return frozenset(
+        name
+        for name in assignment_names
+        if name == "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS"
+        or (
+            name.startswith("CONDITIONAL_GROUP_EXISTS_")
+            and name.endswith("_WORKLOAD_IDS")
+        )
+    )
+
+
 def _synthetic_report_scorecard(
     *,
     workloads: tuple[dict[str, object], ...],
@@ -3602,25 +3619,14 @@ def test_source_tree_compiled_pattern_module_compile_standard_definition_helpers
 
 
 def test_source_tree_owner_keeps_collection_routed_names_off_source_tree_module() -> None:
-    for routed_name in (
-        "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS",
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
-        "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS",
-    ):
+    routed_names = _collection_routed_owner_assignment_names()
+
+    assert routed_names
+    assert (
+        "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS"
+        in routed_names
+    )
+    for routed_name in routed_names:
         assert not hasattr(support, routed_name)
         assert not hasattr(benchmark_test_support, routed_name)
         assert hasattr(collection_support, routed_name)
