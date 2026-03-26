@@ -2359,9 +2359,9 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
         manifest_definition = source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
             "pattern-boundary"
         ]
-        shape_expectation = source_tree_support.source_tree_combined_manifest_shape_expectation(
-            "pattern-boundary"
-        )
+        shape_expectation = manifest_definition.shape_expectation
+        self.assertIsNotNone(shape_expectation)
+        assert shape_expectation is not None
         self.assertIs(manifest_definition.shape_expectation, shape_expectation)
         self.assertEqual(
             source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
@@ -2403,10 +2403,29 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
         )
 
     def test_source_tree_combined_slice_filters_match_expected_manifest_rows(self) -> None:
-        for manifest_id in source_tree_support.source_tree_combined_slice_manifest_ids():
+        manifest_ids_with_slice_expectations = {
+            expectation.manifest_id
+            for expectation in source_tree_support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+        }
+        combined_target_manifest_ids = (
+            source_tree_support.source_tree_combined_target_manifest_ids()
+        )
+        self.assertEqual(
+            manifest_ids_with_slice_expectations - set(combined_target_manifest_ids),
+            set(),
+        )
+        for manifest_id in (
+            manifest_id
+            for manifest_id in combined_target_manifest_ids
+            if manifest_id in manifest_ids_with_slice_expectations
+        ):
             with self.subTest(manifest_id=manifest_id):
                 manifest = source_tree_support.source_tree_combined_case(manifest_id).target_manifest
-                for expectation in source_tree_support.source_tree_combined_slice_expectations(manifest_id):
+                for expectation in (
+                    expectation
+                    for expectation in source_tree_support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+                    if expectation.manifest_id == manifest_id
+                ):
                     with self.subTest(slice_id=expectation.slice_id):
                         self.assertEqual(
                             tuple(
@@ -2420,9 +2439,14 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                         )
 
     def test_scoped_manifests_keep_slice_backed_representatives(self) -> None:
+        manifest_ids_with_slice_expectations = {
+            expectation.manifest_id
+            for expectation in source_tree_support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+        }
         for manifest_id in (
             manifest_id
-            for manifest_id in source_tree_support.source_tree_combined_slice_manifest_ids()
+            for manifest_id in source_tree_support.source_tree_combined_target_manifest_ids()
+            if manifest_id in manifest_ids_with_slice_expectations
             if source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
                 manifest_id
             ].representative_measured_workload_ids
@@ -2444,9 +2468,8 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                     ),
                     tuple(
                         workload_id
-                        for expectation in source_tree_support.source_tree_combined_slice_expectations(
-                            manifest_id
-                        )
+                        for expectation in source_tree_support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+                        if expectation.manifest_id == manifest_id
                         for workload_id in expectation.expected_workload_ids
                     ),
                 )
@@ -2541,7 +2564,15 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                 )
 
     def test_selected_combined_source_tree_manifest_slices_stay_covered(self) -> None:
-        for manifest_id in source_tree_support.source_tree_combined_slice_manifest_ids():
+        manifest_ids_with_slice_expectations = {
+            expectation.manifest_id
+            for expectation in source_tree_support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+        }
+        for manifest_id in (
+            manifest_id
+            for manifest_id in source_tree_support.source_tree_combined_target_manifest_ids()
+            if manifest_id in manifest_ids_with_slice_expectations
+        ):
             with self.subTest(manifest_id=manifest_id):
                 case = source_tree_support.source_tree_combined_case(manifest_id)
                 _, scorecard = run_harness_scorecard(
@@ -2560,7 +2591,11 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                     case.manifest_expectation.known_gap_count,
                 )
 
-                for expectation in source_tree_support.source_tree_combined_slice_expectations(manifest_id):
+                for expectation in (
+                    expectation
+                    for expectation in source_tree_support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+                    if expectation.manifest_id == manifest_id
+                ):
                     with self.subTest(slice_id=expectation.slice_id):
                         source_tree_support.assert_source_tree_combined_manifest_slice(
                             self,
@@ -2573,9 +2608,11 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
         self,
     ) -> None:
         case = source_tree_support.source_tree_combined_case(WIDER_RANGED_REPEAT_MANIFEST_ID)
-        shape_expectation = source_tree_support.source_tree_combined_manifest_shape_expectation(
+        shape_expectation = source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
             WIDER_RANGED_REPEAT_MANIFEST_ID
-        )
+        ].shape_expectation
+        self.assertIsNotNone(shape_expectation)
+        assert shape_expectation is not None
         _, scorecard = run_harness_scorecard(
             "rebar_harness.benchmarks",
             [
@@ -2976,9 +3013,8 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     case.representative_measured_workload_ids,
                     tuple(
                         workload_id
-                        for expectation in source_tree_support.source_tree_combined_slice_expectations(
-                            case_id
-                        )
+                        for expectation in source_tree_support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+                        if expectation.manifest_id == case_id
                         for workload_id in expectation.expected_workload_ids
                     ),
                 )

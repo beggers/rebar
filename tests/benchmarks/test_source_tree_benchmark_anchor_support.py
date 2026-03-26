@@ -839,37 +839,13 @@ def test_source_tree_combined_case_requires_regression_manifest_for_non_module_t
         support.source_tree_combined_case("synthetic-boundary")
 
 
-def test_source_tree_combined_slice_manifest_ids_rejects_expectations_outside_selector(
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    monkeypatch.setattr(
-        support,
-        "source_tree_combined_target_manifest_ids",
-        lambda: ("module-boundary",),
-    )
-    monkeypatch.setattr(
-        support,
-        "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS",
-        (
-            support.SourceTreeCombinedSliceExpectation(
-                manifest_id="module-boundary",
-                slice_id="module-slice",
-            ),
-            support.SourceTreeCombinedSliceExpectation(
-                manifest_id="synthetic-boundary",
-                slice_id="synthetic-slice",
-            ),
-        ),
-    )
-
-    with pytest.raises(
-        AssertionError,
-        match=(
-            "source-tree combined slice expectations reference manifest ids outside "
-            "the published combined selector: \\['synthetic-boundary'\\]"
-        ),
+def test_deleted_source_tree_wrapper_helpers_are_absent() -> None:
+    for attribute_name in (
+        "source_tree_combined_manifest_shape_expectation",
+        "source_tree_combined_slice_manifest_ids",
+        "source_tree_combined_slice_expectations",
     ):
-        support.source_tree_combined_slice_manifest_ids()
+        assert not hasattr(support, attribute_name)
 
 
 def test_source_tree_combined_slice_manifest_filter_keeps_only_slice_derived_contracts(
@@ -924,10 +900,20 @@ def test_source_tree_combined_slice_manifest_filter_keeps_only_slice_derived_con
         ),
     )
 
+    combined_target_manifest_ids = (
+        "explicit-boundary",
+        "shape-boundary",
+        "slice-derived-boundary",
+    )
+    manifest_ids_with_slice_expectations = {
+        expectation.manifest_id
+        for expectation in support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+    }
     assert tuple(
         manifest_id
-        for manifest_id in support.source_tree_combined_slice_manifest_ids()
-        if support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+        for manifest_id in combined_target_manifest_ids
+        if manifest_id in manifest_ids_with_slice_expectations
+        and support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
             manifest_id
         ].representative_measured_workload_ids
         is None
@@ -938,51 +924,6 @@ def test_source_tree_combined_slice_manifest_filter_keeps_only_slice_derived_con
     ) == (
         "slice-derived-boundary",
     )
-
-
-@pytest.mark.parametrize(
-    ("manifest_expectations", "manifest_id", "message"),
-    (
-        pytest.param(
-            {},
-            "synthetic-missing",
-            "unknown source-tree combined manifest expectation 'synthetic-missing'",
-            id="unknown-manifest",
-        ),
-        pytest.param(
-            {
-                "synthetic-no-shape": (
-                    support.SourceTreeCombinedManifestExpectationDefinition()
-                ),
-            },
-            "synthetic-no-shape",
-            (
-                "source-tree combined manifest 'synthetic-no-shape' does not define "
-                "shared shape expectations"
-            ),
-            id="missing-shape",
-        ),
-    ),
-)
-def test_source_tree_combined_manifest_shape_expectation_rejects_invalid_manifests(
-    monkeypatch: pytest.MonkeyPatch,
-    manifest_expectations: dict[
-        str, support.SourceTreeCombinedManifestExpectationDefinition
-    ],
-    manifest_id: str,
-    message: str,
-) -> None:
-    support.source_tree_combined_manifest_shape_expectation.cache_clear()
-    monkeypatch.setattr(
-        support,
-        "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
-        manifest_expectations,
-    )
-
-    with pytest.raises(AssertionError, match=message):
-        support.source_tree_combined_manifest_shape_expectation(manifest_id)
-
-    support.source_tree_combined_manifest_shape_expectation.cache_clear()
 
 
 @pytest.mark.parametrize(
@@ -1216,9 +1157,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "source_tree_scorecard_case",
         "source_tree_combined_target_manifest_ids",
         "source_tree_combined_case",
-        "source_tree_combined_manifest_shape_expectation",
-        "source_tree_combined_slice_manifest_ids",
-        "source_tree_combined_slice_expectations",
         "source_tree_combined_manifest_representative_measured_workload_ids",
         "assert_zero_gap_bytes_representative_subset",
         "assert_zero_gap_manifest_representative_promotion",
@@ -1821,9 +1759,6 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
         "source_tree_scorecard_case",
         "source_tree_combined_target_manifest_ids",
         "source_tree_combined_case",
-        "source_tree_combined_manifest_shape_expectation",
-        "source_tree_combined_slice_manifest_ids",
-        "source_tree_combined_slice_expectations",
         "source_tree_combined_manifest_representative_measured_workload_ids",
         "assert_zero_gap_bytes_representative_subset",
         "assert_zero_gap_manifest_representative_promotion",

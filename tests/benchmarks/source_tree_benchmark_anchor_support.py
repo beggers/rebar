@@ -3671,58 +3671,6 @@ def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase
         target_manifest=target_manifest,
     )
 
-
-@cache
-def source_tree_combined_manifest_shape_expectation(
-    manifest_id: str,
-) -> SourceTreeCombinedManifestShapeExpectation:
-    manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
-    if manifest_expectation is None:
-        raise AssertionError(
-            f"unknown source-tree combined manifest expectation {manifest_id!r}"
-        )
-    shape_expectation = manifest_expectation.shape_expectation
-    if shape_expectation is None:
-        raise AssertionError(
-            "source-tree combined manifest "
-            f"{manifest_id!r} does not define shared shape expectations"
-        )
-    return shape_expectation
-
-
-def source_tree_combined_slice_manifest_ids() -> tuple[str, ...]:
-    manifest_ids_with_expectations = {
-        expectation.manifest_id for expectation in SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
-    }
-    combined_target_ids = source_tree_combined_target_manifest_ids()
-    missing_manifest_ids = manifest_ids_with_expectations - set(combined_target_ids)
-    if missing_manifest_ids:
-        raise AssertionError(
-            "source-tree combined slice expectations reference manifest ids outside the "
-            f"published combined selector: {sorted(missing_manifest_ids)}"
-        )
-    return tuple(
-        manifest_id
-        for manifest_id in combined_target_ids
-        if manifest_id in manifest_ids_with_expectations
-    )
-
-
-def source_tree_combined_slice_expectations(
-    manifest_id: str,
-) -> tuple[SourceTreeCombinedSliceExpectation, ...]:
-    expectations = tuple(
-        expectation
-        for expectation in SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
-        if expectation.manifest_id == manifest_id
-    )
-    if not expectations:
-        raise AssertionError(
-            f"unknown source-tree combined slice expectation manifest {manifest_id!r}"
-        )
-    return expectations
-
-
 def _workload_matches_source_tree_combined_slice(
     workload: Workload,
     expectation: SourceTreeCombinedSliceExpectation,
