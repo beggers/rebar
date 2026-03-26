@@ -3314,6 +3314,50 @@ def test_rehomed_source_tree_contract_tests_stay_owned_by_combined_boundary_suit
     )
 
 
+def test_rehomed_collection_replacement_tests_stay_owned_by_surviving_source_tree_suites(
+) -> None:
+    anchor_module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_benchmark_anchor_support"
+    )
+    combined_module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    anchor_rehomed_names = frozenset(
+        {
+            "test_collection_replacement_pattern_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates",
+            "test_collection_replacement_pattern_wrong_text_model_contract_spec_uses_owner_metadata",
+            "test_collection_replacement_pattern_wrong_text_model_standard_definition_stays_bound_to_local_contract",
+            "test_collection_replacement_positional_indexlike_workloads_stay_in_scope_and_keep_expected_signature",
+            "test_collection_replacement_positional_indexlike_workload_filter_rejects_keyword_and_non_indexlike_rows",
+            "test_collection_replacement_positional_indexlike_correctness_case_signature_requires_collection_call_shape",
+            "test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wrong_text_model_rows_until_helper_invocation",
+            "test_run_internal_workload_probe_measures_collection_replacement_pattern_wrong_text_model_contract_workloads",
+            "test_collection_replacement_pattern_wrong_text_model_callbacks_preserve_precompile_contract",
+        }
+    )
+    combined_rehomed_names = frozenset(
+        {
+            "test_collection_replacement_manifest_keeps_pattern_keyword_replacement_and_split_rows_measured",
+            "test_collection_replacement_manifest_keeps_module_keyword_replacement_and_split_rows_measured",
+            "test_collection_replacement_manifest_keeps_positional_indexlike_module_and_pattern_rows_measured",
+            "test_conditional_collection_replacement_slice_expectations_stay_in_sync_with_owner_workload_ids",
+        }
+    )
+
+    anchor_definition_names, anchor_assignment_names = (
+        support.top_level_module_definition_and_assignment_names(anchor_module)
+    )
+    anchor_local_names = anchor_definition_names | anchor_assignment_names
+    combined_suite_names = frozenset(
+        dir(combined_module.SourceTreeCombinedBoundaryBenchmarkSuiteTest)
+    )
+
+    assert anchor_rehomed_names.issubset(anchor_local_names)
+    assert combined_rehomed_names.issubset(combined_suite_names)
+    assert anchor_rehomed_names.isdisjoint(combined_suite_names)
+    assert combined_rehomed_names.isdisjoint(anchor_local_names)
+
+
 def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by_source_tree_support(
 ) -> None:
     owner_definition_names, _ = support.top_level_module_definition_and_assignment_names(
