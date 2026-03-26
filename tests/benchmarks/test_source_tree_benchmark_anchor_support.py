@@ -1606,7 +1606,20 @@ def test_source_tree_support_module_exposes_moved_conditional_callable_helpers()
     }
 
     for function_name in (
-        collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES
+        "_conditional_group_exists_callable_str_slice_workloads",
+        "_conditional_group_exists_callable_bytes_slice_workloads",
+        "_conditional_group_exists_quantified_callable_str_workloads",
+        "_conditional_group_exists_nested_callable_str_workloads",
+        "_conditional_group_exists_nested_callable_bytes_workloads",
+        "_conditional_group_exists_quantified_callable_bytes_workloads",
+        "_conditional_group_exists_alternation_callable_bytes_workloads",
+        "_conditional_group_exists_template_replacement_expectation",
+        "_conditional_group_exists_callable_replacement_expectations",
+        "_conditional_group_exists_alternation_callable_replacement_expectation",
+        "_conditional_group_exists_nested_callable_replacement_expectation",
+        "_conditional_group_exists_nested_callable_bytes_replacement_expectation",
+        "_conditional_group_exists_quantified_callable_replacement_expectation",
+        "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
     ):
         assert not hasattr(support, function_name)
         assert function_name not in source_tree_function_names
@@ -1635,7 +1648,20 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
         node.name for node in collection_module_ast.body if isinstance(node, ast.FunctionDef)
     }
     for function_name in (
-        collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES
+        "_conditional_group_exists_callable_str_slice_workloads",
+        "_conditional_group_exists_callable_bytes_slice_workloads",
+        "_conditional_group_exists_quantified_callable_str_workloads",
+        "_conditional_group_exists_nested_callable_str_workloads",
+        "_conditional_group_exists_nested_callable_bytes_workloads",
+        "_conditional_group_exists_quantified_callable_bytes_workloads",
+        "_conditional_group_exists_alternation_callable_bytes_workloads",
+        "_conditional_group_exists_template_replacement_expectation",
+        "_conditional_group_exists_callable_replacement_expectations",
+        "_conditional_group_exists_alternation_callable_replacement_expectation",
+        "_conditional_group_exists_nested_callable_replacement_expectation",
+        "_conditional_group_exists_nested_callable_bytes_replacement_expectation",
+        "_conditional_group_exists_quantified_callable_replacement_expectation",
+        "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
     ):
         assert hasattr(collection_support, function_name)
         assert function_name in collection_function_names
@@ -1661,7 +1687,11 @@ def test_source_tree_support_module_no_longer_exposes_collection_owned_signature
     }
 
     for function_name in (
-        collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES
+        "_text_model_agnostic_callable_match_group_signature",
+        "_conditional_group_exists_nested_callable_correctness_case_signature",
+        "_conditional_group_exists_nested_callable_workload_signature",
+        "_conditional_group_exists_quantified_callable_correctness_case_signature",
+        "_conditional_group_exists_quantified_callable_workload_signature",
     ):
         assert not hasattr(support, function_name)
         assert function_name not in local_function_names
@@ -1965,7 +1995,20 @@ def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_loc
     }
 
     for function_name in (
-        collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES
+        "_conditional_group_exists_callable_str_slice_workloads",
+        "_conditional_group_exists_callable_bytes_slice_workloads",
+        "_conditional_group_exists_quantified_callable_str_workloads",
+        "_conditional_group_exists_nested_callable_str_workloads",
+        "_conditional_group_exists_nested_callable_bytes_workloads",
+        "_conditional_group_exists_quantified_callable_bytes_workloads",
+        "_conditional_group_exists_alternation_callable_bytes_workloads",
+        "_conditional_group_exists_template_replacement_expectation",
+        "_conditional_group_exists_callable_replacement_expectations",
+        "_conditional_group_exists_alternation_callable_replacement_expectation",
+        "_conditional_group_exists_nested_callable_replacement_expectation",
+        "_conditional_group_exists_nested_callable_bytes_replacement_expectation",
+        "_conditional_group_exists_quantified_callable_replacement_expectation",
+        "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
     ):
         assert function_name not in local_function_names
 
@@ -2137,14 +2180,35 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
         pytest.param(
             "collection_replacement_support",
             collection_support,
-            collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES,
+            (
+                "_conditional_group_exists_callable_str_slice_workloads",
+                "_conditional_group_exists_callable_bytes_slice_workloads",
+                "_conditional_group_exists_quantified_callable_str_workloads",
+                "_conditional_group_exists_nested_callable_str_workloads",
+                "_conditional_group_exists_nested_callable_bytes_workloads",
+                "_conditional_group_exists_quantified_callable_bytes_workloads",
+                "_conditional_group_exists_alternation_callable_bytes_workloads",
+                "_conditional_group_exists_template_replacement_expectation",
+                "_conditional_group_exists_callable_replacement_expectations",
+                "_conditional_group_exists_alternation_callable_replacement_expectation",
+                "_conditional_group_exists_nested_callable_replacement_expectation",
+                "_conditional_group_exists_nested_callable_bytes_replacement_expectation",
+                "_conditional_group_exists_quantified_callable_replacement_expectation",
+                "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
+            ),
             frozenset(),
             id="conditional-callable-helpers",
         ),
         pytest.param(
             "collection_replacement_support",
             collection_support,
-            collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES,
+            (
+                "_text_model_agnostic_callable_match_group_signature",
+                "_conditional_group_exists_nested_callable_correctness_case_signature",
+                "_conditional_group_exists_nested_callable_workload_signature",
+                "_conditional_group_exists_quantified_callable_correctness_case_signature",
+                "_conditional_group_exists_quantified_callable_workload_signature",
+            ),
             frozenset(),
             id="conditional-callable-signature-helpers",
         ),

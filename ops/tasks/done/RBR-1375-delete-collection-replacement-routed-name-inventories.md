@@ -1,6 +1,6 @@
 ## RBR-1375: Delete collection-replacement routed-name inventories
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -50,3 +50,12 @@ Created: 2026-03-26
   - `python3 -m py_compile tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py` passed
   - `bash -lc "! rg -n '^(COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_WORKLOAD_ID_NAMES|COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES|COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES)\\s*=' tests/benchmarks/collection_replacement_benchmark_anchor_support.py"` currently fails because those exported bookkeeping inventories still exist, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n 'COLLECTION_REPLACEMENT_ROUTED_(SOURCE_TREE_WORKLOAD_ID_NAMES|CONDITIONAL_CALLABLE_HELPER_NAMES|CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES)' tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"` currently fails because the affected ownership tests still read those bookkeeping inventories from the owner module, and that failure belongs exactly to this cleanup
+
+## Completion
+- Deleted `COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_WORKLOAD_ID_NAMES`, `COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES`, and `COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES` from `tests/benchmarks/collection_replacement_benchmark_anchor_support.py`.
+- Rewrote the affected collection/source-tree ownership assertions to name the routed workload-id constants and callable helper surfaces directly instead of consuming exported tuple inventories.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` -> `424 passed in 3.30s`
+  - `python3 -m py_compile tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py`
+  - `bash -lc "! rg -n '^(COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_WORKLOAD_ID_NAMES|COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES|COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES)\\s*=' tests/benchmarks/collection_replacement_benchmark_anchor_support.py"`
+  - `bash -lc "! rg -n 'COLLECTION_REPLACEMENT_ROUTED_(SOURCE_TREE_WORKLOAD_ID_NAMES|CONDITIONAL_CALLABLE_HELPER_NAMES|CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES)' tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py"`

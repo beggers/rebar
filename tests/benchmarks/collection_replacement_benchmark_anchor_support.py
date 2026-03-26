@@ -1845,37 +1845,6 @@ CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS = (
     + CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS[8:]
 )
 
-COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_WORKLOAD_ID_NAMES = (
-    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS",
-    "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS",
-)
-
-COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_HELPER_NAMES = (
-    "_conditional_group_exists_callable_str_slice_workloads",
-    "_conditional_group_exists_callable_bytes_slice_workloads",
-    "_conditional_group_exists_quantified_callable_str_workloads",
-    "_conditional_group_exists_nested_callable_str_workloads",
-    "_conditional_group_exists_nested_callable_bytes_workloads",
-    "_conditional_group_exists_quantified_callable_bytes_workloads",
-    "_conditional_group_exists_alternation_callable_bytes_workloads",
-    "_conditional_group_exists_template_replacement_expectation",
-    "_conditional_group_exists_callable_replacement_expectations",
-    "_conditional_group_exists_alternation_callable_replacement_expectation",
-    "_conditional_group_exists_nested_callable_replacement_expectation",
-    "_conditional_group_exists_nested_callable_bytes_replacement_expectation",
-    "_conditional_group_exists_quantified_callable_replacement_expectation",
-    "_conditional_group_exists_quantified_callable_bytes_replacement_expectation",
-)
 @cache
 def _conditional_group_exists_callable_str_slice_workloads() -> tuple[Any, ...]:
     expected_workload_ids = tuple(
@@ -2644,15 +2613,6 @@ def _conditional_group_exists_quantified_callable_workload_signature(
         workload.flags,
         workload.text_model,
     )
-
-
-COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES = (
-    "_text_model_agnostic_callable_match_group_signature",
-    "_conditional_group_exists_nested_callable_correctness_case_signature",
-    "_conditional_group_exists_nested_callable_workload_signature",
-    "_conditional_group_exists_quantified_callable_correctness_case_signature",
-    "_conditional_group_exists_quantified_callable_workload_signature",
-)
 
 
 COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS = (
