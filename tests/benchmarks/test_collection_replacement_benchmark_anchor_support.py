@@ -790,15 +790,18 @@ def test_grouped_callable_anchor_contract_in_combined_suite_uses_owner_helpers()
 def test_collection_replacement_standard_definitions_are_reused_by_standard_inventory(
 ) -> None:
     owner_definitions = support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS
+    owner_definition_names = tuple(
+        definition.name for definition in owner_definitions
+    )
     standard_definitions = benchmark_test_support.select_standard_inventory_definitions(
         benchmark_test_support.STANDARD_BENCHMARK_DEFINITIONS,
-        support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITION_NAMES,
+        owner_definition_names,
     )
 
     benchmark_test_support.assert_standard_inventory_reuses_owner_definitions(
         owner_definitions,
         standard_definitions,
-        support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITION_NAMES,
+        owner_definition_names,
     )
 
 

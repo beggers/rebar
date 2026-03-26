@@ -2655,21 +2655,6 @@ COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES = (
 )
 
 
-COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITION_NAMES = (
-    "collection-replacement-module-positional-indexlike",
-    "collection-replacement-keyword",
-    "collection-replacement-compiled-pattern-literal-success",
-    "collection-replacement-compiled-pattern-wrong-text-model",
-    "pattern-helper-collection-replacement-wrong-text-model",
-    "collection-replacement-pattern-findall-bounded",
-    "collection-replacement-pattern-finditer-bounded",
-    "collection-replacement-pattern-split",
-    "collection-replacement-module-literal-replacement",
-    "collection-replacement-pattern-literal-replacement",
-    "collection-replacement-grouped-callable-replacement",
-)
-
-
 COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS = (
     _collection_replacement_standard_benchmark_definitions()
 )
