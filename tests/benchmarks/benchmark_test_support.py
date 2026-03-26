@@ -1737,6 +1737,123 @@ def synthetic_workload(
     return benchmarks.workload_from_payload(payload)
 
 
+def _summary_contract_workload_payload(
+    *,
+    manifest_id: str,
+    workload_id: str,
+    family: str = "module",
+    operation: str | None = None,
+    cache_mode: str = "warm",
+    smoke: bool = False,
+) -> dict[str, object]:
+    resolved_operation = operation
+    if resolved_operation is None:
+        resolved_operation = "compile" if family == "parser" else "module.search"
+
+    return {
+        "manifest_id": manifest_id,
+        "workload_id": workload_id,
+        "bucket": workload_id,
+        "family": family,
+        "operation": resolved_operation,
+        "pattern": "abc",
+        "haystack": None if resolved_operation == "compile" else "abc",
+        "replacement": None,
+        "expected_exception": None,
+        "flags": 0,
+        "use_compiled_pattern": False,
+        "count": 0,
+        "maxsplit": 0,
+        "pos": None,
+        "endpos": None,
+        "kwargs": {},
+        "text_model": "str",
+        "haystack_text_model": None,
+        "cache_mode": cache_mode,
+        "timing_scope": (
+            "compile-call"
+            if resolved_operation == "compile"
+            else "module-helper-call"
+        ),
+        "warmup_iterations": 1,
+        "sample_iterations": 1,
+        "timed_samples": 1,
+        "notes": [],
+        "categories": [],
+        "syntax_features": [],
+        "smoke": smoke,
+    }
+
+
+def _summary_contract_workload_record(
+    *,
+    manifest_id: str,
+    workload_id: str,
+    family: str = "module",
+    operation: str | None = None,
+    cache_mode: str = "warm",
+    status: str = "measured",
+    baseline_ns: int | None = 100,
+    implementation_ns: int | None = 80,
+    speedup_vs_cpython: float | None = 1.25,
+) -> dict[str, Any]:
+    payload = _summary_contract_workload_payload(
+        manifest_id=manifest_id,
+        workload_id=workload_id,
+        family=family,
+        operation=operation,
+        cache_mode=cache_mode,
+    )
+    if status != "measured":
+        baseline_ns = None
+        implementation_ns = None
+        speedup_vs_cpython = None
+    return {
+        "manifest_id": payload["manifest_id"],
+        "workload_id": payload["workload_id"],
+        "family": payload["family"],
+        "operation": payload["operation"],
+        "cache_mode": payload["cache_mode"],
+        "status": status,
+        "baseline_ns": baseline_ns,
+        "implementation_ns": implementation_ns,
+        "speedup_vs_cpython": speedup_vs_cpython,
+    }
+
+
+def _summary_contract_manifest(
+    *,
+    manifest_id: str,
+    workload_ids: tuple[str, ...],
+    family: str = "module",
+    operation: str | None = None,
+    smoke_workload_ids: tuple[str, ...] = (),
+    spec_refs: tuple[str, ...] = (),
+    notes: tuple[str, ...] = (),
+) -> BenchmarkManifest:
+    smoke_workload_id_set = set(smoke_workload_ids)
+    workloads = [
+        workload_from_payload(
+            _summary_contract_workload_payload(
+                manifest_id=manifest_id,
+                workload_id=workload_id,
+                family=family,
+                operation=operation,
+                smoke=workload_id in smoke_workload_id_set,
+            )
+        )
+        for workload_id in workload_ids
+    ]
+    return BenchmarkManifest(
+        path=pathlib.Path(f"{manifest_id}.py"),
+        manifest_id=manifest_id,
+        schema_version=benchmarks.MANIFEST_SCHEMA_VERSION,
+        workloads=workloads,
+        spec_refs=list(spec_refs),
+        notes=list(notes),
+    )
+
+
 def _expected_exception_instance(
     expected_exception: dict[str, str],
 ) -> Exception:

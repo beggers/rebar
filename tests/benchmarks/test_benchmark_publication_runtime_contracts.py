@@ -14,7 +14,6 @@ import pytest
 from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
     BENCHMARK_WORKLOADS_ROOT,
-    BenchmarkManifest,
     PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR,
     Workload,
     load_manifest,
@@ -177,127 +176,10 @@ def _assert_built_native_combined_scorecard_fields(
     assert artifacts["selection_mode"] == expected_selection_mode
     assert len(artifacts["manifests"]) == expected_manifest_count
 
-
-def _summary_contract_workload_payload(
-    *,
-    manifest_id: str,
-    workload_id: str,
-    family: str = "module",
-    operation: str | None = None,
-    cache_mode: str = "warm",
-    smoke: bool = False,
-) -> dict[str, object]:
-    resolved_operation = operation
-    if resolved_operation is None:
-        resolved_operation = "compile" if family == "parser" else "module.search"
-
-    return {
-        "manifest_id": manifest_id,
-        "workload_id": workload_id,
-        "bucket": workload_id,
-        "family": family,
-        "operation": resolved_operation,
-        "pattern": "abc",
-        "haystack": None if resolved_operation == "compile" else "abc",
-        "replacement": None,
-        "expected_exception": None,
-        "flags": 0,
-        "use_compiled_pattern": False,
-        "count": 0,
-        "maxsplit": 0,
-        "pos": None,
-        "endpos": None,
-        "kwargs": {},
-        "text_model": "str",
-        "haystack_text_model": None,
-        "cache_mode": cache_mode,
-        "timing_scope": (
-            "compile-call"
-            if resolved_operation == "compile"
-            else "module-helper-call"
-        ),
-        "warmup_iterations": 1,
-        "sample_iterations": 1,
-        "timed_samples": 1,
-        "notes": [],
-        "categories": [],
-        "syntax_features": [],
-        "smoke": smoke,
-    }
-
-
-def _summary_contract_workload_record(
-    *,
-    manifest_id: str,
-    workload_id: str,
-    family: str = "module",
-    operation: str | None = None,
-    cache_mode: str = "warm",
-    status: str = "measured",
-    baseline_ns: int | None = 100,
-    implementation_ns: int | None = 80,
-    speedup_vs_cpython: float | None = 1.25,
-) -> dict[str, Any]:
-    payload = _summary_contract_workload_payload(
-        manifest_id=manifest_id,
-        workload_id=workload_id,
-        family=family,
-        operation=operation,
-        cache_mode=cache_mode,
-    )
-    if status != "measured":
-        baseline_ns = None
-        implementation_ns = None
-        speedup_vs_cpython = None
-    return {
-        "manifest_id": payload["manifest_id"],
-        "workload_id": payload["workload_id"],
-        "family": payload["family"],
-        "operation": payload["operation"],
-        "cache_mode": payload["cache_mode"],
-        "status": status,
-        "baseline_ns": baseline_ns,
-        "implementation_ns": implementation_ns,
-        "speedup_vs_cpython": speedup_vs_cpython,
-    }
-
-
-def _summary_contract_manifest(
-    *,
-    manifest_id: str,
-    workload_ids: tuple[str, ...],
-    family: str = "module",
-    operation: str | None = None,
-    smoke_workload_ids: tuple[str, ...] = (),
-    spec_refs: tuple[str, ...] = (),
-    notes: tuple[str, ...] = (),
-) -> BenchmarkManifest:
-    workloads = [
-        workload_from_payload(
-            _summary_contract_workload_payload(
-                manifest_id=manifest_id,
-                workload_id=workload_id,
-                family=family,
-                operation=operation,
-                smoke=workload_id in set(smoke_workload_ids),
-            )
-        )
-        for workload_id in workload_ids
-    ]
-    return BenchmarkManifest(
-        path=pathlib.Path(f"{manifest_id}.py"),
-        manifest_id=manifest_id,
-        schema_version=benchmarks.MANIFEST_SCHEMA_VERSION,
-        workloads=workloads,
-        spec_refs=list(spec_refs),
-        notes=list(notes),
-    )
-
-
 def test_build_family_summary_marks_partial_parser_family_and_keeps_parser_proxy_note() -> None:
     summary = benchmarks.build_family_summary(
         [
-            _summary_contract_workload_record(
+            benchmark_test_support._summary_contract_workload_record(
                 manifest_id="compile-matrix",
                 workload_id="parser-measured",
                 family="parser",
@@ -306,14 +188,14 @@ def test_build_family_summary_marks_partial_parser_family_and_keeps_parser_proxy
                 implementation_ns=90,
                 speedup_vs_cpython=1.3333,
             ),
-            _summary_contract_workload_record(
+            benchmark_test_support._summary_contract_workload_record(
                 manifest_id="compile-matrix",
                 workload_id="parser-gap",
                 family="parser",
                 cache_mode="warm",
                 status="known-gap",
             ),
-            _summary_contract_workload_record(
+            benchmark_test_support._summary_contract_workload_record(
                 manifest_id="module-boundary",
                 workload_id="module-measured",
                 family="module",
@@ -361,7 +243,7 @@ def test_build_family_summary_marks_partial_parser_family_and_keeps_parser_proxy
 def test_build_family_summary_marks_absent_module_family_and_keeps_deferred_note() -> None:
     summary = benchmarks.build_family_summary(
         [
-            _summary_contract_workload_record(
+            benchmark_test_support._summary_contract_workload_record(
                 manifest_id="compile-matrix",
                 workload_id="parser-measured",
                 family="parser",
@@ -406,7 +288,7 @@ def test_build_family_summary_marks_absent_module_family_and_keeps_deferred_note
 def test_build_family_summary_marks_scaffold_only_module_family_when_every_row_is_a_gap() -> None:
     summary = benchmarks.build_family_summary(
         [
-            _summary_contract_workload_record(
+            benchmark_test_support._summary_contract_workload_record(
                 manifest_id="module-boundary",
                 workload_id="module-gap",
                 family="module",
@@ -436,7 +318,7 @@ def test_build_family_summary_marks_scaffold_only_module_family_when_every_row_i
 
 
 def test_build_manifest_summaries_marks_empty_module_boundary_selection_absent() -> None:
-    manifest = _summary_contract_manifest(
+    manifest = benchmark_test_support._summary_contract_manifest(
         manifest_id="module-boundary",
         workload_ids=("module-boundary-workload",),
         family="module",
@@ -467,7 +349,7 @@ def test_build_manifest_summaries_marks_empty_module_boundary_selection_absent()
 
 
 def test_build_manifest_summaries_marks_all_gap_regression_selection_scaffold_only() -> None:
-    manifest = _summary_contract_manifest(
+    manifest = benchmark_test_support._summary_contract_manifest(
         manifest_id="regression-matrix",
         workload_ids=("regression-gap",),
         family="module",
@@ -478,7 +360,7 @@ def test_build_manifest_summaries_marks_all_gap_regression_selection_scaffold_on
     summary = benchmarks.build_manifest_summaries(
         manifests=[manifest],
         workloads=[
-            _summary_contract_workload_record(
+            benchmark_test_support._summary_contract_workload_record(
                 manifest_id="regression-matrix",
                 workload_id="regression-gap",
                 family="module",

@@ -49,3 +49,6 @@ Created: 2026-03-26
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py tests/benchmarks/test_benchmark_test_support.py -k 'build_family_summary or build_manifest_summaries or publication_runtime or synthetic_workload'` passed with `191 passed, 3 skipped, 194 deselected in 0.41s`.
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_publication_runtime_contracts.py tests/benchmarks/test_benchmark_test_support.py` passed.
   - `bash -lc "rg -n '^def _summary_contract_workload_payload\\(|^def _summary_contract_workload_record\\(|^def _summary_contract_manifest\\(' tests/benchmarks/test_benchmark_publication_runtime_contracts.py"` currently finds the duplicate local builder family this task deletes.
+
+## Completion
+- Completed 2026-03-26: moved the publication-runtime `_summary_contract_workload_payload(...)`, `_summary_contract_workload_record(...)`, and `_summary_contract_manifest(...)` builders into `tests/benchmarks/benchmark_test_support.py`, rewired `tests/benchmarks/test_benchmark_publication_runtime_contracts.py` to consume those shared helpers, tightened the support-owner meta-test to assert the new boundary, and verified with the scoped pytest target, `python3 -m py_compile`, and the `rg` absence check against the publication-runtime module.
