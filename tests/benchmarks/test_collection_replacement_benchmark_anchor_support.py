@@ -1224,7 +1224,9 @@ def test_quantified_conditional_callable_combined_slice_expectations_stay_in_syn
     combined_suite = source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="collection_replacement_support",
         owner_module=support,
-        owner_names=support.COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_COMBINED_SLICE_OWNER_NAMES,
+        owner_names=(
+            "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS",
+        ),
     )
     expectations_by_slice_id = {
         expectation.slice_id: expectation

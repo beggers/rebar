@@ -1652,11 +1652,14 @@ def test_source_tree_support_module_exposes_routed_collection_owner_surface() ->
     ):
         assert hasattr(collection_support, function_name)
         assert function_name in collection_function_names
-    for constant_name in (
-        collection_support.COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_COMBINED_SLICE_OWNER_NAMES
-    ):
-        assert hasattr(collection_support, constant_name)
-        assert constant_name in collection_local_assignment_names
+    assert hasattr(
+        collection_support,
+        "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS",
+    )
+    assert (
+        "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS"
+        in collection_local_assignment_names
+    )
 
 
 def test_source_tree_support_module_no_longer_exposes_collection_owned_signature_helpers(
@@ -1692,18 +1695,14 @@ def test_source_tree_support_module_exports_combined_slice_owner_group() -> None
             collection_support
         )
     )
-    owner_names = (
-        collection_support.COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_COMBINED_SLICE_OWNER_NAMES
+    assert hasattr(
+        collection_support,
+        "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS",
     )
-
     assert (
         "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS"
-        in owner_names
+        in collection_local_assignment_names
     )
-    assert len(owner_names) == len(set(owner_names))
-    for constant_name in owner_names:
-        assert hasattr(collection_support, constant_name)
-        assert constant_name in collection_local_assignment_names
 
 
 def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally() -> None:
@@ -2118,7 +2117,9 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
         pytest.param(
             "collection_replacement_support",
             collection_support,
-            collection_support.COLLECTION_REPLACEMENT_ROUTED_SOURCE_TREE_COMBINED_SLICE_OWNER_NAMES,
+            (
+                "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS",
+            ),
             frozenset(),
             id="collection-owner-combined-slice-owner-names",
         ),
