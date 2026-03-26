@@ -1569,6 +1569,99 @@ def test_owner_module_package_import_helper_rejects_missing_package_alias_or_dir
         )
 
 
+@pytest.mark.parametrize(
+    (
+        "local_definition_names",
+        "local_assignment_names",
+        "definition_names",
+        "assignment_names",
+    ),
+    (
+        pytest.param(
+            frozenset(),
+            frozenset({"owner_helper"}),
+            ("owner_helper",),
+            (),
+            id="expected-definition-assigned-locally",
+        ),
+        pytest.param(
+            frozenset({"OWNER_ASSIGNMENT"}),
+            frozenset(),
+            (),
+            ("OWNER_ASSIGNMENT",),
+            id="expected-assignment-defined-locally",
+        ),
+    ),
+)
+def test_owner_surface_module_owned_without_local_duplicates_rejects_cross_kind_local_duplicates(
+    monkeypatch,
+    local_definition_names: frozenset[str],
+    local_assignment_names: frozenset[str],
+    definition_names: tuple[str, ...],
+    assignment_names: tuple[str, ...],
+) -> None:
+    caller_module = object()
+    owner_module = SimpleNamespace(
+        owner_helper=object(),
+        OWNER_ASSIGNMENT=object(),
+    )
+    observed_modules: list[object] = []
+
+    def _top_level_names(module: object) -> tuple[set[str], set[str]]:
+        observed_modules.append(module)
+        return set(local_definition_names), set(local_assignment_names)
+
+    monkeypatch.setattr(
+        support,
+        "top_level_module_definition_and_assignment_names",
+        _top_level_names,
+    )
+
+    with pytest.raises(AssertionError):
+        support.assert_owner_surface_module_owned_without_local_duplicates(
+            caller_module,
+            owner_module,
+            definition_names=definition_names,
+            assignment_names=assignment_names,
+        )
+
+    assert observed_modules == [caller_module]
+
+
+def test_owner_surface_module_owned_without_local_duplicates_accepts_extra_owner_name_when_local_surface_is_clean(
+    monkeypatch,
+) -> None:
+    caller_module = object()
+    owner_module = SimpleNamespace(
+        owner_helper=object(),
+        OWNER_ASSIGNMENT=object(),
+    )
+    extra_owner_module = SimpleNamespace(EXTRA_OWNER_ASSIGNMENT=object())
+    observed_modules: list[object] = []
+
+    def _top_level_names(module: object) -> tuple[set[str], set[str]]:
+        observed_modules.append(module)
+        assert module is caller_module
+        return set(), set()
+
+    monkeypatch.setattr(
+        support,
+        "top_level_module_definition_and_assignment_names",
+        _top_level_names,
+    )
+
+    support.assert_owner_surface_module_owned_without_local_duplicates(
+        caller_module,
+        owner_module,
+        definition_names=("owner_helper",),
+        assignment_names=("OWNER_ASSIGNMENT",),
+        extra_owner_name="EXTRA_OWNER_ASSIGNMENT",
+        extra_owner_module=extra_owner_module,
+    )
+
+    assert observed_modules == [caller_module]
+
+
 def test_source_tree_anchor_contract_suite_imports_benchmark_support_without_shadow_alias(
 ) -> None:
     module = importlib.import_module(
