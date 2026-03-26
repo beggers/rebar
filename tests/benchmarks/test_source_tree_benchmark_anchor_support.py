@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import importlib
 import pathlib
 from types import SimpleNamespace
 import unittest
@@ -55,6 +56,22 @@ def _combined_suite_class_method_names(class_name: str) -> set[str]:
         for node in combined_suite_class.body
         if isinstance(node, ast.FunctionDef)
     }
+
+
+def _module_attribute_load_names(
+    module: object,
+    *,
+    alias_name: str,
+    attribute_names: frozenset[str],
+) -> frozenset[str]:
+    return frozenset(
+        node.attr
+        for node in ast.walk(benchmark_test_support._parsed_module_ast(module))
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == alias_name
+        and node.attr in attribute_names
+    )
 
 
 def _synthetic_report_scorecard(
@@ -2354,6 +2371,84 @@ def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_packa
         }
         for node in module_ast.body
     )
+
+
+@pytest.mark.parametrize(
+    ("module_name", "expected_routed_names"),
+    (
+        pytest.param(
+            "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support",
+            frozenset(
+                {
+                    "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                }
+            ),
+            id="pattern-boundary",
+        ),
+        pytest.param(
+            "tests.benchmarks.test_collection_replacement_benchmark_anchor_support",
+            frozenset(
+                {
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                }
+            ),
+            id="collection-replacement",
+        ),
+        pytest.param(
+            "tests.benchmarks.test_benchmark_manifest_validation",
+            frozenset(
+                {
+                    "_SourceTreeContractBuilderSpec",
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                }
+            ),
+            id="manifest-validation",
+        ),
+        pytest.param(
+            "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
+            frozenset(
+                {
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                }
+            ),
+            id="source-tree-combined",
+        ),
+    ),
+)
+def test_source_tree_contract_builder_consumers_route_owner_surface_through_package_alias(
+    module_name: str,
+    expected_routed_names: frozenset[str],
+) -> None:
+    module = importlib.import_module(module_name)
+    module_ast = benchmark_test_support._parsed_module_ast(module)
+    _, _, local_assignment_names = _top_level_name_sets(module)
+    package_imports = {
+        (alias.name, alias.asname)
+        for node in module_ast.body
+        if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
+        for alias in node.names
+        if alias.name == "source_tree_benchmark_anchor_support"
+    }
+
+    assert "tests.benchmarks" in benchmark_test_support._module_import_targets(module)
+    assert (
+        "tests.benchmarks.source_tree_benchmark_anchor_support"
+        not in benchmark_test_support._module_import_targets(module)
+    )
+    assert package_imports == {
+        ("source_tree_benchmark_anchor_support", "source_tree_support")
+    }
+    assert expected_routed_names.isdisjoint(local_assignment_names)
+    assert _module_attribute_load_names(
+        module,
+        alias_name="source_tree_support",
+        attribute_names=expected_routed_names,
+    ) == expected_routed_names
 
 
 def test_source_tree_owner_manifest_path_constants_point_to_current_workload_files() -> None:
