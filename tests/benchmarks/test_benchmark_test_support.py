@@ -53,45 +53,6 @@ def _class_method_definition(
     )
 
 
-def _top_level_benchmark_support_alias_pairs(
-    module: object,
-    attribute_names: frozenset[str],
-) -> frozenset[tuple[str, str]]:
-    alias_pairs: set[tuple[str, str]] = set()
-
-    for node in support._parsed_module_ast(module).body:
-        if isinstance(node, ast.ImportFrom):
-            if node.module != "tests.benchmarks.benchmark_test_support":
-                continue
-            alias_pairs.update(
-                (alias.name, alias.asname)
-                for alias in node.names
-                if alias.name in attribute_names and alias.asname is not None
-            )
-            continue
-
-        if isinstance(node, ast.Assign):
-            targets = tuple(
-                target.id for target in node.targets if isinstance(target, ast.Name)
-            )
-            value = node.value
-        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
-            targets = (node.target.id,)
-            value = node.value
-        else:
-            continue
-
-        if (
-            isinstance(value, ast.Attribute)
-            and isinstance(value.value, ast.Name)
-            and value.value.id == "benchmark_test_support"
-            and value.attr in attribute_names
-        ):
-            alias_pairs.update((value.attr, target_name) for target_name in targets)
-
-    return frozenset(alias_pairs)
-
-
 def _top_level_package_import_alias_pairs(
     module: object,
     *,
@@ -2673,11 +2634,38 @@ def test_compiled_pattern_contract_consumer_suites_do_not_alias_owner_module_sur
     retired_owner_names: frozenset[str],
 ) -> None:
     module = importlib.import_module(module_name)
+    alias_pairs: set[tuple[str, str | None]] = set()
+    for node in support._parsed_module_ast(module).body:
+        if isinstance(node, ast.ImportFrom):
+            if node.module != "tests.benchmarks.benchmark_test_support":
+                continue
+            alias_pairs.update(
+                (alias.name, alias.asname)
+                for alias in node.names
+                if alias.name in retired_owner_names and alias.asname is not None
+            )
+            continue
 
-    assert _top_level_benchmark_support_alias_pairs(
-        module,
-        retired_owner_names,
-    ) == frozenset()
+        if isinstance(node, ast.Assign):
+            targets = tuple(
+                target.id for target in node.targets if isinstance(target, ast.Name)
+            )
+            value = node.value
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            targets = (node.target.id,)
+            value = node.value
+        else:
+            continue
+
+        if (
+            isinstance(value, ast.Attribute)
+            and isinstance(value.value, ast.Name)
+            and value.value.id == "benchmark_test_support"
+            and value.attr in retired_owner_names
+        ):
+            alias_pairs.update((value.attr, target_name) for target_name in targets)
+
+    assert alias_pairs == set()
 
 
 def test_collection_replacement_owner_surface_reaches_combined_suite_through_source_tree_support_only(
