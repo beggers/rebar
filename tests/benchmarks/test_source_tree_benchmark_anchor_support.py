@@ -16,12 +16,6 @@ from tests.benchmarks import source_tree_benchmark_anchor_support as support
 from tests.conftest import REPO_ROOT
 
 anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
-_COLLECTION_OWNER_SIGNATURE_HELPER_NAMES = (
-    "_conditional_group_exists_nested_callable_correctness_case_signature",
-    "_conditional_group_exists_nested_callable_workload_signature",
-    "_conditional_group_exists_quantified_callable_correctness_case_signature",
-    "_conditional_group_exists_quantified_callable_workload_signature",
-)
 
 def _assert_mixed_owner_surface(
     owner_module: object,
@@ -1644,7 +1638,9 @@ def test_source_tree_support_module_no_longer_exposes_collection_owned_signature
     }
 
     assert support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_SIGNATURE_HELPER_NAMES == ()
-    for function_name in _COLLECTION_OWNER_SIGNATURE_HELPER_NAMES:
+    for function_name in (
+        collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES
+    ):
         assert not hasattr(support, function_name)
         assert function_name not in local_function_names
         assert hasattr(collection_support, function_name)
