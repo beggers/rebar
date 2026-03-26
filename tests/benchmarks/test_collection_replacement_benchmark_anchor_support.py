@@ -1094,6 +1094,148 @@ def test_moved_collection_replacement_workload_ids_in_combined_suite_use_direct_
     )
 
 
+def test_conditional_collection_replacement_slice_expectations_stay_in_sync_with_owner_workload_ids(
+) -> None:
+    callable_expectations = {
+        expectation.slice_id: expectation.expected_workload_ids
+        for expectation in source_tree_support._conditional_group_exists_callable_replacement_expectations()
+    }
+    minimal_callable_workload_ids = (
+        callable_expectations["minimal-callable-replacement-rows"]
+        + callable_expectations["minimal-callable-replacement-exception-rows"]
+    )
+    minimal_callable_str_ids, minimal_callable_bytes_ids = (
+        source_tree_support._split_workload_ids_by_text_model(
+            minimal_callable_workload_ids
+        )
+    )
+    none_count_str_ids, none_count_bytes_ids = (
+        source_tree_support._split_workload_ids_by_text_model(
+            tuple(
+                workload_id
+                for workload_id in (
+                    callable_expectations[
+                        "minimal-callable-replacement-none-count-exception-rows"
+                    ]
+                    + callable_expectations[
+                        "alternation-heavy-callable-replacement-rows"
+                    ]
+                )
+                if "none-count" in workload_id
+            )
+        )
+    )
+    alternation_str_ids, alternation_bytes_ids = (
+        source_tree_support._split_workload_ids_by_text_model(
+            callable_expectations["alternation-heavy-callable-replacement-rows"]
+        )
+    )
+    template_workload_ids = (
+        source_tree_support._conditional_group_exists_template_replacement_expectation().expected_workload_ids
+    )
+    template_str_ids, template_bytes_ids = source_tree_support._split_workload_ids_by_text_model(
+        template_workload_ids
+    )
+
+    observed_workload_ids_by_label = {
+        "callable-bytes": tuple(
+            workload_id
+            for workload_id in minimal_callable_bytes_ids
+            if "negative-count" not in workload_id
+        ),
+        "callable-negative-count-str": tuple(
+            workload_id
+            for workload_id in minimal_callable_str_ids
+            if "negative-count" in workload_id
+        ),
+        "callable-negative-count-bytes": tuple(
+            workload_id
+            for workload_id in minimal_callable_bytes_ids
+            if "negative-count" in workload_id
+        ),
+        "callable-none-count-all": none_count_str_ids + none_count_bytes_ids,
+        "callable-none-count-str": none_count_str_ids,
+        "callable-none-count-bytes": none_count_bytes_ids,
+        "callable-alternation-all": callable_expectations[
+            "alternation-heavy-callable-replacement-rows"
+        ],
+        "callable-alternation-str": alternation_str_ids,
+        "callable-alternation-bytes": alternation_bytes_ids,
+        "template-round-trip": tuple(
+            workload_id
+            for workload_id in template_workload_ids
+            if workload_id.endswith("-bytes") or "negative-count" in workload_id
+        ),
+        "template-bytes": template_bytes_ids,
+        "template-negative-count-str": tuple(
+            workload_id
+            for workload_id in template_str_ids
+            if "negative-count" in workload_id
+        ),
+        "nested-callable-str": (
+            source_tree_support._conditional_group_exists_nested_callable_replacement_expectation().expected_workload_ids
+        ),
+        "nested-callable-bytes": (
+            source_tree_support._conditional_group_exists_nested_callable_bytes_replacement_expectation().expected_workload_ids
+        ),
+        "quantified-callable-str": (
+            source_tree_support._conditional_group_exists_quantified_callable_replacement_expectation().expected_workload_ids
+        ),
+        "quantified-callable-bytes": (
+            source_tree_support._conditional_group_exists_quantified_callable_bytes_replacement_expectation().expected_workload_ids
+        ),
+    }
+    expected_workload_ids_by_label = {
+        "callable-bytes": support.CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS,
+        "callable-negative-count-str": (
+            support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+        ),
+        "callable-negative-count-bytes": (
+            support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS
+        ),
+        "callable-none-count-all": (
+            support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS
+        ),
+        "callable-none-count-str": (
+            support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS
+        ),
+        "callable-none-count-bytes": (
+            support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS
+        ),
+        "callable-alternation-all": (
+            support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS
+        ),
+        "callable-alternation-str": (
+            support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS
+        ),
+        "callable-alternation-bytes": (
+            support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS
+        ),
+        "template-round-trip": (
+            support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS
+        ),
+        "template-bytes": support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS,
+        "template-negative-count-str": (
+            support.CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+        ),
+        "nested-callable-str": (
+            support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS
+        ),
+        "nested-callable-bytes": (
+            support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
+        ),
+        "quantified-callable-str": (
+            source_tree_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS
+        ),
+        "quantified-callable-bytes": (
+            source_tree_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
+        ),
+    }
+
+    for label, expected_workload_ids in expected_workload_ids_by_label.items():
+        assert observed_workload_ids_by_label[label] == expected_workload_ids, label
+
+
 def test_quantified_conditional_callable_combined_slice_expectations_stay_in_sync_with_owner_workload_ids(
 ) -> None:
     combined_suite = source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
