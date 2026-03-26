@@ -43,6 +43,27 @@ COMPILED_PATTERN_MODULE_HELPER_KEYWORD_COMBINED_SUITE_OWNER_NAMES = frozenset(
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     }
 )
+COLLECTION_REPLACEMENT_ROUTED_OWNER_NAMES = frozenset(
+    {
+        "COLLECTION_REPLACEMENT_CONDITIONAL_GROUP_EXISTS_COMBINED_SLICE_EXPECTATIONS",
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_STR_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_BYTES_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_STR_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_TEMPLATE_BYTES_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_TEMPLATE_NEGATIVE_COUNT_STR_WORKLOAD_IDS",
+        "CONDITIONAL_GROUP_EXISTS_TEMPLATE_ROUND_TRIP_WORKLOAD_IDS",
+    }
+)
 
 
 def _compiled_pattern_wrong_text_model_local_function_names() -> frozenset[str]:
@@ -3592,9 +3613,13 @@ def test_source_tree_compiled_pattern_module_compile_standard_definition_helpers
     )
 
 
-def test_source_tree_owner_keeps_collection_routed_name_off_source_tree_module() -> None:
-    routed_name = "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS"
-
+@pytest.mark.parametrize(
+    "routed_name",
+    sorted(COLLECTION_REPLACEMENT_ROUTED_OWNER_NAMES),
+)
+def test_source_tree_owner_keeps_collection_routed_names_off_source_tree_module(
+    routed_name: str,
+) -> None:
     assert not hasattr(support, routed_name)
     assert not hasattr(benchmark_test_support, routed_name)
     assert hasattr(collection_support, routed_name)
