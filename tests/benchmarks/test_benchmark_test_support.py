@@ -451,7 +451,7 @@ def test_source_tree_contract_manifest_workload_payload_drops_fields_and_injects
         smoke=True,
     )
     source_payload = benchmarks.workload_to_payload(source_workload)
-    spec = anchor_support._SourceTreeContractBuilderSpec(
+    spec = support._SourceTreeContractBuilderSpec(
         manifest_id="contract-manifest",
         excluded_fields=frozenset(
             {
@@ -467,7 +467,7 @@ def test_source_tree_contract_manifest_workload_payload_drops_fields_and_injects
         notes=("keeps helper invocation unresolved",),
     )
 
-    manifest = anchor_support._source_tree_contract_manifest(
+    manifest = support._source_tree_contract_manifest(
         (source_workload,),
         spec=spec,
     )
@@ -507,7 +507,7 @@ def test_source_tree_contract_workload_reconstructs_contract_workload_with_defau
         smoke=True,
     )
     source_payload = benchmarks.workload_to_payload(source_workload)
-    spec = anchor_support._SourceTreeContractBuilderSpec(
+    spec = support._SourceTreeContractBuilderSpec(
         manifest_id="contract-manifest",
         excluded_fields=frozenset(
             {
@@ -523,7 +523,7 @@ def test_source_tree_contract_workload_reconstructs_contract_workload_with_defau
         notes=("contract workload",),
     )
 
-    workload = anchor_support._source_tree_contract_workload(source_workload, spec=spec)
+    workload = support._source_tree_contract_workload(source_workload, spec=spec)
     payload = benchmarks.workload_to_payload(workload)
 
     assert payload["manifest_id"] == "contract-manifest"
@@ -560,13 +560,13 @@ def test_source_tree_contract_manifest_uses_manifest_defaults_and_contract_ids()
             replacement="x",
         ),
     )
-    spec = anchor_support._SourceTreeContractBuilderSpec(
+    spec = support._SourceTreeContractBuilderSpec(
         manifest_id="contract-manifest",
         excluded_fields=frozenset({"manifest_id", "workload_id"}),
         manifest_timed_samples=7,
     )
 
-    manifest = anchor_support._source_tree_contract_manifest(source_workloads, spec=spec)
+    manifest = support._source_tree_contract_manifest(source_workloads, spec=spec)
 
     assert manifest["schema_version"] == 1
     assert manifest["manifest_id"] == "contract-manifest"
@@ -1460,11 +1460,9 @@ def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_suppor
         "RecordingBenchmarkModule",
     ):
         assert not hasattr(module, shared_name)
-    assert {
-        "_source_tree_contract_manifest",
-        "_source_tree_contract_workload",
-        "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
-    }.isdisjoint(definition_names | assignment_names)
+    assert {"_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC"}.isdisjoint(
+        definition_names | assignment_names
+    )
 
 
 @pytest.mark.parametrize(
@@ -2078,8 +2076,6 @@ def test_collection_replacement_anchor_suite_routes_owner_imports_through_packag
         "_record_numeric_materialization_fields",
         "run_benchmark_workload_with_cpython",
         "compiled_pattern_contract_expected_build_calls",
-        "_source_tree_contract_manifest",
-        "_source_tree_contract_workload",
         "assert_zero_gap_manifest_workloads_measured",
         "_write_test_manifest",
         "_assert_wrong_text_model_payload_round_trip",
@@ -3326,12 +3322,7 @@ def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_
     (
         (
             "tests.benchmarks.test_collection_replacement_benchmark_anchor_support",
-            frozenset(
-                {
-                    "_source_tree_contract_manifest",
-                    "_source_tree_contract_workload",
-                }
-            ),
+            frozenset({"_source_tree_contract_manifest", "_source_tree_contract_workload"}),
         ),
     ),
 )
@@ -3353,7 +3344,7 @@ def test_source_tree_contract_helper_suites_import_from_support(
             ("source_tree_benchmark_anchor_support", "source_tree_support"),
         }
     )
-    assert expected_imported_names.issubset(dir(module.source_tree_support))
+    assert expected_imported_names.issubset(dir(module.benchmark_test_support))
     assert "tests.benchmarks.benchmark_test_support" not in support._module_import_targets(
         module
     )

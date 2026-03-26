@@ -1759,7 +1759,7 @@ def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_key
         if case.case_id == "success"
     )
     success_source_workload = success_case.source_workloads()[0]
-    success_workload = source_tree_support._source_tree_contract_workload(
+    success_workload = benchmark_test_support._source_tree_contract_workload(
         success_source_workload,
         spec=source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
             success_case
@@ -1772,7 +1772,7 @@ def test_compiled_pattern_module_compile_cpython_dispatch_covers_success_and_key
         if case.case_id == "bool-false"
     )
     keyword_source_workload = keyword_case.source_workloads()[0]
-    keyword_workload = source_tree_support._source_tree_contract_workload(
+    keyword_workload = benchmark_test_support._source_tree_contract_workload(
         keyword_source_workload,
         spec=source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
             keyword_case
@@ -1899,7 +1899,7 @@ def test_compiled_pattern_module_compile_contract_rows_stay_anchored_to_publishe
         for case in source_tree_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
         if case.case_id == anchor_lane.case_id
     )
-    manifest = source_tree_support._source_tree_contract_manifest(
+    manifest = benchmark_test_support._source_tree_contract_manifest(
         anchor_lane.source_workloads,
         spec=source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
             contract_case
@@ -1951,7 +1951,7 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
     case_group: object,
     source_workload: Workload,
 ) -> None:
-    workload = source_tree_support._source_tree_contract_workload(
+    workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
         spec=source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
             case_group
@@ -1999,7 +1999,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_compile_su
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = source_tree_support._source_tree_contract_workload(
+    workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
         spec=source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
             contract_case
@@ -2042,7 +2042,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
     callback = benchmarks.build_callable(
         module,
         "re",
-        source_tree_support._source_tree_contract_workload(
+        benchmark_test_support._source_tree_contract_workload(
             source_workload,
             spec=source_tree_support.compiled_pattern_module_compile_contract_builder_spec(
                 contract_case
@@ -4256,7 +4256,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_wrong_text_model_
     for source_workload in (
         source_tree_support._compiled_pattern_wrong_text_model_source_workloads(spec)
     ):
-        workload = source_tree_support._source_tree_contract_workload(
+        workload = benchmark_test_support._source_tree_contract_workload(
             source_workload,
             spec=source_tree_support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
                 str(spec["contract_manifest_id"])
@@ -4308,7 +4308,7 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
         callback = benchmarks.build_callable(
             module,
             "re",
-            source_tree_support._source_tree_contract_workload(
+            benchmark_test_support._source_tree_contract_workload(
                 source_workload,
                 spec=source_tree_support._COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS[
                     str(spec["contract_manifest_id"])
@@ -4344,7 +4344,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_success_co
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = source_tree_support._source_tree_contract_workload(
+    workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
         spec=source_tree_support.compiled_pattern_module_success_contract_builder_spec(
             owner_spec
@@ -4384,7 +4384,7 @@ def test_compiled_pattern_module_success_callbacks_precompile_first_argument_bef
     callback = benchmarks.build_callable(
         module,
         "re",
-        source_tree_support._source_tree_contract_workload(
+        benchmark_test_support._source_tree_contract_workload(
             source_workload,
             spec=source_tree_support.compiled_pattern_module_success_contract_builder_spec(
                 owner_spec
@@ -4449,7 +4449,7 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
     monkeypatch: pytest.MonkeyPatch,
     source_workload: Workload,
 ) -> None:
-    workload = source_tree_support._source_tree_contract_workload(
+    workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
         spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
             source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC
@@ -4484,7 +4484,7 @@ def test_run_internal_workload_probe_measures_compiled_pattern_module_helper_key
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = source_tree_support._source_tree_contract_workload(
+    workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
         spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
             contract_surface.spec
@@ -4523,7 +4523,7 @@ def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_fi
     callback = benchmarks.build_callable(
         module,
         "re",
-        source_tree_support._source_tree_contract_workload(
+        benchmark_test_support._source_tree_contract_workload(
             source_workload,
             spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
                 contract_surface.spec
@@ -4562,7 +4562,7 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
         )
         if surface.case_id == "keyword-error"
     )
-    workload = source_tree_support._source_tree_contract_workload(
+    workload = benchmark_test_support._source_tree_contract_workload(
         source_workload,
         spec=source_tree_support.compiled_pattern_module_helper_keyword_contract_builder_spec(
             source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC

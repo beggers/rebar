@@ -1241,7 +1241,7 @@ def test_compiled_pattern_module_compile_contract_builder_spec_builds_source_tre
 
     assert support.compiled_pattern_module_compile_contract_builder_spec(
         contract_case
-    ) == support._SourceTreeContractBuilderSpec(
+    ) == benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id="module-boundary",
         excluded_fields=excluded_fields,
         manifest_timed_samples=2,
@@ -1378,7 +1378,7 @@ def test_compiled_pattern_wrong_text_model_contract_specs_track_manifest_family(
         contract_manifest_id
     ]
 
-    assert spec == support._SourceTreeContractBuilderSpec(
+    assert spec == benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id=contract_manifest_id,
         excluded_fields=(
             benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
@@ -1446,7 +1446,7 @@ def test_compiled_pattern_module_helper_keyword_contract_builder_spec_handles_ex
         )
     )
 
-    assert spec == support._SourceTreeContractBuilderSpec(
+    assert spec == benchmark_test_support._SourceTreeContractBuilderSpec(
         manifest_id="collection-replacement-boundary",
         excluded_fields=expected_excluded_fields,
         manifest_timed_samples=7,
@@ -2764,27 +2764,20 @@ def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_packa
     (
         pytest.param(
             "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support",
+            frozenset({"_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC"}),
+            frozenset(),
             frozenset(
-                {
-                    "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
-                    "_source_tree_contract_manifest",
-                    "_source_tree_contract_workload",
-                }
+                {"_source_tree_contract_manifest", "_source_tree_contract_workload"}
             ),
-            frozenset(),
-            frozenset(),
             id="pattern-boundary",
         ),
         pytest.param(
             "tests.benchmarks.test_collection_replacement_benchmark_anchor_support",
+            frozenset(),
+            frozenset(),
             frozenset(
-                {
-                    "_source_tree_contract_manifest",
-                    "_source_tree_contract_workload",
-                }
+                {"_source_tree_contract_manifest", "_source_tree_contract_workload"}
             ),
-            frozenset(),
-            frozenset(),
             id="collection-replacement",
         ),
         pytest.param(
@@ -2797,8 +2790,6 @@ def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_packa
                     "_compiled_pattern_wrong_text_model_specs",
                     "_compiled_pattern_wrong_text_model_source_workloads",
                     "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
-                    "_source_tree_contract_manifest",
-                    "_source_tree_contract_workload",
                 }
             ),
             frozenset(
@@ -2808,7 +2799,13 @@ def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_packa
                     "_compiled_pattern_module_helper_keyword_contract_spec",
                 }
             ),
-            frozenset({"_assert_wrong_text_model_payload_round_trip"}),
+            frozenset(
+                {
+                    "_assert_wrong_text_model_payload_round_trip",
+                    "_source_tree_contract_manifest",
+                    "_source_tree_contract_workload",
+                }
+            ),
             id="manifest-validation",
         ),
         pytest.param(
@@ -2818,8 +2815,6 @@ def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_packa
                     "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
                     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-                    "_source_tree_contract_manifest",
-                    "_source_tree_contract_workload",
                     "compiled_pattern_module_compile_contract_builder_spec",
                     "compiled_pattern_module_helper_keyword_contract_builder_spec",
                 }
@@ -2830,7 +2825,9 @@ def test_source_tree_owner_imports_shared_support_through_tests_benchmarks_packa
                     "_compiled_pattern_module_helper_keyword_contract_spec",
                 }
             ),
-            frozenset(),
+            frozenset(
+                {"_source_tree_contract_manifest", "_source_tree_contract_workload"}
+            ),
             id="source-tree-combined",
         ),
     ),
@@ -2849,6 +2846,12 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         )
     )
     local_names = local_definition_names | local_assignment_names
+    benchmark_support_alias_names = benchmark_test_support._module_alias_names(
+        module_ast,
+        import_from_module="tests.benchmarks",
+        import_name="benchmark_test_support",
+        dotted_import_name="tests.benchmarks.benchmark_test_support",
+    )
     package_imports = {
         (alias.name, alias.asname)
         for node in module_ast.body
@@ -2881,7 +2884,7 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         for node in ast.walk(module_ast)
         if isinstance(node, ast.Attribute)
         and isinstance(node.value, ast.Name)
-        and node.value.id == "benchmark_test_support"
+        and node.value.id in benchmark_support_alias_names
         and node.attr in expected_benchmark_support_names
     ) == expected_benchmark_support_names
 

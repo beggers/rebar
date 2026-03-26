@@ -517,7 +517,7 @@ def test_standard_benchmark_manifest_preserves_pattern_boundary_wrong_text_model
     tmp_path: pathlib.Path,
 ) -> None:
     source_workloads = support._pattern_boundary_wrong_text_model_source_workloads()
-    manifest = source_tree_support._source_tree_contract_manifest(
+    manifest = support._source_tree_contract_manifest(
         source_workloads,
         spec=source_tree_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
@@ -582,7 +582,7 @@ def test_run_internal_workload_probe_measures_pattern_boundary_wrong_text_model_
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = source_tree_support._source_tree_contract_workload(
+    workload = support._source_tree_contract_workload(
         source_workload,
         spec=source_tree_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
@@ -628,7 +628,7 @@ def test_pattern_boundary_wrong_text_model_callbacks_preserve_precompile_contrac
     callback = build_callable(
         module,
         "re",
-        source_tree_support._source_tree_contract_workload(
+        support._source_tree_contract_workload(
             source_workload,
             spec=source_tree_support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
         ),
