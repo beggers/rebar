@@ -2053,6 +2053,50 @@ def test_combined_suite_routes_moved_support_surfaces_through_source_tree_suppor
     )
 
 
+def test_source_tree_owner_inventory_constants_are_not_mirrored_back_into_this_test_module(
+) -> None:
+    module = importlib.import_module(__name__)
+    module_ast = benchmark_test_support._parsed_module_ast(module)
+    local_definition_names, local_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            module
+        )
+    )
+    legacy_local_mirror_names = frozenset(
+        {
+            "_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
+            "_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES",
+            "_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES",
+            "_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES",
+            "_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES",
+            "_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES",
+        }
+    )
+    support_inventory_names = frozenset(
+        {
+            "SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
+            "SOURCE_TREE_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES",
+            "SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES",
+            "SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_ALIAS_ASSIGNMENT_NAMES",
+            "SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES",
+            "SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES",
+        }
+    )
+
+    assert legacy_local_mirror_names.isdisjoint(
+        local_definition_names | local_assignment_names
+    )
+    assert support_inventory_names.issubset(
+        {
+            node.attr
+            for node in ast.walk(module_ast)
+            if isinstance(node, ast.Attribute)
+            and isinstance(node.value, ast.Name)
+            and node.value.id == "support"
+        }
+    )
+
+
 def test_moved_conditional_callable_expectation_helpers_pin_current_slice_ids() -> None:
     expected_callable_slice_ids = (
         "minimal-callable-replacement-rows",
