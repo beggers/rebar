@@ -166,45 +166,6 @@ SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES = (
     "OPEN_ENDED_MANIFEST_PATH",
 )
 
-SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES = (
-    "MODULE_BOUNDARY_MANIFEST_PATH",
-    *SOURCE_TREE_CENTRALIZED_MANIFEST_PATH_NAMES,
-    "StandardBenchmarkAnchorContractDefinition",
-    "_definition_anchor_expectations",
-    "_workload_case_pair_anchor_expectations",
-    "_workload_case_pairs_case_ids",
-    "_workload_case_pairs_workload_ids",
-    "freeze_signature_value",
-    "live_manifest_workloads",
-    "published_case_ids_by_signature",
-    "published_cases_by_id",
-    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-    "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-    "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
-    "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-    "_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS",
-    "_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS",
-    "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
-    "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
-    "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
-    "_COMPILED_PATTERN_MODULE_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS",
-    "_compiled_pattern_wrong_text_model_specs",
-    "_compiled_pattern_wrong_text_model_source_workloads",
-    "_is_module_workflow_compiled_pattern_wrong_text_model_workload",
-    "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-    "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
-    "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
-)
-
 @cache
 def _source_tree_combined_suite_module() -> object:
     return importlib.import_module(

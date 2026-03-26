@@ -3391,10 +3391,12 @@ def test_benchmark_test_support_exports_generic_workload_id_selector_helpers() -
         assert not hasattr(collection_replacement_support, name)
 
 
-def test_compiled_pattern_module_helper_keyword_shared_surface_stays_listed_in_source_tree_retired_owner_registries(
+def test_compiled_pattern_module_helper_keyword_shared_surface_stays_shared_support_owned(
 ) -> None:
-    assert COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES <= frozenset(
-        anchor_support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
+    assert all(hasattr(support, name) for name in COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES)
+    assert all(
+        not hasattr(anchor_support, name)
+        for name in COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES
     )
 
 

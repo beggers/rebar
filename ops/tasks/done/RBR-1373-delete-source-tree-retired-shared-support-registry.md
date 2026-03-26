@@ -1,6 +1,6 @@
 ## RBR-1373: Delete source-tree retired shared support registry
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -31,6 +31,19 @@ Created: 2026-03-26
 ## Constraints
 - Prefer deleting the registry over moving it sideways or recreating it under another module.
 - Keep the run bounded to this single exported-registry cleanup and the ownership assertions that currently depend on it.
+
+## Completion Notes
+- Deleted `SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES` from `tests/benchmarks/source_tree_benchmark_anchor_support.py` without adding a replacement registry.
+- Reworked `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` to keep the same ownership boundary through direct checks that:
+  - compiled-pattern helper-keyword shared-surface names stay on `tests.benchmarks.benchmark_test_support` and off the source-tree owner;
+  - compiled-pattern module-compile standard-definition helpers stay on `tests.benchmarks.benchmark_test_support` and off the source-tree owner; and
+  - `CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS` stays collection-owned and absent from the source-tree owner.
+- Reworked `tests/benchmarks/test_benchmark_test_support.py` so the helper-keyword shared-surface ownership check no longer depends on a source-tree retired-name registry.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` passed with `277 passed in 1.89s`
+  - `python3 -m py_compile tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` passed
+  - `bash -lc "! rg -n '^SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES\\s*=' tests/benchmarks/source_tree_benchmark_anchor_support.py"` passed
+  - `bash -lc "! rg -n 'SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES' tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py"` passed
 
 ## Notes
 - ID check in this run:

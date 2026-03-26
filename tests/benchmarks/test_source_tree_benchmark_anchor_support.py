@@ -1206,7 +1206,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     )
     for constant_name in moved_names:
-        assert constant_name in support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
         assert not hasattr(support, constant_name)
         assert constant_name not in local_function_names
         assert constant_name not in local_assignment_names
@@ -1297,17 +1296,15 @@ def test_compiled_pattern_module_compile_standard_definition_surface_moves_to_sh
     assert {
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     }.issubset(shared_assignment_names)
-    assert (
-        "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
-        in support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
+    assert not hasattr(
+        support,
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
     )
-    assert (
-        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
-        in support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
+    assert not hasattr(
+        support,
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     )
-    assert "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES" in (
-        support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
-    )
+    assert not hasattr(support, "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES")
 
 
 def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_shared_support_owned(
@@ -3309,53 +3306,89 @@ def test_source_tree_owner_definition_exports_reuse_owner_manifest_path_constant
     assert all(manifest_path.is_file() for manifest_path in manifest_paths)
 
 
-def test_source_tree_owner_retired_shared_support_names_stay_out_of_top_level_namespace(
+def test_source_tree_owner_does_not_export_compiled_pattern_module_helper_keyword_shared_surface(
 ) -> None:
     definition_names, assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(support)
     )
+    local_names = definition_names | assignment_names
 
-    assert set(support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES).isdisjoint(
-        definition_names | assignment_names
-    )
-    assert all(
-        not hasattr(support, name)
-        for name in support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
-    )
+    moved_names = {
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    }
+
+    assert moved_names.isdisjoint(local_names)
+    assert all(not hasattr(support, name) for name in moved_names)
+    assert all(hasattr(benchmark_test_support, name) for name in moved_names)
 
 
-def test_source_tree_owner_retired_shared_support_names_resolve_to_one_live_owner(
+def test_source_tree_compiled_pattern_module_compile_standard_definition_helpers_stay_shared_support_owned(
 ) -> None:
-    collection_owned_names = {
-        "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
-    }
-    ownership_by_name = {
-        name: {
-            owner_name
-            for owner_name, owner_module in (
-                ("benchmark_test_support", benchmark_test_support),
-                ("collection_replacement_support", collection_support),
-            )
-            if hasattr(owner_module, name)
-        }
-        for name in support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
-    }
-
-    assert all(owners for owners in ownership_by_name.values())
-    assert all(len(owners) == 1 for owners in ownership_by_name.values())
-    assert {
-        name
-        for name, owners in ownership_by_name.items()
-        if owners == {"collection_replacement_support"}
-    } == collection_owned_names
-    assert {
-        name
-        for name, owners in ownership_by_name.items()
-        if owners == {"benchmark_test_support"}
-    } == (
-        set(support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES)
-        - collection_owned_names
+    definition_names, assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(support)
     )
+    shared_definition_names, shared_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            benchmark_test_support
+        )
+    )
+
+    assert (
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
+        not in definition_names
+    )
+    assert (
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
+        not in assignment_names
+    )
+    assert "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES" not in assignment_names
+    assert (
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
+        in shared_definition_names
+    )
+    assert (
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
+        in shared_assignment_names
+    )
+    assert "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES" in shared_assignment_names
+    assert not hasattr(
+        support,
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
+    )
+    assert not hasattr(
+        support,
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+    )
+    assert not hasattr(support, "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES")
+    assert hasattr(
+        benchmark_test_support,
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
+    )
+    assert hasattr(
+        benchmark_test_support,
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
+    )
+    assert hasattr(
+        benchmark_test_support,
+        "_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES",
+    )
+
+
+def test_source_tree_owner_keeps_collection_routed_name_off_source_tree_module() -> None:
+    routed_name = "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS"
+
+    assert not hasattr(support, routed_name)
+    assert not hasattr(benchmark_test_support, routed_name)
+    assert hasattr(collection_support, routed_name)
 
 
 def test_source_tree_standard_definitions_export_stays_owned_by_source_tree() -> None:
