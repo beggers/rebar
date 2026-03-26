@@ -1589,26 +1589,17 @@ def test_source_tree_support_module_exposes_moved_conditional_callable_helpers()
 
 
 def test_source_tree_support_module_exposes_routed_collection_owner_surface() -> None:
-    module_ast = benchmark_test_support._parsed_module_ast(support)
     _, local_assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(
             support
         )
     )
-    local_function_names = {
-        node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
-    }
 
     for constant_name in (
         support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES
     ):
         assert hasattr(support, constant_name)
         assert constant_name in local_assignment_names
-    for function_name in (
-        support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_SIGNATURE_HELPER_NAMES
-    ):
-        assert hasattr(support, function_name)
-        assert function_name in local_function_names
 
     collection_module_ast = benchmark_test_support._parsed_module_ast(collection_support)
     _, collection_local_assignment_names = (
@@ -1638,8 +1629,6 @@ def test_source_tree_support_module_no_longer_exposes_collection_owned_signature
         node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
     }
 
-    assert support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_CONDITIONAL_CALLABLE_HELPER_NAMES == ()
-    assert support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_SIGNATURE_HELPER_NAMES == ()
     for function_name in (
         collection_support.COLLECTION_REPLACEMENT_ROUTED_CONDITIONAL_CALLABLE_SIGNATURE_HELPER_NAMES
     ):
@@ -1654,7 +1643,6 @@ def test_source_tree_support_module_exports_combined_slice_owner_group() -> None
             support
         )
     )
-    assert support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_COMBINED_SLICE_OWNER_NAMES == ()
     assert "SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS" in local_assignment_names
 
     _, collection_local_assignment_names = (
