@@ -1446,7 +1446,7 @@ def test_source_tree_support_module_exports_combined_slice_owner_group() -> None
 
 
 def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally() -> None:
-    module_ast = benchmark_test_support._parsed_source_tree_combined_suite_ast()
+    module_ast = support._parsed_source_tree_combined_suite_ast()
     local_class_names = {
         node.name for node in module_ast.body if isinstance(node, ast.ClassDef)
     }
@@ -1464,7 +1464,7 @@ def test_combined_suite_class_no_longer_defines_zero_gap_representative_wrappers
 ) -> None:
     combined_suite_class = next(
         node
-        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
+        for node in support._parsed_source_tree_combined_suite_ast().body
         if isinstance(node, ast.ClassDef)
         and node.name == "SourceTreeCombinedBoundaryBenchmarkSuiteTest"
     )
@@ -1486,7 +1486,7 @@ def test_combined_suite_class_no_longer_defines_zero_gap_representative_wrappers
 def test_combined_suite_class_no_longer_defines_scorecard_contract_wrappers() -> None:
     combined_suite_class = next(
         node
-        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
+        for node in support._parsed_source_tree_combined_suite_ast().body
         if isinstance(node, ast.ClassDef) and node.name == "SourceTreeScorecardBenchmarkSuiteTest"
     )
     class_method_names = {
@@ -1507,7 +1507,7 @@ def test_combined_suite_class_no_longer_defines_scorecard_contract_wrappers() ->
 
 def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
 ) -> None:
-    combined_suite_ast = benchmark_test_support._parsed_source_tree_combined_suite_ast()
+    combined_suite_ast = support._parsed_source_tree_combined_suite_ast()
     direct_import_names = {
         alias.name
         for node in combined_suite_ast.body
@@ -1554,7 +1554,7 @@ def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
 
 def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_locally(
 ) -> None:
-    combined_suite_ast = benchmark_test_support._parsed_source_tree_combined_suite_ast()
+    combined_suite_ast = support._parsed_source_tree_combined_suite_ast()
     direct_import_names = {
         alias.name
         for node in combined_suite_ast.body
@@ -1629,7 +1629,7 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
 
 
 def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally() -> None:
-    module_ast = benchmark_test_support._parsed_source_tree_combined_suite_ast()
+    module_ast = support._parsed_source_tree_combined_suite_ast()
     local_function_names = {
         node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
     }
@@ -1640,7 +1640,7 @@ def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally(
 
 def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_locally(
 ) -> None:
-    module_ast = benchmark_test_support._parsed_source_tree_combined_suite_ast()
+    module_ast = support._parsed_source_tree_combined_suite_ast()
     local_function_names = {
         node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
     }
@@ -1654,13 +1654,13 @@ def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_loc
 def test_combined_suite_imports_source_tree_support_through_owner_module_only() -> None:
     direct_owner_imports = [
         node
-        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
+        for node in support._parsed_source_tree_combined_suite_ast().body
         if isinstance(node, ast.ImportFrom)
         and node.module == "tests.benchmarks.source_tree_benchmark_anchor_support"
     ]
     owner_module_imports = [
         alias
-        for node in benchmark_test_support._parsed_source_tree_combined_suite_ast().body
+        for node in support._parsed_source_tree_combined_suite_ast().body
         if isinstance(node, ast.ImportFrom) and node.module == "tests.benchmarks"
         for alias in node.names
     ]
@@ -1675,7 +1675,7 @@ def test_combined_suite_imports_source_tree_support_through_owner_module_only() 
 
 def test_combined_suite_no_longer_imports_or_reads_collection_owner_surface_directly(
 ) -> None:
-    combined_suite_ast = benchmark_test_support._parsed_source_tree_combined_suite_ast()
+    combined_suite_ast = support._parsed_source_tree_combined_suite_ast()
     direct_collection_imports = [
         alias
         for node in combined_suite_ast.body
@@ -1693,6 +1693,23 @@ def test_combined_suite_no_longer_imports_or_reads_collection_owner_surface_dire
 
     assert direct_collection_imports == []
     assert direct_collection_attribute_reads == set()
+
+
+def test_source_tree_support_defines_combined_route_helpers_locally() -> None:
+    module_ast = benchmark_test_support._parsed_module_ast(support)
+    local_function_names = {
+        node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
+    }
+
+    moved_helper_names = {
+        "_source_tree_combined_suite_module",
+        "_parsed_source_tree_combined_suite_ast",
+        "_assert_source_tree_combined_routes_owner_names_through_module_alias",
+    }
+
+    assert moved_helper_names.issubset(local_function_names)
+    for helper_name in moved_helper_names:
+        assert getattr(support, helper_name).__module__ == support.__name__
 
 
 @pytest.mark.parametrize(
@@ -1799,7 +1816,7 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
 def test_combined_suite_routes_moved_support_surfaces_through_source_tree_support(
     routed_names: tuple[str, ...],
 ) -> None:
-    benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
+    support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="source_tree_support",
         owner_module=support,
         owner_names=routed_names,

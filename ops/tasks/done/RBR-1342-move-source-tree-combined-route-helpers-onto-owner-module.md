@@ -1,6 +1,6 @@
 ## RBR-1342: Move source-tree combined route helpers onto owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -59,3 +59,15 @@ Created: 2026-03-26
   - `./.venv/bin/python -m pytest tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpers or quantified_conditional_callable_combined_slice_expectations_stay_in_sync_with_owner_workload_ids or conditional_template_anchor_contract_in_combined_suite_uses_owner_helpers' -q` passed with `3 passed, 143 deselected in 0.37s`
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` passed
   - `bash -lc "! rg -n '^def (_source_tree_combined_suite_module|_parsed_source_tree_combined_suite_ast|_assert_source_tree_combined_routes_owner_names_through_module_alias)\\(' tests/benchmarks/benchmark_test_support.py"` currently fails because the source-tree-only route helpers still live in the generic support module, and that failure belongs exactly to this cleanup
+
+## Completion
+- Moved `_source_tree_combined_suite_module`, `_parsed_source_tree_combined_suite_ast`, and `_assert_source_tree_combined_routes_owner_names_through_module_alias` off `tests/benchmarks/benchmark_test_support.py` and onto `tests/benchmarks/source_tree_benchmark_anchor_support.py`, keeping the route logic wired through the existing shared AST/import primitives in `benchmark_test_support`.
+- Updated the generic cache guard so `tests/benchmarks/benchmark_test_support.py` no longer names those helpers locally while still clearing cached source-tree owner helpers through the loaded owner module.
+- Updated `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` and `tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py` to consume the moved route-helper surface from `source_tree_benchmark_anchor_support`, and tightened `tests/benchmarks/test_benchmark_test_support.py` plus the source-tree owner tests so the split stays pinned.
+
+## Verification
+- `./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_benchmark_anchor_support.py -k 'combined_suite_routes_moved_support_surfaces_through_source_tree_support or combined_suite_imports_source_tree_support_through_owner_module_only or combined_suite_no_longer_imports_or_reads_collection_owner_surface_directly' -q`
+- `./.venv/bin/python -m pytest tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py -k 'conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpers or quantified_conditional_callable_combined_slice_expectations_stay_in_sync_with_owner_workload_ids or conditional_template_anchor_contract_in_combined_suite_uses_owner_helpers' -q`
+- `./.venv/bin/python -m pytest tests/benchmarks/test_benchmark_test_support.py -k 'no_longer_owns_source_tree_combined_routing_helpers or source_tree_combined_routing_helpers_stay_owner_scoped or source_tree_combined_route_helper_rejects_secondary_owner_alias_surface_refs or source_tree_combined_route_helper_rejects_direct_owner_surface_refs' -q`
+- `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_collection_replacement_benchmark_anchor_support.py`
+- `bash -lc "! rg -n '^def (_source_tree_combined_suite_module|_parsed_source_tree_combined_suite_ast|_assert_source_tree_combined_routes_owner_names_through_module_alias)\\(' tests/benchmarks/benchmark_test_support.py"`

@@ -1073,7 +1073,7 @@ def test_grouped_callable_workload_signature_rejects_non_pair_and_non_callable_r
 
 
 def test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
-    benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
+    source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="source_tree_support",
         owner_module=source_tree_support,
         owner_names=source_tree_support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_SIGNATURE_HELPER_NAMES
@@ -1083,7 +1083,7 @@ def test_conditional_callable_anchor_contract_in_combined_suite_uses_owner_helpe
 
 def test_quantified_conditional_callable_combined_slice_expectations_stay_in_sync_with_owner_workload_ids(
 ) -> None:
-    combined_suite = benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
+    combined_suite = source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="source_tree_support",
         owner_module=source_tree_support,
         owner_names=source_tree_support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_COMBINED_SLICE_OWNER_NAMES,
@@ -1108,7 +1108,7 @@ def test_quantified_conditional_callable_combined_slice_expectations_stay_in_syn
 
 
 def test_conditional_template_anchor_contract_in_combined_suite_uses_owner_helpers() -> None:
-    benchmark_test_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
+    source_tree_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
         alias_name="source_tree_support",
         owner_module=source_tree_support,
         owner_names=source_tree_support.SOURCE_TREE_ROUTED_COLLECTION_REPLACEMENT_WORKLOAD_ID_NAMES[

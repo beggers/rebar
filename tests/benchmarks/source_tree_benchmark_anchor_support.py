@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import ast
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass
 from functools import cache
+import importlib
 import pathlib
 import re
 from typing import Any
@@ -259,6 +261,116 @@ def _source_tree_contract_manifest(
         },
         "workloads": workloads,
     }
+
+
+@cache
+def _source_tree_combined_suite_module() -> object:
+    return importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+
+
+@cache
+def _parsed_source_tree_combined_suite_ast() -> ast.Module:
+    return benchmark_test_support._parsed_module_ast(_source_tree_combined_suite_module())
+
+
+def _assert_source_tree_combined_routes_owner_names_through_module_alias(
+    *,
+    alias_name: str,
+    owner_module: object,
+    owner_names: tuple[str, ...],
+) -> object:
+    combined_suite = _source_tree_combined_suite_module()
+    combined_suite_ast = _parsed_source_tree_combined_suite_ast()
+    _, local_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            combined_suite
+        )
+    )
+    owner_module_name = owner_module.__name__
+    owner_import_name = owner_module_name.rsplit(".", 1)[-1]
+    benchmark_test_support_alias_names = benchmark_test_support._module_alias_names(
+        combined_suite_ast,
+        import_from_module="tests.benchmarks",
+        import_name="benchmark_test_support",
+        dotted_import_name="tests.benchmarks.benchmark_test_support",
+    )
+    owner_alias_names = benchmark_test_support._module_alias_names(
+        combined_suite_ast,
+        import_from_module="tests.benchmarks",
+        import_name=owner_import_name,
+        dotted_import_name=owner_module_name,
+    )
+
+    assert alias_name in owner_alias_names
+    assert getattr(combined_suite, alias_name) is owner_module
+
+    direct_import_names = {
+        alias.name
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.ImportFrom)
+        for alias in node.names
+    }
+    local_alias_names: set[str] = set()
+    for node in combined_suite_ast.body:
+        if isinstance(node, ast.Assign):
+            targets = tuple(
+                target.id for target in node.targets if isinstance(target, ast.Name)
+            )
+            value = node.value
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            targets = (node.target.id,)
+            value = node.value
+        else:
+            continue
+
+        if isinstance(value, ast.Name) and value.id in owner_names:
+            local_alias_names.update(targets)
+            continue
+
+        if (
+            isinstance(value, ast.Attribute)
+            and isinstance(value.value, ast.Name)
+            and value.value.id
+            in (owner_alias_names | benchmark_test_support_alias_names)
+            and value.attr in owner_names
+        ):
+            local_alias_names.update(targets)
+
+    local_name_loads = {
+        node.id
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Name)
+        and isinstance(node.ctx, ast.Load)
+        and node.id in owner_names
+    }
+    direct_benchmark_test_support_refs = {
+        node.attr
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id in benchmark_test_support_alias_names
+        and node.attr in owner_names
+    }
+    aliased_owner_refs = {
+        node.attr
+        for node in ast.walk(combined_suite_ast)
+        if isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id in (owner_alias_names - {alias_name})
+        and node.attr in owner_names
+    }
+    owner_alias = getattr(combined_suite, alias_name)
+    for name in owner_names:
+        assert getattr(owner_alias, name) is getattr(owner_module, name)
+        assert name not in direct_import_names
+        assert name not in local_assignment_names
+        assert name not in local_name_loads
+    assert local_alias_names == set()
+    assert direct_benchmark_test_support_refs == set()
+    assert aliased_owner_refs == set()
+    return combined_suite
 
 
 def compiled_pattern_module_compile_contract_builder_spec(

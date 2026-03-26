@@ -2271,20 +2271,25 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
     )
 
 
-def test_benchmark_test_support_owns_source_tree_combined_routing_helpers() -> None:
+def test_benchmark_test_support_no_longer_owns_source_tree_combined_routing_helpers(
+) -> None:
     definition_names, _ = support.top_level_module_definition_and_assignment_names(
         support
     )
 
-    assert {
+    moved_helper_names = {
         "_source_tree_combined_suite_module",
         "_parsed_source_tree_combined_suite_ast",
-        "_module_alias_names",
         "_assert_source_tree_combined_routes_owner_names_through_module_alias",
-    }.issubset(definition_names)
+    }
+
+    assert moved_helper_names.isdisjoint(definition_names)
+    for helper_name in moved_helper_names:
+        assert not hasattr(support, helper_name)
+    assert "_module_alias_names" in definition_names
 
 
-def test_source_tree_combined_routing_helpers_stay_centralized() -> None:
+def test_source_tree_combined_routing_helpers_stay_owner_scoped() -> None:
     source_tree_suite = importlib.import_module(
         "tests.benchmarks.test_source_tree_benchmark_anchor_support"
     )
@@ -2293,9 +2298,13 @@ def test_source_tree_combined_routing_helpers_stay_centralized() -> None:
     )
     helper_names = {
         "_parsed_source_tree_combined_suite_ast",
-        "_module_alias_names",
         "_assert_source_tree_combined_routes_owner_names_through_module_alias",
     }
+
+    owner_definition_names, _ = support.top_level_module_definition_and_assignment_names(
+        anchor_support
+    )
+    assert helper_names.issubset(owner_definition_names)
 
     for suite in (source_tree_suite, collection_suite):
         definition_names, _ = support.top_level_module_definition_and_assignment_names(
@@ -2388,12 +2397,12 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
     )
 
     monkeypatch.setattr(
-        support,
+        anchor_support,
         "_source_tree_combined_suite_module",
         lambda: combined_suite,
     )
     monkeypatch.setattr(
-        support,
+        anchor_support,
         "_parsed_source_tree_combined_suite_ast",
         lambda: combined_suite_ast,
     )
@@ -2407,7 +2416,7 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
     )
 
     with pytest.raises(AssertionError):
-        support._assert_source_tree_combined_routes_owner_names_through_module_alias(
+        anchor_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
             alias_name="source_tree_support",
             owner_module=owner_module,
             owner_names=("SOURCE_TREE_SCORECARD_EXPECTATIONS",),
@@ -2469,12 +2478,12 @@ def test_source_tree_combined_route_helper_rejects_direct_owner_surface_refs(
     combined_suite_ast = ast.parse(module_source)
 
     monkeypatch.setattr(
-        support,
+        anchor_support,
         "_source_tree_combined_suite_module",
         lambda: combined_suite,
     )
     monkeypatch.setattr(
-        support,
+        anchor_support,
         "_parsed_source_tree_combined_suite_ast",
         lambda: combined_suite_ast,
     )
@@ -2485,7 +2494,7 @@ def test_source_tree_combined_route_helper_rejects_direct_owner_surface_refs(
     )
 
     with pytest.raises(AssertionError):
-        support._assert_source_tree_combined_routes_owner_names_through_module_alias(
+        anchor_support._assert_source_tree_combined_routes_owner_names_through_module_alias(
             alias_name="source_tree_support",
             owner_module=owner_module,
             owner_names=("SOURCE_TREE_SCORECARD_EXPECTATIONS",),
