@@ -529,6 +529,52 @@ def test_collection_replacement_manifest_keeps_positional_indexlike_module_and_p
     )
 
 
+@pytest.mark.parametrize(
+    ("label", "route"),
+    (
+        (
+            "pattern-findall",
+            support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["findall"],
+        ),
+        (
+            "pattern-finditer",
+            support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["finditer"],
+        ),
+        (
+            "pattern-split",
+            support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"],
+        ),
+        (
+            "pattern-literal-replacement",
+            support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
+        ),
+        (
+            "module-literal-replacement",
+            support._COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
+        ),
+    ),
+    ids=lambda item: item if isinstance(item, str) else None,
+)
+def test_collection_replacement_routes_preserve_declared_workload_case_pair_order_and_anchor_expectations(
+    label: str,
+    route: object,
+) -> None:
+    del label
+
+    assert route.workload_ids() == tuple(
+        workload_id for workload_id, _ in route.workload_case_pairs
+    )
+    assert route.case_ids() == tuple(
+        case_id for _, case_id in route.workload_case_pairs
+    )
+    assert route.anchor_expectations() == (
+        benchmark_test_support._workload_case_pair_anchor_expectations(
+            benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+            route.workload_case_pairs,
+        )
+    )
+
+
 def test_collection_replacement_manifest_keeps_pattern_findall_bounded_rows_measured() -> None:
     manifest_path = "collection_replacement_boundary.py"
     manifest_workload_count = len(

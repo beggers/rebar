@@ -263,27 +263,6 @@ def test_definition_anchor_expectations_expand_manifest_name() -> None:
     assert not hasattr(support, "_definition_anchor_expectations")
 
 
-def test_workload_case_pair_tuple_projections_preserve_tuple_order() -> None:
-    workload_case_pairs = (
-        ("workload-a", "case-1"),
-        ("workload-b", "case-2"),
-        ("workload-c", "case-3"),
-    )
-
-    assert tuple(
-        workload_id for workload_id, _ in workload_case_pairs
-    ) == (
-        "workload-a",
-        "workload-b",
-        "workload-c",
-    )
-    assert tuple(case_id for _, case_id in workload_case_pairs) == (
-        "case-1",
-        "case-2",
-        "case-3",
-    )
-
-
 def test_workload_case_pair_anchor_expectations_wrap_each_case_id() -> None:
     manifest_path = pathlib.Path("synthetic_boundary.py")
     workload_case_pairs = (
