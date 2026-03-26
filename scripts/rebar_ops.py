@@ -1319,7 +1319,9 @@ def render_write_probe_prompt(probe_relpath: str, token: str) -> str:
     return (
         "# Rebar Worker Write Probe\n\n"
         "Create exactly one file at the path below with the exact token shown below, then stop.\n"
-        "This is an environment probe, not project work. Do not edit tracked files.\n\n"
+        "This is an environment probe, not project work. Do not edit tracked files.\n"
+        "The parent directory already exists. Use `apply_patch` to create the file directly,\n"
+        "and do not run shell commands, tests, or searches.\n\n"
         f"Probe path: `{probe_relpath}`\n"
         f"Required contents: `{token}`\n"
     )
