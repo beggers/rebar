@@ -315,6 +315,37 @@ def _published_benchmark_manifest_ids() -> frozenset[str]:
     )
 
 
+PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS = (
+    benchmark_test_support._PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK
+)
+
+
+def _compiled_pattern_module_helper_route(
+    workload: Workload,
+    *,
+    collection_replacement_callback_flags: int,
+) -> tuple[object, tuple[object, ...], tuple[object, ...], bool]:
+    return benchmark_test_support._compiled_pattern_module_helper_runtime_route(
+        workload,
+        collection_replacement_callback_flags=collection_replacement_callback_flags,
+    )
+
+
+COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
+    benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK
+)
+
+
+@cache
+def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
+    return benchmark_test_support._build_source_tree_standard_benchmark_definitions()
+
+
+SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS = (
+    _source_tree_standard_benchmark_definitions()
+)
+
+
 _SOURCE_TREE_DEFAULT_COMBINED_MANIFEST_EXPECTATION = _combined_manifest_definition()
 
 
@@ -2841,7 +2872,7 @@ class CompiledPatternModuleSuccessOwnerSpec:
         )
 
     def expected_callback_result(self, source_workload: Workload) -> object:
-        callback_result, _, _, _ = benchmark_test_support._compiled_pattern_module_helper_route(
+        callback_result, _, _, _ = _compiled_pattern_module_helper_route(
             source_workload,
             collection_replacement_callback_flags=source_workload.flags,
         )
@@ -2851,7 +2882,7 @@ class CompiledPatternModuleSuccessOwnerSpec:
         self,
         source_workload: Workload,
     ) -> tuple[object, ...]:
-        _, callback_call, _, _ = benchmark_test_support._compiled_pattern_module_helper_route(
+        _, callback_call, _, _ = _compiled_pattern_module_helper_route(
             source_workload,
             collection_replacement_callback_flags=source_workload.flags,
         )
@@ -12598,7 +12629,7 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
             label="wrong-text-model",
         )
         expected_callback_result, expected_callback_call, _, _ = (
-            benchmark_test_support._compiled_pattern_module_helper_route(
+            _compiled_pattern_module_helper_route(
                 source_workload,
                 collection_replacement_callback_flags=0,
             )

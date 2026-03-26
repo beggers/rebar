@@ -2570,7 +2570,7 @@ def _is_pattern_verbose_regression_workload(workload: Any) -> bool:
     )
 
 
-PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS = (
+_PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK = (
     benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
         name="pattern-window-positional-indexlike",
         manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
@@ -2782,7 +2782,7 @@ _VERBOSE_REGRESSION_PATTERN = (
 _VERBOSE_REGRESSION_FLAGS = int(re.VERBOSE | re.MULTILINE)
 
 
-def _compiled_pattern_module_helper_route(
+def _compiled_pattern_module_helper_runtime_route(
     workload: Workload,
     *,
     collection_replacement_callback_flags: int,
@@ -2986,7 +2986,7 @@ def _is_collection_replacement_compiled_pattern_success_workload(
     )
 
 
-COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
+_COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK = (
     benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
         name="module-workflow-compiled-pattern-literal-success",
         manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
@@ -3099,7 +3099,7 @@ def _run_cpython_compiled_pattern_module_helper_workload(
         workload.flags,
     )
     _, _, cpython_call_args, materialize_cpython_result = (
-        _compiled_pattern_module_helper_route(
+        _compiled_pattern_module_helper_runtime_route(
             workload,
             collection_replacement_callback_flags=collection_replacement_callback_flags,
         )
@@ -3440,7 +3440,7 @@ def _assert_compiled_pattern_module_compile_contract_payload_round_trip_common(
 
 
 @cache
-def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
+def _build_source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
     return (
         benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
             name="module-workflow-compiled-pattern-wrong-text-model",
@@ -4274,6 +4274,6 @@ def _grouped_alternation_replacement_correctness_case_signature(
         )
     return None
 
-SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS = (
-    _source_tree_standard_benchmark_definitions()
+_SOURCE_TREE_STANDARD_DEFINITION_BLOCK = (
+    _build_source_tree_standard_benchmark_definitions()
 )
