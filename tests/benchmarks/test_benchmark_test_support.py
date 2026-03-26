@@ -3224,20 +3224,24 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
 
 @pytest.mark.parametrize(
     ("owner",),
-    (
-        pytest.param(
-            anchor_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES[0],
-            id="module-compile",
-        ),
-        pytest.param(
-            anchor_support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS[
-                0
-            ],
-            id="module-success",
-        ),
+    tuple(
+        pytest.param(owner, id=f"module-compile-{owner.case_id}")
+        for owner in anchor_support._COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES
+    )
+    + tuple(
+        pytest.param(owner, id=f"module-success-{owner.case_id}")
+        for owner in (
+            anchor_support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS
+        )
+    )
+    + (
         pytest.param(
             anchor_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC,
-            id="module-helper-keyword",
+            id="module-helper-keyword-success",
+        ),
+        pytest.param(
+            anchor_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC,
+            id="module-helper-keyword-error",
         ),
     ),
 )
@@ -3245,11 +3249,12 @@ def test_compiled_pattern_contract_builder_owner_methods_return_live_specs(
     owner: object,
 ) -> None:
     owner_builder = getattr(owner, "contract_builder_spec", None)
+    expected_manifest_timed_samples = getattr(owner, "manifest_timed_samples", 2)
 
     assert callable(owner_builder)
     built_spec = owner_builder()
     assert isinstance(built_spec, support._SourceTreeContractBuilderSpec)
-    assert built_spec.manifest_timed_samples == 2
+    assert built_spec.manifest_timed_samples == expected_manifest_timed_samples
     assert built_spec.timing_scope == "module-helper-call"
 
 
