@@ -503,6 +503,59 @@ def test_select_source_tree_combined_slice_rows_filters_suffix_features_and_cate
     ] == ["first-keep", "second-keep"]
 
 
+def test_expected_summary_for_manifests_ignores_known_gaps_from_empty_selected_manifests(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    selected_gap = SimpleNamespace(
+        workload_id="module-compile-synthetic-gap",
+        family="parser",
+    )
+    regression_measured = SimpleNamespace(
+        workload_id="module-search-regression-measured",
+        family="module",
+    )
+    manifests = [
+        SimpleNamespace(
+            manifest_id="synthetic-boundary",
+            selected_workloads=lambda *, selection_mode: (selected_gap,),
+        ),
+        SimpleNamespace(
+            manifest_id="unselected-boundary",
+            selected_workloads=lambda *, selection_mode: (),
+        ),
+        SimpleNamespace(
+            manifest_id="regression-matrix",
+            selected_workloads=lambda *, selection_mode: (regression_measured,),
+        ),
+    ]
+    monkeypatch.setattr(
+        support,
+        "SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS",
+        {
+            "synthetic-boundary": support.SourceTreeCombinedManifestExpectationDefinition(
+                known_gap_workload_ids=("module-compile-synthetic-gap",),
+            ),
+            "unselected-boundary": (
+                support.SourceTreeCombinedManifestExpectationDefinition(
+                    known_gap_workload_ids=("module-search-unselected-gap",),
+                )
+            ),
+        },
+    )
+
+    assert support.expected_summary_for_manifests(
+        manifests,
+        selection_mode="smoke",
+    ) == {
+        "known_gap_count": 1,
+        "measured_workloads": 1,
+        "module_workloads": 1,
+        "parser_workloads": 1,
+        "regression_workloads": 1,
+        "total_workloads": 2,
+    }
+
+
 def test_source_tree_combined_case_rejects_unknown_target_manifest(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
