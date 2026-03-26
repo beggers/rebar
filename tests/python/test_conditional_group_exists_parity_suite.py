@@ -15,6 +15,7 @@ from tests.python.fixture_parity_support import (
     CaseIdBoundedPatternCase as BoundedPatternCase,
     FixtureBundle,
     WRAPPER_PAIRS,
+    assert_fixture_bundle_tracks_published_case_frontier,
     assert_generated_text_matrix_matches_cpython,
     assert_fixture_bundle_contract,
     assert_invalid_match_group_access_parity,
@@ -733,6 +734,14 @@ def test_generated_fully_empty_alternation_compile_cases_stay_anchored_to_publis
     assert len(GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC.candidate_texts) == (
         len(WRAPPER_PAIRS) * 8
     )
+
+
+def test_conditional_group_exists_parity_suite_tracks_published_case_frontier() -> None:
+    for bundle in FIXTURE_BUNDLES:
+        assert_fixture_bundle_tracks_published_case_frontier(
+            bundle,
+            selected_case_ids=tuple(case.case_id for case in bundle.cases),
+        )
 
 
 def test_conditional_group_exists_direct_test_buckets_cover_selected_frontier() -> None:
