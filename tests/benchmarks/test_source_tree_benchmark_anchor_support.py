@@ -799,6 +799,205 @@ def test_source_tree_combined_case_requires_regression_manifest_for_non_module_t
         support.source_tree_combined_case("synthetic-boundary")
 
 
+@pytest.mark.parametrize(
+    ("target_manifest_id", "expected_manifest_ids"),
+    (
+        pytest.param(
+            "module-boundary",
+            ("compile-matrix", "module-boundary"),
+            id="module-boundary-excludes-regression",
+        ),
+        pytest.param(
+            "synthetic-boundary",
+            (
+                "compile-matrix",
+                "module-boundary",
+                "synthetic-boundary",
+                "regression-matrix",
+            ),
+            id="non-module-target-appends-regression",
+        ),
+    ),
+)
+def test_source_tree_combined_case_selects_expected_manifest_prefix_for_target(
+    monkeypatch: pytest.MonkeyPatch,
+    target_manifest_id: str,
+    expected_manifest_ids: tuple[str, ...],
+) -> None:
+    compile_workload = SimpleNamespace(
+        workload_id="module-compile-compile-matrix-cold-gap",
+        family="parser",
+    )
+    module_workload = SimpleNamespace(
+        workload_id="module-search-module-boundary-warm-str",
+        family="module",
+    )
+    target_workload = SimpleNamespace(
+        workload_id="pattern-fullmatch-synthetic-boundary-purged-str",
+        family="module",
+    )
+    regression_workload = SimpleNamespace(
+        workload_id="module-search-regression-warm-str",
+        family="module",
+    )
+    manifests = [
+        SimpleNamespace(
+            manifest_id="compile-matrix",
+            workloads=(compile_workload,),
+        ),
+        SimpleNamespace(
+            manifest_id="module-boundary",
+            workloads=(module_workload,),
+        ),
+        SimpleNamespace(
+            manifest_id="regression-matrix",
+            workloads=(regression_workload,),
+        ),
+        SimpleNamespace(
+            manifest_id="synthetic-boundary",
+            workloads=(target_workload,),
+        ),
+        SimpleNamespace(
+            manifest_id="later-boundary",
+            workloads=(
+                SimpleNamespace(
+                    workload_id="module-search-later-boundary-warm-str",
+                    family="module",
+                ),
+            ),
+        ),
+    ]
+    payloads: list[str] = []
+    summary_call: dict[str, object] = {}
+    manifest_expectation = support.SourceTreeManifestExpectation(
+        known_gap_count=1,
+        representative_measured_workload_ids=("module-search-module-boundary-warm-str",),
+        representative_known_gap_workload_ids=(
+            "module-compile-compile-matrix-cold-gap",
+        ),
+    )
+
+    monkeypatch.setattr(
+        support,
+        "published_benchmark_manifests",
+        lambda: manifests,
+    )
+    monkeypatch.setattr(
+        support,
+        "workload_to_payload",
+        lambda workload: payloads.append(workload.workload_id) or workload.workload_id,
+    )
+    monkeypatch.setattr(
+        support,
+        "determine_phase",
+        lambda observed_payloads: f"phase:{','.join(observed_payloads)}",
+    )
+    monkeypatch.setattr(
+        support,
+        "determine_runner_version",
+        lambda observed_payloads: f"runner:{len(observed_payloads)}",
+    )
+    monkeypatch.setattr(
+        support,
+        "expected_summary_for_manifests",
+        lambda observed_manifests, *, selection_mode, manifest_known_gap_counts=None: (
+            summary_call.update(
+                {
+                    "manifest_ids": tuple(
+                        manifest.manifest_id for manifest in observed_manifests
+                    ),
+                    "selection_mode": selection_mode,
+                    "manifest_known_gap_counts": manifest_known_gap_counts,
+                }
+            )
+            or {
+                "known_gap_count": len(observed_manifests),
+                "measured_workloads": len(observed_manifests) + 1,
+                "module_workloads": sum(
+                    len(
+                        [
+                            workload
+                            for workload in manifest.workloads
+                            if workload.family == "module"
+                        ]
+                    )
+                    for manifest in observed_manifests
+                ),
+                "parser_workloads": sum(
+                    len(
+                        [
+                            workload
+                            for workload in manifest.workloads
+                            if workload.family == "parser"
+                        ]
+                    )
+                    for manifest in observed_manifests
+                ),
+                "regression_workloads": sum(
+                    len(manifest.workloads)
+                    for manifest in observed_manifests
+                    if manifest.manifest_id == "regression-matrix"
+                ),
+                "total_workloads": sum(
+                    len(manifest.workloads) for manifest in observed_manifests
+                ),
+            }
+        ),
+    )
+    monkeypatch.setattr(
+        support,
+        "_public_source_tree_manifest_expectation",
+        lambda manifest_id: (
+            manifest_expectation if manifest_id == target_manifest_id else None
+        ),
+    )
+
+    case = support.source_tree_combined_case(target_manifest_id)
+
+    assert tuple(manifest.manifest_id for manifest in case.manifests) == (
+        expected_manifest_ids
+    )
+    assert case.manifest_id == target_manifest_id
+    assert case.target_manifest.manifest_id == target_manifest_id
+    assert case.manifest_expectation is manifest_expectation
+    assert case.expected_adapter == "rebar.module-surface"
+    assert case.expected_phase == f"phase:{','.join(payloads)}"
+    assert case.expected_runner_version == f"runner:{len(payloads)}"
+    assert case.expected_summary == {
+        "known_gap_count": len(expected_manifest_ids),
+        "measured_workloads": len(expected_manifest_ids) + 1,
+        "module_workloads": sum(
+            len(
+                [
+                    workload
+                    for workload in manifest.workloads
+                    if workload.family == "module"
+                ]
+            )
+            for manifest in case.manifests
+        ),
+        "parser_workloads": sum(
+            len(
+                [
+                    workload
+                    for workload in manifest.workloads
+                    if workload.family == "parser"
+                ]
+            )
+            for manifest in case.manifests
+        ),
+        "regression_workloads": (
+            1 if target_manifest_id != "module-boundary" else 0
+        ),
+        "total_workloads": len(expected_manifest_ids),
+    }
+    assert summary_call == {
+        "manifest_ids": expected_manifest_ids,
+        "selection_mode": "full",
+        "manifest_known_gap_counts": None,
+    }
+
+
 def test_source_tree_combined_target_manifest_ids_rejects_missing_expectation_drift(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
