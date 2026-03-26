@@ -2860,7 +2860,7 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
         "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
         "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
         "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
-    }.issubset(assignment_names)
+    }.isdisjoint(assignment_names)
     assert not hasattr(
         support.CompiledPatternModuleSuccessOwnerSpec,
         "contract_builder_spec",
@@ -2881,6 +2881,22 @@ def test_benchmark_test_support_owns_compiled_pattern_module_success_surface(
         support.CompiledPatternModuleSuccessOwnerSpec.expected_callback_call.__name__
         == "expected_callback_call"
     )
+
+
+def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_success_owner_specs(
+) -> None:
+    source = (
+        REPO_ROOT / "tests" / "benchmarks" / "benchmark_test_support.py"
+    ).read_text(encoding="utf-8")
+
+    assert re.search(
+        r"^(_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC|"
+        r"_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC|"
+        r"_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|"
+        r"_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\b",
+        source,
+        re.MULTILINE,
+    ) is None
 
 
 def test_compiled_pattern_contract_builder_helpers_live_only_in_source_tree_owner_module(

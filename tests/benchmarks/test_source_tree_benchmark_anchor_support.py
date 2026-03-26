@@ -21,6 +21,12 @@ _ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS = (
     support._COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC,
     support._COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
 )
+_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES = (
+    "_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC",
+    "_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC",
+    "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
+    "_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS",
+)
 
 
 def _module_assignment(module: object, name: str) -> ast.Assign:
@@ -1218,6 +1224,16 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
             benchmark_test_support,
             constant_name,
         )
+    for constant_name in _LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES:
+        assert hasattr(support, constant_name)
+        assert constant_name in local_assignment_names
+        assignment = _module_assignment(support, constant_name)
+        assert not (
+            isinstance(assignment.value, ast.Attribute)
+            and isinstance(assignment.value.value, ast.Name)
+            and assignment.value.value.id == "benchmark_test_support"
+            and assignment.value.attr == constant_name
+        )
 
 
 def test_compiled_pattern_module_compile_contract_builder_spec_builds_source_tree_contract(
@@ -1357,6 +1373,24 @@ def test_compiled_pattern_module_success_owner_specs_pin_live_source_workload_id
 
     assert workload_ids == owner_spec.expected_source_workload_ids
     assert len(workload_ids) == len(set(workload_ids))
+
+
+def test_compiled_pattern_module_success_owner_spec_surface_is_owned_locally() -> None:
+    _, local_assignment_names = benchmark_test_support.top_level_module_definition_and_assignment_names(
+        support
+    )
+
+    assert set(_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES).issubset(
+        local_assignment_names
+    )
+    for constant_name in _LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES:
+        assignment = _module_assignment(support, constant_name)
+        assert not (
+            isinstance(assignment.value, ast.Attribute)
+            and isinstance(assignment.value.value, ast.Name)
+            and assignment.value.value.id == "benchmark_test_support"
+            and assignment.value.attr == constant_name
+        )
 
 
 def test_compiled_pattern_module_success_source_workload_params_follow_owner_specs(

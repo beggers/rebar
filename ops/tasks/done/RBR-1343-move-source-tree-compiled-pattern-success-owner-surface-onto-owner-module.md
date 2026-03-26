@@ -1,6 +1,6 @@
 ## RBR-1343: Move source-tree compiled-pattern success owner surface onto owner module
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -61,3 +61,15 @@ Created: 2026-03-26
   - `./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py::test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metadata tests/benchmarks/test_source_tree_benchmark_anchor_support.py::test_compiled_pattern_module_success_owner_specs_pin_live_source_workload_ids tests/benchmarks/test_source_tree_benchmark_anchor_support.py::test_compiled_pattern_module_success_source_workload_params_follow_owner_specs` passed with `5 passed in 0.09s`
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` passed
   - `bash -lc "! rg -n '^(_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\\b' tests/benchmarks/benchmark_test_support.py"` currently fails because that source-tree-only owner-spec block still lives in the generic support module, and that failure belongs exactly to this cleanup
+
+## Completion Note
+- Moved the compiled-pattern module success owner-spec block from `tests/benchmarks/benchmark_test_support.py` onto `tests/benchmarks/source_tree_benchmark_anchor_support.py`, including the grouped owner-spec tuple and source-workload params.
+- Kept the shared class and helper functions in `tests/benchmarks/benchmark_test_support.py`, and routed the remaining shared live-surface selector through `source_tree_benchmark_anchor_support` instead of rebuilding a local owner-spec alias block.
+- Updated the benchmark manifest/source-tree owner tests so source-tree support must define the moved owner-spec names locally and generic support now fails if those names reappear.
+- Verification in this implementation run:
+  - `./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::test_run_internal_workload_probe_measures_compiled_pattern_module_success_contract_workloads tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py::test_compiled_pattern_module_success_callbacks_precompile_first_argument_before_timing` passed with `39 passed in 0.21s`
+  - `./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_manifest_validation.py::test_standard_benchmark_compiled_pattern_module_success_contract_rows_preserve_live_source_selection_and_payload_round_trip_until_helper_invocation` passed with `2 passed in 0.20s`
+  - `./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_benchmark_anchor_support.py::test_compiled_pattern_module_success_contract_builder_spec_uses_owner_metadata tests/benchmarks/test_source_tree_benchmark_anchor_support.py::test_compiled_pattern_module_success_owner_specs_pin_live_source_workload_ids tests/benchmarks/test_source_tree_benchmark_anchor_support.py::test_compiled_pattern_module_success_source_workload_params_follow_owner_specs tests/benchmarks/test_source_tree_benchmark_anchor_support.py::test_compiled_pattern_module_success_owner_spec_surface_is_owned_locally` passed with `6 passed in 0.22s`
+  - `./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py::test_benchmark_test_support_owns_compiled_pattern_module_success_surface tests/benchmarks/test_benchmark_test_support.py::test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_success_owner_specs` passed with `2 passed in 0.24s`
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/source_tree_benchmark_anchor_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_source_tree_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` passed
+  - `bash -lc "! rg -n '^(_COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC|_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS|_COMPILED_PATTERN_MODULE_SUCCESS_SOURCE_WORKLOAD_PARAMS)\\b' tests/benchmarks/benchmark_test_support.py"` now passes
