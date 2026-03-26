@@ -2658,7 +2658,7 @@ def test_standard_benchmark_manifest_preserves_collection_replacement_pattern_wr
     tmp_path: pathlib.Path,
 ) -> None:
     source_workloads = support._collection_replacement_wrong_text_model_source_workloads()
-    manifest = benchmark_test_support._source_tree_contract_manifest(
+    manifest = source_tree_support._source_tree_contract_manifest(
         source_workloads,
         spec=support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
@@ -2728,7 +2728,7 @@ def test_run_internal_workload_probe_measures_collection_replacement_pattern_wro
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = benchmark_test_support._source_tree_contract_workload(
+    workload = source_tree_support._source_tree_contract_workload(
         source_workload,
         spec=support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
@@ -2775,7 +2775,7 @@ def test_collection_replacement_pattern_wrong_text_model_callbacks_preserve_prec
     callback = build_callable(
         module,
         "re",
-        benchmark_test_support._source_tree_contract_workload(
+        source_tree_support._source_tree_contract_workload(
             source_workload,
             spec=support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC,
         ),

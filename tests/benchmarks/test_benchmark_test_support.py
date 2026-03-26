@@ -499,7 +499,7 @@ def test_source_tree_contract_manifest_workload_payload_drops_fields_and_injects
         smoke=True,
     )
     source_payload = benchmarks.workload_to_payload(source_workload)
-    spec = support._SourceTreeContractBuilderSpec(
+    spec = anchor_support._SourceTreeContractBuilderSpec(
         manifest_id="contract-manifest",
         excluded_fields=frozenset(
             {
@@ -515,7 +515,7 @@ def test_source_tree_contract_manifest_workload_payload_drops_fields_and_injects
         notes=("keeps helper invocation unresolved",),
     )
 
-    manifest = support._source_tree_contract_manifest(
+    manifest = anchor_support._source_tree_contract_manifest(
         (source_workload,),
         spec=spec,
     )
@@ -555,7 +555,7 @@ def test_source_tree_contract_workload_reconstructs_contract_workload_with_defau
         smoke=True,
     )
     source_payload = benchmarks.workload_to_payload(source_workload)
-    spec = support._SourceTreeContractBuilderSpec(
+    spec = anchor_support._SourceTreeContractBuilderSpec(
         manifest_id="contract-manifest",
         excluded_fields=frozenset(
             {
@@ -571,7 +571,10 @@ def test_source_tree_contract_workload_reconstructs_contract_workload_with_defau
         notes=("contract workload",),
     )
 
-    workload = support._source_tree_contract_workload(source_workload, spec=spec)
+    workload = anchor_support._source_tree_contract_workload(
+        source_workload,
+        spec=spec,
+    )
     payload = benchmarks.workload_to_payload(workload)
 
     assert payload["manifest_id"] == "contract-manifest"
@@ -608,13 +611,16 @@ def test_source_tree_contract_manifest_uses_manifest_defaults_and_contract_ids()
             replacement="x",
         ),
     )
-    spec = support._SourceTreeContractBuilderSpec(
+    spec = anchor_support._SourceTreeContractBuilderSpec(
         manifest_id="contract-manifest",
         excluded_fields=frozenset({"manifest_id", "workload_id"}),
         manifest_timed_samples=7,
     )
 
-    manifest = support._source_tree_contract_manifest(source_workloads, spec=spec)
+    manifest = anchor_support._source_tree_contract_manifest(
+        source_workloads,
+        spec=spec,
+    )
 
     assert manifest["schema_version"] == 1
     assert manifest["manifest_id"] == "contract-manifest"
@@ -3320,7 +3326,7 @@ def test_compiled_pattern_contract_builder_owner_methods_return_live_specs(
 
     assert callable(owner_builder)
     built_spec = owner_builder()
-    assert isinstance(built_spec, support._SourceTreeContractBuilderSpec)
+    assert isinstance(built_spec, anchor_support._SourceTreeContractBuilderSpec)
     assert built_spec.manifest_timed_samples == expected_manifest_timed_samples
     assert built_spec.timing_scope == "module-helper-call"
 
@@ -3509,7 +3515,7 @@ def test_source_tree_contract_helper_suites_import_from_support(
             ("source_tree_benchmark_anchor_support", "source_tree_support"),
         }
     )
-    assert expected_imported_names.issubset(dir(module.benchmark_test_support))
+    assert expected_imported_names.issubset(dir(module.source_tree_support))
     assert "tests.benchmarks.benchmark_test_support" not in support._module_import_targets(
         module
     )

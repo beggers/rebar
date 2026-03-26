@@ -15,6 +15,7 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from tests.benchmarks import benchmark_test_support as support
+from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 from tests.python.fixture_parity_support import IndexLike
 
 def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(
@@ -516,7 +517,7 @@ def test_standard_benchmark_manifest_preserves_pattern_boundary_wrong_text_model
     tmp_path: pathlib.Path,
 ) -> None:
     source_workloads = support._pattern_boundary_wrong_text_model_source_workloads()
-    manifest = support._source_tree_contract_manifest(
+    manifest = source_tree_support._source_tree_contract_manifest(
         source_workloads,
         spec=support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
@@ -581,7 +582,7 @@ def test_run_internal_workload_probe_measures_pattern_boundary_wrong_text_model_
     import_name: str,
     adapter_name: str,
 ) -> None:
-    workload = support._source_tree_contract_workload(
+    workload = source_tree_support._source_tree_contract_workload(
         source_workload,
         spec=support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
@@ -627,7 +628,7 @@ def test_pattern_boundary_wrong_text_model_callbacks_preserve_precompile_contrac
     callback = build_callable(
         module,
         "re",
-        support._source_tree_contract_workload(
+        source_tree_support._source_tree_contract_workload(
             source_workload,
             spec=support._PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
         ),
