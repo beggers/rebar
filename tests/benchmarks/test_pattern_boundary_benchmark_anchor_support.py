@@ -231,6 +231,36 @@ def test_pattern_window_positional_indexlike_workload_and_case_signatures_stay_p
     )
 
 
+def test_pattern_window_positional_indexlike_endpos_only_defaults_pos_to_zero() -> None:
+    workload = support.synthetic_workload(
+        manifest_id="module-pattern-boundary",
+        workload_id="pattern-search-endpos-only-window-indexlike",
+        operation="pattern.search",
+        haystack="zabcabc",
+        categories=["positional-window", "indexlike"],
+        pos=None,
+        endpos={"type": "indexlike", "value": 6},
+    )
+
+    assert pattern_boundary_support._is_pattern_window_positional_indexlike_workload(
+        workload
+    )
+    assert (
+        pattern_boundary_support._pattern_window_positional_indexlike_workload_args(
+            workload
+        )
+        == ("zabcabc", 0, {"type": "indexlike", "value": 6})
+    )
+    assert pattern_boundary_support._pattern_window_positional_indexlike_workload_signature(
+        workload
+    ) == (
+        "search",
+        "abc",
+        (("str", "zabcabc"), ("int", 0), ("indexlike", 6)),
+        "str",
+    )
+
+
 def test_pattern_keyword_window_workload_and_case_signatures_stay_pinned() -> None:
     workload = support.synthetic_workload(
         manifest_id="module-pattern-boundary",
