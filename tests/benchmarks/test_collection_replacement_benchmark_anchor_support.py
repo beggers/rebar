@@ -26,19 +26,6 @@ anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
 source_tree_support = support
 
 
-def _explicit_standard_benchmark_definitions(
-) -> tuple[benchmark_test_support.StandardBenchmarkAnchorContractDefinition, ...]:
-    return (
-        *benchmark_test_support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
-        *support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
-        *benchmark_test_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
-        *source_tree_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
-        *source_tree_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
-        *source_tree_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
-        *source_tree_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,
-    )
-
-
 def _default_collection_replacement_wrong_text_model_manifest_timed_samples() -> int:
     default = (
         support._COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_CONTRACT_SPEC.manifest_timed_samples
@@ -996,7 +983,7 @@ def test_grouped_callable_anchor_contract_in_combined_suite_uses_owner_helpers()
     )
     definitions = [
         definition
-        for definition in _explicit_standard_benchmark_definitions()
+        for definition in support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS
         if definition.name == "collection-replacement-grouped-callable-replacement"
     ]
 
@@ -1021,8 +1008,7 @@ def test_collection_replacement_standard_definitions_are_reused_by_standard_inve
     )
     standard_definitions_by_name = {
         definition.name: definition
-        for definition in _explicit_standard_benchmark_definitions()
-        if definition.name in owner_definition_names
+        for definition in owner_definitions
     }
 
     assert tuple(standard_definitions_by_name) == owner_definition_names
