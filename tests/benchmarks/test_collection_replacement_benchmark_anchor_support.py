@@ -23,6 +23,8 @@ from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree
 from tests.conftest import records_by_string_id
 from tests.python.fixture_parity_support import IndexLike
 
+anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
+
 
 def _default_collection_replacement_wrong_text_model_manifest_timed_samples() -> int:
     default = (
@@ -1357,6 +1359,63 @@ def test_conditional_collection_replacement_slice_expectations_stay_in_sync_with
 
     for label, expected_workload_ids in expected_workload_ids_by_label.items():
         assert observed_workload_ids_by_label[label] == expected_workload_ids, label
+
+
+def test_conditional_collection_replacement_callable_slice_workload_helpers_match_declared_ids(
+    anchor_support_cache_guard: None,
+) -> None:
+    callable_str_expected_workload_ids = tuple(
+        workload_id
+        for expectation in support._CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS
+        for workload_id in expectation.expected_workload_ids
+        if not workload_id.endswith("-bytes")
+    )
+    callable_bytes_expected_workload_ids = tuple(
+        workload_id
+        for expectation in support._CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS
+        for workload_id in expectation.expected_workload_ids
+        if workload_id.endswith("-bytes")
+    )
+    helper_expectations = (
+        (
+            support._conditional_group_exists_callable_str_slice_workloads,
+            callable_str_expected_workload_ids,
+        ),
+        (
+            support._conditional_group_exists_callable_bytes_slice_workloads,
+            callable_bytes_expected_workload_ids,
+        ),
+        (
+            support._conditional_group_exists_alternation_callable_bytes_workloads,
+            support.CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
+        ),
+        (
+            support._conditional_group_exists_nested_callable_str_workloads,
+            support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
+        ),
+        (
+            support._conditional_group_exists_nested_callable_bytes_workloads,
+            support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
+        ),
+        (
+            support._conditional_group_exists_quantified_callable_str_workloads,
+            support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
+        ),
+        (
+            support._conditional_group_exists_quantified_callable_bytes_workloads,
+            support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
+        ),
+    )
+
+    for helper, expected_workload_ids in helper_expectations:
+        workloads = helper()
+        assert (
+            tuple(workload.workload_id for workload in workloads)
+            == expected_workload_ids
+        )
+        assert {workload.manifest_id for workload in workloads} == {
+            "conditional-group-exists-boundary"
+        }
 
 
 def test_quantified_conditional_callable_combined_slice_expectations_stay_in_sync_with_owner_workload_ids(
