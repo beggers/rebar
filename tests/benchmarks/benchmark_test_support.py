@@ -2704,6 +2704,23 @@ _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS = (
     ),
 )
 
+
+def _build_compiled_pattern_module_compile_standard_benchmark_definitions() -> tuple[
+    StandardBenchmarkAnchorContractDefinition, ...
+]:
+    return tuple(
+        owner_spec.anchor_definition()
+        for owner_spec in (
+            *_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
+            *_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
+        )
+    )
+
+
+COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS = (
+    _build_compiled_pattern_module_compile_standard_benchmark_definitions()
+)
+
 _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES = (
     build_compiled_pattern_module_compile_contract_cases(
         manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
@@ -4945,7 +4962,7 @@ STANDARD_BENCHMARK_DEFINITIONS = (
     *COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
     *collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
     *MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
-    *source_tree_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+    *COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
     *COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
     *PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
     *source_tree_support.SOURCE_TREE_STANDARD_BENCHMARK_DEFINITIONS,

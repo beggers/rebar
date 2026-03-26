@@ -125,6 +125,8 @@ SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES = (
     "published_cases_by_id",
     "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
     "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+    "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
+    "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
@@ -376,16 +378,6 @@ def build_compiled_pattern_module_contract_anchor_lanes(
     )
 
 
-def _build_compiled_pattern_module_compile_standard_benchmark_definitions() -> tuple[
-    benchmark_test_support.StandardBenchmarkAnchorContractDefinition, ...
-]:
-    return tuple(
-        owner_spec.anchor_definition()
-        for owner_spec in (
-            *benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS,
-            *benchmark_test_support._COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS,
-        )
-    )
 def _assert_zero_gap_manifest_state(
     testcase: Any,
     manifest_id: str,
@@ -5142,10 +5134,6 @@ def _grouped_alternation_replacement_correctness_case_signature(
 
 _is_collection_replacement_compiled_pattern_success_workload = (
     benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload
-)
-
-COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS = (
-    _build_compiled_pattern_module_compile_standard_benchmark_definitions()
 )
 
 

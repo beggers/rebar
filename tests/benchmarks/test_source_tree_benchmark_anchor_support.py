@@ -1282,25 +1282,47 @@ def test_compiled_pattern_module_compile_contract_builder_surface_builds_expecte
     )
 
 
-def test_compiled_pattern_module_compile_wrapper_surface_is_owned_locally() -> None:
+def test_compiled_pattern_module_compile_standard_definition_surface_moves_to_shared_support(
+) -> None:
     definition_names, local_assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(
             support
         )
     )
+    shared_definition_names, shared_assignment_names = (
+        benchmark_test_support.top_level_module_definition_and_assignment_names(
+            benchmark_test_support
+        )
+    )
 
     assert {
         "build_compiled_pattern_module_contract_anchor_lanes",
-        "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
         "live_compiled_pattern_module_success_surface_ids",
     }.issubset(definition_names)
+    assert (
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
+        not in definition_names
+    )
+    assert (
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
+        not in local_assignment_names
+    )
+    assert {
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
+    }.issubset(shared_definition_names)
     assert {
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
-    }.issubset(local_assignment_names)
-
+    }.issubset(shared_assignment_names)
+    assert (
+        "_build_compiled_pattern_module_compile_standard_benchmark_definitions"
+        in support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
+    )
+    assert (
+        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
+        in support.SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES
+    )
     for function_name in (
         "build_compiled_pattern_module_contract_anchor_lanes",
-        "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
         "live_compiled_pattern_module_success_surface_ids",
     ):
         function_definition = benchmark_test_support._module_function_definition(
@@ -1309,20 +1331,8 @@ def test_compiled_pattern_module_compile_wrapper_surface_is_owned_locally() -> N
         )
         assert function_definition.name == function_name
 
-    assignment = benchmark_test_support._module_assignment(
-        support,
-        "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
-    )
-    assert not (
-        isinstance(assignment.value, ast.Attribute)
-        and isinstance(assignment.value.value, ast.Name)
-        and assignment.value.value.id == "benchmark_test_support"
-        and assignment.value.attr
-        == "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
-    )
 
-
-def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_owned_locally_and_wrapper_free(
+def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_shared_support_owned(
 ) -> None:
     expected_definitions = tuple(
         owner_spec.anchor_definition()
@@ -1333,17 +1343,17 @@ def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_owne
     )
 
     first_export = getattr(
-        support,
+        benchmark_test_support,
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     )
     second_export = getattr(
-        support,
+        benchmark_test_support,
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
     )
 
     assert first_export is second_export
     assert (
-        support._build_compiled_pattern_module_compile_standard_benchmark_definitions()
+        benchmark_test_support._build_compiled_pattern_module_compile_standard_benchmark_definitions()
         == first_export
     )
     assert first_export == expected_definitions
@@ -1359,14 +1369,14 @@ def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_owne
         "module-workflow-compiled-pattern-module-compile-flags-ignorecase-keyword-rejection-named-group",
     )
     assert (
-        vars(support)[
+        vars(benchmark_test_support)[
             "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS"
         ]
         is first_export
     )
 
     builder_definition = benchmark_test_support._module_function_definition(
-        support,
+        benchmark_test_support,
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
     )
     assert any(
@@ -1374,14 +1384,6 @@ def test_compiled_pattern_module_compile_standard_benchmark_definitions_are_owne
         and isinstance(node.func, ast.Attribute)
         and isinstance(node.func.value, ast.Name)
         and node.func.value.id == "owner_spec"
-        and node.func.attr == "anchor_definition"
-        for node in ast.walk(builder_definition)
-    )
-    assert not any(
-        isinstance(node, ast.Call)
-        and isinstance(node.func, ast.Attribute)
-        and isinstance(node.func.value, ast.Name)
-        and node.func.value.id == "benchmark_test_support"
         and node.func.attr == "anchor_definition"
         for node in ast.walk(builder_definition)
     )

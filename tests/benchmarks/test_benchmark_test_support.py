@@ -941,7 +941,7 @@ def test_standard_benchmark_definitions_are_direct_support_owned_global_tuple() 
             id="module-workflow-keyword-after-collection-replacement",
         ),
         pytest.param(
-            anchor_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
+            support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
             "module-workflow-keyword-errors",
             "module-workflow-compiled-pattern-literal-success",
             id="compiled-pattern-module-compile-after-module-workflow-keyword",
@@ -1002,7 +1002,7 @@ def test_standard_benchmark_definitions_keep_owner_blocks_in_order(
         assert standard_names[next_index] == following_definition_name
 
 
-def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_compile_wrapper_surface(
+def test_benchmark_test_support_owns_compiled_pattern_module_compile_standard_definitions(
 ) -> None:
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(support)
@@ -1013,15 +1013,19 @@ def test_benchmark_test_support_does_not_reintroduce_compiled_pattern_module_com
 
     assert {
         "_build_compiled_pattern_module_compile_standard_benchmark_definitions",
-        "live_compiled_pattern_module_success_surface_ids",
-    }.isdisjoint(definition_names)
+    }.issubset(definition_names)
     assert {
         "COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS",
-    }.isdisjoint(assignment_names)
+    }.issubset(assignment_names)
+    assert "live_compiled_pattern_module_success_surface_ids" not in definition_names
     assert re.search(
-        r"^def (_build_compiled_pattern_module_compile_standard_benchmark_definitions|"
-        r"live_compiled_pattern_module_success_surface_ids)\b|"
+        r"^def _build_compiled_pattern_module_compile_standard_benchmark_definitions\b|"
         r"^COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS\b",
+        source,
+        re.MULTILINE,
+    ) is not None
+    assert re.search(
+        r"^def live_compiled_pattern_module_success_surface_ids\b",
         source,
         re.MULTILINE,
     ) is None
