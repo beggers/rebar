@@ -3349,7 +3349,7 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                     case.representative_measured_workload_ids,
                     tuple(
                         workload_id
-                        for expectation in source_tree_support.SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS
+                        for expectation in source_tree_support.SOURCE_TREE_COMBINED_SUITE_SLICE_EXPECTATIONS
                         if expectation.manifest_id == case_id
                         for workload_id in expectation.expected_workload_ids
                     ),
