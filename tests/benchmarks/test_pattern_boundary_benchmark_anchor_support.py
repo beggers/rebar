@@ -18,15 +18,6 @@ from tests.benchmarks import benchmark_test_support as support
 from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree_support
 from tests.python.fixture_parity_support import IndexLike
 
-_PATTERN_BOUNDARY_STANDARD_DEFINITION_NAMES = (
-    "pattern-window-positional-indexlike",
-    "pattern-window-keyword",
-    "pattern-boundary-bounded-wildcard",
-    "pattern-boundary-verbose-regression",
-    "pattern-boundary-wrong-text-model",
-)
-
-
 def test_pattern_boundary_wrong_text_model_support_surface_is_owner_module_owned_without_local_duplicates(
 ) -> None:
     import sys
@@ -55,7 +46,7 @@ def test_pattern_boundary_standard_definitions_are_owner_owned_in_exact_order() 
 
     assert isinstance(definitions, tuple)
     assert tuple(definition.name for definition in definitions) == (
-        _PATTERN_BOUNDARY_STANDARD_DEFINITION_NAMES
+        support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES
     )
 
 
@@ -63,13 +54,13 @@ def test_pattern_boundary_standard_definitions_are_reused_by_standard_inventory(
     owner_definitions = support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS
     standard_definitions = support.select_standard_inventory_definitions(
         support.STANDARD_BENCHMARK_DEFINITIONS,
-        _PATTERN_BOUNDARY_STANDARD_DEFINITION_NAMES,
+        support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES,
     )
 
     support.assert_standard_inventory_reuses_owner_definitions(
         owner_definitions,
         standard_definitions,
-        _PATTERN_BOUNDARY_STANDARD_DEFINITION_NAMES,
+        support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITION_NAMES,
     )
 
 

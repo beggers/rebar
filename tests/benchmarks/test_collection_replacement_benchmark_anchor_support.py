@@ -22,21 +22,6 @@ from tests.benchmarks import source_tree_benchmark_anchor_support as source_tree
 from tests.conftest import records_by_string_id
 from tests.python.fixture_parity_support import IndexLike
 
-_COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES = (
-    "collection-replacement-module-positional-indexlike",
-    "collection-replacement-keyword",
-    "collection-replacement-compiled-pattern-literal-success",
-    "collection-replacement-compiled-pattern-wrong-text-model",
-    "pattern-helper-collection-replacement-wrong-text-model",
-    "collection-replacement-pattern-findall-bounded",
-    "collection-replacement-pattern-finditer-bounded",
-    "collection-replacement-pattern-split",
-    "collection-replacement-module-literal-replacement",
-    "collection-replacement-pattern-literal-replacement",
-    "collection-replacement-grouped-callable-replacement",
-)
-
-
 def _collection_replacement_case(
     *,
     helper: str,
@@ -790,13 +775,13 @@ def test_collection_replacement_standard_definitions_are_reused_by_standard_inve
     owner_definitions = support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS
     standard_definitions = benchmark_test_support.select_standard_inventory_definitions(
         benchmark_test_support.STANDARD_BENCHMARK_DEFINITIONS,
-        _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES,
+        support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITION_NAMES,
     )
 
     benchmark_test_support.assert_standard_inventory_reuses_owner_definitions(
         owner_definitions,
         standard_definitions,
-        _COLLECTION_REPLACEMENT_STANDARD_DEFINITION_NAMES,
+        support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITION_NAMES,
     )
 
 
