@@ -608,6 +608,52 @@ def test_source_tree_contract_workload_reconstructs_contract_workload_with_defau
     assert payload["notes"] == ["contract workload"]
 
 
+def test_source_tree_contract_workload_preserves_source_timing_scope_but_drops_notes_without_builder_metadata(
+) -> None:
+    source_workload = support.synthetic_workload(
+        manifest_id="source-manifest",
+        workload_id="module-findall-cold-str",
+        operation="module.findall",
+        pattern="abc",
+        haystack="abcabc",
+        timing_scope="pattern-helper-call",
+        notes=["source workload note"],
+        categories=["source-category"],
+        syntax_features=["source-syntax"],
+        smoke=True,
+    )
+    spec = anchor_support._SourceTreeContractBuilderSpec(
+        manifest_id="contract-manifest",
+        excluded_fields=frozenset(
+            {
+                "manifest_id",
+                "workload_id",
+                "warmup_iterations",
+                "sample_iterations",
+                "timed_samples",
+                "notes",
+            }
+        ),
+    )
+
+    workload = anchor_support._source_tree_contract_workload(
+        source_workload,
+        spec=spec,
+    )
+    payload = benchmarks.workload_to_payload(workload)
+
+    assert payload["manifest_id"] == "contract-manifest"
+    assert payload["workload_id"] == "module-findall-cold-str-contract"
+    assert payload["warmup_iterations"] == 1
+    assert payload["sample_iterations"] == 1
+    assert payload["timed_samples"] == 1
+    assert payload["categories"] == []
+    assert payload["syntax_features"] == []
+    assert payload["smoke"] is False
+    assert payload["timing_scope"] == "pattern-helper-call"
+    assert payload["notes"] == []
+
+
 def test_source_tree_contract_manifest_uses_manifest_defaults_and_contract_ids() -> None:
     source_workloads = (
         support.synthetic_workload(
