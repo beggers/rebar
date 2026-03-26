@@ -2840,7 +2840,6 @@ def test_source_tree_owner_module_owns_source_tree_combined_routing_helpers(
     )
 
     moved_helper_names = {
-        "_parsed_source_tree_combined_suite_ast",
         "_assert_source_tree_combined_routes_owner_names_through_module_alias",
     }
 
@@ -2860,7 +2859,6 @@ def test_source_tree_combined_routing_helpers_move_out_of_shared_support_scope()
         "tests.benchmarks.test_collection_replacement_benchmark_anchor_support"
     )
     helper_names = {
-        "_parsed_source_tree_combined_suite_ast",
         "_assert_source_tree_combined_routes_owner_names_through_module_alias",
     }
 
@@ -3027,11 +3025,7 @@ def _patch_source_tree_combined_route_helper_dependencies(
     local_assignment_names: set[str],
 ) -> None:
     monkeypatch.setattr(anchor_support, "_source_tree_combined_suite", lambda: combined_suite)
-    monkeypatch.setattr(
-        anchor_support,
-        "_parsed_source_tree_combined_suite_ast",
-        lambda: combined_suite_ast,
-    )
+    monkeypatch.setattr(support, "_parsed_module_ast", lambda module: combined_suite_ast)
     monkeypatch.setattr(
         support,
         "top_level_module_definition_and_assignment_names",

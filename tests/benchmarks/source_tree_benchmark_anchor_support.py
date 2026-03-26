@@ -116,11 +116,6 @@ def _source_tree_combined_suite() -> object:
     )
 
 
-@cache
-def _parsed_source_tree_combined_suite_ast() -> ast.Module:
-    return benchmark_test_support._parsed_module_ast(_source_tree_combined_suite())
-
-
 def _assert_source_tree_combined_routes_owner_names_through_module_alias(
     *,
     alias_name: str,
@@ -129,7 +124,7 @@ def _assert_source_tree_combined_routes_owner_names_through_module_alias(
     expected_direct_benchmark_test_support_refs: frozenset[str] = frozenset(),
 ) -> object:
     combined_suite = _source_tree_combined_suite()
-    combined_suite_ast = _parsed_source_tree_combined_suite_ast()
+    combined_suite_ast = benchmark_test_support._parsed_module_ast(combined_suite)
     _, local_assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(
             combined_suite

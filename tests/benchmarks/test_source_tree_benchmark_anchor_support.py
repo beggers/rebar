@@ -1761,7 +1761,9 @@ def test_source_tree_support_module_exports_combined_slice_owner_group() -> None
 
 
 def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally() -> None:
-    module_ast = support._parsed_source_tree_combined_suite_ast()
+    module_ast = benchmark_test_support._parsed_module_ast(
+        support._source_tree_combined_suite()
+    )
     local_class_names = {
         node.name for node in module_ast.body if isinstance(node, ast.ClassDef)
     }
@@ -1802,7 +1804,9 @@ def test_combined_suite_class_no_longer_defines_zero_gap_representative_wrappers
 ) -> None:
     combined_suite_class = next(
         node
-        for node in support._parsed_source_tree_combined_suite_ast().body
+        for node in benchmark_test_support._parsed_module_ast(
+            support._source_tree_combined_suite()
+        ).body
         if isinstance(node, ast.ClassDef)
         and node.name == "SourceTreeCombinedBoundaryBenchmarkSuiteTest"
     )
@@ -1824,7 +1828,9 @@ def test_combined_suite_class_no_longer_defines_zero_gap_representative_wrappers
 def test_combined_suite_class_no_longer_defines_scorecard_contract_wrappers() -> None:
     combined_suite_class = next(
         node
-        for node in support._parsed_source_tree_combined_suite_ast().body
+        for node in benchmark_test_support._parsed_module_ast(
+            support._source_tree_combined_suite()
+        ).body
         if isinstance(node, ast.ClassDef) and node.name == "SourceTreeScorecardBenchmarkSuiteTest"
     )
     class_method_names = {
@@ -1855,7 +1861,9 @@ def test_source_tree_support_module_does_not_export_deleted_fully_measured_helpe
 
 def test_combined_suite_no_longer_routes_deleted_wrapper_helpers_through_source_tree_support(
 ) -> None:
-    module_ast = support._parsed_source_tree_combined_suite_ast()
+    module_ast = benchmark_test_support._parsed_module_ast(
+        support._source_tree_combined_suite()
+    )
     deleted_wrapper_names = frozenset(
         {
             "assert_zero_gap_bytes_representative_subset",
@@ -1890,7 +1898,9 @@ def test_combined_suite_no_longer_routes_deleted_wrapper_helpers_through_source_
 
 def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
 ) -> None:
-    combined_suite_ast = support._parsed_source_tree_combined_suite_ast()
+    combined_suite_ast = benchmark_test_support._parsed_module_ast(
+        support._source_tree_combined_suite()
+    )
     moved_constant_names = frozenset(
         {
             "SOURCE_TREE_SCORECARD_EXPECTATIONS",
@@ -1944,7 +1954,9 @@ def test_combined_suite_no_longer_binds_moved_source_tree_constants_locally(
 
 def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_locally(
 ) -> None:
-    combined_suite_ast = support._parsed_source_tree_combined_suite_ast()
+    combined_suite_ast = benchmark_test_support._parsed_module_ast(
+        support._source_tree_combined_suite()
+    )
     centralized_manifest_path_names = frozenset(
         {
             "OPTIONAL_GROUP_MANIFEST_PATH",
@@ -2043,7 +2055,9 @@ def test_combined_suite_no_longer_binds_centralized_source_tree_manifest_paths_l
 
 
 def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally() -> None:
-    module_ast = support._parsed_source_tree_combined_suite_ast()
+    module_ast = benchmark_test_support._parsed_module_ast(
+        support._source_tree_combined_suite()
+    )
     local_function_names = {
         node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
     }
@@ -2060,7 +2074,9 @@ def test_combined_suite_no_longer_defines_moved_report_contract_helpers_locally(
 
 def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_locally(
 ) -> None:
-    module_ast = support._parsed_source_tree_combined_suite_ast()
+    module_ast = benchmark_test_support._parsed_module_ast(
+        support._source_tree_combined_suite()
+    )
     local_function_names = {
         node.name for node in module_ast.body if isinstance(node, ast.FunctionDef)
     }
@@ -2078,7 +2094,9 @@ def test_combined_suite_no_longer_defines_moved_conditional_callable_helpers_loc
 
 
 def test_combined_suite_imports_source_tree_support_through_owner_module_only() -> None:
-    combined_suite_ast = support._parsed_source_tree_combined_suite_ast()
+    combined_suite_ast = benchmark_test_support._parsed_module_ast(
+        support._source_tree_combined_suite()
+    )
     direct_owner_imports = [
         node
         for node in combined_suite_ast.body
@@ -2110,7 +2128,9 @@ def test_combined_suite_imports_source_tree_support_through_owner_module_only() 
 
 def test_combined_suite_imports_and_reads_collection_owner_surface_through_package_alias(
 ) -> None:
-    combined_suite_ast = support._parsed_source_tree_combined_suite_ast()
+    combined_suite_ast = benchmark_test_support._parsed_module_ast(
+        support._source_tree_combined_suite()
+    )
     package_collection_imports = [
         (alias.name, alias.asname)
         for node in combined_suite_ast.body
@@ -2160,7 +2180,6 @@ def test_source_tree_support_defines_combined_route_helpers_locally() -> None:
 
     moved_helper_names = {
         "_source_tree_combined_suite",
-        "_parsed_source_tree_combined_suite_ast",
         "_assert_source_tree_combined_routes_owner_names_through_module_alias",
         "source_tree_combined_manifest_representative_measured_workload_ids",
     }
@@ -2325,7 +2344,9 @@ def test_combined_suite_routes_moved_support_surfaces_through_benchmark_test_sup
 
 def test_combined_suite_imports_report_contract_helpers_through_benchmark_test_support(
 ) -> None:
-    module_ast = support._parsed_source_tree_combined_suite_ast()
+    module_ast = benchmark_test_support._parsed_module_ast(
+        support._source_tree_combined_suite()
+    )
     benchmark_support_alias_names = benchmark_test_support._module_alias_names(
         module_ast,
         import_from_module="tests.benchmarks",
@@ -2366,7 +2387,9 @@ def test_combined_suite_imports_report_contract_helpers_through_benchmark_test_s
 
 def test_combined_suite_imports_compiled_pattern_module_helper_keyword_surface_through_collection_support(
 ) -> None:
-    module_ast = support._parsed_source_tree_combined_suite_ast()
+    module_ast = benchmark_test_support._parsed_module_ast(
+        support._source_tree_combined_suite()
+    )
     owner_names = frozenset(
         {
             "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
