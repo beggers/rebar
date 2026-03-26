@@ -30,6 +30,10 @@ Created: 2026-03-26
 - If one assertion block still wants a local helper after the rewrite, keep it file-local to the owning test file and scoped only to that test block; do not recreate a cross-file support surface.
 
 ## Notes
+- Completed 2026-03-26:
+  - Deleted `_split_workload_ids_by_text_model(...)`, `_selected_workload_ids(...)`, and `_mirrored_bytes_workload_ids(...)` from `tests/benchmarks/benchmark_test_support.py`.
+  - Rewrote the source-tree owner assertions in `tests/benchmarks/test_source_tree_benchmark_anchor_support.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` to use local tuple comprehensions for text-model partitioning, category filtering, and mirrored `-bytes` ids.
+  - Verified with the two task pytest slices plus the helper-removal grep guard; all passed after the rewrite.
 - Queue and JSON check in this run:
   - `.rebar/runtime/dashboard.md` reports `ready: 0`, `in_progress: 0`, `blocked: 0`, and `tracked_json_blob_count: 0`.
   - `git status --short` was empty in this run, so the runtime counts were not lagging a dirty checkout.

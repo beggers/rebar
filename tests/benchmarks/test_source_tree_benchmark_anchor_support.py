@@ -2495,10 +2495,15 @@ def test_moved_conditional_callable_workload_loaders_pin_expected_ids() -> None:
         for expectation in callable_expectations
         for workload_id in expectation.expected_workload_ids
     )
-    expected_callable_str_workload_ids, expected_callable_bytes_workload_ids = (
-        benchmark_test_support._split_workload_ids_by_text_model(
-            expected_callable_workload_ids
-        )
+    expected_callable_str_workload_ids = tuple(
+        workload_id
+        for workload_id in expected_callable_workload_ids
+        if not workload_id.endswith("-bytes")
+    )
+    expected_callable_bytes_workload_ids = tuple(
+        workload_id
+        for workload_id in expected_callable_workload_ids
+        if workload_id.endswith("-bytes")
     )
     manifest_path = (
         benchmarks.BENCHMARK_WORKLOADS_ROOT / "conditional_group_exists_boundary.py"
@@ -2613,48 +2618,67 @@ def test_moved_conditional_callable_selector_helpers_keep_partition_rules() -> N
         ),
     )
 
-    assert benchmark_test_support._split_workload_ids_by_text_model(
-        expected_callable_workload_ids
-    ) == (
-        tuple(
-            workload_id
-            for workload_id in expected_callable_workload_ids
-            if not workload_id.endswith("-bytes")
-        ),
-        tuple(
-            workload_id
-            for workload_id in expected_callable_workload_ids
-            if workload_id.endswith("-bytes")
-        ),
+    expected_callable_str_workload_ids = tuple(
+        workload_id
+        for workload_id in expected_callable_workload_ids
+        if not workload_id.endswith("-bytes")
     )
-    assert benchmark_test_support._mirrored_bytes_workload_ids(
-        collection_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+    expected_callable_bytes_workload_ids = tuple(
+        workload_id
+        for workload_id in expected_callable_workload_ids
+        if workload_id.endswith("-bytes")
+    )
+    assert len(expected_callable_workload_ids) == (
+        len(expected_callable_str_workload_ids)
+        + len(expected_callable_bytes_workload_ids)
+    )
+    assert all(
+        not workload_id.endswith("-bytes")
+        for workload_id in expected_callable_str_workload_ids
+    )
+    assert all(
+        workload_id.endswith("-bytes")
+        for workload_id in expected_callable_bytes_workload_ids
+    )
+    assert set(expected_callable_workload_ids) == (
+        set(expected_callable_str_workload_ids)
+        | set(expected_callable_bytes_workload_ids)
+    )
+    assert tuple(
+        f"{workload_id.removesuffix('-str')}-bytes"
+        for workload_id in (
+            collection_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_STR_WORKLOAD_IDS
+        )
     ) == (
         collection_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NEGATIVE_COUNT_BYTES_WORKLOAD_IDS
     )
-    assert benchmark_test_support._selected_workload_ids(
-        synthetic_workloads,
-        text_model="str",
-        required_categories=("negative-count",),
+    assert tuple(
+        workload.workload_id
+        for workload in synthetic_workloads
+        if workload.text_model == "str"
+        and "negative-count" in workload.categories
     ) == (
         "callable-negative-count-warm-str",
         "callable-negative-none-count-warm-str",
     )
-    assert benchmark_test_support._selected_workload_ids(
-        synthetic_workloads,
-        text_model="str",
-        required_categories=("negative-count",),
-        excluded_categories=("none-count",),
+    assert tuple(
+        workload.workload_id
+        for workload in synthetic_workloads
+        if workload.text_model == "str"
+        and "negative-count" in workload.categories
+        and "none-count" not in workload.categories
     ) == ("callable-negative-count-warm-str",)
-    assert benchmark_test_support._selected_workload_ids(
-        synthetic_workloads,
-        text_model="bytes",
-        required_categories=("negative-count",),
+    assert tuple(
+        workload.workload_id
+        for workload in synthetic_workloads
+        if workload.text_model == "bytes"
+        and "negative-count" in workload.categories
     ) == ("callable-negative-count-warm-bytes",)
-    assert benchmark_test_support._selected_workload_ids(
-        synthetic_workloads,
-        text_model="str",
-        required_categories=("no-match",),
+    assert tuple(
+        workload.workload_id
+        for workload in synthetic_workloads
+        if workload.text_model == "str"
+        and "no-match" in workload.categories
     ) == ("callable-no-match-warm-str",)
 
 

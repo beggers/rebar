@@ -474,45 +474,6 @@ def live_manifest_workloads(
     return tuple(workloads_by_id[workload_id] for workload_id in workload_ids)
 
 
-def _split_workload_ids_by_text_model(
-    workload_ids: tuple[str, ...],
-) -> tuple[tuple[str, ...], tuple[str, ...]]:
-    return (
-        tuple(
-            workload_id
-            for workload_id in workload_ids
-            if not workload_id.endswith("-bytes")
-        ),
-        tuple(
-            workload_id
-            for workload_id in workload_ids
-            if workload_id.endswith("-bytes")
-        ),
-    )
-
-
-def _selected_workload_ids(
-    workloads: Iterable[Any],
-    *,
-    text_model: str,
-    required_categories: tuple[str, ...],
-    excluded_categories: tuple[str, ...] = (),
-) -> tuple[str, ...]:
-    return tuple(
-        workload.workload_id
-        for workload in workloads
-        if workload.text_model == text_model
-        and all(category in workload.categories for category in required_categories)
-        and all(category not in workload.categories for category in excluded_categories)
-    )
-
-
-def _mirrored_bytes_workload_ids(str_workload_ids: tuple[str, ...]) -> tuple[str, ...]:
-    return tuple(
-        f"{workload_id.removesuffix('-str')}-bytes" for workload_id in str_workload_ids
-    )
-
-
 _KNOWN_GAP_STATUSES = frozenset({"known-gap", "unimplemented"})
 
 
