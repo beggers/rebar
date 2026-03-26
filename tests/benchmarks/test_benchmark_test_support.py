@@ -2875,6 +2875,32 @@ MODULE_ALIAS = benchmark_test_support.MODULE_ALIAS
     }
 
 
+def _patch_source_tree_combined_route_helper_dependencies(
+    monkeypatch,
+    *,
+    combined_suite: object,
+    combined_suite_ast: ast.Module,
+    local_assignment_names: set[str],
+) -> None:
+    monkeypatch.setattr(
+        anchor_support.importlib,
+        "import_module",
+        lambda module_name: combined_suite
+        if module_name == "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+        else importlib.import_module(module_name),
+    )
+    monkeypatch.setattr(
+        anchor_support,
+        "_parsed_source_tree_combined_suite_ast",
+        lambda: combined_suite_ast,
+    )
+    monkeypatch.setattr(
+        support,
+        "top_level_module_definition_and_assignment_names",
+        lambda module: (set(), local_assignment_names),
+    )
+
+
 def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface_refs(
     monkeypatch,
 ) -> None:
@@ -2898,23 +2924,14 @@ def test_source_tree_combined_route_helper_rejects_secondary_owner_alias_surface
         )
     )
 
-    monkeypatch.setattr(
-        anchor_support,
-        "_source_tree_combined_suite_module",
-        lambda: combined_suite,
-    )
-    monkeypatch.setattr(
-        anchor_support,
-        "_parsed_source_tree_combined_suite_ast",
-        lambda: combined_suite_ast,
-    )
-    monkeypatch.setattr(
-        support,
-        "top_level_module_definition_and_assignment_names",
-        lambda module: (
-            set(),
-            {"source_tree_support_alias", "source_tree_scorecard_expectations_alias"},
-        ),
+    _patch_source_tree_combined_route_helper_dependencies(
+        monkeypatch,
+        combined_suite=combined_suite,
+        combined_suite_ast=combined_suite_ast,
+        local_assignment_names={
+            "source_tree_support_alias",
+            "source_tree_scorecard_expectations_alias",
+        },
     )
 
     with pytest.raises(AssertionError):
@@ -2979,20 +2996,11 @@ def test_source_tree_combined_route_helper_rejects_direct_owner_surface_refs(
     )
     combined_suite_ast = ast.parse(module_source)
 
-    monkeypatch.setattr(
-        anchor_support,
-        "_source_tree_combined_suite_module",
-        lambda: combined_suite,
-    )
-    monkeypatch.setattr(
-        anchor_support,
-        "_parsed_source_tree_combined_suite_ast",
-        lambda: combined_suite_ast,
-    )
-    monkeypatch.setattr(
-        support,
-        "top_level_module_definition_and_assignment_names",
-        lambda module: (set(), local_assignment_names),
+    _patch_source_tree_combined_route_helper_dependencies(
+        monkeypatch,
+        combined_suite=combined_suite,
+        combined_suite_ast=combined_suite_ast,
+        local_assignment_names=local_assignment_names,
     )
 
     with pytest.raises(AssertionError):
