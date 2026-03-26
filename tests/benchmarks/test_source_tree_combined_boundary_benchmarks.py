@@ -4441,7 +4441,7 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
         source_workload,
         spec=source_tree_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.contract_builder_spec(),
     )
-    source_tree_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+    benchmark_test_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
         workload,
         expected_result=benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),

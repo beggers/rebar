@@ -102,7 +102,6 @@ SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES = (
     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
     "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
     "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-    "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
 )
 
 SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES = frozenset(
@@ -150,6 +149,7 @@ SOURCE_TREE_RETIRED_SHARED_SUPPORT_NAMES = (
     "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
     "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
     "CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS",
+    "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
 )
 
 SOURCE_TREE_ROUTED_SUITE_ASSERTION_HELPER_NAMES = (
@@ -5358,10 +5358,6 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS = tupl
     for surface in _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES
     for source_workload in surface.precompile_source_workloads()
 )
-_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call = (
-    benchmark_test_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call
-)
-
 COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS = (
     _build_compiled_pattern_module_compile_standard_benchmark_definitions()
 )

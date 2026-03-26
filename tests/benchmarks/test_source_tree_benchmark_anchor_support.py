@@ -1204,16 +1204,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES
     ):
         assert hasattr(support, constant_name)
-        if (
-            constant_name
-            == "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call"
-        ):
-            assert constant_name in local_assignment_names
-            assert getattr(support, constant_name) is getattr(
-                benchmark_test_support,
-                constant_name,
-            )
-            continue
         if constant_name == "_is_collection_replacement_compiled_pattern_keyword_error_workload":
             assert constant_name in local_function_names
             assert not hasattr(benchmark_test_support, constant_name)
@@ -1251,6 +1241,14 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     )
     assert (
         "_assert_compiled_pattern_module_success_payload_round_trip"
+        not in local_assignment_names
+    )
+    assert not hasattr(
+        support,
+        "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
+    )
+    assert (
+        "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call"
         not in local_assignment_names
     )
     for constant_name in (
