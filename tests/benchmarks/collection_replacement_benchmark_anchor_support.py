@@ -47,67 +47,82 @@ def _collection_replacement_pattern_collection_workload_args(
     return tuple(args)
 
 
-@dataclass(frozen=True, slots=True)
-class _CollectionReplacementPatternCollectionRoute:
-    workload_case_pairs: tuple[tuple[str, str], ...]
-    operation: str
-    requires_window_bounds: bool
+def _collection_replacement_pattern_collection_correctness_case_signature(
+    case: Any,
+    *,
+    case_ids: tuple[str, ...],
+    expected_operation: str,
+) -> tuple[Any, ...] | None:
+    if case.case_id not in case_ids:
+        return None
+    if (
+        case.operation != "pattern_call"
+        or case.kwargs
+        or case.helper != expected_operation.removeprefix("pattern.")
+    ):
+        return None
+    return (
+        expected_operation,
+        case_pattern(case),
+        benchmark_test_support.freeze_signature_value(list(case.args)),
+        (),
+        case.flags or 0,
+        case.text_model or "str",
+    )
 
-    @property
-    def helper(self) -> str:
-        return self.operation.removeprefix("pattern.")
 
-    def correctness_case_signature(self, case: Any) -> tuple[Any, ...] | None:
-        if case.case_id not in tuple(
-            case_id for _, case_id in self.workload_case_pairs
-        ):
-            return None
-        if case.operation != "pattern_call" or case.kwargs or case.helper != self.helper:
-            return None
-        return (
-            self.operation,
-            case_pattern(case),
-            benchmark_test_support.freeze_signature_value(list(case.args)),
-            (),
-            case.flags or 0,
-            case.text_model or "str",
+def _is_collection_replacement_pattern_collection_workload(
+    workload: Any,
+    *,
+    workload_ids: tuple[str, ...],
+    expected_operation: str,
+    requires_window_bounds: bool,
+) -> bool:
+    return (
+        workload.workload_id in workload_ids
+        and workload.operation == expected_operation
+        and workload.pattern == "abc"
+        and workload.expected_exception is None
+        and not workload.use_compiled_pattern
+        and workload.text_model in {"str", "bytes"}
+        and not workload.kwargs
+        and (workload.pos is not None) is requires_window_bounds
+        and (workload.endpos is not None) is requires_window_bounds
+    )
+
+
+def _collection_replacement_pattern_collection_workload_signature(
+    workload: Any,
+    *,
+    workload_ids: tuple[str, ...],
+    expected_operation: str,
+    requires_window_bounds: bool,
+) -> tuple[Any, ...]:
+    if not _is_collection_replacement_pattern_collection_workload(
+        workload,
+        workload_ids=workload_ids,
+        expected_operation=expected_operation,
+        requires_window_bounds=requires_window_bounds,
+    ):
+        raise AssertionError(
+            "unexpected collection/replacement bounded "
+            f"{expected_operation} workload {workload.workload_id!r}"
         )
-
-    def workload_signature(self, workload: Any) -> tuple[Any, ...]:
-        if not self.includes_workload(workload):
-            raise AssertionError(
-                "unexpected collection/replacement bounded "
-                f"{self.operation} workload {workload.workload_id!r}"
-            )
-        return (
-            self.operation,
-            workload.pattern_payload(),
-            benchmark_test_support.freeze_signature_value(
-                list(
-                    _collection_replacement_pattern_collection_workload_args(
-                        workload,
-                        requires_window_bounds=self.requires_window_bounds,
-                    )
+    return (
+        expected_operation,
+        workload.pattern_payload(),
+        benchmark_test_support.freeze_signature_value(
+            list(
+                _collection_replacement_pattern_collection_workload_args(
+                    workload,
+                    requires_window_bounds=requires_window_bounds,
                 )
-            ),
-            (),
-            workload.flags,
-            workload.text_model,
-        )
-
-    def includes_workload(self, workload: Any) -> bool:
-        return (
-            workload.workload_id
-            in tuple(workload_id for workload_id, _ in self.workload_case_pairs)
-            and workload.operation == self.operation
-            and workload.pattern == "abc"
-            and workload.expected_exception is None
-            and not workload.use_compiled_pattern
-            and workload.text_model in {"str", "bytes"}
-            and not workload.kwargs
-            and (workload.pos is not None) is self.requires_window_bounds
-            and (workload.endpos is not None) is self.requires_window_bounds
-        )
+            )
+        ),
+        (),
+        workload.flags,
+        workload.text_model,
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -175,44 +190,54 @@ def _collection_replacement_combined_slice_expectation(
     )
 
 
-_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES = {
-    "findall": _CollectionReplacementPatternCollectionRoute(
-        workload_case_pairs=(
-            ("pattern-findall-bounded-warm-str", "pattern-findall-str-bounded"),
-            (
-                "pattern-findall-bounded-no-match-warm-str",
-                "pattern-findall-str-bounded-no-match",
-            ),
-            ("pattern-findall-bounded-purged-bytes", "pattern-findall-bytes-bounded"),
-        ),
-        operation="pattern.findall",
-        requires_window_bounds=True,
+_COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_CASE_PAIRS = (
+    ("pattern-findall-bounded-warm-str", "pattern-findall-str-bounded"),
+    (
+        "pattern-findall-bounded-no-match-warm-str",
+        "pattern-findall-str-bounded-no-match",
     ),
-    "finditer": _CollectionReplacementPatternCollectionRoute(
-        workload_case_pairs=(
-            ("pattern-finditer-bounded-warm-str", "pattern-finditer-str-bounded"),
-            (
-                "pattern-finditer-bounded-no-match-warm-str",
-                "pattern-finditer-str-bounded-no-match",
-            ),
-            (
-                "pattern-finditer-bounded-purged-bytes",
-                "pattern-finditer-bytes-bounded",
-            ),
-        ),
-        operation="pattern.finditer",
-        requires_window_bounds=True,
+    ("pattern-findall-bounded-purged-bytes", "pattern-findall-bytes-bounded"),
+)
+_COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_IDS = tuple(
+    workload_id
+    for workload_id, _ in _COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_CASE_PAIRS
+)
+_COLLECTION_REPLACEMENT_PATTERN_FINDALL_CASE_IDS = tuple(
+    case_id
+    for _, case_id in _COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_CASE_PAIRS
+)
+_COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_CASE_PAIRS = (
+    ("pattern-finditer-bounded-warm-str", "pattern-finditer-str-bounded"),
+    (
+        "pattern-finditer-bounded-no-match-warm-str",
+        "pattern-finditer-str-bounded-no-match",
     ),
-    "split": _CollectionReplacementPatternCollectionRoute(
-        workload_case_pairs=(
-            ("pattern-split-no-match-warm-str", "pattern-split-str-no-match"),
-            ("pattern-split-repeated-warm-str", "pattern-split-str-repeated"),
-            ("pattern-split-maxsplit-purged-bytes", "pattern-split-bytes-maxsplit"),
-        ),
-        operation="pattern.split",
-        requires_window_bounds=False,
+    (
+        "pattern-finditer-bounded-purged-bytes",
+        "pattern-finditer-bytes-bounded",
     ),
-}
+)
+_COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_IDS = tuple(
+    workload_id
+    for workload_id, _ in _COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_CASE_PAIRS
+)
+_COLLECTION_REPLACEMENT_PATTERN_FINDITER_CASE_IDS = tuple(
+    case_id
+    for _, case_id in _COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_CASE_PAIRS
+)
+_COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_CASE_PAIRS = (
+    ("pattern-split-no-match-warm-str", "pattern-split-str-no-match"),
+    ("pattern-split-repeated-warm-str", "pattern-split-str-repeated"),
+    ("pattern-split-maxsplit-purged-bytes", "pattern-split-bytes-maxsplit"),
+)
+_COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_IDS = tuple(
+    workload_id
+    for workload_id, _ in _COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_CASE_PAIRS
+)
+_COLLECTION_REPLACEMENT_PATTERN_SPLIT_CASE_IDS = tuple(
+    case_id
+    for _, case_id in _COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_CASE_PAIRS
+)
 
 _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS = (
     ("pattern-sub-no-match-warm-str", "pattern-sub-str-no-match"),
@@ -665,19 +690,25 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=benchmark_test_support._workload_case_pair_anchor_expectations(
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
-                _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                    "findall"
-                ].workload_case_pairs,
+                _COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_CASE_PAIRS,
             ),
-            include_workload=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "findall"
-            ].includes_workload,
-            correctness_case_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "findall"
-            ].correctness_case_signature,
-            workload_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "findall"
-            ].workload_signature,
+            include_workload=partial(
+                _is_collection_replacement_pattern_collection_workload,
+                workload_ids=_COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_IDS,
+                expected_operation="pattern.findall",
+                requires_window_bounds=True,
+            ),
+            correctness_case_signature=partial(
+                _collection_replacement_pattern_collection_correctness_case_signature,
+                case_ids=_COLLECTION_REPLACEMENT_PATTERN_FINDALL_CASE_IDS,
+                expected_operation="pattern.findall",
+            ),
+            workload_signature=partial(
+                _collection_replacement_pattern_collection_workload_signature,
+                workload_ids=_COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_IDS,
+                expected_operation="pattern.findall",
+                requires_window_bounds=True,
+            ),
             run_callback_result_parity=True,
         ),
         benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
@@ -685,19 +716,25 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=benchmark_test_support._workload_case_pair_anchor_expectations(
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
-                _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                    "finditer"
-                ].workload_case_pairs,
+                _COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_CASE_PAIRS,
             ),
-            include_workload=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "finditer"
-            ].includes_workload,
-            correctness_case_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "finditer"
-            ].correctness_case_signature,
-            workload_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "finditer"
-            ].workload_signature,
+            include_workload=partial(
+                _is_collection_replacement_pattern_collection_workload,
+                workload_ids=_COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_IDS,
+                expected_operation="pattern.finditer",
+                requires_window_bounds=True,
+            ),
+            correctness_case_signature=partial(
+                _collection_replacement_pattern_collection_correctness_case_signature,
+                case_ids=_COLLECTION_REPLACEMENT_PATTERN_FINDITER_CASE_IDS,
+                expected_operation="pattern.finditer",
+            ),
+            workload_signature=partial(
+                _collection_replacement_pattern_collection_workload_signature,
+                workload_ids=_COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_IDS,
+                expected_operation="pattern.finditer",
+                requires_window_bounds=True,
+            ),
             run_callback_result_parity=True,
         ),
         benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
@@ -705,19 +742,25 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=benchmark_test_support._workload_case_pair_anchor_expectations(
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
-                _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                    "split"
-                ].workload_case_pairs,
+                _COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_CASE_PAIRS,
             ),
-            include_workload=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "split"
-            ].includes_workload,
-            correctness_case_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "split"
-            ].correctness_case_signature,
-            workload_signature=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "split"
-            ].workload_signature,
+            include_workload=partial(
+                _is_collection_replacement_pattern_collection_workload,
+                workload_ids=_COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_IDS,
+                expected_operation="pattern.split",
+                requires_window_bounds=False,
+            ),
+            correctness_case_signature=partial(
+                _collection_replacement_pattern_collection_correctness_case_signature,
+                case_ids=_COLLECTION_REPLACEMENT_PATTERN_SPLIT_CASE_IDS,
+                expected_operation="pattern.split",
+            ),
+            workload_signature=partial(
+                _collection_replacement_pattern_collection_workload_signature,
+                workload_ids=_COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_IDS,
+                expected_operation="pattern.split",
+                requires_window_bounds=False,
+            ),
             run_callback_result_parity=True,
         ),
         benchmark_test_support.StandardBenchmarkAnchorContractDefinition(

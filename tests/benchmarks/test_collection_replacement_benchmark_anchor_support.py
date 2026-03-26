@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from functools import partial
 import json
 import pathlib
 import re
@@ -580,21 +581,15 @@ def test_collection_replacement_manifest_keeps_positional_indexlike_module_and_p
     (
         (
             "pattern-findall",
-            support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "findall"
-            ].workload_case_pairs,
+            support._COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_CASE_PAIRS,
         ),
         (
             "pattern-finditer",
-            support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "finditer"
-            ].workload_case_pairs,
+            support._COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_CASE_PAIRS,
         ),
         (
             "pattern-split",
-            support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "split"
-            ].workload_case_pairs,
+            support._COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_CASE_PAIRS,
         ),
         (
             "pattern-literal-replacement",
@@ -638,15 +633,19 @@ def test_collection_replacement_manifest_keeps_pattern_findall_bounded_rows_meas
     manifest_workload_count = len(
         benchmark_test_support.selected_manifest_workloads(manifest_path)
     )
-    route = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["findall"]
-    expected_measured_workload_ids = tuple(
-        workload_id for workload_id, _ in route.workload_case_pairs
+    expected_measured_workload_ids = (
+        support._COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_IDS
     )
     selected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
-            include_workload=route.includes_workload,
+            include_workload=partial(
+                support._is_collection_replacement_pattern_collection_workload,
+                workload_ids=support._COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_IDS,
+                expected_operation="pattern.findall",
+                requires_window_bounds=True,
+            ),
         )
     )
 
@@ -666,15 +665,19 @@ def test_collection_replacement_manifest_keeps_pattern_finditer_bounded_rows_mea
     manifest_workload_count = len(
         benchmark_test_support.selected_manifest_workloads(manifest_path)
     )
-    route = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["finditer"]
-    expected_measured_workload_ids = tuple(
-        workload_id for workload_id, _ in route.workload_case_pairs
+    expected_measured_workload_ids = (
+        support._COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_IDS
     )
     selected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
-            include_workload=route.includes_workload,
+            include_workload=partial(
+                support._is_collection_replacement_pattern_collection_workload,
+                workload_ids=support._COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_IDS,
+                expected_operation="pattern.finditer",
+                requires_window_bounds=True,
+            ),
         )
     )
 
@@ -694,15 +697,19 @@ def test_collection_replacement_manifest_keeps_pattern_split_rows_measured() -> 
     manifest_workload_count = len(
         benchmark_test_support.selected_manifest_workloads(manifest_path)
     )
-    route = support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES["split"]
-    expected_measured_workload_ids = tuple(
-        workload_id for workload_id, _ in route.workload_case_pairs
+    expected_measured_workload_ids = (
+        support._COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_IDS
     )
     selected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
-            include_workload=route.includes_workload,
+            include_workload=partial(
+                support._is_collection_replacement_pattern_collection_workload,
+                workload_ids=support._COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_IDS,
+                expected_operation="pattern.split",
+                requires_window_bounds=False,
+            ),
         )
     )
 
@@ -2983,7 +2990,11 @@ def test_collection_replacement_keyword_contract_surface_routes_owner_names_thro
         assert not hasattr(support, name)
 
     for name in (
-        "_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES",
+        "_COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_CASE_PAIRS",
+        "_COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_CASE_PAIRS",
+        "_COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_CASE_PAIRS",
+        "_is_collection_replacement_pattern_collection_workload",
+        "_collection_replacement_pattern_collection_workload_signature",
         "_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
         "_assert_keyword_error_workload_probe_measured",
         "_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
@@ -3001,7 +3012,9 @@ def test_collection_replacement_keyword_contract_surface_routes_owner_names_thro
     assert {
         "COLLECTION_REPLACEMENT_MANIFEST_PATH",
         "MODULE_BOUNDARY_MANIFEST_PATH",
-        "_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES",
+        "_COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_CASE_PAIRS",
+        "_COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_CASE_PAIRS",
+        "_COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_CASE_PAIRS",
         "_PATTERN_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS",
         "_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
         "_MODULE_HELPER_BOUNDARY_KEYWORD_ERROR_WORKLOAD_IDS",
@@ -4184,16 +4197,19 @@ def test_pattern_split_workload_signature_normalizes_implicit_zero_maxsplit_to_m
 
     assert workload.maxsplit == 0
     assert (
-        support._COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-            "split"
-        ].workload_signature(workload)
+        support._collection_replacement_pattern_collection_workload_signature(
+            workload,
+            workload_ids=support._COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_IDS,
+            expected_operation="pattern.split",
+            requires_window_bounds=False,
+        )
         == (
-        "pattern.split",
-        "abc",
-        ("zzz",),
-        (),
-        0,
-        "str",
+            "pattern.split",
+            "abc",
+            ("zzz",),
+            (),
+            0,
+            "str",
         )
     )
 
