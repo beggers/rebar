@@ -2313,8 +2313,14 @@ def test_benchmark_test_support_owns_pattern_boundary_surface() -> None:
         "_PATTERN_VERBOSE_REGRESSION_CASE_IDS",
         "_PATTERN_VERBOSE_REGRESSION_PATTERN",
     }.issubset(support_definition_names | support_assignment_names)
+    assert "_PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK" not in (
+        support_definition_names | support_assignment_names
+    )
     assert "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS" not in (
         support_definition_names | support_assignment_names
+    )
+    assert "_PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK" in (
+        collection_definition_names | collection_assignment_names
     )
     assert "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS" in (
         collection_definition_names | collection_assignment_names
@@ -2652,9 +2658,21 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     assert hasattr(support, "_is_module_workflow_compiled_pattern_wrong_text_model_workload")
     assert hasattr(support, "_run_cpython_compiled_pattern_module_helper_workload")
     assert hasattr(support, "_assert_wrong_text_model_payload_round_trip")
+    assert "_compiled_pattern_module_helper_runtime_route" not in (
+        support_definition_names | support_assignment_names
+    )
+    assert "_COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK" not in (
+        support_definition_names | support_assignment_names
+    )
     assert "_compiled_pattern_module_helper_route" not in support_definition_names
     assert "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS" not in (
         support_definition_names | support_assignment_names
+    )
+    assert "_compiled_pattern_module_helper_runtime_route" in (
+        collection_definition_names | collection_assignment_names
+    )
+    assert "_COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK" in (
+        collection_definition_names | collection_assignment_names
     )
     assert "_compiled_pattern_module_helper_route" in collection_definition_names
     assert "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS" in (
@@ -3772,7 +3790,10 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
         "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
         "_compiled_pattern_wrong_text_model_source_workloads",
         "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
+        "_PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK",
+        "_compiled_pattern_module_helper_runtime_route",
         "_compiled_pattern_module_helper_route",
+        "_COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK",
         "COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS",
         "PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS",
         "_source_tree_standard_benchmark_definitions",
@@ -3787,6 +3808,9 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
     )
     assert local_owner_names.issubset(definition_names | assignment_names)
     assert local_owner_names.isdisjoint(support_definition_names | support_assignment_names)
+    assert "_build_source_tree_standard_benchmark_definitions" not in (
+        support_definition_names | support_assignment_names
+    )
 
 
 @pytest.mark.parametrize(
