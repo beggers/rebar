@@ -213,12 +213,14 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_counted_repeat_manifests_promote_legacy_upper_bound_rows_to_measured(
         self,
     ) -> None:
-        for manifest_id in source_tree_support.source_tree_combined_fully_measured_manifest_ids(
-            "counted-repeat"
+        for manifest_id, manifest_definition in (
+            source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.items()
         ):
-            fully_measured_expectation = (
-                source_tree_support.source_tree_combined_fully_measured_manifest_expectation(manifest_id)
-            )
+            fully_measured_expectation = manifest_definition.fully_measured_expectation
+            if fully_measured_expectation is None:
+                continue
+            if fully_measured_expectation.coverage_group != "counted-repeat":
+                continue
             expected_workload_ids = (
                 fully_measured_expectation.representative_measured_workload_ids
             )
@@ -226,9 +228,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 fully_measured_expectation.expected_measured_workload_count
             )
             with self.subTest(manifest_id=manifest_id):
-                manifest_definition = source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
-                    manifest_id
-                ]
                 self.assertIsNone(manifest_definition.known_gap_workload_ids)
                 self.assertEqual(
                     manifest_definition.fully_measured_expectation,
@@ -1376,11 +1375,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         manifest_id = "quantified-alternation-boundary"
-        fully_measured_expectation = (
-            source_tree_support.source_tree_combined_fully_measured_manifest_expectation(
-                manifest_id
-            )
-        )
+        manifest_definition = source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
+        fully_measured_expectation = manifest_definition.fully_measured_expectation
+        self.assertIsNotNone(fully_measured_expectation)
+        assert fully_measured_expectation is not None
         expected_workload_ids = (
             fully_measured_expectation.representative_measured_workload_ids
         )
@@ -1390,7 +1388,6 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         expected_total_workload_count = (
             fully_measured_expectation.expected_total_workload_count
         )
-        manifest_definition = source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[manifest_id]
         self.assertIsNone(manifest_definition.known_gap_workload_ids)
         self.assertEqual(
             manifest_definition.fully_measured_expectation,
@@ -2903,13 +2900,16 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
     def test_combined_cases_treat_counted_repeat_manifest_pair_as_fully_measured(
         self,
     ) -> None:
-        for manifest_id in source_tree_support.source_tree_combined_fully_measured_manifest_ids(
-            "counted-repeat"
+        for manifest_id, manifest_definition in (
+            source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.items()
         ):
+            fully_measured_expectation = manifest_definition.fully_measured_expectation
+            if fully_measured_expectation is None:
+                continue
+            if fully_measured_expectation.coverage_group != "counted-repeat":
+                continue
             expected_workload_ids = (
-                source_tree_support.source_tree_combined_fully_measured_manifest_expectation(
-                    manifest_id
-                ).representative_measured_workload_ids
+                fully_measured_expectation.representative_measured_workload_ids
             )
             with self.subTest(manifest_id=manifest_id):
                 case = source_tree_support.source_tree_combined_case(manifest_id)

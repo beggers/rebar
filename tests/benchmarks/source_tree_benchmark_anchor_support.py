@@ -3299,41 +3299,6 @@ def source_tree_combined_manifest_representative_measured_workload_ids(
     return tuple(representative_ids)
 
 
-def source_tree_combined_fully_measured_manifest_expectation(
-    manifest_id: str,
-) -> SourceTreeCombinedFullyMeasuredManifestExpectation:
-    manifest_expectation = SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.get(manifest_id)
-    if manifest_expectation is None:
-        raise AssertionError(
-            f"unknown source-tree combined manifest expectation {manifest_id!r}"
-        )
-
-    fully_measured_expectation = manifest_expectation.fully_measured_expectation
-    if fully_measured_expectation is None:
-        raise AssertionError(
-            "source-tree combined manifest "
-            f"{manifest_id!r} does not define a fully measured contract"
-        )
-    return fully_measured_expectation
-
-
-def source_tree_combined_fully_measured_manifest_ids(
-    coverage_group: str | None = None,
-) -> tuple[str, ...]:
-    return tuple(
-        manifest_id
-        for manifest_id, manifest_expectation in (
-            SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS.items()
-        )
-        if manifest_expectation.fully_measured_expectation is not None
-        and (
-            coverage_group is None
-            or manifest_expectation.fully_measured_expectation.coverage_group
-            == coverage_group
-        )
-    )
-
-
 def _public_source_tree_manifest_expectation(
     manifest_id: str,
     *,

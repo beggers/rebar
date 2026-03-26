@@ -1209,8 +1209,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "source_tree_combined_slice_manifest_ids",
         "source_tree_combined_slice_derived_manifest_ids",
         "source_tree_combined_slice_expectations",
-        "source_tree_combined_fully_measured_manifest_ids",
-        "source_tree_combined_fully_measured_manifest_expectation",
         "source_tree_combined_manifest_representative_measured_workload_ids",
         "assert_zero_gap_bytes_representative_subset",
         "assert_zero_gap_manifest_representative_promotion",
@@ -1817,8 +1815,6 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
         "source_tree_combined_slice_manifest_ids",
         "source_tree_combined_slice_derived_manifest_ids",
         "source_tree_combined_slice_expectations",
-        "source_tree_combined_fully_measured_manifest_ids",
-        "source_tree_combined_fully_measured_manifest_expectation",
         "source_tree_combined_manifest_representative_measured_workload_ids",
         "assert_zero_gap_bytes_representative_subset",
         "assert_zero_gap_manifest_representative_promotion",
@@ -1876,11 +1872,26 @@ def test_combined_suite_class_no_longer_defines_scorecard_contract_wrappers() ->
     assert "_assert_workloads" not in class_method_names
 
 
+def test_source_tree_support_module_does_not_export_deleted_fully_measured_helpers(
+) -> None:
+    assert not hasattr(
+        support, "source_tree_combined_fully_measured_manifest_ids"
+    )
+    assert not hasattr(
+        support, "source_tree_combined_fully_measured_manifest_expectation"
+    )
+
+
 def test_combined_suite_no_longer_routes_deleted_wrapper_helpers_through_source_tree_support(
 ) -> None:
     module_ast = support._parsed_source_tree_combined_suite_ast()
     deleted_wrapper_names = frozenset(
-        {"relative_manifest_path", "source_tree_scorecard_case_ids"}
+        {
+            "relative_manifest_path",
+            "source_tree_scorecard_case_ids",
+            "source_tree_combined_fully_measured_manifest_ids",
+            "source_tree_combined_fully_measured_manifest_expectation",
+        }
     )
     source_tree_support_alias_names = benchmark_test_support._module_alias_names(
         module_ast,
