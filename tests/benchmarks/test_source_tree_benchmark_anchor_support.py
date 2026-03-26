@@ -17,6 +17,13 @@ from tests.conftest import REPO_ROOT
 
 anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
 
+
+def _compiled_pattern_wrong_text_model_local_function_names() -> frozenset[str]:
+    return frozenset(
+        support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES
+    )
+
+
 def _synthetic_report_scorecard(
     *,
     workloads: tuple[dict[str, object], ...],
@@ -1174,14 +1181,10 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     for constant_name in (
         support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES
     ):
-        assert constant_name in (
-            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
-        )
+        assert constant_name in _compiled_pattern_wrong_text_model_local_function_names()
     benchmark_test_support.assert_mixed_owner_surface(
         support,
-        local_function_names=(
-            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
-        ),
+        local_function_names=_compiled_pattern_wrong_text_model_local_function_names(),
         local_assignment_names=(
             support.SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES
         ),
@@ -2102,7 +2105,6 @@ def test_source_tree_owner_inventory_constants_are_not_mirrored_back_into_this_t
         {
             "SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
             "SOURCE_TREE_LOCAL_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPEC_NAMES",
-            "SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES",
             "SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES",
             "SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES",
         }
@@ -3124,14 +3126,12 @@ def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_loc
     )
     module_ast = benchmark_test_support._parsed_module_ast(support)
 
-    assert set(support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES) == (
-        support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
+    assert _compiled_pattern_wrong_text_model_local_function_names() == frozenset(
+        support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES
     )
     benchmark_test_support.assert_mixed_owner_surface(
         support,
-        local_function_names=(
-            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_LOCAL_FUNCTION_NAMES
-        ),
+        local_function_names=_compiled_pattern_wrong_text_model_local_function_names(),
         local_assignment_names=owner_assignment_names,
         support_alias_assignment_names=frozenset(),
     )
