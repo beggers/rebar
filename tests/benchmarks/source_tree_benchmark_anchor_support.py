@@ -2771,16 +2771,6 @@ def ordered_operations(workloads: list[Workload]) -> list[str]:
     return operations
 
 
-def _append_unique_workload_ids(
-    representative_ids: list[str],
-    workload_ids: Iterable[str],
-) -> None:
-    for workload_id in workload_ids:
-        normalized_workload_id = str(workload_id)
-        if normalized_workload_id not in representative_ids:
-            representative_ids.append(normalized_workload_id)
-
-
 def _filter_manifest_workload_ids(
     workload_ids: tuple[str, ...] | None,
     *,
@@ -2817,17 +2807,17 @@ def source_tree_combined_manifest_representative_measured_workload_ids(
     representative_ids: list[str] = []
     shape_expectation = manifest_expectation.shape_expectation
     if shape_expectation is not None:
-        _append_unique_workload_ids(
-            representative_ids,
-            shape_expectation.representative_measured_workload_ids,
-        )
+        for workload_id in shape_expectation.representative_measured_workload_ids:
+            normalized_workload_id = str(workload_id)
+            if normalized_workload_id not in representative_ids:
+                representative_ids.append(normalized_workload_id)
     for expectation in SOURCE_TREE_COMBINED_SLICE_EXPECTATIONS:
         if expectation.manifest_id != manifest_id:
             continue
-        _append_unique_workload_ids(
-            representative_ids,
-            expectation.expected_workload_ids,
-        )
+        for workload_id in expectation.expected_workload_ids:
+            normalized_workload_id = str(workload_id)
+            if normalized_workload_id not in representative_ids:
+                representative_ids.append(normalized_workload_id)
     return tuple(representative_ids)
 
 
