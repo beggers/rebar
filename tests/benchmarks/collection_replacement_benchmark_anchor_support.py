@@ -57,18 +57,6 @@ class _CollectionReplacementLiteralReplacementRoute:
     args_offset: int
     allowed_counts: tuple[int, ...] | None = None
 
-    def workload_ids(self) -> tuple[str, ...]:
-        return tuple(workload_id for workload_id, _ in self.workload_case_pairs)
-
-    def case_ids(self) -> tuple[str, ...]:
-        return tuple(case_id for _, case_id in self.workload_case_pairs)
-
-    def anchor_expectations(self) -> dict[tuple[str, str], tuple[str, ...]]:
-        return benchmark_test_support._workload_case_pair_anchor_expectations(
-            benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
-            self.workload_case_pairs,
-        )
-
 
 @dataclass(frozen=True, slots=True)
 class _CollectionReplacementPatternCollectionRoute:
@@ -80,20 +68,10 @@ class _CollectionReplacementPatternCollectionRoute:
     def helper(self) -> str:
         return self.operation.removeprefix("pattern.")
 
-    def workload_ids(self) -> tuple[str, ...]:
-        return tuple(workload_id for workload_id, _ in self.workload_case_pairs)
-
-    def case_ids(self) -> tuple[str, ...]:
-        return tuple(case_id for _, case_id in self.workload_case_pairs)
-
-    def anchor_expectations(self) -> dict[tuple[str, str], tuple[str, ...]]:
-        return benchmark_test_support._workload_case_pair_anchor_expectations(
-            benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
-            self.workload_case_pairs,
-        )
-
     def correctness_case_signature(self, case: Any) -> tuple[Any, ...] | None:
-        if case.case_id not in self.case_ids():
+        if case.case_id not in tuple(
+            case_id for _, case_id in self.workload_case_pairs
+        ):
             return None
         if case.operation != "pattern_call" or case.kwargs or case.helper != self.helper:
             return None
@@ -130,7 +108,8 @@ class _CollectionReplacementPatternCollectionRoute:
 
     def includes_workload(self, workload: Any) -> bool:
         return (
-            workload.workload_id in self.workload_ids()
+            workload.workload_id
+            in tuple(workload_id for workload_id, _ in self.workload_case_pairs)
             and workload.operation == self.operation
             and workload.pattern == "abc"
             and workload.expected_exception is None
@@ -676,9 +655,12 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-pattern-findall-bounded",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "findall"
-            ].anchor_expectations(),
+            expected_anchor_case_ids=benchmark_test_support._workload_case_pair_anchor_expectations(
+                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                    "findall"
+                ].workload_case_pairs,
+            ),
             include_workload=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
                 "findall"
             ].includes_workload,
@@ -693,9 +675,12 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-pattern-finditer-bounded",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "finditer"
-            ].anchor_expectations(),
+            expected_anchor_case_ids=benchmark_test_support._workload_case_pair_anchor_expectations(
+                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                    "finditer"
+                ].workload_case_pairs,
+            ),
             include_workload=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
                 "finditer"
             ].includes_workload,
@@ -710,9 +695,12 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-pattern-split",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
-                "split"
-            ].anchor_expectations(),
+            expected_anchor_case_ids=benchmark_test_support._workload_case_pair_anchor_expectations(
+                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                _COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
+                    "split"
+                ].workload_case_pairs,
+            ),
             include_workload=_COLLECTION_REPLACEMENT_PATTERN_COLLECTION_ROUTES[
                 "split"
             ].includes_workload,
@@ -727,9 +715,12 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-module-literal-replacement",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
-                "module"
-            ].anchor_expectations(),
+            expected_anchor_case_ids=benchmark_test_support._workload_case_pair_anchor_expectations(
+                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+                    "module"
+                ].workload_case_pairs,
+            ),
             include_workload=_COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR,
             correctness_case_signature=partial(
                 _collection_replacement_literal_replacement_correctness_case_signature,
@@ -745,9 +736,12 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-pattern-literal-replacement",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
-                "pattern"
-            ].anchor_expectations(),
+            expected_anchor_case_ids=benchmark_test_support._workload_case_pair_anchor_expectations(
+                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+                    "pattern"
+                ].workload_case_pairs,
+            ),
             include_workload=_COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR,
             correctness_case_signature=partial(
                 _collection_replacement_literal_replacement_correctness_case_signature,
@@ -787,7 +781,7 @@ def _collection_replacement_literal_replacement_correctness_case_signature(
     args_offset: int | None = None,
 ) -> tuple[Any, ...] | None:
     if route is not None:
-        case_ids = route.case_ids()
+        case_ids = tuple(case_id for _, case_id in route.workload_case_pairs)
         expected_operation = route.expected_operation
         operation_prefix = route.operation_prefix
         args_offset = route.args_offset
@@ -1578,16 +1572,22 @@ def _is_collection_replacement_literal_replacement_workload(
 _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_SELECTOR = partial(
     _is_collection_replacement_literal_replacement_workload,
     route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["module"],
-    workload_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
-        "module"
-    ].workload_ids(),
+    workload_ids=tuple(
+        workload_id
+        for workload_id, _ in _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+            "module"
+        ].workload_case_pairs
+    ),
 )
 _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_SELECTOR = partial(
     _is_collection_replacement_literal_replacement_workload,
     route=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES["pattern"],
-    workload_ids=_COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
-        "pattern"
-    ].workload_ids(),
+    workload_ids=tuple(
+        workload_id
+        for workload_id, _ in _COLLECTION_REPLACEMENT_LITERAL_REPLACEMENT_ROUTES[
+            "pattern"
+        ].workload_case_pairs
+    ),
 )
 
 _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS = (
