@@ -3383,6 +3383,31 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
             frozenset({("contract_manifest", "_source_tree_contract_manifest")}),
             id="annotated-local-alias",
         ),
+        pytest.param(
+            "\n".join(
+                (
+                    (
+                        "from tests.benchmarks import "
+                        "source_tree_benchmark_anchor_support as source_tree_support"
+                    ),
+                    "",
+                    "source_tree_support_alias = source_tree_support",
+                    (
+                        "contract_manifest = "
+                        "source_tree_support_alias._source_tree_contract_manifest"
+                    ),
+                    "contract_manifest_alias: object = contract_manifest",
+                )
+            ),
+            frozenset(),
+            frozenset(
+                {
+                    ("contract_manifest", "_source_tree_contract_manifest"),
+                    ("contract_manifest_alias", "_source_tree_contract_manifest"),
+                }
+            ),
+            id="chained-package-and-local-alias",
+        ),
     ),
 )
 def test_source_tree_contract_builder_consumer_guard_detects_direct_imports_and_local_aliases(
