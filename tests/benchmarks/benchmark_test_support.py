@@ -1373,65 +1373,10 @@ def _is_encoded_indexlike_payload(value: object) -> bool:
     )
 
 
-def _collection_replacement_keyword_parameter_name(
-    workload: Any,
-) -> str | None:
-    if workload.operation in {"module.split", "pattern.split"}:
-        return "maxsplit"
-    if workload.operation in {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}:
-        return "count"
-    return None
-
-
-def _collection_replacement_positional_keyword_field(
-    workload: Any,
-) -> str | None:
-    if workload.operation.startswith("module."):
-        expected_keyword_field = (
-            benchmarks._expected_duplicate_module_helper_keyword_field(workload)
-            or benchmarks._expected_positional_module_helper_keyword_field(workload)
-        )
-    elif workload.operation.startswith("pattern."):
-        expected_keyword_field = (
-            benchmarks._expected_pattern_helper_positional_keyword_field(workload)
-        )
-    else:
-        expected_keyword_field = None
-    if expected_keyword_field is None:
-        return None
-    keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
-    if expected_keyword_field != keyword_parameter:
-        return None
-    return expected_keyword_field
-
-
-def _is_collection_replacement_keyword_workload(workload: Any) -> bool:
-    keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
-    if keyword_parameter is None or not workload.kwargs:
-        return False
-    keyword_names = tuple(workload.kwargs)
-    if len(keyword_names) != 1:
-        return False
-    if keyword_names[0] == keyword_parameter:
-        return True
-    if _collection_replacement_positional_keyword_field(workload) is not None:
-        return True
-    expected_exception = workload.expected_exception
-    if expected_exception is None or expected_exception.get("type") != "TypeError":
-        return False
-    keyword_name = keyword_names[0]
-    message_substring = expected_exception.get("message_substring")
-    if not isinstance(message_substring, str):
-        return False
-    if f"unexpected keyword argument '{keyword_name}'" in message_substring:
-        return True
-    if workload.operation.startswith("pattern."):
-        helper_name = workload.operation.removeprefix("pattern.")
-        return (
-            message_substring
-            == f"'{keyword_name}' is an invalid keyword argument for {helper_name}()"
-        )
-    return False
+def _collection_replacement_owner_support() -> Any:
+    return importlib.import_module(
+        "tests.benchmarks.collection_replacement_benchmark_anchor_support"
+    )
 
 
 def _is_collection_replacement_wrong_text_model_workload(workload: Any) -> bool:
@@ -3123,35 +3068,6 @@ def _record_numeric_materialization_fields(
     return observed_field_names
 
 
-def _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
-    monkeypatch: pytest.MonkeyPatch,
-    workload: Workload,
-    *,
-    expected_result: object | None,
-    expected_exception_message: str | None = None,
-    expected_field_names: list[str] | tuple[str, ...],
-) -> None:
-    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
-
-    re.purge()
-    try:
-        callback = benchmarks.build_callable(re, "re", workload)
-        assert observed_field_names == []
-
-        if expected_exception_message is None:
-            assert callback() == expected_result
-            assert callback() == expected_result
-        else:
-            with pytest.raises(TypeError, match=re.escape(expected_exception_message)):
-                callback()
-            with pytest.raises(TypeError, match=re.escape(expected_exception_message)):
-                callback()
-
-        assert observed_field_names == list(expected_field_names) * 2
-    finally:
-        re.purge()
-
-
 COLLECTION_REPLACEMENT_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.py"
 )
@@ -3728,31 +3644,6 @@ COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
     ),
 )
 
-
-def _is_collection_replacement_compiled_pattern_module_helper_keyword_workload(
-    workload: Any,
-) -> bool:
-    return (
-        _is_collection_replacement_keyword_workload(workload)
-        and workload.use_compiled_pattern
-        and workload.operation in {"module.split", "module.sub", "module.subn"}
-        and workload.expected_exception is None
-        and getattr(workload, "haystack_text_model", None) is None
-    )
-
-
-def _is_collection_replacement_compiled_pattern_keyword_error_workload(
-    workload: Any,
-) -> bool:
-    return (
-        _is_collection_replacement_keyword_workload(workload)
-        and workload.use_compiled_pattern
-        and workload.operation in {"module.split", "module.sub", "module.subn"}
-        and workload.expected_exception is not None
-        and getattr(workload, "haystack_text_model", None) is None
-    )
-
-
 @dataclass(frozen=True, slots=True)
 class _CompiledPatternModuleHelperKeywordContractSpec:
     contract_filename: str
@@ -3767,18 +3658,23 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
         self,
         source_workload: Workload,
     ) -> tuple[str, ...]:
+        collection_replacement_support = _collection_replacement_owner_support()
         if self.materializes_positional_keyword_field:
             field_names: list[str] = []
-            positional_keyword_field = _collection_replacement_positional_keyword_field(
-                source_workload
+            positional_keyword_field = (
+                collection_replacement_support._collection_replacement_positional_keyword_field(
+                    source_workload
+                )
             )
             if positional_keyword_field is not None:
                 field_names.append(positional_keyword_field)
             field_names.extend(f"kwargs.{name}" for name in source_workload.kwargs)
             return tuple(field_names)
 
-        keyword_parameter = _collection_replacement_keyword_parameter_name(
-            source_workload
+        keyword_parameter = (
+            collection_replacement_support._collection_replacement_keyword_parameter_name(
+                source_workload
+            )
         )
         if keyword_parameter is None:
             raise AssertionError(
@@ -3861,12 +3757,15 @@ class _CompiledPatternModuleHelperKeywordContractSurface:
         self,
         workload: Workload,
     ) -> object:
+        collection_replacement_support = _collection_replacement_owner_support()
         compiled_pattern = re.compile(workload.pattern_payload(), workload.flags)
         helper_name = workload.operation.removeprefix("module.")
         helper = getattr(re, helper_name)
         kwargs = dict(workload.kwargs)
-        positional_keyword_field = _collection_replacement_positional_keyword_field(
-            workload
+        positional_keyword_field = (
+            collection_replacement_support._collection_replacement_positional_keyword_field(
+                workload
+            )
         )
 
         if workload.operation == "module.split":
@@ -4011,8 +3910,8 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC = (
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS = (
     selected_manifest_workloads(
         COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload=(
-            _is_collection_replacement_compiled_pattern_module_helper_keyword_workload
+        include_workload=lambda workload: _collection_replacement_owner_support()._is_collection_replacement_compiled_pattern_module_helper_keyword_workload(
+            workload
         ),
     )
 )
@@ -4049,8 +3948,8 @@ if (
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = (
     selected_manifest_workloads(
         COLLECTION_REPLACEMENT_MANIFEST_PATH,
-        include_workload=(
-            _is_collection_replacement_compiled_pattern_keyword_error_workload
+        include_workload=lambda workload: _collection_replacement_owner_support()._is_collection_replacement_compiled_pattern_keyword_error_workload(
+            workload
         ),
     )
 )

@@ -321,9 +321,7 @@ def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keywo
         },
     )
 
-    assert benchmark_test_support._is_collection_replacement_keyword_workload(
-        expected_keyword_workload
-    )
+    assert support._is_collection_replacement_keyword_workload(expected_keyword_workload)
     assert support._collection_replacement_keyword_workload_signature(
         expected_keyword_workload
     ) == (
@@ -336,13 +334,9 @@ def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keywo
         "str",
     )
 
-    assert benchmark_test_support._is_collection_replacement_keyword_workload(
-        duplicate_keyword_workload
-    )
+    assert support._is_collection_replacement_keyword_workload(duplicate_keyword_workload)
     assert (
-        benchmark_test_support._collection_replacement_positional_keyword_field(
-            duplicate_keyword_workload
-        )
+        support._collection_replacement_positional_keyword_field(duplicate_keyword_workload)
         == "count"
     )
     assert support._collection_replacement_keyword_workload_signature(
@@ -357,15 +351,11 @@ def test_keyword_workloads_cover_expected_keyword_duplicate_and_unexpected_keywo
         "str",
     )
 
-    assert benchmark_test_support._is_collection_replacement_keyword_workload(
-        unexpected_keyword_workload
-    )
+    assert support._is_collection_replacement_keyword_workload(unexpected_keyword_workload)
     keyword_names = tuple(unexpected_keyword_workload.kwargs)
     assert keyword_names == ("missing",)
     assert (
-        benchmark_test_support._collection_replacement_keyword_parameter_name(
-            unexpected_keyword_workload
-        )
+        support._collection_replacement_keyword_parameter_name(unexpected_keyword_workload)
         != keyword_names[0]
     )
     expected_exception = unexpected_keyword_workload.expected_exception
@@ -408,12 +398,8 @@ def test_keyword_workload_filter_rejects_non_collection_keyword_shapes() -> None
         kwargs={"flags": 1},
     )
 
-    assert not benchmark_test_support._is_collection_replacement_keyword_workload(
-        multiple_keyword_workload
-    )
-    assert not benchmark_test_support._is_collection_replacement_keyword_workload(
-        search_keyword_workload
-    )
+    assert not support._is_collection_replacement_keyword_workload(multiple_keyword_workload)
+    assert not support._is_collection_replacement_keyword_workload(search_keyword_workload)
 
 
 def test_keyword_correctness_case_signature_preserves_call_shape_and_compiled_pattern_flag() -> None:
@@ -466,9 +452,7 @@ def test_collection_replacement_manifest_keeps_pattern_keyword_replacement_and_s
         for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
             include_workload=lambda workload: (
-                benchmark_test_support._is_collection_replacement_keyword_workload(
-                    workload
-                )
+                support._is_collection_replacement_keyword_workload(workload)
                 and workload.operation.startswith("pattern.")
             ),
         )
@@ -516,9 +500,7 @@ def test_collection_replacement_manifest_keeps_module_keyword_replacement_and_sp
         for workload in benchmark_test_support.selected_manifest_workloads(
             manifest_path,
             include_workload=lambda workload: (
-                benchmark_test_support._is_collection_replacement_keyword_workload(
-                    workload
-                )
+                support._is_collection_replacement_keyword_workload(workload)
                 and workload.operation.startswith("module.")
             ),
         )
@@ -3191,6 +3173,12 @@ def test_collection_replacement_keyword_contract_surface_routes_owner_names_thro
         assert not hasattr(support, name)
 
     for name in (
+        "_collection_replacement_keyword_parameter_name",
+        "_collection_replacement_positional_keyword_field",
+        "_is_collection_replacement_keyword_workload",
+        "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
+        "_is_collection_replacement_compiled_pattern_module_helper_keyword_workload",
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
         "_COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_CASE_PAIRS",
         "_COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_CASE_PAIRS",
         "_COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_CASE_PAIRS",
@@ -3205,6 +3193,12 @@ def test_collection_replacement_keyword_contract_surface_routes_owner_names_thro
     ):
         assert hasattr(support, name)
     assert {
+        "_collection_replacement_keyword_parameter_name",
+        "_collection_replacement_positional_keyword_field",
+        "_is_collection_replacement_keyword_workload",
+        "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
+        "_is_collection_replacement_compiled_pattern_module_helper_keyword_workload",
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
         "_assert_keyword_error_workload_probe_measured",
         "_pattern_helper_collection_replacement_keyword_error_workload",
         "_is_collection_replacement_pattern_helper_keyword_error_workload",
@@ -3222,6 +3216,15 @@ def test_collection_replacement_keyword_contract_surface_routes_owner_names_thro
         "_MODULE_HELPER_COLLECTION_REPLACEMENT_KEYWORD_ERROR_WORKLOAD_IDS",
         "_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
     }.isdisjoint(local_assignment_names)
+    for name in (
+        "_collection_replacement_keyword_parameter_name",
+        "_collection_replacement_positional_keyword_field",
+        "_is_collection_replacement_keyword_workload",
+        "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
+        "_is_collection_replacement_compiled_pattern_module_helper_keyword_workload",
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    ):
+        assert not hasattr(owner_support, name)
 
 
 def test_pattern_helper_collection_replacement_keyword_error_workload_builder_shape() -> None:
@@ -3823,7 +3826,7 @@ def test_pattern_helper_collection_replacement_keyword_kwargs_materialize_at_cal
             "smoke": False,
         }
     )
-    benchmark_test_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+    support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
         workload,
         expected_result=expected_result,
@@ -3964,9 +3967,7 @@ def test_pattern_helper_collection_replacement_keyword_error_callbacks_match_cpy
     callback_field_names: list[str] = []
     helper_name = workload.operation.removeprefix("pattern.")
     positional_keyword_field = (
-        benchmark_test_support._collection_replacement_positional_keyword_field(
-            workload
-        )
+        support._collection_replacement_positional_keyword_field(workload)
     )
 
     re.purge()
@@ -4178,7 +4179,7 @@ def test_module_helper_collection_replacement_keyword_kwargs_materialize_at_call
             "smoke": False,
         }
     )
-    benchmark_test_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+    support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
         workload,
         expected_result=expected_result,
@@ -4220,9 +4221,7 @@ def test_module_helper_workflow_keyword_error_callbacks_match_cpython_exceptions
             source_workload
         ):
             positional_keyword_field = (
-                benchmark_test_support._collection_replacement_positional_keyword_field(
-                    source_workload
-                )
+                support._collection_replacement_positional_keyword_field(source_workload)
             )
             if positional_keyword_field is not None:
                 expected_field_names.insert(0, positional_keyword_field)

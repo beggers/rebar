@@ -4997,7 +4997,7 @@ def test_compiled_pattern_module_helper_keyword_error_rows_keep_collection_repla
         for workload in benchmark_test_support.selected_manifest_workloads(
             benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
             include_workload=(
-                benchmark_test_support._is_collection_replacement_compiled_pattern_keyword_error_workload
+                collection_replacement_support._is_collection_replacement_compiled_pattern_keyword_error_workload
             ),
         )
     )
@@ -5040,7 +5040,7 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
         source_workload,
         spec=benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.contract_builder_spec(),
     )
-    benchmark_test_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+    collection_replacement_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
         workload,
         expected_result=benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),

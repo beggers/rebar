@@ -186,7 +186,7 @@ def test_collection_replacement_keyword_kwargs_materialize_on_each_callback_call
         timing_scope="pattern-helper-call",
     )
 
-    support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+    collection_replacement_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
         workload,
         expected_result="xxabc",
@@ -212,7 +212,7 @@ def test_collection_replacement_keyword_kwargs_materialize_on_each_callback_call
         timing_scope="pattern-helper-call",
     )
 
-    support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+    collection_replacement_support._assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
         workload,
         expected_result=None,
@@ -1511,14 +1511,19 @@ def test_benchmark_test_support_owns_shared_collection_replacement_classifier_he
 
     assert {
         "_is_encoded_indexlike_payload",
+        "_is_collection_replacement_wrong_text_model_workload",
+    }.issubset(definition_names)
+    assert {
         "_collection_replacement_keyword_parameter_name",
         "_collection_replacement_positional_keyword_field",
         "_is_collection_replacement_keyword_workload",
-        "_is_collection_replacement_wrong_text_model_workload",
-    }.issubset(definition_names)
+        "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
+        "_is_collection_replacement_compiled_pattern_module_helper_keyword_workload",
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    }.isdisjoint(definition_names)
 
 
-def test_non_owner_collection_replacement_benchmark_support_routes_shared_classifiers_through_support_alias(
+def test_collection_replacement_benchmark_support_owns_keyword_classifier_helpers_and_routes_shared_ones_through_support_alias(
 ) -> None:
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(
@@ -1535,14 +1540,21 @@ def test_non_owner_collection_replacement_benchmark_support_routes_shared_classi
         "_collection_replacement_keyword_parameter_name",
         "_collection_replacement_positional_keyword_field",
         "_is_collection_replacement_keyword_workload",
-        "_is_collection_replacement_wrong_text_model_workload",
-    }.isdisjoint(definition_names)
+        "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
+        "_is_collection_replacement_compiled_pattern_module_helper_keyword_workload",
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    }.issubset(definition_names)
     assert {
         "_collection_replacement_keyword_parameter_name",
         "_collection_replacement_positional_keyword_field",
         "_is_collection_replacement_keyword_workload",
-        "_is_collection_replacement_wrong_text_model_workload",
+        "_assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call",
+        "_is_collection_replacement_compiled_pattern_module_helper_keyword_workload",
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     }.isdisjoint(assignment_names)
+    assert {"_is_collection_replacement_wrong_text_model_workload"}.isdisjoint(
+        definition_names
+    )
 
 
 def test_pattern_boundary_benchmark_support_routes_shared_helpers_through_support_alias(
@@ -3681,22 +3693,17 @@ def test_benchmark_test_support_exports_compiled_pattern_module_helper_keyword_c
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
     }
 
-    assert (
-        "_is_collection_replacement_compiled_pattern_keyword_error_workload"
-        in definition_names
-    )
     assert assignment_only_names <= assignment_names
+    assert not hasattr(support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
+    assert not hasattr(anchor_support, "_is_collection_replacement_compiled_pattern_keyword_error_workload")
     assert hasattr(
-        support,
-        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-    )
-    assert not hasattr(
-        anchor_support,
+        collection_replacement_support,
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     )
     for name in assignment_only_names:
         assert hasattr(support, name)
         assert not hasattr(anchor_support, name)
+        assert not hasattr(collection_replacement_support, name)
 
 
 def test_benchmark_test_support_no_longer_exports_deleted_workload_id_selector_helpers(
@@ -3735,12 +3742,20 @@ def test_compiled_pattern_module_helper_keyword_shared_surface_stays_shared_supp
 
     assert all(hasattr(support, name) for name in assignment_only_names)
     assert all(not hasattr(anchor_support, name) for name in assignment_only_names)
-    assert hasattr(
+    assert all(
+        not hasattr(collection_replacement_support, name)
+        for name in assignment_only_names
+    )
+    assert not hasattr(
         support,
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     )
     assert not hasattr(
         anchor_support,
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    )
+    assert hasattr(
+        collection_replacement_support,
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     )
 

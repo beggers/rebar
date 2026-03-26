@@ -8,6 +8,8 @@ import re
 from types import SimpleNamespace
 from typing import Any
 
+import pytest
+
 from rebar_harness import benchmarks
 from tests.benchmarks import benchmark_test_support
 from tests.python.fixture_parity_support import (
@@ -25,6 +27,122 @@ _COLLECTION_REPLACEMENT_SPLIT_OPERATIONS = frozenset(
 _COLLECTION_REPLACEMENT_SUBSTITUTE_OPERATIONS = frozenset(
     {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
 )
+
+
+def _collection_replacement_keyword_parameter_name(
+    workload: Any,
+) -> str | None:
+    if workload.operation in {"module.split", "pattern.split"}:
+        return "maxsplit"
+    if workload.operation in {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}:
+        return "count"
+    return None
+
+
+def _collection_replacement_positional_keyword_field(
+    workload: Any,
+) -> str | None:
+    if workload.operation.startswith("module."):
+        expected_keyword_field = (
+            benchmarks._expected_duplicate_module_helper_keyword_field(workload)
+            or benchmarks._expected_positional_module_helper_keyword_field(workload)
+        )
+    elif workload.operation.startswith("pattern."):
+        expected_keyword_field = (
+            benchmarks._expected_pattern_helper_positional_keyword_field(workload)
+        )
+    else:
+        expected_keyword_field = None
+    if expected_keyword_field is None:
+        return None
+    keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
+    if expected_keyword_field != keyword_parameter:
+        return None
+    return expected_keyword_field
+
+
+def _is_collection_replacement_keyword_workload(workload: Any) -> bool:
+    keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
+    if keyword_parameter is None or not workload.kwargs:
+        return False
+    keyword_names = tuple(workload.kwargs)
+    if len(keyword_names) != 1:
+        return False
+    if keyword_names[0] == keyword_parameter:
+        return True
+    if _collection_replacement_positional_keyword_field(workload) is not None:
+        return True
+    expected_exception = workload.expected_exception
+    if expected_exception is None or expected_exception.get("type") != "TypeError":
+        return False
+    keyword_name = keyword_names[0]
+    message_substring = expected_exception.get("message_substring")
+    if not isinstance(message_substring, str):
+        return False
+    if f"unexpected keyword argument '{keyword_name}'" in message_substring:
+        return True
+    if workload.operation.startswith("pattern."):
+        helper_name = workload.operation.removeprefix("pattern.")
+        return (
+            message_substring
+            == f"'{keyword_name}' is an invalid keyword argument for {helper_name}()"
+        )
+    return False
+
+
+def _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
+    monkeypatch: pytest.MonkeyPatch,
+    workload: benchmarks.Workload,
+    *,
+    expected_result: object | None,
+    expected_exception_message: str | None = None,
+    expected_field_names: list[str] | tuple[str, ...],
+) -> None:
+    observed_field_names = benchmark_test_support._record_numeric_materialization_fields(
+        monkeypatch
+    )
+
+    re.purge()
+    try:
+        callback = benchmarks.build_callable(re, "re", workload)
+        assert observed_field_names == []
+
+        if expected_exception_message is None:
+            assert callback() == expected_result
+            assert callback() == expected_result
+        else:
+            with pytest.raises(TypeError, match=re.escape(expected_exception_message)):
+                callback()
+            with pytest.raises(TypeError, match=re.escape(expected_exception_message)):
+                callback()
+
+        assert observed_field_names == list(expected_field_names) * 2
+    finally:
+        re.purge()
+
+
+def _is_collection_replacement_compiled_pattern_module_helper_keyword_workload(
+    workload: Any,
+) -> bool:
+    return (
+        _is_collection_replacement_keyword_workload(workload)
+        and workload.use_compiled_pattern
+        and workload.operation in {"module.split", "module.sub", "module.subn"}
+        and workload.expected_exception is None
+        and getattr(workload, "haystack_text_model", None) is None
+    )
+
+
+def _is_collection_replacement_compiled_pattern_keyword_error_workload(
+    workload: Any,
+) -> bool:
+    return (
+        _is_collection_replacement_keyword_workload(workload)
+        and workload.use_compiled_pattern
+        and workload.operation in {"module.split", "module.sub", "module.subn"}
+        and workload.expected_exception is not None
+        and getattr(workload, "haystack_text_model", None) is None
+    )
 
 
 def _collection_replacement_pattern_collection_correctness_case_signature(
@@ -526,7 +644,7 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
                     ),
                 },
             ),
-            include_workload=benchmark_test_support._is_collection_replacement_keyword_workload,
+            include_workload=_is_collection_replacement_keyword_workload,
             correctness_case_signature=(
                 _collection_replacement_keyword_correctness_case_signature
             ),
@@ -935,11 +1053,7 @@ def _collection_replacement_positional_indexlike_workload_signature(
 
 
 def _is_collection_replacement_positional_indexlike_workload(workload: Any) -> bool:
-    keyword_parameter = (
-        benchmark_test_support._collection_replacement_keyword_parameter_name(
-            workload
-        )
-    )
+    keyword_parameter = _collection_replacement_keyword_parameter_name(workload)
     if keyword_parameter == "maxsplit":
         parameter_payload = workload.maxsplit
     elif keyword_parameter == "count":
@@ -978,10 +1092,8 @@ def _collection_replacement_keyword_correctness_case_signature(
 def _collection_replacement_keyword_workload_args(
     workload: Any,
 ) -> tuple[object, ...]:
-    positional_keyword_field = (
-        benchmark_test_support._collection_replacement_positional_keyword_field(
-            workload
-        )
+    positional_keyword_field = _collection_replacement_positional_keyword_field(
+        workload
     )
     if workload.operation in {"module.split", "pattern.split"}:
         args: list[object] = [workload.haystack_payload()]
@@ -1005,9 +1117,7 @@ def _collection_replacement_keyword_workload_args(
 def _collection_replacement_keyword_workload_signature(
     workload: Any,
 ) -> tuple[Any, ...]:
-    if not benchmark_test_support._is_collection_replacement_keyword_workload(
-        workload
-    ):
+    if not _is_collection_replacement_keyword_workload(workload):
         raise AssertionError(
             "unexpected collection/replacement keyword workload "
             f"{workload.workload_id!r}"
@@ -1132,7 +1242,7 @@ def _is_collection_replacement_pattern_helper_keyword_error_workload(
     workload: Any,
 ) -> bool:
     return (
-        benchmark_test_support._is_collection_replacement_keyword_workload(workload)
+        _is_collection_replacement_keyword_workload(workload)
         and not workload.use_compiled_pattern
         and workload.operation in {"pattern.split", "pattern.sub", "pattern.subn"}
         and workload.expected_exception is not None
@@ -1179,7 +1289,7 @@ def _is_collection_replacement_module_helper_keyword_error_workload(
     workload: Any,
 ) -> bool:
     return (
-        benchmark_test_support._is_collection_replacement_keyword_workload(workload)
+        _is_collection_replacement_keyword_workload(workload)
         and not workload.use_compiled_pattern
         and workload.operation in {"module.split", "module.sub", "module.subn"}
         and workload.expected_exception is not None
