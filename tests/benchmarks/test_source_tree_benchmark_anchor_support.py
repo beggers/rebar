@@ -3428,6 +3428,26 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         pytest.param(
             "\n".join(
                 (
+                    "from tests.benchmarks import benchmark_test_support",
+                    "",
+                    (
+                        "contract_manifest = contract_manifest_alias = "
+                        "benchmark_test_support._source_tree_contract_manifest"
+                    ),
+                )
+            ),
+            frozenset(),
+            frozenset(
+                {
+                    ("contract_manifest", "_source_tree_contract_manifest"),
+                    ("contract_manifest_alias", "_source_tree_contract_manifest"),
+                }
+            ),
+            id="multi-target-local-alias",
+        ),
+        pytest.param(
+            "\n".join(
+                (
                     (
                         "from tests.benchmarks import "
                         "benchmark_test_support as benchmark_test_support_alias"
