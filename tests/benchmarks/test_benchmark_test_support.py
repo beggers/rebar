@@ -3361,7 +3361,6 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
         {
             "_expected_exception_instance",
             "_write_test_manifest",
-            "CompiledPatternModuleCompileContractCase",
             "assert_benchmark_workload_matches_expected_result",
             "assert_pattern_helper_wrong_text_model_payload_round_trip",
             "run_benchmark_workload_with_cpython",
@@ -3376,6 +3375,7 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
     )
     source_tree_owner_names = frozenset(
         {
+            "CompiledPatternModuleCompileContractCase",
             "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
         }
     )
@@ -3722,14 +3722,52 @@ def test_benchmark_test_support_no_longer_defines_compiled_pattern_module_compil
     ).read_text(encoding="utf-8")
 
     assert re.search(
-        r"^(_COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_OWNER_SPECS|"
-        r"_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_OWNER_SPECS|"
-        r"_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES|"
-        r"_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS|"
-        r"_COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES)\b",
+        r"^(class _CompiledPatternModuleCompileContractRoute|"
+        r"class CompiledPatternModuleCompileContractCase|"
+        r"class _CompiledPatternModuleContractAnchorLane|"
+        r"class _CompiledPatternModuleCompileKeywordOwnerSpec|"
+        r"class _CompiledPatternModuleCompileSuccessOwnerSpec|"
+        r"def _compiled_pattern_module_compile_success_owner_specs|"
+        r"def _compiled_pattern_module_compile_keyword_owner_specs|"
+        r"def build_compiled_pattern_module_compile_contract_cases|"
+        r"def build_compiled_pattern_module_compile_contract_source_workload_params|"
+        r"def build_compiled_pattern_module_contract_anchor_lanes|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION)\b",
         source,
         re.MULTILINE,
     ) is None
+
+
+def test_source_tree_support_owns_compiled_pattern_module_compile_owner_surface() -> None:
+    source = (
+        REPO_ROOT / "tests" / "benchmarks" / "source_tree_benchmark_anchor_support.py"
+    ).read_text(encoding="utf-8")
+
+    assert re.search(
+        r"^(class _CompiledPatternModuleCompileContractRoute|"
+        r"class CompiledPatternModuleCompileContractCase|"
+        r"class _CompiledPatternModuleContractAnchorLane|"
+        r"class _CompiledPatternModuleCompileKeywordOwnerSpec|"
+        r"class _CompiledPatternModuleCompileSuccessOwnerSpec|"
+        r"def _compiled_pattern_module_compile_success_owner_specs|"
+        r"def _compiled_pattern_module_compile_keyword_owner_specs|"
+        r"def build_compiled_pattern_module_compile_contract_cases|"
+        r"def build_compiled_pattern_module_compile_contract_source_workload_params|"
+        r"def build_compiled_pattern_module_contract_anchor_lanes|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_INT_ZERO_KEYWORD_SIGNATURE|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_BOOL_FALSE_KEYWORD_SIGNATURE|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_KEYWORD_SIGNATURE|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_LITERAL_KEYWORD_PATTERNS|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_NAMED_GROUP_KEYWORD_PATTERNS|"
+        r"_COMPILED_PATTERN_MODULE_COMPILE_IGNORECASE_REJECTION)\b",
+        source,
+        re.MULTILINE,
+    ) is not None
 
 
 def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
@@ -3743,7 +3781,7 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
     for wrapper_name, owner_type in (
         (
             "compiled_pattern_module_compile_contract_builder_spec",
-            support.CompiledPatternModuleCompileContractCase,
+            anchor_support.CompiledPatternModuleCompileContractCase,
         ),
         (
             "compiled_pattern_module_success_contract_builder_spec",

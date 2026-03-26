@@ -1191,7 +1191,7 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     for function_name, owner_type in (
         (
             "compiled_pattern_module_compile_contract_builder_spec",
-            benchmark_test_support.CompiledPatternModuleCompileContractCase,
+            support.CompiledPatternModuleCompileContractCase,
         ),
         (
             "compiled_pattern_module_success_contract_builder_spec",
@@ -1350,7 +1350,7 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     ),
 )
 def test_compiled_pattern_module_compile_contract_builder_surface_builds_expected_spec(
-    contract_case: benchmark_test_support.CompiledPatternModuleCompileContractCase,
+    contract_case: support.CompiledPatternModuleCompileContractCase,
 ) -> None:
     excluded_fields = contract_case.manifest_excluded_fields()
 

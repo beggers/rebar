@@ -836,7 +836,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_matches_m
 )
 def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_bounded_ignorecase_rejection_rows(
     tmp_path: pathlib.Path,
-    case_group: benchmark_test_support.CompiledPatternModuleCompileContractCase,
+    case_group: source_tree_support.CompiledPatternModuleCompileContractCase,
     source_workload: Workload,
 ) -> None:
     manifest = source_tree_support._source_tree_contract_manifest(
@@ -866,7 +866,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_b
 )
 def test_standard_benchmark_compiled_pattern_module_compile_contract_rows_preserve_success_and_keyword_payload_round_trip_until_helper_invocation(
     tmp_path: pathlib.Path,
-    contract_case: benchmark_test_support.CompiledPatternModuleCompileContractCase,
+    contract_case: source_tree_support.CompiledPatternModuleCompileContractCase,
 ) -> None:
     source_workloads = contract_case.source_workloads()
     manifest = source_tree_support._source_tree_contract_manifest(
