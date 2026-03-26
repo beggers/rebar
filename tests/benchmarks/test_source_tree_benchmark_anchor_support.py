@@ -313,20 +313,17 @@ def test_source_tree_combined_representative_workload_ids_derive_unique_shape_an
     ) == ("shape-a", "shared", "slice-a", "slice-b")
 
 
-def test_assert_zero_gap_bytes_representative_subset_delegates_expected_counts(
+def test_deleted_zero_gap_representative_helpers_are_absent_from_support_module(
+) -> None:
+    assert not hasattr(support, "assert_zero_gap_bytes_representative_subset")
+    assert not hasattr(support, "assert_zero_gap_manifest_representative_promotion")
+
+
+def test_source_tree_combined_manifest_representative_workload_ids_restore_zero_gap_bytes_subset_public_ids(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     manifest_id = "synthetic-boundary"
     expected_workload_ids = ("bytes-a", "bytes-b")
-    selected_workload_ids = (
-        "selected-a",
-        "selected-b",
-        "selected-c",
-        "selected-d",
-        "selected-e",
-    )
-    target_manifest_path = pathlib.Path("benchmarks/workloads/synthetic_boundary.py")
-    captured_call: dict[str, object] = {}
 
     monkeypatch.setattr(
         support,
@@ -353,53 +350,22 @@ def test_assert_zero_gap_bytes_representative_subset_delegates_expected_counts(
         if observed_manifest_id == manifest_id
         else (),
     )
-    monkeypatch.setattr(
-        support,
-        "source_tree_combined_case",
-        lambda observed_manifest_id: SimpleNamespace(
-            manifest_expectation=support.SourceTreeManifestExpectation(
-                known_gap_count=0,
-                representative_measured_workload_ids=(
-                    "bytes-a",
-                    "bytes-b",
-                    "other-representative",
-                ),
-                representative_known_gap_workload_ids=(),
-            ),
-            target_manifest=SimpleNamespace(
-                path=target_manifest_path,
-                workloads=(object(), object(), object(), object(), object()),
-            ),
-            selected_workload_ids_for_manifest=lambda selected_manifest_id: (
-                selected_workload_ids
-                if observed_manifest_id == manifest_id
-                and selected_manifest_id == manifest_id
-                else ()
-            ),
-        ),
+    manifest_definition = support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+        manifest_id
+    ]
+
+    assert expected_workload_ids in (
+        manifest_definition.zero_gap_bytes_representative_subsets
     )
-    monkeypatch.setattr(
-        benchmark_test_support,
-        "assert_zero_gap_manifest_workloads_measured",
-        lambda **kwargs: captured_call.update(kwargs),
+    assert (
+        support.source_tree_combined_manifest_representative_measured_workload_ids(
+            manifest_id
+        )
+        == ("bytes-a", "bytes-b", "other-representative")
     )
 
-    support.assert_zero_gap_bytes_representative_subset(
-        unittest.TestCase(),
-        manifest_id,
-        expected_workload_ids,
-    )
 
-    assert captured_call == {
-        "manifest_path": target_manifest_path,
-        "manifest_id": manifest_id,
-        "expected_measured_workload_ids": expected_workload_ids,
-        "expected_measured_workload_count": len(selected_workload_ids),
-        "expected_total_workload_count": 5,
-    }
-
-
-def test_assert_zero_gap_manifest_representative_promotion_delegates_selected_count(
+def test_direct_zero_gap_manifest_assertions_use_selected_counts_from_public_case_data(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     manifest_id = "synthetic-boundary"
@@ -441,9 +407,32 @@ def test_assert_zero_gap_manifest_representative_promotion_delegates_selected_co
         lambda **kwargs: captured_call.update(kwargs),
     )
 
-    support.assert_zero_gap_manifest_representative_promotion(
-        unittest.TestCase(),
-        manifest_id,
+    manifest_definition = support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+        manifest_id
+    ]
+    case = support.source_tree_combined_case(manifest_id)
+    manifest_expectation = case.manifest_expectation
+
+    assert manifest_definition.known_gap_workload_ids is None
+    assert (manifest_definition.representative_known_gap_workload_ids or ()) == ()
+    assert manifest_expectation.known_gap_count == 0
+    assert manifest_expectation.representative_known_gap_workload_ids == ()
+    assert (
+        manifest_definition.representative_measured_workload_ids
+        == expected_workload_ids
+    )
+    assert (
+        manifest_expectation.representative_measured_workload_ids
+        == expected_workload_ids
+    )
+
+    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        manifest_path=case.target_manifest.path,
+        manifest_id=manifest_id,
+        expected_measured_workload_ids=expected_workload_ids,
+        expected_measured_workload_count=len(
+            case.selected_workload_ids_for_manifest(manifest_id)
+        ),
     )
 
     assert captured_call == {
@@ -1129,8 +1118,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         "source_tree_combined_target_manifest_ids",
         "source_tree_combined_case",
         "source_tree_combined_manifest_representative_measured_workload_ids",
-        "assert_zero_gap_bytes_representative_subset",
-        "assert_zero_gap_manifest_representative_promotion",
         "expected_summary_for_manifests",
         "representative_measured_workload_ids",
         "select_source_tree_combined_slice_rows",
@@ -1737,8 +1724,6 @@ def test_combined_suite_no_longer_defines_moved_source_tree_case_surface_locally
         "source_tree_combined_target_manifest_ids",
         "source_tree_combined_case",
         "source_tree_combined_manifest_representative_measured_workload_ids",
-        "assert_zero_gap_bytes_representative_subset",
-        "assert_zero_gap_manifest_representative_promotion",
         "expected_summary_for_manifests",
         "representative_measured_workload_ids",
         "select_source_tree_combined_slice_rows",
@@ -1808,6 +1793,8 @@ def test_combined_suite_no_longer_routes_deleted_wrapper_helpers_through_source_
     module_ast = support._parsed_source_tree_combined_suite_ast()
     deleted_wrapper_names = frozenset(
         {
+            "assert_zero_gap_bytes_representative_subset",
+            "assert_zero_gap_manifest_representative_promotion",
             "relative_manifest_path",
             "source_tree_scorecard_case_ids",
             "source_tree_combined_fully_measured_manifest_ids",

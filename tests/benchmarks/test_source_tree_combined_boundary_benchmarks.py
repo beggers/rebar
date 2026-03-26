@@ -154,9 +154,41 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         )
         for manifest_id in promotion_manifest_ids:
             with self.subTest(manifest_id=manifest_id):
-                source_tree_support.assert_zero_gap_manifest_representative_promotion(
-                    self,
-                    manifest_id,
+                manifest_definition = (
+                    source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+                        manifest_id
+                    ]
+                )
+                self.assertIsNone(manifest_definition.known_gap_workload_ids)
+                self.assertEqual(
+                    manifest_definition.representative_known_gap_workload_ids or (),
+                    (),
+                )
+
+                case = source_tree_support.source_tree_combined_case(manifest_id)
+                manifest_expectation = case.manifest_expectation
+                self.assertEqual(manifest_expectation.known_gap_count, 0)
+                self.assertEqual(
+                    manifest_expectation.representative_known_gap_workload_ids,
+                    (),
+                )
+                expected_workload_ids = (
+                    manifest_definition.representative_measured_workload_ids
+                )
+                self.assertIsNotNone(expected_workload_ids)
+                assert expected_workload_ids is not None
+                self.assertEqual(
+                    manifest_expectation.representative_measured_workload_ids,
+                    expected_workload_ids,
+                )
+
+                benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+                    manifest_path=case.target_manifest.path,
+                    manifest_id=manifest_id,
+                    expected_measured_workload_ids=expected_workload_ids,
+                    expected_measured_workload_count=len(
+                        case.selected_workload_ids_for_manifest(manifest_id)
+                    ),
                 )
 
     def test_combined_target_manifest_ids_exclude_only_definition_owned_base_manifests(
@@ -296,10 +328,67 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         for manifest_id, representative_subsets in zero_gap_bytes_subsets_by_manifest.items():
             for expected_workload_ids in representative_subsets:
                 with self.subTest(manifest_id=manifest_id):
-                    source_tree_support.assert_zero_gap_bytes_representative_subset(
-                        self,
-                        manifest_id,
+                    manifest_definition = (
+                        source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+                            manifest_id
+                        ]
+                    )
+                    public_representatives = (
+                        source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                            manifest_id
+                        )
+                    )
+                    case = source_tree_support.source_tree_combined_case(manifest_id)
+                    manifest_expectation = case.manifest_expectation
+                    expected_measured_workload_count = len(
+                        case.selected_workload_ids_for_manifest(manifest_id)
+                    )
+                    expected_total_workload_count = len(
+                        case.target_manifest.workloads
+                    )
+
+                    self.assertIsNone(manifest_definition.known_gap_workload_ids)
+                    self.assertIsNone(
+                        manifest_definition.representative_known_gap_workload_ids
+                    )
+                    self.assertEqual(manifest_expectation.known_gap_count, 0)
+                    self.assertEqual(
+                        manifest_expectation.representative_known_gap_workload_ids,
+                        (),
+                    )
+                    self.assertIn(
                         expected_workload_ids,
+                        manifest_definition.zero_gap_bytes_representative_subsets,
+                    )
+                    self.assertEqual(
+                        expected_measured_workload_count,
+                        expected_total_workload_count,
+                    )
+                    for workload_id in expected_workload_ids:
+                        with self.subTest(workload_id=workload_id):
+                            self.assertIn(workload_id, public_representatives)
+                            if (
+                                manifest_definition.representative_measured_workload_ids
+                                is not None
+                            ):
+                                self.assertIn(
+                                    workload_id,
+                                    manifest_definition.representative_measured_workload_ids,
+                                )
+                            if (
+                                manifest_expectation.representative_measured_workload_ids
+                            ):
+                                self.assertIn(
+                                    workload_id,
+                                    manifest_expectation.representative_measured_workload_ids,
+                                )
+
+                    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+                        manifest_path=case.target_manifest.path,
+                        manifest_id=manifest_id,
+                        expected_measured_workload_ids=expected_workload_ids,
+                        expected_measured_workload_count=expected_measured_workload_count,
+                        expected_total_workload_count=expected_total_workload_count,
                     )
 
     def test_nested_group_callable_replacement_manifest_promotes_bounded_nested_group_bytes_rows_to_measured(
@@ -541,10 +630,51 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_callable_none_count_bytes_manifest_promotes_rows_to_measured(
         self,
     ) -> None:
-        source_tree_support.assert_zero_gap_bytes_representative_subset(
-            self,
-            "conditional-group-exists-boundary",
-            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS,
+        manifest_id = "conditional-group-exists-boundary"
+        expected_workload_ids = (
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_CALLABLE_NONE_COUNT_BYTES_WORKLOAD_IDS
+        )
+        manifest_definition = source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+            manifest_id
+        ]
+        case = source_tree_support.source_tree_combined_case(manifest_id)
+        manifest_expectation = case.manifest_expectation
+        public_representatives = (
+            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                manifest_id
+            )
+        )
+        expected_workload_count = len(
+            case.selected_workload_ids_for_manifest(manifest_id)
+        )
+
+        self.assertIsNone(manifest_definition.known_gap_workload_ids)
+        self.assertIsNone(manifest_definition.representative_known_gap_workload_ids)
+        self.assertEqual(manifest_expectation.known_gap_count, 0)
+        self.assertEqual(
+            manifest_expectation.representative_known_gap_workload_ids,
+            (),
+        )
+        self.assertIn(
+            expected_workload_ids,
+            manifest_definition.zero_gap_bytes_representative_subsets,
+        )
+        self.assertEqual(expected_workload_count, len(case.target_manifest.workloads))
+        for workload_id in expected_workload_ids:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(workload_id, public_representatives)
+                if manifest_expectation.representative_measured_workload_ids:
+                    self.assertIn(
+                        workload_id,
+                        manifest_expectation.representative_measured_workload_ids,
+                    )
+
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
+            expected_total_workload_count=expected_workload_count,
         )
 
     def test_conditional_group_exists_nested_callable_str_manifest_promotes_replacement_and_exception_rows_to_measured(
@@ -610,11 +740,50 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         manifest_id = "conditional-group-exists-boundary"
-        expected_workload_ids = collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
-        source_tree_support.assert_zero_gap_bytes_representative_subset(
-            self,
-            manifest_id,
+        expected_workload_ids = (
+            collection_replacement_support.CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS
+        )
+        manifest_definition = source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+            manifest_id
+        ]
+        case = source_tree_support.source_tree_combined_case(manifest_id)
+        manifest_expectation = case.manifest_expectation
+        public_representatives = (
+            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                manifest_id
+            )
+        )
+        expected_workload_count = len(
+            case.selected_workload_ids_for_manifest(manifest_id)
+        )
+
+        self.assertIsNone(manifest_definition.known_gap_workload_ids)
+        self.assertIsNone(manifest_definition.representative_known_gap_workload_ids)
+        self.assertEqual(manifest_expectation.known_gap_count, 0)
+        self.assertEqual(
+            manifest_expectation.representative_known_gap_workload_ids,
+            (),
+        )
+        self.assertIn(
             expected_workload_ids,
+            manifest_definition.zero_gap_bytes_representative_subsets,
+        )
+        self.assertEqual(expected_workload_count, len(case.target_manifest.workloads))
+        for workload_id in expected_workload_ids:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(workload_id, public_representatives)
+                if manifest_expectation.representative_measured_workload_ids:
+                    self.assertIn(
+                        workload_id,
+                        manifest_expectation.representative_measured_workload_ids,
+                    )
+
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
+            expected_total_workload_count=expected_workload_count,
         )
 
     def test_conditional_group_exists_quantified_callable_str_manifest_promotes_replacement_and_exception_rows_to_measured(
@@ -685,10 +854,47 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         expected_workload_ids = (
             collection_replacement_support.CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS
         )
-        source_tree_support.assert_zero_gap_bytes_representative_subset(
-            self,
-            manifest_id,
+        manifest_definition = source_tree_support.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS[
+            manifest_id
+        ]
+        case = source_tree_support.source_tree_combined_case(manifest_id)
+        manifest_expectation = case.manifest_expectation
+        public_representatives = (
+            source_tree_support.source_tree_combined_manifest_representative_measured_workload_ids(
+                manifest_id
+            )
+        )
+        expected_workload_count = len(
+            case.selected_workload_ids_for_manifest(manifest_id)
+        )
+
+        self.assertIsNone(manifest_definition.known_gap_workload_ids)
+        self.assertIsNone(manifest_definition.representative_known_gap_workload_ids)
+        self.assertEqual(manifest_expectation.known_gap_count, 0)
+        self.assertEqual(
+            manifest_expectation.representative_known_gap_workload_ids,
+            (),
+        )
+        self.assertIn(
             expected_workload_ids,
+            manifest_definition.zero_gap_bytes_representative_subsets,
+        )
+        self.assertEqual(expected_workload_count, len(case.target_manifest.workloads))
+        for workload_id in expected_workload_ids:
+            with self.subTest(workload_id=workload_id):
+                self.assertIn(workload_id, public_representatives)
+                if manifest_expectation.representative_measured_workload_ids:
+                    self.assertIn(
+                        workload_id,
+                        manifest_expectation.representative_measured_workload_ids,
+                    )
+
+        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+            manifest_path=case.target_manifest.path,
+            manifest_id=manifest_id,
+            expected_measured_workload_ids=expected_workload_ids,
+            expected_measured_workload_count=expected_workload_count,
+            expected_total_workload_count=expected_workload_count,
         )
 
     def test_conditional_group_exists_nested_callable_str_workloads_round_trip_preserves_outcomes(
