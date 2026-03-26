@@ -3497,43 +3497,6 @@ def test_source_tree_support_module_imports_shared_support_through_tests_benchma
     ),
     (
         pytest.param(
-            "tests.benchmarks.test_benchmark_manifest_validation",
-            frozenset(
-                {
-                    "_COMPILED_PATTERN_MODULE_SUCCESS_OWNER_SPECS",
-                    "_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS",
-                    "_assert_compiled_pattern_module_success_payload_round_trip",
-                    "_source_tree_contract_manifest",
-                    "_source_tree_contract_workload",
-                    "_compiled_pattern_wrong_text_model_specs",
-                    "_compiled_pattern_wrong_text_model_source_workloads",
-                    "_run_cpython_compiled_pattern_module_helper_workload",
-                    "_assert_wrong_text_model_payload_round_trip",
-                    "include_live_compiled_pattern_module_success_workload",
-                }
-            ),
-            frozenset(
-                {
-                    "_compiled_pattern_module_helper_keyword_contract_surface",
-                    "_compiled_pattern_module_helper_keyword_contract_spec",
-                }
-            ),
-            frozenset(),
-            frozenset(
-                {
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-                    "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-                }
-            ),
-            frozenset(
-                {
-                    ("source_tree_benchmark_anchor_support", "source_tree_support"),
-                }
-            ),
-            id="manifest-validation",
-        ),
-        pytest.param(
             "tests.benchmarks.test_source_tree_combined_boundary_benchmarks",
             frozenset(
                 {
@@ -3677,6 +3640,27 @@ def test_source_tree_contract_builder_consumers_route_owner_surface_through_pack
         and node.value.id in source_tree_alias_names
         and node.attr in expected_collection_replacement_names
     ) == expected_collection_replacement_names
+
+
+def test_benchmark_manifest_validation_stays_generic_without_source_tree_owner_routes(
+) -> None:
+    module = importlib.import_module("tests.benchmarks.test_benchmark_manifest_validation")
+    module_ast = benchmark_test_support._parsed_module_ast(module)
+
+    assert benchmark_test_support._top_level_import_from_alias_pairs(
+        module_ast,
+        module_name="tests.benchmarks",
+        imported_names=frozenset({"source_tree_benchmark_anchor_support"}),
+    ) == frozenset()
+    assert frozenset(
+        target.id
+        for node in module_ast.body
+        if isinstance(node, ast.Assign)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == "source_tree_support"
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    ) == frozenset()
 
 
 @pytest.mark.parametrize(

@@ -3266,77 +3266,21 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
             "selected_manifest_workloads",
         }
     )
-    source_tree_owner_names = frozenset(
-        {
-            "CompiledPatternModuleCompileContractCase",
-            "_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES",
-            "_is_pattern_boundary_wrong_text_model_workload",
-            "_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC",
-        }
-    )
-    collection_owner_names = frozenset(
-        {
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-            "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-        }
-    )
-
     _assert_owner_module_routes_through_package_import(
         module,
         owner_module="tests.benchmarks.benchmark_test_support",
         package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset(
-            {
-                ("benchmark_test_support", None),
-                ("source_tree_benchmark_anchor_support", "source_tree_support"),
-            }
-        ),
-    )
-    _assert_owner_module_routes_through_package_import(
-        module,
-        owner_module="tests.benchmarks.source_tree_benchmark_anchor_support",
-        package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset(
-            {("source_tree_benchmark_anchor_support", "source_tree_support")}
-        ),
-    )
-    _assert_owner_module_routes_through_package_import(
-        module,
-        owner_module="tests.benchmarks.source_tree_benchmark_anchor_support",
-        package_module="tests.benchmarks",
-        expected_alias_pairs=frozenset(
-            {
-                ("benchmark_test_support", None),
-                ("source_tree_benchmark_anchor_support", "source_tree_support"),
-            }
-        ),
+        expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
     assert support._top_level_import_from_alias_pairs(
         support._parsed_module_ast(module),
         module_name="tests.benchmarks",
         imported_names=frozenset({"source_tree_benchmark_anchor_support"}),
-    ) == frozenset({("source_tree_benchmark_anchor_support", "source_tree_support")})
+    ) == frozenset()
     assert shared_owner_names.isdisjoint(definition_names | assignment_names)
-    assert collection_owner_names.isdisjoint(definition_names | assignment_names)
     _assert_benchmark_test_support_aliases_absent(
         "tests.benchmarks.test_benchmark_manifest_validation",
         shared_owner_names,
-    )
-    _assert_benchmark_test_support_aliases_absent(
-        "tests.benchmarks.test_benchmark_manifest_validation",
-        source_tree_owner_names,
-    )
-    _assert_benchmark_test_support_aliases_absent(
-        "tests.benchmarks.test_benchmark_manifest_validation",
-        collection_owner_names,
     )
 
 
