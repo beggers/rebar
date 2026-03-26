@@ -120,6 +120,23 @@ COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SHARED_SURFACE_NAMES = frozenset(
     }
 )
 
+COLLECTION_REPLACEMENT_SUPPORT_RETIRED_SHARED_SURFACE_NAMES = frozenset(
+    {
+        "COLLECTION_REPLACEMENT_MANIFEST_PATH",
+        "MODULE_BOUNDARY_MANIFEST_PATH",
+        "StandardBenchmarkAnchorContractDefinition",
+        "_SourceTreeContractBuilderSpec",
+        "_contract_source_workloads",
+        "_definition_anchor_expectations",
+        "_is_collection_replacement_compiled_pattern_success_workload",
+        "_is_module_workflow_keyword_error_workload",
+        "_source_tree_contract_manifest",
+        "_source_tree_contract_workload",
+        "freeze_signature_value",
+        "source_tree_support",
+    }
+)
+
 def test_write_test_manifest_dedents_and_writes_utf8_text(tmp_path) -> None:
     manifest_path = support._write_test_manifest(
         tmp_path,
@@ -3446,20 +3463,14 @@ def test_collection_replacement_support_reaches_source_tree_owner_surface_throug
         "tests.benchmarks.source_tree_benchmark_anchor_support"
         not in support._module_import_targets(collection_replacement_support)
     )
+    assert "_SourceTreeContractBuilderSpec" not in dir(collection_replacement_support)
     assert "source_tree_support" not in definition_names | assignment_names
     assert (
         collection_replacement_support.benchmark_test_support.source_tree_support
         is anchor_support
     )
-    assert (
-        "_SourceTreeContractBuilderSpec"
-        not in collection_replacement_support.COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES
-    )
-    assert (
-        collection_replacement_support
-        .COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES.isdisjoint(
-            definition_names | assignment_names
-        )
+    assert COLLECTION_REPLACEMENT_SUPPORT_RETIRED_SHARED_SURFACE_NAMES.isdisjoint(
+        definition_names | assignment_names
     )
 
 

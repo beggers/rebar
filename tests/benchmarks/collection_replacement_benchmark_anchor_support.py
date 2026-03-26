@@ -26,22 +26,6 @@ _COLLECTION_REPLACEMENT_SUBSTITUTE_OPERATIONS = frozenset(
     {"module.sub", "module.subn", "pattern.sub", "pattern.subn"}
 )
 
-COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES = frozenset(
-    {
-        "COLLECTION_REPLACEMENT_MANIFEST_PATH",
-        "MODULE_BOUNDARY_MANIFEST_PATH",
-        "StandardBenchmarkAnchorContractDefinition",
-        "_contract_source_workloads",
-        "_definition_anchor_expectations",
-        "_is_collection_replacement_compiled_pattern_success_workload",
-        "_is_module_workflow_keyword_error_workload",
-        "_workload_case_pair_anchor_expectations",
-        "_workload_case_pairs_case_ids",
-        "_workload_case_pairs_workload_ids",
-        "freeze_signature_value",
-    }
-)
-
 def _collection_replacement_pattern_collection_workload_args(
     workload: Any,
     *,

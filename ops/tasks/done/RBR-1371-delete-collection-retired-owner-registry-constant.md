@@ -1,6 +1,6 @@
 ## RBR-1371: Delete collection retired owner registry constant
 
-Status: ready
+Status: done
 Owner: architecture-implementation
 Created: 2026-03-26
 
@@ -46,3 +46,13 @@ Created: 2026-03-26
   - `python3 -m py_compile tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py` passed
   - `bash -lc "! rg -n '^COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES\\s*=' tests/benchmarks/collection_replacement_benchmark_anchor_support.py"` currently fails because the exported registry constant still exists, and that failure belongs exactly to this cleanup
   - `bash -lc "! rg -n 'COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES' tests/benchmarks/test_benchmark_test_support.py"` currently fails because the support test still depends on that registry, and that failure belongs exactly to this cleanup
+
+## Completion
+- Removed `COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES` from `tests/benchmarks/collection_replacement_benchmark_anchor_support.py` instead of moving it sideways.
+- Rewrote the owner-surface assertion in `tests/benchmarks/test_benchmark_test_support.py` to pin the narrow contract directly: the module still routes through `tests.benchmarks.benchmark_test_support`, still avoids a local `source_tree_support` alias and `_SourceTreeContractBuilderSpec`, and still does not reintroduce the specific shared-support names that matter to this route.
+
+## Verification
+- `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'collection_replacement_support_reaches_source_tree_owner_surface_through_benchmark_test_support_alias'`
+- `python3 -m py_compile tests/benchmarks/collection_replacement_benchmark_anchor_support.py tests/benchmarks/test_benchmark_test_support.py`
+- `bash -lc "! rg -n '^COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES\\s*=' tests/benchmarks/collection_replacement_benchmark_anchor_support.py"`
+- `bash -lc "! rg -n 'COLLECTION_REPLACEMENT_SUPPORT_RETIRED_BENCHMARK_OWNER_NAMES' tests/benchmarks/test_benchmark_test_support.py"`
