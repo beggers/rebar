@@ -3079,37 +3079,6 @@ def _source_tree_manifest_known_gap_counts(
         )
     return known_gap_counts
 
-def _source_tree_benchmark_common_case_kwargs(
-    *,
-    manifests: list[BenchmarkManifest],
-    workloads: list[Workload],
-    selection_mode: str,
-    manifest_known_gap_counts: dict[str, int] | None = None,
-    expected_summary: dict[str, int] | None = None,
-) -> dict[str, Any]:
-    workload_payloads = [workload_to_payload(workload) for workload in workloads]
-    return {
-        "expected_adapter": (
-            "rebar.module-surface"
-            if any(workload.family == "module" for workload in workloads)
-            else "rebar.compile"
-        ),
-        "expected_phase": determine_phase(workload_payloads),
-        "expected_runner_version": determine_runner_version(workload_payloads),
-        "expected_summary": (
-            expected_summary
-            if expected_summary is not None
-            else expected_summary_for_manifests(
-                manifests,
-                selection_mode=selection_mode,
-                manifest_known_gap_counts=manifest_known_gap_counts,
-            )
-        ),
-        "manifests": manifests,
-        "selection_mode": selection_mode,
-    }
-
-
 def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
     if case_id not in SOURCE_TREE_SCORECARD_EXPECTATIONS:
         raise AssertionError(f"unknown source-tree scorecard case {case_id!r}")
@@ -3179,15 +3148,25 @@ def source_tree_scorecard_case(case_id: str) -> SourceTreeScorecardCase:
                     manifest_expectation.representative_known_gap_workload_ids
                 )
             )
-    common_case_kwargs = _source_tree_benchmark_common_case_kwargs(
-        manifests=manifests,
-        workloads=selected_workloads,
-        selection_mode=case_definition.selection_mode,
-        manifest_known_gap_counts=manifest_known_gap_counts,
-    )
+    workload_payloads = [
+        workload_to_payload(workload) for workload in selected_workloads
+    ]
     return SourceTreeScorecardCase(
-        **common_case_kwargs,
         case_id=case_id,
+        expected_adapter=(
+            "rebar.module-surface"
+            if any(workload.family == "module" for workload in selected_workloads)
+            else "rebar.compile"
+        ),
+        expected_phase=determine_phase(workload_payloads),
+        expected_runner_version=determine_runner_version(workload_payloads),
+        expected_summary=expected_summary_for_manifests(
+            manifests,
+            selection_mode=case_definition.selection_mode,
+            manifest_known_gap_counts=manifest_known_gap_counts,
+        ),
+        manifests=manifests,
+        selection_mode=case_definition.selection_mode,
         manifest_expectations=manifest_expectations,
         representative_measured_workload_ids=representative_measured_workload_ids,
         representative_known_gap_workload_ids=representative_known_gap_workload_ids,
@@ -3310,13 +3289,21 @@ def source_tree_combined_case(target_manifest_id: str) -> SourceTreeCombinedCase
     target_manifest = next(
         manifest for manifest in manifests if manifest.manifest_id == target_manifest_id
     )
-    common_case_kwargs = _source_tree_benchmark_common_case_kwargs(
-        manifests=manifests,
-        workloads=workloads,
-        selection_mode="full",
-    )
+    workload_payloads = [workload_to_payload(workload) for workload in workloads]
     return SourceTreeCombinedCase(
-        **common_case_kwargs,
+        expected_adapter=(
+            "rebar.module-surface"
+            if any(workload.family == "module" for workload in workloads)
+            else "rebar.compile"
+        ),
+        expected_phase=determine_phase(workload_payloads),
+        expected_runner_version=determine_runner_version(workload_payloads),
+        expected_summary=expected_summary_for_manifests(
+            manifests,
+            selection_mode="full",
+        ),
+        manifests=manifests,
+        selection_mode="full",
         manifest_expectation=_public_source_tree_manifest_expectation(target_manifest_id),
         manifest_id=target_manifest_id,
         target_manifest=target_manifest,
