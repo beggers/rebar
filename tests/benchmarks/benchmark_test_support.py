@@ -648,6 +648,49 @@ def _module_alias_names(
     return frozenset(alias_names)
 
 
+def _module_attribute_alias_targets(
+    module_ast: ast.AST,
+    *,
+    module_alias_names: frozenset[str],
+) -> dict[str, str]:
+    attribute_alias_targets: dict[str, str] = {}
+
+    changed = True
+    while changed:
+        changed = False
+        for node in ast.walk(module_ast):
+            if isinstance(node, ast.Assign):
+                targets = tuple(
+                    target.id for target in node.targets if isinstance(target, ast.Name)
+                )
+                value = node.value
+            elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+                targets = (node.target.id,)
+                value = node.value
+            else:
+                continue
+
+            if (
+                isinstance(value, ast.Attribute)
+                and isinstance(value.value, ast.Name)
+                and value.value.id in module_alias_names
+            ):
+                aliased_attribute = value.attr
+            elif isinstance(value, ast.Name):
+                aliased_attribute = attribute_alias_targets.get(value.id)
+                if aliased_attribute is None:
+                    continue
+            else:
+                continue
+
+            for target in targets:
+                if attribute_alias_targets.get(target) != aliased_attribute:
+                    attribute_alias_targets[target] = aliased_attribute
+                    changed = True
+
+    return attribute_alias_targets
+
+
 def _owner_definition_manifest_path_names(
     owner_definition: ast.Assign | ast.Return,
 ) -> tuple[tuple[str, ...], ...]:
@@ -778,6 +821,18 @@ def assert_mixed_owner_surface(
     expected_local_assignment_names = set(local_assignment_names)
     expected_support_alias_assignment_names = set(support_alias_assignment_names)
     shared_module = sys.modules[__name__]
+    benchmark_test_support_alias_names = frozenset({"benchmark_test_support"}) | (
+        _module_alias_names(
+            module_ast,
+            import_from_module="tests.benchmarks",
+            import_name="benchmark_test_support",
+            dotted_import_name="tests.benchmarks.benchmark_test_support",
+        )
+    )
+    benchmark_test_support_attribute_alias_targets = _module_attribute_alias_targets(
+        module_ast,
+        module_alias_names=benchmark_test_support_alias_names,
+    )
 
     assert expected_local_function_names.isdisjoint(expected_local_assignment_names)
     assert expected_local_function_names.isdisjoint(
@@ -798,11 +853,8 @@ def assert_mixed_owner_surface(
         assert assignment_name in parsed_assignment_names
         assert assignment_name not in parsed_function_names
         assert not hasattr(shared_module, assignment_name)
-        assignment = _module_assignment(caller_module, assignment_name)
-        assert not (
-            isinstance(assignment.value, ast.Attribute)
-            and isinstance(assignment.value.value, ast.Name)
-            and assignment.value.value.id == "benchmark_test_support"
+        assert (
+            benchmark_test_support_attribute_alias_targets.get(assignment_name) is None
         )
 
     for assignment_name in expected_support_alias_assignment_names:
@@ -812,7 +864,7 @@ def assert_mixed_owner_surface(
         assignment = _module_assignment(caller_module, assignment_name)
         assert isinstance(assignment.value, ast.Attribute)
         assert isinstance(assignment.value.value, ast.Name)
-        assert assignment.value.value.id == "benchmark_test_support"
+        assert assignment.value.value.id in benchmark_test_support_alias_names
         assert assignment.value.attr == assignment_name
         assert getattr(caller_module, assignment_name) is getattr(
             shared_module,
