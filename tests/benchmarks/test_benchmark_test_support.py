@@ -2552,6 +2552,27 @@ def test_source_tree_combined_suite_deletes_manifest_contract_wrapper_methods() 
     }.isdisjoint(method_names)
 
 
+def test_class_method_definition_resolves_source_tree_combined_suite_test_method(
+) -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    suite_definition = support._module_class_definition(
+        module,
+        "SourceTreeCombinedBoundaryBenchmarkSuiteTest",
+    )
+
+    method_definition = support._class_method_definition(
+        suite_definition,
+        "test_literal_flag_combined_case_preserves_expected_manifest_paths",
+    )
+
+    assert method_definition.name == (
+        "test_literal_flag_combined_case_preserves_expected_manifest_paths"
+    )
+    assert [argument.arg for argument in method_definition.args.args] == ["self"]
+
+
 def test_pattern_boundary_anchor_support_reuses_shared_pattern_case_builder() -> None:
     module = importlib.import_module(
         "tests.benchmarks.test_pattern_boundary_benchmark_anchor_support"
