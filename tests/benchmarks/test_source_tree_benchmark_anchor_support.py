@@ -2084,7 +2084,6 @@ def test_source_tree_support_defines_combined_route_helpers_locally() -> None:
     }
 
     moved_helper_names = {
-        "_source_tree_combined_suite_module",
         "_parsed_source_tree_combined_suite_ast",
         "_assert_source_tree_combined_routes_owner_names_through_module_alias",
     }

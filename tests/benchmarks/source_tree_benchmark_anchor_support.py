@@ -108,15 +108,12 @@ def _source_tree_contract_manifest(
         "workloads": workloads,
     }
 @cache
-def _source_tree_combined_suite_module() -> object:
-    return importlib.import_module(
-        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
-    )
-
-
-@cache
 def _parsed_source_tree_combined_suite_ast() -> ast.Module:
-    return benchmark_test_support._parsed_module_ast(_source_tree_combined_suite_module())
+    return benchmark_test_support._parsed_module_ast(
+        importlib.import_module(
+            "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+        )
+    )
 
 
 def _assert_source_tree_combined_routes_owner_names_through_module_alias(
@@ -126,7 +123,9 @@ def _assert_source_tree_combined_routes_owner_names_through_module_alias(
     owner_names: tuple[str, ...],
     expected_direct_benchmark_test_support_refs: frozenset[str] = frozenset(),
 ) -> object:
-    combined_suite = _source_tree_combined_suite_module()
+    combined_suite = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
     combined_suite_ast = _parsed_source_tree_combined_suite_ast()
     _, local_assignment_names = (
         benchmark_test_support.top_level_module_definition_and_assignment_names(
