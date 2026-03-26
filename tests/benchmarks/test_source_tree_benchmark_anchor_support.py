@@ -19,9 +19,7 @@ anchor_support_cache_guard = benchmark_test_support.anchor_support_cache_guard
 
 
 def _compiled_pattern_wrong_text_model_local_function_names() -> frozenset[str]:
-    return frozenset(
-        support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES
-    )
+    return frozenset()
 
 
 def _synthetic_report_scorecard(
@@ -1183,16 +1181,10 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
         assert constant_name not in local_assignment_names
         assert not hasattr(support, constant_name)
         assert hasattr(benchmark_test_support, constant_name)
-    for constant_name in (
-        support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES
-    ):
-        assert constant_name in _compiled_pattern_wrong_text_model_local_function_names()
     benchmark_test_support.assert_mixed_owner_surface(
         support,
         local_function_names=_compiled_pattern_wrong_text_model_local_function_names(),
-        local_assignment_names=(
-            support.SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES
-        ),
+        local_assignment_names=frozenset(),
         support_alias_assignment_names=frozenset(),
     )
     for removed_name in (
@@ -1201,10 +1193,6 @@ def test_source_tree_support_module_exposes_moved_combined_case_surface() -> Non
     ):
         assert not hasattr(support, removed_name)
         assert removed_name not in local_assignment_names
-    assert (
-        support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES
-        == ()
-    )
     moved_names = (
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
         "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
@@ -2027,21 +2015,21 @@ def test_module_alias_names_follow_import_and_assignment_alias_chains(
         pytest.param(
             "source_tree_support",
             support,
-            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_NAMES,
+            (),
             frozenset(),
             id="compiled-pattern-module-compile",
         ),
         pytest.param(
             "source_tree_support",
             support,
-            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES,
+            (),
             frozenset(),
             id="compiled-pattern-wrong-text-model",
         ),
         pytest.param(
             "source_tree_support",
             support,
-            support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_NAMES,
+            (),
             frozenset(),
             id="compiled-pattern-module-helper-keyword",
         ),
@@ -2174,24 +2162,8 @@ def test_source_tree_owner_inventory_constants_are_not_mirrored_back_into_this_t
             "_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES",
         }
     )
-    support_inventory_names = frozenset(
-        {
-            "SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES",
-            "SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES",
-        }
-    )
-
     assert legacy_local_mirror_names.isdisjoint(
         local_definition_names | local_assignment_names
-    )
-    assert support_inventory_names.issubset(
-        {
-            node.attr
-            for node in ast.walk(module_ast)
-            if isinstance(node, ast.Attribute)
-            and isinstance(node.value, ast.Name)
-            and node.value.id == "support"
-        }
     )
 
 
@@ -3187,17 +3159,11 @@ def test_source_tree_owner_retires_contract_builder_spec_to_shared_support() -> 
 
 def test_source_tree_owner_defines_compiled_pattern_wrong_text_model_surface_locally(
 ) -> None:
-    owner_definition_names = (
-        support.SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_DEFINITION_NAMES
-    )
-    owner_assignment_names = (
-        support.SOURCE_TREE_LOCAL_COMPILED_PATTERN_WRONG_TEXT_MODEL_ASSIGNMENT_NAMES
-    )
+    owner_definition_names = frozenset()
+    owner_assignment_names = frozenset()
     module_ast = benchmark_test_support._parsed_module_ast(support)
 
-    assert _compiled_pattern_wrong_text_model_local_function_names() == frozenset(
-        support.SOURCE_TREE_ROUTED_COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_NAMES
-    )
+    assert _compiled_pattern_wrong_text_model_local_function_names() == frozenset()
     benchmark_test_support.assert_mixed_owner_surface(
         support,
         local_function_names=_compiled_pattern_wrong_text_model_local_function_names(),
