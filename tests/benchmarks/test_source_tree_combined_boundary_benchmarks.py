@@ -2823,11 +2823,61 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                     if expectation.manifest_id == manifest_id
                 ):
                     with self.subTest(slice_id=expectation.slice_id):
-                        source_tree_support.assert_source_tree_combined_manifest_slice(
+                        matched_rows = (
+                            source_tree_support.select_source_tree_combined_slice_rows(
+                                case.target_manifest,
+                                expectation,
+                            )
+                        )
+                        self.assertEqual(
+                            tuple(workload.workload_id for workload in matched_rows),
+                            expectation.expected_workload_ids,
+                        )
+                        self.assertEqual(
+                            {workload.pattern for workload in matched_rows},
+                            expectation.expected_patterns,
+                        )
+                        self.assertEqual(
+                            {workload.operation for workload in matched_rows},
+                            expectation.expected_operations,
+                        )
+                        self.assertEqual(
+                            {
+                                str(workload.haystack)
+                                for workload in matched_rows
+                                if workload.haystack is not None
+                            },
+                            expectation.expected_haystacks,
+                        )
+                        for workload in matched_rows:
+                            with self.subTest(
+                                slice_id=expectation.slice_id,
+                                workload_id=workload.workload_id,
+                            ):
+                                for category in expectation.required_row_categories:
+                                    self.assertIn(category, workload.categories)
+                        scorecard_rows = [
+                            workload
+                            for workload in scorecard["workloads"]
+                            if workload["manifest_id"] == manifest_id
+                            and workload["id"] in expectation.expected_workload_ids
+                        ]
+                        self.assertEqual(
+                            {workload["id"] for workload in scorecard_rows},
+                            set(expectation.expected_workload_ids),
+                        )
+                        benchmark_test_support.assert_manifest_workload_contracts(
                             self,
                             case.target_manifest,
                             scorecard,
-                            expectation=expectation,
+                            (
+                                (
+                                    workload_id,
+                                    expectation.expected_status,
+                                )
+                                for workload_id in expectation.expected_workload_ids
+                            ),
+                            subtest_label="workload_id",
                         )
 
     def test_wider_ranged_repeat_manifest_shape_stays_covered_in_combined_suite(
@@ -2873,13 +2923,79 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
 
         for pattern_group in shape_expectation.pattern_groups:
             with self.subTest(slice_id=pattern_group.slice_id):
-                source_tree_support.assert_source_tree_combined_pattern_group(
-                    self,
-                    case.target_manifest,
-                    scorecard,
-                    manifest_id=WIDER_RANGED_REPEAT_MANIFEST_ID,
-                    expectation=pattern_group,
+                manifest_rows = [
+                    workload
+                    for workload in case.target_manifest.workloads
+                    if workload.pattern in pattern_group.patterns
+                ]
+                self.assertGreaterEqual(
+                    len(manifest_rows),
+                    pattern_group.minimum_rows,
+                    f"expected benchmark rows for the {pattern_group.slice_id} slice",
                 )
+                for pattern in pattern_group.patterns:
+                    pattern_rows = [
+                        workload
+                        for workload in manifest_rows
+                        if workload.pattern == pattern
+                    ]
+                    self.assertGreaterEqual(
+                        len(pattern_rows),
+                        3,
+                        f"expected compile/search/fullmatch coverage for {pattern!r}",
+                    )
+                    self.assertTrue(
+                        set(pattern_group.required_operations).issubset(
+                            {workload.operation for workload in pattern_rows}
+                        )
+                    )
+                    for workload in pattern_rows:
+                        with self.subTest(
+                            pattern=pattern,
+                            workload_id=workload.workload_id,
+                        ):
+                            for category in pattern_group.required_categories:
+                                self.assertIn(category, workload.categories)
+                manifest_search_haystacks = {
+                    str(workload.haystack)
+                    for workload in manifest_rows
+                    if workload.operation == "module.search"
+                }
+                for haystack in pattern_group.search_haystacks:
+                    self.assertIn(haystack, manifest_search_haystacks)
+                for snippet in pattern_group.search_haystack_substrings:
+                    self.assertTrue(
+                        any(
+                            snippet in haystack
+                            for haystack in manifest_search_haystacks
+                        ),
+                        f"expected a module.search workload covering {snippet!r}",
+                    )
+                manifest_pattern_haystacks = {
+                    str(workload.haystack)
+                    for workload in manifest_rows
+                    if workload.operation == "pattern.fullmatch"
+                }
+                for haystack in pattern_group.pattern_haystacks:
+                    self.assertIn(haystack, manifest_pattern_haystacks)
+                scorecard_rows = [
+                    workload
+                    for workload in scorecard["workloads"]
+                    if workload["manifest_id"] == WIDER_RANGED_REPEAT_MANIFEST_ID
+                    and workload["pattern"] in pattern_group.patterns
+                ]
+                self.assertEqual(
+                    {workload["id"] for workload in scorecard_rows},
+                    {workload.workload_id for workload in manifest_rows},
+                )
+                for workload in scorecard_rows:
+                    with self.subTest(scorecard_workload_id=workload["id"]):
+                        self.assertEqual(workload["status"], "measured")
+                        self.assertEqual(
+                            workload["implementation_timing"]["status"],
+                            "measured",
+                        )
+                        self.assertGreater(workload["implementation_ns"], 0)
 
 
 class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
