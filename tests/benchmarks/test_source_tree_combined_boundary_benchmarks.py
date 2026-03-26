@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Callable
 from collections import Counter
 from dataclasses import dataclass
 from functools import cache, partial
@@ -8,6 +9,7 @@ import pathlib
 import re
 from types import SimpleNamespace
 import unittest
+from typing import Any
 
 import pytest
 
@@ -49,6 +51,286 @@ _is_collection_replacement_compiled_pattern_success_workload = (
 _is_collection_replacement_wrong_text_model_workload = (
     benchmark_test_support._is_collection_replacement_wrong_text_model_workload
 )
+
+_OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
+    "module-search-numbered-optional-group-conditional-cold-gap"
+)
+
+
+def _compile_search_fullmatch_case_signature(
+    case: Any,
+    *,
+    pattern: Callable[[], Any],
+) -> tuple[Any, ...] | None:
+    kwargs_signature = benchmark_test_support.freeze_signature_value(case.serialized_kwargs())
+    flags = case.flags or 0
+    text_model = case.text_model or "str"
+
+    if case.operation == "compile":
+        return ("module.compile", pattern(), (), kwargs_signature, flags, text_model)
+    if case.operation == "module_call" and case.helper == "search":
+        return (
+            "module.search",
+            None,
+            benchmark_test_support.freeze_signature_value(case.serialized_args()),
+            kwargs_signature,
+            flags,
+            text_model,
+        )
+    if case.operation == "pattern_call" and case.helper == "fullmatch":
+        return (
+            "pattern.fullmatch",
+            pattern(),
+            benchmark_test_support.freeze_signature_value(case.serialized_args()),
+            kwargs_signature,
+            flags,
+            text_model,
+        )
+    return None
+
+
+def _compile_search_fullmatch_workload_signature(
+    workload: Any,
+    *,
+    pattern: Callable[[], Any],
+    module_search_args: Callable[[], tuple[Any, ...]],
+    pattern_fullmatch_args: Callable[[], tuple[Any, ...]],
+    error_label: str,
+) -> tuple[Any, ...]:
+    if workload.operation == "module.compile":
+        return (
+            "module.compile",
+            pattern(),
+            (),
+            (),
+            workload.flags,
+            workload.text_model,
+        )
+    if workload.operation == "module.search":
+        return (
+            "module.search",
+            None,
+            module_search_args(),
+            (),
+            workload.flags,
+            workload.text_model,
+        )
+    if workload.operation == "pattern.fullmatch":
+        return (
+            "pattern.fullmatch",
+            pattern(),
+            pattern_fullmatch_args(),
+            (),
+            workload.flags,
+            workload.text_model,
+        )
+    raise AssertionError(
+        f"unexpected {error_label} workload operation {workload.operation!r}"
+    )
+
+
+def _optional_group_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.operation != "module_call" or case.helper != "search":
+        return None
+
+    kwargs_signature = benchmark_test_support.freeze_signature_value(case.serialized_kwargs())
+    flags = case.flags or 0
+    text_model = case.text_model or "str"
+    return (
+        "module.search",
+        None,
+        benchmark_test_support.freeze_signature_value(case.serialized_args()),
+        kwargs_signature,
+        flags,
+        text_model,
+    )
+
+
+def _optional_group_workload_signature(workload: Any) -> tuple[Any, ...]:
+    if workload.operation != "module.search":
+        raise AssertionError(
+            "unexpected optional-group benchmark workload operation "
+            f"{workload.operation!r}"
+        )
+
+    return (
+        "module.search",
+        None,
+        benchmark_test_support.freeze_signature_value([workload.pattern, workload.haystack]),
+        (),
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def _is_optional_group_conditional_workload(workload: Any) -> bool:
+    return workload.workload_id == _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID
+
+
+def _nested_group_correctness_case_signature(case: Any) -> tuple[Any, ...] | None:
+    return _compile_search_fullmatch_case_signature(
+        case,
+        pattern=lambda: case.pattern,
+    )
+
+
+def _nested_group_workload_signature(workload: Any) -> tuple[Any, ...]:
+    return _compile_search_fullmatch_workload_signature(
+        workload,
+        pattern=lambda: workload.pattern,
+        module_search_args=lambda: (workload.pattern, workload.haystack),
+        pattern_fullmatch_args=lambda: (workload.haystack,),
+        error_label="nested-group benchmark",
+    )
+
+
+def _counted_repeat_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    return _compile_search_fullmatch_case_signature(
+        case,
+        pattern=lambda: case.pattern_payload(),
+    )
+
+
+def _counted_repeat_workload_signature(workload: Any) -> tuple[Any, ...]:
+    return _compile_search_fullmatch_workload_signature(
+        workload,
+        pattern=lambda: workload.pattern_payload(),
+        module_search_args=lambda: benchmark_test_support.freeze_signature_value(
+            [
+                workload.pattern_payload(),
+                workload.haystack_payload(),
+            ]
+        ),
+        pattern_fullmatch_args=lambda: benchmark_test_support.freeze_signature_value(
+            [workload.haystack_payload()]
+        ),
+        error_label="counted-repeat benchmark",
+    )
+
+
+def _is_non_alternation_counted_repeat_workload(workload: Any) -> bool:
+    return workload.operation in {
+        "module.compile",
+        "module.search",
+        "pattern.fullmatch",
+    } and "|" not in workload.pattern
+
+
+def _grouped_alternation_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    kwargs_signature = benchmark_test_support.freeze_signature_value(case.serialized_kwargs())
+    flags = case.flags or 0
+    text_model = case.text_model or "str"
+
+    if case.operation == "compile":
+        return ("module.compile", case.pattern, (), kwargs_signature, flags, text_model)
+    if case.operation == "module_call" and case.helper in {"search", "sub", "subn"}:
+        return (
+            f"module.{case.helper}",
+            None,
+            benchmark_test_support.freeze_signature_value(case.serialized_args()),
+            kwargs_signature,
+            flags,
+            text_model,
+        )
+    if case.operation == "pattern_call" and case.helper in {"fullmatch", "sub", "subn"}:
+        return (
+            f"pattern.{case.helper}",
+            case.pattern,
+            benchmark_test_support.freeze_signature_value(case.serialized_args()),
+            kwargs_signature,
+            flags,
+            text_model,
+        )
+    return None
+
+
+def _grouped_alternation_workload_args(workload: Any) -> tuple[Any, ...]:
+    if workload.operation == "module.compile":
+        return ()
+    if workload.operation == "module.search":
+        return benchmark_test_support.freeze_signature_value([workload.pattern, workload.haystack])
+    if workload.operation == "pattern.fullmatch":
+        return benchmark_test_support.freeze_signature_value([workload.haystack])
+    if workload.operation in {"module.sub", "module.subn"}:
+        args = [workload.pattern, workload.replacement, workload.haystack]
+        if workload.count:
+            args.append(workload.count)
+        return benchmark_test_support.freeze_signature_value(args)
+    if workload.operation in {"pattern.sub", "pattern.subn"}:
+        args = [workload.replacement, workload.haystack]
+        if workload.count:
+            args.append(workload.count)
+        return benchmark_test_support.freeze_signature_value(args)
+    raise AssertionError(
+        f"unexpected grouped-alternation benchmark workload operation {workload.operation!r}"
+    )
+
+
+def _grouped_alternation_workload_signature(workload: Any) -> tuple[Any, ...]:
+    if workload.operation == "module.compile":
+        return (
+            "module.compile",
+            workload.pattern,
+            (),
+            (),
+            workload.flags,
+            workload.text_model,
+        )
+    if workload.operation in {"module.search", "module.sub", "module.subn"}:
+        return (
+            workload.operation,
+            None,
+            _grouped_alternation_workload_args(workload),
+            (),
+            workload.flags,
+            workload.text_model,
+        )
+    if workload.operation in {"pattern.fullmatch", "pattern.sub", "pattern.subn"}:
+        return (
+            workload.operation,
+            workload.pattern,
+            _grouped_alternation_workload_args(workload),
+            (),
+            workload.flags,
+            workload.text_model,
+        )
+    raise AssertionError(
+        f"unexpected grouped-alternation benchmark workload operation {workload.operation!r}"
+    )
+
+
+def _grouped_alternation_replacement_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    kwargs_signature = benchmark_test_support.freeze_signature_value(case.serialized_kwargs())
+    flags = case.flags or 0
+    text_model = case.text_model or "str"
+
+    if case.operation == "module_call" and case.helper in {"sub", "subn"}:
+        return (
+            f"module.{case.helper}",
+            case.pattern,
+            benchmark_test_support.freeze_signature_value(case.serialized_args()),
+            kwargs_signature,
+            flags,
+            text_model,
+        )
+    if case.operation == "pattern_call" and case.helper in {"sub", "subn"}:
+        return (
+            f"pattern.{case.helper}",
+            case.pattern,
+            benchmark_test_support.freeze_signature_value(case.serialized_args()),
+            kwargs_signature,
+            flags,
+            text_model,
+        )
+    return None
 
 
 def _assert_compiled_pattern_module_compile_contract_payload_round_trip_common(
@@ -932,14 +1214,14 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
             expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
                 benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,
                 {
-                    benchmark_test_support._OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID: (
+                    _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID: (
                         "optional-group-conditional-module-search-present-str",
                     ),
                 },
             ),
-            include_workload=benchmark_test_support._is_optional_group_conditional_workload,
-            correctness_case_signature=benchmark_test_support._optional_group_correctness_case_signature,
-            workload_signature=benchmark_test_support._optional_group_workload_signature,
+            include_workload=_is_optional_group_conditional_workload,
+            correctness_case_signature=_optional_group_correctness_case_signature,
+            workload_signature=_optional_group_workload_signature,
             run_callback_result_parity=True,
         ),
         benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
@@ -969,8 +1251,8 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
                 },
             ),
             include_workload=lambda _: True,
-            correctness_case_signature=benchmark_test_support._nested_group_correctness_case_signature,
-            workload_signature=benchmark_test_support._nested_group_workload_signature,
+            correctness_case_signature=_nested_group_correctness_case_signature,
+            workload_signature=_nested_group_workload_signature,
             run_callback_result_parity=True,
             expected_excluded_workload_ids=frozenset(
                 {
@@ -1008,9 +1290,9 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
                     ),
                 },
             ),
-            include_workload=benchmark_test_support._is_non_alternation_counted_repeat_workload,
-            correctness_case_signature=benchmark_test_support._counted_repeat_correctness_case_signature,
-            workload_signature=benchmark_test_support._counted_repeat_workload_signature,
+            include_workload=_is_non_alternation_counted_repeat_workload,
+            correctness_case_signature=_counted_repeat_correctness_case_signature,
+            workload_signature=_counted_repeat_workload_signature,
             run_callback_result_parity=True,
         ),
         benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
@@ -1042,9 +1324,9 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
                     ),
                 },
             ),
-            include_workload=benchmark_test_support._is_non_alternation_counted_repeat_workload,
-            correctness_case_signature=benchmark_test_support._counted_repeat_correctness_case_signature,
-            workload_signature=benchmark_test_support._counted_repeat_workload_signature,
+            include_workload=_is_non_alternation_counted_repeat_workload,
+            correctness_case_signature=_counted_repeat_correctness_case_signature,
+            workload_signature=_counted_repeat_workload_signature,
             run_callback_result_parity=True,
         ),
         benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
@@ -1080,8 +1362,8 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
                 },
             ),
             include_workload=lambda _: True,
-            correctness_case_signature=benchmark_test_support._grouped_alternation_correctness_case_signature,
-            workload_signature=benchmark_test_support._grouped_alternation_workload_signature,
+            correctness_case_signature=_grouped_alternation_correctness_case_signature,
+            workload_signature=_grouped_alternation_workload_signature,
             run_callback_result_parity=True,
             expected_legacy_workload_ids=frozenset(
                 {
@@ -1138,9 +1420,9 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
             ),
             include_workload=lambda _: True,
             correctness_case_signature=(
-                benchmark_test_support._grouped_alternation_replacement_correctness_case_signature
+                _grouped_alternation_replacement_correctness_case_signature
             ),
-            workload_signature=benchmark_test_support._grouped_alternation_workload_signature,
+            workload_signature=_grouped_alternation_workload_signature,
             run_callback_result_parity=True,
             expected_legacy_workload_ids=frozenset(
                 {
@@ -1243,9 +1525,9 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
             ),
             include_workload=lambda _: True,
             correctness_case_signature=(
-                benchmark_test_support._grouped_alternation_replacement_correctness_case_signature
+                _grouped_alternation_replacement_correctness_case_signature
             ),
-            workload_signature=benchmark_test_support._grouped_alternation_workload_signature,
+            workload_signature=_grouped_alternation_workload_signature,
             run_callback_result_parity=True,
             expected_special_unanchored_workload_ids=(
                 "module-sub-template-numbered-wider-ranged-repeat-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
@@ -1410,8 +1692,8 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
                 },
             ),
             include_workload=lambda _: True,
-            correctness_case_signature=benchmark_test_support._counted_repeat_correctness_case_signature,
-            workload_signature=benchmark_test_support._counted_repeat_workload_signature,
+            correctness_case_signature=_counted_repeat_correctness_case_signature,
+            workload_signature=_counted_repeat_workload_signature,
             run_callback_result_parity=True,
             expected_special_unanchored_workload_ids=(
                 "module-search-numbered-open-ended-group-alternation-lower-bound-bc-warm-bytes",

@@ -2875,6 +2875,21 @@ def test_source_tree_combined_suite_owns_rehomed_manifest_expectation_surface_lo
             "_workload_matches_source_tree_combined_slice",
             "_select_source_tree_combined_slice_rows",
             "_assert_source_tree_benchmark_contract",
+            "_OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID",
+            "_compile_search_fullmatch_case_signature",
+            "_compile_search_fullmatch_workload_signature",
+            "_optional_group_correctness_case_signature",
+            "_optional_group_workload_signature",
+            "_is_optional_group_conditional_workload",
+            "_nested_group_correctness_case_signature",
+            "_nested_group_workload_signature",
+            "_counted_repeat_correctness_case_signature",
+            "_counted_repeat_workload_signature",
+            "_is_non_alternation_counted_repeat_workload",
+            "_grouped_alternation_correctness_case_signature",
+            "_grouped_alternation_workload_args",
+            "_grouped_alternation_workload_signature",
+            "_grouped_alternation_replacement_correctness_case_signature",
         }
     )
     exported_owner_aliases = frozenset(
@@ -2904,6 +2919,8 @@ def test_source_tree_combined_suite_owns_rehomed_manifest_expectation_surface_lo
     assert exported_owner_aliases.issubset(definition_names | assignment_names)
     assert private_owner_names.isdisjoint(dir(module.benchmark_test_support))
     assert exported_owner_aliases.isdisjoint(dir(module.benchmark_test_support))
+    assert hasattr(support, "freeze_signature_value")
+    assert "freeze_signature_value" not in private_owner_names
     assert (
         module.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
         is module._SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
