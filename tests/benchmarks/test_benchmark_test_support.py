@@ -5106,6 +5106,13 @@ def test_source_tree_contract_helper_suites_import_shared_alias_but_define_local
     expected_alias_pairs: frozenset[tuple[str, str | None]],
 ) -> None:
     module = importlib.import_module(module_name)
+    owner_local_fixture_helpers = frozenset(
+        {
+            "case_pattern",
+            "module_workflow_keyword_kwargs_signature",
+            "module_workflow_positional_args_signature",
+        }
+    )
 
     assert _top_level_import_from_alias_pairs(
         _parsed_module_ast(module),
@@ -5114,6 +5121,8 @@ def test_source_tree_contract_helper_suites_import_shared_alias_but_define_local
     ) == expected_alias_pairs
     assert expected_imported_names.issubset(dir(module))
     assert expected_imported_names.isdisjoint(dir(module.benchmark_test_support))
+    assert owner_local_fixture_helpers.issubset(dir(module))
+    assert owner_local_fixture_helpers.isdisjoint(dir(module.benchmark_test_support))
     assert "tests.benchmarks.benchmark_test_support" not in _module_import_targets(
         module
     )

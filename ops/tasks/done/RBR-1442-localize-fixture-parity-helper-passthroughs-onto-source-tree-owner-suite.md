@@ -44,3 +44,13 @@ Created: 2026-03-27
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'callable_signature or keyword_signature or positional_args_signature or case_pattern'` passed (`1 passed, 312 deselected`).
   - `bash -lc "! rg -n 'benchmark_test_support\\.(case_pattern|module_workflow_positional_args_signature|module_workflow_keyword_kwargs_signature)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` is currently red because those exact passthrough calls still exist in the owner suite.
   - `./.venv/bin/python -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_test_support.py` passed.
+
+## Completion
+- Replaced the remaining `benchmark_test_support.case_pattern`, `benchmark_test_support.module_workflow_positional_args_signature`, and `benchmark_test_support.module_workflow_keyword_kwargs_signature` call sites in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` with the suite's existing direct imports from `tests.python.fixture_parity_support`.
+- Removed those three fixture-parity helper re-exports from `tests/benchmarks/benchmark_test_support.py` while leaving `assert_pattern_parity` and `assert_match_result_parity` in shared benchmark support.
+- Tightened `tests/benchmarks/test_benchmark_test_support.py` so the source-tree owner-suite contract now asserts those three owner-local helper routes remain absent from `benchmark_test_support`.
+- Verification in this implementation run:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'source_tree or benchmark_test_support'` passed (`214 passed in 0.91s`).
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'callable_signature or keyword_signature or positional_args_signature or case_pattern'` passed (`1 passed, 312 deselected in 0.35s`).
+  - `bash -lc "! rg -n 'benchmark_test_support\\.(case_pattern|module_workflow_positional_args_signature|module_workflow_keyword_kwargs_signature)' tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` passed with no matches.
+  - `./.venv/bin/python -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_test_support.py` passed.

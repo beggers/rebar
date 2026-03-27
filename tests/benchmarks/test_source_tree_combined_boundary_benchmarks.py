@@ -1479,7 +1479,7 @@ def _pattern_boundary_wrong_text_model_correctness_case_signature(
         return None
     return (
         f"pattern.{case.helper}",
-        benchmark_test_support.case_pattern(case),
+        case_pattern(case),
         freeze_signature_value(case_args),
         (),
         case.flags or 0,
@@ -1598,8 +1598,8 @@ def _pattern_window_positional_indexlike_correctness_case_signature(
         return None
     return (
         case.helper,
-        benchmark_test_support.case_pattern(case),
-        benchmark_test_support.module_workflow_positional_args_signature(case.args),
+        case_pattern(case),
+        module_workflow_positional_args_signature(case.args),
         case.text_model or "str",
     )
 
@@ -1638,7 +1638,7 @@ def _pattern_window_positional_indexlike_workload_signature(
     return (
         workload.operation.removeprefix("pattern."),
         workload.pattern_payload(),
-        benchmark_test_support.module_workflow_positional_args_signature(
+        module_workflow_positional_args_signature(
             _pattern_window_positional_indexlike_workload_args(workload)
         ),
         workload.text_model,
@@ -1674,9 +1674,9 @@ def _pattern_keyword_window_correctness_case_signature(
         return None
     return (
         f"pattern.{case.helper}",
-        benchmark_test_support.case_pattern(case),
+        case_pattern(case),
         freeze_signature_value(list(case.args)),
-        benchmark_test_support.module_workflow_keyword_kwargs_signature(case.kwargs),
+        module_workflow_keyword_kwargs_signature(case.kwargs),
         case.flags or 0,
         case.text_model or "str",
     )
@@ -1694,9 +1694,7 @@ def _pattern_keyword_window_workload_signature(
         workload.operation,
         workload.pattern_payload(),
         freeze_signature_value([workload.haystack_payload()]),
-        benchmark_test_support.module_workflow_keyword_kwargs_signature(
-            workload.kwargs
-        ),
+        module_workflow_keyword_kwargs_signature(workload.kwargs),
         workload.flags,
         workload.text_model,
     )
@@ -1732,7 +1730,7 @@ def _pattern_bounded_wildcard_correctness_case_signature(
         return None
     return (
         f"pattern.{case.helper}",
-        benchmark_test_support.case_pattern(case),
+        case_pattern(case),
         freeze_signature_value(case.serialized_args()),
         (),
         case.flags or 0,
@@ -1793,7 +1791,7 @@ def _pattern_verbose_regression_correctness_case_signature(
         return None
     return (
         f"pattern.{case.helper}",
-        benchmark_test_support.case_pattern(case),
+        case_pattern(case),
         freeze_signature_value(list(case.args)),
         (),
         case.flags or 0,

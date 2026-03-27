@@ -34,12 +34,9 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
     assert_match_result_parity,
     assert_pattern_parity,
-    case_pattern,
     case_replacement_argument,
     case_text_argument,
     callable_match_group_signature,
-    module_workflow_keyword_kwargs_signature,
-    module_workflow_positional_args_signature,
 )
 
 benchmark_test_support = sys.modules[__name__]
