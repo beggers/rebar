@@ -1197,6 +1197,147 @@ def assert_zero_gap_manifest_workloads_measured(
     )
 
 
+@pytest.mark.parametrize(
+    (
+        "manifest_path",
+        "expected_resolved_manifest_path",
+        "expected_measured_workload_ids",
+        "expected_total_workload_count",
+        "expected_subtest_label",
+    ),
+    (
+        pytest.param(
+            pathlib.Path("/tmp/direct-manifest.py"),
+            pathlib.Path("/tmp/direct-manifest.py"),
+            ("workload-a", "workload-b"),
+            2,
+            "measured_workload_id",
+            id="pathlib-path-with-total-count",
+        ),
+        pytest.param(
+            "pattern_boundary.py",
+            BENCHMARK_WORKLOADS_ROOT / "pattern_boundary.py",
+            ("workload-a", "workload-b"),
+            None,
+            "workload_id",
+            id="manifest-filename-with-multiple-ids",
+        ),
+        pytest.param(
+            "pattern_boundary.py",
+            BENCHMARK_WORKLOADS_ROOT / "pattern_boundary.py",
+            ("workload-a",),
+            None,
+            None,
+            id="manifest-filename-with-single-id",
+        ),
+    ),
+)
+def test_assert_zero_gap_manifest_workloads_measured_routes_manifest_paths_through_shared_contract_helper(
+    monkeypatch: pytest.MonkeyPatch,
+    manifest_path: pathlib.Path | str,
+    expected_resolved_manifest_path: pathlib.Path,
+    expected_measured_workload_ids: tuple[str, ...],
+    expected_total_workload_count: int | None,
+    expected_subtest_label: str | None,
+) -> None:
+    manifest_id = "owner-helper-contract"
+    expected_measured_workload_count = len(expected_measured_workload_ids)
+    fake_manifest = SimpleNamespace(manifest_id=manifest_id)
+    captured_contract_calls: list[tuple[object, object, object, object, object]] = []
+    helper_module = __import__(
+        assert_zero_gap_manifest_workloads_measured.__module__,
+        fromlist=["unused"],
+    )
+
+    def fake_load_manifest(path: pathlib.Path) -> SimpleNamespace:
+        assert path == expected_resolved_manifest_path
+        return fake_manifest
+
+    def fake_run_harness_scorecard(
+        module_name: str,
+        argv: list[str],
+        *,
+        report_name: str,
+    ) -> tuple[int, dict[str, object]]:
+        assert module_name == "rebar_harness.benchmarks"
+        assert argv == ["--manifest", str(expected_resolved_manifest_path)]
+        assert report_name == "benchmarks.json"
+        return (
+            0,
+            {
+                "manifests": {
+                    manifest_id: {
+                        "known_gap_count": 0,
+                        "measured_workloads": expected_measured_workload_count,
+                        "workload_count": expected_measured_workload_count,
+                    }
+                }
+            },
+        )
+
+    def fake_assert_manifest_workload_contracts(
+        testcase: unittest.TestCase,
+        manifest: object,
+        scorecard: dict[str, object],
+        workload_expectations: Iterable[tuple[str, str]],
+        *,
+        subtest_label: str | None = None,
+    ) -> None:
+        captured_contract_calls.append(
+            (
+                testcase,
+                manifest,
+                scorecard,
+                tuple(workload_expectations),
+                subtest_label,
+            )
+        )
+
+    monkeypatch.setattr(helper_module, "load_manifest", fake_load_manifest)
+    monkeypatch.setattr(
+        "tests.conftest.run_harness_scorecard",
+        fake_run_harness_scorecard,
+    )
+    monkeypatch.setattr(
+        helper_module,
+        "assert_manifest_workload_contracts",
+        fake_assert_manifest_workload_contracts,
+    )
+
+    assert_zero_gap_manifest_workloads_measured(
+        manifest_path=manifest_path,
+        manifest_id=manifest_id,
+        expected_measured_workload_ids=expected_measured_workload_ids,
+        expected_measured_workload_count=expected_measured_workload_count,
+        expected_total_workload_count=expected_total_workload_count,
+    )
+
+    assert len(captured_contract_calls) == 1
+    (
+        testcase,
+        manifest,
+        scorecard,
+        workload_expectations,
+        subtest_label,
+    ) = captured_contract_calls[0]
+    assert isinstance(testcase, unittest.TestCase)
+    assert manifest is fake_manifest
+    assert scorecard == {
+        "manifests": {
+            manifest_id: {
+                "known_gap_count": 0,
+                "measured_workloads": expected_measured_workload_count,
+                "workload_count": expected_measured_workload_count,
+            }
+        }
+    }
+    assert workload_expectations == tuple(
+        (workload_id, "measured")
+        for workload_id in expected_measured_workload_ids
+    )
+    assert subtest_label == expected_subtest_label
+
+
 def _has_standard_benchmark_legacy_workloads(
     definition: StandardBenchmarkAnchorContractDefinition,
 ) -> bool:
