@@ -15,6 +15,8 @@ import unittest
 from unittest import mock
 import warnings
 
+import pytest
+
 from rebar_harness import correctness
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
@@ -78,6 +80,144 @@ def run_harness_scorecard(
         else:
             scorecard = correctness.SCORECARD_REPORT.load(report_path)
     return summary, scorecard
+
+
+def test_run_harness_scorecard_rejects_explicit_report_argument() -> None:
+    with pytest.raises(
+        ValueError,
+        match="run_harness_scorecard manages its own --report argument",
+    ):
+        run_harness_scorecard(
+            "rebar_harness.correctness",
+            ["--selector", "focused", "--report", "ignored.py"],
+            report_name="custom-scorecard.py",
+        )
+
+
+def test_run_harness_scorecard_loads_json_report_with_owner_local_subprocess_contract(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+) -> None:
+    summary_payload = {"suite": "correctness", "status": "ok"}
+    scorecard_payload = {"summary": {"total_cases": 3}, "manifests": []}
+    observed_subprocess_call: dict[str, object] = {}
+
+    class _FixedTemporaryDirectory:
+        def __enter__(self) -> str:
+            return str(tmp_path)
+
+        def __exit__(self, exc_type: object, exc: object, tb: object) -> None:
+            return None
+
+    def fake_run(
+        args: list[str],
+        *,
+        check: bool,
+        cwd: pathlib.Path,
+        env: dict[str, str],
+        capture_output: bool,
+        text: bool,
+    ) -> subprocess.CompletedProcess[str]:
+        observed_subprocess_call.update(
+            {
+                "args": tuple(args),
+                "check": check,
+                "cwd": cwd,
+                "env": env,
+                "capture_output": capture_output,
+                "text": text,
+            }
+        )
+        pathlib.Path(args[-1]).write_text(json.dumps(scorecard_payload), encoding="utf-8")
+        return subprocess.CompletedProcess(
+            args=args,
+            returncode=0,
+            stdout=json.dumps(summary_payload),
+            stderr="",
+        )
+
+    monkeypatch.setattr(tempfile, "TemporaryDirectory", _FixedTemporaryDirectory)
+    monkeypatch.setattr(subprocess, "run", fake_run)
+
+    summary, scorecard = run_harness_scorecard(
+        "rebar_harness.correctness",
+        ["--selector", "focused"],
+        report_name="custom-scorecard.json",
+    )
+
+    assert summary == summary_payload
+    assert scorecard == scorecard_payload
+    assert observed_subprocess_call == {
+        "args": (
+            sys.executable,
+            "-m",
+            "rebar_harness.correctness",
+            "--selector",
+            "focused",
+            "--report",
+            str(tmp_path / "custom-scorecard.json"),
+        ),
+        "check": True,
+        "cwd": REPO_ROOT,
+        "env": {"PYTHONPATH": str(REPO_ROOT / "python")},
+        "capture_output": True,
+        "text": True,
+    }
+
+
+def test_run_harness_scorecard_loads_python_report_via_correctness_scorecard_loader(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+) -> None:
+    summary_payload = {"suite": "correctness", "status": "ok"}
+    loaded_scorecard = {"summary": {"total_cases": 7}, "manifests": ["loaded-from-py"]}
+    observed_load_paths: list[pathlib.Path] = []
+
+    class _FixedTemporaryDirectory:
+        def __enter__(self) -> str:
+            return str(tmp_path)
+
+        def __exit__(self, exc_type: object, exc: object, tb: object) -> None:
+            return None
+
+    def fake_run(
+        args: list[str],
+        *,
+        check: bool,
+        cwd: pathlib.Path,
+        env: dict[str, str],
+        capture_output: bool,
+        text: bool,
+    ) -> subprocess.CompletedProcess[str]:
+        pathlib.Path(args[-1]).write_text("REPORT = {'summary': {'total_cases': 7}}\n", encoding="utf-8")
+        return subprocess.CompletedProcess(
+            args=args,
+            returncode=0,
+            stdout=json.dumps(summary_payload),
+            stderr="",
+        )
+
+    def fake_load(report_path: pathlib.Path) -> dict[str, object]:
+        observed_load_paths.append(report_path)
+        return loaded_scorecard
+
+    fake_report_descriptor = mock.Mock()
+    fake_report_descriptor.load.side_effect = fake_load
+
+    monkeypatch.setattr(tempfile, "TemporaryDirectory", _FixedTemporaryDirectory)
+    monkeypatch.setattr(subprocess, "run", fake_run)
+    monkeypatch.setattr(correctness, "SCORECARD_REPORT", fake_report_descriptor)
+
+    summary, scorecard = run_harness_scorecard(
+        "rebar_harness.correctness",
+        ["--selector", "focused"],
+        report_name="custom-scorecard.py",
+    )
+
+    assert summary == summary_payload
+    assert scorecard == loaded_scorecard
+    assert observed_load_paths == [tmp_path / "custom-scorecard.py"]
+    fake_report_descriptor.load.assert_called_once_with(tmp_path / "custom-scorecard.py")
 
 
 @dataclass(frozen=True)
