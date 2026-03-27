@@ -1654,6 +1654,15 @@ def test_support_module_does_not_export_compile_proxy_meta_only_surface(
         assert not hasattr(support, name)
 
 
+def test_support_module_does_not_export_owner_local_imported_helpers() -> None:
+    for name in (
+        "BENCHMARK_WORKLOADS_ROOT",
+        "build_cpython_baseline",
+        "unittest",
+    ):
+        assert not hasattr(support, name)
+
+
 def test_compile_proxy_standard_definition_export_is_direct_global(
 ) -> None:
     first_export = getattr(meta_support, "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS")

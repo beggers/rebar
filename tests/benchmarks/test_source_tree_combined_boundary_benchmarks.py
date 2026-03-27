@@ -25,6 +25,7 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from rebar_harness.correctness import published_fixture_manifests
+from rebar_harness.scorecard_io import build_cpython_baseline
 from tests.benchmarks import benchmark_test_support
 from tests.conftest import (
     REPO_ROOT,
@@ -992,7 +993,7 @@ def assert_zero_gap_manifest_workloads_measured(
     resolved_manifest_path = (
         manifest_path
         if isinstance(manifest_path, pathlib.Path)
-        else benchmark_test_support.BENCHMARK_WORKLOADS_ROOT / manifest_path
+        else benchmarks.BENCHMARK_WORKLOADS_ROOT / manifest_path
     )
     manifest = benchmark_test_support.load_manifest(resolved_manifest_path)
     _, scorecard = shared_run_harness_scorecard(
@@ -2192,7 +2193,7 @@ def _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
     *,
     include_workload: Callable[[Any], bool],
 ) -> None:
-    testcase = benchmark_test_support.unittest.TestCase()
+    testcase = unittest.TestCase()
     manifest = benchmark_test_support.load_manifest(owner_spec.manifest_path)
     expected_measured_workload_ids = tuple(
         workload.workload_id
@@ -9853,7 +9854,7 @@ def _assert_source_tree_benchmark_contract(
     testcase.assertEqual(scorecard["suite"], "benchmarks")
     testcase.assertEqual(scorecard["phase"], expected_phase)
     expected_baseline = {
-        **benchmark_test_support.build_cpython_baseline(version_family="3.12.x"),
+        **build_cpython_baseline(version_family="3.12.x"),
         "re_module": "re",
     }
     for key, expected_value in expected_baseline.items():

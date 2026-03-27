@@ -12,11 +12,9 @@ from functools import cache
 from functools import partial
 from types import SimpleNamespace
 from typing import Any
-import unittest
 
 from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
-    BENCHMARK_WORKLOADS_ROOT,
     BenchmarkManifest,
     Workload,
     determine_phase,
@@ -26,7 +24,6 @@ from rebar_harness.benchmarks import (
     workload_from_payload,
     workload_to_payload,
 )
-from rebar_harness.scorecard_io import build_cpython_baseline
 from tests.conftest import records_by_string_id
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
