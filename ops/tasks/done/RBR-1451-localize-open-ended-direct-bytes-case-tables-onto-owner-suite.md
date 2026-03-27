@@ -38,6 +38,8 @@ Created: 2026-03-27
 - `bash -lc "! rg -n 'OPEN_ENDED_ALTERNATION_BYTES_CASES|NESTED_OPEN_ENDED_ALTERNATION_BYTES_CASES|OPEN_ENDED_CONDITIONAL_BYTES_CASES|OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES|BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES|BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES|BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES' tests/python/test_fixture_parity_support_contract.py"`
 
 ## Notes
+- Completed 2026-03-27: moved the seven open-ended direct-bytes supplemental tables into `tests/python/test_open_ended_quantified_group_parity_suite.py`, deleted their shared-support definitions from `tests/python/fixture_parity_support.py`, and retired the leftover contract checks in `tests/python/test_fixture_parity_support_contract.py` that referenced those owner-specific constants.
+- Verification: `PYTHONPATH=python ./.venv/bin/python -m pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py`; `./.venv/bin/python -m py_compile tests/python/fixture_parity_support.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_fixture_parity_support_contract.py`; the task’s positive and negative `rg` checks all passed after the move.
 - Queue and JSON check in this planning run:
   - `.rebar/runtime/dashboard.md` reported `ready: 0`, `in_progress: 0`, `blocked: 0`, `tracked_json_blob_count: 0`, and `tracked_json_blob_delta: 0`.
   - `git status --short` was empty in this run, so the runtime JSON count was not lagging a dirty checkout.
