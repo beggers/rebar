@@ -15,10 +15,11 @@ Required behavior:
 5. Pick exactly one concrete cleanup target for the run. If two bounded candidate probes do not yield a safe target, exit without changes instead of widening the search.
 6. First choice: delete one redundant helper/plumbing layer, obsolete generated artifact, or duplicate coverage file only after a repo-wide caller search shows the symbol is unused or every remaining caller will be updated in the same cleanup.
 7. Second choice: remove another non-standard data-storage or intermediate-representation layer that is already redundant after earlier landed cleanup work.
-8. If no redundant layer, duplication target, or materially simplifying code-quality cleanup remains, exit without changes instead of inventing a cosmetic edit.
-9. Run the most relevant tests for the areas you touched, using repo-local tooling such as `./.venv/bin/python -m pytest` when it exists instead of bare `python3`.
-10. If your cleanup changes affect default published correctness behavior or benchmark behavior, refresh the tracked combined report that corresponds to the default published surface.
-11. Before claiming that a tracked artifact was deleted, verify the final state after your last regeneration or test command. In the unstaged worktree, `git diff --name-status -- <path>` must show `D` rather than `M`, and the live filesystem must no longer contain the path.
+8. Check `tracked_json_blob_count` in `.rebar/runtime/dashboard.md`, and when that value is `0`, treat cleanup throughput as already in the post-JSON phase. In that phase, only proceed when the candidate removes an entire shared helper/plumbing layer, a duplicate coverage file or tracked artifact, or another clearly reusable cross-file structure; if the best remaining candidate is just one more owner-local helper deletion inside the same subsystem support file, exit without changes.
+9. If no redundant layer, duplication target, or materially simplifying code-quality cleanup remains, exit without changes instead of inventing a cosmetic edit.
+10. Run the most relevant tests for the areas you touched, using repo-local tooling such as `./.venv/bin/python -m pytest` when it exists instead of bare `python3`.
+11. If your cleanup changes affect default published correctness behavior or benchmark behavior, refresh the tracked combined report that corresponds to the default published surface.
+12. Before claiming that a tracked artifact was deleted, verify the final state after your last regeneration or test command. In the unstaged worktree, `git diff --name-status -- <path>` must show `D` rather than `M`, and the live filesystem must no longer contain the path.
 
 Constraints:
 - Do not add new features.
@@ -30,6 +31,7 @@ Constraints:
 - Ignored caches, build outputs, and other ephemeral untracked files are not valid cleanup targets by themselves; if those are the only waste you find, exit without changes.
 - Do not dump or enumerate large symbol inventories from broad files when a narrow `rg`, direct caller search, or recent-diff inspection would answer the same question.
 - Do not choose a cleanup that needs a large-file rewrite, a broad multi-screen diff, or a wide verification matrix just to remove one helper; prefer smaller local deletions and no-op over another sprawling consolidation pass.
+- Once `tracked_json_blob_count` is `0`, do not spend a run removing just one more owner-local helper or cache reset from an already-active subsystem support file unless that same patch also removes the enclosing shared layer or another clearly reusable cross-file structure.
 - Treat "plain Python + Rust only" as the target shape for the repository, and prefer deleting intermediate data layers over preserving them for convenience.
 - Keep the repo in the same overall state: implemented features stay implemented, existing failing tests stay failing unless a cleanup change incidentally fixes a real bug, and passing tests must remain passing.
 - Prefer deleting code over moving it unless movement is necessary to remove duplication cleanly.
