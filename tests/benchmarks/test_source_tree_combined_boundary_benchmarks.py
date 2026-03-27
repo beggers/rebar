@@ -45,12 +45,144 @@ from tests.python.fixture_parity_support import (
     module_workflow_positional_args_signature,
 )
 
-_is_collection_replacement_compiled_pattern_success_workload = (
-    benchmark_test_support._is_collection_replacement_compiled_pattern_success_workload
+_COMPILED_PATTERN_MODULE_HELPER_OPERATIONS = frozenset(
+    {"module.search", "module.match", "module.fullmatch"}
 )
-_is_collection_replacement_wrong_text_model_workload = (
-    benchmark_test_support._is_collection_replacement_wrong_text_model_workload
+_VERBOSE_REGRESSION_PATTERN = (
+    r"^ (?P<key>[A-Z_]+) \s* = \s* (?:[A-Z]{2,4}+|\d{2,3}) $"
 )
+_VERBOSE_REGRESSION_FLAGS = int(re.VERBOSE | re.MULTILINE)
+
+
+def _is_module_workflow_compiled_pattern_workload(workload: Any) -> bool:
+    return (
+        not workload.kwargs
+        and workload.use_compiled_pattern
+        and workload.operation in _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS
+    )
+
+
+def _is_module_workflow_compiled_pattern_literal_success_workload(
+    workload: Any,
+) -> bool:
+    return (
+        _is_module_workflow_compiled_pattern_workload(workload)
+        and getattr(workload, "haystack_text_model", None) is None
+        and workload.expected_exception is None
+        and workload.pattern == "abc"
+    )
+
+
+def _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload(
+    workload: Any,
+) -> bool:
+    return (
+        _is_module_workflow_compiled_pattern_workload(workload)
+        and getattr(workload, "haystack_text_model", None) is None
+        and workload.expected_exception is None
+        and workload.pattern == "a.c"
+        and workload.text_model in {"str", "bytes"}
+    )
+
+
+def _is_module_workflow_compiled_pattern_verbose_bytes_success_workload(
+    workload: Any,
+) -> bool:
+    return (
+        _is_module_workflow_compiled_pattern_workload(workload)
+        and getattr(workload, "haystack_text_model", None) is None
+        and workload.expected_exception is None
+        and workload.pattern == _VERBOSE_REGRESSION_PATTERN
+        and workload.flags == _VERBOSE_REGRESSION_FLAGS
+        and workload.text_model == "bytes"
+    )
+
+
+def _is_collection_replacement_compiled_pattern_success_workload(
+    workload: Any,
+) -> bool:
+    return (
+        getattr(workload, "haystack_text_model", None) is None
+        and not workload.kwargs
+        and workload.use_compiled_pattern
+        and workload.operation
+        in {
+            "module.split",
+            "module.findall",
+            "module.finditer",
+            "module.sub",
+            "module.subn",
+        }
+        and workload.expected_exception is None
+        and workload.pattern == "abc"
+    )
+
+
+def _is_module_workflow_compiled_pattern_wrong_text_model_workload(
+    workload: Any,
+) -> bool:
+    return (
+        _is_module_workflow_compiled_pattern_workload(workload)
+        and getattr(workload, "haystack_text_model", None) is not None
+        and workload.expected_exception is not None
+        and workload.expected_exception.get("type") == "TypeError"
+    )
+
+
+def _is_collection_replacement_wrong_text_model_workload(workload: Any) -> bool:
+    return (
+        getattr(workload, "haystack_text_model", None) is not None
+        and not workload.kwargs
+        and workload.use_compiled_pattern
+        and workload.operation
+        in {
+            "module.split",
+            "module.findall",
+            "module.finditer",
+            "module.sub",
+            "module.subn",
+        }
+        and workload.expected_exception is not None
+        and workload.expected_exception.get("type") == "TypeError"
+    )
+
+
+def _module_workflow_compiled_pattern_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.operation != "module_call" or case.kwargs or not case.use_compiled_pattern:
+        return None
+    if case.helper not in {"search", "match", "fullmatch"}:
+        return None
+    if not case.args:
+        return None
+    case_text_model = case.text_model or "str"
+    return (
+        f"module.{case.helper}",
+        case_pattern(case),
+        benchmark_test_support.freeze_signature_value(list(case.args)),
+        case.use_compiled_pattern,
+        case.flags or 0,
+        case_text_model,
+    )
+
+
+def _module_workflow_compiled_pattern_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if not _is_module_workflow_compiled_pattern_workload(workload):
+        raise AssertionError(
+            "unexpected module-workflow compiled-pattern workload "
+            f"{workload.workload_id!r}"
+        )
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        benchmark_test_support.freeze_signature_value([workload.haystack_payload()]),
+        workload.use_compiled_pattern,
+        workload.flags,
+        workload.text_model,
+    )
 
 _PATTERN_BOUNDARY_OPERATIONS = frozenset(
     {"pattern.search", "pattern.match", "pattern.fullmatch"}
@@ -1362,7 +1494,7 @@ def _run_cpython_compiled_pattern_module_helper_workload(
         workload.pattern_payload(),
         workload.flags,
     )
-    if workload.operation in benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_OPERATIONS:
+    if workload.operation in _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS:
         cpython_call_args = (workload.haystack_payload(), workload.flags)
         materialize_cpython_result = False
     elif workload.operation == "module.split":
@@ -1880,7 +2012,7 @@ def _compiled_pattern_module_helper_runtime_route(
     *,
     collection_replacement_callback_flags: int,
 ) -> tuple[object, tuple[object, ...], tuple[object, ...], bool]:
-    if workload.operation in benchmark_test_support._COMPILED_PATTERN_MODULE_HELPER_OPERATIONS:
+    if workload.operation in _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS:
         return (
             "module-result",
             (workload.operation, workload.haystack_payload(), 0, {}),
@@ -1993,11 +2125,11 @@ _COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK = (
                 ),
             },
         ),
-        include_workload=benchmark_test_support._is_module_workflow_compiled_pattern_literal_success_workload,
+        include_workload=_is_module_workflow_compiled_pattern_literal_success_workload,
         correctness_case_signature=(
-            benchmark_test_support._module_workflow_compiled_pattern_correctness_case_signature
+            _module_workflow_compiled_pattern_correctness_case_signature
         ),
-        workload_signature=benchmark_test_support._module_workflow_compiled_pattern_workload_signature,
+        workload_signature=_module_workflow_compiled_pattern_workload_signature,
         run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(
@@ -2018,12 +2150,12 @@ _COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK = (
             },
         ),
         include_workload=(
-            benchmark_test_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload
+            _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload
         ),
         correctness_case_signature=(
-            benchmark_test_support._module_workflow_compiled_pattern_correctness_case_signature
+            _module_workflow_compiled_pattern_correctness_case_signature
         ),
-        workload_signature=benchmark_test_support._module_workflow_compiled_pattern_workload_signature,
+        workload_signature=_module_workflow_compiled_pattern_workload_signature,
         run_callback_result_parity=True,
     ),
     StandardBenchmarkAnchorContractDefinition(
@@ -2040,11 +2172,11 @@ _COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK = (
                 ),
             },
         ),
-        include_workload=benchmark_test_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+        include_workload=_is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
         correctness_case_signature=(
-            benchmark_test_support._module_workflow_compiled_pattern_correctness_case_signature
+            _module_workflow_compiled_pattern_correctness_case_signature
         ),
-        workload_signature=benchmark_test_support._module_workflow_compiled_pattern_workload_signature,
+        workload_signature=_module_workflow_compiled_pattern_workload_signature,
         run_callback_result_parity=True,
     ),
 )
@@ -2076,13 +2208,13 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
                 },
             ),
             include_workload=(
-                benchmark_test_support._is_module_workflow_compiled_pattern_wrong_text_model_workload
+                _is_module_workflow_compiled_pattern_wrong_text_model_workload
             ),
             correctness_case_signature=(
-                benchmark_test_support._module_workflow_compiled_pattern_correctness_case_signature
+                _module_workflow_compiled_pattern_correctness_case_signature
             ),
             workload_signature=(
-                benchmark_test_support._module_workflow_compiled_pattern_workload_signature
+                _module_workflow_compiled_pattern_workload_signature
             ),
         ),
         StandardBenchmarkAnchorContractDefinition(
@@ -5089,7 +5221,7 @@ def _compiled_pattern_wrong_text_model_specs() -> tuple[dict[str, object], ...]:
             "case_id": "compiled_pattern_module_boundary_wrong_text_model",
             "manifest_path": "module_boundary.py",
             "include_workload": (
-                benchmark_test_support._is_module_workflow_compiled_pattern_wrong_text_model_workload
+                _is_module_workflow_compiled_pattern_wrong_text_model_workload
             ),
             "contract_manifest_id": "module-boundary",
             "contract_filename": (
@@ -5203,9 +5335,9 @@ _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC = (
         case_id="module-boundary",
         manifest_path=benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
         include_workload_selectors=(
-            benchmark_test_support._is_module_workflow_compiled_pattern_literal_success_workload,
-            benchmark_test_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
-            benchmark_test_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+            _is_module_workflow_compiled_pattern_literal_success_workload,
+            _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+            _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
         ),
         contract_manifest_id="module-boundary",
         contract_filename=(
@@ -15032,17 +15164,17 @@ def test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern
         ),
         pytest.param(
             _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
-            benchmark_test_support._is_module_workflow_compiled_pattern_literal_success_workload,
+            _is_module_workflow_compiled_pattern_literal_success_workload,
             id="module-boundary-literal-success",
         ),
         pytest.param(
             _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
-            benchmark_test_support._is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
+            _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
             id="module-boundary-bounded-wildcard-success",
         ),
         pytest.param(
             _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC,
-            benchmark_test_support._is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
+            _is_module_workflow_compiled_pattern_verbose_bytes_success_workload,
             id="module-boundary-verbose-bytes-success",
         ),
     ),
