@@ -566,6 +566,59 @@ def test_run_harness_scorecard_loads_python_benchmark_reports() -> None:
     assert {key: scorecard["summary"][key] for key in summary} == summary
 
 
+def test_run_harness_scorecard_loads_python_benchmark_reports_uses_owner_local_manifest_constant(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    contract_manifest_path = (
+        REPO_ROOT
+        / "benchmarks"
+        / "workloads"
+        / "compile_matrix_contract_probe.py"
+    )
+    captured_call: dict[str, object] = {}
+
+    def _run_harness_scorecard(
+        module_name: str,
+        cli_args: list[str],
+        *,
+        report_name: str,
+    ) -> tuple[dict[str, int], dict[str, object]]:
+        captured_call.update(
+            {
+                "module_name": module_name,
+                "cli_args": list(cli_args),
+                "report_name": report_name,
+            }
+        )
+        summary = {"measured_workloads": 1}
+        return (
+            summary,
+            {
+                "suite": "benchmarks",
+                "artifacts": {
+                    "manifest": str(contract_manifest_path.relative_to(REPO_ROOT)),
+                    "manifest_id": "compile-matrix",
+                },
+                "summary": summary,
+            },
+        )
+
+    monkeypatch.setattr(sys.modules[__name__], "run_harness_scorecard", _run_harness_scorecard)
+    monkeypatch.setattr(
+        sys.modules[__name__],
+        "COMPILE_MATRIX_MANIFEST_PATH",
+        contract_manifest_path,
+    )
+
+    test_run_harness_scorecard_loads_python_benchmark_reports()
+
+    assert captured_call == {
+        "module_name": "rebar_harness.benchmarks",
+        "cli_args": ["--manifest", str(contract_manifest_path)],
+        "report_name": "compile-matrix.py",
+    }
+
+
 def test_run_harness_scorecard_accepts_one_shot_cli_arg_iterators() -> None:
     summary, scorecard = run_harness_scorecard(
         "rebar_harness.correctness",
