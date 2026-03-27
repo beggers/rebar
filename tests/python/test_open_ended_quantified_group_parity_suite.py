@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Callable, Iterable, Mapping
 from itertools import product
 import re
 
@@ -36,7 +37,6 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     bundle_manifest_pytest_id,
-    build_compile_case_pattern_trace_cases,
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
@@ -67,6 +67,94 @@ OPEN_ENDED_BACKTRACKING_BRANCH_BYTES = {
     branch: text.encode("ascii")
     for branch, text in OPEN_ENDED_BACKTRACKING_BRANCH_TEXT.items()
 }
+
+
+def _compile_case_trace_prefix(case: FixtureCase) -> str:
+    for suffix in ("-compile-metadata-str", "-compile-metadata-bytes"):
+        if case.case_id.endswith(suffix):
+            return case.case_id.removesuffix(suffix)
+    raise AssertionError(f"unexpected compile case id {case.case_id!r}")
+
+
+def _build_compile_case_pattern_trace_cases(
+    compile_cases: Iterable[FixtureCase],
+    *,
+    pattern_extractor: Callable[[FixtureCase], str | bytes] = case_pattern,
+    branch_text_by_id: Mapping[str, str | bytes],
+    repetition_counts: Iterable[int],
+    case_id_suffix: str = "",
+) -> tuple[OpenEndedTraceCase, ...]:
+    ordered_branch_ids = tuple(branch_text_by_id)
+    trace_specs = tuple(
+        (_compile_case_trace_prefix(case), pattern_extractor(case))
+        for case in compile_cases
+    )
+    cases: list[OpenEndedTraceCase] = []
+
+    for prefix, pattern in trace_specs:
+        if isinstance(pattern, bytes):
+            typed_branch_text_by_id = {
+                branch_id: text
+                for branch_id, text in branch_text_by_id.items()
+                if isinstance(text, bytes)
+            }
+            if len(typed_branch_text_by_id) != len(branch_text_by_id):
+                raise AssertionError(
+                    f"{prefix!r} bytes trace builder requires bytes branch texts"
+                )
+            for repetition_count in repetition_counts:
+                for branch_order in product(ordered_branch_ids, repeat=repetition_count):
+                    body = b"".join(
+                        typed_branch_text_by_id[branch_id] for branch_id in branch_order
+                    )
+                    branch_id = "-".join(branch_order)
+                    fullmatch_text = b"a" + body + b"d"
+                    case_id = (
+                        f"{prefix}{case_id_suffix}-{branch_id}"
+                        if case_id_suffix
+                        else f"{prefix}-{branch_id}"
+                    )
+                    cases.append(
+                        OpenEndedTraceCase(
+                            id=case_id,
+                            pattern=pattern,
+                            search_text=b"zz" + fullmatch_text + b"zz",
+                            fullmatch_text=fullmatch_text,
+                        )
+                    )
+            continue
+
+        typed_branch_text_by_id = {
+            branch_id: text
+            for branch_id, text in branch_text_by_id.items()
+            if isinstance(text, str)
+        }
+        if len(typed_branch_text_by_id) != len(branch_text_by_id):
+            raise AssertionError(
+                f"{prefix!r} str trace builder requires str branch texts"
+            )
+        for repetition_count in repetition_counts:
+            for branch_order in product(ordered_branch_ids, repeat=repetition_count):
+                body = "".join(
+                    typed_branch_text_by_id[branch_id] for branch_id in branch_order
+                )
+                branch_id = "-".join(branch_order)
+                fullmatch_text = f"a{body}d"
+                case_id = (
+                    f"{prefix}{case_id_suffix}-{branch_id}"
+                    if case_id_suffix
+                    else f"{prefix}-{branch_id}"
+                )
+                cases.append(
+                    OpenEndedTraceCase(
+                        id=case_id,
+                        pattern=pattern,
+                        search_text=f"zz{fullmatch_text}zz",
+                        fullmatch_text=fullmatch_text,
+                    )
+                )
+
+    return tuple(cases)
 
 
 FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles(
@@ -314,7 +402,7 @@ COMPILE_CASES, MODULE_CASES, PATTERN_CASES = partition_direct_bytes_follow_on_ca
         if spec.follow_on_id is not None
     ),
 )
-OPEN_ENDED_TRACE_CASES = build_compile_case_pattern_trace_cases(
+OPEN_ENDED_TRACE_CASES = _build_compile_case_pattern_trace_cases(
     tuple(
         case
         for bundle in OPEN_ENDED_TRACE_BUNDLES
@@ -330,7 +418,7 @@ EXPECTED_OPEN_ENDED_FULLMATCH_TEXTS = frozenset(
     for repetition_count in range(1, 5)
     for branch_order in product(OPEN_ENDED_BRANCH_TEXT, repeat=repetition_count)
 )
-BROADER_RANGE_OPEN_ENDED_TRACE_CASES = build_compile_case_pattern_trace_cases(
+BROADER_RANGE_OPEN_ENDED_TRACE_CASES = _build_compile_case_pattern_trace_cases(
     tuple(
         case
         for case in fixture_cases_for_operation(
@@ -348,7 +436,7 @@ EXPECTED_BROADER_RANGE_OPEN_ENDED_FULLMATCH_TEXTS = frozenset(
     for repetition_count in range(2, 6)
     for branch_order in product(OPEN_ENDED_BRANCH_TEXT, repeat=repetition_count)
 )
-BROADER_RANGE_OPEN_ENDED_CONDITIONAL_TRACE_CASES = build_compile_case_pattern_trace_cases(
+BROADER_RANGE_OPEN_ENDED_CONDITIONAL_TRACE_CASES = _build_compile_case_pattern_trace_cases(
     tuple(
         case
         for case in fixture_cases_for_operation(
@@ -366,7 +454,7 @@ EXPECTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_FULLMATCH_TEXTS = frozenset(
     for repetition_count in range(2, 6)
     for branch_order in product(OPEN_ENDED_BRANCH_TEXT, repeat=repetition_count)
 )
-OPEN_ENDED_BYTES_TRACE_CASES = build_compile_case_pattern_trace_cases(
+OPEN_ENDED_BYTES_TRACE_CASES = _build_compile_case_pattern_trace_cases(
     tuple(
         case
         for bundle in OPEN_ENDED_TRACE_BUNDLES
@@ -384,7 +472,7 @@ EXPECTED_OPEN_ENDED_BYTES_FULLMATCH_TEXTS = frozenset(
     for branch_order in product(OPEN_ENDED_BRANCH_BYTES, repeat=repetition_count)
 )
 BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_TRACE_CASES = (
-    build_compile_case_pattern_trace_cases(
+    _build_compile_case_pattern_trace_cases(
         tuple(
             case
             for case in fixture_cases_for_operation(
@@ -404,7 +492,7 @@ EXPECTED_BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_FULLMATCH_TEXTS = frozenset(
     for repetition_count in range(2, 6)
     for branch_order in product(OPEN_ENDED_BRANCH_BYTES, repeat=repetition_count)
 )
-OPEN_ENDED_BACKTRACKING_TRACE_CASES = build_compile_case_pattern_trace_cases(
+OPEN_ENDED_BACKTRACKING_TRACE_CASES = _build_compile_case_pattern_trace_cases(
     tuple(
         case
         for case in fixture_cases_for_operation(
@@ -425,7 +513,7 @@ EXPECTED_OPEN_ENDED_BACKTRACKING_FULLMATCH_TEXTS = frozenset(
         repeat=repetition_count,
     )
 )
-OPEN_ENDED_BACKTRACKING_BYTES_TRACE_CASES = build_compile_case_pattern_trace_cases(
+OPEN_ENDED_BACKTRACKING_BYTES_TRACE_CASES = _build_compile_case_pattern_trace_cases(
     tuple(
         case
         for case in fixture_cases_for_operation(

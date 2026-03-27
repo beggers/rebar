@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import Iterable, Mapping
 from itertools import product
 import re
 
@@ -35,7 +36,6 @@ from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_valid_match_group_access_parity,
     bundle_manifest_pytest_id,
-    build_pattern_trace_cases,
     case_pattern,
     compile_with_cpython_parity,
     direct_test_case_id_buckets_for_follow_on_bundles,
@@ -53,6 +53,83 @@ BACKTRACKING_BRANCH_TEXT = {
     "short": "bc",
     "long": "bcc",
 }
+
+
+def _build_pattern_trace_cases(
+    *,
+    trace_specs: Iterable[tuple[str, str | bytes]],
+    branch_text_by_id: Mapping[str, str | bytes],
+    repetition_counts: Iterable[int],
+    case_id_suffix: str = "",
+) -> tuple[BacktrackingTraceCase, ...]:
+    ordered_branch_ids = tuple(branch_text_by_id)
+    ordered_specs = tuple(trace_specs)
+    cases: list[BacktrackingTraceCase] = []
+
+    for prefix, pattern in ordered_specs:
+        if isinstance(pattern, bytes):
+            typed_branch_text_by_id = {
+                branch_id: text
+                for branch_id, text in branch_text_by_id.items()
+                if isinstance(text, bytes)
+            }
+            if len(typed_branch_text_by_id) != len(branch_text_by_id):
+                raise AssertionError(
+                    f"{prefix!r} bytes trace builder requires bytes branch texts"
+                )
+            for repetition_count in repetition_counts:
+                for branch_order in product(ordered_branch_ids, repeat=repetition_count):
+                    body = b"".join(
+                        typed_branch_text_by_id[branch_id] for branch_id in branch_order
+                    )
+                    branch_id = "-".join(branch_order)
+                    fullmatch_text = b"a" + body + b"d"
+                    case_id = (
+                        f"{prefix}{case_id_suffix}-{branch_id}"
+                        if case_id_suffix
+                        else f"{prefix}-{branch_id}"
+                    )
+                    cases.append(
+                        BacktrackingTraceCase(
+                            id=case_id,
+                            pattern=pattern,
+                            search_text=b"zz" + fullmatch_text + b"zz",
+                            fullmatch_text=fullmatch_text,
+                        )
+                    )
+            continue
+
+        typed_branch_text_by_id = {
+            branch_id: text
+            for branch_id, text in branch_text_by_id.items()
+            if isinstance(text, str)
+        }
+        if len(typed_branch_text_by_id) != len(branch_text_by_id):
+            raise AssertionError(
+                f"{prefix!r} str trace builder requires str branch texts"
+            )
+        for repetition_count in repetition_counts:
+            for branch_order in product(ordered_branch_ids, repeat=repetition_count):
+                body = "".join(
+                    typed_branch_text_by_id[branch_id] for branch_id in branch_order
+                )
+                branch_id = "-".join(branch_order)
+                fullmatch_text = f"a{body}d"
+                case_id = (
+                    f"{prefix}{case_id_suffix}-{branch_id}"
+                    if case_id_suffix
+                    else f"{prefix}-{branch_id}"
+                )
+                cases.append(
+                    BacktrackingTraceCase(
+                        id=case_id,
+                        pattern=pattern,
+                        search_text=f"zz{fullmatch_text}zz",
+                        fullmatch_text=fullmatch_text,
+                    )
+                )
+
+    return tuple(cases)
 
 
 FIXTURE_BUNDLES, FIXTURE_BUNDLES_BY_MANIFEST_ID = load_published_fixture_bundles(
@@ -235,7 +312,7 @@ DIRECT_BYTES_FOLLOW_ON_CASES = tuple(
     case for spec in DIRECT_BYTES_FOLLOW_ON_CASE_SURFACES for case in spec.cases
 )
 BACKTRACKING_TRACE_CASES = (
-    *build_pattern_trace_cases(
+    *_build_pattern_trace_cases(
         trace_specs=(
             ("broader-range-wider-ranged-repeat-backtracking-numbered", r"a((bc|b)c){1,4}d"),
             (
@@ -246,7 +323,7 @@ BACKTRACKING_TRACE_CASES = (
         branch_text_by_id=BACKTRACKING_BRANCH_TEXT,
         repetition_counts=range(1, 5),
     ),
-    *build_pattern_trace_cases(
+    *_build_pattern_trace_cases(
         trace_specs=(
             (
                 "nested-broader-range-wider-ranged-repeat-backtracking-numbered",

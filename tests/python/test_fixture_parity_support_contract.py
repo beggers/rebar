@@ -6080,109 +6080,16 @@ def test_id_attribute_pytest_id_returns_case_id_attribute(
     assert id_attribute_pytest_id(case) == expected_id
 
 
-def test_compile_case_trace_prefix_strips_standard_compile_suffixes() -> None:
-    str_case = SimpleNamespace(
-        case_id="open-ended-grouped-alternation-numbered-compile-metadata-str"
-    )
-    bytes_case = SimpleNamespace(
-        case_id="open-ended-grouped-alternation-numbered-compile-metadata-bytes"
-    )
-
-    assert fixture_parity_support.compile_case_trace_prefix(str_case) == (
-        "open-ended-grouped-alternation-numbered"
-    )
-    assert fixture_parity_support.compile_case_trace_prefix(bytes_case) == (
-        "open-ended-grouped-alternation-numbered"
-    )
-
-
-def test_build_compile_case_pattern_trace_cases_preserves_open_ended_branch_order() -> None:
-    compile_cases = (
-        SimpleNamespace(
-            case_id="open-ended-grouped-alternation-numbered-compile-metadata-str",
-            pattern=r"a(bc|de){1,}d",
-        ),
-        SimpleNamespace(
-            case_id="nested-open-ended-grouped-alternation-numbered-compile-metadata-str",
-            pattern=r"a((bc|de){1,})d",
-        ),
-    )
-
-    trace_cases = fixture_parity_support.build_compile_case_pattern_trace_cases(
-        compile_cases,
-        pattern_extractor=lambda case: case.pattern,
-        branch_text_by_id={"bc": "bc", "de": "de"},
-        repetition_counts=range(1, 3),
-    )
-
-    assert tuple(case.id for case in trace_cases) == (
-        "open-ended-grouped-alternation-numbered-bc",
-        "open-ended-grouped-alternation-numbered-de",
-        "open-ended-grouped-alternation-numbered-bc-bc",
-        "open-ended-grouped-alternation-numbered-bc-de",
-        "open-ended-grouped-alternation-numbered-de-bc",
-        "open-ended-grouped-alternation-numbered-de-de",
-        "nested-open-ended-grouped-alternation-numbered-bc",
-        "nested-open-ended-grouped-alternation-numbered-de",
-        "nested-open-ended-grouped-alternation-numbered-bc-bc",
-        "nested-open-ended-grouped-alternation-numbered-bc-de",
-        "nested-open-ended-grouped-alternation-numbered-de-bc",
-        "nested-open-ended-grouped-alternation-numbered-de-de",
-    )
-    assert tuple(case.search_text for case in trace_cases[:4]) == (
-        "zzabcdzz",
-        "zzadedzz",
-        "zzabcbcdzz",
-        "zzabcdedzz",
-    )
-    assert tuple(case.fullmatch_text for case in trace_cases[-4:]) == (
-        "abcbcd",
-        "abcded",
-        "adebcd",
-        "adeded",
-    )
-
-
-def test_build_pattern_trace_cases_preserves_numbered_named_variant_expansion_shape() -> None:
-    trace_cases = fixture_parity_support.build_pattern_trace_cases(
-        trace_specs=(
-            ("broader-range-backtracking-numbered", r"a((bc|b)c){1,4}d"),
-            ("broader-range-backtracking-named", r"a(?P<word>(bc|b)c){1,4}d"),
-        ),
-        branch_text_by_id={"short": "bc", "long": "bcc"},
-        repetition_counts=range(1, 3),
-    )
-
-    assert tuple(case.id for case in trace_cases) == (
-        "broader-range-backtracking-numbered-short",
-        "broader-range-backtracking-numbered-long",
-        "broader-range-backtracking-numbered-short-short",
-        "broader-range-backtracking-numbered-short-long",
-        "broader-range-backtracking-numbered-long-short",
-        "broader-range-backtracking-numbered-long-long",
-        "broader-range-backtracking-named-short",
-        "broader-range-backtracking-named-long",
-        "broader-range-backtracking-named-short-short",
-        "broader-range-backtracking-named-short-long",
-        "broader-range-backtracking-named-long-short",
-        "broader-range-backtracking-named-long-long",
-    )
-    assert {case.pattern for case in trace_cases} == {
-        r"a((bc|b)c){1,4}d",
-        r"a(?P<word>(bc|b)c){1,4}d",
-    }
-    assert tuple(case.search_text for case in trace_cases[:4]) == (
-        "zzabcdzz",
-        "zzabccdzz",
-        "zzabcbcdzz",
-        "zzabcbccdzz",
-    )
-    assert tuple(case.fullmatch_text for case in trace_cases[-4:]) == (
-        "abcbcd",
-        "abcbccd",
-        "abccbcd",
-        "abccbccd",
-    )
+@pytest.mark.parametrize(
+    "helper_name",
+    (
+        "compile_case_trace_prefix",
+        "build_compile_case_pattern_trace_cases",
+        "build_pattern_trace_cases",
+    ),
+)
+def test_trace_helper_exports_stay_owner_local(helper_name: str) -> None:
+    assert not hasattr(fixture_parity_support, helper_name)
 
 
 def test_load_fixture_manifest_preserves_distinct_zero_flag_keyword_carriers(

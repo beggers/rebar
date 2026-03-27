@@ -47,3 +47,13 @@ Created: 2026-03-27
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py -k 'trace_cases or pattern_trace'` passed (`7 passed, 3895 deselected`).
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py -k 'trace_cases or pattern_trace'` passed (`1 passed, 1352 deselected`).
   - `bash -lc "! rg -n '\\b(compile_case_trace_prefix|build_pattern_trace_cases|build_compile_case_pattern_trace_cases)\\b' tests/python/fixture_parity_support.py"` is currently red because that shared trace-helper layer still exists and is the target of this task.
+
+## Completion
+- Localized the open-ended quantified-group compile-trace builder into `tests/python/test_open_ended_quantified_group_parity_suite.py` and the wider ranged-repeat pattern-trace builder into `tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py`, leaving `PatternTraceCase` shared but deleting the three owner-only trace helper exports from `tests/python/fixture_parity_support.py`.
+- Tightened `tests/python/test_fixture_parity_support_contract.py` so the shared-support contract asserts `compile_case_trace_prefix`, `build_compile_case_pattern_trace_cases`, and `build_pattern_trace_cases` are no longer exported from `tests.python.fixture_parity_support`.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/python/test_fixture_parity_support_contract.py -k 'compile_case_trace_prefix or build_compile_case_pattern_trace_cases or build_pattern_trace_cases'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/python/test_open_ended_quantified_group_parity_suite.py -k 'trace_cases or pattern_trace'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py -k 'trace_cases or pattern_trace'`
+  - `bash -lc "! rg -n '\\b(compile_case_trace_prefix|build_pattern_trace_cases|build_compile_case_pattern_trace_cases)\\b' tests/python/fixture_parity_support.py"`
+  - `./.venv/bin/python -m py_compile tests/python/fixture_parity_support.py tests/python/test_open_ended_quantified_group_parity_suite.py tests/python/test_wider_ranged_repeat_quantified_group_parity_suite.py tests/python/test_fixture_parity_support_contract.py`
