@@ -1693,7 +1693,7 @@ def test_source_tree_combined_suite_owns_compiled_pattern_module_compile_standar
     )
 
 
-def test_benchmark_test_support_exports_compiled_pattern_module_compile_helper_surface(
+def test_source_tree_combined_suite_owns_compiled_pattern_module_compile_helper_surface(
 ) -> None:
     helper_names = {
         "_compiled_pattern_module_compile_keyword_kwargs_signature",
@@ -1707,12 +1707,22 @@ def test_benchmark_test_support_exports_compiled_pattern_module_compile_helper_s
         "_is_module_workflow_compiled_pattern_compile_keyword_workload",
     }
 
-    shared_definition_names, _ = top_level_module_definition_and_assignment_names(
-        support
+    shared_definition_names, shared_assignment_names = (
+        top_level_module_definition_and_assignment_names(support)
     )
-    assert helper_names.issubset(shared_definition_names)
+    owner_definition_names, owner_assignment_names = (
+        top_level_module_definition_and_assignment_names(collection_replacement_support)
+    )
+    shared_names = shared_definition_names | shared_assignment_names
+    owner_names = owner_definition_names | owner_assignment_names
+
+    assert helper_names.isdisjoint(shared_names)
+    assert helper_names.issubset(owner_names)
     for helper_name in helper_names:
-        assert getattr(support, helper_name) is getattr(anchor_support, helper_name)
+        assert not hasattr(support, helper_name)
+        assert getattr(collection_replacement_support, helper_name).__module__ == (
+            collection_replacement_support.__name__
+        )
 
 
 def test_source_tree_combined_suite_owns_compile_contract_round_trip_helper() -> None:
@@ -4581,6 +4591,15 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
         top_level_module_definition_and_assignment_names(module)
     )
     local_owner_names = {
+        "_compiled_pattern_module_compile_keyword_kwargs_signature",
+        "_module_workflow_compiled_pattern_compile_correctness_case_signature",
+        "_module_workflow_compiled_pattern_compile_workload_signature",
+        "_is_module_workflow_compiled_pattern_compile_workload",
+        "_is_module_workflow_compiled_pattern_compile_success_workload",
+        "_workload_matches_expected_exception",
+        "_module_workflow_compiled_pattern_compile_keyword_correctness_case_signature",
+        "_module_workflow_compiled_pattern_compile_keyword_workload_signature",
+        "_is_module_workflow_compiled_pattern_compile_keyword_workload",
         "compiled_pattern_contract_expected_build_calls",
         "_run_cpython_compiled_pattern_module_helper_workload",
         "_assert_wrong_text_model_payload_round_trip",

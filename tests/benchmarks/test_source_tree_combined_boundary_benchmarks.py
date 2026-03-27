@@ -538,6 +538,170 @@ def _is_non_alternation_counted_repeat_workload(workload: Any) -> bool:
     } and "|" not in workload.pattern
 
 
+def _compiled_pattern_module_compile_keyword_kwargs_signature(
+    kwargs: dict[str, object],
+) -> tuple[tuple[str, str, object], ...]:
+    signature: list[tuple[str, str, object]] = []
+    for name, value in sorted(kwargs.items()):
+        if isinstance(value, bool):
+            signature.append((name, "bool", value))
+            continue
+        if isinstance(value, re.RegexFlag) and int(value) == 0:
+            signature.append((name, "noflag", 0))
+            continue
+        if isinstance(value, int):
+            signature.append((name, "int", int(value)))
+            continue
+        signature.append((name, type(value).__name__, repr(value)))
+    return tuple(signature)
+
+
+def _module_workflow_compiled_pattern_compile_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.operation != "module_call" or case.kwargs or not case.use_compiled_pattern:
+        return None
+    if case.helper != "compile" or case.args:
+        return None
+    case_text_model = case.text_model or "str"
+    return (
+        "module.compile",
+        case_pattern(case),
+        (),
+        case.use_compiled_pattern,
+        case.flags or 0,
+        case_text_model,
+    )
+
+
+def _module_workflow_compiled_pattern_compile_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if not _is_module_workflow_compiled_pattern_compile_workload(workload):
+        raise AssertionError(
+            "unexpected module-workflow compiled-pattern module.compile workload "
+            f"{workload.workload_id!r}"
+        )
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        (),
+        workload.use_compiled_pattern,
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def _is_module_workflow_compiled_pattern_compile_workload(workload: Any) -> bool:
+    return (
+        not workload.kwargs
+        and workload.use_compiled_pattern
+        and workload.operation == "module.compile"
+    )
+
+
+def _is_module_workflow_compiled_pattern_compile_success_workload(
+    workload: Any,
+    *,
+    allowed_patterns: tuple[str, ...],
+) -> bool:
+    return (
+        _is_module_workflow_compiled_pattern_compile_workload(workload)
+        and workload.expected_exception is None
+        and workload.pattern in allowed_patterns
+        and workload.flags == 0
+    )
+
+
+def _workload_matches_expected_exception(
+    workload: Any,
+    *,
+    expected_exception: dict[str, str] | None,
+) -> bool:
+    if expected_exception is None:
+        return workload.expected_exception is None
+    return workload.expected_exception == expected_exception
+
+
+def _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+    case: Any,
+    *,
+    keyword_signature: tuple[tuple[str, str, object], ...],
+    allowed_patterns: tuple[str, ...],
+) -> tuple[Any, ...] | None:
+    if case.operation != "module_call" or not case.use_compiled_pattern:
+        return None
+    if case.helper != "compile" or case.args:
+        return None
+    if (
+        _compiled_pattern_module_compile_keyword_kwargs_signature(case.kwargs)
+        != keyword_signature
+    ):
+        return None
+    if case.pattern not in allowed_patterns:
+        return None
+    case_text_model = case.text_model or "str"
+    return (
+        "module.compile",
+        case_pattern(case),
+        (),
+        keyword_signature,
+        case.use_compiled_pattern,
+        case.flags or 0,
+        case_text_model,
+    )
+
+
+def _module_workflow_compiled_pattern_compile_keyword_workload_signature(
+    workload: Any,
+    *,
+    keyword_label: str,
+    keyword_signature: tuple[tuple[str, str, object], ...],
+    allowed_patterns: tuple[str, ...],
+    expected_exception: dict[str, str] | None = None,
+) -> tuple[Any, ...]:
+    if not _is_module_workflow_compiled_pattern_compile_keyword_workload(
+        workload,
+        keyword_signature=keyword_signature,
+        allowed_patterns=allowed_patterns,
+        expected_exception=expected_exception,
+    ):
+        raise AssertionError(
+            "unexpected module-workflow compiled-pattern module.compile "
+            f"{keyword_label} keyword workload {workload.workload_id!r}"
+        )
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        (),
+        keyword_signature,
+        workload.use_compiled_pattern,
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def _is_module_workflow_compiled_pattern_compile_keyword_workload(
+    workload: Any,
+    *,
+    keyword_signature: tuple[tuple[str, str, object], ...],
+    allowed_patterns: tuple[str, ...],
+    expected_exception: dict[str, str] | None = None,
+) -> bool:
+    return (
+        workload.use_compiled_pattern
+        and workload.operation == "module.compile"
+        and _workload_matches_expected_exception(
+            workload,
+            expected_exception=expected_exception,
+        )
+        and workload.pattern in allowed_patterns
+        and workload.flags == 0
+        and _compiled_pattern_module_compile_keyword_kwargs_signature(workload.kwargs)
+        == keyword_signature
+    )
+
+
 def _pattern_boundary_wrong_text_model_source_workloads() -> tuple[Any, ...]:
     return benchmark_test_support._contract_source_workloads(
         manifest_path=PATTERN_BOUNDARY_MANIFEST_PATH,
@@ -5241,17 +5405,17 @@ _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_ROUTE = (
             "module.compile rows unresolved until helper invocation."
         ),
         correctness_case_signature_builder=(
-            lambda _contract_case, case: benchmark_test_support._module_workflow_compiled_pattern_compile_correctness_case_signature(
+            lambda _contract_case, case: _module_workflow_compiled_pattern_compile_correctness_case_signature(
                 case
             )
         ),
         workload_signature_builder=(
-            lambda _contract_case, workload: benchmark_test_support._module_workflow_compiled_pattern_compile_workload_signature(
+            lambda _contract_case, workload: _module_workflow_compiled_pattern_compile_workload_signature(
                 workload
             )
         ),
         include_workload_selector=(
-            lambda _contract_case, workload: benchmark_test_support._is_module_workflow_compiled_pattern_compile_workload(
+            lambda _contract_case, workload: _is_module_workflow_compiled_pattern_compile_workload(
                 workload
             )
         ),
@@ -5280,14 +5444,14 @@ _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE = (
             "module.compile flags= keyword rows unresolved until helper invocation."
         ),
         correctness_case_signature_builder=(
-            lambda contract_case, case: benchmark_test_support._module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+            lambda contract_case, case: _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
                 case,
                 keyword_signature=contract_case.required_keyword_signature(),
                 allowed_patterns=contract_case.allowed_patterns,
             )
         ),
         workload_signature_builder=(
-            lambda contract_case, workload: benchmark_test_support._module_workflow_compiled_pattern_compile_keyword_workload_signature(
+            lambda contract_case, workload: _module_workflow_compiled_pattern_compile_keyword_workload_signature(
                 workload,
                 keyword_label=contract_case.case_id,
                 keyword_signature=contract_case.required_keyword_signature(),
@@ -5296,7 +5460,7 @@ _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE = (
             )
         ),
         include_workload_selector=(
-            lambda contract_case, workload: benchmark_test_support._is_module_workflow_compiled_pattern_compile_keyword_workload(
+            lambda contract_case, workload: _is_module_workflow_compiled_pattern_compile_keyword_workload(
                 workload,
                 keyword_signature=contract_case.required_keyword_signature(),
                 allowed_patterns=contract_case.allowed_patterns,
@@ -5348,14 +5512,14 @@ class _CompiledPatternModuleCompileKeywordOwnerSpec:
     expected_exception: dict[str, str] | None = None
 
     def correctness_case_signature(self, case: Any) -> tuple[Any, ...] | None:
-        return benchmark_test_support._module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
+        return _module_workflow_compiled_pattern_compile_keyword_correctness_case_signature(
             case,
             keyword_signature=self.keyword_signature,
             allowed_patterns=self.allowed_patterns,
         )
 
     def workload_signature(self, workload: Any) -> tuple[Any, ...]:
-        return benchmark_test_support._module_workflow_compiled_pattern_compile_keyword_workload_signature(
+        return _module_workflow_compiled_pattern_compile_keyword_workload_signature(
             workload,
             keyword_label=self.case_id,
             keyword_signature=self.keyword_signature,
@@ -5364,7 +5528,7 @@ class _CompiledPatternModuleCompileKeywordOwnerSpec:
         )
 
     def includes_workload(self, workload: Any) -> bool:
-        return benchmark_test_support._is_module_workflow_compiled_pattern_compile_keyword_workload(
+        return _is_module_workflow_compiled_pattern_compile_keyword_workload(
             workload,
             keyword_signature=self.keyword_signature,
             allowed_patterns=self.allowed_patterns,
@@ -5420,17 +5584,17 @@ class _CompiledPatternModuleCompileSuccessOwnerSpec:
     expected_anchor_pairs: tuple[tuple[str, str], ...]
 
     def correctness_case_signature(self, case: Any) -> tuple[Any, ...] | None:
-        return benchmark_test_support._module_workflow_compiled_pattern_compile_correctness_case_signature(
+        return _module_workflow_compiled_pattern_compile_correctness_case_signature(
             case
         )
 
     def workload_signature(self, workload: Any) -> tuple[Any, ...]:
-        return benchmark_test_support._module_workflow_compiled_pattern_compile_workload_signature(
+        return _module_workflow_compiled_pattern_compile_workload_signature(
             workload
         )
 
     def includes_workload(self, workload: Any) -> bool:
-        return benchmark_test_support._is_module_workflow_compiled_pattern_compile_success_workload(
+        return _is_module_workflow_compiled_pattern_compile_success_workload(
             workload,
             allowed_patterns=self.allowed_patterns,
         )

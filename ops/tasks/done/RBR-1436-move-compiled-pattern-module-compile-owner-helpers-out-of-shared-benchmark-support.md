@@ -37,6 +37,7 @@ Created: 2026-03-27
 - `bash -lc "! rg -n '^def (_compiled_pattern_module_compile_keyword_kwargs_signature|_module_workflow_compiled_pattern_compile_correctness_case_signature|_module_workflow_compiled_pattern_compile_workload_signature|_is_module_workflow_compiled_pattern_compile_workload|_is_module_workflow_compiled_pattern_compile_success_workload|_workload_matches_expected_exception|_module_workflow_compiled_pattern_compile_keyword_correctness_case_signature|_module_workflow_compiled_pattern_compile_keyword_workload_signature|_is_module_workflow_compiled_pattern_compile_keyword_workload)\\b' tests/benchmarks/benchmark_test_support.py"`
 
 ## Notes
+- Completed 2026-03-27: moved the compiled-pattern module-compile selector/signature helper family out of `tests/benchmarks/benchmark_test_support.py` and into `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, updated the benchmark-support ownership assertions to expect local source-tree ownership, and verified the scoped pytest targets, `py_compile`, and the negative `rg` export check all pass.
 - Queue and JSON check in this planning run:
   - `.rebar/runtime/dashboard.md` reported `ready: 0`, `in_progress: 0`, `blocked: 0`, `tracked_json_blob_count: 0`, and `tracked_json_blob_delta: 0`.
   - `git status --short --branch` showed a clean `main...origin/main` checkout in this run, so the runtime JSON count was not stale.
