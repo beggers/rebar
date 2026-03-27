@@ -871,7 +871,7 @@ def test_manifest_workloads_resolve_and_cache_manifest_loads(
     monkeypatch.setattr(support, "load_manifest", _load_manifest)
 
     assert support.manifest_workloads(manifest_path) == workloads
-    assert support.selected_manifest_workloads(
+    assert collection_replacement_support.selected_manifest_workloads(
         manifest_path,
         include_workload=_synthetic_workload_is_included,
     ) == (workloads[0],)
@@ -897,7 +897,7 @@ def test_manifest_workloads_resolve_string_paths_from_workloads_root(
 
     monkeypatch.setattr(support, "load_manifest", _load_manifest)
 
-    assert support.selected_manifest_workloads(manifest_name) == workloads
+    assert collection_replacement_support.selected_manifest_workloads(manifest_name) == workloads
     assert resolved_paths == [
         benchmarks.BENCHMARK_WORKLOADS_ROOT / manifest_name,
     ]
@@ -1361,7 +1361,7 @@ def test_source_tree_contract_manifest_uses_manifest_defaults_and_contract_ids()
 
 
 def test_compiled_pattern_contract_shared_excluded_fields_stay_pinned() -> None:
-    assert support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS == frozenset(
+    assert collection_replacement_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS == frozenset(
         {
             "manifest_id",
             "workload_id",
@@ -2045,8 +2045,8 @@ def test_module_workflow_keyword_definition_exports_reuse_owner_manifest_path_co
             collection_replacement_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
         )
     ) == (
-        support.MODULE_BOUNDARY_MANIFEST_PATH,
-        support.MODULE_BOUNDARY_MANIFEST_PATH,
+        collection_replacement_support.MODULE_BOUNDARY_MANIFEST_PATH,
+        collection_replacement_support.MODULE_BOUNDARY_MANIFEST_PATH,
     )
 
 
@@ -2079,7 +2079,10 @@ def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_b
         expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
     assert getattr(module, "benchmark_test_support") is support
-    assert module.benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH is support.MODULE_BOUNDARY_MANIFEST_PATH
+    assert not hasattr(support, "MODULE_BOUNDARY_MANIFEST_PATH")
+    assert module.MODULE_BOUNDARY_MANIFEST_PATH is (
+        collection_replacement_support.MODULE_BOUNDARY_MANIFEST_PATH
+    )
     if module_constant_name is not None:
         _, assignment_names = top_level_module_definition_and_assignment_names(
             module
@@ -2103,19 +2106,28 @@ def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_b
 def test_source_tree_manifest_path_consumers_reuse_support_constants_by_identity(
     manifest_path_name: str,
 ) -> None:
-    assert getattr(anchor_support, manifest_path_name) is getattr(support, manifest_path_name)
+    definition_names, assignment_names = top_level_module_definition_and_assignment_names(
+        collection_replacement_support
+    )
+    assert not hasattr(support, manifest_path_name)
+    assert manifest_path_name in assignment_names
+    assert manifest_path_name not in definition_names
+    assert getattr(collection_replacement_support, manifest_path_name) is getattr(
+        collection_replacement_support,
+        manifest_path_name,
+    )
 
 
 def test_shared_source_tree_manifest_path_constants_point_to_current_workload_files() -> None:
     assert (
-        support.OPTIONAL_GROUP_MANIFEST_PATH,
-        support.NESTED_GROUP_MANIFEST_PATH,
-        support.EXACT_REPEAT_MANIFEST_PATH,
-        support.RANGED_REPEAT_MANIFEST_PATH,
-        support.GROUPED_ALTERNATION_MANIFEST_PATH,
-        support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
-        support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
-        support.OPEN_ENDED_MANIFEST_PATH,
+        collection_replacement_support.OPTIONAL_GROUP_MANIFEST_PATH,
+        collection_replacement_support.NESTED_GROUP_MANIFEST_PATH,
+        collection_replacement_support.EXACT_REPEAT_MANIFEST_PATH,
+        collection_replacement_support.RANGED_REPEAT_MANIFEST_PATH,
+        collection_replacement_support.GROUPED_ALTERNATION_MANIFEST_PATH,
+        collection_replacement_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+        collection_replacement_support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
+        collection_replacement_support.OPEN_ENDED_MANIFEST_PATH,
     ) == (
         REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py",
         REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py",
@@ -3533,7 +3545,7 @@ def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
     assert {
         "COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS",
         "COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
-    }.issubset(support_assignment_names)
+    }.issubset(collection_assignment_names)
     removed_duplicate_names = {
         "_module_workflow_compiled_pattern_success_correctness_case_signature",
         "_module_workflow_compiled_pattern_success_workload_signature",
@@ -3723,8 +3735,6 @@ def test_source_tree_combined_suite_owns_rehomed_manifest_expectation_surface_lo
     assert exported_owner_aliases.issubset(definition_names | assignment_names)
     assert private_owner_names.isdisjoint(dir(module.benchmark_test_support))
     assert exported_owner_aliases.isdisjoint(dir(module.benchmark_test_support))
-    assert hasattr(support, "freeze_signature_value")
-    assert "freeze_signature_value" not in private_owner_names
     assert (
         module.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
         is module._SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
@@ -3733,6 +3743,54 @@ def test_source_tree_combined_suite_owns_rehomed_manifest_expectation_surface_lo
         module.assert_source_tree_benchmark_contract
         is module._assert_source_tree_benchmark_contract
     )
+
+
+def test_source_tree_combined_suite_owns_selection_recording_and_helper_surface_locally(
+) -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    support_definition_names, support_assignment_names = (
+        top_level_module_definition_and_assignment_names(support)
+    )
+    definition_names, assignment_names = (
+        top_level_module_definition_and_assignment_names(module)
+    )
+    owner_definition_names = frozenset(
+        {
+            "RecordingBenchmarkCompiledPattern",
+            "RecordingBenchmarkModule",
+            "selected_manifest_workloads",
+            "freeze_signature_value",
+            "AnchoredWorkloadCasePair",
+        }
+    )
+    owner_assignment_names = frozenset(
+        {
+            "COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS",
+            "COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS",
+            "COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS",
+            "MODULE_BOUNDARY_MANIFEST_PATH",
+            "OPTIONAL_GROUP_MANIFEST_PATH",
+            "NESTED_GROUP_MANIFEST_PATH",
+            "EXACT_REPEAT_MANIFEST_PATH",
+            "RANGED_REPEAT_MANIFEST_PATH",
+            "GROUPED_ALTERNATION_MANIFEST_PATH",
+            "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
+            "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
+            "OPEN_ENDED_MANIFEST_PATH",
+            "COLLECTION_REPLACEMENT_MANIFEST_PATH",
+        }
+    )
+
+    assert owner_definition_names.isdisjoint(support_definition_names | support_assignment_names)
+    assert owner_assignment_names.isdisjoint(support_definition_names | support_assignment_names)
+    assert owner_definition_names.issubset(definition_names | assignment_names)
+    assert owner_assignment_names.issubset(definition_names | assignment_names)
+    assert all(not hasattr(support, name) for name in owner_definition_names)
+    assert all(not hasattr(support, name) for name in owner_assignment_names)
+    assert all(hasattr(module, name) for name in owner_definition_names)
+    assert all(hasattr(module, name) for name in owner_assignment_names)
 
 
 @pytest.mark.parametrize(
@@ -4497,7 +4555,7 @@ def test_compiled_pattern_contract_builder_owner_methods_return_live_specs(
 def test_compiled_pattern_owner_builder_methods_return_shared_specs_directly() -> None:
     owner_spec = collection_replacement_support.CompiledPatternModuleSuccessOwnerSpec(
         case_id="synthetic-boundary",
-        manifest_path=support.MODULE_BOUNDARY_MANIFEST_PATH,
+        manifest_path=collection_replacement_support.MODULE_BOUNDARY_MANIFEST_PATH,
         include_workload_selectors=(),
         contract_manifest_id="synthetic-boundary",
         contract_filename="synthetic_contract.py",
@@ -4511,7 +4569,7 @@ def test_compiled_pattern_owner_builder_methods_return_shared_specs_directly() -
     assert built_spec == collection_replacement_support._SourceTreeContractBuilderSpec(
         manifest_id="synthetic-boundary",
         excluded_fields=(
-            support.COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
+            collection_replacement_support.COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
         ),
         timing_scope="module-helper-call",
         notes=(
@@ -5859,7 +5917,7 @@ def test_assert_anchored_workload_case_result_parity_delegates_expected_values(
     anchor_support_cache_guard: None,
 ) -> None:
     workload = _synthetic_workload("anchored", ("shared",))
-    pair = support.AnchoredWorkloadCasePair(
+    pair = collection_replacement_support.AnchoredWorkloadCasePair(
         manifest_name="synthetic_boundary.py",
         workload_id="anchored",
         case_id="case-1",
@@ -5887,7 +5945,7 @@ def test_assert_anchored_workload_case_result_parity_accepts_matching_exceptions
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     workload = _synthetic_workload("anchored", ("shared",))
-    pair = support.AnchoredWorkloadCasePair(
+    pair = collection_replacement_support.AnchoredWorkloadCasePair(
         manifest_name="synthetic_boundary.py",
         workload_id="anchored",
         case_id="case-1",
@@ -5919,7 +5977,7 @@ def test_assert_anchored_workload_case_result_parity_rejects_exception_message_d
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     workload = _synthetic_workload("anchored", ("shared",))
-    pair = support.AnchoredWorkloadCasePair(
+    pair = collection_replacement_support.AnchoredWorkloadCasePair(
         manifest_name="synthetic_boundary.py",
         workload_id="anchored",
         case_id="case-1",
@@ -6122,7 +6180,7 @@ def test_standard_benchmark_special_unanchored_workloads_stay_live_and_out_of_st
         scoped_workload_ids = tuple(
             workload.workload_id
             for manifest_path in definition.manifest_paths
-            for workload in support.selected_manifest_workloads(
+            for workload in collection_replacement_support.selected_manifest_workloads(
                 manifest_path,
                 include_workload=definition.includes_workload,
             )
@@ -6180,7 +6238,7 @@ def test_source_tree_combined_suite_does_not_expose_deleted_standard_benchmark_i
 
 def test_recording_benchmark_support_records_compile_calls_and_reuses_compiled_patterns(
 ) -> None:
-    module = support.RecordingBenchmarkModule()
+    module = collection_replacement_support.RecordingBenchmarkModule()
     compiled_pattern = module.compile("abc", 0)
 
     assert module.calls == [("compile", "abc", 0)]
@@ -6191,7 +6249,7 @@ def test_recording_benchmark_support_records_compile_calls_and_reuses_compiled_p
 
 
 def test_recording_benchmark_support_records_helper_call_before_raising() -> None:
-    module = support.RecordingBenchmarkModule(
+    module = collection_replacement_support.RecordingBenchmarkModule(
         helper_exception=TypeError("unexpected keyword argument 'missing'"),
     )
     callback = benchmarks.build_callable(
@@ -6214,7 +6272,7 @@ def test_recording_benchmark_support_records_helper_call_before_raising() -> Non
 
 
 def test_recording_benchmark_support_records_pattern_helper_calls() -> None:
-    module = support.RecordingBenchmarkModule()
+    module = collection_replacement_support.RecordingBenchmarkModule()
     callback = benchmarks.build_callable(
         module,
         "re",
@@ -6230,7 +6288,7 @@ def test_recording_benchmark_support_records_pattern_helper_calls() -> None:
 
     assert module.calls == [("compile", "abc", 0)]
     compiled_pattern = module.compiled_patterns[0]
-    assert isinstance(compiled_pattern, support.RecordingBenchmarkCompiledPattern)
+    assert isinstance(compiled_pattern, collection_replacement_support.RecordingBenchmarkCompiledPattern)
 
     assert callback() == "pattern-result"
     assert module.calls[-1] == ("pattern.search", "zabcabc", (), {})
@@ -6275,7 +6333,7 @@ def test_recording_benchmark_module_helper_cache_modes_preserve_expected_order(
     expected_build_calls: list[tuple[object, ...]],
     expected_callback_calls: list[tuple[object, ...]],
 ) -> None:
-    module = support.RecordingBenchmarkModule()
+    module = collection_replacement_support.RecordingBenchmarkModule()
     callback = benchmarks.build_callable(
         module,
         "re",
@@ -6300,7 +6358,7 @@ def test_recording_benchmark_module_helper_cache_modes_preserve_expected_order(
 
 def test_recording_benchmark_module_helper_warm_expected_exception_prewarms_compile_cache(
 ) -> None:
-    module = support.RecordingBenchmarkModule(
+    module = collection_replacement_support.RecordingBenchmarkModule(
         helper_exception=TypeError("unexpected keyword argument 'missing'"),
     )
     callback = benchmarks.build_callable(
@@ -6374,7 +6432,7 @@ def test_recording_benchmark_pattern_helper_cache_modes_preserve_expected_order(
     expected_build_calls: list[tuple[object, ...]],
     expected_callback_calls: list[tuple[object, ...]],
 ) -> None:
-    module = support.RecordingBenchmarkModule()
+    module = collection_replacement_support.RecordingBenchmarkModule()
     callback = benchmarks.build_callable(
         module,
         "re",

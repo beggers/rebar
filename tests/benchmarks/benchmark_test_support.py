@@ -48,180 +48,6 @@ from tests.python.fixture_parity_support import (
 benchmark_test_support = sys.modules[__name__]
 
 
-class RecordingBenchmarkCompiledPattern:
-    def __init__(self, calls: list[tuple[object, ...]]) -> None:
-        self._calls = calls
-
-    def search(self, haystack: object, *args: object, **kwargs: object) -> object:
-        self._calls.append(("pattern.search", haystack, args, kwargs))
-        return "pattern-result"
-
-    def match(self, haystack: object, *args: object, **kwargs: object) -> object:
-        self._calls.append(("pattern.match", haystack, args, kwargs))
-        return "pattern-result"
-
-    def fullmatch(
-        self,
-        haystack: object,
-        *args: object,
-        **kwargs: object,
-    ) -> object:
-        self._calls.append(("pattern.fullmatch", haystack, args, kwargs))
-        return "pattern-result"
-
-    def split(self, haystack: object, *args: object, **kwargs: object) -> object:
-        self._calls.append(("pattern.split", haystack, args, kwargs))
-        return "pattern-result"
-
-    def sub(
-        self,
-        repl: object,
-        string: object,
-        *args: object,
-        **kwargs: object,
-    ) -> object:
-        self._calls.append(("pattern.sub", repl, string, args, kwargs))
-        return "pattern-result"
-
-    def subn(
-        self,
-        repl: object,
-        string: object,
-        *args: object,
-        **kwargs: object,
-    ) -> object:
-        self._calls.append(("pattern.subn", repl, string, args, kwargs))
-        return ("pattern-result", 0)
-
-
-class RecordingBenchmarkModule:
-    def __init__(
-        self,
-        *,
-        helper_exception: Exception | None = None,
-        compile_exception: Exception | None = None,
-    ) -> None:
-        self.calls: list[tuple[object, ...]] = []
-        self._helper_exception = helper_exception
-        self._compile_exception = compile_exception
-        self.compiled_patterns: list[RecordingBenchmarkCompiledPattern] = []
-
-    def _maybe_raise_helper_exception(self) -> None:
-        if self._helper_exception is not None:
-            raise self._helper_exception
-
-    def purge(self) -> None:
-        self.calls.append(("purge",))
-
-    def compile(
-        self,
-        pattern: object,
-        flags: int = 0,
-    ) -> RecordingBenchmarkCompiledPattern:
-        self.calls.append(("compile", pattern, flags))
-        if isinstance(pattern, RecordingBenchmarkCompiledPattern):
-            if self._compile_exception is not None:
-                raise self._compile_exception
-            return pattern
-        compiled_pattern = RecordingBenchmarkCompiledPattern(self.calls)
-        self.compiled_patterns.append(compiled_pattern)
-        return compiled_pattern
-
-    def search(
-        self,
-        pattern: object,
-        haystack: object,
-        flags: int = 0,
-        **kwargs: object,
-    ) -> object:
-        self.calls.append(("module.search", pattern, haystack, flags, kwargs))
-        self._maybe_raise_helper_exception()
-        return "module-result"
-
-    def match(
-        self,
-        pattern: object,
-        haystack: object,
-        flags: int = 0,
-        **kwargs: object,
-    ) -> object:
-        self.calls.append(("module.match", pattern, haystack, flags, kwargs))
-        self._maybe_raise_helper_exception()
-        return "module-result"
-
-    def fullmatch(
-        self,
-        pattern: object,
-        haystack: object,
-        flags: int = 0,
-        **kwargs: object,
-    ) -> object:
-        self.calls.append(("module.fullmatch", pattern, haystack, flags, kwargs))
-        self._maybe_raise_helper_exception()
-        return "module-result"
-
-    def split(
-        self,
-        pattern: object,
-        haystack: object,
-        *args: object,
-        **kwargs: object,
-    ) -> object:
-        maxsplit = args[0] if args else 0
-        flags = args[1] if len(args) > 1 else 0
-        self.calls.append(("module.split", pattern, haystack, maxsplit, flags, kwargs))
-        self._maybe_raise_helper_exception()
-        return "module-result"
-
-    def findall(
-        self,
-        pattern: object,
-        haystack: object,
-        flags: int = 0,
-    ) -> object:
-        self.calls.append(("module.findall", pattern, haystack, flags))
-        self._maybe_raise_helper_exception()
-        return "module-result"
-
-    def finditer(
-        self,
-        pattern: object,
-        haystack: object,
-        flags: int = 0,
-    ) -> object:
-        self.calls.append(("module.finditer", pattern, haystack, flags))
-        self._maybe_raise_helper_exception()
-        return iter(["module-finditer-result"])
-
-    def sub(
-        self,
-        pattern: object,
-        repl: object,
-        string: object,
-        *args: object,
-        **kwargs: object,
-    ) -> object:
-        count = args[0] if args else 0
-        flags = args[1] if len(args) > 1 else 0
-        self.calls.append(("module.sub", pattern, repl, string, count, flags, kwargs))
-        self._maybe_raise_helper_exception()
-        return "module-result"
-
-    def subn(
-        self,
-        pattern: object,
-        repl: object,
-        string: object,
-        *args: object,
-        **kwargs: object,
-    ) -> object:
-        count = args[0] if args else 0
-        flags = args[1] if len(args) > 1 else 0
-        self.calls.append(("module.subn", pattern, repl, string, count, flags, kwargs))
-        self._maybe_raise_helper_exception()
-        return ("module-result", 0)
-
-
 def _resolve_live_manifest_path(
     manifest_path: pathlib.Path | str,
 ) -> pathlib.Path:
@@ -235,17 +61,6 @@ def manifest_workloads(
     manifest_path: pathlib.Path | str,
 ) -> tuple[benchmarks.Workload, ...]:
     return tuple(load_manifest(_resolve_live_manifest_path(manifest_path)).workloads)
-
-
-def selected_manifest_workloads(
-    manifest_path: pathlib.Path | str,
-    *,
-    include_workload: Any | None = None,
-) -> tuple[benchmarks.Workload, ...]:
-    workloads = manifest_workloads(manifest_path)
-    if include_workload is None:
-        return workloads
-    return tuple(workload for workload in workloads if include_workload(workload))
 
 
 @cache
@@ -294,102 +109,16 @@ def _clear_anchor_support_caches() -> None:
     if combined_suite is not None:
         _clear_cached_functions(vars(combined_suite).values())
 
-
-COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
-    {
-        "manifest_id",
-        "workload_id",
-        "warmup_iterations",
-        "sample_iterations",
-        "timed_samples",
-        "notes",
-        "smoke",
-    }
-)
-
-COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS = (
-    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
-    | {
-        "categories",
-        "syntax_features",
-        "expected_exception",
-        "haystack_text_model",
-    }
-)
-
-COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS = frozenset(
-    {
-        "manifest_id",
-        "workload_id",
-        "warmup_iterations",
-        "sample_iterations",
-        "timed_samples",
-        "notes",
-        "smoke",
-        "categories",
-        "syntax_features",
-        "haystack_text_model",
-    }
-)
-
-def freeze_signature_value(value: Any) -> Any:
-    if isinstance(value, dict):
-        return tuple(
-            (str(key), freeze_signature_value(nested_value))
-            for key, nested_value in sorted(value.items())
-        )
-    if isinstance(value, list):
-        return tuple(freeze_signature_value(item) for item in value)
-    return value
-
-
 COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
 REGRESSION_MATRIX_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
 )
-
-MODULE_BOUNDARY_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py"
-)
 CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_boundary.py"
-)
-OPTIONAL_GROUP_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py"
-)
-NESTED_GROUP_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py"
-)
-EXACT_REPEAT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "exact_repeat_quantified_group_boundary.py"
-)
-RANGED_REPEAT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "ranged_repeat_quantified_group_boundary.py"
-)
-GROUPED_ALTERNATION_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py"
-)
-GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.py"
-)
-NESTED_GROUP_REPLACEMENT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py"
 )
 NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "nested_group_callable_replacement_boundary.py"
 )
-OPEN_ENDED_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
-)
-
-
-@dataclass(frozen=True, slots=True)
-class AnchoredWorkloadCasePair:
-    manifest_name: str
-    workload_id: str
-    case_id: str
-    workload: Any
-    case: Any
 
 def run_benchmark_workload_with_cpython(workload: Any) -> object:
     re.purge()
@@ -468,12 +197,6 @@ def _write_test_manifest(
     path = tmp_path / filename
     path.write_text(textwrap.dedent(source), encoding="utf-8")
     return path
-
-
-COLLECTION_REPLACEMENT_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.py"
-)
-
 
 def _manual_expected_result(workload: Any) -> object:
     pattern = workload.pattern_payload()

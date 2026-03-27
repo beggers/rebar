@@ -46,6 +46,282 @@ from tests.python.fixture_parity_support import (
     module_workflow_positional_args_signature,
 )
 
+
+class RecordingBenchmarkCompiledPattern:
+    def __init__(self, calls: list[tuple[object, ...]]) -> None:
+        self._calls = calls
+
+    def search(self, haystack: object, *args: object, **kwargs: object) -> object:
+        self._calls.append(("pattern.search", haystack, args, kwargs))
+        return "pattern-result"
+
+    def match(self, haystack: object, *args: object, **kwargs: object) -> object:
+        self._calls.append(("pattern.match", haystack, args, kwargs))
+        return "pattern-result"
+
+    def fullmatch(
+        self,
+        haystack: object,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        self._calls.append(("pattern.fullmatch", haystack, args, kwargs))
+        return "pattern-result"
+
+    def split(self, haystack: object, *args: object, **kwargs: object) -> object:
+        self._calls.append(("pattern.split", haystack, args, kwargs))
+        return "pattern-result"
+
+    def sub(
+        self,
+        repl: object,
+        string: object,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        self._calls.append(("pattern.sub", repl, string, args, kwargs))
+        return "pattern-result"
+
+    def subn(
+        self,
+        repl: object,
+        string: object,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        self._calls.append(("pattern.subn", repl, string, args, kwargs))
+        return ("pattern-result", 0)
+
+
+class RecordingBenchmarkModule:
+    def __init__(
+        self,
+        *,
+        helper_exception: Exception | None = None,
+        compile_exception: Exception | None = None,
+    ) -> None:
+        self.calls: list[tuple[object, ...]] = []
+        self._helper_exception = helper_exception
+        self._compile_exception = compile_exception
+        self.compiled_patterns: list[RecordingBenchmarkCompiledPattern] = []
+
+    def _maybe_raise_helper_exception(self) -> None:
+        if self._helper_exception is not None:
+            raise self._helper_exception
+
+    def purge(self) -> None:
+        self.calls.append(("purge",))
+
+    def compile(
+        self,
+        pattern: object,
+        flags: int = 0,
+    ) -> RecordingBenchmarkCompiledPattern:
+        self.calls.append(("compile", pattern, flags))
+        if isinstance(pattern, RecordingBenchmarkCompiledPattern):
+            if self._compile_exception is not None:
+                raise self._compile_exception
+            return pattern
+        compiled_pattern = RecordingBenchmarkCompiledPattern(self.calls)
+        self.compiled_patterns.append(compiled_pattern)
+        return compiled_pattern
+
+    def search(
+        self,
+        pattern: object,
+        haystack: object,
+        flags: int = 0,
+        **kwargs: object,
+    ) -> object:
+        self.calls.append(("module.search", pattern, haystack, flags, kwargs))
+        self._maybe_raise_helper_exception()
+        return "module-result"
+
+    def match(
+        self,
+        pattern: object,
+        haystack: object,
+        flags: int = 0,
+        **kwargs: object,
+    ) -> object:
+        self.calls.append(("module.match", pattern, haystack, flags, kwargs))
+        self._maybe_raise_helper_exception()
+        return "module-result"
+
+    def fullmatch(
+        self,
+        pattern: object,
+        haystack: object,
+        flags: int = 0,
+        **kwargs: object,
+    ) -> object:
+        self.calls.append(("module.fullmatch", pattern, haystack, flags, kwargs))
+        self._maybe_raise_helper_exception()
+        return "module-result"
+
+    def split(
+        self,
+        pattern: object,
+        haystack: object,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        maxsplit = args[0] if args else 0
+        flags = args[1] if len(args) > 1 else 0
+        self.calls.append(("module.split", pattern, haystack, maxsplit, flags, kwargs))
+        self._maybe_raise_helper_exception()
+        return "module-result"
+
+    def findall(
+        self,
+        pattern: object,
+        haystack: object,
+        flags: int = 0,
+    ) -> object:
+        self.calls.append(("module.findall", pattern, haystack, flags))
+        self._maybe_raise_helper_exception()
+        return "module-result"
+
+    def finditer(
+        self,
+        pattern: object,
+        haystack: object,
+        flags: int = 0,
+    ) -> object:
+        self.calls.append(("module.finditer", pattern, haystack, flags))
+        self._maybe_raise_helper_exception()
+        return iter(["module-finditer-result"])
+
+    def sub(
+        self,
+        pattern: object,
+        repl: object,
+        string: object,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        count = args[0] if args else 0
+        flags = args[1] if len(args) > 1 else 0
+        self.calls.append(("module.sub", pattern, repl, string, count, flags, kwargs))
+        self._maybe_raise_helper_exception()
+        return "module-result"
+
+    def subn(
+        self,
+        pattern: object,
+        repl: object,
+        string: object,
+        *args: object,
+        **kwargs: object,
+    ) -> object:
+        count = args[0] if args else 0
+        flags = args[1] if len(args) > 1 else 0
+        self.calls.append(("module.subn", pattern, repl, string, count, flags, kwargs))
+        self._maybe_raise_helper_exception()
+        return ("module-result", 0)
+
+
+def selected_manifest_workloads(
+    manifest_path: pathlib.Path | str,
+    *,
+    include_workload: Any | None = None,
+) -> tuple[benchmarks.Workload, ...]:
+    workloads = benchmark_test_support.manifest_workloads(manifest_path)
+    if include_workload is None:
+        return workloads
+    return tuple(workload for workload in workloads if include_workload(workload))
+
+
+COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
+    {
+        "manifest_id",
+        "workload_id",
+        "warmup_iterations",
+        "sample_iterations",
+        "timed_samples",
+        "notes",
+        "smoke",
+    }
+)
+
+COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS = (
+    COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
+    | {
+        "categories",
+        "syntax_features",
+        "expected_exception",
+        "haystack_text_model",
+    }
+)
+
+COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS = frozenset(
+    {
+        "manifest_id",
+        "workload_id",
+        "warmup_iterations",
+        "sample_iterations",
+        "timed_samples",
+        "notes",
+        "smoke",
+        "categories",
+        "syntax_features",
+        "haystack_text_model",
+    }
+)
+
+
+def freeze_signature_value(value: Any) -> Any:
+    if isinstance(value, dict):
+        return tuple(
+            (str(key), freeze_signature_value(nested_value))
+            for key, nested_value in sorted(value.items())
+        )
+    if isinstance(value, list):
+        return tuple(freeze_signature_value(item) for item in value)
+    return value
+
+
+MODULE_BOUNDARY_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "module_boundary.py"
+)
+OPTIONAL_GROUP_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py"
+)
+NESTED_GROUP_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py"
+)
+EXACT_REPEAT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "exact_repeat_quantified_group_boundary.py"
+)
+RANGED_REPEAT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "ranged_repeat_quantified_group_boundary.py"
+)
+GROUPED_ALTERNATION_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py"
+)
+GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_replacement_boundary.py"
+)
+NESTED_GROUP_REPLACEMENT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py"
+)
+OPEN_ENDED_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "open_ended_quantified_group_boundary.py"
+)
+COLLECTION_REPLACEMENT_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "collection_replacement_boundary.py"
+)
+
+
+@dataclass(frozen=True, slots=True)
+class AnchoredWorkloadCasePair:
+    manifest_name: str
+    workload_id: str
+    case_id: str
+    workload: Any
+    case: Any
+
+
 _COMPILED_PATTERN_MODULE_HELPER_OPERATIONS = frozenset(
     {"module.search", "module.match", "module.fullmatch"}
 )
@@ -236,7 +512,7 @@ def _contract_source_workloads(
     source_workloads = tuple(
         workload
         for include_workload in include_workload_selectors
-        for workload in benchmark_test_support.selected_manifest_workloads(
+        for workload in selected_manifest_workloads(
             manifest_path,
             include_workload=include_workload,
         )
@@ -482,7 +758,7 @@ def _module_workflow_compiled_pattern_correctness_case_signature(
     return (
         f"module.{case.helper}",
         case_pattern(case),
-        benchmark_test_support.freeze_signature_value(list(case.args)),
+        freeze_signature_value(list(case.args)),
         case.use_compiled_pattern,
         case.flags or 0,
         case_text_model,
@@ -500,7 +776,7 @@ def _module_workflow_compiled_pattern_workload_signature(
     return (
         workload.operation,
         workload.pattern_payload(),
-        benchmark_test_support.freeze_signature_value([workload.haystack_payload()]),
+        freeze_signature_value([workload.haystack_payload()]),
         workload.use_compiled_pattern,
         workload.flags,
         workload.text_model,
@@ -602,7 +878,7 @@ def anchored_workload_case_ids(
     workload_signature: Callable[[Any], tuple[Any, ...]],
     include_workload: Callable[[Any], bool] | None = None,
 ) -> dict[tuple[str, str], tuple[str, ...]]:
-    workloads = benchmark_test_support.selected_manifest_workloads(
+    workloads = selected_manifest_workloads(
         manifest_path,
         include_workload=include_workload,
     )
@@ -622,7 +898,7 @@ def unanchored_workload_ids(
     workload_signature: Callable[[Any], tuple[Any, ...]],
     include_workload: Callable[[Any], bool] | None = None,
 ) -> tuple[str, ...]:
-    workloads = benchmark_test_support.selected_manifest_workloads(
+    workloads = selected_manifest_workloads(
         manifest_path,
         include_workload=include_workload,
     )
@@ -638,17 +914,17 @@ def expected_anchored_workload_case_pairs(
     *,
     expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]],
     include_workload: Callable[[Any], bool] | None = None,
-) -> tuple[benchmark_test_support.AnchoredWorkloadCasePair, ...]:
+) -> tuple[AnchoredWorkloadCasePair, ...]:
     manifest_name = manifest_path.name
     workloads_by_id = records_by_string_id(
-        benchmark_test_support.selected_manifest_workloads(
+        selected_manifest_workloads(
             manifest_path,
             include_workload=include_workload,
         ),
         id_attr="workload_id",
     )
     published_cases = published_cases_by_id()
-    anchored_pairs: list[benchmark_test_support.AnchoredWorkloadCasePair] = []
+    anchored_pairs: list[AnchoredWorkloadCasePair] = []
 
     for (expected_manifest_name, workload_id), case_ids in expected_anchor_case_ids.items():
         if expected_manifest_name != manifest_name:
@@ -672,7 +948,7 @@ def expected_anchored_workload_case_pairs(
                 f"expected anchored correctness case {case_id!r} to be published"
             )
         anchored_pairs.append(
-            benchmark_test_support.AnchoredWorkloadCasePair(
+            AnchoredWorkloadCasePair(
                 manifest_name=manifest_name,
                 workload_id=workload_id,
                 case_id=case_id,
@@ -684,7 +960,7 @@ def expected_anchored_workload_case_pairs(
 
 
 def assert_anchored_workload_case_result_parity(
-    anchored_pairs: Iterable[benchmark_test_support.AnchoredWorkloadCasePair],
+    anchored_pairs: Iterable[AnchoredWorkloadCasePair],
 ) -> None:
     for anchored_pair in anchored_pairs:
         try:
@@ -832,7 +1108,7 @@ def _compile_search_fullmatch_case_signature(
     *,
     pattern: Callable[[], Any],
 ) -> tuple[Any, ...] | None:
-    kwargs_signature = benchmark_test_support.freeze_signature_value(case.serialized_kwargs())
+    kwargs_signature = freeze_signature_value(case.serialized_kwargs())
     flags = case.flags or 0
     text_model = case.text_model or "str"
 
@@ -842,7 +1118,7 @@ def _compile_search_fullmatch_case_signature(
         return (
             "module.search",
             None,
-            benchmark_test_support.freeze_signature_value(case.serialized_args()),
+            freeze_signature_value(case.serialized_args()),
             kwargs_signature,
             flags,
             text_model,
@@ -851,7 +1127,7 @@ def _compile_search_fullmatch_case_signature(
         return (
             "pattern.fullmatch",
             pattern(),
-            benchmark_test_support.freeze_signature_value(case.serialized_args()),
+            freeze_signature_value(case.serialized_args()),
             kwargs_signature,
             flags,
             text_model,
@@ -905,13 +1181,13 @@ def _optional_group_correctness_case_signature(
     if case.operation != "module_call" or case.helper != "search":
         return None
 
-    kwargs_signature = benchmark_test_support.freeze_signature_value(case.serialized_kwargs())
+    kwargs_signature = freeze_signature_value(case.serialized_kwargs())
     flags = case.flags or 0
     text_model = case.text_model or "str"
     return (
         "module.search",
         None,
-        benchmark_test_support.freeze_signature_value(case.serialized_args()),
+        freeze_signature_value(case.serialized_args()),
         kwargs_signature,
         flags,
         text_model,
@@ -928,7 +1204,7 @@ def _optional_group_workload_signature(workload: Any) -> tuple[Any, ...]:
     return (
         "module.search",
         None,
-        benchmark_test_support.freeze_signature_value([workload.pattern, workload.haystack]),
+        freeze_signature_value([workload.pattern, workload.haystack]),
         (),
         workload.flags,
         workload.text_model,
@@ -969,13 +1245,13 @@ def _counted_repeat_workload_signature(workload: Any) -> tuple[Any, ...]:
     return _compile_search_fullmatch_workload_signature(
         workload,
         pattern=lambda: workload.pattern_payload(),
-        module_search_args=lambda: benchmark_test_support.freeze_signature_value(
+        module_search_args=lambda: freeze_signature_value(
             [
                 workload.pattern_payload(),
                 workload.haystack_payload(),
             ]
         ),
-        pattern_fullmatch_args=lambda: benchmark_test_support.freeze_signature_value(
+        pattern_fullmatch_args=lambda: freeze_signature_value(
             [workload.haystack_payload()]
         ),
         error_label="counted-repeat benchmark",
@@ -1201,7 +1477,7 @@ def _pattern_boundary_wrong_text_model_correctness_case_signature(
     return (
         f"pattern.{case.helper}",
         benchmark_test_support.case_pattern(case),
-        benchmark_test_support.freeze_signature_value(case_args),
+        freeze_signature_value(case_args),
         (),
         case.flags or 0,
         case_text_model,
@@ -1219,7 +1495,7 @@ def _pattern_boundary_wrong_text_model_workload_signature(
     return (
         workload.operation,
         workload.pattern_payload(),
-        benchmark_test_support.freeze_signature_value([workload.haystack_payload()]),
+        freeze_signature_value([workload.haystack_payload()]),
         (),
         workload.flags,
         workload.text_model,
@@ -1396,7 +1672,7 @@ def _pattern_keyword_window_correctness_case_signature(
     return (
         f"pattern.{case.helper}",
         benchmark_test_support.case_pattern(case),
-        benchmark_test_support.freeze_signature_value(list(case.args)),
+        freeze_signature_value(list(case.args)),
         benchmark_test_support.module_workflow_keyword_kwargs_signature(case.kwargs),
         case.flags or 0,
         case.text_model or "str",
@@ -1414,7 +1690,7 @@ def _pattern_keyword_window_workload_signature(
     return (
         workload.operation,
         workload.pattern_payload(),
-        benchmark_test_support.freeze_signature_value([workload.haystack_payload()]),
+        freeze_signature_value([workload.haystack_payload()]),
         benchmark_test_support.module_workflow_keyword_kwargs_signature(
             workload.kwargs
         ),
@@ -1454,7 +1730,7 @@ def _pattern_bounded_wildcard_correctness_case_signature(
     return (
         f"pattern.{case.helper}",
         benchmark_test_support.case_pattern(case),
-        benchmark_test_support.freeze_signature_value(case.serialized_args()),
+        freeze_signature_value(case.serialized_args()),
         (),
         case.flags or 0,
         case.text_model or "str",
@@ -1472,7 +1748,7 @@ def _pattern_bounded_wildcard_workload_signature(
     return (
         workload.operation,
         workload.pattern_payload(),
-        benchmark_test_support.freeze_signature_value(
+        freeze_signature_value(
             list(_pattern_window_positional_indexlike_workload_args(workload))
         ),
         (),
@@ -1515,7 +1791,7 @@ def _pattern_verbose_regression_correctness_case_signature(
     return (
         f"pattern.{case.helper}",
         benchmark_test_support.case_pattern(case),
-        benchmark_test_support.freeze_signature_value(list(case.args)),
+        freeze_signature_value(list(case.args)),
         (),
         case.flags or 0,
         case.text_model or "str",
@@ -1533,7 +1809,7 @@ def _pattern_verbose_regression_workload_signature(
     return (
         workload.operation,
         workload.pattern_payload(),
-        benchmark_test_support.freeze_signature_value([workload.haystack_payload()]),
+        freeze_signature_value([workload.haystack_payload()]),
         (),
         workload.flags,
         workload.text_model,
@@ -1558,7 +1834,7 @@ def _is_pattern_verbose_regression_workload(workload: Any) -> bool:
 def _grouped_alternation_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
-    kwargs_signature = benchmark_test_support.freeze_signature_value(case.serialized_kwargs())
+    kwargs_signature = freeze_signature_value(case.serialized_kwargs())
     flags = case.flags or 0
     text_model = case.text_model or "str"
 
@@ -1568,7 +1844,7 @@ def _grouped_alternation_correctness_case_signature(
         return (
             f"module.{case.helper}",
             None,
-            benchmark_test_support.freeze_signature_value(case.serialized_args()),
+            freeze_signature_value(case.serialized_args()),
             kwargs_signature,
             flags,
             text_model,
@@ -1577,7 +1853,7 @@ def _grouped_alternation_correctness_case_signature(
         return (
             f"pattern.{case.helper}",
             case.pattern,
-            benchmark_test_support.freeze_signature_value(case.serialized_args()),
+            freeze_signature_value(case.serialized_args()),
             kwargs_signature,
             flags,
             text_model,
@@ -1589,19 +1865,19 @@ def _grouped_alternation_workload_args(workload: Any) -> tuple[Any, ...]:
     if workload.operation == "module.compile":
         return ()
     if workload.operation == "module.search":
-        return benchmark_test_support.freeze_signature_value([workload.pattern, workload.haystack])
+        return freeze_signature_value([workload.pattern, workload.haystack])
     if workload.operation == "pattern.fullmatch":
-        return benchmark_test_support.freeze_signature_value([workload.haystack])
+        return freeze_signature_value([workload.haystack])
     if workload.operation in {"module.sub", "module.subn"}:
         args = [workload.pattern, workload.replacement, workload.haystack]
         if workload.count:
             args.append(workload.count)
-        return benchmark_test_support.freeze_signature_value(args)
+        return freeze_signature_value(args)
     if workload.operation in {"pattern.sub", "pattern.subn"}:
         args = [workload.replacement, workload.haystack]
         if workload.count:
             args.append(workload.count)
-        return benchmark_test_support.freeze_signature_value(args)
+        return freeze_signature_value(args)
     raise AssertionError(
         f"unexpected grouped-alternation benchmark workload operation {workload.operation!r}"
     )
@@ -1643,7 +1919,7 @@ def _grouped_alternation_workload_signature(workload: Any) -> tuple[Any, ...]:
 def _grouped_alternation_replacement_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
-    kwargs_signature = benchmark_test_support.freeze_signature_value(case.serialized_kwargs())
+    kwargs_signature = freeze_signature_value(case.serialized_kwargs())
     flags = case.flags or 0
     text_model = case.text_model or "str"
 
@@ -1651,7 +1927,7 @@ def _grouped_alternation_replacement_correctness_case_signature(
         return (
             f"module.{case.helper}",
             case.pattern,
-            benchmark_test_support.freeze_signature_value(case.serialized_args()),
+            freeze_signature_value(case.serialized_args()),
             kwargs_signature,
             flags,
             text_model,
@@ -1660,7 +1936,7 @@ def _grouped_alternation_replacement_correctness_case_signature(
         return (
             f"pattern.{case.helper}",
             case.pattern,
-            benchmark_test_support.freeze_signature_value(case.serialized_args()),
+            freeze_signature_value(case.serialized_args()),
             kwargs_signature,
             flags,
             text_model,
@@ -2427,9 +2703,9 @@ def _compiled_pattern_module_helper_route(
 _COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK = (
     StandardBenchmarkAnchorContractDefinition(
         name="module-workflow-compiled-pattern-literal-success",
-        manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
         expected_anchor_case_ids=_definition_anchor_expectations(
-            benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+            MODULE_BOUNDARY_MANIFEST_PATH,
             {
                 "module-search-literal-warm-hit-str-compiled-pattern": (
                     "workflow-module-search-str-compiled-pattern",
@@ -2451,9 +2727,9 @@ _COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK = (
     ),
     StandardBenchmarkAnchorContractDefinition(
         name="module-workflow-compiled-pattern-bounded-wildcard-success",
-        manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
         expected_anchor_case_ids=_definition_anchor_expectations(
-            benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+            MODULE_BOUNDARY_MANIFEST_PATH,
             {
                 "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern": (
                     "workflow-module-search-str-bounded-wildcard-ignorecase-compiled-pattern",
@@ -2477,9 +2753,9 @@ _COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK = (
     ),
     StandardBenchmarkAnchorContractDefinition(
         name="module-workflow-compiled-pattern-verbose-bytes-success",
-        manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
         expected_anchor_case_ids=_definition_anchor_expectations(
-            benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+            MODULE_BOUNDARY_MANIFEST_PATH,
             {
                 "module-search-verbose-regression-warm-hit-bytes-compiled-pattern": (
                     "workflow-module-search-bytes-verbose-regression-compiled-pattern",
@@ -2509,9 +2785,9 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
     return (
         StandardBenchmarkAnchorContractDefinition(
             name="module-workflow-compiled-pattern-wrong-text-model",
-            manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
             expected_anchor_case_ids=_definition_anchor_expectations(
-                benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+                MODULE_BOUNDARY_MANIFEST_PATH,
                 {
                     "module-search-on-bytes-string-warm-str-compiled-pattern": (
                         "workflow-module-search-str-compiled-pattern-on-bytes-string",
@@ -2536,9 +2812,9 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="optional-group-conditional",
-            manifest_paths=(benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,),
+            manifest_paths=(OPTIONAL_GROUP_MANIFEST_PATH,),
             expected_anchor_case_ids=_definition_anchor_expectations(
-                benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,
+                OPTIONAL_GROUP_MANIFEST_PATH,
                 {
                     _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID: (
                         "optional-group-conditional-module-search-present-str",
@@ -2552,9 +2828,9 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="nested-group",
-            manifest_paths=(benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,),
+            manifest_paths=(NESTED_GROUP_MANIFEST_PATH,),
             expected_anchor_case_ids=_definition_anchor_expectations(
-                benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,
+                NESTED_GROUP_MANIFEST_PATH,
                 {
                     "module-compile-nested-group-cold-str": (
                         "nested-group-compile-metadata-str",
@@ -2589,9 +2865,9 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="exact-repeat",
-            manifest_paths=(benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,),
+            manifest_paths=(EXACT_REPEAT_MANIFEST_PATH,),
             expected_anchor_case_ids=_definition_anchor_expectations(
-                benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,
+                EXACT_REPEAT_MANIFEST_PATH,
                 {
                     "module-compile-numbered-exact-repeat-group-cold-str": (
                         "exact-repeat-numbered-group-compile-metadata-str",
@@ -2623,9 +2899,9 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="ranged-repeat",
-            manifest_paths=(benchmark_test_support.RANGED_REPEAT_MANIFEST_PATH,),
+            manifest_paths=(RANGED_REPEAT_MANIFEST_PATH,),
             expected_anchor_case_ids=_definition_anchor_expectations(
-                benchmark_test_support.RANGED_REPEAT_MANIFEST_PATH,
+                RANGED_REPEAT_MANIFEST_PATH,
                 {
                     "module-compile-numbered-ranged-repeat-group-cold-str": (
                         "ranged-repeat-numbered-group-compile-metadata-str",
@@ -2657,9 +2933,9 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="grouped-alternation",
-            manifest_paths=(benchmark_test_support.GROUPED_ALTERNATION_MANIFEST_PATH,),
+            manifest_paths=(GROUPED_ALTERNATION_MANIFEST_PATH,),
             expected_anchor_case_ids=_definition_anchor_expectations(
-                benchmark_test_support.GROUPED_ALTERNATION_MANIFEST_PATH,
+                GROUPED_ALTERNATION_MANIFEST_PATH,
                 {
                     "module-compile-grouped-alternation-cold-str": (
                         "grouped-alternation-compile-metadata-str",
@@ -2707,10 +2983,10 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
         StandardBenchmarkAnchorContractDefinition(
             name="grouped-alternation-replacement",
             manifest_paths=(
-                benchmark_test_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+                GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
             ),
             expected_anchor_case_ids=_definition_anchor_expectations(
-                benchmark_test_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
+                GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
                 {
                     "module-sub-template-grouped-alternation-warm-str": (
                         "module-sub-template-grouped-alternation-str",
@@ -2759,9 +3035,9 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="nested-group-replacement",
-            manifest_paths=(benchmark_test_support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,),
+            manifest_paths=(NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=_definition_anchor_expectations(
-                benchmark_test_support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
+                NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
                 {
                     "module-sub-template-nested-group-numbered-warm-str": (
                         "module-sub-template-nested-group-numbered-str",
@@ -2873,9 +3149,9 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="open-ended-grouped-alternation",
-            manifest_paths=(benchmark_test_support.OPEN_ENDED_MANIFEST_PATH,),
+            manifest_paths=(OPEN_ENDED_MANIFEST_PATH,),
             expected_anchor_case_ids=_definition_anchor_expectations(
-                benchmark_test_support.OPEN_ENDED_MANIFEST_PATH,
+                OPEN_ENDED_MANIFEST_PATH,
                 {
                     "module-compile-numbered-open-ended-group-alternation-cold-str": (
                         "open-ended-quantified-group-alternation-numbered-compile-metadata-str",
@@ -5137,7 +5413,7 @@ class _CompiledPatternModuleHelperKeywordContractSpec:
 
     def contract_builder_spec(self) -> object:
         excluded_fields = (
-            benchmark_test_support.COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
+            COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS
         )
         if not self.preserve_expected_exception:
             excluded_fields = excluded_fields | {"expected_exception"}
@@ -5362,8 +5638,8 @@ _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC = (
 )
 
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS = (
-    benchmark_test_support.selected_manifest_workloads(
-        benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    selected_manifest_workloads(
+        COLLECTION_REPLACEMENT_MANIFEST_PATH,
         include_workload=(
             _is_collection_replacement_compiled_pattern_module_helper_keyword_workload
         ),
@@ -5400,8 +5676,8 @@ if (
     )
 
 _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = (
-    benchmark_test_support.selected_manifest_workloads(
-        benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    selected_manifest_workloads(
+        COLLECTION_REPLACEMENT_MANIFEST_PATH,
         include_workload=(
             _is_collection_replacement_compiled_pattern_keyword_error_workload
         ),
@@ -5481,7 +5757,7 @@ _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
     "collection-replacement-boundary": _SourceTreeContractBuilderSpec(
         manifest_id="collection-replacement-boundary",
         excluded_fields=(
-            benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
+            COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
         ),
         timing_scope="module-helper-call",
         notes=(
@@ -5493,7 +5769,7 @@ _COMPILED_PATTERN_WRONG_TEXT_MODEL_CONTRACT_SPECS = {
     "module-boundary": _SourceTreeContractBuilderSpec(
         manifest_id="module-boundary",
         excluded_fields=(
-            benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
+            COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
         ),
         timing_scope="module-helper-call",
         notes=(
@@ -5552,7 +5828,7 @@ def _compiled_pattern_wrong_text_model_specs() -> tuple[dict[str, object], ...]:
 def _compiled_pattern_wrong_text_model_source_workloads(
     spec: dict[str, object],
 ) -> tuple[Workload, ...]:
-    return benchmark_test_support.selected_manifest_workloads(
+    return selected_manifest_workloads(
         spec["manifest_path"],
         include_workload=spec["include_workload"],
     )
@@ -5611,7 +5887,7 @@ class CompiledPatternModuleSuccessOwnerSpec:
         return _SourceTreeContractBuilderSpec(
             manifest_id=self.contract_manifest_id,
             excluded_fields=(
-                benchmark_test_support.COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
+                COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS
             ),
             timing_scope="module-helper-call",
             notes=(
@@ -5625,7 +5901,7 @@ class CompiledPatternModuleSuccessOwnerSpec:
 _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC = (
     CompiledPatternModuleSuccessOwnerSpec(
         case_id="collection-replacement",
-        manifest_path=benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
         include_workload_selectors=(
             _is_collection_replacement_compiled_pattern_success_workload,
         ),
@@ -5648,7 +5924,7 @@ _COMPILED_PATTERN_MODULE_COLLECTION_REPLACEMENT_SUCCESS_OWNER_SPEC = (
 _COMPILED_PATTERN_MODULE_BOUNDARY_SUCCESS_OWNER_SPEC = (
     CompiledPatternModuleSuccessOwnerSpec(
         case_id="module-boundary",
-        manifest_path=benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+        manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
         include_workload_selectors=(
             _is_module_workflow_compiled_pattern_literal_success_workload,
             _is_module_workflow_compiled_pattern_bounded_wildcard_success_workload,
@@ -5845,7 +6121,7 @@ _COMPILED_PATTERN_MODULE_COMPILE_SUCCESS_CONTRACT_ROUTE = (
     _CompiledPatternModuleCompileContractRoute(
         surface_label="success",
         excluded_fields=(
-            benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
+            COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
         ),
         note=(
             "Ensures benchmark manifests keep the bounded compiled-pattern-first-argument "
@@ -5883,7 +6159,7 @@ _COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE = (
     _CompiledPatternModuleCompileContractRoute(
         surface_label="keyword",
         excluded_fields=(
-            benchmark_test_support.COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
+            COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS
             | {"categories", "syntax_features"}
         ),
         note=(
@@ -5984,7 +6260,7 @@ class _CompiledPatternModuleCompileKeywordOwnerSpec:
 
     def expected_anchor_case_ids(self) -> dict[tuple[str, str], tuple[str, ...]]:
         return _definition_anchor_expectations(
-            benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+            MODULE_BOUNDARY_MANIFEST_PATH,
             dict(self.anchor_expectations),
         )
 
@@ -5996,7 +6272,7 @@ class _CompiledPatternModuleCompileKeywordOwnerSpec:
     ) -> StandardBenchmarkAnchorContractDefinition:
         return StandardBenchmarkAnchorContractDefinition(
             name=self.anchor_definition_name,
-            manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
             expected_anchor_case_ids=self.expected_anchor_case_ids(),
             include_workload=self.includes_workload,
             correctness_case_signature=self.correctness_case_signature,
@@ -6008,7 +6284,7 @@ class _CompiledPatternModuleCompileKeywordOwnerSpec:
         return CompiledPatternModuleCompileContractCase(
             route=_COMPILED_PATTERN_MODULE_COMPILE_KEYWORD_CONTRACT_ROUTE,
             case_id=self.case_id,
-            manifest_path=benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+            manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
             source_selectors=(self.includes_workload,),
             keyword_signature=self.keyword_signature,
             allowed_patterns=self.allowed_patterns,
@@ -6048,7 +6324,7 @@ class _CompiledPatternModuleCompileSuccessOwnerSpec:
 
     def expected_anchor_case_ids(self) -> dict[tuple[str, str], tuple[str, ...]]:
         return _definition_anchor_expectations(
-            benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+            MODULE_BOUNDARY_MANIFEST_PATH,
             dict(self.anchor_expectations),
         )
 
@@ -6060,7 +6336,7 @@ class _CompiledPatternModuleCompileSuccessOwnerSpec:
     ) -> StandardBenchmarkAnchorContractDefinition:
         return StandardBenchmarkAnchorContractDefinition(
             name=self.anchor_definition_name,
-            manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+            manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
             expected_anchor_case_ids=self.expected_anchor_case_ids(),
             include_workload=self.includes_workload,
             correctness_case_signature=self.correctness_case_signature,
@@ -6461,7 +6737,7 @@ COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS = tuple(
 
 _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES = (
     build_compiled_pattern_module_compile_contract_cases(
-        manifest_path=benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+        manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
         expected_build_calls_builder=partial(
             compiled_pattern_contract_expected_build_calls,
             label="module.compile contract",
@@ -6502,7 +6778,7 @@ def _collection_replacement_pattern_collection_correctness_case_signature(
     return (
         expected_operation,
         case_pattern(case),
-        benchmark_test_support.freeze_signature_value(list(case.args)),
+        freeze_signature_value(list(case.args)),
         (),
         case.flags or 0,
         case.text_model or "str",
@@ -6561,7 +6837,7 @@ def _collection_replacement_pattern_collection_workload_signature(
     return (
         expected_operation,
         workload.pattern_payload(),
-        benchmark_test_support.freeze_signature_value(list(args)),
+        freeze_signature_value(list(args)),
         (),
         workload.flags,
         workload.text_model,
@@ -6753,9 +7029,9 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
     return (
         StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-module-positional-indexlike",
-            manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=_definition_anchor_expectations(
-                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 {
                     "module-split-maxsplit-indexlike-positional-purged-bytes": (
                         "workflow-module-split-maxsplit-indexlike-positional-bytes",
@@ -6786,9 +7062,9 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-keyword",
-            manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=_definition_anchor_expectations(
-                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 {
                     "module-split-maxsplit-keyword-purged-bytes": (
                         "workflow-module-split-maxsplit-keyword-bytes",
@@ -6993,9 +7269,9 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-compiled-pattern-literal-success",
-            manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=_definition_anchor_expectations(
-                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 {
                     "module-split-literal-warm-str-compiled-pattern": (
                         "workflow-module-split-str-compiled-pattern",
@@ -7027,9 +7303,9 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-compiled-pattern-wrong-text-model",
-            manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=_definition_anchor_expectations(
-                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 {
                     "module-split-on-bytes-string-purged-str-compiled-pattern": (
                         "workflow-module-split-str-compiled-pattern-on-bytes-string",
@@ -7056,9 +7332,9 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="pattern-helper-collection-replacement-wrong-text-model",
-            manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=_definition_anchor_expectations(
-                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 {
                     "pattern-split-on-bytes-string-warm-str": (
                         "workflow-pattern-split-str-pattern-on-bytes-string",
@@ -7081,9 +7357,9 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-pattern-findall-bounded",
-            manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
-                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 _COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_CASE_PAIRS,
             ),
             include_workload=partial(
@@ -7107,9 +7383,9 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-pattern-finditer-bounded",
-            manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
-                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 _COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_CASE_PAIRS,
             ),
             include_workload=partial(
@@ -7133,9 +7409,9 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-pattern-split",
-            manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
-                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 _COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_CASE_PAIRS,
             ),
             include_workload=partial(
@@ -7159,9 +7435,9 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-module-literal-replacement",
-            manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
-                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS,
             ),
             include_workload=partial(
@@ -7205,9 +7481,9 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-pattern-literal-replacement",
-            manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
-                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS,
             ),
             include_workload=partial(
@@ -7249,9 +7525,9 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
         ),
         StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-grouped-callable-replacement",
-            manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
+            manifest_paths=(COLLECTION_REPLACEMENT_MANIFEST_PATH,),
             expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
-                benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+                COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS,
             ),
             include_workload=_is_collection_replacement_grouped_callable_workload,
@@ -7302,7 +7578,7 @@ def _collection_replacement_literal_replacement_correctness_case_signature(
     return (
         f"{operation_prefix}.{case.helper}",
         pattern,
-        benchmark_test_support.freeze_signature_value(list(trailing_args)),
+        freeze_signature_value(list(trailing_args)),
         (),
         case.flags or 0,
         case.text_model or "str",
@@ -7329,7 +7605,7 @@ def _collection_replacement_literal_replacement_workload_signature(
     return (
         workload.operation,
         workload.pattern_payload(),
-        benchmark_test_support.freeze_signature_value(args),
+        freeze_signature_value(args),
         (),
         workload.flags,
         workload.text_model,
@@ -7417,7 +7693,7 @@ def _module_workflow_keyword_correctness_case_signature(
     return (
         f"module.{case.helper}",
         case_pattern(case),
-        benchmark_test_support.freeze_signature_value(list(case.args)),
+        freeze_signature_value(list(case.args)),
         module_workflow_keyword_kwargs_signature(case.kwargs),
         case.flags or 0,
         case.text_model or "str",
@@ -7492,7 +7768,7 @@ def _module_workflow_keyword_workload_signature(
     return (
         workload.operation,
         workload.pattern_payload(),
-        benchmark_test_support.freeze_signature_value(
+        freeze_signature_value(
             list(_module_workflow_keyword_workload_args(workload))
         ),
         module_workflow_keyword_kwargs_signature(workload.kwargs),
@@ -7504,18 +7780,18 @@ def _module_workflow_keyword_workload_signature(
 MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS = (
     StandardBenchmarkAnchorContractDefinition(
         name="module-workflow-keyword-flags",
-        manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
         expected_anchor_case_ids={
             (
-                benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH.name,
+                MODULE_BOUNDARY_MANIFEST_PATH.name,
                 "module-search-flags-keyword-warm-str",
             ): ("workflow-module-search-flags-keyword-str",),
             (
-                benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH.name,
+                MODULE_BOUNDARY_MANIFEST_PATH.name,
                 "module-match-flags-keyword-purged-bytes",
             ): ("workflow-module-match-flags-keyword-bytes",),
             (
-                benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH.name,
+                MODULE_BOUNDARY_MANIFEST_PATH.name,
                 "module-fullmatch-flags-keyword-warm-str",
             ): ("workflow-module-fullmatch-flags-keyword-str",),
         },
@@ -7526,14 +7802,14 @@ MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS = (
     ),
     StandardBenchmarkAnchorContractDefinition(
         name="module-workflow-keyword-errors",
-        manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+        manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
         expected_anchor_case_ids={
             (
-                benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH.name,
+                MODULE_BOUNDARY_MANIFEST_PATH.name,
                 "module-search-duplicate-flags-keyword-warm-str",
             ): ("workflow-module-search-duplicate-flags-keyword",),
             (
-                benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH.name,
+                MODULE_BOUNDARY_MANIFEST_PATH.name,
                 "module-fullmatch-unexpected-keyword-purged-str",
             ): ("workflow-module-fullmatch-unexpected-keyword",),
         },
@@ -7558,7 +7834,7 @@ def _collection_replacement_keyword_correctness_case_signature(
     return (
         f"{'module' if case.operation == 'module_call' else 'pattern'}.{case.helper}",
         case_pattern(case),
-        benchmark_test_support.freeze_signature_value(list(case.args)),
+        freeze_signature_value(list(case.args)),
         module_workflow_keyword_kwargs_signature(case.kwargs),
         use_compiled_pattern,
         case.flags or 0,
@@ -7602,7 +7878,7 @@ def _collection_replacement_keyword_workload_signature(
     return (
         workload.operation,
         workload.pattern_payload(),
-        benchmark_test_support.freeze_signature_value(
+        freeze_signature_value(
             list(_collection_replacement_keyword_workload_args(workload))
         ),
         module_workflow_keyword_kwargs_signature(workload.kwargs),
@@ -7632,7 +7908,7 @@ def _collection_replacement_compiled_pattern_success_correctness_case_signature(
     return (
         operation,
         case_pattern(case),
-        benchmark_test_support.freeze_signature_value(list(case.args)),
+        freeze_signature_value(list(case.args)),
         case.use_compiled_pattern,
         case.flags or 0,
         case_text_model,
@@ -7650,7 +7926,7 @@ def _collection_replacement_compiled_pattern_success_workload_signature(
     return (
         workload.operation,
         workload.pattern_payload(),
-        benchmark_test_support.freeze_signature_value(
+        freeze_signature_value(
             list(_collection_replacement_wrong_text_model_workload_args(workload))
         ),
         workload.use_compiled_pattern,
@@ -7728,7 +8004,7 @@ def _is_collection_replacement_pattern_helper_keyword_error_workload(
 
 
 _PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _contract_source_workloads(
-    manifest_path=benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
     include_workload_selectors=(
         _is_collection_replacement_pattern_helper_keyword_error_workload,
     ),
@@ -7775,7 +8051,7 @@ def _is_collection_replacement_module_helper_keyword_error_workload(
 
 
 _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _contract_source_workloads(
-    manifest_path=benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+    manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
     include_workload_selectors=(
         _is_module_workflow_keyword_error_workload,
     ),
@@ -7785,7 +8061,7 @@ _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _contract_source_workloads(
         "workload surface"
     ),
 ) + _contract_source_workloads(
-    manifest_path=benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+    manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
     include_workload_selectors=(
         _is_collection_replacement_module_helper_keyword_error_workload,
     ),
@@ -7940,7 +8216,7 @@ def _collection_replacement_wrong_text_model_correctness_case_signature(
     return (
         operation,
         case_pattern(case),
-        benchmark_test_support.freeze_signature_value(list(case.args)),
+        freeze_signature_value(list(case.args)),
         case.use_compiled_pattern,
         case.flags or 0,
         case_text_model,
@@ -7980,7 +8256,7 @@ def _collection_replacement_wrong_text_model_workload_signature(
     return (
         workload.operation,
         workload.pattern_payload(),
-        benchmark_test_support.freeze_signature_value(
+        freeze_signature_value(
             list(_collection_replacement_wrong_text_model_workload_args(workload))
         ),
         workload.use_compiled_pattern,
@@ -8023,7 +8299,7 @@ def _collection_replacement_pattern_wrong_text_model_correctness_case_signature(
     return (
         operation,
         case_pattern(case),
-        benchmark_test_support.freeze_signature_value(case_args),
+        freeze_signature_value(case_args),
         (),
         case.flags or 0,
         case_text_model,
@@ -8063,7 +8339,7 @@ def _collection_replacement_pattern_wrong_text_model_workload_signature(
     return (
         workload.operation,
         workload.pattern_payload(),
-        benchmark_test_support.freeze_signature_value(
+        freeze_signature_value(
             list(
                 _collection_replacement_pattern_wrong_text_model_workload_args(
                     workload
@@ -8091,7 +8367,7 @@ def _is_collection_replacement_pattern_wrong_text_model_workload(
 
 _COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOADS = (
     _contract_source_workloads(
-        manifest_path=benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
         include_workload_selectors=(
             _is_collection_replacement_pattern_wrong_text_model_workload,
         ),
@@ -8196,7 +8472,7 @@ def _collection_replacement_grouped_callable_correctness_case_signature(
         f"{operation_prefix}.{case.helper}",
         case_pattern(case),
         replacement_signature,
-        benchmark_test_support.freeze_signature_value(args),
+        freeze_signature_value(args),
         (),
         case.flags or 0,
         case.text_model or "str",
@@ -8226,7 +8502,7 @@ def _collection_replacement_grouped_callable_workload_signature(
         workload.operation,
         workload.pattern_payload(),
         replacement_signature,
-        benchmark_test_support.freeze_signature_value(args),
+        freeze_signature_value(args),
         (),
         workload.flags,
         workload.text_model,
@@ -8980,7 +9256,7 @@ def _conditional_group_exists_quantified_callable_correctness_case_signature(
         f"{operation_prefix}.{case.helper}",
         case_pattern(case),
         replacement_signature,
-        benchmark_test_support.freeze_signature_value(args),
+        freeze_signature_value(args),
         "exception" in case.categories,
         "no-match" in case.categories,
         case.flags or 0,
@@ -9017,7 +9293,7 @@ def _conditional_group_exists_nested_callable_correctness_case_signature(
         f"{operation_prefix}.{case.helper}",
         case_pattern(case),
         replacement_signature,
-        benchmark_test_support.freeze_signature_value(args),
+        freeze_signature_value(args),
         "exception" in case.categories,
         "no-match" in case.categories,
         case.flags or 0,
@@ -9052,7 +9328,7 @@ def _conditional_group_exists_nested_callable_workload_signature(
         workload.operation,
         workload.pattern_payload(),
         replacement_signature,
-        benchmark_test_support.freeze_signature_value(args),
+        freeze_signature_value(args),
         workload.expected_exception is not None,
         "no-match" in workload.categories,
         workload.flags,
@@ -9087,7 +9363,7 @@ def _conditional_group_exists_quantified_callable_workload_signature(
         workload.operation,
         workload.pattern_payload(),
         replacement_signature,
-        benchmark_test_support.freeze_signature_value(args),
+        freeze_signature_value(args),
         workload.expected_exception is not None,
         "no-match" in workload.categories,
         workload.flags,
@@ -9921,11 +10197,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         manifest_path = "collection_replacement_boundary.py"
         manifest_workload_count = len(
-            benchmark_test_support.selected_manifest_workloads(manifest_path)
+            selected_manifest_workloads(manifest_path)
         )
         expected_measured_workload_ids = tuple(
             workload.workload_id
-            for workload in benchmark_test_support.selected_manifest_workloads(
+            for workload in selected_manifest_workloads(
                 manifest_path,
                 include_workload=lambda workload: (
                     _is_collection_replacement_keyword_workload(
@@ -9975,11 +10251,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         manifest_path = "collection_replacement_boundary.py"
         manifest_workload_count = len(
-            benchmark_test_support.selected_manifest_workloads(manifest_path)
+            selected_manifest_workloads(manifest_path)
         )
         expected_measured_workload_ids = tuple(
             workload.workload_id
-            for workload in benchmark_test_support.selected_manifest_workloads(
+            for workload in selected_manifest_workloads(
                 manifest_path,
                 include_workload=lambda workload: (
                     _is_collection_replacement_keyword_workload(
@@ -10051,11 +10327,11 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     ) -> None:
         manifest_path = "collection_replacement_boundary.py"
         manifest_workload_count = len(
-            benchmark_test_support.selected_manifest_workloads(manifest_path)
+            selected_manifest_workloads(manifest_path)
         )
         expected_measured_workload_ids = tuple(
             workload.workload_id
-            for workload in benchmark_test_support.selected_manifest_workloads(
+            for workload in selected_manifest_workloads(
                 manifest_path,
                 include_workload=_is_collection_replacement_positional_indexlike_workload,
             )
@@ -12288,19 +12564,19 @@ def test_compiled_pattern_module_compile_owner_specs_keep_module_boundary_rows_m
     owner_spec: object,
 ) -> None:
     manifest_workload_count = len(
-        benchmark_test_support.selected_manifest_workloads(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH)
+        selected_manifest_workloads(MODULE_BOUNDARY_MANIFEST_PATH)
     )
     expected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in benchmark_test_support.selected_manifest_workloads(
-            benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+        for workload in selected_manifest_workloads(
+            MODULE_BOUNDARY_MANIFEST_PATH,
             include_workload=owner_spec.includes_workload,
         )
     )
 
     assert expected_measured_workload_ids == owner_spec.expected_anchor_workload_ids()
     assert_zero_gap_manifest_workloads_measured(
-        manifest_path=benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
+        manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
         manifest_id="module-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
         expected_measured_workload_count=manifest_workload_count,
@@ -12453,7 +12729,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
         if source_workload.expected_exception is None
         else _expected_exception_instance(source_workload.expected_exception)
     )
-    module = benchmark_test_support.RecordingBenchmarkModule(compile_exception=compile_exception)
+    module = RecordingBenchmarkModule(compile_exception=compile_exception)
     callback = benchmarks.build_callable(
         module,
         "re",
@@ -15491,11 +15767,11 @@ def test_compiled_pattern_module_helper_owner_specs_keep_zero_gap_rows_measured(
     owner_spec: object,
     include_workload: object,
 ) -> None:
-    manifest_workload_count = len(benchmark_test_support.selected_manifest_workloads(owner_spec.manifest_path))
+    manifest_workload_count = len(selected_manifest_workloads(owner_spec.manifest_path))
     manifest_id = owner_spec.source_workloads()[0].manifest_id
     expected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in benchmark_test_support.selected_manifest_workloads(
+        for workload in selected_manifest_workloads(
             owner_spec.manifest_path,
             include_workload=include_workload,
         )
@@ -15580,7 +15856,7 @@ def test_compiled_pattern_wrong_text_model_callbacks_preserve_precompile_contrac
                 collection_replacement_callback_flags=0,
             )
         )
-        module = benchmark_test_support.RecordingBenchmarkModule()
+        module = RecordingBenchmarkModule()
         callback = benchmarks.build_callable(
             module,
             "re",
@@ -15654,7 +15930,7 @@ def test_compiled_pattern_module_success_callbacks_precompile_first_argument_bef
 ) -> None:
     expected_build_calls = owner_spec.expected_build_calls(source_workload)
     expected_callback_call = owner_spec.expected_callback_call(source_workload)
-    module = benchmark_test_support.RecordingBenchmarkModule()
+    module = RecordingBenchmarkModule()
     callback = benchmarks.build_callable(
         module,
         "re",
@@ -15679,8 +15955,8 @@ def test_compiled_pattern_module_helper_keyword_error_rows_keep_collection_repla
 ) -> None:
     expected_measured_workload_ids = tuple(
         workload.workload_id
-        for workload in benchmark_test_support.selected_manifest_workloads(
-            benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        for workload in selected_manifest_workloads(
+            COLLECTION_REPLACEMENT_MANIFEST_PATH,
             include_workload=(
                 _is_collection_replacement_compiled_pattern_keyword_error_workload
             ),
@@ -15693,14 +15969,14 @@ def test_compiled_pattern_module_helper_keyword_error_rows_keep_collection_repla
         )
     )
     manifest_workload_count = len(
-        benchmark_test_support.selected_manifest_workloads(
-            benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH
+        selected_manifest_workloads(
+            COLLECTION_REPLACEMENT_MANIFEST_PATH
         )
     )
 
     assert expected_measured_workload_ids == expected_source_workload_ids
     assert_zero_gap_manifest_workloads_measured(
-        manifest_path=benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
+        manifest_path=COLLECTION_REPLACEMENT_MANIFEST_PATH,
         manifest_id="collection-replacement-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
         expected_measured_workload_count=manifest_workload_count,
@@ -15787,7 +16063,7 @@ def test_compiled_pattern_module_helper_keyword_contract_callbacks_precompile_fi
 ) -> None:
     expected_build_calls = contract_surface.expected_build_calls(source_workload)
     expected_callback_call = contract_surface.expected_callback_call(source_workload)
-    module = benchmark_test_support.RecordingBenchmarkModule()
+    module = RecordingBenchmarkModule()
     callback = benchmarks.build_callable(
         module,
         "re",

@@ -61,3 +61,12 @@ Created: 2026-03-27
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest tests/benchmarks/test_benchmark_test_support.py -q` passed with `203 passed in 0.68s`.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -q` passed with `307 passed, 1573 subtests passed in 12.83s`.
+
+## Completion
+- Moved the source-tree-combined-only recording doubles, workload-selection helper, frozen-signature helper, anchored pair dataclass, and owner-only manifest/contract constants out of `tests/benchmarks/benchmark_test_support.py` and into `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Updated `tests/benchmarks/test_benchmark_test_support.py` so the meta-tests now assert the moved surface belongs to the combined owner suite and is absent from shared benchmark support.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest tests/benchmarks/test_benchmark_test_support.py -q` -> `204 passed in 0.91s`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -q` -> `307 passed, 1573 subtests passed in 13.10s`
+  - `./.venv/bin/python -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `bash -lc "! rg -n '^(class (RecordingBenchmarkCompiledPattern|RecordingBenchmarkModule|AnchoredWorkloadCasePair)\\b|def (selected_manifest_workloads|freeze_signature_value)\\b|(MODULE_BOUNDARY_MANIFEST_PATH|OPTIONAL_GROUP_MANIFEST_PATH|NESTED_GROUP_MANIFEST_PATH|EXACT_REPEAT_MANIFEST_PATH|RANGED_REPEAT_MANIFEST_PATH|GROUPED_ALTERNATION_MANIFEST_PATH|GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH|NESTED_GROUP_REPLACEMENT_MANIFEST_PATH|OPEN_ENDED_MANIFEST_PATH|COLLECTION_REPLACEMENT_MANIFEST_PATH|COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS|COMPILED_PATTERN_MODULE_SUCCESS_CONTRACT_EXCLUDED_FIELDS|COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS)\\s*=)' tests/benchmarks/benchmark_test_support.py"` -> success
