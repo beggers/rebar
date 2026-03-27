@@ -25,6 +25,14 @@ meta_support = sys.modules[__name__]
 collection_replacement_support = importlib.import_module(
     "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
 )
+COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
+REGRESSION_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
+CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_boundary.py"
+)
+NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_callable_replacement_boundary.py"
+)
 
 
 def _clear_cached_functions(functions: tuple[object, ...]) -> None:
@@ -679,52 +687,52 @@ COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS = (
     collection_replacement_support.StandardBenchmarkAnchorContractDefinition(
         name="compile-proxy",
         manifest_paths=(
-            support.COMPILE_MATRIX_MANIFEST_PATH,
-            support.REGRESSION_MATRIX_MANIFEST_PATH,
+            COMPILE_MATRIX_MANIFEST_PATH,
+            REGRESSION_MATRIX_MANIFEST_PATH,
         ),
         expected_anchor_case_ids={
-            (support.COMPILE_MATRIX_MANIFEST_PATH.name, "compile-inline-locale-bytes-warm"): (
+            (COMPILE_MATRIX_MANIFEST_PATH.name, "compile-inline-locale-bytes-warm"): (
                 "bytes-inline-locale-flag-success",
             ),
-            (support.COMPILE_MATRIX_MANIFEST_PATH.name, "compile-lookbehind-cold"): (
+            (COMPILE_MATRIX_MANIFEST_PATH.name, "compile-lookbehind-cold"): (
                 "str-fixed-width-lookbehind-success",
             ),
             (
-                support.COMPILE_MATRIX_MANIFEST_PATH.name,
+                COMPILE_MATRIX_MANIFEST_PATH.name,
                 "compile-character-class-ignorecase-warm",
             ): ("str-character-class-ignorecase-success",),
             (
-                support.COMPILE_MATRIX_MANIFEST_PATH.name,
+                COMPILE_MATRIX_MANIFEST_PATH.name,
                 "compile-possessive-quantifier-cold",
             ): ("str-possessive-quantifier-success",),
-            (support.COMPILE_MATRIX_MANIFEST_PATH.name, "compile-atomic-group-purged"): (
+            (COMPILE_MATRIX_MANIFEST_PATH.name, "compile-atomic-group-purged"): (
                 "str-atomic-group-success",
             ),
-            (support.COMPILE_MATRIX_MANIFEST_PATH.name, "compile-parser-stress-cold"): (
+            (COMPILE_MATRIX_MANIFEST_PATH.name, "compile-parser-stress-cold"): (
                 "str-parser-stress-compile-proxy-success",
             ),
             (
-                support.REGRESSION_MATRIX_MANIFEST_PATH.name,
+                REGRESSION_MATRIX_MANIFEST_PATH.name,
                 "regression-parser-atomic-lookbehind-cold",
             ): ("str-parser-stress-compile-proxy-success",),
             (
-                support.REGRESSION_MATRIX_MANIFEST_PATH.name,
+                REGRESSION_MATRIX_MANIFEST_PATH.name,
                 "regression-parser-bytes-backreference-purged",
             ): ("bytes-named-backreference-compile-proxy-success",),
             (
-                support.REGRESSION_MATRIX_MANIFEST_PATH.name,
+                REGRESSION_MATRIX_MANIFEST_PATH.name,
                 "regression-module-compile-verbose-purged",
             ): ("workflow-compile-str-verbose-regression",),
             (
-                support.REGRESSION_MATRIX_MANIFEST_PATH.name,
+                REGRESSION_MATRIX_MANIFEST_PATH.name,
                 "regression-module-compile-multiline-purged",
             ): ("workflow-compile-str-multiline-regression",),
             (
-                support.REGRESSION_MATRIX_MANIFEST_PATH.name,
+                REGRESSION_MATRIX_MANIFEST_PATH.name,
                 "regression-module-compile-multiline-purged-bytes",
             ): ("workflow-compile-bytes-multiline-regression",),
             (
-                support.REGRESSION_MATRIX_MANIFEST_PATH.name,
+                REGRESSION_MATRIX_MANIFEST_PATH.name,
                 "regression-module-compile-verbose-purged-bytes",
             ): ("workflow-compile-bytes-verbose-regression",),
         },
@@ -1598,19 +1606,19 @@ def test_compile_proxy_standard_definition_preserves_manifest_order_and_anchor_m
 ) -> None:
     definition = COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS[0]
 
-    assert support.COMPILE_MATRIX_MANIFEST_PATH == (
+    assert COMPILE_MATRIX_MANIFEST_PATH == (
         REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
     )
-    assert support.REGRESSION_MATRIX_MANIFEST_PATH == (
+    assert REGRESSION_MATRIX_MANIFEST_PATH == (
         REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
     )
     assert definition.manifest_paths == (
-        support.COMPILE_MATRIX_MANIFEST_PATH,
-        support.REGRESSION_MATRIX_MANIFEST_PATH,
+        COMPILE_MATRIX_MANIFEST_PATH,
+        REGRESSION_MATRIX_MANIFEST_PATH,
     )
     assert definition.expected_anchor_case_ids == (
         collection_replacement_support._definition_anchor_expectations(
-            support.COMPILE_MATRIX_MANIFEST_PATH,
+            COMPILE_MATRIX_MANIFEST_PATH,
             {
                 "compile-inline-locale-bytes-warm": (
                     "bytes-inline-locale-flag-success",
@@ -1633,7 +1641,7 @@ def test_compile_proxy_standard_definition_preserves_manifest_order_and_anchor_m
             },
         )
         | collection_replacement_support._definition_anchor_expectations(
-            support.REGRESSION_MATRIX_MANIFEST_PATH,
+            REGRESSION_MATRIX_MANIFEST_PATH,
             {
                 "regression-parser-atomic-lookbehind-cold": (
                     "str-parser-stress-compile-proxy-success",
@@ -2168,18 +2176,12 @@ def test_publication_runtime_contracts_route_shared_support_through_package_owne
     )
     assert publication_runtime_contracts.benchmark_test_support is support
     assert {
-        "COMPILE_MATRIX_MANIFEST_PATH",
-        "CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH",
-        "NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH",
         "_write_test_manifest",
         "assert_benchmark_workload_matches_expected_result",
         "live_manifest_workloads",
         "run_benchmark_workload_with_cpython",
     }.isdisjoint(definition_names | assignment_names)
     for shared_name in (
-        "COMPILE_MATRIX_MANIFEST_PATH",
-        "CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH",
-        "NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH",
         "_write_test_manifest",
         "assert_benchmark_workload_matches_expected_result",
         "live_manifest_workloads",
@@ -2213,9 +2215,19 @@ def test_publication_runtime_contracts_keep_summary_contract_helpers_owner_local
 
 def test_shared_publication_runtime_manifest_path_constants_point_to_current_workload_files(
 ) -> None:
+    definition_names, assignment_names = top_level_module_definition_and_assignment_names(
+        publication_runtime_contracts
+    )
+
+    owner_local_names = {
+        "COMPILE_MATRIX_MANIFEST_PATH",
+        "CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH",
+        "NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH",
+    }
+    assert owner_local_names.issubset(definition_names | assignment_names)
     assert (
-        support.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
-        support.NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
+        publication_runtime_contracts.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+        publication_runtime_contracts.NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
     ) == (
         REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_boundary.py",
         REPO_ROOT
@@ -2223,6 +2235,32 @@ def test_shared_publication_runtime_manifest_path_constants_point_to_current_wor
         / "workloads"
         / "nested_group_callable_replacement_boundary.py",
     )
+    for name in (
+        "COMPILE_MATRIX_MANIFEST_PATH",
+        "CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH",
+        "NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH",
+    ):
+        assert not hasattr(support, name)
+
+
+def test_compile_proxy_manifest_path_constants_are_owner_local() -> None:
+    definition_names, assignment_names = top_level_module_definition_and_assignment_names(
+        meta_support
+    )
+
+    owner_local_names = {
+        "COMPILE_MATRIX_MANIFEST_PATH",
+        "REGRESSION_MATRIX_MANIFEST_PATH",
+    }
+    assert owner_local_names.issubset(definition_names | assignment_names)
+    assert COMPILE_MATRIX_MANIFEST_PATH == (
+        REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
+    )
+    assert REGRESSION_MATRIX_MANIFEST_PATH == (
+        REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
+    )
+    for owner_local_name in owner_local_names:
+        assert not hasattr(support, owner_local_name)
 
 
 def test_benchmark_test_support_owns_only_shared_collection_replacement_classifier_helpers(

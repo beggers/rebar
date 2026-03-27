@@ -42,6 +42,14 @@ _MISSING_MATURIN_REASON = (
     "built-native mode unavailable because no `maturin` executable was found on PATH"
 )
 _MISSING_MATURIN_PATTERN = "no `maturin` executable was found on PATH"
+COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
+CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_boundary.py"
+)
+NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH = (
+    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_callable_replacement_boundary.py"
+)
+
 
 def _tracked_benchmark_manifest_paths() -> tuple[pathlib.Path, ...]:
     return tuple(sorted(BENCHMARK_WORKLOADS_ROOT.glob("*.py"), key=lambda path: path.name))
@@ -938,7 +946,7 @@ def test_run_internal_workload_probe_reports_unsupported_operations_as_unavailab
 def _nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads(
 ) -> tuple[Workload, ...]:
     return benchmark_test_support.live_manifest_workloads(
-        benchmark_test_support.NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
+        NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
         (
             "module-sub-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
             "module-subn-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-b-branch-first-match-only-warm-bytes",
@@ -1010,7 +1018,7 @@ def test_run_internal_workload_probe_measures_nested_group_callable_replacement_
 @cache
 def _conditional_group_exists_callable_negative_count_str_workloads() -> tuple[Workload, ...]:
     manifest = load_manifest(
-        benchmark_test_support.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH
+        CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH
     )
     workload_ids = tuple(
         workload.workload_id
@@ -1031,7 +1039,7 @@ def _conditional_group_exists_callable_negative_count_str_workloads() -> tuple[W
         }
     )
     return benchmark_test_support.live_manifest_workloads(
-        benchmark_test_support.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+        CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
         workload_ids,
     )
 
@@ -1039,7 +1047,7 @@ def _conditional_group_exists_callable_negative_count_str_workloads() -> tuple[W
 @cache
 def _conditional_group_exists_callable_none_count_workloads() -> tuple[Workload, ...]:
     manifest = load_manifest(
-        benchmark_test_support.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH
+        CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH
     )
     workload_ids = tuple(
         workload.workload_id
@@ -1053,7 +1061,7 @@ def _conditional_group_exists_callable_none_count_workloads() -> tuple[Workload,
         }
     )
     return benchmark_test_support.live_manifest_workloads(
-        benchmark_test_support.CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
+        CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
         workload_ids,
     )
 
@@ -1537,7 +1545,7 @@ def test_run_benchmarks_falls_back_to_source_shim_when_build_tooling_is_unavaila
         return_value=(None, None, _MISSING_MATURIN_REASON),
     ):
         scorecard = benchmarks.run_benchmarks(
-            manifest_paths=[benchmark_test_support.COMPILE_MATRIX_MANIFEST_PATH],
+            manifest_paths=[COMPILE_MATRIX_MANIFEST_PATH],
             report_path=report_path,
             adapter_mode=benchmarks.BUILT_NATIVE_MODE,
         )
@@ -1605,7 +1613,7 @@ def test_run_benchmarks_reports_built_native_provenance_when_available(
     tmp_path: pathlib.Path,
 ) -> None:
     scorecard = benchmarks.run_benchmarks(
-        manifest_paths=[benchmark_test_support.COMPILE_MATRIX_MANIFEST_PATH],
+        manifest_paths=[COMPILE_MATRIX_MANIFEST_PATH],
         report_path=tmp_path / "benchmarks-native.json",
         adapter_mode=benchmarks.BUILT_NATIVE_MODE,
     )

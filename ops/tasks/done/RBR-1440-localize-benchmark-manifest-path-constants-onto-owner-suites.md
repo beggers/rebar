@@ -47,3 +47,11 @@ Created: 2026-03-27
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest tests/benchmarks/test_benchmark_test_support.py -q` passed with `204 passed in 0.71s`.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest tests/benchmarks/test_benchmark_publication_runtime_contracts.py -q` passed with `192 passed, 3 skipped in 0.31s`.
   - `./.venv/bin/python -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_publication_runtime_contracts.py` succeeded.
+
+## Completion
+- Landed the owner-local benchmark manifest-path cleanup by deleting the manifest-path constant layer from `tests/benchmarks/benchmark_test_support.py`, defining the compile/runtime manifest anchors inside the two consuming suites, and updating the ownership meta-tests to assert those constants stay local while shared helper exports remain shared.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest tests/benchmarks/test_benchmark_test_support.py -q` passed with `205 passed in 0.93s`.
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest tests/benchmarks/test_benchmark_publication_runtime_contracts.py -q` passed with `192 passed, 3 skipped in 0.36s`.
+  - `./.venv/bin/python -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_benchmark_publication_runtime_contracts.py` succeeded.
+  - `bash -lc "! rg -n '^(COMPILE_MATRIX_MANIFEST_PATH|REGRESSION_MATRIX_MANIFEST_PATH|CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH|NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH)\\s*=' tests/benchmarks/benchmark_test_support.py"` succeeded.

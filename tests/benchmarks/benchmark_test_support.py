@@ -27,7 +27,7 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from rebar_harness.scorecard_io import build_cpython_baseline
-from tests.conftest import REPO_ROOT, records_by_string_id
+from tests.conftest import records_by_string_id
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
@@ -108,17 +108,6 @@ def _clear_anchor_support_caches() -> None:
     )
     if combined_suite is not None:
         _clear_cached_functions(vars(combined_suite).values())
-
-COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
-REGRESSION_MATRIX_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
-)
-CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "conditional_group_exists_boundary.py"
-)
-NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH = (
-    REPO_ROOT / "benchmarks" / "workloads" / "nested_group_callable_replacement_boundary.py"
-)
 
 def run_benchmark_workload_with_cpython(workload: Any) -> object:
     re.purge()
