@@ -39,6 +39,10 @@ Created: 2026-03-27
 - `./.venv/bin/python -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py`
 - `bash -lc "! rg -n '^def (_parsed_module_ast|_module_imported_names|_module_import_targets|_module_function_definition|_module_assignment|_module_class_definition|_class_method_definition|_ast_import_targets|_module_alias_names|_top_level_import_from_alias_pairs|_module_attribute_alias_targets|_owner_definition_manifest_path_names|top_level_module_definition_and_assignment_names|assert_owner_surface_module_owned_without_local_duplicates|assert_mixed_owner_surface)\\b' tests/benchmarks/benchmark_test_support.py"`
 
+## Completion
+- Moved the AST/owner-introspection helper layer out of `tests/benchmarks/benchmark_test_support.py` and into `tests/benchmarks/test_benchmark_test_support.py`, including local cache-reset plumbing for the meta-test-owned cached AST helpers.
+- Verified the targeted benchmark meta-test slice passes (`28 passed, 172 deselected`), both files compile with `py_compile`, and the shared support module no longer defines any of the removed helper exports.
+
 ## Notes
 - Queue and JSON check in this planning run:
   - `.rebar/runtime/dashboard.md` reported `ready: 0`, `in_progress: 0`, `blocked: 0`, `tracked_json_blob_count: 0`, and `tracked_json_blob_delta: 0`.

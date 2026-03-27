@@ -4,6 +4,7 @@ import ast
 from dataclasses import replace
 from functools import cache
 import importlib
+import inspect
 import pathlib
 import re
 import sys
@@ -19,12 +20,379 @@ from tests.benchmarks import (
 from tests.conftest import REPO_ROOT, records_by_string_id
 from tests.python.fixture_parity_support import IndexLike
 
-# Pytest fixture discovery needs a module-level binding for this shared fixture.
-anchor_support_cache_guard = support.anchor_support_cache_guard
 anchor_support = support
+meta_support = sys.modules[__name__]
 collection_replacement_support = importlib.import_module(
     "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
 )
+
+
+def _clear_cached_functions(functions: tuple[object, ...]) -> None:
+    for function in functions:
+        cache_clear = getattr(function, "cache_clear", None)
+        if callable(cache_clear):
+            cache_clear()
+
+
+def _clear_local_meta_support_caches() -> None:
+    _clear_cached_functions(
+        (
+            _parsed_module_ast,
+            _benchmark_support_import_targets_by_path,
+        )
+    )
+
+
+@pytest.fixture
+def anchor_support_cache_guard() -> None:
+    support._clear_anchor_support_caches()
+    _clear_local_meta_support_caches()
+    yield
+    _clear_local_meta_support_caches()
+    support._clear_anchor_support_caches()
+
+
+@cache
+def _parsed_module_ast(module: object) -> ast.Module:
+    return ast.parse(inspect.getsource(module))
+
+
+def _module_imported_names(module: object, imported_module: str) -> frozenset[str]:
+    return frozenset(
+        alias.name
+        for node in _parsed_module_ast(module).body
+        if isinstance(node, ast.ImportFrom) and node.module == imported_module
+        for alias in node.names
+    )
+
+
+def _module_import_targets(module: object) -> frozenset[str]:
+    return _ast_import_targets(_parsed_module_ast(module))
+
+
+def _module_function_definition(module: object, function_name: str) -> ast.FunctionDef:
+    return next(
+        node
+        for node in _parsed_module_ast(module).body
+        if isinstance(node, ast.FunctionDef) and node.name == function_name
+    )
+
+
+def _module_assignment(module: object, name: str) -> ast.Assign | ast.AnnAssign:
+    return next(
+        node
+        for node in _parsed_module_ast(module).body
+        if (
+            isinstance(node, ast.Assign)
+            and any(
+                isinstance(target, ast.Name) and target.id == name
+                for target in node.targets
+            )
+        )
+        or (
+            isinstance(node, ast.AnnAssign)
+            and isinstance(node.target, ast.Name)
+            and node.target.id == name
+        )
+    )
+
+
+def _module_class_definition(module: object, class_name: str) -> ast.ClassDef:
+    return next(
+        node
+        for node in _parsed_module_ast(module).body
+        if isinstance(node, ast.ClassDef) and node.name == class_name
+    )
+
+
+def _class_method_definition(
+    class_definition: ast.ClassDef,
+    method_name: str,
+) -> ast.FunctionDef:
+    return next(
+        node
+        for node in class_definition.body
+        if isinstance(node, ast.FunctionDef) and node.name == method_name
+    )
+
+
+def _ast_import_targets(module_ast: ast.Module) -> frozenset[str]:
+    targets: set[str] = set()
+
+    for node in module_ast.body:
+        if isinstance(node, ast.ImportFrom) and node.module is not None:
+            targets.add(node.module)
+        elif isinstance(node, ast.Import):
+            targets.update(alias.name for alias in node.names)
+
+    return frozenset(targets)
+
+
+def _module_alias_names(
+    module_ast: ast.AST,
+    *,
+    import_from_module: str,
+    import_name: str,
+    dotted_import_name: str,
+) -> frozenset[str]:
+    module_body = getattr(module_ast, "body", ())
+    alias_names: set[str] = set()
+
+    for node in module_body:
+        if isinstance(node, ast.ImportFrom) and node.module == import_from_module:
+            alias_names.update(
+                alias.asname or alias.name
+                for alias in node.names
+                if alias.name == import_name
+            )
+            continue
+
+        if isinstance(node, ast.Import):
+            alias_names.update(
+                alias.asname or alias.name.rsplit(".", 1)[-1]
+                for alias in node.names
+                if alias.name == dotted_import_name
+            )
+            continue
+
+        if isinstance(node, ast.Assign):
+            targets = tuple(
+                target.id for target in node.targets if isinstance(target, ast.Name)
+            )
+            value = node.value
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            targets = (node.target.id,)
+            value = node.value
+        else:
+            continue
+
+        if isinstance(value, ast.Name) and value.id in alias_names:
+            alias_names.update(targets)
+            continue
+
+        for target in targets:
+            alias_names.discard(target)
+
+    return frozenset(alias_names)
+
+
+def _top_level_import_from_alias_pairs(
+    module_ast: ast.Module,
+    *,
+    module_name: str,
+    imported_names: frozenset[str],
+) -> frozenset[tuple[str, str | None]]:
+    return frozenset(
+        (alias.name, alias.asname)
+        for node in module_ast.body
+        if isinstance(node, ast.ImportFrom) and node.module == module_name
+        for alias in node.names
+        if alias.name in imported_names
+    )
+
+
+def _module_attribute_alias_targets(
+    module_ast: ast.AST,
+    *,
+    module_alias_names: frozenset[str],
+) -> dict[str, str]:
+    attribute_alias_targets: dict[str, str] = {}
+    module_body = getattr(module_ast, "body", ())
+
+    for node in module_body:
+        if isinstance(node, ast.Assign):
+            targets = tuple(
+                target.id for target in node.targets if isinstance(target, ast.Name)
+            )
+            value = node.value
+        elif isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name):
+            targets = (node.target.id,)
+            value = node.value
+        else:
+            continue
+
+        aliased_attribute: str | None = None
+        if (
+            isinstance(value, ast.Attribute)
+            and isinstance(value.value, ast.Name)
+            and value.value.id in module_alias_names
+        ):
+            aliased_attribute = value.attr
+        elif isinstance(value, ast.Name):
+            aliased_attribute = attribute_alias_targets.get(value.id)
+
+        if aliased_attribute is None:
+            for target in targets:
+                attribute_alias_targets.pop(target, None)
+            continue
+
+        for target in targets:
+            attribute_alias_targets[target] = aliased_attribute
+
+    return attribute_alias_targets
+
+
+def _owner_definition_manifest_path_names(
+    owner_definition: ast.Assign | ast.Return,
+) -> tuple[tuple[str, ...], ...]:
+    def _manifest_path_name(node: ast.expr) -> str:
+        if isinstance(node, ast.Name):
+            return node.id
+        if (
+            isinstance(node, ast.Attribute)
+            and isinstance(node.value, ast.Name)
+            and node.value.id == "benchmark_test_support"
+        ):
+            return node.attr
+        raise AssertionError("manifest path definitions must resolve through named support constants")
+
+    value = owner_definition.value
+    assert isinstance(value, ast.Tuple)
+
+    manifest_path_names: list[tuple[str, ...]] = []
+    for element in value.elts:
+        assert isinstance(element, ast.Call)
+        manifest_paths_keyword = next(
+            keyword
+            for keyword in element.keywords
+            if keyword.arg == "manifest_paths"
+        )
+        assert isinstance(manifest_paths_keyword.value, ast.Tuple)
+        manifest_path_names.append(
+            tuple(
+                _manifest_path_name(manifest_path)
+                for manifest_path in manifest_paths_keyword.value.elts
+            )
+        )
+
+    return tuple(manifest_path_names)
+
+
+def top_level_module_definition_and_assignment_names(
+    module: object,
+) -> tuple[set[str], set[str]]:
+    module_tree = _parsed_module_ast(module)
+    definition_names = {
+        node.name
+        for node in module_tree.body
+        if isinstance(node, (ast.AsyncFunctionDef, ast.ClassDef, ast.FunctionDef))
+    }
+    assignment_names = {
+        node.target.id
+        for node in module_tree.body
+        if isinstance(node, ast.AnnAssign) and isinstance(node.target, ast.Name)
+    }
+    assignment_names.update(
+        target.id
+        for node in module_tree.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    )
+    return definition_names, assignment_names
+
+
+def assert_owner_surface_module_owned_without_local_duplicates(
+    caller_module: object,
+    owner_module: object,
+    *,
+    definition_names: tuple[str, ...] = (),
+    assignment_names: tuple[str, ...] = (),
+    extra_owner_name: str | None = None,
+    extra_owner_module: object | None = None,
+) -> None:
+    local_definition_names, local_assignment_names = (
+        top_level_module_definition_and_assignment_names(caller_module)
+    )
+    local_names = local_definition_names | local_assignment_names
+    expected_definition_names = set(definition_names)
+    expected_assignment_names = set(assignment_names)
+
+    for name in expected_definition_names | expected_assignment_names:
+        assert hasattr(owner_module, name)
+
+    assert expected_definition_names.isdisjoint(local_names)
+    assert expected_assignment_names.isdisjoint(local_names)
+
+    if extra_owner_name is None:
+        assert extra_owner_module is None
+        return
+
+    assert extra_owner_module is not None
+    assert hasattr(extra_owner_module, extra_owner_name)
+    assert extra_owner_name not in local_names
+
+
+def assert_mixed_owner_surface(
+    caller_module: object,
+    *,
+    local_function_names: tuple[str, ...] = (),
+    local_assignment_names: tuple[str, ...] = (),
+    support_alias_assignment_names: tuple[str, ...] = (),
+) -> None:
+    module_ast = _parsed_module_ast(caller_module)
+    parsed_function_names = {
+        node.name
+        for node in module_ast.body
+        if isinstance(node, (ast.AsyncFunctionDef, ast.FunctionDef))
+    }
+    _, parsed_assignment_names = (
+        top_level_module_definition_and_assignment_names(caller_module)
+    )
+    expected_local_function_names = set(local_function_names)
+    expected_local_assignment_names = set(local_assignment_names)
+    expected_support_alias_assignment_names = set(support_alias_assignment_names)
+    shared_module = support
+    benchmark_test_support_alias_names = frozenset({"benchmark_test_support"}) | (
+        _module_alias_names(
+            module_ast,
+            import_from_module="tests.benchmarks",
+            import_name="benchmark_test_support",
+            dotted_import_name="tests.benchmarks.benchmark_test_support",
+        )
+    )
+    benchmark_test_support_attribute_alias_targets = _module_attribute_alias_targets(
+        module_ast,
+        module_alias_names=benchmark_test_support_alias_names,
+    )
+
+    assert expected_local_function_names.isdisjoint(expected_local_assignment_names)
+    assert expected_local_function_names.isdisjoint(
+        expected_support_alias_assignment_names
+    )
+    assert expected_local_assignment_names.isdisjoint(
+        expected_support_alias_assignment_names
+    )
+
+    for function_name in expected_local_function_names:
+        assert hasattr(caller_module, function_name)
+        assert function_name in parsed_function_names
+        assert function_name not in parsed_assignment_names
+        assert not hasattr(shared_module, function_name)
+
+    for assignment_name in expected_local_assignment_names:
+        assert hasattr(caller_module, assignment_name)
+        assert assignment_name in parsed_assignment_names
+        assert assignment_name not in parsed_function_names
+        assert not hasattr(shared_module, assignment_name)
+        assert (
+            benchmark_test_support_attribute_alias_targets.get(assignment_name) is None
+        )
+
+    for assignment_name in expected_support_alias_assignment_names:
+        assert hasattr(caller_module, assignment_name)
+        assert assignment_name in parsed_assignment_names
+        assert assignment_name not in parsed_function_names
+        assignment = _module_assignment(caller_module, assignment_name)
+        assert assignment.value is not None
+        assert isinstance(assignment.value, ast.Attribute)
+        assert isinstance(assignment.value.value, ast.Name)
+        assert assignment.value.value.id in benchmark_test_support_alias_names
+        assert assignment.value.attr == assignment_name
+        assert getattr(caller_module, assignment_name) is getattr(
+            shared_module,
+            assignment_name,
+        )
 
 
 def _synthetic_manifest(
@@ -165,10 +533,10 @@ def _assert_owner_module_routes_through_package_import(
     package_module: str,
     expected_alias_pairs: frozenset[tuple[str, str | None]],
 ) -> None:
-    assert package_module in support._module_import_targets(module)
-    assert owner_module not in support._module_import_targets(module)
-    assert support._top_level_import_from_alias_pairs(
-        support._parsed_module_ast(module),
+    assert package_module in _module_import_targets(module)
+    assert owner_module not in _module_import_targets(module)
+    assert _top_level_import_from_alias_pairs(
+        _parsed_module_ast(module),
         module_name=package_module,
         imported_names=frozenset(name for name, _ in expected_alias_pairs),
     ) == expected_alias_pairs
@@ -181,7 +549,7 @@ def _benchmark_support_import_targets_by_path(
     return tuple(
         (
             path.relative_to(REPO_ROOT),
-            support._ast_import_targets(
+            _ast_import_targets(
                 ast.parse(
                     path.read_text(encoding="utf-8"),
                     filename=str(path),
@@ -230,7 +598,7 @@ def _inline_standard_definition_assignments(
 ) -> tuple[ast.Assign, ...]:
     return tuple(
         node
-        for node in support._parsed_module_ast(module).body
+        for node in _parsed_module_ast(module).body
         if isinstance(node, ast.Assign)
         and _assignment_target_name(node).endswith("_STANDARD_BENCHMARK_DEFINITIONS")
         and isinstance(node.value, ast.Tuple)
@@ -636,22 +1004,22 @@ def test_clear_anchor_support_caches_resets_shared_ast_import_helpers(
         assert module is fake_module
         return source[0]
 
-    monkeypatch.setattr(support.inspect, "getsource", _getsource)
+    monkeypatch.setattr(inspect, "getsource", _getsource)
 
-    assert support._module_imported_names(fake_module, "alpha") == frozenset({"beta"})
-    assert support._module_import_targets(fake_module) == frozenset({"alpha"})
+    assert _module_imported_names(fake_module, "alpha") == frozenset({"beta"})
+    assert _module_import_targets(fake_module) == frozenset({"alpha"})
     assert getsource_calls == [fake_module]
 
     source[0] = "from gamma import delta\n"
 
-    assert support._module_imported_names(fake_module, "gamma") == frozenset()
-    assert support._module_import_targets(fake_module) == frozenset({"alpha"})
+    assert _module_imported_names(fake_module, "gamma") == frozenset()
+    assert _module_import_targets(fake_module) == frozenset({"alpha"})
     assert getsource_calls == [fake_module]
 
-    support._clear_anchor_support_caches()
+    _clear_local_meta_support_caches()
 
-    assert support._module_imported_names(fake_module, "gamma") == frozenset({"delta"})
-    assert support._module_import_targets(fake_module) == frozenset({"gamma"})
+    assert _module_imported_names(fake_module, "gamma") == frozenset({"delta"})
+    assert _module_import_targets(fake_module) == frozenset({"gamma"})
     assert getsource_calls == [fake_module, fake_module]
 
 def test_source_tree_contract_manifest_workload_payload_drops_fields_and_injects_metadata(
@@ -1167,8 +1535,8 @@ def test_standard_benchmark_param_helpers_require_explicit_definition_inventory(
         )
     ) == standard_definitions
 
-    support_ast = support._parsed_module_ast(support)
-    owner_ast = support._parsed_module_ast(collection_replacement_support)
+    support_ast = _parsed_module_ast(support)
+    owner_ast = _parsed_module_ast(collection_replacement_support)
     assert not any(
         isinstance(node, ast.Assign)
         and any(
@@ -1193,7 +1561,7 @@ def test_standard_benchmark_param_helpers_require_explicit_definition_inventory(
         and node.name == "_standard_benchmark_definition_params"
         for node in owner_ast.body
     )
-    helper_definition = support._module_function_definition(
+    helper_definition = _module_function_definition(
         collection_replacement_support,
         "_standard_benchmark_definition_params",
     )
@@ -1293,10 +1661,10 @@ def test_standard_benchmark_definitions_keep_owner_blocks_in_order(
 def test_source_tree_combined_suite_owns_compiled_pattern_module_compile_standard_definitions(
 ) -> None:
     support_definition_names, support_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(support)
+        top_level_module_definition_and_assignment_names(support)
     )
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(
+        top_level_module_definition_and_assignment_names(
             collection_replacement_support
         )
     )
@@ -1339,7 +1707,7 @@ def test_benchmark_test_support_exports_compiled_pattern_module_compile_helper_s
         "_is_module_workflow_compiled_pattern_compile_keyword_workload",
     }
 
-    shared_definition_names, _ = support.top_level_module_definition_and_assignment_names(
+    shared_definition_names, _ = top_level_module_definition_and_assignment_names(
         support
     )
     assert helper_names.issubset(shared_definition_names)
@@ -1477,8 +1845,8 @@ def test_module_workflow_keyword_standard_definitions_stay_owned_by_source_tree_
 
 def test_source_tree_module_keyword_definition_references_owner_manifest_path_constant(
 ) -> None:
-    assert support._owner_definition_manifest_path_names(
-        support._module_assignment(
+    assert _owner_definition_manifest_path_names(
+        _module_assignment(
             collection_replacement_support,
             "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
         )
@@ -1498,12 +1866,12 @@ ANNOTATED_ALIAS: object = benchmark_test_support.SHARED_ALIAS
     )
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "_parsed_module_ast",
         lambda module: module_ast,
     )
 
-    assignment = support._module_assignment(
+    assignment = _module_assignment(
         SimpleNamespace(ANNOTATED_ALIAS=object()),
         "ANNOTATED_ALIAS",
     )
@@ -1540,7 +1908,7 @@ def test_inline_standard_definition_exports_reuse_named_manifest_path_constants(
 
     for assignment in assignment_nodes:
         assignment_name = _assignment_target_name(assignment)
-        manifest_path_name_groups = support._owner_definition_manifest_path_names(assignment)
+        manifest_path_name_groups = _owner_definition_manifest_path_names(assignment)
         assert all(
             manifest_path_names
             and all(
@@ -1585,7 +1953,7 @@ def test_shared_module_boundary_manifest_path_consumers_reuse_support_constant_b
     assert getattr(module, "benchmark_test_support") is support
     assert module.benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH is support.MODULE_BOUNDARY_MANIFEST_PATH
     if module_constant_name is not None:
-        _, assignment_names = support.top_level_module_definition_and_assignment_names(
+        _, assignment_names = top_level_module_definition_and_assignment_names(
             module
         )
         assert module_constant_name not in assignment_names
@@ -1647,7 +2015,7 @@ def test_shared_source_tree_manifest_path_constants_point_to_current_workload_fi
 def test_publication_runtime_contracts_route_shared_support_through_package_owner(
 ) -> None:
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(
+        top_level_module_definition_and_assignment_names(
             publication_runtime_contracts
         )
     )
@@ -1685,7 +2053,7 @@ def test_publication_runtime_contracts_route_shared_support_through_package_owne
 
 def test_publication_runtime_contracts_keep_summary_contract_helpers_owner_local() -> None:
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(
+        top_level_module_definition_and_assignment_names(
             publication_runtime_contracts
         )
     )
@@ -1719,7 +2087,7 @@ def test_shared_publication_runtime_manifest_path_constants_point_to_current_wor
 
 def test_benchmark_test_support_owns_only_shared_collection_replacement_classifier_helpers(
 ) -> None:
-    definition_names, _ = support.top_level_module_definition_and_assignment_names(
+    definition_names, _ = top_level_module_definition_and_assignment_names(
         support
     )
 
@@ -1746,7 +2114,7 @@ def test_benchmark_test_support_owns_only_shared_collection_replacement_classifi
 def test_collection_replacement_benchmark_support_owns_keyword_classifier_helpers_and_routes_shared_ones_through_support_alias(
 ) -> None:
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(
+        top_level_module_definition_and_assignment_names(
             collection_replacement_support
         )
     )
@@ -1804,19 +2172,19 @@ def test_collection_replacement_benchmark_support_owns_keyword_classifier_helper
         ),
     ),
 )
-def test_benchmark_import_introspection_helpers_stay_owned_by_shared_support(
+def test_benchmark_import_introspection_helpers_stay_owned_by_meta_suite(
     module_name: str,
     expected_helper_names: frozenset[str],
 ) -> None:
     module = importlib.import_module(module_name)
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(module)
+        top_level_module_definition_and_assignment_names(module)
     )
-    module_ast = support._parsed_module_ast(module)
+    module_ast = _parsed_module_ast(module)
     local_names = definition_names | assignment_names
 
-    assert support._top_level_import_from_alias_pairs(
-        support._parsed_module_ast(module),
+    assert _top_level_import_from_alias_pairs(
+        _parsed_module_ast(module),
         module_name="tests.benchmarks",
         imported_names=frozenset({"benchmark_test_support"}),
     ) == frozenset({("benchmark_test_support", "support")})
@@ -1826,18 +2194,18 @@ def test_benchmark_import_introspection_helpers_stay_owned_by_shared_support(
         and any(alias.name in expected_helper_names for alias in node.names)
         for node in module_ast.body
     )
-    assert expected_helper_names.isdisjoint(local_names)
+    assert expected_helper_names.issubset(local_names)
     assert module.support is support
     for helper_name in expected_helper_names:
-        assert not hasattr(module, helper_name)
-        assert getattr(module.support, helper_name) is getattr(support, helper_name)
+        assert getattr(module, helper_name) is getattr(meta_support, helper_name)
+        assert not hasattr(module.support, helper_name)
 
 
 def test_benchmark_support_suite_routes_shared_owner_imports_through_package_alias(
 ) -> None:
     module = importlib.import_module("tests.benchmarks.test_benchmark_test_support")
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(module)
+        top_level_module_definition_and_assignment_names(module)
     )
 
     _assert_owner_module_routes_through_package_import(
@@ -1850,9 +2218,9 @@ def test_benchmark_support_suite_routes_shared_owner_imports_through_package_ali
     assert {
         "MODULE_BOUNDARY_MANIFEST_PATH",
         "RecordingBenchmarkModule",
-        "_parsed_module_ast",
         "_write_test_manifest",
     }.isdisjoint(definition_names | assignment_names)
+    assert "_parsed_module_ast" in definition_names
     assert "_synthetic_workload" in definition_names
 
 
@@ -1892,9 +2260,9 @@ def test_owner_module_package_import_helper_rejects_missing_package_alias_or_dir
 ) -> None:
     current_module = importlib.import_module(__name__)
 
-    monkeypatch.setattr(support, "_module_import_targets", lambda _: import_targets)
+    monkeypatch.setattr(meta_support, "_module_import_targets", lambda _: import_targets)
     monkeypatch.setattr(
-        support,
+        meta_support,
         "_top_level_import_from_alias_pairs",
         lambda *args, **kwargs: observed_alias_pairs,
     )
@@ -1951,13 +2319,13 @@ def test_owner_surface_module_owned_without_local_duplicates_rejects_cross_kind_
         return set(local_definition_names), set(local_assignment_names)
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "top_level_module_definition_and_assignment_names",
         _top_level_names,
     )
 
     with pytest.raises(AssertionError):
-        support.assert_owner_surface_module_owned_without_local_duplicates(
+        assert_owner_surface_module_owned_without_local_duplicates(
             caller_module,
             owner_module,
             definition_names=definition_names,
@@ -1984,12 +2352,12 @@ def test_owner_surface_module_owned_without_local_duplicates_accepts_extra_owner
         return set(), set()
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "top_level_module_definition_and_assignment_names",
         _top_level_names,
     )
 
-    support.assert_owner_surface_module_owned_without_local_duplicates(
+    assert_owner_surface_module_owned_without_local_duplicates(
         caller_module,
         owner_module,
         definition_names=("owner_helper",),
@@ -2024,13 +2392,13 @@ def test_owner_surface_module_owned_without_local_duplicates_rejects_extra_owner
         return set(local_definition_names), set(local_assignment_names)
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "top_level_module_definition_and_assignment_names",
         _top_level_names,
     )
 
     with pytest.raises(AssertionError):
-        support.assert_owner_surface_module_owned_without_local_duplicates(
+        assert_owner_surface_module_owned_without_local_duplicates(
             caller_module,
             owner_module,
             definition_names=("owner_helper",),
@@ -2049,20 +2417,20 @@ def test_owner_surface_module_owned_without_local_duplicates_rejects_unpaired_ex
     extra_owner_module = SimpleNamespace(EXTRA_OWNER_ASSIGNMENT=object())
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "top_level_module_definition_and_assignment_names",
         lambda module: (set(), set()),
     )
 
     with pytest.raises(AssertionError):
-        support.assert_owner_surface_module_owned_without_local_duplicates(
+        assert_owner_surface_module_owned_without_local_duplicates(
             caller_module,
             owner_module,
             extra_owner_module=extra_owner_module,
         )
 
     with pytest.raises(AssertionError):
-        support.assert_owner_surface_module_owned_without_local_duplicates(
+        assert_owner_surface_module_owned_without_local_duplicates(
             caller_module,
             owner_module,
             extra_owner_name="EXTRA_OWNER_ASSIGNMENT",
@@ -2093,7 +2461,7 @@ SHARED_ALIAS = benchmark_test_support.SHARED_ALIAS
     )
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "_parsed_module_ast",
         lambda module: module_ast,
     )
@@ -2104,7 +2472,7 @@ SHARED_ALIAS = benchmark_test_support.SHARED_ALIAS
         raising=False,
     )
 
-    support.assert_mixed_owner_surface(
+    assert_mixed_owner_surface(
         caller_module,
         local_function_names=("owner_helper",),
         local_assignment_names=("OWNER_ASSIGNMENT",),
@@ -2123,13 +2491,13 @@ def duplicated_name():
     )
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "_parsed_module_ast",
         lambda module: module_ast,
     )
 
     with pytest.raises(AssertionError):
-        support.assert_mixed_owner_surface(
+        assert_mixed_owner_surface(
             object(),
             local_function_names=("duplicated_name",),
             local_assignment_names=("duplicated_name",),
@@ -2148,7 +2516,7 @@ OWNER_ASSIGNMENT = benchmark_test_support.SHARED_ALIAS
     )
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "_parsed_module_ast",
         lambda module: module_ast,
     )
@@ -2160,7 +2528,7 @@ OWNER_ASSIGNMENT = benchmark_test_support.SHARED_ALIAS
     )
 
     with pytest.raises(AssertionError):
-        support.assert_mixed_owner_surface(
+        assert_mixed_owner_surface(
             caller_module,
             local_assignment_names=("OWNER_ASSIGNMENT",),
         )
@@ -2194,7 +2562,7 @@ def test_assert_mixed_owner_surface_rejects_local_assignment_that_routes_through
     module_ast = ast.parse(module_source)
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "_parsed_module_ast",
         lambda module: module_ast,
     )
@@ -2206,7 +2574,7 @@ def test_assert_mixed_owner_surface_rejects_local_assignment_that_routes_through
     )
 
     with pytest.raises(AssertionError):
-        support.assert_mixed_owner_surface(
+        assert_mixed_owner_surface(
             caller_module,
             local_assignment_names=("OWNER_ASSIGNMENT",),
         )
@@ -2225,7 +2593,7 @@ SHARED_ALIAS = shared_support.SHARED_ALIAS
     )
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "_parsed_module_ast",
         lambda module: module_ast,
     )
@@ -2236,7 +2604,7 @@ SHARED_ALIAS = shared_support.SHARED_ALIAS
         raising=False,
     )
 
-    support.assert_mixed_owner_surface(
+    assert_mixed_owner_surface(
         caller_module,
         support_alias_assignment_names=("SHARED_ALIAS",),
     )
@@ -2255,7 +2623,7 @@ SHARED_ALIAS: object = shared_support.SHARED_ALIAS
     )
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "_parsed_module_ast",
         lambda module: module_ast,
     )
@@ -2266,7 +2634,7 @@ SHARED_ALIAS: object = shared_support.SHARED_ALIAS
         raising=False,
     )
 
-    support.assert_mixed_owner_surface(
+    assert_mixed_owner_surface(
         caller_module,
         support_alias_assignment_names=("SHARED_ALIAS",),
     )
@@ -2286,12 +2654,12 @@ OWNER_ASSIGNMENT = shared_support.SHARED_ALIAS
     )
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "_parsed_module_ast",
         lambda module: module_ast,
     )
 
-    support.assert_mixed_owner_surface(
+    assert_mixed_owner_surface(
         caller_module,
         local_assignment_names=("OWNER_ASSIGNMENT",),
     )
@@ -2329,7 +2697,7 @@ def test_assert_mixed_owner_surface_rejects_support_alias_after_module_alias_reb
     module_ast = ast.parse(module_source)
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "_parsed_module_ast",
         lambda module: module_ast,
     )
@@ -2341,7 +2709,7 @@ def test_assert_mixed_owner_surface_rejects_support_alias_after_module_alias_reb
     )
 
     with pytest.raises(AssertionError):
-        support.assert_mixed_owner_surface(
+        assert_mixed_owner_surface(
             caller_module,
             support_alias_assignment_names=("SHARED_ALIAS",),
         )
@@ -2377,7 +2745,7 @@ def test_assert_mixed_owner_surface_rejects_support_alias_through_top_level_alia
     module_ast = ast.parse(module_source)
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "_parsed_module_ast",
         lambda module: module_ast,
     )
@@ -2389,7 +2757,7 @@ def test_assert_mixed_owner_surface_rejects_support_alias_through_top_level_alia
     )
 
     with pytest.raises(AssertionError):
-        support.assert_mixed_owner_surface(
+        assert_mixed_owner_surface(
             caller_module,
             support_alias_assignment_names=("SHARED_ALIAS",),
         )
@@ -2407,7 +2775,7 @@ SHARED_ALIAS = benchmark_test_support.OTHER_ALIAS
     )
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "_parsed_module_ast",
         lambda module: module_ast,
     )
@@ -2425,7 +2793,7 @@ SHARED_ALIAS = benchmark_test_support.OTHER_ALIAS
     )
 
     with pytest.raises(AssertionError):
-        support.assert_mixed_owner_surface(
+        assert_mixed_owner_surface(
             caller_module,
             support_alias_assignment_names=("SHARED_ALIAS",),
         )
@@ -2444,7 +2812,7 @@ OWNER_ASSIGNMENT: object = shared_support.SHARED_ALIAS
     )
 
     monkeypatch.setattr(
-        support,
+        meta_support,
         "_parsed_module_ast",
         lambda module: module_ast,
     )
@@ -2456,7 +2824,7 @@ OWNER_ASSIGNMENT: object = shared_support.SHARED_ALIAS
     )
 
     with pytest.raises(AssertionError):
-        support.assert_mixed_owner_surface(
+        assert_mixed_owner_surface(
             caller_module,
             local_assignment_names=("OWNER_ASSIGNMENT",),
         )
@@ -2490,7 +2858,7 @@ def test_deleted_source_tree_support_modules_stay_unimportable_and_unreferenced(
 
 
 def test_benchmark_test_support_no_longer_imports_deleted_source_tree_modules() -> None:
-    import_targets = support._module_import_targets(support)
+    import_targets = _module_import_targets(support)
     deleted_owner_module = ".".join(
         ("tests", "benchmarks", "source_tree" + "_benchmark_anchor_support")
     )
@@ -2550,10 +2918,10 @@ def test_deleted_collection_replacement_owner_module_stays_unimportable_and_unre
 def test_benchmark_test_support_owns_pattern_boundary_wrong_text_model_surface(
 ) -> None:
     support_definition_names, support_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(support)
+        top_level_module_definition_and_assignment_names(support)
     )
     collection_definition_names, collection_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(
+        top_level_module_definition_and_assignment_names(
             collection_replacement_support
         )
     )
@@ -2637,7 +3005,7 @@ def test_source_tree_combined_suite_owns_rehomed_pattern_boundary_wrong_text_mod
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(module)
+        top_level_module_definition_and_assignment_names(module)
     )
     moved_owner_names = {
         "_pattern_boundary_wrong_text_model_source_workloads",
@@ -2658,7 +3026,7 @@ def test_source_tree_combined_suite_owns_benchmark_contract_helpers_locally() ->
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(module)
+        top_level_module_definition_and_assignment_names(module)
     )
     moved_owner_names = {
         "_KNOWN_GAP_STATUSES",
@@ -2672,7 +3040,7 @@ def test_source_tree_combined_suite_owns_benchmark_contract_helpers_locally() ->
 
 def test_benchmark_test_support_defines_shared_manifest_workload_contract_helper(
 ) -> None:
-    definition_names, _ = support.top_level_module_definition_and_assignment_names(
+    definition_names, _ = top_level_module_definition_and_assignment_names(
         support
     )
 
@@ -2972,10 +3340,10 @@ def test_assert_zero_gap_manifest_workloads_measured_routes_through_shared_contr
 def test_benchmark_test_support_owns_compiled_pattern_helper_surface(
 ) -> None:
     support_definition_names, support_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(support)
+        top_level_module_definition_and_assignment_names(support)
     )
     collection_definition_names, collection_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(
+        top_level_module_definition_and_assignment_names(
             collection_replacement_support
         )
     )
@@ -3048,19 +3416,19 @@ def test_shared_compiled_pattern_helper_contract_tests_import_from_support() -> 
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
 
-    assert support._top_level_import_from_alias_pairs(
-        support._parsed_module_ast(combined_suite),
+    assert _top_level_import_from_alias_pairs(
+        _parsed_module_ast(combined_suite),
         module_name="tests.benchmarks",
         imported_names=frozenset({"benchmark_test_support"}),
     ) == frozenset({("benchmark_test_support", None)})
-    assert "tests.benchmarks.benchmark_test_support" not in support._module_import_targets(
+    assert "tests.benchmarks.benchmark_test_support" not in _module_import_targets(
         combined_suite
     )
 
 
 def test_source_tree_combined_routing_helper_is_deleted_from_shared_support() -> None:
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(support)
+        top_level_module_definition_and_assignment_names(support)
     )
 
     assert "_assert_source_tree_combined_routes_owner_names_through_module_alias" not in (
@@ -3076,7 +3444,7 @@ def test_source_tree_combined_suite_deletes_proxy_boundary_symbols() -> None:
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(module)
+        top_level_module_definition_and_assignment_names(module)
     )
 
     assert "_SourceTreeSupportProxy" not in definition_names
@@ -3091,7 +3459,7 @@ def test_source_tree_combined_suite_owns_rehomed_manifest_expectation_surface_lo
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(module)
+        top_level_module_definition_and_assignment_names(module)
     )
     private_owner_names = frozenset(
         {
@@ -3228,7 +3596,7 @@ def test_module_alias_names_follow_dotted_import_and_assignment_alias_chains(
     dotted_import_name: str,
     expected_alias_names: set[str],
 ) -> None:
-    assert support._module_alias_names(
+    assert _module_alias_names(
         ast.parse(module_source),
         import_from_module="tests.benchmarks",
         import_name=import_name,
@@ -3255,7 +3623,7 @@ class Holder:
 """
     )
 
-    assert support._module_alias_names(
+    assert _module_alias_names(
         module_ast,
         import_from_module="tests.benchmarks",
         import_name="benchmark_test_support",
@@ -3280,7 +3648,7 @@ FINAL_ALIAS = MODULE_ALIAS
 """
     )
 
-    assert support._module_alias_names(
+    assert _module_alias_names(
         module_ast,
         import_from_module="tests.benchmarks",
         import_name="benchmark_test_support",
@@ -3304,7 +3672,7 @@ FINAL_FOLLOWER: object = ANNOTATED_ALIAS
 """
     )
 
-    assert support._module_attribute_alias_targets(
+    assert _module_attribute_alias_targets(
         module_ast,
         module_alias_names=frozenset({"shared_support"}),
     ) == {
@@ -3329,7 +3697,7 @@ MODULE_ALIAS = benchmark_test_support.MODULE_ALIAS
 """
     )
 
-    assert support._module_attribute_alias_targets(
+    assert _module_attribute_alias_targets(
         module_ast,
         module_alias_names=frozenset({"benchmark_test_support"}),
     ) == {
@@ -3344,7 +3712,7 @@ def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(module)
+        top_level_module_definition_and_assignment_names(module)
     )
     local_names = definition_names | assignment_names
 
@@ -3369,7 +3737,7 @@ def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_
     )
     assert all(name in local_names for name in owner_local_names)
     support_definition_names, support_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(support)
+        top_level_module_definition_and_assignment_names(support)
     )
     assert set(owner_local_names).isdisjoint(
         support_definition_names | support_assignment_names
@@ -3380,7 +3748,7 @@ def test_source_tree_combined_suite_deletes_manifest_contract_wrapper_methods() 
     module = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
-    suite_definition = support._module_class_definition(
+    suite_definition = _module_class_definition(
         module,
         "SourceTreeCombinedBoundaryBenchmarkSuiteTest",
     )
@@ -3401,12 +3769,12 @@ def test_class_method_definition_resolves_source_tree_combined_suite_test_method
     module = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
-    suite_definition = support._module_class_definition(
+    suite_definition = _module_class_definition(
         module,
         "SourceTreeCombinedBoundaryBenchmarkSuiteTest",
     )
 
-    method_definition = support._class_method_definition(
+    method_definition = _class_method_definition(
         suite_definition,
         "test_literal_flag_combined_case_preserves_expected_manifest_paths",
     )
@@ -3435,7 +3803,7 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
 ) -> None:
     module = importlib.import_module("tests.benchmarks.test_benchmark_manifest_validation")
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(module)
+        top_level_module_definition_and_assignment_names(module)
     )
     shared_owner_names = frozenset(
         {
@@ -3453,8 +3821,8 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
         package_module="tests.benchmarks",
         expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
-    assert support._top_level_import_from_alias_pairs(
-        support._parsed_module_ast(module),
+    assert _top_level_import_from_alias_pairs(
+        _parsed_module_ast(module),
         module_name="tests.benchmarks",
         imported_names=frozenset(),
     ) == frozenset()
@@ -3484,10 +3852,10 @@ def test_rehomed_source_tree_contract_tests_stay_owned_by_combined_boundary_suit
     )
 
     generic_definition_names, generic_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(generic_module)
+        top_level_module_definition_and_assignment_names(generic_module)
     )
     owner_definition_names, owner_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(owner_module)
+        top_level_module_definition_and_assignment_names(owner_module)
     )
 
     assert rehomed_definition_names.isdisjoint(
@@ -3521,11 +3889,11 @@ def test_rehomed_collection_replacement_tests_stay_owned_by_combined_boundary_su
 
 def test_collection_replacement_compiled_pattern_success_selector_stays_owned_by_combined_suite(
 ) -> None:
-    owner_definition_names, _ = support.top_level_module_definition_and_assignment_names(
+    owner_definition_names, _ = top_level_module_definition_and_assignment_names(
         anchor_support
     )
     consumer_definition_names, consumer_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(
+        top_level_module_definition_and_assignment_names(
             collection_replacement_support
         )
     )
@@ -3545,7 +3913,7 @@ def _assert_benchmark_test_support_aliases_absent(
 ) -> None:
     module = importlib.import_module(module_name)
     alias_pairs: set[tuple[str, str | None]] = set()
-    for node in support._parsed_module_ast(module).body:
+    for node in _parsed_module_ast(module).body:
         if isinstance(node, ast.ImportFrom):
             if node.module != "tests.benchmarks.benchmark_test_support":
                 continue
@@ -3605,7 +3973,7 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(combined_suite)
+        top_level_module_definition_and_assignment_names(combined_suite)
     )
     local_names = definition_names | assignment_names
     moved_workload_id_names = frozenset(
@@ -3641,10 +4009,10 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
 def test_source_tree_combined_suite_owns_compiled_pattern_module_success_surface(
 ) -> None:
     support_definition_names, support_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(support)
+        top_level_module_definition_and_assignment_names(support)
     )
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(
+        top_level_module_definition_and_assignment_names(
             collection_replacement_support
         )
     )
@@ -3787,7 +4155,7 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
 ) -> None:
     source_tree_function_names = {
         node.name
-        for node in support._parsed_module_ast(collection_replacement_support).body
+        for node in _parsed_module_ast(collection_replacement_support).body
         if isinstance(node, ast.FunctionDef)
     }
 
@@ -3806,7 +4174,7 @@ def test_compiled_pattern_contract_builder_surface_uses_one_owned_route(
         ),
     ):
         owner_module = importlib.import_module(owner_type.__module__)
-        class_definition = support._module_class_definition(
+        class_definition = _module_class_definition(
             owner_module,
             owner_type.__name__,
         )
@@ -3828,7 +4196,7 @@ def test_source_tree_contract_builder_spec_constructor_sites_stay_owner_scoped()
     constructor_name = "_SourceTreeContractBuilderSpec"
     call_sites: list[tuple[str, ...]] = []
 
-    for node in support._parsed_module_ast(collection_replacement_support).body:
+    for node in _parsed_module_ast(collection_replacement_support).body:
         if isinstance(node, ast.Assign):
             target_name = _assignment_target_name(node)
             if (
@@ -3962,7 +4330,7 @@ def test_compiled_pattern_owner_builder_methods_return_shared_specs_directly() -
 
 
 def test_benchmark_test_support_drops_local_wrong_text_model_contract_builder() -> None:
-    definition_names, _ = support.top_level_module_definition_and_assignment_names(
+    definition_names, _ = top_level_module_definition_and_assignment_names(
         support
     )
 
@@ -3973,10 +4341,10 @@ def test_benchmark_test_support_drops_local_wrong_text_model_contract_builder() 
 def test_collection_replacement_support_exports_compiled_pattern_module_helper_keyword_contract_surface(
 ) -> None:
     support_definition_names, support_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(support)
+        top_level_module_definition_and_assignment_names(support)
     )
     collection_definition_names, collection_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(
+        top_level_module_definition_and_assignment_names(
             collection_replacement_support
         )
     )
@@ -4018,7 +4386,7 @@ def test_collection_replacement_support_exports_compiled_pattern_module_helper_k
 
 def test_benchmark_test_support_no_longer_exports_deleted_workload_id_selector_helpers(
 ) -> None:
-    definition_names, _ = support.top_level_module_definition_and_assignment_names(
+    definition_names, _ = top_level_module_definition_and_assignment_names(
         support
     )
     deleted_names = frozenset(
@@ -4164,10 +4532,10 @@ def test_compiled_pattern_module_compile_surviving_suites_import_shared_support_
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
     support_definition_names, support_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(support)
+        top_level_module_definition_and_assignment_names(support)
     )
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(module)
+        top_level_module_definition_and_assignment_names(module)
     )
     _assert_owner_module_routes_through_package_import(
         module,
@@ -4203,10 +4571,10 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
     support_definition_names, support_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(support)
+        top_level_module_definition_and_assignment_names(support)
     )
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(module)
+        top_level_module_definition_and_assignment_names(module)
     )
     local_owner_names = {
         "compiled_pattern_contract_expected_build_calls",
@@ -4269,14 +4637,14 @@ def test_source_tree_contract_helper_suites_import_shared_alias_but_define_local
 ) -> None:
     module = importlib.import_module(module_name)
 
-    assert support._top_level_import_from_alias_pairs(
-        support._parsed_module_ast(module),
+    assert _top_level_import_from_alias_pairs(
+        _parsed_module_ast(module),
         module_name="tests.benchmarks",
         imported_names=frozenset({"benchmark_test_support"}),
     ) == expected_alias_pairs
     assert expected_imported_names.issubset(dir(module))
     assert expected_imported_names.isdisjoint(dir(module.benchmark_test_support))
-    assert "tests.benchmarks.benchmark_test_support" not in support._module_import_targets(
+    assert "tests.benchmarks.benchmark_test_support" not in _module_import_targets(
         module
     )
 
@@ -5550,10 +5918,10 @@ def test_source_tree_combined_suite_does_not_expose_deleted_standard_benchmark_i
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
     support_definition_names, support_assignment_names = (
-        support.top_level_module_definition_and_assignment_names(support)
+        top_level_module_definition_and_assignment_names(support)
     )
     definition_names, assignment_names = (
-        support.top_level_module_definition_and_assignment_names(combined_suite)
+        top_level_module_definition_and_assignment_names(combined_suite)
     )
     owner_only_names = {
         "StandardBenchmarkAnchorContractDefinition",
