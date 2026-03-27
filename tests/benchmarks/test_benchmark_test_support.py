@@ -275,17 +275,6 @@ def _module_attribute_alias_targets(
 def _owner_definition_manifest_path_names(
     owner_definition: ast.Assign | ast.Return,
 ) -> tuple[tuple[str, ...], ...]:
-    def _manifest_path_name(node: ast.expr) -> str:
-        if isinstance(node, ast.Name):
-            return node.id
-        if (
-            isinstance(node, ast.Attribute)
-            and isinstance(node.value, ast.Name)
-            and node.value.id == "benchmark_test_support"
-        ):
-            return node.attr
-        raise AssertionError("manifest path definitions must resolve through named support constants")
-
     value = owner_definition.value
     assert isinstance(value, ast.Tuple)
 
@@ -300,12 +289,86 @@ def _owner_definition_manifest_path_names(
         assert isinstance(manifest_paths_keyword.value, ast.Tuple)
         manifest_path_names.append(
             tuple(
-                _manifest_path_name(manifest_path)
+                _manifest_path_reference_name(manifest_path)
                 for manifest_path in manifest_paths_keyword.value.elts
             )
         )
 
     return tuple(manifest_path_names)
+
+
+def _manifest_path_reference_name(node: ast.expr) -> str:
+    if isinstance(node, ast.Name):
+        return node.id
+    if (
+        isinstance(node, ast.Attribute)
+        and isinstance(node.value, ast.Name)
+        and node.value.id == "benchmark_test_support"
+    ):
+        return node.attr
+    raise AssertionError(
+        "manifest path references must resolve through named owner constants"
+    )
+
+
+def _manifest_path_reference_group(node: ast.expr) -> tuple[str, ...]:
+    if isinstance(node, (ast.List, ast.Tuple)):
+        return tuple(
+            _manifest_path_reference_name(manifest_path)
+            for manifest_path in node.elts
+        )
+    return (_manifest_path_reference_name(node),)
+
+
+def _function_call_manifest_path_reference_groups(
+    function_definition: ast.FunctionDef,
+    *,
+    call_target: str,
+    argument_index: int | None = None,
+    keyword_name: str | None = None,
+) -> tuple[tuple[str, ...], ...]:
+    assert (argument_index is None) != (keyword_name is None)
+
+    def _matches_target(node: ast.Call) -> bool:
+        if call_target == "load_manifest":
+            return isinstance(node.func, ast.Name) and node.func.id == "load_manifest"
+        if call_target == "live_manifest_workloads":
+            return (
+                isinstance(node.func, ast.Attribute)
+                and isinstance(node.func.value, ast.Name)
+                and node.func.value.id == "benchmark_test_support"
+                and node.func.attr == "live_manifest_workloads"
+            )
+        if call_target == "run_benchmarks":
+            return (
+                isinstance(node.func, ast.Attribute)
+                and isinstance(node.func.value, ast.Name)
+                and node.func.value.id == "benchmarks"
+                and node.func.attr == "run_benchmarks"
+            )
+        raise AssertionError(f"unsupported call target {call_target!r}")
+
+    manifest_path_references: list[tuple[str, ...]] = []
+    for node in ast.walk(function_definition):
+        if not isinstance(node, ast.Call) or not _matches_target(node):
+            continue
+
+        if argument_index is not None:
+            manifest_path_references.append(
+                _manifest_path_reference_group(node.args[argument_index])
+            )
+            continue
+
+        keyword = next(
+            child_keyword
+            for child_keyword in node.keywords
+            if child_keyword.arg == keyword_name
+        )
+        manifest_path_references.append(
+            _manifest_path_reference_group(keyword.value)
+        )
+
+    return tuple(manifest_path_references)
 
 
 def top_level_module_definition_and_assignment_names(
@@ -2241,6 +2304,87 @@ def test_shared_publication_runtime_manifest_path_constants_point_to_current_wor
         "NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH",
     ):
         assert not hasattr(support, name)
+
+
+@pytest.mark.parametrize(
+    ("function_name", "call_target", "argument_index", "keyword_name", "expected"),
+    (
+        pytest.param(
+            "_nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads",
+            "live_manifest_workloads",
+            0,
+            None,
+            (("NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH",),),
+            id="nested-group-live-manifest-workloads",
+        ),
+        pytest.param(
+            "_conditional_group_exists_callable_negative_count_str_workloads",
+            "load_manifest",
+            0,
+            None,
+            (("CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH",),),
+            id="conditional-negative-count-load-manifest",
+        ),
+        pytest.param(
+            "_conditional_group_exists_callable_negative_count_str_workloads",
+            "live_manifest_workloads",
+            0,
+            None,
+            (("CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH",),),
+            id="conditional-negative-count-live-manifest-workloads",
+        ),
+        pytest.param(
+            "_conditional_group_exists_callable_none_count_workloads",
+            "load_manifest",
+            0,
+            None,
+            (("CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH",),),
+            id="conditional-none-count-load-manifest",
+        ),
+        pytest.param(
+            "_conditional_group_exists_callable_none_count_workloads",
+            "live_manifest_workloads",
+            0,
+            None,
+            (("CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH",),),
+            id="conditional-none-count-live-manifest-workloads",
+        ),
+        pytest.param(
+            "test_run_benchmarks_falls_back_to_source_shim_when_build_tooling_is_unavailable",
+            "run_benchmarks",
+            None,
+            "manifest_paths",
+            (("COMPILE_MATRIX_MANIFEST_PATH",),),
+            id="built-native-fallback-run-benchmarks",
+        ),
+        pytest.param(
+            "test_run_benchmarks_reports_built_native_provenance_when_available",
+            "run_benchmarks",
+            None,
+            "manifest_paths",
+            (("COMPILE_MATRIX_MANIFEST_PATH",),),
+            id="built-native-provenance-run-benchmarks",
+        ),
+    ),
+)
+def test_publication_runtime_contract_manifest_consumers_reuse_owner_local_constants(
+    function_name: str,
+    call_target: str,
+    argument_index: int | None,
+    keyword_name: str | None,
+    expected: tuple[tuple[str, ...], ...],
+) -> None:
+    function_definition = _module_function_definition(
+        publication_runtime_contracts,
+        function_name,
+    )
+
+    assert _function_call_manifest_path_reference_groups(
+        function_definition,
+        call_target=call_target,
+        argument_index=argument_index,
+        keyword_name=keyword_name,
+    ) == expected
 
 
 def test_compile_proxy_manifest_path_constants_are_owner_local() -> None:
