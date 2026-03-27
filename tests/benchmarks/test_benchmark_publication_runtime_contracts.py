@@ -7,6 +7,7 @@ import pathlib
 import re
 import shutil
 import textwrap
+from types import ModuleType
 from typing import Any
 from unittest import mock
 
@@ -28,11 +29,7 @@ from rebar_harness.benchmarks import (
 from rebar_harness.scorecard_io import ordered_published_subset_filenames
 from tests.conftest import (
     REPO_ROOT,
-    assert_declared_string_selector_registry_contract,
-    assert_published_manifest_inventory_contract,
-    assert_published_manifest_helper_contract,
-    assert_published_manifest_helper_reload_contract,
-    assert_published_selector_subset_paths_contract,
+    duplicate_string_ids,
 )
 from tests.python.fixture_parity_support import (
     assert_match_result_parity,
@@ -53,6 +50,167 @@ CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH = (
 NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "nested_group_callable_replacement_boundary.py"
 )
+
+
+def _declared_string_constants_by_suffix(
+    module: ModuleType,
+    *,
+    name_suffix: str,
+) -> dict[str, str]:
+    return {
+        name: value
+        for name, value in vars(module).items()
+        if name.endswith(name_suffix) and isinstance(value, str)
+    }
+
+
+def _assert_declared_string_selector_registry_contract(
+    module: ModuleType,
+    *,
+    name_suffix: str,
+    selector_registry: dict[str, object],
+) -> dict[str, str]:
+    declared_selectors = _declared_string_constants_by_suffix(
+        module,
+        name_suffix=name_suffix,
+    )
+
+    assert declared_selectors
+    assert len(declared_selectors) == len(set(declared_selectors.values()))
+    assert set(declared_selectors.values()) == set(selector_registry)
+    return declared_selectors
+
+
+def _assert_published_selector_subset_paths_contract(
+    published_full_suite_paths: tuple[pathlib.Path, ...],
+    resolved_paths: tuple[pathlib.Path, ...],
+    *,
+    root_path: pathlib.Path,
+    expected_filenames: tuple[str, ...] | None = None,
+) -> None:
+    assert resolved_paths
+    assert len(resolved_paths) == len(set(resolved_paths))
+
+    if expected_filenames is None:
+        expected_ordered_subset = tuple(
+            path for path in published_full_suite_paths if path in set(resolved_paths)
+        )
+    else:
+        expected_filename_set = set(expected_filenames)
+        assert len(expected_filenames) == len(expected_filename_set)
+        expected_ordered_subset = tuple(
+            path
+            for path in published_full_suite_paths
+            if path.name in expected_filename_set
+        )
+        assert tuple(path.name for path in expected_ordered_subset) == expected_filenames
+        assert tuple(path.name for path in resolved_paths) == expected_filenames
+
+    assert expected_ordered_subset
+    assert len(expected_ordered_subset) == len(resolved_paths)
+    assert resolved_paths == expected_ordered_subset
+
+    for path in resolved_paths:
+        assert path.is_relative_to(root_path)
+        assert path.is_file()
+        assert path.suffix == ".py"
+        assert path in published_full_suite_paths
+
+
+def _assert_published_manifest_helper_contract(
+    published_loader: Callable[[], object],
+    *,
+    expected_paths: tuple[pathlib.Path, ...],
+    expected_manifest_ids: tuple[str, ...] | None = None,
+    observed_load_calls: list[tuple[pathlib.Path, ...]] | None = None,
+) -> object:
+    manifests = published_loader()
+
+    assert published_loader() is manifests
+    assert tuple(manifest.path for manifest in manifests) == expected_paths
+
+    if expected_manifest_ids is not None:
+        assert tuple(manifest.manifest_id for manifest in manifests) == expected_manifest_ids
+
+    if observed_load_calls is not None:
+        assert observed_load_calls == [expected_paths]
+
+    return manifests
+
+
+def _assert_published_manifest_helper_reload_contract(
+    published_loader: Callable[[], object],
+    *,
+    clear_cache: Callable[[], None],
+    expected_paths: tuple[pathlib.Path, ...],
+    expected_manifest_ids: tuple[str, ...] | None = None,
+    observed_load_calls: list[tuple[pathlib.Path, ...]] | None = None,
+) -> object:
+    clear_cache()
+    try:
+        return _assert_published_manifest_helper_contract(
+            published_loader,
+            expected_paths=expected_paths,
+            expected_manifest_ids=expected_manifest_ids,
+            observed_load_calls=observed_load_calls,
+        )
+    finally:
+        clear_cache()
+
+
+def _resolve_inventory_value(
+    record: Any,
+    accessor: str | Callable[[Any], Any],
+) -> Any:
+    if callable(accessor):
+        return accessor(record)
+    return getattr(record, accessor)
+
+
+def _assert_published_manifest_inventory_contract(
+    manifests: tuple[Any, ...],
+    *,
+    child_records: str | Callable[[Any], tuple[Any, ...]],
+    child_id: str | Callable[[Any], str],
+    extra_manifest_unique_fields: tuple[str | Callable[[Any], str], ...] = (),
+    manifest_id: str | Callable[[Any], str] = "manifest_id",
+    child_manifest_id: str | Callable[[Any], str] = "manifest_id",
+) -> tuple[Any, ...]:
+    assert manifests
+
+    manifest_ids = tuple(
+        _resolve_inventory_value(manifest, manifest_id)
+        for manifest in manifests
+    )
+    assert duplicate_string_ids(manifest_ids) == ()
+
+    for field in extra_manifest_unique_fields:
+        assert duplicate_string_ids(
+            _resolve_inventory_value(manifest, field) for manifest in manifests
+        ) == ()
+
+    child_entries = tuple(
+        child
+        for manifest in manifests
+        for child in _resolve_inventory_value(manifest, child_records)
+    )
+    assert duplicate_string_ids(
+        _resolve_inventory_value(child, child_id) for child in child_entries
+    ) == ()
+
+    manifest_ids_set = set(manifest_ids)
+    child_counts_by_manifest = {
+        current_manifest_id: 0 for current_manifest_id in manifest_ids
+    }
+    for child in child_entries:
+        current_manifest_id = _resolve_inventory_value(child, child_manifest_id)
+        assert current_manifest_id in manifest_ids_set
+        child_counts_by_manifest[current_manifest_id] += 1
+
+    for current_manifest_id in manifest_ids:
+        assert child_counts_by_manifest[current_manifest_id] > 0
+
+    return child_entries
 
 
 def _resolve_manifest_path(manifest_path: pathlib.Path | str) -> pathlib.Path:
@@ -1441,7 +1599,7 @@ def test_shared_benchmark_manifest_selectors_resolve_published_subset_invariants
     )
     selected_paths = select_benchmark_manifest_paths(selector)
 
-    assert_published_selector_subset_paths_contract(
+    _assert_published_selector_subset_paths_contract(
         published_manifest_paths,
         selected_paths,
         root_path=BENCHMARK_WORKLOADS_ROOT,
@@ -1457,7 +1615,7 @@ def test_built_native_smoke_manifest_selector_keeps_membership_contract() -> Non
     )
     assert benchmarks._BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR[selector] == expected_filenames
 
-    assert_published_selector_subset_paths_contract(
+    _assert_published_selector_subset_paths_contract(
         select_benchmark_manifest_paths(PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR),
         select_benchmark_manifest_paths(selector),
         root_path=BENCHMARK_WORKLOADS_ROOT,
@@ -1484,7 +1642,7 @@ def test_benchmark_selector_subset_helper_keeps_benchmark_specific_missing_filen
 
 
 def test_declared_benchmark_manifest_selectors_match_registry_keys() -> None:
-    declared_selectors = assert_declared_string_selector_registry_contract(
+    declared_selectors = _assert_declared_string_selector_registry_contract(
         benchmarks,
         name_suffix="_MANIFEST_SELECTOR",
         selector_registry=benchmarks._BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR,
@@ -1498,7 +1656,7 @@ def test_default_benchmark_published_manifest_helper_is_cached_and_preserves_sel
         PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
     )
 
-    assert_published_manifest_helper_contract(
+    _assert_published_manifest_helper_contract(
         published_benchmark_manifests,
         expected_paths=published_manifest_paths,
     )
@@ -1558,7 +1716,7 @@ def test_published_benchmark_manifests_cache_clear_reloads_current_default_selec
 
     monkeypatch.setattr(benchmarks, "select_benchmark_manifest_paths", _recording_selector)
     monkeypatch.setattr(benchmarks, "load_manifests", _recording_loader)
-    assert_published_manifest_helper_reload_contract(
+    _assert_published_manifest_helper_reload_contract(
         published_benchmark_manifests,
         clear_cache=benchmarks.published_benchmark_manifests.cache_clear,
         expected_paths=requested_paths,
@@ -1572,7 +1730,7 @@ def test_published_benchmark_manifests_cache_clear_reloads_current_default_selec
 
 def test_default_benchmark_published_manifest_inventory_has_unique_manifest_and_workload_ids() -> None:
     manifests = published_benchmark_manifests()
-    assert_published_manifest_inventory_contract(
+    _assert_published_manifest_inventory_contract(
         manifests,
         child_records="workloads",
         child_id="workload_id",

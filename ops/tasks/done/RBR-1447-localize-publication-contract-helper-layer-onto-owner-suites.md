@@ -50,3 +50,11 @@ Created: 2026-03-27
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py tests/python/test_fixture_parity_support_contract.py tests/python/test_shared_test_support_contract.py` passed (`655 passed, 3 skipped`).
   - `./.venv/bin/python -m py_compile tests/conftest.py tests/benchmarks/test_benchmark_publication_runtime_contracts.py tests/python/test_fixture_parity_support_contract.py tests/python/test_shared_test_support_contract.py` passed.
   - The negative `rg` verification is intentionally red in the current checkout because `tests/conftest.py` and `tests/python/test_shared_test_support_contract.py` still carry the shared publication-contract helper layer that this task deletes.
+
+## Completion
+- Localized the publication-selector and published-manifest contract helpers into `tests/benchmarks/test_benchmark_publication_runtime_contracts.py` and `tests/python/test_fixture_parity_support_contract.py`, leaving `tests/conftest.py` with only the remaining generic shared support helpers.
+- Removed the deleted helper-layer import and contract coverage from `tests/python/test_shared_test_support_contract.py`.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py tests/python/test_fixture_parity_support_contract.py tests/python/test_shared_test_support_contract.py` passed (`641 passed, 3 skipped`).
+  - `./.venv/bin/python -m py_compile tests/conftest.py tests/benchmarks/test_benchmark_publication_runtime_contracts.py tests/python/test_fixture_parity_support_contract.py tests/python/test_shared_test_support_contract.py` passed.
+  - `bash -lc "! rg -n 'def (declared_string_constants_by_suffix|assert_declared_string_selector_registry_contract|assert_published_selector_subset_paths_contract|assert_published_manifest_helper_contract|assert_published_manifest_helper_reload_contract|assert_published_manifest_inventory_contract)\\b' tests/conftest.py && ! rg -n 'assert_declared_string_selector_registry_contract|assert_published_manifest_inventory_contract|assert_published_manifest_helper_contract|assert_published_manifest_helper_reload_contract|assert_published_selector_subset_paths_contract|declared_string_constants_by_suffix' tests/python/test_shared_test_support_contract.py"` passed.

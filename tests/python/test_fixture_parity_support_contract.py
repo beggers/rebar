@@ -7,7 +7,7 @@ import json
 import pathlib
 import re
 import textwrap
-from types import SimpleNamespace
+from types import ModuleType, SimpleNamespace
 
 import pytest
 
@@ -30,12 +30,7 @@ from rebar_harness.scorecard_io import (
     ordered_published_subset_filenames,
 )
 from tests.conftest import (
-    assert_declared_string_selector_registry_contract,
-    assert_published_manifest_inventory_contract,
-    assert_published_manifest_helper_contract,
-    assert_published_manifest_helper_reload_contract,
-    assert_published_selector_subset_paths_contract,
-    declared_string_constants_by_suffix,
+    duplicate_string_ids,
     records_by_string_id,
 )
 import tests.python.fixture_parity_support as fixture_parity_support
@@ -80,6 +75,167 @@ from tests.python.fixture_parity_support import (
 OPTIONAL_NAMED_GROUP_PATTERN = r"a(?P<word>b)?d"
 OPTIONAL_NAMED_GROUP_BYTES_PATTERN = rb"a(?P<word>b)?d"
 BYTES_LITERAL_PATTERN = b"abc"
+
+
+def _declared_string_constants_by_suffix(
+    module: ModuleType,
+    *,
+    name_suffix: str,
+) -> dict[str, str]:
+    return {
+        name: value
+        for name, value in vars(module).items()
+        if name.endswith(name_suffix) and isinstance(value, str)
+    }
+
+
+def _assert_declared_string_selector_registry_contract(
+    module: ModuleType,
+    *,
+    name_suffix: str,
+    selector_registry: dict[str, object],
+) -> dict[str, str]:
+    declared_selectors = _declared_string_constants_by_suffix(
+        module,
+        name_suffix=name_suffix,
+    )
+
+    assert declared_selectors
+    assert len(declared_selectors) == len(set(declared_selectors.values()))
+    assert set(declared_selectors.values()) == set(selector_registry)
+    return declared_selectors
+
+
+def _assert_published_selector_subset_paths_contract(
+    published_full_suite_paths: tuple[pathlib.Path, ...],
+    resolved_paths: tuple[pathlib.Path, ...],
+    *,
+    root_path: pathlib.Path,
+    expected_filenames: tuple[str, ...] | None = None,
+) -> None:
+    assert resolved_paths
+    assert len(resolved_paths) == len(set(resolved_paths))
+
+    if expected_filenames is None:
+        expected_ordered_subset = tuple(
+            path for path in published_full_suite_paths if path in set(resolved_paths)
+        )
+    else:
+        expected_filename_set = set(expected_filenames)
+        assert len(expected_filenames) == len(expected_filename_set)
+        expected_ordered_subset = tuple(
+            path
+            for path in published_full_suite_paths
+            if path.name in expected_filename_set
+        )
+        assert tuple(path.name for path in expected_ordered_subset) == expected_filenames
+        assert tuple(path.name for path in resolved_paths) == expected_filenames
+
+    assert expected_ordered_subset
+    assert len(expected_ordered_subset) == len(resolved_paths)
+    assert resolved_paths == expected_ordered_subset
+
+    for path in resolved_paths:
+        assert path.is_relative_to(root_path)
+        assert path.is_file()
+        assert path.suffix == ".py"
+        assert path in published_full_suite_paths
+
+
+def _assert_published_manifest_helper_contract(
+    published_loader: Callable[[], object],
+    *,
+    expected_paths: tuple[pathlib.Path, ...],
+    expected_manifest_ids: tuple[str, ...] | None = None,
+    observed_load_calls: list[tuple[pathlib.Path, ...]] | None = None,
+) -> object:
+    manifests = published_loader()
+
+    assert published_loader() is manifests
+    assert tuple(manifest.path for manifest in manifests) == expected_paths
+
+    if expected_manifest_ids is not None:
+        assert tuple(manifest.manifest_id for manifest in manifests) == expected_manifest_ids
+
+    if observed_load_calls is not None:
+        assert observed_load_calls == [expected_paths]
+
+    return manifests
+
+
+def _assert_published_manifest_helper_reload_contract(
+    published_loader: Callable[[], object],
+    *,
+    clear_cache: Callable[[], None],
+    expected_paths: tuple[pathlib.Path, ...],
+    expected_manifest_ids: tuple[str, ...] | None = None,
+    observed_load_calls: list[tuple[pathlib.Path, ...]] | None = None,
+) -> object:
+    clear_cache()
+    try:
+        return _assert_published_manifest_helper_contract(
+            published_loader,
+            expected_paths=expected_paths,
+            expected_manifest_ids=expected_manifest_ids,
+            observed_load_calls=observed_load_calls,
+        )
+    finally:
+        clear_cache()
+
+
+def _resolve_inventory_value(
+    record: object,
+    accessor: str | Callable[[object], object],
+) -> object:
+    if callable(accessor):
+        return accessor(record)
+    return getattr(record, accessor)
+
+
+def _assert_published_manifest_inventory_contract(
+    manifests: tuple[object, ...],
+    *,
+    child_records: str | Callable[[object], tuple[object, ...]],
+    child_id: str | Callable[[object], str],
+    extra_manifest_unique_fields: tuple[str | Callable[[object], str], ...] = (),
+    manifest_id: str | Callable[[object], str] = "manifest_id",
+    child_manifest_id: str | Callable[[object], str] = "manifest_id",
+) -> tuple[object, ...]:
+    assert manifests
+
+    manifest_ids = tuple(
+        _resolve_inventory_value(manifest, manifest_id)
+        for manifest in manifests
+    )
+    assert duplicate_string_ids(manifest_ids) == ()
+
+    for field in extra_manifest_unique_fields:
+        assert duplicate_string_ids(
+            _resolve_inventory_value(manifest, field) for manifest in manifests
+        ) == ()
+
+    child_entries = tuple(
+        child
+        for manifest in manifests
+        for child in _resolve_inventory_value(manifest, child_records)
+    )
+    assert duplicate_string_ids(
+        _resolve_inventory_value(child, child_id) for child in child_entries
+    ) == ()
+
+    manifest_ids_set = set(manifest_ids)
+    child_counts_by_manifest = {
+        current_manifest_id: 0 for current_manifest_id in manifest_ids
+    }
+    for child in child_entries:
+        current_manifest_id = _resolve_inventory_value(child, child_manifest_id)
+        assert current_manifest_id in manifest_ids_set
+        child_counts_by_manifest[current_manifest_id] += 1
+
+    for current_manifest_id in manifest_ids:
+        assert child_counts_by_manifest[current_manifest_id] > 0
+
+    return child_entries
 
 
 class _NonCachingStdlibBackend:
@@ -1372,7 +1528,7 @@ def test_shared_correctness_fixture_selectors_resolve_published_paths(
     )
     resolved_paths = select_correctness_fixture_paths(selector)
 
-    assert_published_selector_subset_paths_contract(
+    _assert_published_selector_subset_paths_contract(
         published_full_suite_paths,
         resolved_paths,
         root_path=CORRECTNESS_FIXTURES_ROOT,
@@ -1399,7 +1555,7 @@ def test_canonical_published_subset_selectors_keep_explicit_membership_contract(
         expected_filenames
     )
 
-    assert_published_selector_subset_paths_contract(
+    _assert_published_selector_subset_paths_contract(
         select_correctness_fixture_paths(PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR),
         select_correctness_fixture_paths(selector),
         root_path=CORRECTNESS_FIXTURES_ROOT,
@@ -1431,7 +1587,7 @@ def test_unknown_correctness_fixture_selector_raises_clear_error() -> None:
 
 
 def test_declared_correctness_fixture_selectors_match_registry_keys() -> None:
-    declared_selectors = assert_declared_string_selector_registry_contract(
+    declared_selectors = _assert_declared_string_selector_registry_contract(
         correctness,
         name_suffix="_FIXTURE_SELECTOR",
         selector_registry=correctness._CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR,
@@ -1444,7 +1600,7 @@ def test_declared_nondefault_correctness_fixture_selectors_are_parametrized_once
     declared_nondefault_selectors = tuple(
         sorted(
             selector
-            for selector in declared_string_constants_by_suffix(
+            for selector in _declared_string_constants_by_suffix(
                 correctness,
                 name_suffix="_FIXTURE_SELECTOR",
             ).values()
@@ -1691,11 +1847,11 @@ def test_fixture_case_module_call_args_require_compiled_pattern_argument(
 
 
 def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> None:
-    manifests = assert_published_manifest_helper_contract(
+    manifests = _assert_published_manifest_helper_contract(
         published_fixture_manifests,
         expected_paths=DEFAULT_FIXTURE_PATHS,
     )
-    assert_published_manifest_inventory_contract(
+    _assert_published_manifest_inventory_contract(
         manifests,
         child_records="cases",
         child_id="case_id",
@@ -2353,7 +2509,7 @@ def test_published_fixture_manifests_cache_clear_reloads_current_default_fixture
 
     monkeypatch.setattr(correctness, "DEFAULT_FIXTURE_PATHS", requested_paths)
     monkeypatch.setattr(correctness, "load_fixture_manifests", _recording_loader)
-    assert_published_manifest_helper_reload_contract(
+    _assert_published_manifest_helper_reload_contract(
         published_fixture_manifests,
         clear_cache=correctness.published_fixture_manifests.cache_clear,
         expected_paths=requested_paths,
