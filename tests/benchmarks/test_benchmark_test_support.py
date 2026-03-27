@@ -3592,40 +3592,57 @@ def test_assert_manifest_workload_contracts_wraps_each_expectation_in_named_subt
 
 @pytest.mark.parametrize(
     (
+        "manifest_path_input",
+        "expected_resolved_manifest_path",
         "expected_measured_workload_ids",
         "expected_total_workload_count",
         "expected_subtest_label",
     ),
     (
         pytest.param(
+            pathlib.Path("/tmp/synthetic-boundary.py"),
+            pathlib.Path("/tmp/synthetic-boundary.py"),
             ("only-workload",),
             None,
             None,
-            id="single-measured-workload-without-total-count",
+            id="path-single-measured-workload-without-total-count",
         ),
         pytest.param(
+            pathlib.Path("/tmp/synthetic-boundary.py"),
+            pathlib.Path("/tmp/synthetic-boundary.py"),
             ("first-workload", "second-workload"),
             None,
             "workload_id",
-            id="multiple-measured-workloads-without-total-count",
+            id="path-multiple-measured-workloads-without-total-count",
         ),
         pytest.param(
+            pathlib.Path("/tmp/synthetic-boundary.py"),
+            pathlib.Path("/tmp/synthetic-boundary.py"),
             ("first-workload", "second-workload"),
             2,
             "measured_workload_id",
-            id="explicit-total-count",
+            id="path-explicit-total-count",
+        ),
+        pytest.param(
+            "synthetic_boundary.py",
+            benchmarks.BENCHMARK_WORKLOADS_ROOT / "synthetic_boundary.py",
+            ("only-workload",),
+            None,
+            None,
+            id="string-single-measured-workload-without-total-count",
         ),
     ),
 )
 def test_assert_zero_gap_manifest_workloads_measured_routes_through_shared_contract_helper(
     monkeypatch: pytest.MonkeyPatch,
+    manifest_path_input: pathlib.Path | str,
+    expected_resolved_manifest_path: pathlib.Path,
     expected_measured_workload_ids: tuple[str, ...],
     expected_total_workload_count: int | None,
     expected_subtest_label: str | None,
 ) -> None:
     import tests.conftest as shared_conftest
 
-    resolved_manifest_path = pathlib.Path("/tmp/synthetic-boundary.py")
     manifest = SimpleNamespace(manifest_id="synthetic-boundary")
     captured_call: dict[str, object] = {}
     measured_workload_count = len(expected_measured_workload_ids)
@@ -3643,7 +3660,11 @@ def test_assert_zero_gap_manifest_workloads_measured_routes_through_shared_contr
         }
     }
 
-    monkeypatch.setattr(support, "load_manifest", lambda path: manifest)
+    def _load_manifest(path: pathlib.Path) -> SimpleNamespace:
+        captured_call["resolved_manifest_path"] = path
+        return manifest
+
+    monkeypatch.setattr(support, "load_manifest", _load_manifest)
 
     def _run_harness_scorecard(
         module_name: str,
@@ -3689,7 +3710,7 @@ def test_assert_zero_gap_manifest_workloads_measured_routes_through_shared_contr
     )
 
     collection_replacement_support.assert_zero_gap_manifest_workloads_measured(
-        manifest_path=resolved_manifest_path,
+        manifest_path=manifest_path_input,
         manifest_id="synthetic-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
         expected_measured_workload_count=measured_workload_count,
@@ -3697,8 +3718,9 @@ def test_assert_zero_gap_manifest_workloads_measured_routes_through_shared_contr
     )
 
     assert captured_call["module_name"] == "rebar_harness.benchmarks"
-    assert captured_call["args"] == ["--manifest", str(resolved_manifest_path)]
+    assert captured_call["args"] == ["--manifest", str(expected_resolved_manifest_path)]
     assert captured_call["report_name"] == "benchmarks.json"
+    assert captured_call["resolved_manifest_path"] == expected_resolved_manifest_path
     assert captured_call["observed_manifest"] is manifest
     assert captured_call["observed_scorecard"] is scorecard
     assert captured_call["workload_expectations"] == tuple(
