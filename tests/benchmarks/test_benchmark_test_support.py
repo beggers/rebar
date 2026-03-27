@@ -2197,7 +2197,11 @@ def test_benchmark_import_introspection_helpers_stay_owned_by_meta_suite(
     assert expected_helper_names.issubset(local_names)
     assert module.support is support
     for helper_name in expected_helper_names:
-        assert getattr(module, helper_name) is getattr(meta_support, helper_name)
+        helper = getattr(module, helper_name)
+        assert helper.__module__ == module.__name__
+        assert pathlib.Path(inspect.getsourcefile(helper)).resolve() == pathlib.Path(
+            module.__file__
+        ).resolve()
         assert not hasattr(module.support, helper_name)
 
 
