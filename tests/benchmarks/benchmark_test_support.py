@@ -32,28 +32,25 @@ def manifest_workloads(
     return tuple(load_manifest(resolved_manifest_path).workloads)
 
 
-@cache
-def _live_manifest_workloads_by_id(
-    manifest_path: pathlib.Path | str,
-) -> dict[str, benchmarks.Workload]:
-    return {
-        workload.workload_id: workload
-        for workload in manifest_workloads(manifest_path)
-    }
-
-
 def live_manifest_workload(
     manifest_path: pathlib.Path | str,
     workload_id: str,
 ) -> benchmarks.Workload:
-    return _live_manifest_workloads_by_id(manifest_path)[workload_id]
+    return next(
+        workload
+        for workload in manifest_workloads(manifest_path)
+        if workload.workload_id == workload_id
+    )
 
 
 def live_manifest_workloads(
     manifest_path: pathlib.Path | str,
     workload_ids: tuple[str, ...],
 ) -> tuple[benchmarks.Workload, ...]:
-    workloads_by_id = _live_manifest_workloads_by_id(manifest_path)
+    workloads_by_id = {
+        workload.workload_id: workload
+        for workload in manifest_workloads(manifest_path)
+    }
     return tuple(workloads_by_id[workload_id] for workload_id in workload_ids)
 
 
@@ -61,7 +58,6 @@ def _clear_anchor_support_caches() -> None:
     for functions in (
         (
             manifest_workloads,
-            _live_manifest_workloads_by_id,
         ),
         vars(benchmark_test_support).values(),
     ):
