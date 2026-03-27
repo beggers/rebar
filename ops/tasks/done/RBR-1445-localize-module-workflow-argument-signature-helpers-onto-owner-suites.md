@@ -51,3 +51,15 @@ Created: 2026-03-27
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'module_workflow_keyword_standard_benchmark or positional_indexlike'` passed (`7 passed, 306 deselected`).
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'source_tree_contract_helper_suites_import_shared_alias_but_define_local_helpers'` passed (`1 passed, 222 deselected`).
   - `bash -lc "! rg -n '^def module_workflow_(positional_args_signature|keyword_kwargs_signature)\\b|^def _encoded_indexlike_value\\b' tests/python/fixture_parity_support.py"` is currently red because that shared argument-signature layer still exists and is the target of this task.
+
+## Completion
+- Localized the module-workflow argument-signature normalization into `tests/python/test_module_workflow_parity_suite.py` and `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, so both owner suites now define the signature helpers they use instead of importing them from shared parity support.
+- Deleted `module_workflow_positional_args_signature()`, `module_workflow_keyword_kwargs_signature()`, and `_encoded_indexlike_value()` from `tests/python/fixture_parity_support.py`, leaving the shared module focused on cross-suite fixture and parity helpers.
+- Tightened `tests/python/test_fixture_parity_support_contract.py` so the shared-support contract now asserts those two module-workflow signature helpers are no longer exported from `tests.python.fixture_parity_support`; `tests/benchmarks/test_benchmark_test_support.py` already covered the combined benchmark suite's owner-local helper surface and did not need changes.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/python/test_fixture_parity_support_contract.py -k 'module_workflow_positional_args_signature or module_workflow_keyword_kwargs_signature'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/python/test_module_workflow_parity_suite.py -k 'workflow_keyword_kwargs_signature or workflow_positional_args_signature or AlternateIndexLike'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'module_workflow_keyword_standard_benchmark or positional_indexlike'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'source_tree_contract_helper_suites_import_shared_alias_but_define_local_helpers'`
+  - `bash -lc "! rg -n '^def module_workflow_(positional_args_signature|keyword_kwargs_signature)\\b|^def _encoded_indexlike_value\\b' tests/python/fixture_parity_support.py"`
+  - `./.venv/bin/python -m py_compile tests/python/fixture_parity_support.py tests/python/test_module_workflow_parity_suite.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/python/test_fixture_parity_support_contract.py tests/benchmarks/test_benchmark_test_support.py`

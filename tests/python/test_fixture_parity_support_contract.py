@@ -1539,55 +1539,16 @@ def test_recording_indexlike_helper_propagates_configured_errors_after_counting_
     assert carrier.calls == 1
 
 
-def test_module_workflow_positional_signature_distinguishes_bool_int_and_indexlike() -> None:
-    assert fixture_parity_support.module_workflow_positional_args_signature(
-        [True, fixture_parity_support.IndexLike(1), 1, "abc", b"abc"]
-    ) == (
-        ("bool", True),
-        ("indexlike", 1),
-        ("int", 1),
-        ("str", "abc"),
-        ("bytes", b"abc"),
-    )
-    assert fixture_parity_support.module_workflow_positional_args_signature(
-        [fixture_parity_support.IndexLike(4)]
-    ) == fixture_parity_support.module_workflow_positional_args_signature(
-        [{"type": "indexlike", "value": 4}]
-    )
-
-
-def test_module_workflow_keyword_signature_preserves_explicit_noflag() -> None:
-    assert fixture_parity_support.module_workflow_keyword_kwargs_signature(
-        {"flags": re.NOFLAG}
-    ) == (("flags", "regexflag", 0),)
-    assert fixture_parity_support.module_workflow_keyword_kwargs_signature(
-        {"flags": re.NOFLAG}
-    ) != fixture_parity_support.module_workflow_keyword_kwargs_signature({"flags": 0})
-    assert fixture_parity_support.module_workflow_keyword_kwargs_signature(
-        {"flags": re.NOFLAG}
-    ) != fixture_parity_support.module_workflow_keyword_kwargs_signature(
-        {"flags": False}
-    )
-
-
-def test_module_workflow_keyword_signature_accepts_encoded_indexlike_payloads() -> None:
-    assert fixture_parity_support.module_workflow_keyword_kwargs_signature(
-        {"endpos": {"type": "indexlike", "value": 4}}
-    ) == fixture_parity_support.module_workflow_keyword_kwargs_signature(
-        {"endpos": fixture_parity_support.IndexLike(4)}
-    )
-
-
-def test_module_workflow_positional_signature_rejects_bool_encoded_indexlike_payloads() -> None:
-    assert fixture_parity_support.module_workflow_positional_args_signature(
-        [{"type": "indexlike", "value": True}]
-    ) == (("dict", "{'type': 'indexlike', 'value': True}"),)
-
-
-def test_module_workflow_keyword_signature_rejects_bool_encoded_indexlike_payloads() -> None:
-    assert fixture_parity_support.module_workflow_keyword_kwargs_signature(
-        {"endpos": {"type": "indexlike", "value": True}}
-    ) == (("endpos", "dict", "{'type': 'indexlike', 'value': True}"),)
+@pytest.mark.parametrize(
+    "name",
+    (
+        "module_workflow_positional_args_signature",
+        "module_workflow_keyword_kwargs_signature",
+    ),
+)
+def test_module_workflow_signature_helpers_are_not_exported(name: str) -> None:
+    assert name not in dir(fixture_parity_support)
+    assert not hasattr(fixture_parity_support, name)
 
 
 @pytest.mark.parametrize(

@@ -53,8 +53,6 @@ from tests.python.fixture_parity_support import (
     fixture_cases_for_operation,
     load_single_published_fixture_bundle,
     load_published_fixture_bundles,
-    module_workflow_keyword_kwargs_signature as _workflow_keyword_kwargs_signature,
-    module_workflow_positional_args_signature as _workflow_positional_args_signature,
 )
 
 MATURIN = shutil.which("maturin")
@@ -164,6 +162,67 @@ _BUILT_WHEEL_SMOKE_PROBE = textwrap.dedent(
 
 MODULE_WORKFLOW_MANIFEST_ID = "module-workflow-surface"
 MATCH_BEHAVIOR_MANIFEST_ID = "match-behavior-smoke"
+
+
+def _workflow_encoded_indexlike_value(value: object) -> int | None:
+    if (
+        isinstance(value, dict)
+        and value.get("type") == "indexlike"
+        and isinstance(value.get("value"), int)
+        and not isinstance(value.get("value"), bool)
+    ):
+        return int(value["value"])
+    return None
+
+
+def _workflow_positional_args_signature(
+    args: tuple[object, ...] | list[object],
+) -> tuple[tuple[str, object], ...]:
+    signature: list[tuple[str, object]] = []
+    for value in args:
+        if isinstance(value, bool):
+            signature.append(("bool", value))
+            continue
+        if isinstance(value, int):
+            signature.append(("int", int(value)))
+            continue
+        if isinstance(value, (str, bytes)):
+            signature.append((type(value).__name__, value))
+            continue
+        encoded_indexlike = _workflow_encoded_indexlike_value(value)
+        if encoded_indexlike is not None:
+            signature.append(("indexlike", encoded_indexlike))
+            continue
+        if hasattr(value, "__index__"):
+            signature.append(("indexlike", int(value.__index__())))
+            continue
+        signature.append((type(value).__name__, repr(value)))
+    return tuple(signature)
+
+
+def _workflow_keyword_kwargs_signature(
+    kwargs: dict[str, object],
+) -> tuple[tuple[str, str, object], ...]:
+    signature: list[tuple[str, str, object]] = []
+    for name, value in sorted(kwargs.items()):
+        if isinstance(value, bool):
+            signature.append((name, "bool", value))
+            continue
+        if isinstance(value, re.RegexFlag) and int(value) == 0:
+            signature.append((name, "regexflag", 0))
+            continue
+        if isinstance(value, int):
+            signature.append((name, "int", int(value)))
+            continue
+        encoded_indexlike = _workflow_encoded_indexlike_value(value)
+        if encoded_indexlike is not None:
+            signature.append((name, "indexlike", encoded_indexlike))
+            continue
+        if hasattr(value, "__index__"):
+            signature.append((name, "indexlike", int(value.__index__())))
+            continue
+        signature.append((name, type(value).__name__, repr(value)))
+    return tuple(signature)
 
 
 (
