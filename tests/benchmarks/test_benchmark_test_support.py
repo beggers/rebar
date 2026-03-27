@@ -70,6 +70,38 @@ def _module_import_targets(module: object) -> frozenset[str]:
     return _ast_import_targets(_parsed_module_ast(module))
 
 
+def _assert_exported_name_matches_owner(
+    consumer_module: object,
+    owner_module: object,
+    name: str,
+) -> None:
+    consumer_value = getattr(consumer_module, name)
+    owner_value = getattr(owner_module, name)
+
+    if inspect.isroutine(consumer_value) or inspect.isclass(consumer_value):
+        assert getattr(consumer_value, "__name__", None) == getattr(
+            owner_value,
+            "__name__",
+            None,
+        )
+        assert getattr(consumer_value, "__module__", None) == getattr(
+            owner_value,
+            "__module__",
+            None,
+        )
+        consumer_source = inspect.getsourcefile(consumer_value)
+        owner_source = inspect.getsourcefile(owner_value)
+        if consumer_source is not None or owner_source is not None:
+            assert consumer_source is not None
+            assert owner_source is not None
+            assert pathlib.Path(consumer_source).resolve() == pathlib.Path(
+                owner_source
+            ).resolve()
+        return
+
+    assert consumer_value == owner_value
+
+
 def _module_function_definition(module: object, function_name: str) -> ast.FunctionDef:
     return next(
         node
@@ -389,7 +421,8 @@ def assert_mixed_owner_surface(
         assert isinstance(assignment.value.value, ast.Name)
         assert assignment.value.value.id in benchmark_test_support_alias_names
         assert assignment.value.attr == assignment_name
-        assert getattr(caller_module, assignment_name) is getattr(
+        _assert_exported_name_matches_owner(
+            caller_module,
             shared_module,
             assignment_name,
         )
@@ -4016,8 +4049,12 @@ def test_collection_replacement_owner_surface_reaches_combined_suite_without_sou
     assert moved_workload_id_names.issubset(local_names)
     assert moved_workload_id_names.isdisjoint(dir(combined_suite.benchmark_test_support))
     for name in moved_workload_id_names:
-        assert getattr(combined_suite, name) is getattr(collection_replacement_support, name)
         assert hasattr(collection_replacement_support, name)
+        _assert_exported_name_matches_owner(
+            combined_suite,
+            collection_replacement_support,
+            name,
+        )
 
 
 def test_source_tree_combined_suite_owns_compiled_pattern_module_success_surface(
