@@ -550,6 +550,60 @@ def test_run_harness_scorecard_loads_python_correctness_reports() -> None:
     assert scorecard["summary"] == summary
 
 
+def test_run_harness_scorecard_loads_python_correctness_reports_uses_owner_local_fixture_constant(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    contract_fixture_path = (
+        REPO_ROOT
+        / "tests"
+        / "conformance"
+        / "fixtures"
+        / "parser_matrix_contract_probe.py"
+    )
+    captured_call: dict[str, object] = {}
+
+    def _run_harness_scorecard(
+        module_name: str,
+        cli_args: list[str],
+        *,
+        report_name: str,
+    ) -> tuple[dict[str, int], dict[str, object]]:
+        captured_call.update(
+            {
+                "module_name": module_name,
+                "cli_args": list(cli_args),
+                "report_name": report_name,
+            }
+        )
+        summary = {"passing_cases": 1}
+        return (
+            summary,
+            {
+                "suite": "correctness",
+                "fixtures": {
+                    "path": str(contract_fixture_path.relative_to(REPO_ROOT)),
+                    "manifest_id": "parser-matrix",
+                },
+                "summary": summary,
+            },
+        )
+
+    monkeypatch.setattr(sys.modules[__name__], "run_harness_scorecard", _run_harness_scorecard)
+    monkeypatch.setattr(
+        sys.modules[__name__],
+        "PARSER_FIXTURES_PATH",
+        contract_fixture_path,
+    )
+
+    test_run_harness_scorecard_loads_python_correctness_reports()
+
+    assert captured_call == {
+        "module_name": "rebar_harness.correctness",
+        "cli_args": ["--fixtures", str(contract_fixture_path)],
+        "report_name": "parser-only.py",
+    }
+
+
 def test_run_harness_scorecard_loads_python_benchmark_reports() -> None:
     summary, scorecard = run_harness_scorecard(
         "rebar_harness.benchmarks",
@@ -645,6 +699,32 @@ def test_run_harness_scorecard_compile_manifest_path_constant_stays_owner_local(
         REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
     )
     assert COMPILE_MATRIX_MANIFEST_PATH.is_file()
+
+
+def test_run_harness_scorecard_parser_fixture_path_constant_stays_owner_local() -> None:
+    module_ast = ast.parse(inspect.getsource(sys.modules[__name__]))
+    imported_parser_fixture_names = tuple(
+        alias.asname or alias.name
+        for node in module_ast.body
+        if isinstance(node, ast.ImportFrom)
+        and node.module == "tests.conftest"
+        for alias in node.names
+        if alias.name == "PARSER_FIXTURES_PATH"
+    )
+    assigned_names = {
+        target.id
+        for node in module_ast.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    }
+
+    assert imported_parser_fixture_names == ()
+    assert "PARSER_FIXTURES_PATH" in assigned_names
+    assert PARSER_FIXTURES_PATH == (
+        REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
+    )
+    assert PARSER_FIXTURES_PATH.is_file()
 
 
 def test_run_harness_scorecard_accepts_one_shot_cli_arg_iterators() -> None:
