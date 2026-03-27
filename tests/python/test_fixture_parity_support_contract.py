@@ -5563,60 +5563,6 @@ def test_fixture_cases_for_operation_accepts_one_shot_bundle_iterables(
     )
 
 
-def test_generated_specs_by_manifest_id_preserves_order_and_owner_labelled_lookup_failures(
-    tmp_path: pathlib.Path,
-) -> None:
-    str_path, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    mixed_bundle = build_selected_fixture_bundle(
-        mixed_path,
-        selected_case_ids=(
-            "bundle-loader-contract-mixed-compile-bytes",
-            "bundle-loader-contract-mixed-module-search-str",
-            "bundle-loader-contract-mixed-compile-str",
-        ),
-        pattern_extractor=case_pattern,
-    )
-    str_bundle = build_selected_fixture_bundle(
-        str_path,
-        selected_case_ids=(
-            "bundle-loader-contract-pattern-search-str",
-            "bundle-loader-contract-compile-str",
-        ),
-        pattern_extractor=str_case_pattern,
-    )
-    specs = (
-        SimpleNamespace(bundle=mixed_bundle, owner="mixed"),
-        SimpleNamespace(bundle=str_bundle, owner="str"),
-    )
-
-    specs_by_manifest_id = fixture_parity_support.generated_specs_by_manifest_id(specs)
-
-    assert tuple(specs_by_manifest_id) == (
-        "bundle-loader-contract-mixed",
-        "bundle-loader-contract-str",
-    )
-    assert (
-        fixture_parity_support.generated_spec_by_manifest_id(
-            specs_by_manifest_id,
-            mixed_bundle.expected_manifest_id,
-            owner_label="generated contract",
-        )
-        is specs[0]
-    )
-    with pytest.raises(
-        AssertionError,
-        match=re.escape(
-            "unexpected generated contract manifest id "
-            "'bundle-loader-contract-missing'"
-        ),
-    ):
-        fixture_parity_support.generated_spec_by_manifest_id(
-            specs_by_manifest_id,
-            "bundle-loader-contract-missing",
-            owner_label="generated contract",
-        )
-
-
 def test_generated_compile_anchor_case_selection_preserves_flattened_order_across_bundles(
     tmp_path: pathlib.Path,
 ) -> None:
@@ -5654,45 +5600,6 @@ def test_generated_compile_anchor_case_selection_preserves_flattened_order_acros
         "bundle-loader-contract-mixed-compile-str",
         "bundle-loader-contract-compile-str",
     )
-
-
-def test_generated_compile_anchor_helpers_preserve_representative_spec_contract_inputs(
-    tmp_path: pathlib.Path,
-) -> None:
-    _, mixed_path = _write_bundle_loader_contract_fixture_modules(tmp_path)
-    mixed_bundle = build_selected_fixture_bundle(
-        mixed_path,
-        selected_case_ids=(
-            "bundle-loader-contract-mixed-compile-bytes",
-            "bundle-loader-contract-mixed-module-search-str",
-            "bundle-loader-contract-mixed-compile-str",
-        ),
-        pattern_extractor=case_pattern,
-    )
-    spec = SimpleNamespace(
-        bundle=mixed_bundle,
-        expected_compile_case_ids=(
-            "bundle-loader-contract-mixed-compile-bytes",
-            "bundle-loader-contract-mixed-compile-str",
-        ),
-        expected_patterns=frozenset({b"a(bc|de){1,}d", r"a(bc|de){1,}d"}),
-        expected_text_models=frozenset({"bytes", "str"}),
-    )
-    specs_by_manifest_id = fixture_parity_support.generated_specs_by_manifest_id((spec,))
-    compile_cases = fixture_cases_for_operation((spec.bundle,), "compile")
-
-    assert (
-        fixture_parity_support.generated_spec_by_manifest_id(
-            specs_by_manifest_id,
-            mixed_bundle.expected_manifest_id,
-            owner_label="generated representative",
-        )
-        is spec
-    )
-    assert tuple(case.case_id for case in compile_cases) == spec.expected_compile_case_ids
-    assert {case_pattern(case) for case in compile_cases} == spec.expected_patterns
-    assert {case.text_model for case in compile_cases} == spec.expected_text_models
-
 
 def test_fixture_cases_by_id_preserves_input_order_for_bundles_and_cases(
     tmp_path: pathlib.Path,

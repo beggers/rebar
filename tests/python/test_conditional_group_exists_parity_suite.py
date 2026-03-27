@@ -25,13 +25,12 @@ from tests.python.fixture_parity_support import (
     assert_valid_match_group_access_parity,
     bundle_manifest_pytest_id,
     compile_with_cpython_parity,
+    duplicate_string_ids,
     fixture_bundle_manifest_pytest_id,
     fixture_case_pytest_id,
     fixture_cases_by_id,
     fixture_cases_for_operation,
     flatten_fixture_bundles,
-    generated_spec_by_manifest_id,
-    generated_specs_by_manifest_id,
     id_attribute_pytest_id,
     invoke_bounded_pattern_case,
     load_published_fixture_bundles,
@@ -274,9 +273,39 @@ GENERATED_FULLY_EMPTY_ALTERNATION_PARITY_SPEC = GeneratedFullyEmptyAlternationPa
     ),
     failure_prefix="fully-empty conditional alternation generated parity drifted",
 )
-GENERATED_QUANTIFIED_CONDITIONAL_SPECS_BY_MANIFEST_ID = generated_specs_by_manifest_id(
-    GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS
-)
+
+
+def _build_manifest_spec_index() -> (
+    dict[str, GeneratedQuantifiedConditionalParitySpec]
+):
+    manifest_ids = tuple(
+        spec.bundle.expected_manifest_id
+        for spec in GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS
+    )
+    duplicate_manifest_ids = duplicate_string_ids(manifest_ids)
+    if duplicate_manifest_ids:
+        raise ValueError(
+            "generated quantified conditional specs contain duplicate manifest ids: "
+            f"{duplicate_manifest_ids}"
+        )
+    return {
+        spec.bundle.expected_manifest_id: spec
+        for spec in GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS
+    }
+
+
+GENERATED_QUANTIFIED_CONDITIONAL_SPECS_BY_MANIFEST_ID = _build_manifest_spec_index()
+
+
+def _lookup_generated_parity_spec(manifest_id: str) -> GeneratedQuantifiedConditionalParitySpec:
+    try:
+        return GENERATED_QUANTIFIED_CONDITIONAL_SPECS_BY_MANIFEST_ID[manifest_id]
+    except KeyError as exc:
+        raise AssertionError(
+            f"unexpected generated quantified conditional manifest id {manifest_id!r}"
+        ) from exc
+
+
 GENERATED_CONDITIONAL_CANDIDATE_TEXTS_BY_MANIFEST_ID = {
     spec.bundle.expected_manifest_id: wrap_candidate_core_texts(
         tuple(
@@ -894,11 +923,7 @@ def test_generated_quantified_conditional_text_matrix_matches_cpython(
     regex_backend: tuple[str, object],
     case: FixtureCase,
 ) -> None:
-    spec = generated_spec_by_manifest_id(
-        GENERATED_QUANTIFIED_CONDITIONAL_SPECS_BY_MANIFEST_ID,
-        case.manifest_id,
-        owner_label="generated quantified conditional",
-    )
+    spec = _lookup_generated_parity_spec(case.manifest_id)
     assert_generated_text_matrix_matches_cpython(
         regex_backend,
         case,

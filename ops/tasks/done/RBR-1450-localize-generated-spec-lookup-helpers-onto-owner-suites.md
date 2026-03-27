@@ -45,3 +45,12 @@ Created: 2026-03-27
   - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_fixture_parity_support_contract.py -k 'generated_spec or generated_text_matrix'` passed (`7 passed, 2311 deselected`).
   - `./.venv/bin/python -m py_compile tests/python/fixture_parity_support.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_fixture_parity_support_contract.py` passed.
   - The two negative `rg` verifications are intentionally red in the current checkout because the shared helper definitions and imports are the exact boundary this task removes.
+
+## Completion
+- Landed 2026-03-27.
+- Removed `generated_specs_by_manifest_id` and `generated_spec_by_manifest_id` from `tests/python/fixture_parity_support.py`, localized manifest-id spec indexing/lookup onto the three owning parity suites, and retired the matching shared-helper contract coverage from `tests/python/test_fixture_parity_support_contract.py`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/python/test_quantified_alternation_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_fixture_parity_support_contract.py -k 'generated_spec or generated_text_matrix'`
+  - `./.venv/bin/python -m py_compile tests/python/fixture_parity_support.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py tests/python/test_fixture_parity_support_contract.py`
+  - `bash -lc "! rg -n 'def generated_specs_by_manifest_id|def generated_spec_by_manifest_id' tests/python/fixture_parity_support.py"`
+  - `bash -lc "! rg -n 'generated_specs_by_manifest_id|generated_spec_by_manifest_id' tests/python/test_fixture_parity_support_contract.py tests/python/test_quantified_alternation_parity_suite.py tests/python/test_branch_local_backreference_parity_suite.py tests/python/test_conditional_group_exists_parity_suite.py"`
