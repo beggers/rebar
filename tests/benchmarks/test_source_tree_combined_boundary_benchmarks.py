@@ -90,6 +90,15 @@ class StandardBenchmarkAnchorContractDefinition:
         )
 
 
+def _is_encoded_indexlike_payload(value: object) -> bool:
+    return (
+        isinstance(value, dict)
+        and value.get("type") == "indexlike"
+        and isinstance(value.get("value"), int)
+        and not isinstance(value.get("value"), bool)
+    )
+
+
 def _definition_anchor_expectations(
     manifest_path: pathlib.Path,
     anchor_expectations: dict[str, tuple[str, ...]],
@@ -754,8 +763,8 @@ def _is_pattern_window_positional_indexlike_workload(workload: Any) -> bool:
         and not workload.kwargs
         and {"positional-window", "indexlike"}.issubset(categories)
         and (
-            benchmark_test_support._is_encoded_indexlike_payload(workload.pos)
-            or benchmark_test_support._is_encoded_indexlike_payload(workload.endpos)
+            _is_encoded_indexlike_payload(workload.pos)
+            or _is_encoded_indexlike_payload(workload.endpos)
         )
     )
 
@@ -6782,8 +6791,145 @@ def _is_collection_replacement_positional_indexlike_workload(workload: Any) -> b
     return (
         not workload.kwargs
         and workload.expected_exception is None
-        and benchmark_test_support._is_encoded_indexlike_payload(parameter_payload)
+        and _is_encoded_indexlike_payload(parameter_payload)
     )
+
+
+def _module_workflow_keyword_correctness_case_signature(
+    case: Any,
+) -> tuple[Any, ...] | None:
+    if case.operation != "module_call" or not case.kwargs:
+        return None
+    if case.use_compiled_pattern or case.helper not in {"search", "match", "fullmatch"}:
+        return None
+    return (
+        f"module.{case.helper}",
+        case_pattern(case),
+        benchmark_test_support.freeze_signature_value(list(case.args)),
+        module_workflow_keyword_kwargs_signature(case.kwargs),
+        case.flags or 0,
+        case.text_model or "str",
+    )
+
+
+def _is_module_workflow_keyword_flags_workload(workload: Any) -> bool:
+    keyword_names = tuple(workload.kwargs)
+    return (
+        workload.operation in {"module.search", "module.match", "module.fullmatch"}
+        and bool(workload.kwargs)
+        and len(keyword_names) == 1
+        and keyword_names[0] == "flags"
+        and workload.expected_exception is None
+        and not workload.use_compiled_pattern
+    )
+
+
+def _is_module_workflow_keyword_error_workload(workload: Any) -> bool:
+    keyword_names = tuple(workload.kwargs)
+    expected_exception = workload.expected_exception
+    if (
+        workload.operation
+        not in {"module.search", "module.match", "module.fullmatch"}
+        or not workload.kwargs
+        or len(keyword_names) != 1
+        or expected_exception is None
+        or expected_exception.get("type") != "TypeError"
+        or workload.use_compiled_pattern
+    ):
+        return False
+    message = expected_exception.get("message_substring", "")
+    if keyword_names[0] == "flags":
+        return "multiple values for argument" in message
+    if keyword_names[0] == "missing":
+        return "unexpected keyword argument" in message
+    return False
+
+
+def _module_workflow_keyword_workload_args(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if not (
+        _is_module_workflow_keyword_flags_workload(workload)
+        or _is_module_workflow_keyword_error_workload(workload)
+    ):
+        raise AssertionError(
+            "unexpected module-workflow keyword workload "
+            f"{workload.workload_id!r}"
+        )
+    args: list[object] = [workload.haystack_payload()]
+    if (
+        workload.operation == "module.search"
+        and workload.expected_exception is not None
+        and "flags" in workload.kwargs
+    ):
+        args.append(workload.flags)
+    return tuple(args)
+
+
+def _module_workflow_keyword_workload_signature(
+    workload: Any,
+) -> tuple[Any, ...]:
+    if not (
+        _is_module_workflow_keyword_flags_workload(workload)
+        or _is_module_workflow_keyword_error_workload(workload)
+    ):
+        raise AssertionError(
+            "unexpected module-workflow keyword workload "
+            f"{workload.workload_id!r}"
+        )
+    return (
+        workload.operation,
+        workload.pattern_payload(),
+        benchmark_test_support.freeze_signature_value(
+            list(_module_workflow_keyword_workload_args(workload))
+        ),
+        module_workflow_keyword_kwargs_signature(workload.kwargs),
+        workload.flags,
+        workload.text_model,
+    )
+
+
+MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS = (
+    StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-keyword-flags",
+        manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids={
+            (
+                benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH.name,
+                "module-search-flags-keyword-warm-str",
+            ): ("workflow-module-search-flags-keyword-str",),
+            (
+                benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH.name,
+                "module-match-flags-keyword-purged-bytes",
+            ): ("workflow-module-match-flags-keyword-bytes",),
+            (
+                benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH.name,
+                "module-fullmatch-flags-keyword-warm-str",
+            ): ("workflow-module-fullmatch-flags-keyword-str",),
+        },
+        include_workload=_is_module_workflow_keyword_flags_workload,
+        correctness_case_signature=_module_workflow_keyword_correctness_case_signature,
+        workload_signature=_module_workflow_keyword_workload_signature,
+        run_callback_result_parity=True,
+    ),
+    StandardBenchmarkAnchorContractDefinition(
+        name="module-workflow-keyword-errors",
+        manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
+        expected_anchor_case_ids={
+            (
+                benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH.name,
+                "module-search-duplicate-flags-keyword-warm-str",
+            ): ("workflow-module-search-duplicate-flags-keyword",),
+            (
+                benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH.name,
+                "module-fullmatch-unexpected-keyword-purged-str",
+            ): ("workflow-module-fullmatch-unexpected-keyword",),
+        },
+        include_workload=_is_module_workflow_keyword_error_workload,
+        correctness_case_signature=_module_workflow_keyword_correctness_case_signature,
+        workload_signature=_module_workflow_keyword_workload_signature,
+    ),
+)
 
 def _collection_replacement_keyword_correctness_case_signature(
     case: Any,
@@ -7019,7 +7165,7 @@ def _is_collection_replacement_module_helper_keyword_error_workload(
 _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = benchmark_test_support._contract_source_workloads(
     manifest_path=benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
     include_workload_selectors=(
-        benchmark_test_support._is_module_workflow_keyword_error_workload,
+        _is_module_workflow_keyword_error_workload,
     ),
     expected_source_workload_ids=_MODULE_HELPER_BOUNDARY_KEYWORD_ERROR_WORKLOAD_IDS,
     drift_message=(

@@ -52,3 +52,12 @@ Created: 2026-03-27
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'module_workflow_keyword or encoded_indexlike_payload or inline_standard_definition_exports_reuse_named_manifest_path_constants'` passed with `3 passed, 197 deselected in 0.19s`.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q --collect-only tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions'` passed and collected the targeted source-tree owner tests.
   - `./.venv/bin/python -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed.
+
+## Completion
+- Moved `_is_encoded_indexlike_payload(...)`, the `_module_workflow_keyword_*` selector/signature helpers, and `MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS` out of `tests/benchmarks/benchmark_test_support.py` and onto `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, keeping the owner suite responsible for that module-workflow keyword layer.
+- Updated `tests/benchmarks/test_benchmark_test_support.py` so the ownership checks, manifest-path assertions, and explicit standard-definition inventory now point at the source-tree combined owner suite instead of shared support, while shared support assertions now require those names to stay absent.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'module_workflow_keyword or encoded_indexlike_payload or inline_standard_definition_exports_reuse_named_manifest_path_constants'`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q --collect-only tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_exceptions'`
+  - `./.venv/bin/python -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `bash -lc "! rg -n 'def _is_encoded_indexlike_payload|def _module_workflow_keyword_correctness_case_signature|def _is_module_workflow_keyword_flags_workload|def _is_module_workflow_keyword_error_workload|def _module_workflow_keyword_workload_args|def _module_workflow_keyword_workload_signature|^MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS =' tests/benchmarks/benchmark_test_support.py"`

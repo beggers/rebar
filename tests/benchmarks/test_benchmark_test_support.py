@@ -243,7 +243,7 @@ def _explicit_standard_benchmark_definitions(
     return (
         *support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
         *collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
-        *support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
+        *collection_replacement_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
         *collection_replacement_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
         *collection_replacement_support.COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS,
         *collection_replacement_support.PATTERN_BOUNDARY_STANDARD_BENCHMARK_DEFINITIONS,
@@ -1222,7 +1222,7 @@ def test_standard_benchmark_param_helpers_require_explicit_definition_inventory(
             id="collection-replacement-after-compile-proxy",
         ),
         pytest.param(
-            support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
+            collection_replacement_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
             "collection-replacement-grouped-callable-replacement",
             "module-workflow-compiled-pattern-module-compile-literal-success",
             id="module-workflow-keyword-after-collection-replacement",
@@ -1389,9 +1389,15 @@ def test_module_keyword_flags_workload_stays_pinned() -> None:
         flags=2,
     )
 
-    assert support._is_module_workflow_keyword_flags_workload(workload)
-    assert support._module_workflow_keyword_workload_args(workload) == ("zabc",)
-    assert support._module_workflow_keyword_workload_signature(workload) == (
+    assert collection_replacement_support._is_module_workflow_keyword_flags_workload(
+        workload
+    )
+    assert collection_replacement_support._module_workflow_keyword_workload_args(
+        workload
+    ) == ("zabc",)
+    assert collection_replacement_support._module_workflow_keyword_workload_signature(
+        workload
+    ) == (
         "module.search",
         "abc",
         ("zabc",),
@@ -1399,7 +1405,9 @@ def test_module_keyword_flags_workload_stays_pinned() -> None:
         2,
         "str",
     )
-    assert support._module_workflow_keyword_correctness_case_signature(case) == (
+    assert collection_replacement_support._module_workflow_keyword_correctness_case_signature(
+        case
+    ) == (
         "module.search",
         "abc",
         ("zabc",),
@@ -1423,9 +1431,15 @@ def test_module_keyword_error_workload_stays_pinned() -> None:
         flags=4,
     )
 
-    assert support._is_module_workflow_keyword_error_workload(workload)
-    assert support._module_workflow_keyword_workload_args(workload) == ("zabc", 4)
-    assert support._module_workflow_keyword_workload_signature(workload) == (
+    assert collection_replacement_support._is_module_workflow_keyword_error_workload(
+        workload
+    )
+    assert collection_replacement_support._module_workflow_keyword_workload_args(
+        workload
+    ) == ("zabc", 4)
+    assert collection_replacement_support._module_workflow_keyword_workload_signature(
+        workload
+    ) == (
         "module.search",
         "abc",
         ("zabc", 4),
@@ -1435,9 +1449,11 @@ def test_module_keyword_error_workload_stays_pinned() -> None:
     )
 
 
-def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_support(
+def test_module_workflow_keyword_standard_definitions_stay_owned_by_source_tree_suite(
 ) -> None:
-    owner_definitions = support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
+    owner_definitions = (
+        collection_replacement_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
+    )
     definition_names = tuple(definition.name for definition in owner_definitions)
     standard_definitions_by_name = {
         definition.name: definition
@@ -1458,16 +1474,16 @@ def test_module_workflow_keyword_standard_definitions_export_stays_owned_by_supp
         assert standard_definitions_by_name[definition.name] is definition
 
 
-def test_benchmark_test_support_module_keyword_definition_references_owner_manifest_path_constant(
+def test_source_tree_module_keyword_definition_references_owner_manifest_path_constant(
 ) -> None:
     assert support._owner_definition_manifest_path_names(
         support._module_assignment(
-            support,
+            collection_replacement_support,
             "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
         )
     ) == (
-        ("MODULE_BOUNDARY_MANIFEST_PATH",),
-        ("MODULE_BOUNDARY_MANIFEST_PATH",),
+        ("benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH",),
+        ("benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH",),
     )
 
 
@@ -1500,7 +1516,9 @@ def test_module_workflow_keyword_definition_exports_reuse_owner_manifest_path_co
 ) -> None:
     assert tuple(
         definition.manifest_paths[0]
-        for definition in support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
+        for definition in (
+            collection_replacement_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
+        )
     ) == (
         support.MODULE_BOUNDARY_MANIFEST_PATH,
         support.MODULE_BOUNDARY_MANIFEST_PATH,
@@ -1517,7 +1535,6 @@ def test_inline_standard_definition_exports_reuse_named_manifest_path_constants(
 
     assert {
         "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS",
-        "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
     }.issubset(assignment_names)
 
     for assignment in assignment_nodes:
@@ -1705,11 +1722,17 @@ def test_benchmark_test_support_owns_only_shared_collection_replacement_classifi
         support
     )
 
+    assert {"_is_collection_replacement_wrong_text_model_workload"}.issubset(
+        definition_names
+    )
     assert {
         "_is_encoded_indexlike_payload",
-        "_is_collection_replacement_wrong_text_model_workload",
-    }.issubset(definition_names)
-    assert {
+        "_is_module_workflow_keyword_flags_workload",
+        "_is_module_workflow_keyword_error_workload",
+        "_module_workflow_keyword_workload_args",
+        "_module_workflow_keyword_workload_signature",
+        "_module_workflow_keyword_correctness_case_signature",
+        "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
         "_collection_replacement_keyword_parameter_name",
         "_collection_replacement_positional_keyword_field",
         "_is_collection_replacement_keyword_workload",
@@ -1728,6 +1751,13 @@ def test_collection_replacement_benchmark_support_owns_keyword_classifier_helper
     )
 
     assert {
+        "_is_encoded_indexlike_payload",
+        "_is_module_workflow_keyword_flags_workload",
+        "_is_module_workflow_keyword_error_workload",
+        "_module_workflow_keyword_workload_args",
+        "_module_workflow_keyword_workload_signature",
+        "_module_workflow_keyword_correctness_case_signature",
+        "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
         "_collection_replacement_keyword_parameter_name",
         "_collection_replacement_positional_keyword_field",
         "_is_collection_replacement_keyword_workload",
