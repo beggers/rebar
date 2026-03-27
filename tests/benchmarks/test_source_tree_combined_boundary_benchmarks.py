@@ -7819,6 +7819,104 @@ MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS = (
     ),
 )
 
+
+@pytest.mark.parametrize(
+    ("definition", "manifest_path"),
+    _standard_benchmark_manifest_params(
+        MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
+    ),
+)
+def test_module_workflow_keyword_standard_benchmark_rows_stay_anchored_to_published_correctness_cases(
+    definition: StandardBenchmarkAnchorContractDefinition,
+    manifest_path: pathlib.Path,
+) -> None:
+    expected_anchor_case_ids = {
+        key: value
+        for key, value in definition.expected_anchor_case_ids.items()
+        if key[0] == manifest_path.name
+    }
+    anchor_case_ids = published_case_ids_by_signature(
+        definition.correctness_case_signature
+    )
+
+    assert anchored_workload_case_ids(
+        manifest_path,
+        anchor_case_ids=anchor_case_ids,
+        workload_signature=definition.workload_signature,
+        include_workload=definition.includes_workload,
+    ) == expected_anchor_case_ids
+    assert unanchored_workload_ids(
+        manifest_path,
+        anchor_case_ids=anchor_case_ids,
+        workload_signature=definition.workload_signature,
+        include_workload=definition.includes_workload,
+    ) == ()
+
+
+@pytest.mark.parametrize(
+    ("definition", "manifest_path"),
+    _standard_benchmark_manifest_params(
+        MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS
+    ),
+)
+def test_module_workflow_keyword_standard_benchmark_rows_match_cpython_outcomes(
+    definition: StandardBenchmarkAnchorContractDefinition,
+    manifest_path: pathlib.Path,
+) -> None:
+    expected_anchor_case_ids = {
+        key: value
+        for key, value in definition.expected_anchor_case_ids.items()
+        if key[0] == manifest_path.name
+    }
+
+    anchored_pairs = expected_anchored_workload_case_pairs(
+        manifest_path,
+        expected_anchor_case_ids=expected_anchor_case_ids,
+        include_workload=definition.includes_workload,
+    )
+
+    assert tuple((pair.workload_id, pair.case_id) for pair in anchored_pairs) == tuple(
+        (workload_id, case_id)
+        for (_, workload_id), case_ids in expected_anchor_case_ids.items()
+        for case_id in case_ids
+    )
+    assert_anchored_workload_case_result_parity(anchored_pairs)
+
+
+@pytest.mark.parametrize(
+    "definition",
+    _standard_benchmark_definition_params(
+        MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
+        include_definition=lambda definition: True,
+    ),
+    ids=_standard_benchmark_definition_id,
+)
+def test_module_workflow_keyword_standard_benchmark_definitions_keep_module_boundary_rows_measured(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> None:
+    manifest_workload_count = len(selected_manifest_workloads(MODULE_BOUNDARY_MANIFEST_PATH))
+    expected_measured_workload_ids = tuple(
+        workload.workload_id
+        for workload in selected_manifest_workloads(
+            MODULE_BOUNDARY_MANIFEST_PATH,
+            include_workload=definition.includes_workload,
+        )
+    )
+
+    assert expected_measured_workload_ids == tuple(
+        workload_id
+        for manifest_name, workload_id in definition.expected_anchor_case_ids
+        if manifest_name == MODULE_BOUNDARY_MANIFEST_PATH.name
+    )
+    assert_zero_gap_manifest_workloads_measured(
+        manifest_path=MODULE_BOUNDARY_MANIFEST_PATH,
+        manifest_id="module-boundary",
+        expected_measured_workload_ids=expected_measured_workload_ids,
+        expected_measured_workload_count=manifest_workload_count,
+        expected_total_workload_count=manifest_workload_count,
+    )
+
+
 def _collection_replacement_keyword_correctness_case_signature(
     case: Any,
 ) -> tuple[Any, ...] | None:
