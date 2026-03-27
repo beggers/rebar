@@ -2279,20 +2279,20 @@ def test_publication_runtime_contracts_route_shared_support_through_package_owne
     assert publication_runtime_contracts.benchmark_test_support is support
     assert {
         "_write_test_manifest",
-        "assert_benchmark_workload_matches_expected_result",
         "live_manifest_workloads",
-        "run_benchmark_workload_with_cpython",
     }.isdisjoint(definition_names | assignment_names)
-    for shared_name in (
-        "_write_test_manifest",
-        "assert_benchmark_workload_matches_expected_result",
-        "live_manifest_workloads",
-        "run_benchmark_workload_with_cpython",
-    ):
+    for shared_name in ("_write_test_manifest", "live_manifest_workloads"):
         assert getattr(publication_runtime_contracts.benchmark_test_support, shared_name) is getattr(
             support,
             shared_name,
         )
+    owner_local_names = {
+        "assert_benchmark_workload_matches_expected_result",
+        "run_benchmark_workload_with_cpython",
+    }
+    assert owner_local_names.issubset(definition_names | assignment_names)
+    assert not hasattr(support, "assert_benchmark_workload_matches_expected_result")
+    assert not hasattr(support, "run_benchmark_workload_with_cpython")
 
 
 def test_publication_runtime_contracts_keep_summary_contract_helpers_owner_local() -> None:
@@ -4294,8 +4294,6 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
     shared_owner_names = frozenset(
         {
             "_write_test_manifest",
-            "assert_benchmark_workload_matches_expected_result",
-            "run_benchmark_workload_with_cpython",
             "selected_manifest_workloads",
         }
     )
@@ -6173,13 +6171,13 @@ def test_assert_anchored_workload_case_result_parity_delegates_expected_values(
     calls: list[tuple[object, object]] = []
     monkeypatch.setattr(
         collection_replacement_support,
-        "run_correctness_case_with_cpython",
-        lambda case: f"expected:{case.case_id}",
-    )
-    monkeypatch.setattr(
-        support,
         "assert_benchmark_workload_matches_expected_result",
         lambda workload, expected: calls.append((workload, expected)),
+    )
+    monkeypatch.setattr(
+        collection_replacement_support,
+        "run_correctness_case_with_cpython",
+        lambda case: f"expected:{case.case_id}",
     )
 
     collection_replacement_support.assert_anchored_workload_case_result_parity((pair,))
@@ -6212,7 +6210,11 @@ def test_assert_anchored_workload_case_result_parity_accepts_matching_exceptions
         "run_correctness_case_with_cpython",
         _raise_expected,
     )
-    monkeypatch.setattr(support, "run_benchmark_workload_with_cpython", _raise_observed)
+    monkeypatch.setattr(
+        collection_replacement_support,
+        "run_benchmark_workload_with_cpython",
+        _raise_observed,
+    )
 
     collection_replacement_support.assert_anchored_workload_case_result_parity((pair,))
 
@@ -6242,7 +6244,11 @@ def test_assert_anchored_workload_case_result_parity_rejects_exception_message_d
         "run_correctness_case_with_cpython",
         _raise_expected,
     )
-    monkeypatch.setattr(support, "run_benchmark_workload_with_cpython", _raise_observed)
+    monkeypatch.setattr(
+        collection_replacement_support,
+        "run_benchmark_workload_with_cpython",
+        _raise_observed,
+    )
 
     with pytest.raises(AssertionError):
         collection_replacement_support.assert_anchored_workload_case_result_parity((pair,))

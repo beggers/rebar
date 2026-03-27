@@ -34,7 +34,11 @@ from tests.conftest import (
     assert_published_manifest_helper_reload_contract,
     assert_published_selector_subset_paths_contract,
 )
-from tests.python.fixture_parity_support import callable_match_group_signature
+from tests.python.fixture_parity_support import (
+    assert_match_result_parity,
+    assert_pattern_parity,
+    callable_match_group_signature,
+)
 
 
 MATURIN = shutil.which("maturin")
@@ -66,6 +70,77 @@ def _build_minimal_built_native_scorecard() -> dict[str, object]:
             "known_gap_count": 0,
         }
     }
+
+
+def run_benchmark_workload_with_cpython(workload: Any) -> object:
+    re.purge()
+    try:
+        callback = benchmarks.build_callable(re, "re", workload)
+        return callback()
+    finally:
+        re.purge()
+
+
+def assert_benchmark_workload_matches_expected_result(
+    workload: Any,
+    expected: object,
+) -> None:
+    observed = run_benchmark_workload_with_cpython(workload)
+
+    if workload.operation == "module.compile":
+        assert_pattern_parity("stdlib", observed, expected)
+        return
+
+    if workload.operation in {
+        "module.search",
+        "module.match",
+        "module.fullmatch",
+        "pattern.search",
+        "pattern.match",
+        "pattern.fullmatch",
+    }:
+        assert_match_result_parity(
+            "stdlib",
+            observed,
+            expected,
+            check_regs=True,
+        )
+        return
+
+    if workload.operation in {
+        "module.split",
+        "module.findall",
+        "pattern.findall",
+        "module.sub",
+        "module.subn",
+        "pattern.split",
+        "pattern.sub",
+        "pattern.subn",
+    }:
+        assert observed == expected
+        return
+
+    if workload.operation in {"module.finditer", "pattern.finditer"}:
+        assert isinstance(observed, list)
+        expected_matches = list(expected)
+        assert len(observed) == len(expected_matches)
+        for observed_match, expected_match in zip(
+            observed,
+            expected_matches,
+            strict=True,
+        ):
+            assert_match_result_parity(
+                "stdlib",
+                observed_match,
+                expected_match,
+                check_regs=True,
+            )
+        return
+
+    raise AssertionError(
+        "unexpected anchored benchmark workload operation "
+        f"{workload.operation!r}"
+    )
 
 
 def _assert_built_native_runner_uses_optional_report_path(
@@ -979,9 +1054,9 @@ def test_nested_group_callable_replacement_quantified_branch_local_backreference
     assert round_tripped.pattern_payload() == source_workload.pattern_payload()
     assert round_tripped.haystack_payload() == source_workload.haystack_payload()
 
-    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
+    assert_benchmark_workload_matches_expected_result(
         round_tripped,
-        benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
+        run_benchmark_workload_with_cpython(source_workload),
     )
 
 
@@ -1156,7 +1231,7 @@ def test_conditional_group_exists_callable_negative_count_str_workloads_round_tr
             "x",
         )
         assert (
-            benchmark_test_support.run_benchmark_workload_with_cpython(workload)
+            run_benchmark_workload_with_cpython(workload)
             == expected_result
         )
 
@@ -1169,7 +1244,7 @@ def test_conditional_group_exists_callable_negative_count_str_workloads_round_tr
             "x",
         )
         assert (
-            benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
+            run_benchmark_workload_with_cpython(round_tripped)
             == expected_result
         )
 
@@ -1231,9 +1306,9 @@ def test_conditional_group_exists_callable_none_count_workloads_round_trip_prese
             TypeError,
             match=re.escape(expected_exception["message_substring"]),
         ) as expected_error:
-            benchmark_test_support.run_benchmark_workload_with_cpython(workload)
+            run_benchmark_workload_with_cpython(workload)
         with pytest.raises(TypeError) as observed_error:
-            benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
+            run_benchmark_workload_with_cpython(round_tripped)
         assert str(observed_error.value) == str(expected_error.value)
 
 
@@ -1288,7 +1363,7 @@ def test_conditional_group_exists_callable_none_count_workloads_round_trip_prese
         TypeError,
         match=re.escape(expected_exception["message_substring"]),
     ):
-        benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
+        run_benchmark_workload_with_cpython(round_tripped)
 
 
 @pytest.mark.parametrize(

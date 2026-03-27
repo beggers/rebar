@@ -39,6 +39,8 @@ from tests.python.fixture_parity_support import (
     OPEN_ENDED_ALTERNATION_BYTES_CASES,
     OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
     OPEN_ENDED_CONDITIONAL_BYTES_CASES,
+    assert_match_result_parity,
+    assert_pattern_parity,
     case_pattern,
     case_replacement_argument,
     case_text_argument,
@@ -470,6 +472,77 @@ def run_correctness_case_with_cpython(case: Any) -> object:
         return getattr(compiled, case.helper)(*case.args, **case.kwargs)
 
     raise AssertionError(f"unexpected correctness operation {case.operation!r}")
+
+
+def run_benchmark_workload_with_cpython(workload: Any) -> object:
+    re.purge()
+    try:
+        callback = benchmarks.build_callable(re, "re", workload)
+        return callback()
+    finally:
+        re.purge()
+
+
+def assert_benchmark_workload_matches_expected_result(
+    workload: Any,
+    expected: object,
+) -> None:
+    observed = run_benchmark_workload_with_cpython(workload)
+
+    if workload.operation == "module.compile":
+        assert_pattern_parity("stdlib", observed, expected)
+        return
+
+    if workload.operation in {
+        "module.search",
+        "module.match",
+        "module.fullmatch",
+        "pattern.search",
+        "pattern.match",
+        "pattern.fullmatch",
+    }:
+        assert_match_result_parity(
+            "stdlib",
+            observed,
+            expected,
+            check_regs=True,
+        )
+        return
+
+    if workload.operation in {
+        "module.split",
+        "module.findall",
+        "pattern.findall",
+        "module.sub",
+        "module.subn",
+        "pattern.split",
+        "pattern.sub",
+        "pattern.subn",
+    }:
+        assert observed == expected
+        return
+
+    if workload.operation in {"module.finditer", "pattern.finditer"}:
+        assert isinstance(observed, list)
+        expected_matches = list(expected)
+        assert len(observed) == len(expected_matches)
+        for observed_match, expected_match in zip(
+            observed,
+            expected_matches,
+            strict=True,
+        ):
+            assert_match_result_parity(
+                "stdlib",
+                observed_match,
+                expected_match,
+                check_regs=True,
+            )
+        return
+
+    raise AssertionError(
+        "unexpected anchored benchmark workload operation "
+        f"{workload.operation!r}"
+    )
 
 
 def manifest_workload_ids_matching(
@@ -968,12 +1041,12 @@ def assert_anchored_workload_case_result_parity(
             expected = run_correctness_case_with_cpython(anchored_pair.case)
         except Exception as expected_exc:
             with pytest.raises(type(expected_exc)) as observed_exc:
-                benchmark_test_support.run_benchmark_workload_with_cpython(
+                run_benchmark_workload_with_cpython(
                     anchored_pair.workload
                 )
             assert str(observed_exc.value) == str(expected_exc)
             continue
-        benchmark_test_support.assert_benchmark_workload_matches_expected_result(
+        assert_benchmark_workload_matches_expected_result(
             anchored_pair.workload,
             expected,
         )
@@ -5520,9 +5593,9 @@ class _CompiledPatternModuleHelperKeywordContractSurface:
         round_tripped: benchmarks.Workload,
     ) -> None:
         if self.case_id == "success":
-            benchmark_test_support.assert_benchmark_workload_matches_expected_result(
+            assert_benchmark_workload_matches_expected_result(
                 round_tripped,
-                benchmark_test_support.run_benchmark_workload_with_cpython(
+                run_benchmark_workload_with_cpython(
                     source_workload
                 ),
             )
@@ -5532,7 +5605,7 @@ class _CompiledPatternModuleHelperKeywordContractSurface:
             with pytest.raises(TypeError) as expected_error:
                 self.run_cpython_helper_workload(workload)
             with pytest.raises(TypeError) as observed_error:
-                benchmark_test_support.run_benchmark_workload_with_cpython(
+                run_benchmark_workload_with_cpython(
                     round_tripped
                 )
             assert str(observed_error.value) == str(expected_error.value)
@@ -11100,7 +11173,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_template_payload,
                 )
                 self.assertEqual(
-                    benchmark_test_support.run_benchmark_workload_with_cpython(
+                    run_benchmark_workload_with_cpython(
                         workload
                     ),
                     expected_result,
@@ -11121,7 +11194,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_template_payload,
                 )
                 self.assertEqual(
-                    benchmark_test_support.run_benchmark_workload_with_cpython(
+                    run_benchmark_workload_with_cpython(
                         round_tripped
                     ),
                     expected_result,
@@ -11488,9 +11561,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIsInstance(observed_signature[3], str)
 
                 if source_workload.expected_exception is None:
-                    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
+                    assert_benchmark_workload_matches_expected_result(
                         round_tripped,
-                        benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
+                        run_benchmark_workload_with_cpython(source_workload),
                     )
                     continue
 
@@ -11501,9 +11574,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     TypeError,
                     match=re.escape(expected_exception["message_substring"]),
                 ) as expected_error:
-                    benchmark_test_support.run_benchmark_workload_with_cpython(source_workload)
+                    run_benchmark_workload_with_cpython(source_workload)
                 with pytest.raises(TypeError) as observed_error:
-                    benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
+                    run_benchmark_workload_with_cpython(round_tripped)
                 self.assertEqual(
                     str(observed_error.value),
                     str(expected_error.value),
@@ -11590,10 +11663,10 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIsInstance(observed_signature[2], bytes)
                 self.assertIsInstance(observed_signature[3], bytes)
                 if source_workload.expected_exception is None:
-                    expected_result = benchmark_test_support.run_benchmark_workload_with_cpython(
+                    expected_result = run_benchmark_workload_with_cpython(
                         source_workload
                     )
-                    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
+                    assert_benchmark_workload_matches_expected_result(
                         round_tripped,
                         expected_result,
                     )
@@ -11606,9 +11679,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     TypeError,
                     match=re.escape(expected_exception["message_substring"]),
                 ) as expected_error:
-                    benchmark_test_support.run_benchmark_workload_with_cpython(source_workload)
+                    run_benchmark_workload_with_cpython(source_workload)
                 with pytest.raises(TypeError) as observed_error:
-                    benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
+                    run_benchmark_workload_with_cpython(round_tripped)
                 self.assertEqual(
                     str(observed_error.value),
                     str(expected_error.value),
@@ -11707,9 +11780,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIsInstance(observed_signature[3], str)
 
                 if source_workload.expected_exception is None:
-                    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
+                    assert_benchmark_workload_matches_expected_result(
                         round_tripped,
-                        benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
+                        run_benchmark_workload_with_cpython(source_workload),
                     )
                     continue
 
@@ -11720,9 +11793,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     TypeError,
                     match=re.escape(expected_exception["message_substring"]),
                 ) as expected_error:
-                    benchmark_test_support.run_benchmark_workload_with_cpython(source_workload)
+                    run_benchmark_workload_with_cpython(source_workload)
                 with pytest.raises(TypeError) as observed_error:
-                    benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
+                    run_benchmark_workload_with_cpython(round_tripped)
                 self.assertEqual(
                     str(observed_error.value),
                     str(expected_error.value),
@@ -11775,9 +11848,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertEqual(observed_signature, expected_signature)
 
                 if source_workload.expected_exception is None:
-                    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
+                    assert_benchmark_workload_matches_expected_result(
                         round_tripped,
-                        benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
+                        run_benchmark_workload_with_cpython(source_workload),
                     )
                     continue
 
@@ -11788,9 +11861,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     TypeError,
                     match=re.escape(expected_exception["message_substring"]),
                 ) as expected_error:
-                    benchmark_test_support.run_benchmark_workload_with_cpython(source_workload)
+                    run_benchmark_workload_with_cpython(source_workload)
                 with pytest.raises(TypeError) as observed_error:
-                    benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
+                    run_benchmark_workload_with_cpython(round_tripped)
                 self.assertEqual(
                     str(observed_error.value),
                     str(expected_error.value),
@@ -11901,9 +11974,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIsInstance(observed_signature[3], str)
 
                 if source_workload.expected_exception is None:
-                    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
+                    assert_benchmark_workload_matches_expected_result(
                         round_tripped,
-                        benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
+                        run_benchmark_workload_with_cpython(source_workload),
                     )
                     continue
 
@@ -11914,9 +11987,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     TypeError,
                     match=re.escape(expected_exception["message_substring"]),
                 ) as expected_error:
-                    benchmark_test_support.run_benchmark_workload_with_cpython(source_workload)
+                    run_benchmark_workload_with_cpython(source_workload)
                 with pytest.raises(TypeError) as observed_error:
-                    benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
+                    run_benchmark_workload_with_cpython(round_tripped)
                 self.assertEqual(
                     str(observed_error.value),
                     str(expected_error.value),
@@ -11985,9 +12058,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 self.assertIsInstance(observed_signature[3], bytes)
 
                 if source_workload.expected_exception is None:
-                    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
+                    assert_benchmark_workload_matches_expected_result(
                         round_tripped,
-                        benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
+                        run_benchmark_workload_with_cpython(source_workload),
                     )
                     continue
 
@@ -11998,9 +12071,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     TypeError,
                     match=re.escape(expected_exception["message_substring"]),
                 ) as expected_error:
-                    benchmark_test_support.run_benchmark_workload_with_cpython(source_workload)
+                    run_benchmark_workload_with_cpython(source_workload)
                 with pytest.raises(TypeError) as observed_error:
-                    benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
+                    run_benchmark_workload_with_cpython(round_tripped)
                 self.assertEqual(
                     str(observed_error.value),
                     str(expected_error.value),
@@ -12046,9 +12119,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 )
 
                 if source_workload.expected_exception is None:
-                    benchmark_test_support.assert_benchmark_workload_matches_expected_result(
+                    assert_benchmark_workload_matches_expected_result(
                         round_tripped,
-                        benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
+                        run_benchmark_workload_with_cpython(source_workload),
                     )
                     continue
 
@@ -12059,9 +12132,9 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     TypeError,
                     match=re.escape(expected_exception["message_substring"]),
                 ) as expected_error:
-                    benchmark_test_support.run_benchmark_workload_with_cpython(source_workload)
+                    run_benchmark_workload_with_cpython(source_workload)
                 with pytest.raises(TypeError) as observed_error:
-                    benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
+                    run_benchmark_workload_with_cpython(round_tripped)
                 self.assertEqual(
                     str(observed_error.value),
                     str(expected_error.value),
@@ -15386,7 +15459,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_contract_rows_preser
             round_tripped,
         )
         if source_workload.expected_exception is None:
-            benchmark_test_support.assert_benchmark_workload_matches_expected_result(
+            assert_benchmark_workload_matches_expected_result(
                 round_tripped,
                 contract_case.run_cpython_workload(workload),
             )
@@ -15399,7 +15472,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_contract_rows_preser
         ) as expected_error:
             contract_case.run_cpython_workload(workload)
         with pytest.raises(type(expected_error.value)) as observed_error:
-            benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
+            run_benchmark_workload_with_cpython(round_tripped)
         assert str(observed_error.value) == str(expected_error.value)
 
 
@@ -15496,7 +15569,7 @@ def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_pres
                 collection_replacement_callback_flags=0,
             )
         with pytest.raises(TypeError) as observed_error:
-            benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped)
+            run_benchmark_workload_with_cpython(round_tripped)
 
         assert str(observed_error.value) == str(expected_error.value)
 
@@ -15551,9 +15624,9 @@ def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preser
             round_tripped,
             owner_spec=owner_spec,
         )
-        benchmark_test_support.assert_benchmark_workload_matches_expected_result(
+        assert_benchmark_workload_matches_expected_result(
             round_tripped,
-            benchmark_test_support.run_benchmark_workload_with_cpython(round_tripped),
+            run_benchmark_workload_with_cpython(round_tripped),
         )
 
 
@@ -15703,7 +15776,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_keyword_p
             workload.operation,
             workload.text_model,
             workload.kwargs["count"],
-            benchmark_test_support.run_benchmark_workload_with_cpython(workload),
+            run_benchmark_workload_with_cpython(workload),
         )
         for workload in (
             _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS
@@ -15800,7 +15873,7 @@ def test_compiled_pattern_module_helper_keyword_contract_rows_preserve_cpython_o
         keyword_error_round_tripped,
     )
     with pytest.raises(TypeError):
-        benchmark_test_support.run_benchmark_workload_with_cpython(
+        run_benchmark_workload_with_cpython(
             keyword_error_round_tripped
         )
 
@@ -16103,7 +16176,7 @@ def test_compiled_pattern_module_helper_collection_replacement_keyword_kwargs_ma
     _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_call(
         monkeypatch,
         workload,
-        expected_result=benchmark_test_support.run_benchmark_workload_with_cpython(source_workload),
+        expected_result=run_benchmark_workload_with_cpython(source_workload),
         expected_field_names=(
             _COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC.expected_materialized_field_names(
                 source_workload

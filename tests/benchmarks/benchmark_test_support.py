@@ -1,20 +1,13 @@
 from __future__ import annotations
 
 import pathlib
-import re
 import sys
 import textwrap
 from functools import cache
-from typing import Any
 
 from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
     load_manifest,
-    published_benchmark_manifests,
-)
-from tests.python.fixture_parity_support import (
-    assert_match_result_parity,
-    assert_pattern_parity,
 )
 
 benchmark_test_support = sys.modules[__name__]
@@ -73,75 +66,6 @@ def _clear_anchor_support_caches() -> None:
             cache_clear = getattr(function, "cache_clear", None)
             if callable(cache_clear):
                 cache_clear()
-
-def run_benchmark_workload_with_cpython(workload: Any) -> object:
-    re.purge()
-    callback = benchmarks.build_callable(re, "re", workload)
-    result = callback()
-    re.purge()
-    return result
-
-
-def assert_benchmark_workload_matches_expected_result(
-    workload: Any,
-    expected: object,
-) -> None:
-    observed = run_benchmark_workload_with_cpython(workload)
-
-    if workload.operation == "module.compile":
-        assert_pattern_parity("stdlib", observed, expected)
-        return
-
-    if workload.operation in {
-        "module.search",
-        "module.match",
-        "module.fullmatch",
-        "pattern.search",
-        "pattern.match",
-        "pattern.fullmatch",
-    }:
-        assert_match_result_parity(
-            "stdlib",
-            observed,
-            expected,
-            check_regs=True,
-        )
-        return
-
-    if workload.operation in {
-        "module.split",
-        "module.findall",
-        "pattern.findall",
-        "module.sub",
-        "module.subn",
-        "pattern.split",
-        "pattern.sub",
-        "pattern.subn",
-    }:
-        assert observed == expected
-        return
-
-    if workload.operation in {"module.finditer", "pattern.finditer"}:
-        assert isinstance(observed, list)
-        expected_matches = list(expected)
-        assert len(observed) == len(expected_matches)
-        for observed_match, expected_match in zip(
-            observed,
-            expected_matches,
-            strict=True,
-        ):
-            assert_match_result_parity(
-                "stdlib",
-                observed_match,
-                expected_match,
-                check_regs=True,
-            )
-        return
-
-    raise AssertionError(
-        "unexpected anchored benchmark workload operation "
-        f"{workload.operation!r}"
-    )
 
 def _write_test_manifest(
     tmp_path: pathlib.Path,
