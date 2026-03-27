@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import importlib
 import importlib.util
 import json
 import pathlib
@@ -7,19 +8,13 @@ import re
 import subprocess
 import sys
 import tempfile
+from collections.abc import Iterable
 from types import SimpleNamespace
 import unittest
 from unittest import mock
 
 from rebar_harness import benchmarks, correctness, scorecard_io
-import tests.conftest as test_support
-from tests.conftest import (
-    REPO_ROOT,
-    completed_process,
-    fake_harness_cli_scorecard_result,
-    run_harness_cli,
-    run_harness_scorecard,
-)
+from tests.conftest import REPO_ROOT
 
 
 REBAR_OPS_MODULE_PATH = REPO_ROOT / "scripts" / "rebar_ops.py"
@@ -60,6 +55,101 @@ COMPATIBILITY_HEURISTIC_PATTERN = re.compile(
     r"(?P<correctness_manifests>\d+) manifests, all passing, and "
     r"(?P<benchmark_measured>\d+) benchmark workloads are measured"
 )
+
+
+def run_harness_cli(
+    module_name: str,
+    cli_args: Iterable[str],
+    *,
+    check: bool = True,
+) -> subprocess.CompletedProcess[str]:
+    command = [sys.executable, "-m", module_name, *cli_args]
+    return subprocess.run(
+        command,
+        check=check,
+        cwd=REPO_ROOT,
+        env={"PYTHONPATH": str(REPO_ROOT / "python")},
+        capture_output=True,
+        text=True,
+    )
+
+
+def completed_process(
+    *args: str,
+    returncode: int = 0,
+    stdout: str = "",
+    stderr: str = "",
+) -> subprocess.CompletedProcess[str]:
+    return subprocess.CompletedProcess(
+        args=args,
+        returncode=returncode,
+        stdout=stdout,
+        stderr=stderr,
+    )
+
+
+def report_path_from_cli_args(cli_args: list[str] | tuple[str, ...]) -> pathlib.Path:
+    report_indexes = [
+        index for index, argument in enumerate(cli_args) if argument == "--report"
+    ]
+    if len(report_indexes) != 1:
+        raise ValueError("cli args must include exactly one --report argument")
+
+    report_index = report_indexes[0]
+    if report_index + 1 >= len(cli_args):
+        raise ValueError("--report must be followed by a path")
+
+    return pathlib.Path(cli_args[report_index + 1])
+
+
+def fake_harness_cli_scorecard_result(
+    module_name: str,
+    cli_args: list[str] | tuple[str, ...],
+    *,
+    summary: dict[str, object],
+    report_text: str,
+    process_args: tuple[str, ...] | None = None,
+) -> subprocess.CompletedProcess[str]:
+    report_path = report_path_from_cli_args(cli_args)
+    report_path.write_text(report_text, encoding="utf-8")
+    if process_args is None:
+        process_args = ("python", "-m", module_name)
+    return completed_process(*process_args, stdout=json.dumps(summary))
+
+
+def run_harness_scorecard(
+    module_name: str,
+    cli_args: Iterable[str],
+    *,
+    report_name: str,
+) -> tuple[dict[str, object], dict[str, object]]:
+    cli_args_list = list(cli_args)
+    if "--report" in cli_args_list:
+        raise ValueError(
+            "run_harness_scorecard manages its own --report argument; "
+            "omit it from cli_args"
+        )
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        report_path = pathlib.Path(temp_dir) / report_name
+        result = run_harness_cli(
+            module_name,
+            [*cli_args_list, "--report", str(report_path)],
+        )
+        summary = json.loads(result.stdout.strip())
+        if report_path.suffix == ".json":
+            scorecard = json.loads(report_path.read_text(encoding="utf-8"))
+        else:
+            try:
+                module = importlib.import_module(module_name)
+                load_report = module.SCORECARD_REPORT.load
+            except (ImportError, AttributeError) as exc:
+                raise ValueError(
+                    f"run_harness_scorecard cannot load a non-JSON report for {module_name!r}"
+                ) from exc
+            scorecard = load_report(report_path)
+
+    return summary, scorecard
 
 
 def _match_summary_line(pattern: re.Pattern[str], line: str) -> dict[str, int]:
@@ -1878,7 +1968,7 @@ class ReadmeReportingTest(unittest.TestCase):
             )
 
         with mock.patch.object(
-            test_support,
+            sys.modules[__name__],
             "run_harness_cli",
             side_effect=fake_run_harness_cli,
         ):
@@ -1918,7 +2008,7 @@ class ReadmeReportingTest(unittest.TestCase):
             )
 
         with mock.patch.object(
-            test_support,
+            sys.modules[__name__],
             "run_harness_cli",
             side_effect=fake_run_harness_cli,
         ):
@@ -1963,12 +2053,12 @@ class ReadmeReportingTest(unittest.TestCase):
         for imported_module in missing_loader_modules:
             with self.subTest(imported_module=imported_module):
                 with mock.patch.object(
-                    test_support,
+                    sys.modules[__name__],
                     "run_harness_cli",
                     side_effect=fake_run_harness_cli,
                 ):
                     with mock.patch.object(
-                        test_support.importlib,
+                        importlib,
                         "import_module",
                         return_value=imported_module,
                     ):

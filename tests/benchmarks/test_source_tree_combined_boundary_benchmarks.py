@@ -7,6 +7,9 @@ from functools import cache, partial
 import json
 import pathlib
 import re
+import subprocess
+import sys
+import tempfile
 import textwrap
 from types import SimpleNamespace
 import unittest
@@ -31,7 +34,6 @@ from rebar_harness.scorecard_io import build_cpython_baseline
 from tests.conftest import (
     REPO_ROOT,
     records_by_string_id,
-    run_harness_scorecard,
 )
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
@@ -47,6 +49,37 @@ from tests.python.fixture_parity_support import (
     case_text_argument,
     callable_match_group_signature,
 )
+
+
+def run_harness_scorecard(
+    module_name: str,
+    cli_args: Iterable[str],
+    *,
+    report_name: str,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    cli_args_list = list(cli_args)
+    if "--report" in cli_args_list:
+        raise ValueError(
+            "run_harness_scorecard manages its own --report argument; "
+            "omit it from cli_args"
+        )
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        report_path = pathlib.Path(temp_dir) / report_name
+        result = subprocess.run(
+            [sys.executable, "-m", module_name, *cli_args_list, "--report", str(report_path)],
+            check=True,
+            cwd=REPO_ROOT,
+            env={"PYTHONPATH": str(REPO_ROOT / "python")},
+            capture_output=True,
+            text=True,
+        )
+        summary = json.loads(result.stdout.strip())
+        if report_path.suffix == ".json":
+            scorecard = json.loads(report_path.read_text(encoding="utf-8"))
+        else:
+            scorecard = benchmarks.SCORECARD_REPORT.load(report_path)
+    return summary, scorecard
 
 
 def _module_workflow_encoded_indexlike_value(value: object) -> int | None:
@@ -1152,8 +1185,6 @@ def assert_zero_gap_manifest_workloads_measured(
     expected_measured_workload_count: int,
     expected_total_workload_count: int | None = None,
 ) -> None:
-    from tests.conftest import run_harness_scorecard as shared_run_harness_scorecard
-
     testcase = unittest.TestCase()
     resolved_manifest_path = (
         manifest_path
@@ -1161,7 +1192,7 @@ def assert_zero_gap_manifest_workloads_measured(
         else benchmarks.BENCHMARK_WORKLOADS_ROOT / manifest_path
     )
     manifest = load_manifest(resolved_manifest_path)
-    _, scorecard = shared_run_harness_scorecard(
+    _, scorecard = run_harness_scorecard(
         "rebar_harness.benchmarks",
         ["--manifest", str(resolved_manifest_path)],
         report_name="benchmarks.json",
@@ -1232,7 +1263,7 @@ def assert_zero_gap_manifest_workloads_measured(
         ),
     ),
 )
-def test_assert_zero_gap_manifest_workloads_measured_routes_manifest_paths_through_shared_contract_helper(
+def test_assert_zero_gap_manifest_workloads_measured_routes_manifest_paths_through_owner_local_helper(
     monkeypatch: pytest.MonkeyPatch,
     manifest_path: pathlib.Path | str,
     expected_resolved_manifest_path: pathlib.Path,
@@ -1294,10 +1325,7 @@ def test_assert_zero_gap_manifest_workloads_measured_routes_manifest_paths_throu
         )
 
     monkeypatch.setattr(helper_module, "load_manifest", fake_load_manifest)
-    monkeypatch.setattr(
-        "tests.conftest.run_harness_scorecard",
-        fake_run_harness_scorecard,
-    )
+    monkeypatch.setattr(helper_module, "run_harness_scorecard", fake_run_harness_scorecard)
     monkeypatch.setattr(
         helper_module,
         "assert_manifest_workload_contracts",

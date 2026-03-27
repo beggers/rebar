@@ -4,9 +4,12 @@ from collections import Counter
 from collections.abc import Callable, Iterable
 from dataclasses import dataclass, replace
 from functools import lru_cache, partial
+import json
 import pathlib
 import re
 import subprocess
+import sys
+import tempfile
 from typing import Any
 import unittest
 from unittest import mock
@@ -16,7 +19,7 @@ from rebar_harness import correctness
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
 )
-from tests.conftest import REPO_ROOT, manifest_records_by_id, run_harness_scorecard
+from tests.conftest import REPO_ROOT, manifest_records_by_id
 
 from rebar_harness.correctness import (
     CpythonReAdapter,
@@ -30,6 +33,38 @@ from rebar_harness.correctness import (
 )
 
 TRACKED_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
+
+
+def run_harness_scorecard(
+    module_name: str,
+    cli_args: Iterable[str],
+    *,
+    report_name: str,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    cli_args_list = list(cli_args)
+    if "--report" in cli_args_list:
+        raise ValueError(
+            "run_harness_scorecard manages its own --report argument; "
+            "omit it from cli_args"
+        )
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        report_path = pathlib.Path(temp_dir) / report_name
+        result = subprocess.run(
+            [sys.executable, "-m", module_name, *cli_args_list, "--report", str(report_path)],
+            check=True,
+            cwd=REPO_ROOT,
+            env={"PYTHONPATH": str(REPO_ROOT / "python")},
+            capture_output=True,
+            text=True,
+        )
+        summary = json.loads(result.stdout.strip())
+        if report_path.suffix == ".json":
+            scorecard = json.loads(report_path.read_text(encoding="utf-8"))
+        else:
+            scorecard = correctness.SCORECARD_REPORT.load(report_path)
+    return summary, scorecard
+
 
 @dataclass(frozen=True)
 class CorrectnessScorecardManifestExpectation:

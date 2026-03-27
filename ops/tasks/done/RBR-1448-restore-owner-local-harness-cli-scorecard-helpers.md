@@ -92,3 +92,17 @@ PY`
   - `./.venv/bin/python -m py_compile tests/conftest.py tests/python/test_ops_harness.py tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/python/test_shared_test_support_contract.py` passed.
   - The AST import-boundary probe in Verification currently fails exactly on this cleanup with `AssertionError: ['completed_process', 'fake_harness_cli_scorecard_result', 'report_path_from_cli_args', 'run_harness_cli', 'run_harness_scorecard']` because `tests/conftest.py` still defines the helper layer.
   - A broader suite command, `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/python/test_ops_harness.py tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/python/test_shared_test_support_contract.py`, is currently red for unrelated drift in `tests/python/test_ops_harness.py::OpsHarnessTest::test_dispatch_policies_match_the_current_specialist_mix` (`'interval' != 'every_cycle'`), so it is intentionally not part of this task's acceptance.
+
+## Completion
+- Landed owner-local harness helper restoration without changing harness/product code:
+  - deleted the harness CLI/scorecard helper layer from `tests/conftest.py`
+  - restored the full helper surface locally in `tests/python/test_ops_harness.py`
+  - added owner-local temporary scorecard helpers in the correctness and benchmark publication suites
+  - removed the shared-support contract assertions for the deleted helper layer and replaced them with a negative ownership check
+- Verification completed in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/python/test_ops_harness.py -k 'run_harness_cli or run_harness_scorecard or fake_harness_cli_scorecard_result or completed_process'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/python/test_shared_test_support_contract.py -k 'run_harness_cli or run_harness_scorecard or fake_harness_cli_scorecard_result or completed_process or report_path_from_cli_args'`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/conformance/test_combined_correctness_scorecards.py`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `./.venv/bin/python -m py_compile tests/conftest.py tests/python/test_ops_harness.py tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/python/test_shared_test_support_contract.py`
+  - AST boundary probe from Verification now passes
