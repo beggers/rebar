@@ -2198,37 +2198,67 @@ def test_source_tree_manifest_path_consumers_reuse_support_constants_by_identity
     )
 
 
-def test_shared_source_tree_manifest_path_constants_point_to_current_workload_files() -> None:
-    assert (
-        collection_replacement_support.OPTIONAL_GROUP_MANIFEST_PATH,
-        collection_replacement_support.NESTED_GROUP_MANIFEST_PATH,
-        collection_replacement_support.EXACT_REPEAT_MANIFEST_PATH,
-        collection_replacement_support.RANGED_REPEAT_MANIFEST_PATH,
-        collection_replacement_support.GROUPED_ALTERNATION_MANIFEST_PATH,
-        collection_replacement_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
-        collection_replacement_support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
-        collection_replacement_support.OPEN_ENDED_MANIFEST_PATH,
-    ) == (
-        REPO_ROOT / "benchmarks" / "workloads" / "optional_group_boundary.py",
-        REPO_ROOT / "benchmarks" / "workloads" / "nested_group_boundary.py",
-        REPO_ROOT
-        / "benchmarks"
-        / "workloads"
-        / "exact_repeat_quantified_group_boundary.py",
-        REPO_ROOT
-        / "benchmarks"
-        / "workloads"
-        / "ranged_repeat_quantified_group_boundary.py",
-        REPO_ROOT / "benchmarks" / "workloads" / "grouped_alternation_boundary.py",
-        REPO_ROOT
-        / "benchmarks"
-        / "workloads"
-        / "grouped_alternation_replacement_boundary.py",
-        REPO_ROOT / "benchmarks" / "workloads" / "nested_group_replacement_boundary.py",
-        REPO_ROOT
-        / "benchmarks"
-        / "workloads"
-        / "open_ended_quantified_group_boundary.py",
+@pytest.mark.parametrize(
+    ("manifest_path_name", "expected_manifest_filename"),
+    (
+        pytest.param(
+            "MODULE_BOUNDARY_MANIFEST_PATH",
+            "module_boundary.py",
+            id="module-boundary",
+        ),
+        pytest.param(
+            "OPTIONAL_GROUP_MANIFEST_PATH",
+            "optional_group_boundary.py",
+            id="optional-group",
+        ),
+        pytest.param(
+            "NESTED_GROUP_MANIFEST_PATH",
+            "nested_group_boundary.py",
+            id="nested-group",
+        ),
+        pytest.param(
+            "EXACT_REPEAT_MANIFEST_PATH",
+            "exact_repeat_quantified_group_boundary.py",
+            id="exact-repeat",
+        ),
+        pytest.param(
+            "RANGED_REPEAT_MANIFEST_PATH",
+            "ranged_repeat_quantified_group_boundary.py",
+            id="ranged-repeat",
+        ),
+        pytest.param(
+            "GROUPED_ALTERNATION_MANIFEST_PATH",
+            "grouped_alternation_boundary.py",
+            id="grouped-alternation",
+        ),
+        pytest.param(
+            "GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH",
+            "grouped_alternation_replacement_boundary.py",
+            id="grouped-alternation-replacement",
+        ),
+        pytest.param(
+            "NESTED_GROUP_REPLACEMENT_MANIFEST_PATH",
+            "nested_group_replacement_boundary.py",
+            id="nested-group-replacement",
+        ),
+        pytest.param(
+            "OPEN_ENDED_MANIFEST_PATH",
+            "open_ended_quantified_group_boundary.py",
+            id="open-ended",
+        ),
+        pytest.param(
+            "COLLECTION_REPLACEMENT_MANIFEST_PATH",
+            "collection_replacement_boundary.py",
+            id="collection-replacement",
+        ),
+    ),
+)
+def test_shared_source_tree_manifest_path_constants_point_to_current_workload_files(
+    manifest_path_name: str,
+    expected_manifest_filename: str,
+) -> None:
+    assert getattr(collection_replacement_support, manifest_path_name) == (
+        REPO_ROOT / "benchmarks" / "workloads" / expected_manifest_filename
     )
 
 
