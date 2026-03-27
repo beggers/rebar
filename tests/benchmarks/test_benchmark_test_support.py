@@ -5218,6 +5218,20 @@ def test_compiled_pattern_module_helper_route_preserves_expected_shapes(
     (
         pytest.param(
             synthetic_workload(
+                manifest_id=_compiled_pattern_module_helper_manifest_id("module.split"),
+                workload_id="module-split-runtime",
+                operation="module.split",
+                pattern="abc",
+                haystack="abcabc",
+                maxsplit=1,
+                use_compiled_pattern=True,
+            ),
+            ["", "abc"],
+            None,
+            id="split-preserves-list-result",
+        ),
+        pytest.param(
+            synthetic_workload(
                 manifest_id=_compiled_pattern_module_helper_manifest_id("module.search"),
                 workload_id="module-search-runtime",
                 operation="module.search",
@@ -5338,6 +5352,11 @@ def test_run_cpython_compiled_pattern_module_helper_workload_preserves_expected_
     if workload.operation == "module.finditer":
         assert isinstance(result, list)
         assert [match.group(0) for match in result] == expected_result
+        return
+
+    if workload.operation == "module.split":
+        assert isinstance(result, list)
+        assert result == expected_result
         return
 
     assert result == expected_result
