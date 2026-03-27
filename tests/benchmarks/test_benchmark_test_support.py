@@ -1018,7 +1018,11 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         "published_case_ids_by_signature",
         _published_case_ids_by_signature,
     )
-    monkeypatch.setattr(support, "published_cases_by_id", _published_cases_by_id)
+    monkeypatch.setattr(
+        collection_replacement_support,
+        "published_cases_by_id",
+        _published_cases_by_id,
+    )
     assert anchor_support.benchmark_test_support is support
     assert collection_replacement_support is not anchor_support
     assert collection_replacement_support.benchmark_test_support is support
@@ -1030,7 +1034,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     assert collection_replacement_support.published_case_ids_by_signature(
         _synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
-    assert support.published_cases_by_id() is published_cases
+    assert collection_replacement_support.published_cases_by_id() is published_cases
     for workload_ids, expected_workloads in helper_workloads:
         assert (
             support.live_manifest_workloads(
@@ -1049,7 +1053,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     assert collection_replacement_support.published_case_ids_by_signature(
         _synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
-    assert support.published_cases_by_id() is published_cases
+    assert collection_replacement_support.published_cases_by_id() is published_cases
     for workload_ids, expected_workloads in helper_workloads:
         assert (
             support.live_manifest_workloads(
@@ -1072,7 +1076,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     assert collection_replacement_support.published_case_ids_by_signature(
         _synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
-    assert support.published_cases_by_id() is published_cases
+    assert collection_replacement_support.published_cases_by_id() is published_cases
     for workload_ids, expected_workloads in helper_workloads:
         assert (
             support.live_manifest_workloads(
@@ -1435,7 +1439,7 @@ def test_contract_source_workloads_follow_selector_order_on_synthetic_manifest_r
         lambda path: _synthetic_manifest_loader(path, workloads=workloads),
     )
 
-    source_workloads = support._contract_source_workloads(
+    source_workloads = collection_replacement_support._contract_source_workloads(
         manifest_path=manifest_path,
         include_workload_selectors=(
             lambda workload: workload.workload_id in {"second", "third"},
@@ -1468,7 +1472,7 @@ def test_contract_source_workloads_detect_drift_on_synthetic_manifest_rows(
     )
 
     with pytest.raises(AssertionError, match="synthetic workloads drifted"):
-        support._contract_source_workloads(
+        collection_replacement_support._contract_source_workloads(
             manifest_path=pathlib.Path("synthetic_boundary.py"),
             include_workload_selectors=(
                 lambda workload: workload.workload_id == "first",
@@ -3199,14 +3203,24 @@ def test_source_tree_combined_suite_owns_benchmark_contract_helpers_locally() ->
     assert moved_owner_names.isdisjoint(dir(module.benchmark_test_support))
 
 
-def test_benchmark_test_support_defines_shared_manifest_workload_contract_helper(
-) -> None:
-    definition_names, _ = top_level_module_definition_and_assignment_names(
-        support
+def test_source_tree_combined_suite_owns_workload_contract_helpers_locally() -> None:
+    module = importlib.import_module(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
+    definition_names, assignment_names = (
+        top_level_module_definition_and_assignment_names(module)
+    )
+    moved_owner_names = {
+        "published_cases_by_id",
+        "_contract_source_workloads",
+        "find_workload_record",
+        "find_workload_document",
+        "assert_manifest_workload_contracts",
+        "assert_benchmark_workload_contract",
+    }
 
-    assert hasattr(support, "assert_manifest_workload_contracts")
-    assert "assert_manifest_workload_contracts" in definition_names
+    assert moved_owner_names.issubset(definition_names | assignment_names)
+    assert moved_owner_names.isdisjoint(dir(module.benchmark_test_support))
 
 
 class _RecordingSubTestContext:
@@ -3293,15 +3307,23 @@ def test_assert_manifest_workload_contracts_delegates_without_subtests(
             )
         )
 
-    monkeypatch.setattr(support, "find_workload_record", _find_workload_record)
-    monkeypatch.setattr(support, "find_workload_document", _find_workload_document)
     monkeypatch.setattr(
-        support,
+        collection_replacement_support,
+        "find_workload_record",
+        _find_workload_record,
+    )
+    monkeypatch.setattr(
+        collection_replacement_support,
+        "find_workload_document",
+        _find_workload_document,
+    )
+    monkeypatch.setattr(
+        collection_replacement_support,
         "assert_benchmark_workload_contract",
         _assert_benchmark_workload_contract,
     )
 
-    support.assert_manifest_workload_contracts(
+    collection_replacement_support.assert_manifest_workload_contracts(
         testcase,
         manifest,
         scorecard,
@@ -3339,24 +3361,24 @@ def test_assert_manifest_workload_contracts_wraps_each_expectation_in_named_subt
     delegated_workload_ids: list[str] = []
 
     monkeypatch.setattr(
-        support,
+        collection_replacement_support,
         "find_workload_record",
         lambda scorecard, workload_id: {"workload_id": workload_id},
     )
     monkeypatch.setattr(
-        support,
+        collection_replacement_support,
         "find_workload_document",
         lambda benchmark_manifest, workload_id: workload_id,
     )
     monkeypatch.setattr(
-        support,
+        collection_replacement_support,
         "assert_benchmark_workload_contract",
         lambda observed_testcase, workload_record, **kwargs: delegated_workload_ids.append(
             workload_record["workload_id"]
         ),
     )
 
-    support.assert_manifest_workload_contracts(
+    collection_replacement_support.assert_manifest_workload_contracts(
         testcase,
         manifest,
         {"synthetic": "scorecard"},
@@ -3473,7 +3495,7 @@ def test_assert_zero_gap_manifest_workloads_measured_routes_through_shared_contr
         _run_harness_scorecard,
     )
     monkeypatch.setattr(
-        support,
+        collection_replacement_support,
         "assert_manifest_workload_contracts",
         _assert_manifest_workload_contracts,
     )
@@ -5682,7 +5704,7 @@ def test_expected_anchored_workload_case_pairs_return_matching_objects(
         lambda path: _synthetic_manifest_loader(path, workloads=(workload,)),
     )
     monkeypatch.setattr(
-        support,
+        collection_replacement_support,
         "published_cases_by_id",
         lambda: records_by_string_id((case,), id_attr="case_id"),
     )
@@ -5716,7 +5738,7 @@ def test_expected_anchored_workload_case_pairs_rejects_manifest_name_drift(
         ),
     )
     monkeypatch.setattr(
-        support,
+        collection_replacement_support,
         "published_cases_by_id",
         lambda: records_by_string_id(
             (SimpleNamespace(case_id="case-1"),),
@@ -5746,7 +5768,7 @@ def test_expected_anchored_workload_case_pairs_rejects_multiple_case_ids(
         ),
     )
     monkeypatch.setattr(
-        support,
+        collection_replacement_support,
         "published_cases_by_id",
         lambda: records_by_string_id(
             (
@@ -5782,7 +5804,7 @@ def test_expected_anchored_workload_case_pairs_rejects_missing_workload(
         ),
     )
     monkeypatch.setattr(
-        support,
+        collection_replacement_support,
         "published_cases_by_id",
         lambda: records_by_string_id(
             (SimpleNamespace(case_id="case-1"),),
@@ -5815,7 +5837,7 @@ def test_expected_anchored_workload_case_pairs_rejects_unpublished_case(
         ),
     )
     monkeypatch.setattr(
-        support,
+        collection_replacement_support,
         "published_cases_by_id",
         lambda: records_by_string_id((), id_attr="case_id"),
     )

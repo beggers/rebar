@@ -24,6 +24,7 @@ from rebar_harness.benchmarks import (
     workload_from_payload,
     workload_to_payload,
 )
+from rebar_harness.correctness import published_fixture_manifests
 from tests.benchmarks import benchmark_test_support
 from tests.conftest import (
     REPO_ROOT,
@@ -209,6 +210,170 @@ def manifest_workload_ids_matching(
             or workload.operation.startswith(operation_prefix)
         )
     )
+
+@cache
+def published_cases_by_id() -> dict[str, Any]:
+    return records_by_string_id(
+        (
+            case
+            for manifest in published_fixture_manifests()
+            for case in manifest.cases
+        ),
+        id_attr="case_id",
+        duplicate_error=lambda duplicate_ids: AssertionError(
+            f"duplicate published correctness case id {duplicate_ids[0]!r}"
+        ),
+    )
+
+
+def _contract_source_workloads(
+    *,
+    manifest_path: pathlib.Path,
+    include_workload_selectors: tuple[Callable[[Any], bool], ...],
+    expected_source_workload_ids: tuple[str, ...],
+    drift_message: str,
+) -> tuple[Workload, ...]:
+    source_workloads = tuple(
+        workload
+        for include_workload in include_workload_selectors
+        for workload in benchmark_test_support.selected_manifest_workloads(
+            manifest_path,
+            include_workload=include_workload,
+        )
+    )
+    if (
+        tuple(workload.workload_id for workload in source_workloads)
+        != expected_source_workload_ids
+    ):
+        raise AssertionError(drift_message)
+    return source_workloads
+
+
+def find_workload_record(scorecard: dict[str, Any], workload_id: str) -> dict[str, Any]:
+    for workload in scorecard["workloads"]:
+        if str(workload["id"]) == workload_id:
+            return workload
+    raise AssertionError(f"missing workload record for {workload_id!r}")
+
+
+def find_workload_document(
+    manifest: BenchmarkManifest,
+    workload_id: str,
+) -> Workload:
+    for workload in manifest.workloads:
+        if workload.workload_id == workload_id:
+            return workload
+    raise AssertionError(
+        f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"
+    )
+
+
+def assert_manifest_workload_contracts(
+    testcase: Any,
+    manifest: BenchmarkManifest,
+    scorecard: dict[str, Any],
+    workload_expectations: Iterable[tuple[str, str]],
+    *,
+    subtest_label: str | None = None,
+) -> None:
+    manifest_id = manifest.manifest_id
+    for workload_id, expected_status in workload_expectations:
+        if subtest_label is None:
+            assert_benchmark_workload_contract(
+                testcase,
+                find_workload_record(scorecard, workload_id),
+                manifest_id=manifest_id,
+                workload_document=find_workload_document(manifest, workload_id),
+                expected_status=expected_status,
+            )
+            continue
+
+        with testcase.subTest(**{subtest_label: workload_id}):
+            assert_benchmark_workload_contract(
+                testcase,
+                find_workload_record(scorecard, workload_id),
+                manifest_id=manifest_id,
+                workload_document=find_workload_document(manifest, workload_id),
+                expected_status=expected_status,
+            )
+
+
+def assert_benchmark_workload_contract(
+    testcase: Any,
+    workload_record: dict[str, Any],
+    *,
+    manifest_id: str,
+    workload_document: Workload,
+    expected_status: str,
+) -> None:
+    workload_payload = workload_to_payload(workload_document)
+    expected_syntax_features = workload_payload.get(
+        "syntax_features",
+        workload_payload.get("categories", []),
+    )
+    testcase.assertEqual(workload_record["manifest_id"], manifest_id)
+    testcase.assertEqual(
+        workload_record["family"],
+        workload_payload.get("family", "parser"),
+    )
+    testcase.assertEqual(workload_record["operation"], workload_payload["operation"])
+    testcase.assertEqual(workload_record["pattern"], workload_payload.get("pattern", ""))
+    testcase.assertEqual(workload_record["haystack"], workload_payload.get("haystack"))
+    testcase.assertEqual(
+        workload_record["replacement"],
+        workload_payload.get("replacement"),
+    )
+    testcase.assertEqual(workload_record["flags"], workload_payload.get("flags", 0))
+    testcase.assertEqual(workload_record["count"], workload_payload.get("count", 0))
+    testcase.assertEqual(
+        workload_record["maxsplit"],
+        workload_payload.get("maxsplit", 0),
+    )
+    testcase.assertEqual(
+        workload_record.get("pos"),
+        workload_payload.get("pos"),
+    )
+    testcase.assertEqual(
+        workload_record.get("endpos"),
+        workload_payload.get("endpos"),
+    )
+    testcase.assertEqual(
+        workload_record.get("kwargs"),
+        workload_payload.get("kwargs"),
+    )
+    testcase.assertEqual(
+        workload_record["text_model"],
+        workload_payload.get("text_model", "str"),
+    )
+    testcase.assertEqual(
+        workload_record.get("haystack_text_model"),
+        workload_payload.get("haystack_text_model"),
+    )
+    testcase.assertEqual(workload_record["cache_mode"], workload_payload["cache_mode"])
+    testcase.assertEqual(
+        workload_record["timing_scope"],
+        workload_payload.get("timing_scope", "compile-path-proxy"),
+    )
+    testcase.assertEqual(workload_record["syntax_features"], expected_syntax_features)
+    testcase.assertEqual(workload_record["status"], expected_status)
+    testcase.assertEqual(
+        workload_record["baseline_timing"]["status"],
+        "measured",
+    )
+    testcase.assertGreater(workload_record["baseline_ns"], 0)
+    testcase.assertGreater(workload_record["baseline_ops_per_second"], 0)
+    testcase.assertEqual(
+        workload_record["implementation_timing"]["status"],
+        expected_status,
+    )
+    if expected_status == "measured":
+        testcase.assertGreater(workload_record["implementation_ns"], 0)
+        testcase.assertGreater(workload_record["implementation_ops_per_second"], 0)
+        testcase.assertIsInstance(workload_record["speedup_vs_cpython"], float)
+    else:
+        testcase.assertIsNone(workload_record["implementation_ns"])
+        testcase.assertIsNone(workload_record["implementation_ops_per_second"])
+        testcase.assertIsNone(workload_record["speedup_vs_cpython"])
 
 
 def _is_module_workflow_compiled_pattern_workload(workload: Any) -> bool:
@@ -418,7 +583,7 @@ def published_case_ids_by_signature(
 ) -> dict[tuple[Any, ...], tuple[str, ...]]:
     case_ids_by_signature: dict[tuple[Any, ...], list[str]] = {}
 
-    for case in benchmark_test_support.published_cases_by_id().values():
+    for case in published_cases_by_id().values():
         signature = case_signature(case)
         if signature is None:
             continue
@@ -482,7 +647,7 @@ def expected_anchored_workload_case_pairs(
         ),
         id_attr="workload_id",
     )
-    published_cases = benchmark_test_support.published_cases_by_id()
+    published_cases = published_cases_by_id()
     anchored_pairs: list[benchmark_test_support.AnchoredWorkloadCasePair] = []
 
     for (expected_manifest_name, workload_id), case_ids in expected_anchor_case_ids.items():
@@ -576,7 +741,7 @@ def assert_zero_gap_manifest_workloads_measured(
     elif len(expected_measured_workload_ids) > 1:
         subtest_label = "workload_id"
 
-    benchmark_test_support.assert_manifest_workload_contracts(
+    assert_manifest_workload_contracts(
         testcase,
         manifest,
         scorecard,
@@ -990,7 +1155,7 @@ def _is_module_workflow_compiled_pattern_compile_keyword_workload(
 
 
 def _pattern_boundary_wrong_text_model_source_workloads() -> tuple[Any, ...]:
-    return benchmark_test_support._contract_source_workloads(
+    return _contract_source_workloads(
         manifest_path=PATTERN_BOUNDARY_MANIFEST_PATH,
         include_workload_selectors=(_is_pattern_boundary_wrong_text_model_workload,),
         expected_source_workload_ids=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS,
@@ -1776,14 +1941,11 @@ def _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
     assert manifest_summary["workload_count"] == expected_workload_count
 
     for workload_id in expected_measured_workload_ids:
-        benchmark_test_support.assert_benchmark_workload_contract(
+        assert_benchmark_workload_contract(
             testcase,
-            benchmark_test_support.find_workload_record(scorecard, workload_id),
+            find_workload_record(scorecard, workload_id),
             manifest_id=owner_spec.contract_manifest_id,
-            workload_document=benchmark_test_support.find_workload_document(
-                manifest,
-                workload_id,
-            ),
+            workload_document=find_workload_document(manifest, workload_id),
             expected_status="measured",
         )
 
@@ -5409,7 +5571,7 @@ class CompiledPatternModuleSuccessOwnerSpec:
     preserve_replacement_payload_typing: bool
 
     def source_workloads(self) -> tuple[Workload, ...]:
-        return benchmark_test_support._contract_source_workloads(
+        return _contract_source_workloads(
             manifest_path=self.manifest_path,
             include_workload_selectors=self.include_workload_selectors,
             expected_source_workload_ids=self.expected_source_workload_ids,
@@ -5613,7 +5775,7 @@ class CompiledPatternModuleCompileContractCase:
         )
 
     def source_workloads(self) -> tuple[Workload, ...]:
-        return benchmark_test_support._contract_source_workloads(
+        return _contract_source_workloads(
             manifest_path=self.manifest_path,
             include_workload_selectors=self.source_selectors,
             expected_source_workload_ids=self.expected_source_workload_ids(),
@@ -7565,7 +7727,7 @@ def _is_collection_replacement_pattern_helper_keyword_error_workload(
     )
 
 
-_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = benchmark_test_support._contract_source_workloads(
+_PATTERN_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _contract_source_workloads(
     manifest_path=benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
     include_workload_selectors=(
         _is_collection_replacement_pattern_helper_keyword_error_workload,
@@ -7612,7 +7774,7 @@ def _is_collection_replacement_module_helper_keyword_error_workload(
     )
 
 
-_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = benchmark_test_support._contract_source_workloads(
+_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = _contract_source_workloads(
     manifest_path=benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
     include_workload_selectors=(
         _is_module_workflow_keyword_error_workload,
@@ -7622,7 +7784,7 @@ _MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS = benchmark_test_support._contract
         "module helper keyword-error surface drifted from the live source "
         "workload surface"
     ),
-) + benchmark_test_support._contract_source_workloads(
+) + _contract_source_workloads(
     manifest_path=benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
     include_workload_selectors=(
         _is_collection_replacement_module_helper_keyword_error_workload,
@@ -7928,7 +8090,7 @@ def _is_collection_replacement_pattern_wrong_text_model_workload(
 
 
 _COLLECTION_REPLACEMENT_WRONG_TEXT_MODEL_SOURCE_WORKLOADS = (
-    benchmark_test_support._contract_source_workloads(
+    _contract_source_workloads(
         manifest_path=benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
         include_workload_selectors=(
             _is_collection_replacement_pattern_wrong_text_model_workload,
@@ -12594,7 +12756,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
         self.assertEqual(manifest_summary["known_gap_count"], 0)
         self.assertEqual(manifest_summary["measured_workloads"], 8)
 
-        benchmark_test_support.assert_manifest_workload_contracts(
+        assert_manifest_workload_contracts(
             self,
             scorecard_case.manifest_for_id("regression-matrix"),
             scorecard,
@@ -12780,7 +12942,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                         )
                     )
 
-                benchmark_test_support.assert_manifest_workload_contracts(
+                assert_manifest_workload_contracts(
                     self,
                     case.target_manifest,
                     scorecard,
@@ -12864,7 +13026,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
                             {workload["id"] for workload in scorecard_rows},
                             set(expectation.expected_workload_ids),
                         )
-                        benchmark_test_support.assert_manifest_workload_contracts(
+                        assert_manifest_workload_contracts(
                             self,
                             case.target_manifest,
                             scorecard,
@@ -12908,7 +13070,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             len(case.target_manifest.workloads),
         )
 
-        benchmark_test_support.assert_manifest_workload_contracts(
+        assert_manifest_workload_contracts(
             self,
             case.target_manifest,
             scorecard,
@@ -14747,17 +14909,14 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                             workload_id=workload_id,
                             expected_status=expected_status,
                         ):
-                            workload_record = benchmark_test_support.find_workload_record(
-                                scorecard,
-                                workload_id,
-                            )
+                            workload_record = find_workload_record(scorecard, workload_id)
                             manifest_id = workload_record["manifest_id"]
                             manifest = case.manifest_for_id(manifest_id)
-                            benchmark_test_support.assert_benchmark_workload_contract(
+                            assert_benchmark_workload_contract(
                                 self,
                                 workload_record,
                                 manifest_id=manifest_id,
-                                workload_document=benchmark_test_support.find_workload_document(
+                                workload_document=find_workload_document(
                                     manifest,
                                     workload_id,
                                 ),

@@ -26,7 +26,6 @@ from rebar_harness.benchmarks import (
     workload_from_payload,
     workload_to_payload,
 )
-from rebar_harness.correctness import published_fixture_manifests
 from rebar_harness.scorecard_io import build_cpython_baseline
 from tests.conftest import REPO_ROOT, records_by_string_id
 from tests.python.fixture_parity_support import (
@@ -274,21 +273,6 @@ def live_manifest_workloads(
     return tuple(workloads_by_id[workload_id] for workload_id in workload_ids)
 
 
-@cache
-def published_cases_by_id() -> dict[str, Any]:
-    return records_by_string_id(
-        (
-            case
-            for manifest in published_fixture_manifests()
-            for case in manifest.cases
-        ),
-        id_attr="case_id",
-        duplicate_error=lambda duplicate_ids: AssertionError(
-            f"duplicate published correctness case id {duplicate_ids[0]!r}"
-        ),
-    )
-
-
 def _clear_cached_functions(functions: Iterable[object]) -> None:
     for function in functions:
         cache_clear = getattr(function, "cache_clear", None)
@@ -301,7 +285,6 @@ def _clear_anchor_support_caches() -> None:
         (
             manifest_workloads,
             _live_manifest_workloads_by_id,
-            published_cases_by_id,
         )
     )
     _clear_cached_functions(vars(benchmark_test_support).values())
@@ -310,29 +293,6 @@ def _clear_anchor_support_caches() -> None:
     )
     if combined_suite is not None:
         _clear_cached_functions(vars(combined_suite).values())
-
-
-def _contract_source_workloads(
-    *,
-    manifest_path: pathlib.Path,
-    include_workload_selectors: tuple[Callable[[Any], bool], ...],
-    expected_source_workload_ids: tuple[str, ...],
-    drift_message: str,
-) -> tuple[Workload, ...]:
-    source_workloads = tuple(
-        workload
-        for include_workload in include_workload_selectors
-        for workload in selected_manifest_workloads(
-            manifest_path,
-            include_workload=include_workload,
-        )
-    )
-    if (
-        tuple(workload.workload_id for workload in source_workloads)
-        != expected_source_workload_ids
-    ):
-        raise AssertionError(drift_message)
-    return source_workloads
 
 
 COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
@@ -499,134 +459,6 @@ def assert_benchmark_workload_matches_expected_result(
         "unexpected anchored benchmark workload operation "
         f"{workload.operation!r}"
     )
-
-
-def find_workload_record(scorecard: dict[str, Any], workload_id: str) -> dict[str, Any]:
-    for workload in scorecard["workloads"]:
-        if str(workload["id"]) == workload_id:
-            return workload
-    raise AssertionError(f"missing workload record for {workload_id!r}")
-
-
-def find_workload_document(
-    manifest: BenchmarkManifest,
-    workload_id: str,
-) -> Workload:
-    for workload in manifest.workloads:
-        if workload.workload_id == workload_id:
-            return workload
-    raise AssertionError(
-        f"missing workload definition {workload_id!r} in {manifest.manifest_id!r}"
-    )
-
-
-def assert_manifest_workload_contracts(
-    testcase: Any,
-    manifest: BenchmarkManifest,
-    scorecard: dict[str, Any],
-    workload_expectations: Iterable[tuple[str, str]],
-    *,
-    subtest_label: str | None = None,
-) -> None:
-    manifest_id = manifest.manifest_id
-    for workload_id, expected_status in workload_expectations:
-        if subtest_label is None:
-            assert_benchmark_workload_contract(
-                testcase,
-                find_workload_record(scorecard, workload_id),
-                manifest_id=manifest_id,
-                workload_document=find_workload_document(manifest, workload_id),
-                expected_status=expected_status,
-            )
-            continue
-
-        with testcase.subTest(**{subtest_label: workload_id}):
-            assert_benchmark_workload_contract(
-                testcase,
-                find_workload_record(scorecard, workload_id),
-                manifest_id=manifest_id,
-                workload_document=find_workload_document(manifest, workload_id),
-                expected_status=expected_status,
-            )
-
-
-def assert_benchmark_workload_contract(
-    testcase: Any,
-    workload_record: dict[str, Any],
-    *,
-    manifest_id: str,
-    workload_document: Workload,
-    expected_status: str,
-) -> None:
-    workload_payload = workload_to_payload(workload_document)
-    expected_syntax_features = workload_payload.get(
-        "syntax_features",
-        workload_payload.get("categories", []),
-    )
-    testcase.assertEqual(workload_record["manifest_id"], manifest_id)
-    testcase.assertEqual(
-        workload_record["family"],
-        workload_payload.get("family", "parser"),
-    )
-    testcase.assertEqual(workload_record["operation"], workload_payload["operation"])
-    testcase.assertEqual(workload_record["pattern"], workload_payload.get("pattern", ""))
-    testcase.assertEqual(workload_record["haystack"], workload_payload.get("haystack"))
-    testcase.assertEqual(
-        workload_record["replacement"],
-        workload_payload.get("replacement"),
-    )
-    testcase.assertEqual(workload_record["flags"], workload_payload.get("flags", 0))
-    testcase.assertEqual(workload_record["count"], workload_payload.get("count", 0))
-    testcase.assertEqual(
-        workload_record["maxsplit"],
-        workload_payload.get("maxsplit", 0),
-    )
-    testcase.assertEqual(
-        workload_record.get("pos"),
-        workload_payload.get("pos"),
-    )
-    testcase.assertEqual(
-        workload_record.get("endpos"),
-        workload_payload.get("endpos"),
-    )
-    testcase.assertEqual(
-        workload_record.get("kwargs"),
-        workload_payload.get("kwargs"),
-    )
-    testcase.assertEqual(
-        workload_record["text_model"],
-        workload_payload.get("text_model", "str"),
-    )
-    testcase.assertEqual(
-        workload_record.get("haystack_text_model"),
-        workload_payload.get("haystack_text_model"),
-    )
-    testcase.assertEqual(workload_record["cache_mode"], workload_payload["cache_mode"])
-    testcase.assertEqual(
-        workload_record["timing_scope"],
-        workload_payload.get("timing_scope", "compile-path-proxy"),
-    )
-    testcase.assertEqual(workload_record["syntax_features"], expected_syntax_features)
-    testcase.assertEqual(workload_record["status"], expected_status)
-    testcase.assertEqual(
-        workload_record["baseline_timing"]["status"],
-        "measured",
-    )
-    testcase.assertGreater(workload_record["baseline_ns"], 0)
-    testcase.assertGreater(workload_record["baseline_ops_per_second"], 0)
-    testcase.assertEqual(
-        workload_record["implementation_timing"]["status"],
-        expected_status,
-    )
-    if expected_status == "measured":
-        testcase.assertGreater(workload_record["implementation_ns"], 0)
-        testcase.assertGreater(workload_record["implementation_ops_per_second"], 0)
-        testcase.assertIsInstance(workload_record["speedup_vs_cpython"], float)
-    else:
-        testcase.assertIsNone(workload_record["implementation_ns"])
-        testcase.assertIsNone(workload_record["implementation_ops_per_second"])
-        testcase.assertIsNone(workload_record["speedup_vs_cpython"])
-
 
 def _write_test_manifest(
     tmp_path: pathlib.Path,
