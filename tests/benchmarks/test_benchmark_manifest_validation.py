@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import pathlib
 import re
+import textwrap
 
 import pytest
 
@@ -14,7 +15,16 @@ from rebar_harness.benchmarks import (
     workload_from_payload,
     workload_to_payload,
 )
-from tests.benchmarks import benchmark_test_support
+
+
+def _write_test_manifest(
+    tmp_path: pathlib.Path,
+    filename: str,
+    source: str,
+) -> pathlib.Path:
+    path = tmp_path / filename
+    path.write_text(textwrap.dedent(source), encoding="utf-8")
+    return path
 
 
 def _validation_payload(**overrides: object) -> dict[str, object]:
@@ -38,7 +48,7 @@ def _assert_manifest_and_payload_entry_points_raise(
     payload: dict[str, object],
     error_pattern: str,
 ) -> None:
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         filename,
         manifest_source,
@@ -93,7 +103,7 @@ def test_standard_benchmark_manifest_materializes_nested_constant_bytes_without_
     }
     """
 
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         "python_benchmark_nested_constant_contract.py",
         manifest_source,
@@ -237,7 +247,7 @@ def test_standard_benchmark_manifest_materializes_callable_replacement_descripto
     }
     """
 
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         "python_benchmark_loader_contract.py",
         manifest_source,
@@ -400,11 +410,11 @@ def test_standard_benchmark_manifest_loader_rejects_duplicate_ids(
     )
 
     for first_module, second_module, error_pattern in duplicate_modules:
-        first_path = benchmark_test_support._write_test_manifest(
+        first_path = _write_test_manifest(
             tmp_path,
             *first_module,
         )
-        second_path = benchmark_test_support._write_test_manifest(
+        second_path = _write_test_manifest(
             tmp_path,
             *second_module,
         )
@@ -472,7 +482,7 @@ def test_standard_benchmark_manifest_materializes_bytes_template_replacements_fo
     }
     """
 
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         "python_benchmark_bytes_template_contract.py",
         manifest_source,
@@ -527,7 +537,7 @@ def test_standard_benchmark_manifest_replacement_payload_rejects_unsupported_tex
     }
     """
 
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         "python_benchmark_invalid_text_model_contract.py",
         manifest_source,
@@ -555,7 +565,7 @@ def test_standard_benchmark_manifest_rejects_missing_and_non_dict_manifest_value
     )
 
     for filename, source, error_pattern in invalid_modules:
-        manifest_path = benchmark_test_support._write_test_manifest(
+        manifest_path = _write_test_manifest(
             tmp_path,
             filename,
             source,

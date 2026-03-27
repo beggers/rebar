@@ -6,6 +6,7 @@ import json
 import pathlib
 import re
 import shutil
+import textwrap
 from typing import Any
 from unittest import mock
 
@@ -25,7 +26,6 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from rebar_harness.scorecard_io import ordered_published_subset_filenames
-from tests.benchmarks import benchmark_test_support
 from tests.conftest import (
     REPO_ROOT,
     assert_declared_string_selector_registry_contract,
@@ -53,6 +53,38 @@ CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH = (
 NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "nested_group_callable_replacement_boundary.py"
 )
+
+
+def _resolve_manifest_path(manifest_path: pathlib.Path | str) -> pathlib.Path:
+    if isinstance(manifest_path, pathlib.Path):
+        return manifest_path
+    return BENCHMARK_WORKLOADS_ROOT / manifest_path
+
+
+@cache
+def _manifest_workloads(manifest_path: pathlib.Path | str) -> tuple[Workload, ...]:
+    return tuple(load_manifest(_resolve_manifest_path(manifest_path)).workloads)
+
+
+def _live_manifest_workloads(
+    manifest_path: pathlib.Path | str,
+    workload_ids: tuple[str, ...],
+) -> tuple[Workload, ...]:
+    workloads_by_id = {
+        workload.workload_id: workload
+        for workload in _manifest_workloads(manifest_path)
+    }
+    return tuple(workloads_by_id[workload_id] for workload_id in workload_ids)
+
+
+def _write_test_manifest(
+    tmp_path: pathlib.Path,
+    filename: str,
+    source: str,
+) -> pathlib.Path:
+    path = tmp_path / filename
+    path.write_text(textwrap.dedent(source), encoding="utf-8")
+    return path
 
 
 def _tracked_benchmark_manifest_paths() -> tuple[pathlib.Path, ...]:
@@ -739,7 +771,7 @@ def test_standard_benchmark_manifest_selected_workloads_preserves_filters_and_or
     }
     """
 
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         "python_benchmark_selection_contract.py",
         manifest_source,
@@ -840,7 +872,7 @@ def test_standard_benchmark_manifest_measures_expected_exception_workloads(
     }
     """
 
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         "python_benchmark_exception_contract.py",
         manifest_source,
@@ -999,7 +1031,7 @@ def test_run_internal_workload_probe_reports_unsupported_operations_as_unavailab
     }
     """
 
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         "python_benchmark_unsupported_operation_contract.py",
         manifest_source,
@@ -1020,7 +1052,7 @@ def test_run_internal_workload_probe_reports_unsupported_operations_as_unavailab
 @cache
 def _nested_group_callable_replacement_quantified_branch_local_backreference_bytes_workloads(
 ) -> tuple[Workload, ...]:
-    return benchmark_test_support.live_manifest_workloads(
+    return _live_manifest_workloads(
         NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH,
         (
             "module-sub-callable-numbered-quantified-nested-group-alternation-branch-local-backreference-lower-bound-b-branch-warm-bytes",
@@ -1113,7 +1145,7 @@ def _conditional_group_exists_callable_negative_count_str_workloads() -> tuple[W
             "suffix": "x",
         }
     )
-    return benchmark_test_support.live_manifest_workloads(
+    return _live_manifest_workloads(
         CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
         workload_ids,
     )
@@ -1135,7 +1167,7 @@ def _conditional_group_exists_callable_none_count_workloads() -> tuple[Workload,
             "message_substring": "NoneType",
         }
     )
-    return benchmark_test_support.live_manifest_workloads(
+    return _live_manifest_workloads(
         CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH,
         workload_ids,
     )
@@ -1476,7 +1508,7 @@ def test_published_benchmark_manifests_cache_clear_reloads_current_default_selec
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: pathlib.Path,
 ) -> None:
-    first_path = benchmark_test_support._write_test_manifest(
+    first_path = _write_test_manifest(
         tmp_path,
         "cached_benchmark_manifest_a.py",
         """
@@ -1494,7 +1526,7 @@ def test_published_benchmark_manifests_cache_clear_reloads_current_default_selec
         }
         """,
     )
-    second_path = benchmark_test_support._write_test_manifest(
+    second_path = _write_test_manifest(
         tmp_path,
         "cached_benchmark_manifest_b.py",
         """
@@ -1663,7 +1695,7 @@ def test_run_benchmarks_rejects_smoke_only_selection_without_smoke_workloads(
     }
     """
 
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         "python_benchmark_no_smoke_selection_contract.py",
         manifest_source,

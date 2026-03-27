@@ -677,14 +677,6 @@ def test_run_harness_scorecard_loads_python_benchmark_reports_uses_owner_local_m
 
 def test_run_harness_scorecard_compile_manifest_path_constant_stays_owner_local() -> None:
     module_ast = ast.parse(inspect.getsource(sys.modules[__name__]))
-    imported_compile_manifest_names = tuple(
-        alias.asname or alias.name
-        for node in module_ast.body
-        if isinstance(node, ast.ImportFrom)
-        and node.module == "tests.benchmarks.benchmark_test_support"
-        for alias in node.names
-        if alias.name == "COMPILE_MATRIX_MANIFEST_PATH"
-    )
     assigned_names = {
         target.id
         for node in module_ast.body
@@ -693,7 +685,6 @@ def test_run_harness_scorecard_compile_manifest_path_constant_stays_owner_local(
         if isinstance(target, ast.Name)
     }
 
-    assert imported_compile_manifest_names == ()
     assert "COMPILE_MATRIX_MANIFEST_PATH" in assigned_names
     assert COMPILE_MATRIX_MANIFEST_PATH == (
         REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"

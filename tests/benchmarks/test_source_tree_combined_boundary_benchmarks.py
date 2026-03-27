@@ -7,6 +7,7 @@ from functools import cache, partial
 import json
 import pathlib
 import re
+import textwrap
 from types import SimpleNamespace
 import unittest
 from typing import Any
@@ -16,6 +17,7 @@ import pytest
 from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
     BenchmarkManifest,
+    BENCHMARK_WORKLOADS_ROOT,
     Workload,
     determine_phase,
     determine_runner_version,
@@ -26,7 +28,6 @@ from rebar_harness.benchmarks import (
 )
 from rebar_harness.correctness import published_fixture_manifests
 from rebar_harness.scorecard_io import build_cpython_baseline
-from tests.benchmarks import benchmark_test_support
 from tests.conftest import (
     REPO_ROOT,
     records_by_string_id,
@@ -283,12 +284,44 @@ class RecordingBenchmarkModule:
         return ("module-result", 0)
 
 
+def _resolve_manifest_path(manifest_path: pathlib.Path | str) -> pathlib.Path:
+    if isinstance(manifest_path, pathlib.Path):
+        return manifest_path
+    return BENCHMARK_WORKLOADS_ROOT / manifest_path
+
+
+@cache
+def _manifest_workloads(manifest_path: pathlib.Path | str) -> tuple[Workload, ...]:
+    return tuple(load_manifest(_resolve_manifest_path(manifest_path)).workloads)
+
+
+def _live_manifest_workloads(
+    manifest_path: pathlib.Path | str,
+    workload_ids: tuple[str, ...],
+) -> tuple[Workload, ...]:
+    workloads_by_id = {
+        workload.workload_id: workload
+        for workload in _manifest_workloads(manifest_path)
+    }
+    return tuple(workloads_by_id[workload_id] for workload_id in workload_ids)
+
+
+def _write_test_manifest(
+    tmp_path: pathlib.Path,
+    filename: str,
+    source: str,
+) -> pathlib.Path:
+    path = tmp_path / filename
+    path.write_text(textwrap.dedent(source), encoding="utf-8")
+    return path
+
+
 def selected_manifest_workloads(
     manifest_path: pathlib.Path | str,
     *,
     include_workload: Any | None = None,
 ) -> tuple[benchmarks.Workload, ...]:
-    workloads = benchmark_test_support.manifest_workloads(manifest_path)
+    workloads = _manifest_workloads(manifest_path)
     if include_workload is None:
         return workloads
     return tuple(workload for workload in workloads if include_workload(workload))
@@ -1127,7 +1160,7 @@ def assert_zero_gap_manifest_workloads_measured(
         if isinstance(manifest_path, pathlib.Path)
         else benchmarks.BENCHMARK_WORKLOADS_ROOT / manifest_path
     )
-    manifest = benchmark_test_support.load_manifest(resolved_manifest_path)
+    manifest = load_manifest(resolved_manifest_path)
     _, scorecard = shared_run_harness_scorecard(
         "rebar_harness.benchmarks",
         ["--manifest", str(resolved_manifest_path)],
@@ -2324,7 +2357,7 @@ def _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
     include_workload: Callable[[Any], bool],
 ) -> None:
     testcase = unittest.TestCase()
-    manifest = benchmark_test_support.load_manifest(owner_spec.manifest_path)
+    manifest = load_manifest(owner_spec.manifest_path)
     expected_measured_workload_ids = tuple(
         workload.workload_id
         for workload in owner_spec.source_workloads()
@@ -2337,7 +2370,7 @@ def _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
 
     assert selected_measured_workload_ids == expected_measured_workload_ids
 
-    _, scorecard = benchmark_test_support.run_harness_scorecard(
+    _, scorecard = run_harness_scorecard(
         "rebar_harness.benchmarks",
         ["--manifest", str(owner_spec.manifest_path)],
         report_name="benchmarks.json",
@@ -10596,13 +10629,13 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 _CONDITIONAL_GROUP_EXISTS_CALLABLE_REPLACEMENT_EXPECTATIONS
             )
         }
-        minimal_callable_workloads = benchmark_test_support.live_manifest_workloads(
+        minimal_callable_workloads = _live_manifest_workloads(
             "conditional_group_exists_boundary.py",
             callable_expectations["minimal-callable-replacement-rows"]
             + callable_expectations["minimal-callable-replacement-exception-rows"],
         )
         callable_none_count_candidate_workloads = (
-            benchmark_test_support.live_manifest_workloads(
+            _live_manifest_workloads(
                 "conditional_group_exists_boundary.py",
                 callable_expectations[
                     "minimal-callable-replacement-none-count-exception-rows"
@@ -10610,14 +10643,14 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 + callable_expectations["alternation-heavy-callable-replacement-rows"],
             )
         )
-        alternation_workloads = benchmark_test_support.live_manifest_workloads(
+        alternation_workloads = _live_manifest_workloads(
             "conditional_group_exists_boundary.py",
             callable_expectations["alternation-heavy-callable-replacement-rows"],
         )
         template_workload_ids = (
             _CONDITIONAL_GROUP_EXISTS_TEMPLATE_REPLACEMENT_EXPECTATION.expected_workload_ids
         )
-        template_workloads = benchmark_test_support.live_manifest_workloads(
+        template_workloads = _live_manifest_workloads(
             "conditional_group_exists_boundary.py",
             template_workload_ids,
         )
@@ -11571,7 +11604,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_nested_callable_str_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = benchmark_test_support.live_manifest_workloads(
+        source_workloads = _live_manifest_workloads(
             benchmarks.BENCHMARK_WORKLOADS_ROOT
             / "conditional_group_exists_boundary.py",
             CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
@@ -11644,7 +11677,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_nested_callable_bytes_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = benchmark_test_support.live_manifest_workloads(
+        source_workloads = _live_manifest_workloads(
             benchmarks.BENCHMARK_WORKLOADS_ROOT
             / "conditional_group_exists_boundary.py",
             CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
@@ -11750,12 +11783,12 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         workloads = (
-            benchmark_test_support.live_manifest_workloads(
+            _live_manifest_workloads(
                 benchmarks.BENCHMARK_WORKLOADS_ROOT
                 / "conditional_group_exists_boundary.py",
                 CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_STR_WORKLOAD_IDS,
             )
-            + benchmark_test_support.live_manifest_workloads(
+            + _live_manifest_workloads(
                 benchmarks.BENCHMARK_WORKLOADS_ROOT
                 / "conditional_group_exists_boundary.py",
                 CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
@@ -11790,7 +11823,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_quantified_callable_str_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = benchmark_test_support.live_manifest_workloads(
+        source_workloads = _live_manifest_workloads(
             benchmarks.BENCHMARK_WORKLOADS_ROOT
             / "conditional_group_exists_boundary.py",
             CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
@@ -11863,7 +11896,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_quantified_callable_bytes_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = benchmark_test_support.live_manifest_workloads(
+        source_workloads = _live_manifest_workloads(
             benchmarks.BENCHMARK_WORKLOADS_ROOT
             / "conditional_group_exists_boundary.py",
             CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
@@ -11932,12 +11965,12 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
         self,
     ) -> None:
         workloads = (
-            benchmark_test_support.live_manifest_workloads(
+            _live_manifest_workloads(
                 benchmarks.BENCHMARK_WORKLOADS_ROOT
                 / "conditional_group_exists_boundary.py",
                 CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_STR_WORKLOAD_IDS,
             )
-            + benchmark_test_support.live_manifest_workloads(
+            + _live_manifest_workloads(
                 benchmarks.BENCHMARK_WORKLOADS_ROOT
                 / "conditional_group_exists_boundary.py",
                 CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
@@ -11972,7 +12005,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_callable_str_slice_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = benchmark_test_support.live_manifest_workloads(
+        source_workloads = _live_manifest_workloads(
             benchmarks.BENCHMARK_WORKLOADS_ROOT
             / "conditional_group_exists_boundary.py",
             tuple(
@@ -12057,7 +12090,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_callable_bytes_slice_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        source_workloads = benchmark_test_support.live_manifest_workloads(
+        source_workloads = _live_manifest_workloads(
             benchmarks.BENCHMARK_WORKLOADS_ROOT
             / "conditional_group_exists_boundary.py",
             tuple(
@@ -12141,7 +12174,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
     def test_conditional_group_exists_alternation_callable_bytes_workloads_round_trip_preserves_outcomes(
         self,
     ) -> None:
-        for source_workload in benchmark_test_support.live_manifest_workloads(
+        for source_workload in _live_manifest_workloads(
             benchmarks.BENCHMARK_WORKLOADS_ROOT
             / "conditional_group_exists_boundary.py",
             CONDITIONAL_GROUP_EXISTS_CALLABLE_ALTERNATION_BYTES_WORKLOAD_IDS,
@@ -12833,7 +12866,7 @@ def test_compiled_pattern_module_compile_contract_rows_stay_anchored_to_publishe
         anchor_lane.source_workloads,
         spec=contract_case.contract_builder_spec(),
     )
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         anchor_lane.contract_filename,
         f"MANIFEST = {manifest!r}\n",
@@ -15454,7 +15487,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_validation_accepts_b
         (source_workload,),
         spec=case_group.contract_builder_spec(),
     )
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         "python_benchmark_compiled_pattern_module_compile_ignorecase_validation_contract.py",
         f"MANIFEST = {manifest!r}\n",
@@ -15484,7 +15517,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_contract_rows_preser
         source_workloads,
         spec=contract_case.contract_builder_spec(),
     )
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         contract_case.contract_filename,
         f"MANIFEST = {manifest!r}\n",
@@ -15548,7 +15581,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_keyword_payload_roun
         (source_workload,),
         spec=contract_case.contract_builder_spec(),
     )
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         "python_benchmark_compiled_pattern_module_compile_keyword_type_contract.py",
         f"MANIFEST = {manifest!r}\n",
@@ -15589,7 +15622,7 @@ def test_standard_benchmark_compiled_pattern_wrong_text_model_contract_rows_pres
             str(spec["contract_manifest_id"])
         ],
     )
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         str(spec["contract_filename"]),
         f"MANIFEST = {manifest!r}\n",
@@ -15647,7 +15680,7 @@ def test_standard_benchmark_compiled_pattern_module_success_contract_rows_preser
         source_workloads,
         spec=owner_spec.contract_builder_spec(),
     )
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         owner_spec.contract_filename,
         f"MANIFEST = {manifest!r}\n",
@@ -15703,7 +15736,7 @@ def test_standard_benchmark_compiled_pattern_module_helper_keyword_contract_rows
         source_workloads,
         spec=contract_surface.spec.contract_builder_spec(),
     )
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         contract_surface.spec.contract_filename,
         f"MANIFEST = {manifest!r}\n",
@@ -15952,7 +15985,7 @@ def test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern
         (source_workload,),
         spec=_PATTERN_BOUNDARY_WRONG_TEXT_MODEL_CONTRACT_SPEC,
     )
-    manifest_path = benchmark_test_support._write_test_manifest(
+    manifest_path = _write_test_manifest(
         tmp_path,
         f"python_benchmark_{source_workload.workload_id}_haystack_text_model_contract.py",
         f"MANIFEST = {manifest!r}\n",
