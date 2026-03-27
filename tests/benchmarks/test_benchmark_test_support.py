@@ -5328,6 +5328,80 @@ def test_standard_benchmark_manifest_params_preserve_definition_and_manifest_ord
     )
 
 
+def test_standard_benchmark_definition_includes_workload_filters_owner_scoped_rows(
+) -> None:
+    definition = collection_replacement_support.StandardBenchmarkAnchorContractDefinition(
+        name="synthetic",
+        manifest_paths=(pathlib.Path("synthetic_boundary.py"),),
+        expected_anchor_case_ids={},
+        include_workload=support._synthetic_workload_is_included,
+        correctness_case_signature=lambda case: case.signature,
+        workload_signature=support._synthetic_workload_signature,
+        expected_excluded_workload_ids=frozenset({"excluded"}),
+        expected_special_unanchored_workload_ids=("special",),
+    )
+
+    assert definition.includes_workload(
+        support._synthetic_workload("anchored", ("shared",))
+    )
+    assert not definition.includes_workload(
+        support._synthetic_workload("excluded", ("shared",))
+    )
+    assert not definition.includes_workload(
+        support._synthetic_workload("special", ("shared",))
+    )
+    assert not definition.includes_workload(
+        support._synthetic_workload("predicate-false", ("shared",), include=False)
+    )
+
+
+def test_anchor_workload_case_helpers_respect_standard_definition_scope_filter(
+    monkeypatch: pytest.MonkeyPatch,
+    anchor_support_cache_guard: None,
+) -> None:
+    manifest_path = pathlib.Path("synthetic_boundary.py")
+    workloads = (
+        support._synthetic_workload("anchored", ("shared",)),
+        support._synthetic_workload("unanchored", ("missing",)),
+        support._synthetic_workload("excluded", ("shared",)),
+        support._synthetic_workload("special", ("shared",)),
+        support._synthetic_workload("predicate-false", ("missing",), include=False),
+    )
+    definition = collection_replacement_support.StandardBenchmarkAnchorContractDefinition(
+        name="synthetic",
+        manifest_paths=(manifest_path,),
+        expected_anchor_case_ids={},
+        include_workload=support._synthetic_workload_is_included,
+        correctness_case_signature=lambda case: case.signature,
+        workload_signature=support._synthetic_workload_signature,
+        expected_excluded_workload_ids=frozenset({"excluded"}),
+        expected_special_unanchored_workload_ids=("special",),
+    )
+    monkeypatch.setattr(
+        support,
+        "load_manifest",
+        lambda path: support._synthetic_manifest_loader(path, workloads=workloads),
+    )
+
+    anchor_case_ids = {("shared",): ("case-a",)}
+
+    assert collection_replacement_support.anchored_workload_case_ids(
+        manifest_path,
+        anchor_case_ids=anchor_case_ids,
+        workload_signature=definition.workload_signature,
+        include_workload=definition.includes_workload,
+    ) == {
+        ("synthetic_boundary.py", "anchored"): ("case-a",),
+        ("synthetic_boundary.py", "unanchored"): (),
+    }
+    assert collection_replacement_support.unanchored_workload_ids(
+        manifest_path,
+        anchor_case_ids=anchor_case_ids,
+        workload_signature=definition.workload_signature,
+        include_workload=definition.includes_workload,
+    ) == ("unanchored",)
+
+
 def test_standard_benchmark_special_unanchored_result_parity_params_preserve_order() -> None:
     standard_definitions = _explicit_standard_benchmark_definitions()
     params = collection_replacement_support._standard_benchmark_special_unanchored_result_parity_params(
