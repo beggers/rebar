@@ -19,7 +19,6 @@ from rebar_harness import correctness
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
 )
-from tests.python.fixture_parity_support import manifest_records_by_id
 
 from rebar_harness.correctness import (
     CpythonReAdapter,
@@ -34,6 +33,20 @@ from rebar_harness.correctness import (
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 TRACKED_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
+
+
+def manifest_records_by_id(manifests: Iterable[object]) -> dict[str, object]:
+    manifest_entries = tuple(manifests)
+    manifest_ids = tuple(getattr(manifest, "manifest_id") for manifest in manifest_entries)
+    duplicate_ids = tuple(
+        sorted(manifest_id for manifest_id, count in Counter(manifest_ids).items() if count > 1)
+    )
+    if duplicate_ids:
+        raise AssertionError(
+            "manifest ids must be unique; duplicate ids: "
+            f"{list(duplicate_ids)}"
+        )
+    return {manifest.manifest_id: manifest for manifest in manifest_entries}
 
 
 def run_harness_scorecard(

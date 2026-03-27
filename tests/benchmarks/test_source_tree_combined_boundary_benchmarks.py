@@ -31,24 +31,283 @@ from rebar_harness.benchmarks import (
 )
 from rebar_harness.correctness import published_fixture_manifests
 from rebar_harness.scorecard_io import build_cpython_baseline
-from tests.python.fixture_parity_support import (
-    BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
-    BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
-    BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-    OPEN_ENDED_ALTERNATION_BYTES_CASES,
-    OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
-    OPEN_ENDED_CONDITIONAL_BYTES_CASES,
-    assert_match_result_parity,
-    assert_pattern_parity,
-    case_pattern,
-    case_replacement_argument,
-    case_text_argument,
-    callable_match_group_signature,
-    records_by_string_id,
-)
+import rebar
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+_MISSING_GROUP_DEFAULT = object()
+
+
+def records_by_string_id(
+    records: Iterable[object],
+    *,
+    id_attr: str,
+    duplicate_error: Callable[[tuple[str, ...]], Exception] | None = None,
+) -> dict[str, object]:
+    record_entries = tuple(records)
+    duplicate_ids = tuple(
+        sorted(
+            item
+            for item, count in Counter(
+                getattr(record, id_attr) for record in record_entries
+            ).items()
+            if count > 1
+        )
+    )
+    if duplicate_ids:
+        if duplicate_error is not None:
+            raise duplicate_error(duplicate_ids)
+        raise AssertionError(f"{id_attr} values must be unique; duplicate ids: {list(duplicate_ids)}")
+    return {getattr(record, id_attr): record for record in record_entries}
+
+
+def case_pattern(case: Any) -> str | bytes:
+    pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
+    assert isinstance(pattern, (str, bytes))
+    return pattern
+
+
+def case_replacement_argument(case: Any) -> object:
+    if case.operation == "module_call":
+        replacement_index = 0 if case.use_compiled_pattern else 1
+        return case.args[replacement_index]
+    if case.operation == "pattern_call":
+        return case.args[0]
+    raise AssertionError(f"unsupported case operation {case.operation!r}")
+
+
+def case_text_argument(case: Any) -> str | bytes:
+    if case.operation == "module_call":
+        text_index = 1 if case.use_compiled_pattern else 2
+        text = case.args[text_index]
+    elif case.operation == "pattern_call":
+        text = case.args[1]
+    else:
+        raise AssertionError(f"unsupported case operation {case.operation!r}")
+    assert isinstance(text, (str, bytes))
+    return text
+
+
+def callable_match_group_signature(replacement: object) -> tuple[object, ...] | None:
+    if not callable(replacement):
+        return None
+    kwdefaults = getattr(replacement, "__kwdefaults__", None)
+    if not isinstance(kwdefaults, dict):
+        return None
+    return (
+        getattr(replacement, "__qualname__", getattr(replacement, "__name__", None)),
+        kwdefaults.get("_group_reference"),
+        kwdefaults.get("_prefix"),
+        kwdefaults.get("_suffix"),
+    )
+
+
+def assert_pattern_parity(
+    backend_name: str,
+    observed: object,
+    expected: re.Pattern[str] | re.Pattern[bytes],
+) -> None:
+    if backend_name == "rebar":
+        assert type(observed) is rebar.Pattern
+    else:
+        assert type(observed) is type(expected)
+
+    assert observed.pattern == expected.pattern
+    assert observed.flags == expected.flags
+    assert observed.groups == expected.groups
+    assert observed.groupindex == expected.groupindex
+
+
+def _assert_match_parity(
+    backend_name: str,
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes],
+    *,
+    check_regs: bool = False,
+) -> None:
+    if backend_name == "rebar":
+        assert type(observed) is rebar.Match
+    else:
+        assert type(observed) is type(expected)
+
+    group_indexes = tuple(range(expected.re.groups + 1))
+    mixed_group_references: list[tuple[object, ...]] = []
+    if expected.re.groups >= 1:
+        mixed_group_references.append((0, False, 1))
+
+    group_names = tuple(expected.re.groupindex)
+    if group_names:
+        first_group_name = group_names[0]
+        mixed_group_references.append((0, first_group_name))
+        mixed_group_references.append((0, 1, first_group_name))
+
+    assert observed.group(0) == expected.group(0)
+    assert observed.group(*group_indexes) == expected.group(*group_indexes)
+    for references in mixed_group_references:
+        assert observed.group(*references) == expected.group(*references)
+    for group_index in range(1, expected.re.groups + 1):
+        assert observed.group(group_index) == expected.group(group_index)
+        assert observed.span(group_index) == expected.span(group_index)
+        assert observed.start(group_index) == expected.start(group_index)
+        assert observed.end(group_index) == expected.end(group_index)
+
+    assert observed.groups() == expected.groups()
+    assert observed.groups(_MISSING_GROUP_DEFAULT) == expected.groups(
+        _MISSING_GROUP_DEFAULT
+    )
+    assert observed.groupdict() == expected.groupdict()
+    assert observed.groupdict(_MISSING_GROUP_DEFAULT) == expected.groupdict(
+        _MISSING_GROUP_DEFAULT
+    )
+    assert observed.string == expected.string
+    assert observed.pos == expected.pos
+    assert observed.endpos == expected.endpos
+    assert observed.span() == expected.span()
+    assert observed.start() == expected.start()
+    assert observed.end() == expected.end()
+    assert observed.lastindex == expected.lastindex
+    assert observed.lastgroup == expected.lastgroup
+    if check_regs:
+        assert hasattr(observed, "regs") == hasattr(expected, "regs")
+        if hasattr(expected, "regs"):
+            assert tuple(observed.regs) == tuple(expected.regs)
+    assert_pattern_parity(backend_name, observed.re, expected.re)
+
+    for group_name in expected.re.groupindex:
+        assert observed.group(group_name) == expected.group(group_name)
+        assert observed.span(group_name) == expected.span(group_name)
+        assert observed.start(group_name) == expected.start(group_name)
+        assert observed.end(group_name) == expected.end(group_name)
+
+
+def assert_match_result_parity(
+    backend_name: str,
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes] | None,
+    *,
+    check_regs: bool = False,
+) -> None:
+    if expected is None:
+        assert observed is None
+        return
+
+    assert observed is not None
+    _assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=check_regs,
+    )
+
+
+@dataclass(frozen=True)
+class SupplementalCase:
+    id: str
+    pattern: bytes
+    search_matches: tuple[bytes, ...] = ()
+    search_misses: tuple[bytes, ...] = ()
+    fullmatch_matches: tuple[bytes, ...] = ()
+    fullmatch_misses: tuple[bytes, ...] = ()
+    unsupported_backends: tuple[str, ...] = ()
+    unsupported_backend_reason: str | None = None
+
+
+OPEN_ENDED_ALTERNATION_BYTES_CASES = (
+    SupplementalCase(
+        id="open-ended-grouped-alternation-numbered-bytes",
+        pattern=rb"a(bc|de){1,}d",
+        search_matches=(b"zzabcdzz", b"zzadedzz"),
+        fullmatch_matches=(b"abcbcd", b"abcded", b"abcbcded"),
+        fullmatch_misses=(b"ad", b"abed"),
+    ),
+    SupplementalCase(
+        id="open-ended-grouped-alternation-named-bytes",
+        pattern=rb"a(?P<word>bc|de){1,}d",
+        search_matches=(b"zzabcdzz", b"zzadedzz"),
+        fullmatch_matches=(b"abcded", b"abcbcded", b"adededed"),
+        fullmatch_misses=(b"ad", b"abed"),
+    ),
+)
+OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
+    SupplementalCase(
+        id="open-ended-grouped-conditional-numbered-bytes",
+        pattern=rb"a((bc|de){1,})?(?(1)d|e)",
+        search_matches=(b"zzaezz", b"zzabcdzz", b"zzabcbcdzz", b"zzadedzz"),
+        fullmatch_matches=(b"abcded", b"abcbcded"),
+        fullmatch_misses=(b"abcde",),
+    ),
+    SupplementalCase(
+        id="open-ended-grouped-conditional-named-bytes",
+        pattern=rb"a(?P<outer>(bc|de){1,})?(?(outer)d|e)",
+        search_matches=(b"zzaezz", b"zzadedzz", b"zzadedededzz"),
+        fullmatch_matches=(b"abcbcded",),
+        fullmatch_misses=(b"ad",),
+    ),
+)
+OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
+    SupplementalCase(
+        id="open-ended-grouped-backtracking-heavy-numbered-bytes",
+        pattern=rb"a((bc|b)c){1,}d",
+        fullmatch_matches=(b"abccd", b"abcbcd", b"abcbccd"),
+        fullmatch_misses=(b"abcccd",),
+        search_matches=(b"zzabcdzz",),
+    ),
+    SupplementalCase(
+        id="open-ended-grouped-backtracking-heavy-named-bytes",
+        pattern=rb"a(?P<word>(bc|b)c){1,}d",
+        search_matches=(b"zzabccdzz", b"zzabccbcdzz", b"zzabcbccbcdzz"),
+        search_misses=(b"zzabccbdzz",),
+        fullmatch_matches=(b"abcbcbcbcd",),
+    ),
+)
+BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES = (
+    SupplementalCase(
+        id="broader-range-open-ended-grouped-alternation-numbered-bytes",
+        pattern=rb"a(bc|de){2,}d",
+        search_matches=(b"zzabcbcdzz", b"zzadededzz"),
+        fullmatch_matches=(b"abcded", b"abcbcded", b"adededed"),
+        fullmatch_misses=(b"abcd", b"ad"),
+    ),
+    SupplementalCase(
+        id="broader-range-open-ended-grouped-alternation-named-bytes",
+        pattern=rb"a(?P<word>bc|de){2,}d",
+        search_matches=(b"zzabcbcdzz", b"zzadededzz"),
+        fullmatch_matches=(b"abcded", b"abcbcded", b"adededed"),
+        fullmatch_misses=(b"abcd", b"ad"),
+    ),
+)
+BROADER_RANGE_OPEN_ENDED_CONDITIONAL_BYTES_CASES = (
+    SupplementalCase(
+        id="broader-range-open-ended-grouped-conditional-numbered-bytes",
+        pattern=rb"a((bc|de){2,})?(?(1)d|e)",
+        search_matches=(b"zzaezz", b"zzabcbcdzz", b"zzadededzz"),
+        fullmatch_matches=(b"abcded", b"abcbcded"),
+        fullmatch_misses=(b"abcdede", b"abcd"),
+    ),
+    SupplementalCase(
+        id="broader-range-open-ended-grouped-conditional-named-bytes",
+        pattern=rb"a(?P<outer>(bc|de){2,})?(?(outer)d|e)",
+        search_matches=(b"zzaezz", b"zzadededzz", b"zzadedededzz"),
+        fullmatch_matches=(b"abcbcded",),
+        fullmatch_misses=(b"ad",),
+    ),
+)
+BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES = (
+    SupplementalCase(
+        id="broader-range-open-ended-grouped-backtracking-heavy-numbered-bytes",
+        pattern=rb"a((bc|b)c){2,}d",
+        search_matches=(b"zzabcbcdzz", b"zzabcbccdzz"),
+        fullmatch_matches=(b"abccbcd", b"abcbcbcbcd"),
+        fullmatch_misses=(b"abcd", b"abccbd"),
+    ),
+    SupplementalCase(
+        id="broader-range-open-ended-grouped-backtracking-heavy-named-bytes",
+        pattern=rb"a(?P<word>(bc|b)c){2,}d",
+        search_matches=(b"zzabcbccdzz", b"zzabccbcdzz", b"zzabcbcbcbcdzz"),
+        search_misses=(b"zzabccbdzz",),
+        fullmatch_matches=(b"abcbcbcbcd",),
+    ),
+)
 
 
 def run_harness_scorecard(

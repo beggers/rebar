@@ -27,6 +27,16 @@ Created: 2026-03-27
 - `bash -lc "! rg -n 'from tests\\.python\\.fixture_parity_support import|import tests\\.python\\.fixture_parity_support|fixture_parity_support\\.' tests/benchmarks/test_benchmark_publication_runtime_contracts.py tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"`
 
 ## Notes
+- Completed 2026-03-27:
+  - Localized manifest indexing in `tests/conformance/test_combined_correctness_scorecards.py`.
+  - Localized duplicate-id, callable-signature, and pattern/match parity helpers in `tests/benchmarks/test_benchmark_publication_runtime_contracts.py`.
+  - Localized record helpers, bounded bytes supplemental cases, and case accessors in `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+  - Verified the three owner suites no longer import from `tests.python.fixture_parity_support`.
+- Verification in this run:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/benchmarks/test_benchmark_publication_runtime_contracts.py tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed (`561 passed, 3 skipped, 4041 subtests passed`).
+  - `./.venv/bin/python -m py_compile tests/benchmarks/test_benchmark_publication_runtime_contracts.py tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed.
+  - `bash -lc "! rg -n 'from tests\\.python\\.fixture_parity_support import|import tests\\.python\\.fixture_parity_support|fixture_parity_support\\.' tests/benchmarks/test_benchmark_publication_runtime_contracts.py tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py"` passed.
+
 - Queue and JSON check in this planning run:
   - `.rebar/runtime/dashboard.md` reported `ready: 0`, `in_progress: 0`, `blocked: 0`, `tracked_json_blob_count: 0`, and `tracked_json_blob_delta: 0`.
   - `git status --short` was empty in this run, so the runtime JSON count was not lagging a dirty checkout.

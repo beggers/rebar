@@ -13,6 +13,8 @@ from unittest import mock
 
 import pytest
 
+import rebar
+
 from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
     BENCHMARK_WORKLOADS_ROOT,
@@ -27,12 +29,6 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from rebar_harness.scorecard_io import ordered_published_subset_filenames
-from tests.python.fixture_parity_support import (
-    assert_match_result_parity,
-    assert_pattern_parity,
-    callable_match_group_signature,
-    duplicate_string_ids,
-)
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -48,6 +44,126 @@ CONDITIONAL_GROUP_EXISTS_BOUNDARY_MANIFEST_PATH = (
 NESTED_GROUP_CALLABLE_REPLACEMENT_BOUNDARY_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "nested_group_callable_replacement_boundary.py"
 )
+_MISSING_GROUP_DEFAULT = object()
+
+
+def duplicate_string_ids(items: tuple[str, ...] | list[str] | Any) -> tuple[str, ...]:
+    counts: dict[str, int] = {}
+    for item in items:
+        counts[item] = counts.get(item, 0) + 1
+    return tuple(sorted(item for item, count in counts.items() if count > 1))
+
+
+def callable_match_group_signature(replacement: object) -> tuple[object, ...] | None:
+    if not callable(replacement):
+        return None
+    kwdefaults = getattr(replacement, "__kwdefaults__", None)
+    if not isinstance(kwdefaults, dict):
+        return None
+    return (
+        getattr(replacement, "__qualname__", getattr(replacement, "__name__", None)),
+        kwdefaults.get("_group_reference"),
+        kwdefaults.get("_prefix"),
+        kwdefaults.get("_suffix"),
+    )
+
+
+def assert_pattern_parity(
+    backend_name: str,
+    observed: object,
+    expected: re.Pattern[str] | re.Pattern[bytes],
+) -> None:
+    if backend_name == "rebar":
+        assert type(observed) is rebar.Pattern
+    else:
+        assert type(observed) is type(expected)
+
+    assert observed.pattern == expected.pattern
+    assert observed.flags == expected.flags
+    assert observed.groups == expected.groups
+    assert observed.groupindex == expected.groupindex
+
+
+def _assert_match_parity(
+    backend_name: str,
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes],
+    *,
+    check_regs: bool = False,
+) -> None:
+    if backend_name == "rebar":
+        assert type(observed) is rebar.Match
+    else:
+        assert type(observed) is type(expected)
+
+    group_indexes = tuple(range(expected.re.groups + 1))
+    mixed_group_references: list[tuple[object, ...]] = []
+    if expected.re.groups >= 1:
+        mixed_group_references.append((0, False, 1))
+
+    group_names = tuple(expected.re.groupindex)
+    if group_names:
+        first_group_name = group_names[0]
+        mixed_group_references.append((0, first_group_name))
+        mixed_group_references.append((0, 1, first_group_name))
+
+    assert observed.group(0) == expected.group(0)
+    assert observed.group(*group_indexes) == expected.group(*group_indexes)
+    for references in mixed_group_references:
+        assert observed.group(*references) == expected.group(*references)
+    for group_index in range(1, expected.re.groups + 1):
+        assert observed.group(group_index) == expected.group(group_index)
+        assert observed.span(group_index) == expected.span(group_index)
+        assert observed.start(group_index) == expected.start(group_index)
+        assert observed.end(group_index) == expected.end(group_index)
+
+    assert observed.groups() == expected.groups()
+    assert observed.groups(_MISSING_GROUP_DEFAULT) == expected.groups(
+        _MISSING_GROUP_DEFAULT
+    )
+    assert observed.groupdict() == expected.groupdict()
+    assert observed.groupdict(_MISSING_GROUP_DEFAULT) == expected.groupdict(
+        _MISSING_GROUP_DEFAULT
+    )
+    assert observed.string == expected.string
+    assert observed.pos == expected.pos
+    assert observed.endpos == expected.endpos
+    assert observed.span() == expected.span()
+    assert observed.start() == expected.start()
+    assert observed.end() == expected.end()
+    assert observed.lastindex == expected.lastindex
+    assert observed.lastgroup == expected.lastgroup
+    if check_regs:
+        assert hasattr(observed, "regs") == hasattr(expected, "regs")
+        if hasattr(expected, "regs"):
+            assert tuple(observed.regs) == tuple(expected.regs)
+    assert_pattern_parity(backend_name, observed.re, expected.re)
+
+    for group_name in expected.re.groupindex:
+        assert observed.group(group_name) == expected.group(group_name)
+        assert observed.span(group_name) == expected.span(group_name)
+        assert observed.start(group_name) == expected.start(group_name)
+        assert observed.end(group_name) == expected.end(group_name)
+
+
+def assert_match_result_parity(
+    backend_name: str,
+    observed: object,
+    expected: re.Match[str] | re.Match[bytes] | None,
+    *,
+    check_regs: bool = False,
+) -> None:
+    if expected is None:
+        assert observed is None
+        return
+
+    assert observed is not None
+    _assert_match_parity(
+        backend_name,
+        observed,
+        expected,
+        check_regs=check_regs,
+    )
 
 
 def _declared_string_constants_by_suffix(
