@@ -639,10 +639,106 @@ def _inline_standard_definition_assignments(
     )
 
 
+def compile_proxy_correctness_case_signature(
+    case: object,
+) -> tuple[str, str | bytes, tuple[()], tuple[()], int, str] | None:
+    if getattr(case, "operation", None) != "compile":
+        return None
+    pattern = case.pattern_payload() if case.pattern is not None else case.args[0]
+    assert isinstance(pattern, (str, bytes))
+    return (
+        "module.compile",
+        pattern,
+        (),
+        (),
+        case.flags or 0,
+        case.text_model or "str",
+    )
+
+
+def compile_proxy_workload_signature(
+    workload: object,
+) -> tuple[str, str | bytes, tuple[()], tuple[()], int, str]:
+    pattern = workload.pattern_payload()
+    assert isinstance(pattern, (str, bytes))
+    return (
+        "module.compile",
+        pattern,
+        (),
+        (),
+        workload.flags,
+        workload.text_model,
+    )
+
+
+def is_compile_proxy_workload(workload: object) -> bool:
+    return workload.operation in {"compile", "module.compile"}
+
+
+COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS = (
+    collection_replacement_support.StandardBenchmarkAnchorContractDefinition(
+        name="compile-proxy",
+        manifest_paths=(
+            support.COMPILE_MATRIX_MANIFEST_PATH,
+            support.REGRESSION_MATRIX_MANIFEST_PATH,
+        ),
+        expected_anchor_case_ids={
+            (support.COMPILE_MATRIX_MANIFEST_PATH.name, "compile-inline-locale-bytes-warm"): (
+                "bytes-inline-locale-flag-success",
+            ),
+            (support.COMPILE_MATRIX_MANIFEST_PATH.name, "compile-lookbehind-cold"): (
+                "str-fixed-width-lookbehind-success",
+            ),
+            (
+                support.COMPILE_MATRIX_MANIFEST_PATH.name,
+                "compile-character-class-ignorecase-warm",
+            ): ("str-character-class-ignorecase-success",),
+            (
+                support.COMPILE_MATRIX_MANIFEST_PATH.name,
+                "compile-possessive-quantifier-cold",
+            ): ("str-possessive-quantifier-success",),
+            (support.COMPILE_MATRIX_MANIFEST_PATH.name, "compile-atomic-group-purged"): (
+                "str-atomic-group-success",
+            ),
+            (support.COMPILE_MATRIX_MANIFEST_PATH.name, "compile-parser-stress-cold"): (
+                "str-parser-stress-compile-proxy-success",
+            ),
+            (
+                support.REGRESSION_MATRIX_MANIFEST_PATH.name,
+                "regression-parser-atomic-lookbehind-cold",
+            ): ("str-parser-stress-compile-proxy-success",),
+            (
+                support.REGRESSION_MATRIX_MANIFEST_PATH.name,
+                "regression-parser-bytes-backreference-purged",
+            ): ("bytes-named-backreference-compile-proxy-success",),
+            (
+                support.REGRESSION_MATRIX_MANIFEST_PATH.name,
+                "regression-module-compile-verbose-purged",
+            ): ("workflow-compile-str-verbose-regression",),
+            (
+                support.REGRESSION_MATRIX_MANIFEST_PATH.name,
+                "regression-module-compile-multiline-purged",
+            ): ("workflow-compile-str-multiline-regression",),
+            (
+                support.REGRESSION_MATRIX_MANIFEST_PATH.name,
+                "regression-module-compile-multiline-purged-bytes",
+            ): ("workflow-compile-bytes-multiline-regression",),
+            (
+                support.REGRESSION_MATRIX_MANIFEST_PATH.name,
+                "regression-module-compile-verbose-purged-bytes",
+            ): ("workflow-compile-bytes-verbose-regression",),
+        },
+        include_workload=is_compile_proxy_workload,
+        correctness_case_signature=compile_proxy_correctness_case_signature,
+        workload_signature=compile_proxy_workload_signature,
+    ),
+)
+
+
 def _explicit_standard_benchmark_definitions(
 ) -> tuple[collection_replacement_support.StandardBenchmarkAnchorContractDefinition, ...]:
     return (
-        *support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
+        *COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
         *collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
         *collection_replacement_support.MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS,
         *collection_replacement_support.COMPILED_PATTERN_MODULE_COMPILE_STANDARD_BENCHMARK_DEFINITIONS,
@@ -1407,7 +1503,7 @@ def test_compile_proxy_correctness_case_signature_uses_compile_shape() -> None:
         text_model=None,
     )
 
-    assert support.compile_proxy_correctness_case_signature(case) == (
+    assert compile_proxy_correctness_case_signature(case) == (
         "module.compile",
         b"literal",
         (),
@@ -1427,7 +1523,7 @@ def test_compile_proxy_workload_signature_uses_compile_shape() -> None:
         text_model="bytes",
     )
 
-    assert support.compile_proxy_workload_signature(workload) == (
+    assert compile_proxy_workload_signature(workload) == (
         "module.compile",
         b"literal",
         (),
@@ -1438,7 +1534,7 @@ def test_compile_proxy_workload_signature_uses_compile_shape() -> None:
 
 
 def test_is_compile_proxy_workload_includes_compile_operations_only() -> None:
-    assert support.is_compile_proxy_workload(
+    assert is_compile_proxy_workload(
         synthetic_workload(
             manifest_id="compile-proxy-benchmark-support",
             workload_id="compile-literal",
@@ -1448,7 +1544,7 @@ def test_is_compile_proxy_workload_includes_compile_operations_only() -> None:
             text_model="str",
         )
     )
-    assert support.is_compile_proxy_workload(
+    assert is_compile_proxy_workload(
         synthetic_workload(
             manifest_id="compile-proxy-benchmark-support",
             workload_id="module-compile-literal",
@@ -1458,7 +1554,7 @@ def test_is_compile_proxy_workload_includes_compile_operations_only() -> None:
             text_model="str",
         )
     )
-    assert not support.is_compile_proxy_workload(
+    assert not is_compile_proxy_workload(
         synthetic_workload(
             manifest_id="compile-proxy-benchmark-support",
             workload_id="module-search-literal",
@@ -1470,20 +1566,31 @@ def test_is_compile_proxy_workload_includes_compile_operations_only() -> None:
     )
 
 
+def test_support_module_does_not_export_compile_proxy_meta_only_surface(
+) -> None:
+    for name in (
+        "compile_proxy_correctness_case_signature",
+        "compile_proxy_workload_signature",
+        "is_compile_proxy_workload",
+        "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS",
+    ):
+        assert not hasattr(support, name)
+
+
 def test_compile_proxy_standard_definition_export_is_direct_global(
 ) -> None:
-    first_export = getattr(support, "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS")
-    second_export = getattr(support, "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS")
+    first_export = getattr(meta_support, "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS")
+    second_export = getattr(meta_support, "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS")
 
     assert first_export is second_export
     assert len(first_export) == 1
     assert first_export[0].name == "compile-proxy"
-    assert vars(support)["COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS"] is first_export
+    assert vars(meta_support)["COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS"] is first_export
 
 
 def test_compile_proxy_standard_definition_preserves_manifest_order_and_anchor_mapping(
 ) -> None:
-    definition = support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS[0]
+    definition = COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS[0]
 
     assert support.COMPILE_MATRIX_MANIFEST_PATH == (
         REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
@@ -1546,14 +1653,14 @@ def test_compile_proxy_standard_definition_preserves_manifest_order_and_anchor_m
 
 
 def test_compile_proxy_standard_definition_reuses_compile_proxy_helper_functions() -> None:
-    definition = support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS[0]
+    definition = COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS[0]
 
-    assert definition.include_workload is support.is_compile_proxy_workload
+    assert definition.include_workload is is_compile_proxy_workload
     assert (
         definition.correctness_case_signature
-        is support.compile_proxy_correctness_case_signature
+        is compile_proxy_correctness_case_signature
     )
-    assert definition.workload_signature is support.compile_proxy_workload_signature
+    assert definition.workload_signature is compile_proxy_workload_signature
 
 
 def test_standard_benchmark_param_helpers_require_explicit_definition_inventory() -> None:
@@ -1612,7 +1719,7 @@ def test_standard_benchmark_param_helpers_require_explicit_definition_inventory(
     ("owner_definitions", "preceding_definition_name", "following_definition_name"),
     (
         pytest.param(
-            support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
+            COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
             None,
             "collection-replacement-module-positional-indexlike",
             id="compile-proxy-before-collection-replacement",
@@ -1940,36 +2047,8 @@ def test_module_workflow_keyword_definition_exports_reuse_owner_manifest_path_co
 def test_inline_standard_definition_exports_reuse_named_manifest_path_constants(
 ) -> None:
     assignment_nodes = _inline_standard_definition_assignments(support)
-    assignment_names = {
-        _assignment_target_name(assignment)
-        for assignment in assignment_nodes
-    }
-
-    assert {
-        "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS",
-    }.issubset(assignment_names)
-
-    for assignment in assignment_nodes:
-        assignment_name = _assignment_target_name(assignment)
-        manifest_path_name_groups = _owner_definition_manifest_path_names(assignment)
-        assert all(
-            manifest_path_names
-            and all(
-                manifest_path_name.endswith("_MANIFEST_PATH")
-                for manifest_path_name in manifest_path_names
-            )
-            for manifest_path_names in manifest_path_name_groups
-        )
-        assert tuple(
-            definition.manifest_paths
-            for definition in getattr(support, assignment_name)
-        ) == tuple(
-            tuple(
-                getattr(support, manifest_path_name)
-                for manifest_path_name in manifest_path_names
-            )
-            for manifest_path_names in manifest_path_name_groups
-        )
+    assert assignment_nodes == ()
+    assert not hasattr(support, "COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS")
 
 
 @pytest.mark.parametrize(

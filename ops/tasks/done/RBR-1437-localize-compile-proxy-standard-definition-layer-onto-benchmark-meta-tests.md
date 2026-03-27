@@ -30,6 +30,7 @@ Created: 2026-03-27
 - `bash -lc "! rg -n '^((def (compile_proxy_correctness_case_signature|compile_proxy_workload_signature|is_compile_proxy_workload)\\b)|(COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS\\s*=))' tests/benchmarks/benchmark_test_support.py"`
 
 ## Notes
+- Completed 2026-03-27: removed the compile-proxy selector/signature/definition layer from `tests/benchmarks/benchmark_test_support.py`, redefined that layer locally inside `tests/benchmarks/test_benchmark_test_support.py` against the shared compile-manifest path constants, and verified the scoped pytest target, `py_compile`, and the negative `rg` export check all pass.
 - Queue and JSON check in this planning run:
   - `.rebar/runtime/dashboard.md` reported `ready: 0`, `in_progress: 0`, `blocked: 0`, `tracked_json_blob_count: 0`, and `tracked_json_blob_delta: 0`.
   - `git status --short` was empty in this run, so the checkout was not dirty when sizing the next cleanup.
