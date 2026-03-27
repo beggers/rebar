@@ -51,13 +51,26 @@ def _clear_local_meta_support_caches() -> None:
     )
 
 
+def _clear_module_cacheable_objects(module: object) -> None:
+    _clear_cached_functions(tuple(vars(module).values()))
+
+
+def _clear_anchor_support_caches() -> None:
+    _clear_module_cacheable_objects(support)
+    combined_suite = support.sys.modules.get(
+        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
+    )
+    if combined_suite is not None:
+        _clear_module_cacheable_objects(combined_suite)
+
+
 @pytest.fixture
 def anchor_support_cache_guard() -> None:
-    support._clear_anchor_support_caches()
+    _clear_anchor_support_caches()
     _clear_local_meta_support_caches()
     yield
     _clear_local_meta_support_caches()
-    support._clear_anchor_support_caches()
+    _clear_anchor_support_caches()
 
 
 @cache
@@ -1099,7 +1112,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     assert collection_replacement_support.benchmark_test_support is support
     monkeypatch.setattr(support, "live_manifest_workloads", _live_manifest_workloads)
 
-    support._clear_anchor_support_caches()
+    _clear_anchor_support_caches()
 
     assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
     assert collection_replacement_support.published_case_ids_by_signature(
@@ -1141,7 +1154,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
         expected_source_tree_calls + expected_source_tree_calls
     )
 
-    support._clear_anchor_support_caches()
+    _clear_anchor_support_caches()
 
     assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
     assert collection_replacement_support.published_case_ids_by_signature(
@@ -1174,6 +1187,8 @@ def test_clear_anchor_support_caches_clears_cacheable_objects_from_owner_modules
     monkeypatch,
     anchor_support_cache_guard: None,
 ) -> None:
+    assert not hasattr(support, "_clear_anchor_support_caches")
+
     class _CacheRecorder:
         def __init__(self) -> None:
             self.calls = 0
@@ -1192,7 +1207,7 @@ def test_clear_anchor_support_caches_clears_cacheable_objects_from_owner_modules
         ),
     )
 
-    support._clear_anchor_support_caches()
+    _clear_anchor_support_caches()
 
     assert combined_suite_cache.calls == 1
 
@@ -5173,7 +5188,7 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
         "published_benchmark_manifests",
         initial_published_manifests,
     )
-    support._clear_anchor_support_caches()
+    _clear_anchor_support_caches()
 
     assert combined_suite._published_benchmark_manifest_ids() == frozenset(
         {"module-boundary"}
@@ -5201,7 +5216,7 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
         not in combined_suite.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
     )
 
-    support._clear_anchor_support_caches()
+    _clear_anchor_support_caches()
 
     assert combined_suite._published_benchmark_manifest_ids() == frozenset(
         {"synthetic-new-boundary"}
@@ -5239,7 +5254,7 @@ def test_source_tree_combined_manifest_expectations_get_preserves_fallback_contr
         "published_benchmark_manifests",
         published_manifests,
     )
-    support._clear_anchor_support_caches()
+    _clear_anchor_support_caches()
 
     expectations = combined_suite.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
 
@@ -5274,7 +5289,7 @@ def test_source_tree_combined_manifest_expectations_fallback_lookup_preserves_di
         "published_benchmark_manifests",
         published_manifests,
     )
-    support._clear_anchor_support_caches()
+    _clear_anchor_support_caches()
 
     expectations = combined_suite.SOURCE_TREE_COMBINED_MANIFEST_EXPECTATIONS
     explicit_keys_before_lookup = tuple(expectations.keys())

@@ -47,20 +47,6 @@ def live_manifest_workloads(
     return tuple(workloads_by_id[workload_id] for workload_id in workload_ids)
 
 
-def _clear_anchor_support_caches() -> None:
-    for function in vars(benchmark_test_support).values():
-        cache_clear = getattr(function, "cache_clear", None)
-        if callable(cache_clear):
-            cache_clear()
-    combined_suite = sys.modules.get(
-        "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
-    )
-    if combined_suite is not None:
-        for function in vars(combined_suite).values():
-            cache_clear = getattr(function, "cache_clear", None)
-            if callable(cache_clear):
-                cache_clear()
-
 def _write_test_manifest(
     tmp_path: pathlib.Path,
     filename: str,
