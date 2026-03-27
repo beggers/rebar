@@ -1603,6 +1603,9 @@ def test_shared_benchmark_manifest_selectors_resolve_published_subset_invariants
         published_manifest_paths,
         selected_paths,
         root_path=BENCHMARK_WORKLOADS_ROOT,
+        expected_filenames=benchmarks._BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR[
+            selector
+        ],
     )
 
 
@@ -1649,6 +1652,26 @@ def test_declared_benchmark_manifest_selectors_match_registry_keys() -> None:
     )
 
     assert declared_selectors
+
+
+def test_declared_nondefault_benchmark_manifest_selectors_are_parametrized_once() -> None:
+    declared_nondefault_selectors = tuple(
+        sorted(
+            selector
+            for selector in _declared_string_constants_by_suffix(
+                benchmarks,
+                name_suffix="_MANIFEST_SELECTOR",
+            ).values()
+            if selector != PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
+        )
+    )
+    expected_selectors = tuple(
+        sorted(benchmarks._NONDEFAULT_BENCHMARK_MANIFEST_SELECTOR_REQUESTED_FILENAMES)
+    )
+
+    assert PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR not in expected_selectors
+    assert len(expected_selectors) == len(set(expected_selectors))
+    assert expected_selectors == declared_nondefault_selectors
 
 
 def test_default_benchmark_published_manifest_helper_is_cached_and_preserves_selector_order() -> None:
