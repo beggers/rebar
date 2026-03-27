@@ -765,6 +765,46 @@ def test_generated_fully_empty_alternation_compile_cases_stay_anchored_to_publis
     )
 
 
+def test_generated_quantified_conditional_manifest_spec_index_rejects_duplicate_manifest_ids(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    duplicate_spec = GeneratedQuantifiedConditionalParitySpec(
+        bundle=QUANTIFIED_CONDITIONAL_BUNDLE,
+        expected_compile_case_ids=("duplicate-generated-compile-case",),
+        expected_patterns=frozenset({r"a(b)?c(?(1)d|e){2}"}),
+        branch_choices=("d", "e"),
+        failure_prefix="duplicate generated manifest",
+    )
+    monkeypatch.setitem(
+        globals(),
+        "GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS",
+        (
+            GENERATED_QUANTIFIED_CONDITIONAL_PARITY_SPECS[0],
+            duplicate_spec,
+        ),
+    )
+
+    with pytest.raises(
+        ValueError,
+        match=(
+            "generated quantified conditional specs contain duplicate manifest ids: "
+            r"\('conditional-group-exists-quantified-workflows',\)"
+        ),
+    ):
+        _build_manifest_spec_index()
+
+
+def test_lookup_generated_parity_spec_rejects_unknown_manifest_id() -> None:
+    with pytest.raises(
+        AssertionError,
+        match=(
+            "unexpected generated quantified conditional manifest id "
+            "'missing-generated-conditional-manifest'"
+        ),
+    ):
+        _lookup_generated_parity_spec("missing-generated-conditional-manifest")
+
+
 def test_conditional_group_exists_parity_suite_tracks_published_case_frontier() -> None:
     for bundle in FIXTURE_BUNDLES:
         assert_fixture_bundle_tracks_published_case_frontier(
