@@ -2345,6 +2345,39 @@ def test_benchmark_support_suite_routes_shared_owner_imports_through_package_ali
     assert "_synthetic_workload" in definition_names
 
 
+def test_benchmark_support_suite_owns_local_synthetic_helper_surface() -> None:
+    module = importlib.import_module("tests.benchmarks.test_benchmark_test_support")
+    definition_names, assignment_names = (
+        top_level_module_definition_and_assignment_names(module)
+    )
+    support_definition_names, support_assignment_names = (
+        top_level_module_definition_and_assignment_names(support)
+    )
+    local_only_names = {
+        "_synthetic_manifest",
+        "_synthetic_workload",
+        "_synthetic_manifest_loader",
+        "_module_pattern_case",
+        "_synthetic_workload_signature",
+        "_synthetic_workload_is_included",
+        "synthetic_workload",
+        "_synthetic_case",
+    }
+
+    assert module.support is support
+    assert local_only_names.issubset(definition_names | assignment_names)
+    assert local_only_names.isdisjoint(
+        support_definition_names | support_assignment_names
+    )
+    assert local_only_names.isdisjoint(dir(support))
+    for helper_name in local_only_names:
+        helper = getattr(module, helper_name)
+        assert helper.__module__ == module.__name__
+        assert pathlib.Path(inspect.getsourcefile(helper)).resolve() == pathlib.Path(
+            module.__file__
+        ).resolve()
+
+
 @pytest.mark.parametrize(
     ("import_targets", "observed_alias_pairs", "expected_alias_pairs"),
     (
