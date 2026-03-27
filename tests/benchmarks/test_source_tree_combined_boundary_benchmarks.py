@@ -989,8 +989,10 @@ def assert_zero_gap_manifest_workloads_measured(
     from tests.conftest import run_harness_scorecard as shared_run_harness_scorecard
 
     testcase = unittest.TestCase()
-    resolved_manifest_path = benchmark_test_support._resolve_live_manifest_path(
+    resolved_manifest_path = (
         manifest_path
+        if isinstance(manifest_path, pathlib.Path)
+        else benchmark_test_support.BENCHMARK_WORKLOADS_ROOT / manifest_path
     )
     manifest = benchmark_test_support.load_manifest(resolved_manifest_path)
     _, scorecard = shared_run_harness_scorecard(

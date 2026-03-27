@@ -3625,7 +3625,6 @@ def test_assert_zero_gap_manifest_workloads_measured_routes_through_shared_contr
 ) -> None:
     import tests.conftest as shared_conftest
 
-    manifest_path = pathlib.Path("synthetic-boundary.py")
     resolved_manifest_path = pathlib.Path("/tmp/synthetic-boundary.py")
     manifest = SimpleNamespace(manifest_id="synthetic-boundary")
     captured_call: dict[str, object] = {}
@@ -3644,11 +3643,6 @@ def test_assert_zero_gap_manifest_workloads_measured_routes_through_shared_contr
         }
     }
 
-    monkeypatch.setattr(
-        support,
-        "_resolve_live_manifest_path",
-        lambda path: resolved_manifest_path,
-    )
     monkeypatch.setattr(support, "load_manifest", lambda path: manifest)
 
     def _run_harness_scorecard(
@@ -3695,7 +3689,7 @@ def test_assert_zero_gap_manifest_workloads_measured_routes_through_shared_contr
     )
 
     collection_replacement_support.assert_zero_gap_manifest_workloads_measured(
-        manifest_path=manifest_path,
+        manifest_path=resolved_manifest_path,
         manifest_id="synthetic-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
         expected_measured_workload_count=measured_workload_count,

@@ -48,19 +48,16 @@ from tests.python.fixture_parity_support import (
 benchmark_test_support = sys.modules[__name__]
 
 
-def _resolve_live_manifest_path(
-    manifest_path: pathlib.Path | str,
-) -> pathlib.Path:
-    if isinstance(manifest_path, pathlib.Path):
-        return manifest_path
-    return benchmarks.BENCHMARK_WORKLOADS_ROOT / manifest_path
-
-
 @cache
 def manifest_workloads(
     manifest_path: pathlib.Path | str,
 ) -> tuple[benchmarks.Workload, ...]:
-    return tuple(load_manifest(_resolve_live_manifest_path(manifest_path)).workloads)
+    resolved_manifest_path = (
+        manifest_path
+        if isinstance(manifest_path, pathlib.Path)
+        else benchmarks.BENCHMARK_WORKLOADS_ROOT / manifest_path
+    )
+    return tuple(load_manifest(resolved_manifest_path).workloads)
 
 
 @cache
