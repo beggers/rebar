@@ -1848,6 +1848,80 @@ def test_default_fixture_inventory_has_unique_manifest_suite_and_case_ids() -> N
     )
 
 
+def test_published_manifest_inventory_helper_supports_callable_accessors() -> None:
+    manifests = (
+        SimpleNamespace(
+            expected_manifest_id="callable-manifest-a",
+            expected_suite_id="callable-suite-a",
+            entries=(
+                SimpleNamespace(
+                    expected_case_id="callable-case-a",
+                    expected_manifest_id="callable-manifest-a",
+                ),
+            ),
+        ),
+        SimpleNamespace(
+            expected_manifest_id="callable-manifest-b",
+            expected_suite_id="callable-suite-b",
+            entries=(
+                SimpleNamespace(
+                    expected_case_id="callable-case-b",
+                    expected_manifest_id="callable-manifest-b",
+                ),
+            ),
+        ),
+    )
+
+    child_entries = _assert_published_manifest_inventory_contract(
+        manifests,
+        child_records=lambda manifest: manifest.entries,
+        child_id=lambda child: child.expected_case_id,
+        extra_manifest_unique_fields=(lambda manifest: manifest.expected_suite_id,),
+        manifest_id=lambda manifest: manifest.expected_manifest_id,
+        child_manifest_id=lambda child: child.expected_manifest_id,
+    )
+
+    assert tuple(child.expected_case_id for child in child_entries) == (
+        "callable-case-a",
+        "callable-case-b",
+    )
+
+
+def test_published_manifest_inventory_helper_rejects_callable_child_manifest_drift() -> None:
+    manifests = (
+        SimpleNamespace(
+            expected_manifest_id="callable-manifest-a",
+            expected_suite_id="callable-suite-a",
+            entries=(
+                SimpleNamespace(
+                    expected_case_id="callable-case-a",
+                    expected_manifest_id="callable-manifest-a",
+                ),
+            ),
+        ),
+        SimpleNamespace(
+            expected_manifest_id="callable-manifest-b",
+            expected_suite_id="callable-suite-b",
+            entries=(
+                SimpleNamespace(
+                    expected_case_id="callable-case-b",
+                    expected_manifest_id="missing-manifest-id",
+                ),
+            ),
+        ),
+    )
+
+    with pytest.raises(AssertionError):
+        _assert_published_manifest_inventory_contract(
+            manifests,
+            child_records=lambda manifest: manifest.entries,
+            child_id=lambda child: child.expected_case_id,
+            extra_manifest_unique_fields=(lambda manifest: manifest.expected_suite_id,),
+            manifest_id=lambda manifest: manifest.expected_manifest_id,
+            child_manifest_id=lambda child: child.expected_manifest_id,
+        )
+
+
 def test_default_fixture_inventory_serialized_case_payloads_are_json_safe_and_exercise_special_normalization_paths(
 ) -> None:
     manifests = published_fixture_manifests()
