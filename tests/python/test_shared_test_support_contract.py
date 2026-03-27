@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import ast
 from collections import Counter
 from functools import cache
+import inspect
 import pathlib
 import subprocess
 import sys
@@ -617,6 +619,32 @@ def test_run_harness_scorecard_loads_python_benchmark_reports_uses_owner_local_m
         "cli_args": ["--manifest", str(contract_manifest_path)],
         "report_name": "compile-matrix.py",
     }
+
+
+def test_run_harness_scorecard_compile_manifest_path_constant_stays_owner_local() -> None:
+    module_ast = ast.parse(inspect.getsource(sys.modules[__name__]))
+    imported_compile_manifest_names = tuple(
+        alias.asname or alias.name
+        for node in module_ast.body
+        if isinstance(node, ast.ImportFrom)
+        and node.module == "tests.benchmarks.benchmark_test_support"
+        for alias in node.names
+        if alias.name == "COMPILE_MATRIX_MANIFEST_PATH"
+    )
+    assigned_names = {
+        target.id
+        for node in module_ast.body
+        if isinstance(node, ast.Assign)
+        for target in node.targets
+        if isinstance(target, ast.Name)
+    }
+
+    assert imported_compile_manifest_names == ()
+    assert "COMPILE_MATRIX_MANIFEST_PATH" in assigned_names
+    assert COMPILE_MATRIX_MANIFEST_PATH == (
+        REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
+    )
+    assert COMPILE_MATRIX_MANIFEST_PATH.is_file()
 
 
 def test_run_harness_scorecard_accepts_one_shot_cli_arg_iterators() -> None:
