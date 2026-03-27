@@ -49,3 +49,12 @@ Created: 2026-03-27
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'source_tree_combined_suite_owns or benchmark_test_support_owns'` passed with `11 passed, 191 deselected in 0.25s`.
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_error_rows_keep_collection_replacement_manifest_measured'` passed with `1 passed, 306 deselected in 0.26s`.
   - `./.venv/bin/python -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py` passed.
+
+## Completion
+- Moved `assert_benchmark_manifest_contract(...)`, `find_manifest_record(...)`, `run_correctness_case_with_cpython(...)`, and `manifest_workload_ids_matching(...)` out of `tests/benchmarks/benchmark_test_support.py` and into `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`.
+- Rewired the source-tree-combined suite and its meta-tests to call and patch the owner-local helpers directly while keeping shared benchmark support limited to genuinely shared workload/result helpers.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_benchmark_test_support.py -k 'source_tree_combined_suite_owns or benchmark_test_support_owns'` -> `11 passed, 191 deselected`
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest -q tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'compiled_pattern_module_helper_keyword_error_rows_keep_collection_replacement_manifest_measured'` -> `1 passed, 306 deselected`
+  - `./.venv/bin/python -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`
+  - `bash -lc "! rg -n '^def (assert_benchmark_manifest_contract|find_manifest_record|run_correctness_case_with_cpython|manifest_workload_ids_matching)\\b' tests/benchmarks/benchmark_test_support.py"`

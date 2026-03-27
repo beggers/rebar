@@ -274,57 +274,6 @@ def live_manifest_workloads(
     return tuple(workloads_by_id[workload_id] for workload_id in workload_ids)
 
 
-def assert_benchmark_manifest_contract(
-    testcase: Any,
-    manifest_summary: dict[str, Any],
-    manifest_record: dict[str, Any],
-    *,
-    manifest: BenchmarkManifest,
-    manifest_path: str,
-    known_gap_count: int,
-    selection_mode: str = "full",
-    selected_workload_ids: tuple[str, ...] | None = None,
-) -> None:
-    workloads = list(manifest.workloads)
-    selected_workloads = manifest.selected_workloads(
-        selected_workload_ids=selected_workload_ids
-    )
-    smoke_ids = manifest.smoke_workload_ids()
-    operations = sorted({workload.operation for workload in selected_workloads})
-    families = sorted({workload.family for workload in selected_workloads})
-
-    testcase.assertEqual(manifest_summary["workload_count"], len(workloads))
-    testcase.assertEqual(manifest_summary["selected_workload_count"], len(selected_workloads))
-    testcase.assertEqual(
-        manifest_summary["measured_workloads"],
-        len(selected_workloads) - known_gap_count,
-    )
-    testcase.assertEqual(manifest_summary["known_gap_count"], known_gap_count)
-    testcase.assertEqual(
-        manifest_summary["readiness"],
-        "measured" if known_gap_count == 0 else "partial",
-    )
-    testcase.assertEqual(manifest_summary["selection_mode"], selection_mode)
-    testcase.assertEqual(manifest_summary["available_smoke_workload_count"], len(smoke_ids))
-    testcase.assertEqual(manifest_summary["smoke_workload_ids"], smoke_ids)
-    testcase.assertEqual(manifest_summary["families"], families)
-    testcase.assertEqual(manifest_summary["operations"], operations)
-    testcase.assertEqual(manifest_summary["spec_refs"], manifest.spec_refs)
-    if manifest.notes:
-        testcase.assertEqual(manifest_summary["notes"], manifest.notes)
-
-    testcase.assertEqual(manifest_record["manifest_id"], manifest.manifest_id)
-    testcase.assertEqual(manifest_record["manifest"], manifest_path)
-    testcase.assertEqual(manifest_record["smoke_workload_ids"], smoke_ids)
-
-
-def find_manifest_record(scorecard: dict[str, Any], manifest_id: str) -> dict[str, Any]:
-    for manifest_record in scorecard["artifacts"]["manifests"]:
-        if str(manifest_record["manifest_id"]) == manifest_id:
-            return manifest_record
-    raise AssertionError(f"missing manifest record for {manifest_id!r}")
-
-
 @cache
 def published_cases_by_id() -> dict[str, Any]:
     return records_by_string_id(
@@ -490,41 +439,6 @@ def run_benchmark_workload_with_cpython(workload: Any) -> object:
     return result
 
 
-def run_correctness_case_with_cpython(case: Any) -> object:
-    if case.operation == "compile":
-        return re.compile(case.pattern_payload(), case.flags or 0)
-
-    if case.operation == "module_call":
-        if case.helper is None:
-            raise AssertionError(f"expected helper for {case.case_id!r}")
-        compiled_pattern = None
-        if case.use_compiled_pattern:
-            compiled_pattern = re.compile(case.pattern_payload(), case.flags or 0)
-        if not case.use_compiled_pattern and not case.include_pattern_arg:
-            if case.pattern is None:
-                return getattr(re, case.helper)(
-                    *case.args,
-                    **case.kwargs,
-                )
-            return getattr(re, case.helper)(
-                case.pattern_payload(),
-                *case.args,
-                **case.kwargs,
-            )
-        return getattr(re, case.helper)(
-            *case.module_call_args(compiled_pattern),
-            **case.kwargs,
-        )
-
-    if case.operation == "pattern_call":
-        if case.helper is None:
-            raise AssertionError(f"expected helper for {case.case_id!r}")
-        compiled = re.compile(case.pattern_payload(), case.flags or 0)
-        return getattr(compiled, case.helper)(*case.args, **case.kwargs)
-
-    raise AssertionError(f"unexpected correctness operation {case.operation!r}")
-
-
 def assert_benchmark_workload_matches_expected_result(
     workload: Any,
     expected: object,
@@ -584,23 +498,6 @@ def assert_benchmark_workload_matches_expected_result(
     raise AssertionError(
         "unexpected anchored benchmark workload operation "
         f"{workload.operation!r}"
-    )
-
-
-def manifest_workload_ids_matching(
-    manifest: BenchmarkManifest,
-    include_workload: Any,
-    *,
-    operation_prefix: str | None = None,
-) -> tuple[str, ...]:
-    return tuple(
-        workload.workload_id
-        for workload in manifest.workloads
-        if include_workload(workload)
-        and (
-            operation_prefix is None
-            or workload.operation.startswith(operation_prefix)
-        )
     )
 
 

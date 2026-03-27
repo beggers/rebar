@@ -108,6 +108,109 @@ def _record_numeric_materialization_fields(
     return observed_field_names
 
 
+def assert_benchmark_manifest_contract(
+    testcase: Any,
+    manifest_summary: dict[str, Any],
+    manifest_record: dict[str, Any],
+    *,
+    manifest: BenchmarkManifest,
+    manifest_path: str,
+    known_gap_count: int,
+    selection_mode: str = "full",
+    selected_workload_ids: tuple[str, ...] | None = None,
+) -> None:
+    workloads = list(manifest.workloads)
+    selected_workloads = manifest.selected_workloads(
+        selected_workload_ids=selected_workload_ids
+    )
+    smoke_ids = manifest.smoke_workload_ids()
+    operations = sorted({workload.operation for workload in selected_workloads})
+    families = sorted({workload.family for workload in selected_workloads})
+
+    testcase.assertEqual(manifest_summary["workload_count"], len(workloads))
+    testcase.assertEqual(manifest_summary["selected_workload_count"], len(selected_workloads))
+    testcase.assertEqual(
+        manifest_summary["measured_workloads"],
+        len(selected_workloads) - known_gap_count,
+    )
+    testcase.assertEqual(manifest_summary["known_gap_count"], known_gap_count)
+    testcase.assertEqual(
+        manifest_summary["readiness"],
+        "measured" if known_gap_count == 0 else "partial",
+    )
+    testcase.assertEqual(manifest_summary["selection_mode"], selection_mode)
+    testcase.assertEqual(manifest_summary["available_smoke_workload_count"], len(smoke_ids))
+    testcase.assertEqual(manifest_summary["smoke_workload_ids"], smoke_ids)
+    testcase.assertEqual(manifest_summary["families"], families)
+    testcase.assertEqual(manifest_summary["operations"], operations)
+    testcase.assertEqual(manifest_summary["spec_refs"], manifest.spec_refs)
+    if manifest.notes:
+        testcase.assertEqual(manifest_summary["notes"], manifest.notes)
+
+    testcase.assertEqual(manifest_record["manifest_id"], manifest.manifest_id)
+    testcase.assertEqual(manifest_record["manifest"], manifest_path)
+    testcase.assertEqual(manifest_record["smoke_workload_ids"], smoke_ids)
+
+
+def find_manifest_record(scorecard: dict[str, Any], manifest_id: str) -> dict[str, Any]:
+    for manifest_record in scorecard["artifacts"]["manifests"]:
+        if str(manifest_record["manifest_id"]) == manifest_id:
+            return manifest_record
+    raise AssertionError(f"missing manifest record for {manifest_id!r}")
+
+
+def run_correctness_case_with_cpython(case: Any) -> object:
+    if case.operation == "compile":
+        return re.compile(case.pattern_payload(), case.flags or 0)
+
+    if case.operation == "module_call":
+        if case.helper is None:
+            raise AssertionError(f"expected helper for {case.case_id!r}")
+        compiled_pattern = None
+        if case.use_compiled_pattern:
+            compiled_pattern = re.compile(case.pattern_payload(), case.flags or 0)
+        if not case.use_compiled_pattern and not case.include_pattern_arg:
+            if case.pattern is None:
+                return getattr(re, case.helper)(
+                    *case.args,
+                    **case.kwargs,
+                )
+            return getattr(re, case.helper)(
+                case.pattern_payload(),
+                *case.args,
+                **case.kwargs,
+            )
+        return getattr(re, case.helper)(
+            *case.module_call_args(compiled_pattern),
+            **case.kwargs,
+        )
+
+    if case.operation == "pattern_call":
+        if case.helper is None:
+            raise AssertionError(f"expected helper for {case.case_id!r}")
+        compiled = re.compile(case.pattern_payload(), case.flags or 0)
+        return getattr(compiled, case.helper)(*case.args, **case.kwargs)
+
+    raise AssertionError(f"unexpected correctness operation {case.operation!r}")
+
+
+def manifest_workload_ids_matching(
+    manifest: BenchmarkManifest,
+    include_workload: Any,
+    *,
+    operation_prefix: str | None = None,
+) -> tuple[str, ...]:
+    return tuple(
+        workload.workload_id
+        for workload in manifest.workloads
+        if include_workload(workload)
+        and (
+            operation_prefix is None
+            or workload.operation.startswith(operation_prefix)
+        )
+    )
+
+
 def _is_module_workflow_compiled_pattern_workload(workload: Any) -> bool:
     return (
         not workload.kwargs
@@ -420,9 +523,7 @@ def assert_anchored_workload_case_result_parity(
 ) -> None:
     for anchored_pair in anchored_pairs:
         try:
-            expected = benchmark_test_support.run_correctness_case_with_cpython(
-                anchored_pair.case
-            )
+            expected = run_correctness_case_with_cpython(anchored_pair.case)
         except Exception as expected_exc:
             with pytest.raises(type(expected_exc)) as observed_exc:
                 benchmark_test_support.run_benchmark_workload_with_cpython(
@@ -1655,7 +1756,7 @@ def _assert_compiled_pattern_success_rows_measured_in_combined_manifest(
         for workload in owner_spec.source_workloads()
         if include_workload(workload)
     )
-    selected_measured_workload_ids = benchmark_test_support.manifest_workload_ids_matching(
+    selected_measured_workload_ids = manifest_workload_ids_matching(
         manifest,
         include_workload,
     )
@@ -12611,11 +12712,11 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
 
                 manifest_id = case.manifest_id
                 manifest_summary = scorecard["manifests"][manifest_id]
-                manifest_record = benchmark_test_support.find_manifest_record(
+                manifest_record = find_manifest_record(
                     scorecard,
                     manifest_id,
                 )
-                benchmark_test_support.assert_benchmark_manifest_contract(
+                assert_benchmark_manifest_contract(
                     self,
                     manifest_summary,
                     manifest_record,
@@ -14619,10 +14720,10 @@ class SourceTreeScorecardBenchmarkSuiteTest(unittest.TestCase):
                 for manifest_id, manifest_expectation in case.manifest_expectations.items():
                     manifest = case.manifest_for_id(manifest_id)
                     with self.subTest(manifest_id=manifest_id):
-                        benchmark_test_support.assert_benchmark_manifest_contract(
+                        assert_benchmark_manifest_contract(
                             self,
                             scorecard["manifests"][manifest_id],
-                            benchmark_test_support.find_manifest_record(
+                            find_manifest_record(
                                 scorecard,
                                 manifest_id,
                             ),

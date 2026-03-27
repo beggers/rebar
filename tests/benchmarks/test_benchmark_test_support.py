@@ -3155,6 +3155,10 @@ def test_source_tree_combined_suite_owns_benchmark_contract_helpers_locally() ->
         "_artifact_manifest_record",
         "_expected_exception_instance",
         "_record_numeric_materialization_fields",
+        "assert_benchmark_manifest_contract",
+        "find_manifest_record",
+        "manifest_workload_ids_matching",
+        "run_correctness_case_with_cpython",
         "assert_pattern_helper_wrong_text_model_payload_round_trip",
     }
 
@@ -5809,7 +5813,7 @@ def test_assert_anchored_workload_case_result_parity_delegates_expected_values(
     )
     calls: list[tuple[object, object]] = []
     monkeypatch.setattr(
-        support,
+        collection_replacement_support,
         "run_correctness_case_with_cpython",
         lambda case: f"expected:{case.case_id}",
     )
@@ -5844,7 +5848,11 @@ def test_assert_anchored_workload_case_result_parity_accepts_matching_exceptions
         benchmark_calls.append(observed_workload)
         raise ValueError("shared boom")
 
-    monkeypatch.setattr(support, "run_correctness_case_with_cpython", _raise_expected)
+    monkeypatch.setattr(
+        collection_replacement_support,
+        "run_correctness_case_with_cpython",
+        _raise_expected,
+    )
     monkeypatch.setattr(support, "run_benchmark_workload_with_cpython", _raise_observed)
 
     collection_replacement_support.assert_anchored_workload_case_result_parity((pair,))
@@ -5870,7 +5878,11 @@ def test_assert_anchored_workload_case_result_parity_rejects_exception_message_d
     def _raise_observed(_: object) -> object:
         raise ValueError("observed boom")
 
-    monkeypatch.setattr(support, "run_correctness_case_with_cpython", _raise_expected)
+    monkeypatch.setattr(
+        collection_replacement_support,
+        "run_correctness_case_with_cpython",
+        _raise_expected,
+    )
     monkeypatch.setattr(support, "run_benchmark_workload_with_cpython", _raise_observed)
 
     with pytest.raises(AssertionError):
