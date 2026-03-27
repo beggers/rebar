@@ -48,16 +48,10 @@ def live_manifest_workloads(
 
 
 def _clear_anchor_support_caches() -> None:
-    for functions in (
-        (
-            manifest_workloads,
-        ),
-        vars(benchmark_test_support).values(),
-    ):
-        for function in functions:
-            cache_clear = getattr(function, "cache_clear", None)
-            if callable(cache_clear):
-                cache_clear()
+    for function in vars(benchmark_test_support).values():
+        cache_clear = getattr(function, "cache_clear", None)
+        if callable(cache_clear):
+            cache_clear()
     combined_suite = sys.modules.get(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
