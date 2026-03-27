@@ -28,7 +28,6 @@ from rebar_harness.benchmarks import (
     workload_from_payload,
     workload_to_payload,
 )
-from rebar_harness.scorecard_io import ordered_published_subset_filenames
 
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -1747,14 +1746,8 @@ def test_benchmark_selector_subset_helper_keeps_benchmark_specific_missing_filen
             "unknown published benchmark manifest filename(s): ['missing_boundary.py']"
         ),
     ):
-        ordered_published_subset_filenames(
-            benchmarks._BENCHMARK_MANIFEST_FILENAMES_BY_SELECTOR[
-                PUBLISHED_FULL_SUITE_MANIFEST_SELECTOR
-            ],
-            ("missing_boundary.py",),
-            missing_filename_error_prefix=(
-                benchmarks._PUBLISHED_BENCHMARK_MANIFEST_MISSING_ERROR_PREFIX
-            ),
+        benchmarks._ordered_published_benchmark_manifest_filenames(
+            ("missing_boundary.py",)
         )
 
 

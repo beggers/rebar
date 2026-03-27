@@ -1401,101 +1401,37 @@ class ReadmeReportingTest(unittest.TestCase):
     def test_scorecard_ordered_published_subset_filenames_deduplicates_requested_names(
         self,
     ) -> None:
-        ordered_subset = scorecard_io.ordered_published_subset_filenames(
-            ("gamma.py", "alpha.py", "beta.py", "delta.py"),
-            ("beta.py", "alpha.py", "beta.py", "alpha.py"),
-            missing_filename_error_prefix="unknown published filename(s): ",
+        self.assertFalse(
+            hasattr(scorecard_io, "ordered_published_subset_filenames")
         )
-
-        self.assertEqual(ordered_subset, ("alpha.py", "beta.py"))
 
     def test_scorecard_build_published_subset_registry_preserves_published_order(
         self,
     ) -> None:
-        published_filenames = (
-            "gamma.py",
-            "alpha.py",
-            "beta.py",
-            "delta.py",
+        self.assertFalse(
+            hasattr(scorecard_io, "build_published_subset_registry")
         )
-
-        registry = scorecard_io.build_published_subset_registry(
-            published_filenames,
-            {
-                "module-surface": ("beta.py", "alpha.py"),
-                "single-file": ("delta.py",),
-            },
-            full_suite_selector="published-full-suite",
-            missing_filename_error_prefix="unknown published filename(s): ",
-        )
-
-        self.assertEqual(registry["published-full-suite"], published_filenames)
-        self.assertEqual(registry["module-surface"], ("alpha.py", "beta.py"))
-        self.assertEqual(registry["single-file"], ("delta.py",))
 
     def test_scorecard_build_published_subset_registry_deduplicates_requested_names(
         self,
     ) -> None:
-        registry = scorecard_io.build_published_subset_registry(
-            ("gamma.py", "alpha.py", "beta.py", "delta.py"),
-            {
-                "module-surface": (
-                    "beta.py",
-                    "alpha.py",
-                    "beta.py",
-                    "alpha.py",
-                ),
-            },
-            full_suite_selector="published-full-suite",
-            missing_filename_error_prefix="unknown published filename(s): ",
+        self.assertFalse(
+            hasattr(scorecard_io, "build_published_subset_registry")
         )
-
-        self.assertEqual(registry["module-surface"], ("alpha.py", "beta.py"))
 
     def test_scorecard_build_published_subset_registry_rejects_unknown_requested_filenames(
         self,
     ) -> None:
-        with self.assertRaisesRegex(
-            ValueError,
-            re.escape("unknown published filename(s): ['missing.py']"),
-        ):
-            scorecard_io.build_published_subset_registry(
-                ("alpha.py", "beta.py"),
-                {"subset": ("beta.py", "missing.py")},
-                full_suite_selector="published-full-suite",
-                missing_filename_error_prefix="unknown published filename(s): ",
-            )
+        self.assertFalse(
+            hasattr(scorecard_io, "build_published_subset_registry")
+        )
 
     def test_scorecard_select_published_subset_paths_resolves_root_and_unknown_selector(
         self,
     ) -> None:
-        with tempfile.TemporaryDirectory() as temp_dir:
-            root = pathlib.Path(temp_dir)
-            filenames_by_selector = {
-                "published-full-suite": ("alpha.py", "beta.py"),
-                "focused": ("beta.py",),
-            }
-
-            self.assertEqual(
-                scorecard_io.select_published_subset_paths(
-                    "focused",
-                    filenames_by_selector=filenames_by_selector,
-                    root=root,
-                    unknown_selector_error_prefix="unknown test selector",
-                ),
-                (root / "beta.py",),
-            )
-
-            with self.assertRaisesRegex(
-                ValueError,
-                re.escape("unknown test selector 'missing'"),
-            ):
-                scorecard_io.select_published_subset_paths(
-                    "missing",
-                    filenames_by_selector=filenames_by_selector,
-                    root=root,
-                    unknown_selector_error_prefix="unknown test selector",
-                )
+        self.assertFalse(
+            hasattr(scorecard_io, "select_published_subset_paths")
+        )
 
     def test_scorecard_materialize_descriptor_value_materializes_nested_bytes_payloads(
         self,

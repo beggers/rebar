@@ -26,9 +26,6 @@ from rebar_harness.correctness import (
     published_fixture_manifests,
     select_correctness_fixture_paths,
 )
-from rebar_harness.scorecard_io import (
-    ordered_published_subset_filenames,
-)
 import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
     BoundedPatternCase,
@@ -1568,14 +1565,8 @@ def test_correctness_selector_subset_helper_keeps_fixture_specific_missing_filen
             "unknown published correctness fixture filename(s): ['missing_fixture.py']"
         ),
     ):
-        ordered_published_subset_filenames(
-            correctness._CORRECTNESS_FIXTURE_FILENAMES_BY_SELECTOR[
-                PUBLISHED_FULL_SUITE_FIXTURE_SELECTOR
-            ],
-            ("missing_fixture.py",),
-            missing_filename_error_prefix=(
-                correctness._PUBLISHED_CORRECTNESS_FIXTURE_MISSING_ERROR_PREFIX
-            ),
+        correctness._ordered_published_correctness_fixture_filenames(
+            ("missing_fixture.py",)
         )
 
 
