@@ -108,7 +108,7 @@ def _inline_standard_definition_assignments(
 
 
 def _explicit_standard_benchmark_definitions(
-) -> tuple[support.StandardBenchmarkAnchorContractDefinition, ...]:
+) -> tuple[collection_replacement_support.StandardBenchmarkAnchorContractDefinition, ...]:
     return (
         *support.COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS,
         *collection_replacement_support.COLLECTION_REPLACEMENT_STANDARD_BENCHMARK_DEFINITIONS,
@@ -384,7 +384,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
 
     monkeypatch.setattr(support, "load_manifest", _load_manifest)
     monkeypatch.setattr(
-        support,
+        collection_replacement_support,
         "published_case_ids_by_signature",
         _published_case_ids_by_signature,
     )
@@ -396,7 +396,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     support._clear_anchor_support_caches()
 
     assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
-    assert support.published_case_ids_by_signature(
+    assert collection_replacement_support.published_case_ids_by_signature(
         support._synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
     assert support.published_cases_by_id() is published_cases
@@ -415,7 +415,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     assert source_tree_live_manifest_calls == expected_source_tree_calls
 
     assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
-    assert support.published_case_ids_by_signature(
+    assert collection_replacement_support.published_case_ids_by_signature(
         support._synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
     assert support.published_cases_by_id() is published_cases
@@ -438,7 +438,7 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     support._clear_anchor_support_caches()
 
     assert support.live_manifest_workload(manifest_path, "anchored") is workloads[0]
-    assert support.published_case_ids_by_signature(
+    assert collection_replacement_support.published_case_ids_by_signature(
         support._synthetic_workload_signature
     ) == {("shared",): ("case-1",)}
     assert support.published_cases_by_id() is published_cases
@@ -963,7 +963,7 @@ def test_compile_proxy_standard_definition_preserves_manifest_order_and_anchor_m
         support.REGRESSION_MATRIX_MANIFEST_PATH,
     )
     assert definition.expected_anchor_case_ids == (
-        support._definition_anchor_expectations(
+        collection_replacement_support._definition_anchor_expectations(
             support.COMPILE_MATRIX_MANIFEST_PATH,
             {
                 "compile-inline-locale-bytes-warm": (
@@ -986,7 +986,7 @@ def test_compile_proxy_standard_definition_preserves_manifest_order_and_anchor_m
                 ),
             },
         )
-        | support._definition_anchor_expectations(
+        | collection_replacement_support._definition_anchor_expectations(
             support.REGRESSION_MATRIX_MANIFEST_PATH,
             {
                 "regression-parser-atomic-lookbehind-cold": (
@@ -1029,13 +1029,14 @@ def test_standard_benchmark_param_helpers_require_explicit_definition_inventory(
     assert not hasattr(support, "STANDARD_BENCHMARK_DEFINITIONS")
     assert tuple(
         parameter.values[0]
-        for parameter in support._standard_benchmark_definition_params(
+        for parameter in collection_replacement_support._standard_benchmark_definition_params(
             standard_definitions,
             include_definition=lambda _: True
         )
     ) == standard_definitions
 
     support_ast = support._parsed_module_ast(support)
+    owner_ast = support._parsed_module_ast(collection_replacement_support)
     assert not any(
         isinstance(node, ast.Assign)
         and any(
@@ -1050,8 +1051,18 @@ def test_standard_benchmark_param_helpers_require_explicit_definition_inventory(
         and node.name == "_build_standard_benchmark_definitions"
         for node in support_ast.body
     )
+    assert not any(
+        isinstance(node, ast.FunctionDef)
+        and node.name == "_standard_benchmark_definition_params"
+        for node in support_ast.body
+    )
+    assert any(
+        isinstance(node, ast.FunctionDef)
+        and node.name == "_standard_benchmark_definition_params"
+        for node in owner_ast.body
+    )
     helper_definition = support._module_function_definition(
-        support,
+        collection_replacement_support,
         "_standard_benchmark_definition_params",
     )
     assert tuple(argument.arg for argument in helper_definition.args.args) == (
@@ -2859,7 +2870,7 @@ def test_assert_zero_gap_manifest_workloads_measured_routes_through_shared_contr
         _assert_manifest_workload_contracts,
     )
 
-    support.assert_zero_gap_manifest_workloads_measured(
+    collection_replacement_support.assert_zero_gap_manifest_workloads_measured(
         manifest_path=manifest_path,
         manifest_id="synthetic-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
@@ -4986,7 +4997,7 @@ def test_anchored_workload_case_helpers_classify_anchored_and_unanchored_workloa
 
     anchor_case_ids = {("shared",): ("case-a", "case-b")}
 
-    assert support.anchored_workload_case_ids(
+    assert collection_replacement_support.anchored_workload_case_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
         workload_signature=support._synthetic_workload_signature,
@@ -4995,7 +5006,7 @@ def test_anchored_workload_case_helpers_classify_anchored_and_unanchored_workloa
         ("synthetic_boundary.py", "anchored"): ("case-a", "case-b"),
         ("synthetic_boundary.py", "unanchored"): (),
     }
-    assert support.unanchored_workload_ids(
+    assert collection_replacement_support.unanchored_workload_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
         workload_signature=support._synthetic_workload_signature,
@@ -5021,7 +5032,7 @@ def test_expected_anchored_workload_case_pairs_return_matching_objects(
         lambda: records_by_string_id((case,), id_attr="case_id"),
     )
 
-    anchored_pairs = support.expected_anchored_workload_case_pairs(
+    anchored_pairs = collection_replacement_support.expected_anchored_workload_case_pairs(
         manifest_path,
         expected_anchor_case_ids={
             ("synthetic_boundary.py", "anchored"): ("case-1",),
@@ -5059,7 +5070,7 @@ def test_expected_anchored_workload_case_pairs_rejects_manifest_name_drift(
     )
 
     with pytest.raises(AssertionError, match="does not match"):
-        support.expected_anchored_workload_case_pairs(
+        collection_replacement_support.expected_anchored_workload_case_pairs(
             pathlib.Path("synthetic_boundary.py"),
             expected_anchor_case_ids={
                 ("other_boundary.py", "anchored"): ("case-1",),
@@ -5095,7 +5106,7 @@ def test_expected_anchored_workload_case_pairs_rejects_multiple_case_ids(
         AssertionError,
         match="expected exactly one published correctness case",
     ):
-        support.expected_anchored_workload_case_pairs(
+        collection_replacement_support.expected_anchored_workload_case_pairs(
             pathlib.Path("synthetic_boundary.py"),
             expected_anchor_case_ids={
                 ("synthetic_boundary.py", "anchored"): ("case-1", "case-2"),
@@ -5128,7 +5139,7 @@ def test_expected_anchored_workload_case_pairs_rejects_missing_workload(
         AssertionError,
         match=r"expected anchored workload 'missing' to be in scope",
     ):
-        support.expected_anchored_workload_case_pairs(
+        collection_replacement_support.expected_anchored_workload_case_pairs(
             pathlib.Path("synthetic_boundary.py"),
             expected_anchor_case_ids={
                 ("synthetic_boundary.py", "missing"): ("case-1",),
@@ -5158,7 +5169,7 @@ def test_expected_anchored_workload_case_pairs_rejects_unpublished_case(
         AssertionError,
         match=r"expected anchored correctness case 'case-1' to be published",
     ):
-        support.expected_anchored_workload_case_pairs(
+        collection_replacement_support.expected_anchored_workload_case_pairs(
             pathlib.Path("synthetic_boundary.py"),
             expected_anchor_case_ids={
                 ("synthetic_boundary.py", "anchored"): ("case-1",),
@@ -5190,7 +5201,7 @@ def test_assert_anchored_workload_case_result_parity_delegates_expected_values(
         lambda workload, expected: calls.append((workload, expected)),
     )
 
-    support.assert_anchored_workload_case_result_parity((pair,))
+    collection_replacement_support.assert_anchored_workload_case_result_parity((pair,))
 
     assert calls == [(workload, "expected:case-1")]
 
@@ -5218,7 +5229,7 @@ def test_assert_anchored_workload_case_result_parity_accepts_matching_exceptions
     monkeypatch.setattr(support, "run_correctness_case_with_cpython", _raise_expected)
     monkeypatch.setattr(support, "run_benchmark_workload_with_cpython", _raise_observed)
 
-    support.assert_anchored_workload_case_result_parity((pair,))
+    collection_replacement_support.assert_anchored_workload_case_result_parity((pair,))
 
     assert benchmark_calls == [workload]
 
@@ -5245,15 +5256,15 @@ def test_assert_anchored_workload_case_result_parity_rejects_exception_message_d
     monkeypatch.setattr(support, "run_benchmark_workload_with_cpython", _raise_observed)
 
     with pytest.raises(AssertionError):
-        support.assert_anchored_workload_case_result_parity((pair,))
+        collection_replacement_support.assert_anchored_workload_case_result_parity((pair,))
 
 
 def test_standard_benchmark_definition_params_preserve_names_and_filters() -> None:
     def _assert_filtered_definition_params(
         predicate,
-    ) -> tuple[support.StandardBenchmarkAnchorContractDefinition, ...]:
+    ) -> tuple[collection_replacement_support.StandardBenchmarkAnchorContractDefinition, ...]:
         standard_definitions = _explicit_standard_benchmark_definitions()
-        params = support._standard_benchmark_definition_params(
+        params = collection_replacement_support._standard_benchmark_definition_params(
             standard_definitions,
             include_definition=predicate
         )
@@ -5271,16 +5282,16 @@ def test_standard_benchmark_definition_params_preserve_names_and_filters() -> No
         return expected_definitions
 
     legacy_definitions = _assert_filtered_definition_params(
-        support._has_standard_benchmark_legacy_workloads
+        collection_replacement_support._has_standard_benchmark_legacy_workloads
     )
     callback_definitions = _assert_filtered_definition_params(
-        support._runs_standard_benchmark_callback_result_parity
+        collection_replacement_support._runs_standard_benchmark_callback_result_parity
     )
     special_unanchored_definitions = _assert_filtered_definition_params(
-        support._has_standard_benchmark_special_unanchored_workloads
+        collection_replacement_support._has_standard_benchmark_special_unanchored_workloads
     )
     direct_parity_definitions = _assert_filtered_definition_params(
-        support._has_standard_benchmark_special_unanchored_direct_parity_cases
+        collection_replacement_support._has_standard_benchmark_special_unanchored_direct_parity_cases
     )
 
     assert all(definition.expected_legacy_workload_ids for definition in legacy_definitions)
@@ -5295,7 +5306,7 @@ def test_standard_benchmark_definition_params_preserve_names_and_filters() -> No
         for definition in direct_parity_definitions
     )
     assert tuple(
-        support._standard_benchmark_definition_id(definition)
+        collection_replacement_support._standard_benchmark_definition_id(definition)
         for definition in _explicit_standard_benchmark_definitions()
     ) == tuple(
         definition.name
@@ -5305,7 +5316,7 @@ def test_standard_benchmark_definition_params_preserve_names_and_filters() -> No
 
 def test_standard_benchmark_manifest_params_preserve_definition_and_manifest_order() -> None:
     standard_definitions = _explicit_standard_benchmark_definitions()
-    manifest_params = support._standard_benchmark_manifest_params(standard_definitions)
+    manifest_params = collection_replacement_support._standard_benchmark_manifest_params(standard_definitions)
 
     assert tuple(
         (parameter.values[0].name, parameter.values[1].name)
@@ -5319,7 +5330,7 @@ def test_standard_benchmark_manifest_params_preserve_definition_and_manifest_ord
 
 def test_standard_benchmark_special_unanchored_result_parity_params_preserve_order() -> None:
     standard_definitions = _explicit_standard_benchmark_definitions()
-    params = support._standard_benchmark_special_unanchored_result_parity_params(
+    params = collection_replacement_support._standard_benchmark_special_unanchored_result_parity_params(
         standard_definitions
     )
 
@@ -5339,9 +5350,24 @@ def test_source_tree_combined_suite_does_not_expose_deleted_standard_benchmark_i
     combined_suite = importlib.import_module(
         "tests.benchmarks.test_source_tree_combined_boundary_benchmarks"
     )
+    support_definition_names, support_assignment_names = (
+        support.top_level_module_definition_and_assignment_names(support)
+    )
     definition_names, assignment_names = (
         support.top_level_module_definition_and_assignment_names(combined_suite)
     )
+    owner_only_names = {
+        "StandardBenchmarkAnchorContractDefinition",
+        "published_case_ids_by_signature",
+        "anchored_workload_case_ids",
+        "unanchored_workload_ids",
+        "expected_anchored_workload_case_pairs",
+        "assert_anchored_workload_case_result_parity",
+        "assert_zero_gap_manifest_workloads_measured",
+        "_standard_benchmark_definition_params",
+        "_standard_benchmark_manifest_params",
+        "_standard_benchmark_special_unanchored_result_parity_params",
+    }
 
     assert "STANDARD_BENCHMARK_DEFINITIONS" not in (
         definition_names | assignment_names
@@ -5349,6 +5375,8 @@ def test_source_tree_combined_suite_does_not_expose_deleted_standard_benchmark_i
     assert not hasattr(combined_suite, "STANDARD_BENCHMARK_DEFINITIONS")
     assert combined_suite.benchmark_test_support is support
     assert not hasattr(combined_suite.benchmark_test_support, "STANDARD_BENCHMARK_DEFINITIONS")
+    assert owner_only_names.isdisjoint(support_definition_names | support_assignment_names)
+    assert owner_only_names.issubset(definition_names | assignment_names)
 
 
 def test_recording_benchmark_support_records_compile_calls_and_reuses_compiled_patterns(

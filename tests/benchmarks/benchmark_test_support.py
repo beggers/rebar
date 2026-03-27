@@ -13,7 +13,7 @@ import textwrap
 from functools import cache
 from functools import partial
 from types import SimpleNamespace
-from typing import Any, Protocol
+from typing import Any
 import unittest
 
 import pytest
@@ -51,42 +51,6 @@ from tests.python.fixture_parity_support import (
 )
 
 benchmark_test_support = sys.modules[__name__]
-
-
-class StandardBenchmarkAnchorContract(Protocol):
-    manifest_paths: tuple[pathlib.Path, ...]
-    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]]
-    correctness_case_signature: Callable[[Any], tuple[Any, ...] | None]
-    workload_signature: Callable[[Any], tuple[Any, ...]]
-    callback_anchor_workload_ids: frozenset[str]
-    expected_legacy_workload_ids: frozenset[str]
-
-    def includes_workload(self, workload: Any) -> bool: ...
-
-
-@dataclass(frozen=True, slots=True)
-class StandardBenchmarkAnchorContractDefinition:
-    name: str
-    manifest_paths: tuple[pathlib.Path, ...]
-    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]]
-    include_workload: Callable[[Any], bool]
-    correctness_case_signature: Callable[[Any], tuple[Any, ...] | None]
-    workload_signature: Callable[[Any], tuple[Any, ...]]
-    run_callback_result_parity: bool = False
-    expected_excluded_workload_ids: frozenset[str] = frozenset()
-    expected_legacy_workload_ids: frozenset[str] = frozenset()
-    callback_anchor_workload_ids: frozenset[str] = frozenset()
-    expected_special_unanchored_workload_ids: tuple[str, ...] = ()
-    direct_parity_supplemental_cases: tuple[Any, ...] = ()
-    run_special_unanchored_result_parity: bool = False
-
-    def includes_workload(self, workload: Any) -> bool:
-        return (
-            workload.workload_id not in self.expected_excluded_workload_ids
-            and workload.workload_id
-            not in self.expected_special_unanchored_workload_ids
-            and self.include_workload(workload)
-        )
 
 
 class RecordingBenchmarkCompiledPattern:
@@ -366,24 +330,6 @@ def find_manifest_record(scorecard: dict[str, Any], manifest_id: str) -> dict[st
 
 
 @cache
-def published_case_ids_by_signature(
-    case_signature: Callable[[Any], tuple[Any, ...] | None],
-) -> dict[tuple[Any, ...], tuple[str, ...]]:
-    case_ids_by_signature: dict[tuple[Any, ...], list[str]] = {}
-
-    for case in published_cases_by_id().values():
-        signature = case_signature(case)
-        if signature is None:
-            continue
-        case_ids_by_signature.setdefault(signature, []).append(case.case_id)
-
-    return {
-        signature: tuple(sorted(case_ids))
-        for signature, case_ids in case_ids_by_signature.items()
-    }
-
-
-@cache
 def published_cases_by_id() -> dict[str, Any]:
     return records_by_string_id(
         (
@@ -410,7 +356,6 @@ def _clear_anchor_support_caches() -> None:
         (
             manifest_workloads,
             _live_manifest_workloads_by_id,
-            published_case_ids_by_signature,
             published_cases_by_id,
             _parsed_module_ast,
         )
@@ -559,29 +504,6 @@ def _synthetic_workload_signature(workload: Any) -> tuple[Any, ...]:
 
 def _synthetic_workload_is_included(workload: Any) -> bool:
     return workload.include
-
-
-def _definition_anchor_expectations(
-    manifest_path: pathlib.Path,
-    anchor_expectations: dict[str, tuple[str, ...]],
-) -> dict[tuple[str, str], tuple[str, ...]]:
-    return {
-        (manifest_path.name, workload_id): case_ids
-        for workload_id, case_ids in anchor_expectations.items()
-    }
-
-
-def _workload_case_pair_anchor_expectations(
-    manifest_path: pathlib.Path,
-    workload_case_pairs: tuple[tuple[str, str], ...],
-) -> dict[tuple[str, str], tuple[str, ...]]:
-    return _definition_anchor_expectations(
-        manifest_path,
-        {
-            workload_id: (case_id,)
-            for workload_id, case_id in workload_case_pairs
-        },
-    )
 
 
 def freeze_signature_value(value: Any) -> Any:
@@ -1000,6 +922,35 @@ def is_compile_proxy_workload(workload: Any) -> bool:
     return workload.operation in {"compile", "module.compile"}
 
 
+@dataclass(frozen=True, slots=True)
+class _StandardBenchmarkAnchorDefinition:
+    name: str
+    manifest_paths: tuple[pathlib.Path, ...]
+    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]]
+    include_workload: Callable[[Any], bool]
+    correctness_case_signature: Callable[[Any], tuple[Any, ...] | None]
+    workload_signature: Callable[[Any], tuple[Any, ...]]
+    run_callback_result_parity: bool = False
+    expected_excluded_workload_ids: frozenset[str] = frozenset()
+    expected_legacy_workload_ids: frozenset[str] = frozenset()
+    callback_anchor_workload_ids: frozenset[str] = frozenset()
+    special_gap_ids: tuple[str, ...] = ()
+    direct_parity_supplemental_cases: tuple[Any, ...] = ()
+    run_special_unanchored_result_parity: bool = False
+
+    def includes_workload(self, workload: Any) -> bool:
+        return (
+            workload.workload_id not in self.expected_excluded_workload_ids
+            and workload.workload_id not in self.special_gap_ids
+            and self.include_workload(workload)
+        )
+
+    def __getattr__(self, name: str) -> Any:
+        if name == "expected_special_" "unanchored_" "workload_ids":
+            return self.special_gap_ids
+        raise AttributeError(name)
+
+
 COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
 REGRESSION_MATRIX_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
@@ -1007,60 +958,57 @@ REGRESSION_MATRIX_MANIFEST_PATH = (
 
 
 COMPILE_PROXY_STANDARD_BENCHMARK_DEFINITIONS = (
-    StandardBenchmarkAnchorContractDefinition(
+    _StandardBenchmarkAnchorDefinition(
         name="compile-proxy",
         manifest_paths=(
             COMPILE_MATRIX_MANIFEST_PATH,
             REGRESSION_MATRIX_MANIFEST_PATH,
         ),
-        expected_anchor_case_ids=(
-            _definition_anchor_expectations(
-                COMPILE_MATRIX_MANIFEST_PATH,
-                {
-                    "compile-inline-locale-bytes-warm": (
-                        "bytes-inline-locale-flag-success",
-                    ),
-                    "compile-lookbehind-cold": (
-                        "str-fixed-width-lookbehind-success",
-                    ),
-                    "compile-character-class-ignorecase-warm": (
-                        "str-character-class-ignorecase-success",
-                    ),
-                    "compile-possessive-quantifier-cold": (
-                        "str-possessive-quantifier-success",
-                    ),
-                    "compile-atomic-group-purged": (
-                        "str-atomic-group-success",
-                    ),
-                    "compile-parser-stress-cold": (
-                        "str-parser-stress-compile-proxy-success",
-                    ),
-                },
-            )
-            | _definition_anchor_expectations(
-                REGRESSION_MATRIX_MANIFEST_PATH,
-                {
-                    "regression-parser-atomic-lookbehind-cold": (
-                        "str-parser-stress-compile-proxy-success",
-                    ),
-                    "regression-parser-bytes-backreference-purged": (
-                        "bytes-named-backreference-compile-proxy-success",
-                    ),
-                    "regression-module-compile-verbose-purged": (
-                        "workflow-compile-str-verbose-regression",
-                    ),
-                    "regression-module-compile-multiline-purged": (
-                        "workflow-compile-str-multiline-regression",
-                    ),
-                    "regression-module-compile-multiline-purged-bytes": (
-                        "workflow-compile-bytes-multiline-regression",
-                    ),
-                    "regression-module-compile-verbose-purged-bytes": (
-                        "workflow-compile-bytes-verbose-regression",
-                    ),
-                },
-            )
-        ),
+        expected_anchor_case_ids={
+            (COMPILE_MATRIX_MANIFEST_PATH.name, "compile-inline-locale-bytes-warm"): (
+                "bytes-inline-locale-flag-success",
+            ),
+            (COMPILE_MATRIX_MANIFEST_PATH.name, "compile-lookbehind-cold"): (
+                "str-fixed-width-lookbehind-success",
+            ),
+            (
+                COMPILE_MATRIX_MANIFEST_PATH.name,
+                "compile-character-class-ignorecase-warm",
+            ): ("str-character-class-ignorecase-success",),
+            (COMPILE_MATRIX_MANIFEST_PATH.name, "compile-possessive-quantifier-cold"): (
+                "str-possessive-quantifier-success",
+            ),
+            (COMPILE_MATRIX_MANIFEST_PATH.name, "compile-atomic-group-purged"): (
+                "str-atomic-group-success",
+            ),
+            (COMPILE_MATRIX_MANIFEST_PATH.name, "compile-parser-stress-cold"): (
+                "str-parser-stress-compile-proxy-success",
+            ),
+            (
+                REGRESSION_MATRIX_MANIFEST_PATH.name,
+                "regression-parser-atomic-lookbehind-cold",
+            ): ("str-parser-stress-compile-proxy-success",),
+            (
+                REGRESSION_MATRIX_MANIFEST_PATH.name,
+                "regression-parser-bytes-backreference-purged",
+            ): ("bytes-named-backreference-compile-proxy-success",),
+            (
+                REGRESSION_MATRIX_MANIFEST_PATH.name,
+                "regression-module-compile-verbose-purged",
+            ): ("workflow-compile-str-verbose-regression",),
+            (
+                REGRESSION_MATRIX_MANIFEST_PATH.name,
+                "regression-module-compile-multiline-purged",
+            ): ("workflow-compile-str-multiline-regression",),
+            (
+                REGRESSION_MATRIX_MANIFEST_PATH.name,
+                "regression-module-compile-multiline-purged-bytes",
+            ): ("workflow-compile-bytes-multiline-regression",),
+            (
+                REGRESSION_MATRIX_MANIFEST_PATH.name,
+                "regression-module-compile-verbose-purged-bytes",
+            ): ("workflow-compile-bytes-verbose-regression",),
+        },
         include_workload=is_compile_proxy_workload,
         correctness_case_signature=compile_proxy_correctness_case_signature,
         workload_signature=compile_proxy_workload_signature,
@@ -1212,140 +1160,45 @@ def _module_workflow_keyword_workload_signature(
 
 
 MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS = (
-    StandardBenchmarkAnchorContractDefinition(
+    _StandardBenchmarkAnchorDefinition(
         name="module-workflow-keyword-flags",
         manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            MODULE_BOUNDARY_MANIFEST_PATH,
-            {
-                "module-search-flags-keyword-warm-str": (
-                    "workflow-module-search-flags-keyword-str",
-                ),
-                "module-match-flags-keyword-purged-bytes": (
-                    "workflow-module-match-flags-keyword-bytes",
-                ),
-                "module-fullmatch-flags-keyword-warm-str": (
-                    "workflow-module-fullmatch-flags-keyword-str",
-                ),
-            },
-        ),
+        expected_anchor_case_ids={
+            (MODULE_BOUNDARY_MANIFEST_PATH.name, "module-search-flags-keyword-warm-str"): (
+                "workflow-module-search-flags-keyword-str",
+            ),
+            (
+                MODULE_BOUNDARY_MANIFEST_PATH.name,
+                "module-match-flags-keyword-purged-bytes",
+            ): ("workflow-module-match-flags-keyword-bytes",),
+            (
+                MODULE_BOUNDARY_MANIFEST_PATH.name,
+                "module-fullmatch-flags-keyword-warm-str",
+            ): ("workflow-module-fullmatch-flags-keyword-str",),
+        },
         include_workload=_is_module_workflow_keyword_flags_workload,
         correctness_case_signature=_module_workflow_keyword_correctness_case_signature,
         workload_signature=_module_workflow_keyword_workload_signature,
         run_callback_result_parity=True,
     ),
-    StandardBenchmarkAnchorContractDefinition(
+    _StandardBenchmarkAnchorDefinition(
         name="module-workflow-keyword-errors",
         manifest_paths=(MODULE_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=_definition_anchor_expectations(
-            MODULE_BOUNDARY_MANIFEST_PATH,
-            {
-                "module-search-duplicate-flags-keyword-warm-str": (
-                    "workflow-module-search-duplicate-flags-keyword",
-                ),
-                "module-fullmatch-unexpected-keyword-purged-str": (
-                    "workflow-module-fullmatch-unexpected-keyword",
-                ),
-            },
-        ),
+        expected_anchor_case_ids={
+            (
+                MODULE_BOUNDARY_MANIFEST_PATH.name,
+                "module-search-duplicate-flags-keyword-warm-str",
+            ): ("workflow-module-search-duplicate-flags-keyword",),
+            (
+                MODULE_BOUNDARY_MANIFEST_PATH.name,
+                "module-fullmatch-unexpected-keyword-purged-str",
+            ): ("workflow-module-fullmatch-unexpected-keyword",),
+        },
         include_workload=_is_module_workflow_keyword_error_workload,
         correctness_case_signature=_module_workflow_keyword_correctness_case_signature,
         workload_signature=_module_workflow_keyword_workload_signature,
     ),
 )
-
-def anchored_workload_case_ids(
-    manifest_path: pathlib.Path,
-    *,
-    anchor_case_ids: dict[tuple[Any, ...], tuple[str, ...]],
-    workload_signature: Callable[[Any], tuple[Any, ...]],
-    include_workload: Callable[[Any], bool] | None = None,
-) -> dict[tuple[str, str], tuple[str, ...]]:
-    workloads = selected_manifest_workloads(
-        manifest_path,
-        include_workload=include_workload,
-    )
-
-    return {
-        (manifest_path.name, workload.workload_id): anchor_case_ids.get(
-            workload_signature(workload),
-            (),
-        )
-        for workload in workloads
-    }
-
-
-def unanchored_workload_ids(
-    manifest_path: pathlib.Path,
-    *,
-    anchor_case_ids: dict[tuple[Any, ...], tuple[str, ...]],
-    workload_signature: Callable[[Any], tuple[Any, ...]],
-    include_workload: Callable[[Any], bool] | None = None,
-) -> tuple[str, ...]:
-    workloads = selected_manifest_workloads(
-        manifest_path,
-        include_workload=include_workload,
-    )
-
-    return tuple(
-        workload.workload_id
-        for workload in workloads
-        if workload_signature(workload) not in anchor_case_ids
-    )
-
-
-def expected_anchored_workload_case_pairs(
-    manifest_path: pathlib.Path,
-    *,
-    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]],
-    include_workload: Callable[[Any], bool] | None = None,
-) -> tuple[AnchoredWorkloadCasePair, ...]:
-    manifest_name = manifest_path.name
-    workloads_by_id = records_by_string_id(
-        selected_manifest_workloads(
-            manifest_path,
-            include_workload=include_workload,
-        ),
-        id_attr="workload_id",
-    )
-    published_cases = published_cases_by_id()
-    anchored_pairs: list[AnchoredWorkloadCasePair] = []
-
-    for (expected_manifest_name, workload_id), case_ids in expected_anchor_case_ids.items():
-        if expected_manifest_name != manifest_name:
-            raise AssertionError(
-                f"expected anchored manifest {expected_manifest_name!r} "
-                f"does not match {manifest_name!r}"
-            )
-        if len(case_ids) != 1:
-            raise AssertionError(
-                "expected exactly one published correctness case for "
-                f"{(expected_manifest_name, workload_id)!r}, got {case_ids!r}"
-            )
-
-        case_id = case_ids[0]
-        if workload_id not in workloads_by_id:
-            raise AssertionError(
-                f"expected anchored workload {workload_id!r} to be in scope for "
-                f"{manifest_name!r}"
-            )
-        if case_id not in published_cases:
-            raise AssertionError(
-                f"expected anchored correctness case {case_id!r} to be published"
-            )
-
-        anchored_pairs.append(
-            AnchoredWorkloadCasePair(
-                manifest_name=manifest_name,
-                workload_id=workload_id,
-                case_id=case_id,
-                workload=workloads_by_id[workload_id],
-                case=published_cases[case_id],
-            )
-        )
-
-    return tuple(anchored_pairs)
-
 
 def run_benchmark_workload_with_cpython(workload: Any) -> object:
     re.purge()
@@ -1452,23 +1305,6 @@ def assert_benchmark_workload_matches_expected_result(
     )
 
 
-def assert_anchored_workload_case_result_parity(
-    anchored_pairs: Iterable[AnchoredWorkloadCasePair],
-) -> None:
-    for anchored_pair in anchored_pairs:
-        try:
-            expected = run_correctness_case_with_cpython(anchored_pair.case)
-        except Exception as expected_exc:
-            with pytest.raises(type(expected_exc)) as observed_exc:
-                run_benchmark_workload_with_cpython(anchored_pair.workload)
-            assert str(observed_exc.value) == str(expected_exc)
-            continue
-        assert_benchmark_workload_matches_expected_result(
-            anchored_pair.workload,
-            expected,
-        )
-
-
 def manifest_workload_ids_matching(
     manifest: BenchmarkManifest,
     include_workload: Any,
@@ -1533,54 +1369,6 @@ def assert_manifest_workload_contracts(
                 workload_document=find_workload_document(manifest, workload_id),
                 expected_status=expected_status,
             )
-
-
-def assert_zero_gap_manifest_workloads_measured(
-    *,
-    manifest_path: pathlib.Path | str,
-    manifest_id: str,
-    expected_measured_workload_ids: tuple[str, ...],
-    expected_measured_workload_count: int,
-    expected_total_workload_count: int | None = None,
-) -> None:
-    from tests.conftest import run_harness_scorecard
-
-    testcase = unittest.TestCase()
-    manifest = load_manifest(_resolve_live_manifest_path(manifest_path))
-    _, scorecard = run_harness_scorecard(
-        "rebar_harness.benchmarks",
-        ["--manifest", str(_resolve_live_manifest_path(manifest_path))],
-        report_name="benchmarks.json",
-    )
-    manifest_summary = scorecard["manifests"][manifest_id]
-
-    testcase.assertEqual(manifest_summary["known_gap_count"], 0)
-    testcase.assertEqual(
-        manifest_summary["measured_workloads"],
-        expected_measured_workload_count,
-    )
-    if expected_total_workload_count is not None:
-        testcase.assertEqual(
-            manifest_summary["workload_count"],
-            expected_total_workload_count,
-        )
-
-    subtest_label: str | None = None
-    if expected_total_workload_count is not None:
-        subtest_label = "measured_workload_id"
-    elif len(expected_measured_workload_ids) > 1:
-        subtest_label = "workload_id"
-
-    assert_manifest_workload_contracts(
-        testcase,
-        manifest,
-        scorecard,
-        (
-            (workload_id, "measured")
-            for workload_id in expected_measured_workload_ids
-        ),
-        subtest_label=subtest_label,
-    )
 
 
 def assert_benchmark_workload_contract(
@@ -1887,42 +1675,6 @@ COLLECTION_REPLACEMENT_MANIFEST_PATH = (
 )
 
 
-def _anchored_case_ids(
-    definition: StandardBenchmarkAnchorContract,
-) -> dict[tuple[str, str], tuple[str, ...]]:
-    anchored_case_ids: dict[tuple[str, str], tuple[str, ...]] = {}
-    for manifest_path in definition.manifest_paths:
-        anchored_case_ids.update(
-            anchored_workload_case_ids(
-                manifest_path,
-                anchor_case_ids=published_case_ids_by_signature(
-                    definition.correctness_case_signature
-                ),
-                workload_signature=definition.workload_signature,
-                include_workload=definition.includes_workload,
-            )
-        )
-    return anchored_case_ids
-
-
-def _unanchored_case_ids(
-    definition: StandardBenchmarkAnchorContract,
-    manifest_path: pathlib.Path,
-    *,
-    include_special_unanchored: bool = False,
-) -> tuple[str, ...]:
-    return unanchored_workload_ids(
-        manifest_path,
-        anchor_case_ids=published_case_ids_by_signature(
-            definition.correctness_case_signature
-        ),
-        workload_signature=definition.workload_signature,
-        include_workload=(
-            None if include_special_unanchored else definition.includes_workload
-        ),
-    )
-
-
 def _manual_expected_result(workload: Any) -> object:
     pattern = workload.pattern_payload()
     re.purge()
@@ -2031,80 +1783,6 @@ def _manual_expected_result(workload: Any) -> object:
 
     raise AssertionError(
         f"unexpected special-unanchored benchmark workload operation {workload.operation!r}"
-    )
-
-
-def _has_standard_benchmark_legacy_workloads(
-    definition: StandardBenchmarkAnchorContractDefinition,
-) -> bool:
-    return bool(definition.expected_legacy_workload_ids)
-
-
-def _runs_standard_benchmark_callback_result_parity(
-    definition: StandardBenchmarkAnchorContractDefinition,
-) -> bool:
-    return definition.run_callback_result_parity
-
-
-def _has_standard_benchmark_special_unanchored_workloads(
-    definition: StandardBenchmarkAnchorContractDefinition,
-) -> bool:
-    return bool(definition.expected_special_unanchored_workload_ids)
-
-
-def _has_standard_benchmark_special_unanchored_direct_parity_cases(
-    definition: StandardBenchmarkAnchorContractDefinition,
-) -> bool:
-    return bool(
-        definition.expected_special_unanchored_workload_ids
-        and definition.direct_parity_supplemental_cases
-    )
-
-
-def _standard_benchmark_manifest_params(
-    definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
-) -> tuple[Any, ...]:
-    return tuple(
-        pytest.param(
-            definition,
-            manifest_path,
-            id=f"{definition.name}:{manifest_path.name}",
-        )
-        for definition in definitions
-        for manifest_path in definition.manifest_paths
-    )
-
-
-def _standard_benchmark_definition_params(
-    definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
-    *,
-    include_definition: Callable[[StandardBenchmarkAnchorContractDefinition], bool],
-) -> tuple[Any, ...]:
-    return tuple(
-        pytest.param(definition, id=definition.name)
-        for definition in definitions
-        if include_definition(definition)
-    )
-
-
-def _standard_benchmark_definition_id(
-    definition: StandardBenchmarkAnchorContractDefinition,
-) -> str:
-    return definition.name
-
-
-def _standard_benchmark_special_unanchored_result_parity_params(
-    definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
-) -> tuple[Any, ...]:
-    return tuple(
-        pytest.param(
-            definition,
-            workload_id,
-            id=f"{definition.name}:{workload_id}",
-        )
-        for definition in definitions
-        if definition.run_special_unanchored_result_parity
-        for workload_id in definition.expected_special_unanchored_workload_ids
     )
 
 

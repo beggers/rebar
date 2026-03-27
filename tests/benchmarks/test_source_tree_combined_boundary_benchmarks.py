@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from collections import Counter
 from dataclasses import dataclass
 from functools import cache, partial
@@ -28,7 +28,6 @@ from tests.benchmarks import benchmark_test_support
 from tests.conftest import (
     REPO_ROOT,
     records_by_string_id,
-    run_harness_scorecard,
 )
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
@@ -64,6 +63,306 @@ _PATTERN_BOUNDARY_WRONG_TEXT_MODEL_SOURCE_WORKLOAD_IDS = (
 _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID = (
     "module-search-numbered-optional-group-conditional-cold-gap"
 )
+
+
+@dataclass(frozen=True, slots=True)
+class StandardBenchmarkAnchorContractDefinition:
+    name: str
+    manifest_paths: tuple[pathlib.Path, ...]
+    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]]
+    include_workload: Callable[[Any], bool]
+    correctness_case_signature: Callable[[Any], tuple[Any, ...] | None]
+    workload_signature: Callable[[Any], tuple[Any, ...]]
+    run_callback_result_parity: bool = False
+    expected_excluded_workload_ids: frozenset[str] = frozenset()
+    expected_legacy_workload_ids: frozenset[str] = frozenset()
+    callback_anchor_workload_ids: frozenset[str] = frozenset()
+    expected_special_unanchored_workload_ids: tuple[str, ...] = ()
+    direct_parity_supplemental_cases: tuple[Any, ...] = ()
+    run_special_unanchored_result_parity: bool = False
+
+    def includes_workload(self, workload: Any) -> bool:
+        return (
+            workload.workload_id not in self.expected_excluded_workload_ids
+            and workload.workload_id
+            not in self.expected_special_unanchored_workload_ids
+            and self.include_workload(workload)
+        )
+
+
+def _definition_anchor_expectations(
+    manifest_path: pathlib.Path,
+    anchor_expectations: dict[str, tuple[str, ...]],
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    return {
+        (manifest_path.name, workload_id): case_ids
+        for workload_id, case_ids in anchor_expectations.items()
+    }
+
+
+def _workload_case_pair_anchor_expectations(
+    manifest_path: pathlib.Path,
+    workload_case_pairs: tuple[tuple[str, str], ...],
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    return _definition_anchor_expectations(
+        manifest_path,
+        {
+            workload_id: (case_id,)
+            for workload_id, case_id in workload_case_pairs
+        },
+    )
+
+
+@cache
+def published_case_ids_by_signature(
+    case_signature: Callable[[Any], tuple[Any, ...] | None],
+) -> dict[tuple[Any, ...], tuple[str, ...]]:
+    case_ids_by_signature: dict[tuple[Any, ...], list[str]] = {}
+
+    for case in benchmark_test_support.published_cases_by_id().values():
+        signature = case_signature(case)
+        if signature is None:
+            continue
+        case_ids_by_signature.setdefault(signature, []).append(case.case_id)
+
+    return {
+        signature: tuple(sorted(case_ids))
+        for signature, case_ids in case_ids_by_signature.items()
+    }
+
+
+def anchored_workload_case_ids(
+    manifest_path: pathlib.Path,
+    *,
+    anchor_case_ids: dict[tuple[Any, ...], tuple[str, ...]],
+    workload_signature: Callable[[Any], tuple[Any, ...]],
+    include_workload: Callable[[Any], bool] | None = None,
+) -> dict[tuple[str, str], tuple[str, ...]]:
+    workloads = benchmark_test_support.selected_manifest_workloads(
+        manifest_path,
+        include_workload=include_workload,
+    )
+    return {
+        (manifest_path.name, workload.workload_id): anchor_case_ids.get(
+            workload_signature(workload),
+            (),
+        )
+        for workload in workloads
+    }
+
+
+def unanchored_workload_ids(
+    manifest_path: pathlib.Path,
+    *,
+    anchor_case_ids: dict[tuple[Any, ...], tuple[str, ...]],
+    workload_signature: Callable[[Any], tuple[Any, ...]],
+    include_workload: Callable[[Any], bool] | None = None,
+) -> tuple[str, ...]:
+    workloads = benchmark_test_support.selected_manifest_workloads(
+        manifest_path,
+        include_workload=include_workload,
+    )
+    return tuple(
+        workload.workload_id
+        for workload in workloads
+        if workload_signature(workload) not in anchor_case_ids
+    )
+
+
+def expected_anchored_workload_case_pairs(
+    manifest_path: pathlib.Path,
+    *,
+    expected_anchor_case_ids: dict[tuple[str, str], tuple[str, ...]],
+    include_workload: Callable[[Any], bool] | None = None,
+) -> tuple[benchmark_test_support.AnchoredWorkloadCasePair, ...]:
+    manifest_name = manifest_path.name
+    workloads_by_id = records_by_string_id(
+        benchmark_test_support.selected_manifest_workloads(
+            manifest_path,
+            include_workload=include_workload,
+        ),
+        id_attr="workload_id",
+    )
+    published_cases = benchmark_test_support.published_cases_by_id()
+    anchored_pairs: list[benchmark_test_support.AnchoredWorkloadCasePair] = []
+
+    for (expected_manifest_name, workload_id), case_ids in expected_anchor_case_ids.items():
+        if expected_manifest_name != manifest_name:
+            raise AssertionError(
+                f"expected anchored manifest {expected_manifest_name!r} "
+                f"does not match {manifest_name!r}"
+            )
+        if len(case_ids) != 1:
+            raise AssertionError(
+                "expected exactly one published correctness case for "
+                f"{(expected_manifest_name, workload_id)!r}, got {case_ids!r}"
+            )
+        case_id = case_ids[0]
+        if workload_id not in workloads_by_id:
+            raise AssertionError(
+                f"expected anchored workload {workload_id!r} to be in scope for "
+                f"{manifest_name!r}"
+            )
+        if case_id not in published_cases:
+            raise AssertionError(
+                f"expected anchored correctness case {case_id!r} to be published"
+            )
+        anchored_pairs.append(
+            benchmark_test_support.AnchoredWorkloadCasePair(
+                manifest_name=manifest_name,
+                workload_id=workload_id,
+                case_id=case_id,
+                workload=workloads_by_id[workload_id],
+                case=published_cases[case_id],
+            )
+        )
+    return tuple(anchored_pairs)
+
+
+def assert_anchored_workload_case_result_parity(
+    anchored_pairs: Iterable[benchmark_test_support.AnchoredWorkloadCasePair],
+) -> None:
+    for anchored_pair in anchored_pairs:
+        try:
+            expected = benchmark_test_support.run_correctness_case_with_cpython(
+                anchored_pair.case
+            )
+        except Exception as expected_exc:
+            with pytest.raises(type(expected_exc)) as observed_exc:
+                benchmark_test_support.run_benchmark_workload_with_cpython(
+                    anchored_pair.workload
+                )
+            assert str(observed_exc.value) == str(expected_exc)
+            continue
+        benchmark_test_support.assert_benchmark_workload_matches_expected_result(
+            anchored_pair.workload,
+            expected,
+        )
+
+
+def assert_zero_gap_manifest_workloads_measured(
+    *,
+    manifest_path: pathlib.Path | str,
+    manifest_id: str,
+    expected_measured_workload_ids: tuple[str, ...],
+    expected_measured_workload_count: int,
+    expected_total_workload_count: int | None = None,
+) -> None:
+    from tests.conftest import run_harness_scorecard as shared_run_harness_scorecard
+
+    testcase = unittest.TestCase()
+    resolved_manifest_path = benchmark_test_support._resolve_live_manifest_path(
+        manifest_path
+    )
+    manifest = benchmark_test_support.load_manifest(resolved_manifest_path)
+    _, scorecard = shared_run_harness_scorecard(
+        "rebar_harness.benchmarks",
+        ["--manifest", str(resolved_manifest_path)],
+        report_name="benchmarks.json",
+    )
+    manifest_summary = scorecard["manifests"][manifest_id]
+
+    testcase.assertEqual(manifest_summary["known_gap_count"], 0)
+    testcase.assertEqual(
+        manifest_summary["measured_workloads"],
+        expected_measured_workload_count,
+    )
+    if expected_total_workload_count is not None:
+        testcase.assertEqual(
+            manifest_summary["workload_count"],
+            expected_total_workload_count,
+        )
+
+    subtest_label: str | None = None
+    if expected_total_workload_count is not None:
+        subtest_label = "measured_workload_id"
+    elif len(expected_measured_workload_ids) > 1:
+        subtest_label = "workload_id"
+
+    benchmark_test_support.assert_manifest_workload_contracts(
+        testcase,
+        manifest,
+        scorecard,
+        (
+            (workload_id, "measured")
+            for workload_id in expected_measured_workload_ids
+        ),
+        subtest_label=subtest_label,
+    )
+
+
+def _has_standard_benchmark_legacy_workloads(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> bool:
+    return bool(definition.expected_legacy_workload_ids)
+
+
+def _runs_standard_benchmark_callback_result_parity(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> bool:
+    return definition.run_callback_result_parity
+
+
+def _has_standard_benchmark_special_unanchored_workloads(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> bool:
+    return bool(definition.expected_special_unanchored_workload_ids)
+
+
+def _has_standard_benchmark_special_unanchored_direct_parity_cases(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> bool:
+    return bool(
+        definition.expected_special_unanchored_workload_ids
+        and definition.direct_parity_supplemental_cases
+    )
+
+
+def _standard_benchmark_manifest_params(
+    definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
+) -> tuple[Any, ...]:
+    return tuple(
+        pytest.param(
+            definition,
+            manifest_path,
+            id=f"{definition.name}:{manifest_path.name}",
+        )
+        for definition in definitions
+        for manifest_path in definition.manifest_paths
+    )
+
+
+def _standard_benchmark_definition_params(
+    definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
+    *,
+    include_definition: Callable[[StandardBenchmarkAnchorContractDefinition], bool],
+) -> tuple[Any, ...]:
+    return tuple(
+        pytest.param(definition, id=definition.name)
+        for definition in definitions
+        if include_definition(definition)
+    )
+
+
+def _standard_benchmark_definition_id(
+    definition: StandardBenchmarkAnchorContractDefinition,
+) -> str:
+    return definition.name
+
+
+def _standard_benchmark_special_unanchored_result_parity_params(
+    definitions: tuple[StandardBenchmarkAnchorContractDefinition, ...],
+) -> tuple[Any, ...]:
+    return tuple(
+        pytest.param(
+            definition,
+            workload_id,
+            id=f"{definition.name}:{workload_id}",
+        )
+        for definition in definitions
+        if definition.run_special_unanchored_result_parity
+        for workload_id in definition.expected_special_unanchored_workload_ids
+    )
 
 
 def _compile_search_fullmatch_case_signature(
@@ -1201,10 +1500,10 @@ def _published_benchmark_manifest_ids() -> frozenset[str]:
 
 
 _PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK = (
-    benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+    StandardBenchmarkAnchorContractDefinition(
         name="pattern-window-positional-indexlike",
         manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+        expected_anchor_case_ids=_definition_anchor_expectations(
             PATTERN_BOUNDARY_MANIFEST_PATH,
             {
                 "pattern-search-pos-indexlike-positional-warm-str": (
@@ -1232,10 +1531,10 @@ _PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK = (
         workload_signature=_pattern_window_positional_indexlike_workload_signature,
         run_callback_result_parity=True,
     ),
-    benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+    StandardBenchmarkAnchorContractDefinition(
         name="pattern-window-keyword",
         manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+        expected_anchor_case_ids=_definition_anchor_expectations(
             PATTERN_BOUNDARY_MANIFEST_PATH,
             {
                 "pattern-search-pos-keyword-warm-str": (
@@ -1293,10 +1592,10 @@ _PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK = (
         workload_signature=_pattern_keyword_window_workload_signature,
         run_callback_result_parity=True,
     ),
-    benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+    StandardBenchmarkAnchorContractDefinition(
         name="pattern-boundary-bounded-wildcard",
         manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+        expected_anchor_case_ids=_definition_anchor_expectations(
             PATTERN_BOUNDARY_MANIFEST_PATH,
             {
                 "pattern-search-bounded-wildcard-ignorecase-warm-str": (
@@ -1324,10 +1623,10 @@ _PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK = (
         workload_signature=_pattern_bounded_wildcard_workload_signature,
         run_callback_result_parity=True,
     ),
-    benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+    StandardBenchmarkAnchorContractDefinition(
         name="pattern-boundary-verbose-regression",
         manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+        expected_anchor_case_ids=_definition_anchor_expectations(
             PATTERN_BOUNDARY_MANIFEST_PATH,
             {
                 "pattern-search-verbose-regression-warm-str": (
@@ -1373,10 +1672,10 @@ _PATTERN_BOUNDARY_STANDARD_DEFINITION_BLOCK = (
         workload_signature=_pattern_verbose_regression_workload_signature,
         run_callback_result_parity=True,
     ),
-    benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+    StandardBenchmarkAnchorContractDefinition(
         name="pattern-boundary-wrong-text-model",
         manifest_paths=(PATTERN_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+        expected_anchor_case_ids=_definition_anchor_expectations(
             PATTERN_BOUNDARY_MANIFEST_PATH,
             {
                 "pattern-search-on-bytes-string-warm-str": (
@@ -1503,10 +1802,10 @@ def _compiled_pattern_module_helper_route(
 
 
 _COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK = (
-    benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+    StandardBenchmarkAnchorContractDefinition(
         name="module-workflow-compiled-pattern-literal-success",
         manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+        expected_anchor_case_ids=_definition_anchor_expectations(
             benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
             {
                 "module-search-literal-warm-hit-str-compiled-pattern": (
@@ -1527,10 +1826,10 @@ _COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK = (
         workload_signature=benchmark_test_support._module_workflow_compiled_pattern_workload_signature,
         run_callback_result_parity=True,
     ),
-    benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+    StandardBenchmarkAnchorContractDefinition(
         name="module-workflow-compiled-pattern-bounded-wildcard-success",
         manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+        expected_anchor_case_ids=_definition_anchor_expectations(
             benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
             {
                 "module-search-bounded-wildcard-ignorecase-warm-hit-str-compiled-pattern": (
@@ -1553,10 +1852,10 @@ _COMPILED_PATTERN_MODULE_HELPER_STANDARD_DEFINITION_BLOCK = (
         workload_signature=benchmark_test_support._module_workflow_compiled_pattern_workload_signature,
         run_callback_result_parity=True,
     ),
-    benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+    StandardBenchmarkAnchorContractDefinition(
         name="module-workflow-compiled-pattern-verbose-bytes-success",
         manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
-        expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+        expected_anchor_case_ids=_definition_anchor_expectations(
             benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
             {
                 "module-search-verbose-regression-warm-hit-bytes-compiled-pattern": (
@@ -1585,10 +1884,10 @@ COMPILED_PATTERN_MODULE_HELPER_STANDARD_BENCHMARK_DEFINITIONS = (
 @cache
 def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
     return (
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="module-workflow-compiled-pattern-wrong-text-model",
             manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            expected_anchor_case_ids=_definition_anchor_expectations(
                 benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
                 {
                     "module-search-on-bytes-string-warm-str-compiled-pattern": (
@@ -1612,10 +1911,10 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
                 benchmark_test_support._module_workflow_compiled_pattern_workload_signature
             ),
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="optional-group-conditional",
             manifest_paths=(benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            expected_anchor_case_ids=_definition_anchor_expectations(
                 benchmark_test_support.OPTIONAL_GROUP_MANIFEST_PATH,
                 {
                     _OPTIONAL_GROUP_CONDITIONAL_WORKLOAD_ID: (
@@ -1628,10 +1927,10 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
             workload_signature=_optional_group_workload_signature,
             run_callback_result_parity=True,
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="nested-group",
             manifest_paths=(benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            expected_anchor_case_ids=_definition_anchor_expectations(
                 benchmark_test_support.NESTED_GROUP_MANIFEST_PATH,
                 {
                     "module-compile-nested-group-cold-str": (
@@ -1665,10 +1964,10 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
                 }
             ),
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="exact-repeat",
             manifest_paths=(benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            expected_anchor_case_ids=_definition_anchor_expectations(
                 benchmark_test_support.EXACT_REPEAT_MANIFEST_PATH,
                 {
                     "module-compile-numbered-exact-repeat-group-cold-str": (
@@ -1699,10 +1998,10 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
             workload_signature=_counted_repeat_workload_signature,
             run_callback_result_parity=True,
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="ranged-repeat",
             manifest_paths=(benchmark_test_support.RANGED_REPEAT_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            expected_anchor_case_ids=_definition_anchor_expectations(
                 benchmark_test_support.RANGED_REPEAT_MANIFEST_PATH,
                 {
                     "module-compile-numbered-ranged-repeat-group-cold-str": (
@@ -1733,10 +2032,10 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
             workload_signature=_counted_repeat_workload_signature,
             run_callback_result_parity=True,
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="grouped-alternation",
             manifest_paths=(benchmark_test_support.GROUPED_ALTERNATION_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            expected_anchor_case_ids=_definition_anchor_expectations(
                 benchmark_test_support.GROUPED_ALTERNATION_MANIFEST_PATH,
                 {
                     "module-compile-grouped-alternation-cold-str": (
@@ -1782,12 +2081,12 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
                 }
             ),
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="grouped-alternation-replacement",
             manifest_paths=(
                 benchmark_test_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
             ),
-            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            expected_anchor_case_ids=_definition_anchor_expectations(
                 benchmark_test_support.GROUPED_ALTERNATION_REPLACEMENT_MANIFEST_PATH,
                 {
                     "module-sub-template-grouped-alternation-warm-str": (
@@ -1835,10 +2134,10 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
                 }
             ),
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="nested-group-replacement",
             manifest_paths=(benchmark_test_support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            expected_anchor_case_ids=_definition_anchor_expectations(
                 benchmark_test_support.NESTED_GROUP_REPLACEMENT_MANIFEST_PATH,
                 {
                     "module-sub-template-nested-group-numbered-warm-str": (
@@ -1949,10 +2248,10 @@ def _source_tree_standard_benchmark_definitions() -> tuple[object, ...]:
             ),
             run_special_unanchored_result_parity=True,
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="open-ended-grouped-alternation",
             manifest_paths=(benchmark_test_support.OPEN_ENDED_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            expected_anchor_case_ids=_definition_anchor_expectations(
                 benchmark_test_support.OPEN_ENDED_MANIFEST_PATH,
                 {
                     "module-compile-numbered-open-ended-group-alternation-cold-str": (
@@ -4900,7 +5199,7 @@ class CompiledPatternModuleCompileContractCase:
         self,
         manifest_path: pathlib.Path,
     ) -> dict[tuple[str, str], tuple[str, ...]]:
-        return benchmark_test_support._workload_case_pair_anchor_expectations(
+        return _workload_case_pair_anchor_expectations(
             manifest_path,
             self.expected_anchor_pairs,
         )
@@ -5063,7 +5362,7 @@ class _CompiledPatternModuleCompileKeywordOwnerSpec:
         )
 
     def expected_anchor_case_ids(self) -> dict[tuple[str, str], tuple[str, ...]]:
-        return benchmark_test_support._definition_anchor_expectations(
+        return _definition_anchor_expectations(
             benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
             dict(self.anchor_expectations),
         )
@@ -5073,8 +5372,8 @@ class _CompiledPatternModuleCompileKeywordOwnerSpec:
 
     def anchor_definition(
         self,
-    ) -> benchmark_test_support.StandardBenchmarkAnchorContractDefinition:
-        return benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+    ) -> StandardBenchmarkAnchorContractDefinition:
+        return StandardBenchmarkAnchorContractDefinition(
             name=self.anchor_definition_name,
             manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
             expected_anchor_case_ids=self.expected_anchor_case_ids(),
@@ -5127,7 +5426,7 @@ class _CompiledPatternModuleCompileSuccessOwnerSpec:
         )
 
     def expected_anchor_case_ids(self) -> dict[tuple[str, str], tuple[str, ...]]:
-        return benchmark_test_support._definition_anchor_expectations(
+        return _definition_anchor_expectations(
             benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
             dict(self.anchor_expectations),
         )
@@ -5137,8 +5436,8 @@ class _CompiledPatternModuleCompileSuccessOwnerSpec:
 
     def anchor_definition(
         self,
-    ) -> benchmark_test_support.StandardBenchmarkAnchorContractDefinition:
-        return benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+    ) -> StandardBenchmarkAnchorContractDefinition:
+        return StandardBenchmarkAnchorContractDefinition(
             name=self.anchor_definition_name,
             manifest_paths=(benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,),
             expected_anchor_case_ids=self.expected_anchor_case_ids(),
@@ -5560,7 +5859,7 @@ _COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_SOURCE_WORKLOAD_PARAMS = (
 _COMPILED_PATTERN_MODULE_CONTRACT_ANCHOR_LANES = (
     build_compiled_pattern_module_contract_anchor_lanes(
         contract_cases=_COMPILED_PATTERN_MODULE_COMPILE_CONTRACT_CASES,
-        published_case_ids_by_signature=benchmark_test_support.published_case_ids_by_signature,
+        published_case_ids_by_signature=published_case_ids_by_signature,
     )
 )
 
@@ -5831,10 +6130,10 @@ _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_ALLOWED_COUNTS = (-1, 0, 1)
 
 def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ...]:
     return (
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-module-positional-indexlike",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            expected_anchor_case_ids=_definition_anchor_expectations(
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 {
                     "module-split-maxsplit-indexlike-positional-purged-bytes": (
@@ -5864,10 +6163,10 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
             workload_signature=_collection_replacement_positional_indexlike_workload_signature,
             run_callback_result_parity=True,
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-keyword",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            expected_anchor_case_ids=_definition_anchor_expectations(
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 {
                     "module-split-maxsplit-keyword-purged-bytes": (
@@ -6071,10 +6370,10 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
             workload_signature=_collection_replacement_keyword_workload_signature,
             run_callback_result_parity=True,
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-compiled-pattern-literal-success",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            expected_anchor_case_ids=_definition_anchor_expectations(
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 {
                     "module-split-literal-warm-str-compiled-pattern": (
@@ -6105,10 +6404,10 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
             ),
             run_callback_result_parity=True,
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-compiled-pattern-wrong-text-model",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            expected_anchor_case_ids=_definition_anchor_expectations(
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 {
                     "module-split-on-bytes-string-purged-str-compiled-pattern": (
@@ -6134,10 +6433,10 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
             ),
             workload_signature=_collection_replacement_wrong_text_model_workload_signature,
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="pattern-helper-collection-replacement-wrong-text-model",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._definition_anchor_expectations(
+            expected_anchor_case_ids=_definition_anchor_expectations(
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 {
                     "pattern-split-on-bytes-string-warm-str": (
@@ -6159,10 +6458,10 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
                 _collection_replacement_pattern_wrong_text_model_workload_signature
             ),
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-pattern-findall-bounded",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._workload_case_pair_anchor_expectations(
+            expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 _COLLECTION_REPLACEMENT_PATTERN_FINDALL_WORKLOAD_CASE_PAIRS,
             ),
@@ -6185,10 +6484,10 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
             ),
             run_callback_result_parity=True,
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-pattern-finditer-bounded",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._workload_case_pair_anchor_expectations(
+            expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 _COLLECTION_REPLACEMENT_PATTERN_FINDITER_WORKLOAD_CASE_PAIRS,
             ),
@@ -6211,10 +6510,10 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
             ),
             run_callback_result_parity=True,
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-pattern-split",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._workload_case_pair_anchor_expectations(
+            expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 _COLLECTION_REPLACEMENT_PATTERN_SPLIT_WORKLOAD_CASE_PAIRS,
             ),
@@ -6237,10 +6536,10 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
             ),
             run_callback_result_parity=True,
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-module-literal-replacement",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._workload_case_pair_anchor_expectations(
+            expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 _COLLECTION_REPLACEMENT_MODULE_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS,
             ),
@@ -6283,10 +6582,10 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
             ),
             run_callback_result_parity=True,
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-pattern-literal-replacement",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._workload_case_pair_anchor_expectations(
+            expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 _COLLECTION_REPLACEMENT_PATTERN_LITERAL_REPLACEMENT_WORKLOAD_CASE_PAIRS,
             ),
@@ -6327,10 +6626,10 @@ def _collection_replacement_standard_benchmark_definitions() -> tuple[object, ..
             ),
             run_callback_result_parity=True,
         ),
-        benchmark_test_support.StandardBenchmarkAnchorContractDefinition(
+        StandardBenchmarkAnchorContractDefinition(
             name="collection-replacement-grouped-callable-replacement",
             manifest_paths=(benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,),
-            expected_anchor_case_ids=benchmark_test_support._workload_case_pair_anchor_expectations(
+            expected_anchor_case_ids=_workload_case_pair_anchor_expectations(
                 benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
                 _COLLECTION_REPLACEMENT_GROUPED_CALLABLE_WORKLOAD_CASE_PAIRS,
             ),
@@ -8905,7 +9204,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "pattern-subn-count-alias-keyword-warm-bytes",
             ),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=manifest_path,
             manifest_id="collection-replacement-boundary",
             expected_measured_workload_ids=expected_measured_workload_ids,
@@ -8981,7 +9280,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "module-subn-count-alias-keyword-purged-bytes-compiled-pattern",
             ),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=manifest_path,
             manifest_id="collection-replacement-boundary",
             expected_measured_workload_ids=expected_measured_workload_ids,
@@ -9015,7 +9314,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 "pattern-subn-count-indexlike-positional-warm-str",
             ),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=manifest_path,
             manifest_id="collection-replacement-boundary",
             expected_measured_workload_ids=expected_measured_workload_ids,
@@ -9230,7 +9529,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             (),
         )
 
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id="literal-flag-boundary",
             expected_measured_workload_ids=(
@@ -9289,7 +9588,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     expected_workload_ids,
                 )
 
-                benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+                assert_zero_gap_manifest_workloads_measured(
                     manifest_path=case.target_manifest.path,
                     manifest_id=manifest_id,
                     expected_measured_workload_ids=expected_workload_ids,
@@ -9393,7 +9692,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     (),
                 )
 
-                benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+                assert_zero_gap_manifest_workloads_measured(
                     manifest_path=case.target_manifest.path,
                     manifest_id=manifest_id,
                     expected_measured_workload_ids=expected_workload_ids,
@@ -9490,7 +9789,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                                     manifest_expectation.representative_measured_workload_ids,
                                 )
 
-                    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+                    assert_zero_gap_manifest_workloads_measured(
                         manifest_path=case.target_manifest.path,
                         manifest_id=manifest_id,
                         expected_measured_workload_ids=expected_workload_ids,
@@ -9542,7 +9841,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     public_representatives,
                 )
 
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -9581,7 +9880,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     ),
                 )
 
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -9726,7 +10025,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -9776,7 +10075,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                         manifest_expectation.representative_measured_workload_ids,
                     )
 
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -9835,7 +10134,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     ),
                 )
 
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -9885,7 +10184,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                         manifest_expectation.representative_measured_workload_ids,
                     )
 
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -9946,7 +10245,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     ),
                 )
 
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -9996,7 +10295,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                         manifest_expectation.representative_measured_workload_ids,
                     )
 
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -10197,7 +10496,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 CONDITIONAL_GROUP_EXISTS_NESTED_CALLABLE_BYTES_WORKLOAD_IDS,
             )
         )
-        case_ids_by_signature = benchmark_test_support.published_case_ids_by_signature(
+        case_ids_by_signature = published_case_ids_by_signature(
             _conditional_group_exists_nested_callable_correctness_case_signature
         )
         anchored_case_ids: list[str] = []
@@ -10379,7 +10678,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                 CONDITIONAL_GROUP_EXISTS_QUANTIFIED_CALLABLE_BYTES_WORKLOAD_IDS,
             )
         )
-        case_ids_by_signature = benchmark_test_support.published_case_ids_by_signature(
+        case_ids_by_signature = published_case_ids_by_signature(
             _conditional_group_exists_quantified_callable_correctness_case_signature
         )
         anchored_case_ids: list[str] = []
@@ -10674,7 +10973,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
                     public_representatives,
                 )
 
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -10724,7 +11023,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             (),
         )
 
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -10772,7 +11071,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -10820,7 +11119,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -10868,7 +11167,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -10916,7 +11215,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -10964,7 +11263,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -11016,7 +11315,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -11064,7 +11363,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -11112,7 +11411,7 @@ class SourceTreeCombinedBoundaryBenchmarkSuiteTest(unittest.TestCase):
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -11242,7 +11541,7 @@ def test_compiled_pattern_module_compile_owner_specs_keep_module_boundary_rows_m
     )
 
     assert expected_measured_workload_ids == owner_spec.expected_anchor_workload_ids()
-    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+    assert_zero_gap_manifest_workloads_measured(
         manifest_path=benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH,
         manifest_id="module-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,
@@ -11277,13 +11576,13 @@ def test_compiled_pattern_module_compile_contract_rows_stay_anchored_to_publishe
     expected_anchor_case_ids = anchor_lane.expected_anchor_case_ids(manifest_path)
     anchor_case_ids = anchor_lane.anchor_case_ids
 
-    assert benchmark_test_support.anchored_workload_case_ids(
+    assert anchored_workload_case_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
         workload_signature=anchor_lane.workload_signature,
         include_workload=anchor_lane.include_workload,
     ) == expected_anchor_case_ids
-    assert benchmark_test_support.unanchored_workload_ids(
+    assert unanchored_workload_ids(
         manifest_path,
         anchor_case_ids=anchor_case_ids,
         workload_signature=anchor_lane.workload_signature,
@@ -11291,7 +11590,7 @@ def test_compiled_pattern_module_compile_contract_rows_stay_anchored_to_publishe
     ) == ()
     assert tuple(
         (pair.workload_id, pair.case_id)
-        for pair in benchmark_test_support.expected_anchored_workload_case_pairs(
+        for pair in expected_anchored_workload_case_pairs(
             manifest_path,
             expected_anchor_case_ids=expected_anchor_case_ids,
             include_workload=anchor_lane.include_workload,
@@ -11466,7 +11765,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -11514,7 +11813,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -11562,7 +11861,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -11610,7 +11909,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -11658,7 +11957,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
             case.manifest_expectation.representative_known_gap_workload_ids,
             (),
         )
-        benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+        assert_zero_gap_manifest_workloads_measured(
             manifest_path=case.target_manifest.path,
             manifest_id=manifest_id,
             expected_measured_workload_ids=expected_workload_ids,
@@ -14451,7 +14750,7 @@ def test_compiled_pattern_module_helper_owner_specs_keep_zero_gap_rows_measured(
         )
     )
 
-    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+    assert_zero_gap_manifest_workloads_measured(
         manifest_path=owner_spec.manifest_path,
         manifest_id=manifest_id,
         expected_measured_workload_ids=expected_measured_workload_ids,
@@ -14649,7 +14948,7 @@ def test_compiled_pattern_module_helper_keyword_error_rows_keep_collection_repla
     )
 
     assert expected_measured_workload_ids == expected_source_workload_ids
-    benchmark_test_support.assert_zero_gap_manifest_workloads_measured(
+    assert_zero_gap_manifest_workloads_measured(
         manifest_path=benchmark_test_support.COLLECTION_REPLACEMENT_MANIFEST_PATH,
         manifest_id="collection-replacement-boundary",
         expected_measured_workload_ids=expected_measured_workload_ids,

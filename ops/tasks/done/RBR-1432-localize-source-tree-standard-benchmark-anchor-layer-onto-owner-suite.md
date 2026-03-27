@@ -54,3 +54,12 @@ Created: 2026-03-27
   - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark or anchored_workload or unanchored_workload or zero_gap_manifest or published_case_ids_by_signature' -q` passed with `23 passed, 284 deselected, 4 subtests passed in 0.45s`.
   - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_benchmark_test_support.py -k 'standard_benchmark or anchored_workload or unanchored_workload or published_case_ids_by_signature or zero_gap_manifest' -q` passed with `24 passed, 175 deselected in 0.25s`.
   - The `rg` check above currently finds the source-tree-only anchor layer in `tests/benchmarks/benchmark_test_support.py`; that red state belongs to the exact cleanup this task queues.
+
+## Completion
+- Landed the ownership cleanup by moving the source-tree-only standard-benchmark contract type, anchor helpers, zero-gap helper, and `_standard_benchmark_*` parametrization helpers into `tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py`, then rewired that owner suite to call its local layer directly.
+- Tightened `tests/benchmarks/test_benchmark_test_support.py` so it now treats that layer as owner-local instead of shared support, while leaving cross-suite benchmark helpers in `tests/benchmarks/benchmark_test_support.py`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py -k 'standard_benchmark or anchored_workload or unanchored_workload or zero_gap_manifest or published_case_ids_by_signature' -q`
+  - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_benchmark_test_support.py -k 'standard_benchmark or anchored_workload or unanchored_workload or published_case_ids_by_signature or zero_gap_manifest' -q`
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_source_tree_combined_boundary_benchmarks.py tests/benchmarks/test_benchmark_test_support.py`
+  - `bash -lc "! rg -n 'StandardBenchmarkAnchorContractDefinition|_definition_anchor_expectations|_workload_case_pair_anchor_expectations|published_case_ids_by_signature|anchored_workload_case_ids|unanchored_workload_ids|expected_anchored_workload_case_pairs|assert_anchored_workload_case_result_parity|assert_zero_gap_manifest_workloads_measured|_standard_benchmark_' tests/benchmarks/benchmark_test_support.py"`
