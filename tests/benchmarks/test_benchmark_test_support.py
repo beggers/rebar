@@ -5469,6 +5469,46 @@ def test_standard_benchmark_special_unanchored_result_parity_params_preserve_ord
     )
 
 
+def test_standard_benchmark_special_unanchored_workloads_stay_live_and_out_of_standard_scope(
+    anchor_support_cache_guard: None,
+) -> None:
+    standard_definitions = _explicit_standard_benchmark_definitions()
+
+    for definition in standard_definitions:
+        if not definition.expected_special_unanchored_workload_ids:
+            continue
+
+        observed_live_workload_ids = tuple(
+            workload.workload_id
+            for manifest_path in definition.manifest_paths
+            for workload in support.manifest_workloads(manifest_path)
+            if workload.workload_id in definition.expected_special_unanchored_workload_ids
+        )
+        scoped_workload_ids = tuple(
+            workload.workload_id
+            for manifest_path in definition.manifest_paths
+            for workload in support.selected_manifest_workloads(
+                manifest_path,
+                include_workload=definition.includes_workload,
+            )
+        )
+        anchored_workload_ids = {
+            workload_id
+            for manifest_name, workload_id in definition.expected_anchor_case_ids
+            if manifest_name in {manifest_path.name for manifest_path in definition.manifest_paths}
+        }
+
+        assert observed_live_workload_ids == definition.expected_special_unanchored_workload_ids
+        assert not (
+            anchored_workload_ids
+            & set(definition.expected_special_unanchored_workload_ids)
+        )
+        assert not (
+            set(scoped_workload_ids)
+            & set(definition.expected_special_unanchored_workload_ids)
+        )
+
+
 def test_source_tree_combined_suite_does_not_expose_deleted_standard_benchmark_inventory(
 ) -> None:
     combined_suite = importlib.import_module(
