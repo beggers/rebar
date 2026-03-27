@@ -14,8 +14,6 @@ from types import SimpleNamespace
 from typing import Any
 import unittest
 
-import pytest
-
 from rebar_harness import benchmarks
 from rebar_harness.benchmarks import (
     BENCHMARK_WORKLOADS_ROOT,
@@ -363,13 +361,6 @@ def _clear_anchor_support_caches() -> None:
     )
     if combined_suite is not None:
         _clear_cached_functions(vars(combined_suite).values())
-
-
-@pytest.fixture
-def anchor_support_cache_guard() -> None:
-    _clear_anchor_support_caches()
-    yield
-    _clear_anchor_support_caches()
 
 
 def _contract_source_workloads(
