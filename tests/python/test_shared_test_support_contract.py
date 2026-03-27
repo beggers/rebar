@@ -10,7 +10,6 @@ from unittest import mock
 
 import pytest
 
-from tests.benchmarks.benchmark_test_support import COMPILE_MATRIX_MANIFEST_PATH
 import tests.conftest as test_support
 from tests.conftest import (
     REPO_ROOT,
@@ -32,6 +31,7 @@ from tests.conftest import (
 )
 
 
+COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
 PARSER_FIXTURES_PATH = REPO_ROOT / "tests" / "conformance" / "fixtures" / "parser_matrix.py"
 
 

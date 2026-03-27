@@ -39,3 +39,10 @@ Created: 2026-03-27
   - `PYTHONPATH=python:. ./.venv/bin/python -m pytest tests/python/test_shared_test_support_contract.py -q` failed during collection with `ImportError: cannot import name 'COMPILE_MATRIX_MANIFEST_PATH' from 'tests.benchmarks.benchmark_test_support'`; that red state belongs to the exact cleanup this task queues.
   - `./.venv/bin/python -m py_compile tests/python/test_shared_test_support_contract.py tests/conftest.py` succeeded.
   - `bash -lc "! rg -n '^from tests\\.benchmarks\\.benchmark_test_support import COMPILE_MATRIX_MANIFEST_PATH$' tests/python/test_shared_test_support_contract.py"` is currently red because that exact import still exists in the owner suite.
+
+## Completion
+- Localized `COMPILE_MATRIX_MANIFEST_PATH` inside `tests/python/test_shared_test_support_contract.py` next to the suite's other owner-local manifest anchors and removed the remaining import from `tests.benchmarks.benchmark_test_support`.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/python -m pytest tests/python/test_shared_test_support_contract.py -q`
+  - `./.venv/bin/python -m py_compile tests/python/test_shared_test_support_contract.py tests/conftest.py`
+  - `bash -lc "! rg -n '^from tests\\.benchmarks\\.benchmark_test_support import COMPILE_MATRIX_MANIFEST_PATH$' tests/python/test_shared_test_support_contract.py"`
