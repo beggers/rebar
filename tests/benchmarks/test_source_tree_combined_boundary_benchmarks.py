@@ -360,6 +360,99 @@ def selected_manifest_workloads(
     return tuple(workload for workload in workloads if include_workload(workload))
 
 
+def test_selected_manifest_workloads_reuses_owner_local_cache_and_preserves_filter_order(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    helper_module = __import__(
+        selected_manifest_workloads.__module__,
+        fromlist=["unused"],
+    )
+    manifest_path = "owner_local_contract.py"
+    resolved_manifest_path = BENCHMARK_WORKLOADS_ROOT / manifest_path
+    observed_load_paths: list[pathlib.Path] = []
+    observed_filter_ids: list[str] = []
+    manifest_workloads = (
+        SimpleNamespace(workload_id="keep-first", keep=True),
+        SimpleNamespace(workload_id="drop-middle", keep=False),
+        SimpleNamespace(workload_id="keep-last", keep=True),
+    )
+
+    def fake_load_manifest(path: pathlib.Path) -> SimpleNamespace:
+        observed_load_paths.append(path)
+        return SimpleNamespace(workloads=manifest_workloads)
+
+    def include_workload(workload: SimpleNamespace) -> bool:
+        observed_filter_ids.append(workload.workload_id)
+        return workload.keep
+
+    helper_module._manifest_workloads.cache_clear()
+    monkeypatch.setattr(helper_module, "load_manifest", fake_load_manifest)
+    try:
+        first_selection = selected_manifest_workloads(
+            manifest_path,
+            include_workload=include_workload,
+        )
+        second_selection = selected_manifest_workloads(
+            manifest_path,
+            include_workload=include_workload,
+        )
+    finally:
+        helper_module._manifest_workloads.cache_clear()
+
+    assert observed_load_paths == [resolved_manifest_path]
+    assert observed_filter_ids == [
+        "keep-first",
+        "drop-middle",
+        "keep-last",
+        "keep-first",
+        "drop-middle",
+        "keep-last",
+    ]
+    assert first_selection == (
+        manifest_workloads[0],
+        manifest_workloads[2],
+    )
+    assert second_selection == first_selection
+
+
+def test_live_manifest_workloads_preserves_requested_workload_id_order_and_duplicates(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    helper_module = __import__(
+        _live_manifest_workloads.__module__,
+        fromlist=["unused"],
+    )
+    manifest_path = "owner_local_contract.py"
+    resolved_manifest_path = BENCHMARK_WORKLOADS_ROOT / manifest_path
+    observed_load_paths: list[pathlib.Path] = []
+    manifest_workloads = (
+        SimpleNamespace(workload_id="alpha"),
+        SimpleNamespace(workload_id="beta"),
+        SimpleNamespace(workload_id="gamma"),
+    )
+
+    def fake_load_manifest(path: pathlib.Path) -> SimpleNamespace:
+        observed_load_paths.append(path)
+        return SimpleNamespace(workloads=manifest_workloads)
+
+    helper_module._manifest_workloads.cache_clear()
+    monkeypatch.setattr(helper_module, "load_manifest", fake_load_manifest)
+    try:
+        selected = _live_manifest_workloads(
+            manifest_path,
+            ("gamma", "alpha", "gamma"),
+        )
+    finally:
+        helper_module._manifest_workloads.cache_clear()
+
+    assert observed_load_paths == [resolved_manifest_path]
+    assert selected == (
+        manifest_workloads[2],
+        manifest_workloads[0],
+        manifest_workloads[2],
+    )
+
+
 COMPILED_PATTERN_MODULE_CONTRACT_SHARED_EXCLUDED_FIELDS = frozenset(
     {
         "manifest_id",
