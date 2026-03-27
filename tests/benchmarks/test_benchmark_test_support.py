@@ -521,7 +521,8 @@ def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helper
     )
     monkeypatch.setattr(support, "published_cases_by_id", _published_cases_by_id)
     assert anchor_support.benchmark_test_support is support
-    assert collection_replacement_support is anchor_support
+    assert collection_replacement_support is not anchor_support
+    assert collection_replacement_support.benchmark_test_support is support
     monkeypatch.setattr(support, "live_manifest_workloads", _live_manifest_workloads)
 
     support._clear_anchor_support_caches()
@@ -1482,8 +1483,8 @@ def test_source_tree_module_keyword_definition_references_owner_manifest_path_co
             "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
         )
     ) == (
-        ("benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH",),
-        ("benchmark_test_support.MODULE_BOUNDARY_MANIFEST_PATH",),
+        ("MODULE_BOUNDARY_MANIFEST_PATH",),
+        ("MODULE_BOUNDARY_MANIFEST_PATH",),
     )
 
 
@@ -1757,7 +1758,6 @@ def test_collection_replacement_benchmark_support_owns_keyword_classifier_helper
         "_module_workflow_keyword_workload_args",
         "_module_workflow_keyword_workload_signature",
         "_module_workflow_keyword_correctness_case_signature",
-        "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS",
         "_collection_replacement_keyword_parameter_name",
         "_collection_replacement_positional_keyword_field",
         "_is_collection_replacement_keyword_workload",
@@ -1765,6 +1765,7 @@ def test_collection_replacement_benchmark_support_owns_keyword_classifier_helper
         "_is_collection_replacement_compiled_pattern_module_helper_keyword_workload",
         "_is_collection_replacement_compiled_pattern_keyword_error_workload",
     }.issubset(definition_names)
+    assert "MODULE_WORKFLOW_KEYWORD_STANDARD_BENCHMARK_DEFINITIONS" in assignment_names
     assert {
         "_collection_replacement_keyword_parameter_name",
         "_collection_replacement_positional_keyword_field",
@@ -1850,9 +1851,9 @@ def test_benchmark_support_suite_routes_shared_owner_imports_through_package_ali
         "MODULE_BOUNDARY_MANIFEST_PATH",
         "RecordingBenchmarkModule",
         "_parsed_module_ast",
-        "_synthetic_workload",
         "_write_test_manifest",
     }.isdisjoint(definition_names | assignment_names)
+    assert "_synthetic_workload" in definition_names
 
 
 @pytest.mark.parametrize(
@@ -3354,20 +3355,24 @@ def test_compiled_pattern_contract_consumer_suites_reuse_shared_support_without_
         expected_alias_pairs=frozenset({("benchmark_test_support", None)}),
     )
     assert getattr(module, "benchmark_test_support") is support
-    assert all(
-        name not in local_names
-        for name in (
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
-            "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
-            "_is_collection_replacement_compiled_pattern_keyword_error_workload",
-        )
+    owner_local_names = (
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_ANCHOR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_SOURCE_WORKLOADS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACES",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SURFACE_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_SOURCE_WORKLOAD_PARAMS",
+        "_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_PRECOMPILE_SOURCE_WORKLOAD_PARAMS",
+        "_is_collection_replacement_compiled_pattern_keyword_error_workload",
+    )
+    assert all(name in local_names for name in owner_local_names)
+    support_definition_names, support_assignment_names = (
+        support.top_level_module_definition_and_assignment_names(support)
+    )
+    assert set(owner_local_names).isdisjoint(
+        support_definition_names | support_assignment_names
     )
 
 

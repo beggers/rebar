@@ -28,6 +28,7 @@ from tests.benchmarks import benchmark_test_support
 from tests.conftest import (
     REPO_ROOT,
     records_by_string_id,
+    run_harness_scorecard,
 )
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
