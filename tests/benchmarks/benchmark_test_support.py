@@ -434,31 +434,6 @@ def freeze_signature_value(value: Any) -> Any:
     return value
 
 
-def assert_pattern_helper_wrong_text_model_payload_round_trip(
-    source_workload: Workload,
-    payload: dict[str, object],
-    round_tripped: Workload,
-    *,
-    expect_replacement_payload: bool = False,
-) -> None:
-    expected_text_type = str if source_workload.text_model == "str" else bytes
-    expected_haystack_type = (
-        str if source_workload.haystack_text_model == "str" else bytes
-    )
-
-    assert payload.get("use_compiled_pattern") is None
-    assert round_tripped.use_compiled_pattern is False
-    assert payload["timing_scope"] == "pattern-helper-call"
-    assert round_tripped.timing_scope == "pattern-helper-call"
-    assert payload["haystack_text_model"] == source_workload.haystack_text_model
-    assert round_tripped.haystack_text_model == source_workload.haystack_text_model
-    assert payload["expected_exception"] == source_workload.expected_exception
-    assert round_tripped.expected_exception == source_workload.expected_exception
-    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
-    assert isinstance(round_tripped.haystack_payload(), expected_haystack_type)
-    if expect_replacement_payload:
-        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
-
 COMPILE_MATRIX_MANIFEST_PATH = REPO_ROOT / "benchmarks" / "workloads" / "compile_matrix.py"
 REGRESSION_MATRIX_MANIFEST_PATH = (
     REPO_ROOT / "benchmarks" / "workloads" / "regression_matrix.py"
@@ -764,34 +739,6 @@ def _write_test_manifest(
     path = tmp_path / filename
     path.write_text(textwrap.dedent(source), encoding="utf-8")
     return path
-
-
-def _expected_exception_instance(
-    expected_exception: dict[str, str],
-) -> Exception:
-    exception_type = {
-        "TypeError": TypeError,
-        "ValueError": ValueError,
-    }[expected_exception["type"]]
-    return exception_type(expected_exception["message_substring"])
-
-
-def _record_numeric_materialization_fields(
-    monkeypatch: pytest.MonkeyPatch,
-) -> list[str]:
-    observed_field_names: list[str] = []
-    original_materialize = benchmarks.materialize_numeric_workload_argument
-
-    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
-        observed_field_names.append(field_name)
-        return original_materialize(value, field_name=field_name)
-
-    monkeypatch.setattr(
-        benchmarks,
-        "materialize_numeric_workload_argument",
-        record_numeric_materialization,
-    )
-    return observed_field_names
 
 
 COLLECTION_REPLACEMENT_MANIFEST_PATH = (

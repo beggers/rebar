@@ -762,13 +762,13 @@ def test_write_test_manifest_dedents_and_writes_utf8_text(tmp_path) -> None:
 
 
 def test_expected_exception_instance_maps_supported_payloads() -> None:
-    type_error = support._expected_exception_instance(
+    type_error = collection_replacement_support._expected_exception_instance(
         {
             "type": "TypeError",
             "message_substring": "type payload",
         }
     )
-    value_error = support._expected_exception_instance(
+    value_error = collection_replacement_support._expected_exception_instance(
         {
             "type": "ValueError",
             "message_substring": "value payload",
@@ -789,7 +789,9 @@ def test_record_numeric_materialization_fields_collects_names_and_preserves_retu
         {"type": "indexlike", "value": 7},
         field_name="kwargs.count",
     )
-    observed_field_names = support._record_numeric_materialization_fields(monkeypatch)
+    observed_field_names = collection_replacement_support._record_numeric_materialization_fields(
+        monkeypatch
+    )
 
     observed_value = benchmarks.materialize_numeric_workload_argument(
         {"type": "indexlike", "value": 7},
@@ -3151,6 +3153,9 @@ def test_source_tree_combined_suite_owns_benchmark_contract_helpers_locally() ->
         "_KNOWN_GAP_STATUSES",
         "_assert_benchmark_summary_consistent",
         "_artifact_manifest_record",
+        "_expected_exception_instance",
+        "_record_numeric_materialization_fields",
+        "assert_pattern_helper_wrong_text_model_payload_round_trip",
     }
 
     assert moved_owner_names.issubset(definition_names | assignment_names)
@@ -3934,10 +3939,8 @@ def test_benchmark_manifest_validation_routes_owner_surfaces_through_package_imp
     )
     shared_owner_names = frozenset(
         {
-            "_expected_exception_instance",
             "_write_test_manifest",
             "assert_benchmark_workload_matches_expected_result",
-            "assert_pattern_helper_wrong_text_model_payload_round_trip",
             "run_benchmark_workload_with_cpython",
             "selected_manifest_workloads",
         }
@@ -4758,6 +4761,9 @@ def test_compiled_pattern_module_helper_standard_owner_surface_surviving_suites_
                 {
                     "_source_tree_contract_manifest",
                     "_source_tree_contract_workload",
+                    "_expected_exception_instance",
+                    "_record_numeric_materialization_fields",
+                    "assert_pattern_helper_wrong_text_model_payload_round_trip",
                     "compiled_pattern_contract_expected_build_calls",
                     "_run_cpython_compiled_pattern_module_helper_workload",
                     "_assert_wrong_text_model_payload_round_trip",

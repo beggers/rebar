@@ -54,6 +54,60 @@ _VERBOSE_REGRESSION_PATTERN = (
 _VERBOSE_REGRESSION_FLAGS = int(re.VERBOSE | re.MULTILINE)
 
 
+def assert_pattern_helper_wrong_text_model_payload_round_trip(
+    source_workload: Workload,
+    payload: dict[str, object],
+    round_tripped: Workload,
+    *,
+    expect_replacement_payload: bool = False,
+) -> None:
+    expected_text_type = str if source_workload.text_model == "str" else bytes
+    expected_haystack_type = (
+        str if source_workload.haystack_text_model == "str" else bytes
+    )
+
+    assert payload.get("use_compiled_pattern") is None
+    assert round_tripped.use_compiled_pattern is False
+    assert payload["timing_scope"] == "pattern-helper-call"
+    assert round_tripped.timing_scope == "pattern-helper-call"
+    assert payload["haystack_text_model"] == source_workload.haystack_text_model
+    assert round_tripped.haystack_text_model == source_workload.haystack_text_model
+    assert payload["expected_exception"] == source_workload.expected_exception
+    assert round_tripped.expected_exception == source_workload.expected_exception
+    assert isinstance(round_tripped.pattern_payload(), expected_text_type)
+    assert isinstance(round_tripped.haystack_payload(), expected_haystack_type)
+    if expect_replacement_payload:
+        assert isinstance(round_tripped.replacement_payload(), expected_text_type)
+
+
+def _expected_exception_instance(
+    expected_exception: dict[str, str],
+) -> Exception:
+    exception_type = {
+        "TypeError": TypeError,
+        "ValueError": ValueError,
+    }[expected_exception["type"]]
+    return exception_type(expected_exception["message_substring"])
+
+
+def _record_numeric_materialization_fields(
+    monkeypatch: pytest.MonkeyPatch,
+) -> list[str]:
+    observed_field_names: list[str] = []
+    original_materialize = benchmarks.materialize_numeric_workload_argument
+
+    def record_numeric_materialization(value: Any, *, field_name: str) -> Any:
+        observed_field_names.append(field_name)
+        return original_materialize(value, field_name=field_name)
+
+    monkeypatch.setattr(
+        benchmarks,
+        "materialize_numeric_workload_argument",
+        record_numeric_materialization,
+    )
+    return observed_field_names
+
+
 def _is_module_workflow_compiled_pattern_workload(workload: Any) -> bool:
     return (
         not workload.kwargs
@@ -4739,9 +4793,7 @@ def _assert_collection_replacement_keyword_kwargs_materialize_on_each_callback_c
     expected_exception_message: str | None = None,
     expected_field_names: list[str] | tuple[str, ...],
 ) -> None:
-    observed_field_names = benchmark_test_support._record_numeric_materialization_fields(
-        monkeypatch
-    )
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
     re.purge()
     try:
@@ -12061,7 +12113,7 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
         source_workload,
         spec=case_group.contract_builder_spec(),
     )
-    observed_field_names = benchmark_test_support._record_numeric_materialization_fields(monkeypatch)
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
     re.purge()
     try:
@@ -12072,9 +12124,7 @@ def test_compiled_pattern_module_compile_keyword_kwargs_materialize_at_callback_
             observed_result = callback()
             assert observed_result.pattern == workload.pattern_payload()
         else:
-            expected_exception = benchmark_test_support._expected_exception_instance(
-                source_workload.expected_exception
-            )
+            expected_exception = _expected_exception_instance(source_workload.expected_exception)
             with pytest.raises(
                 type(expected_exception),
                 match=source_workload.expected_exception["message_substring"],
@@ -12138,7 +12188,7 @@ def test_compiled_pattern_module_compile_contract_callbacks_precompile_first_arg
     compile_exception = (
         None
         if source_workload.expected_exception is None
-        else benchmark_test_support._expected_exception_instance(source_workload.expected_exception)
+        else _expected_exception_instance(source_workload.expected_exception)
     )
     module = benchmark_test_support.RecordingBenchmarkModule(compile_exception=compile_exception)
     callback = benchmarks.build_callable(
@@ -14707,9 +14757,7 @@ def test_standard_benchmark_compiled_pattern_module_compile_contract_rows_preser
             )
             continue
 
-        expected_exception = benchmark_test_support._expected_exception_instance(
-            source_workload.expected_exception
-        )
+        expected_exception = _expected_exception_instance(source_workload.expected_exception)
         with pytest.raises(
             type(expected_exception),
             match=source_workload.expected_exception["message_substring"],
@@ -15146,7 +15194,7 @@ def test_standard_benchmark_haystack_text_model_validation_accepts_exact_pattern
     payload = workload_to_payload(loaded_workload)
     round_tripped = workload_from_payload(payload)
 
-    benchmark_test_support.assert_pattern_helper_wrong_text_model_payload_round_trip(
+    assert_pattern_helper_wrong_text_model_payload_round_trip(
         source_workload,
         payload,
         round_tripped,
@@ -15524,7 +15572,7 @@ def test_compiled_pattern_module_helper_keyword_error_callbacks_match_cpython_ex
         source_workload,
         spec=_COMPILED_PATTERN_MODULE_HELPER_KEYWORD_ERROR_CONTRACT_SPEC.contract_builder_spec(),
     )
-    observed_field_names = benchmark_test_support._record_numeric_materialization_fields(monkeypatch)
+    observed_field_names = _record_numeric_materialization_fields(monkeypatch)
 
     re.purge()
     try:
