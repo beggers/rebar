@@ -5167,11 +5167,7 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
         SimpleNamespace(manifest_id="module-boundary"),
     )
 
-    monkeypatch.setattr(
-        support,
-        "published_benchmark_manifests",
-        initial_published_manifests,
-    )
+    assert not hasattr(support, "published_benchmark_manifests")
     monkeypatch.setattr(
         combined_suite,
         "published_benchmark_manifests",
@@ -5190,11 +5186,6 @@ def test_clear_anchor_support_caches_refreshes_published_manifest_id_fallbacks(
 
     refreshed_published_manifests = lambda: (
         SimpleNamespace(manifest_id="synthetic-new-boundary"),
-    )
-    monkeypatch.setattr(
-        support,
-        "published_benchmark_manifests",
-        refreshed_published_manifests,
     )
     monkeypatch.setattr(
         combined_suite,
@@ -5242,11 +5233,7 @@ def test_source_tree_combined_manifest_expectations_get_preserves_fallback_contr
         SimpleNamespace(manifest_id="synthetic-fallback-boundary"),
     )
 
-    monkeypatch.setattr(
-        support,
-        "published_benchmark_manifests",
-        published_manifests,
-    )
+    assert not hasattr(support, "published_benchmark_manifests")
     monkeypatch.setattr(
         combined_suite,
         "published_benchmark_manifests",
@@ -5281,11 +5268,7 @@ def test_source_tree_combined_manifest_expectations_fallback_lookup_preserves_di
         SimpleNamespace(manifest_id="synthetic-fallback-boundary"),
     )
 
-    monkeypatch.setattr(
-        support,
-        "published_benchmark_manifests",
-        published_manifests,
-    )
+    assert not hasattr(support, "published_benchmark_manifests")
     monkeypatch.setattr(
         combined_suite,
         "published_benchmark_manifests",
