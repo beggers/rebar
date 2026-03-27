@@ -31,10 +31,6 @@ from rebar_harness.benchmarks import (
 )
 from rebar_harness.correctness import published_fixture_manifests
 from rebar_harness.scorecard_io import build_cpython_baseline
-from tests.conftest import (
-    REPO_ROOT,
-    records_by_string_id,
-)
 from tests.python.fixture_parity_support import (
     BROADER_RANGE_OPEN_ENDED_ALTERNATION_BYTES_CASES,
     BROADER_RANGE_OPEN_ENDED_BACKTRACKING_HEAVY_BYTES_CASES,
@@ -48,7 +44,11 @@ from tests.python.fixture_parity_support import (
     case_replacement_argument,
     case_text_argument,
     callable_match_group_signature,
+    records_by_string_id,
 )
+
+
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 
 def run_harness_scorecard(

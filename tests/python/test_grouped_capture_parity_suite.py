@@ -17,6 +17,7 @@ from tests.python.fixture_parity_support import (
     assert_direct_test_case_id_buckets_cover_selected_frontier,
     assert_fixture_bundle_contract,
     assert_fixture_bundle_tracks_published_case_frontier,
+    duplicate_string_ids,
     assert_invalid_match_group_access_parity,
     assert_match_convenience_api_parity,
     assert_match_parity,
@@ -34,7 +35,6 @@ from tests.python.fixture_parity_support import (
     str_case_pattern,
     workflow_result_with_cpython_parity,
 )
-from tests.conftest import duplicate_string_ids
 GROUPED_SEGMENT_LEADING_CAPTURE_PATTERN = r"(ab)c"
 
 

@@ -14,7 +14,6 @@ from rebar_harness.correctness import (
     load_fixture_manifest,
     select_correctness_fixture_paths,
 )
-from tests.conftest import duplicate_string_ids, records_by_string_id
 
 _MISSING_GROUP_DEFAULT = object()
 _MATCH_ACCESSOR_NAMES = ("group", "span", "start", "end", "getitem")
@@ -24,6 +23,40 @@ WRAPPER_PAIRS = (
     ("", "zz"),
     ("zz", "zz"),
 )
+
+
+def duplicate_items(counter: Counter[str]) -> list[str]:
+    return sorted(item for item, count in counter.items() if count > 1)
+
+
+def duplicate_string_ids(items: Iterable[str]) -> tuple[str, ...]:
+    return tuple(duplicate_items(Counter(items)))
+
+
+def records_by_string_id(
+    records: Iterable[object],
+    *,
+    id_attr: str,
+    duplicate_error: Callable[[tuple[str, ...]], Exception] | None = None,
+) -> dict[str, object]:
+    record_entries = tuple(records)
+    duplicate_ids = duplicate_string_ids(getattr(record, id_attr) for record in record_entries)
+    if duplicate_ids:
+        if duplicate_error is not None:
+            raise duplicate_error(duplicate_ids)
+        raise AssertionError(f"{id_attr} values must be unique; duplicate ids: {list(duplicate_ids)}")
+    return {getattr(record, id_attr): record for record in record_entries}
+
+
+def manifest_records_by_id(manifests: Iterable[object]) -> dict[str, object]:
+    return records_by_string_id(
+        manifests,
+        id_attr="manifest_id",
+        duplicate_error=lambda duplicate_ids: AssertionError(
+            "manifest ids must be unique; duplicate ids: "
+            f"{list(duplicate_ids)}"
+        ),
+    )
 
 
 def _ordered_unique_texts(texts: Iterable[str]) -> tuple[str, ...]:

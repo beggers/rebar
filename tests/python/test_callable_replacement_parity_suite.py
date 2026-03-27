@@ -18,7 +18,6 @@ from rebar_harness.correctness import (
     normalize_exception,
     select_correctness_fixture_paths,
 )
-from tests.conftest import manifest_records_by_id
 from tests.python.fixture_parity_support import (
     FixtureBundle,
     assert_direct_test_case_id_buckets_cover_selected_frontier,
@@ -32,6 +31,7 @@ from tests.python.fixture_parity_support import (
     flatten_fixture_bundles,
     load_single_published_fixture_bundle,
     load_published_fixture_bundles,
+    manifest_records_by_id,
     str_case_pattern,
 )
 

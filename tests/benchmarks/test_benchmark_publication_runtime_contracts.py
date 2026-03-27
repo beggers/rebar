@@ -27,17 +27,15 @@ from rebar_harness.benchmarks import (
     workload_to_payload,
 )
 from rebar_harness.scorecard_io import ordered_published_subset_filenames
-from tests.conftest import (
-    REPO_ROOT,
-    duplicate_string_ids,
-)
 from tests.python.fixture_parity_support import (
     assert_match_result_parity,
     assert_pattern_parity,
     callable_match_group_signature,
+    duplicate_string_ids,
 )
 
 
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 MATURIN = shutil.which("maturin")
 _MISSING_MATURIN_REASON = (
     "built-native mode unavailable because no `maturin` executable was found on PATH"

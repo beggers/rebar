@@ -29,10 +29,6 @@ from rebar_harness.correctness import (
 from rebar_harness.scorecard_io import (
     ordered_published_subset_filenames,
 )
-from tests.conftest import (
-    duplicate_string_ids,
-    records_by_string_id,
-)
 import tests.python.fixture_parity_support as fixture_parity_support
 from tests.python.fixture_parity_support import (
     BoundedPatternCase,
@@ -59,6 +55,7 @@ from tests.python.fixture_parity_support import (
     case_replacement_argument,
     case_text_argument,
     compile_with_cpython_parity,
+    duplicate_string_ids,
     flatten_fixture_bundles,
     fixture_bundle_manifest_pytest_id,
     fixture_case_pytest_id,
@@ -69,6 +66,7 @@ from tests.python.fixture_parity_support import (
     invoke_bounded_pattern_case,
     load_single_published_fixture_bundle,
     ordered_fixture_bundle_case_ids,
+    records_by_string_id,
     str_case_pattern,
     workflow_result_with_cpython_parity,
 )

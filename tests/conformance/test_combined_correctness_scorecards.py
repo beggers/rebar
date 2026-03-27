@@ -19,7 +19,7 @@ from rebar_harness import correctness
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
 )
-from tests.conftest import REPO_ROOT, manifest_records_by_id
+from tests.python.fixture_parity_support import manifest_records_by_id
 
 from rebar_harness.correctness import (
     CpythonReAdapter,
@@ -32,6 +32,7 @@ from rebar_harness.correctness import (
     published_fixture_manifests,
 )
 
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 TRACKED_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
 
 

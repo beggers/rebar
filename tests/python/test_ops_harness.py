@@ -14,9 +14,9 @@ import unittest
 from unittest import mock
 
 from rebar_harness import benchmarks, correctness, scorecard_io
-from tests.conftest import REPO_ROOT
 
 
+REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 REBAR_OPS_MODULE_PATH = REPO_ROOT / "scripts" / "rebar_ops.py"
 
 

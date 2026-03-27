@@ -31,7 +31,6 @@ from rebar_harness.correctness import (
     PUBLIC_SURFACE_FIXTURE_SELECTOR,
     select_correctness_fixture_paths,
 )
-from tests.conftest import PYTHON_SOURCE
 from tests.python import conftest as python_conftest
 from tests.python.fixture_parity_support import (
     FixtureBundle,
@@ -55,6 +54,7 @@ from tests.python.fixture_parity_support import (
     load_published_fixture_bundles,
 )
 
+PYTHON_SOURCE = pathlib.Path(__file__).resolve().parents[2] / "python"
 MATURIN = shutil.which("maturin")
 _BUILT_WHEEL_SMOKE_PROBE = textwrap.dedent(
     """
