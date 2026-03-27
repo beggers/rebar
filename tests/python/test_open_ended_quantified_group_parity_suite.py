@@ -984,6 +984,85 @@ def test_open_ended_direct_bytes_follow_on_case_surfaces_resolve_to_expected_pub
     )
 
 
+def _synthetic_trace_compile_case(
+    *,
+    case_id: str,
+    pattern: str,
+    text_model: str,
+) -> FixtureCase:
+    return FixtureCase(
+        case_id=case_id,
+        manifest_id="synthetic-open-ended-trace-helper-contract",
+        suite_id="synthetic-open-ended-trace-helper-contract",
+        layer="parity_suite_contracts",
+        family="open_ended_quantified_group",
+        operation="compile",
+        notes=[],
+        categories=[],
+        pattern=pattern,
+        flags=None,
+        text_model=text_model,
+        pattern_encoding="latin-1",
+        helper=None,
+        source_args=[],
+        source_kwargs={},
+        args=[],
+        kwargs={},
+    )
+
+
+def test_compile_case_trace_prefix_rejects_unexpected_compile_case_ids() -> None:
+    case = _synthetic_trace_compile_case(
+        case_id="open-ended-grouped-alternation-numbered-str",
+        pattern=r"a(bc|de){1,}d",
+        text_model="str",
+    )
+
+    with pytest.raises(
+        AssertionError,
+        match=re.escape(f"unexpected compile case id {case.case_id!r}"),
+    ):
+        _compile_case_trace_prefix(case)
+
+
+@pytest.mark.parametrize(
+    ("text_model", "branch_text_by_id", "expected_message"),
+    (
+        pytest.param(
+            "str",
+            OPEN_ENDED_BRANCH_BYTES,
+            "'synthetic-open-ended-trace-helper-contract' str trace builder "
+            "requires str branch texts",
+            id="str-case-with-bytes-branches",
+        ),
+        pytest.param(
+            "bytes",
+            OPEN_ENDED_BRANCH_TEXT,
+            "'synthetic-open-ended-trace-helper-contract' bytes trace builder "
+            "requires bytes branch texts",
+            id="bytes-case-with-str-branches",
+        ),
+    ),
+)
+def test_build_compile_case_pattern_trace_cases_rejects_mixed_branch_text_models(
+    text_model: str,
+    branch_text_by_id: Mapping[str, str | bytes],
+    expected_message: str,
+) -> None:
+    case = _synthetic_trace_compile_case(
+        case_id=f"synthetic-open-ended-trace-helper-contract-compile-metadata-{text_model}",
+        pattern=r"a(bc|de){1,}d",
+        text_model=text_model,
+    )
+
+    with pytest.raises(AssertionError, match=re.escape(expected_message)):
+        _build_compile_case_pattern_trace_cases(
+            (case,),
+            branch_text_by_id=branch_text_by_id,
+            repetition_counts=(1,),
+        )
+
+
 def test_open_ended_trace_cases_cover_all_declared_branch_orders() -> None:
     expected_patterns = frozenset(
         case_pattern(case)
