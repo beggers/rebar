@@ -42,6 +42,12 @@ Created: 2026-03-27
 - `bash -lc "! rg -n '^def (load_unique_record_collection|load_python_dict_attribute)\\(' python/rebar_harness/scorecard_io.py"`
 
 ## Notes
+- Completed 2026-03-27: localized fixture-module loading and duplicate fixture-id enforcement into `python/rebar_harness/correctness.py`, localized benchmark-manifest loading and duplicate workload-id enforcement into `python/rebar_harness/benchmarks.py`, deleted the shared loader helper exports from `python/rebar_harness/scorecard_io.py`, moved the negative-path coverage onto the owner suites, and replaced the old `tests/python/test_ops_harness.py` helper assertions with a non-export smoke.
+- Verification after the refactor:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_benchmark_publication_runtime_contracts.py` passed (`291 passed, 3 skipped, 2468 subtests passed in 32.25s`).
+  - `./.venv/bin/python -m py_compile python/rebar_harness/scorecard_io.py python/rebar_harness/correctness.py python/rebar_harness/benchmarks.py tests/python/test_ops_harness.py tests/conformance/test_combined_correctness_scorecards.py tests/benchmarks/test_benchmark_manifest_validation.py tests/benchmarks/test_benchmark_publication_runtime_contracts.py` passed.
+  - `PYTHONPATH=python:. ./.venv/bin/pytest -q tests/python/test_ops_harness.py -k 'scorecard_format_python_module_round_trips_through_python_loader or scorecard_io_does_not_export_owner_local_loader_helpers'` passed (`2 passed, 70 deselected in 0.07s`).
+  - `bash -lc "! rg -n '^def (load_unique_record_collection|load_python_dict_attribute)\\(' python/rebar_harness/scorecard_io.py"` passed.
 - Queue and JSON check in this planning run:
   - `.rebar/runtime/dashboard.md` reported `ready: 0`, `in_progress: 0`, `blocked: 0`, `tracked_json_blob_count: 0`, and `tracked_json_blob_delta: 0`.
   - `git status --short` was empty in this run, so the runtime JSON count was not lagging a dirty checkout.

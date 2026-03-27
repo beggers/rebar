@@ -7,10 +7,7 @@ import platform
 import pprint
 import sys
 from dataclasses import dataclass
-from typing import Any, Callable, Iterable, TypeVar
-
-
-_RecordT = TypeVar("_RecordT")
+from typing import Any
 
 
 def build_cpython_baseline(*, version_family: str) -> dict[str, Any]:
@@ -30,52 +27,6 @@ def build_cpython_baseline(*, version_family: str) -> dict[str, Any]:
         "executable": sys.executable,
         "re_module": "re",
     }
-
-
-def load_unique_record_collection(
-    paths: Iterable[pathlib.Path],
-    *,
-    load_record: Callable[[pathlib.Path], _RecordT],
-    record_id: Callable[[_RecordT], str],
-    record_path: Callable[[_RecordT], pathlib.Path],
-    duplicate_record_error: Callable[[str, pathlib.Path, pathlib.Path], str],
-    nested_ids: Callable[[_RecordT], Iterable[str]],
-    duplicate_nested_error: Callable[[str, pathlib.Path, pathlib.Path], str],
-) -> list[_RecordT]:
-    """Load a record collection while enforcing unique top-level and nested ids."""
-
-    records: list[_RecordT] = []
-    seen_record_paths: dict[str, pathlib.Path] = {}
-    seen_nested_paths: dict[str, pathlib.Path] = {}
-    for path in paths:
-        record = load_record(path)
-        current_path = record_path(record)
-        current_record_id = record_id(record)
-        prior_record_path = seen_record_paths.get(current_record_id)
-        if prior_record_path is not None:
-            raise ValueError(
-                duplicate_record_error(
-                    current_record_id,
-                    prior_record_path,
-                    current_path,
-                )
-            )
-        seen_record_paths[current_record_id] = current_path
-
-        for nested_id in nested_ids(record):
-            prior_nested_path = seen_nested_paths.get(nested_id)
-            if prior_nested_path is not None:
-                raise ValueError(
-                    duplicate_nested_error(
-                        nested_id,
-                        prior_nested_path,
-                        current_path,
-                    )
-                )
-            seen_nested_paths[nested_id] = current_path
-
-        records.append(record)
-    return records
 
 
 class _IndexLike:
@@ -203,7 +154,7 @@ def format_python_scorecard_module(
     return f"{report_attribute} = {payload_literal}\n"
 
 
-def load_python_dict_attribute(
+def _load_python_dict_attribute(
     path: pathlib.Path,
     *,
     module_name_prefix: str,
@@ -292,7 +243,7 @@ class ScorecardReportDescriptor:
                 )
             return raw_payload
         if resolved_report_path.suffix == ".py":
-            return load_python_dict_attribute(
+            return _load_python_dict_attribute(
                 resolved_report_path,
                 module_name_prefix=self.module_name_prefix,
                 attribute_name=self.report_attribute,

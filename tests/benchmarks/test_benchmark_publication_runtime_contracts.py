@@ -1867,6 +1867,66 @@ def test_default_benchmark_published_manifest_inventory_has_unique_manifest_and_
     )
 
 
+def test_published_benchmark_manifests_propagates_owner_local_duplicate_id_failures(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+) -> None:
+    first_path = _write_test_manifest(
+        tmp_path,
+        "published_duplicate_manifest_a.py",
+        """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "published-duplicate-benchmark-manifest-id",
+            "workloads": [
+                {
+                    "id": "published-benchmark-workload-a",
+                    "operation": "module.search",
+                    "pattern": "abc",
+                    "haystack": "abc",
+                },
+            ],
+        }
+        """,
+    )
+    second_path = _write_test_manifest(
+        tmp_path,
+        "published_duplicate_manifest_b.py",
+        """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "published-duplicate-benchmark-manifest-id",
+            "workloads": [
+                {
+                    "id": "published-benchmark-workload-b",
+                    "operation": "module.search",
+                    "pattern": "def",
+                    "haystack": "def",
+                },
+            ],
+        }
+        """,
+    )
+
+    monkeypatch.setattr(
+        benchmarks,
+        "select_benchmark_manifest_paths",
+        lambda selector: (
+            first_path,
+            second_path,
+        ),
+    )
+    benchmarks.published_benchmark_manifests.cache_clear()
+    try:
+        with pytest.raises(
+            ValueError,
+            match=r"duplicate benchmark manifest id .*published-duplicate-benchmark-manifest-id",
+        ):
+            benchmarks.published_benchmark_manifests()
+    finally:
+        benchmarks.published_benchmark_manifests.cache_clear()
+
+
 def test_built_native_smoke_runner_uses_explicit_report_paths_only() -> None:
     _assert_built_native_runner_uses_optional_report_path(
         runner=benchmarks.run_built_native_smoke_benchmarks,

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+import importlib.util
 import json
 import pathlib
 import re as cpython_re
@@ -21,8 +22,6 @@ import rebar
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
     build_scorecard_report_descriptor,
-    load_unique_record_collection,
-    load_python_dict_attribute,
     materialize_descriptor_value,
 )
 
@@ -530,14 +529,7 @@ class FixtureCase:
 def load_fixture_manifest(path: pathlib.Path) -> FixtureManifest:
     if path.suffix != ".py":
         raise ValueError(f"fixture manifests must be Python modules; got {path}")
-    raw_manifest = load_python_dict_attribute(
-        path,
-        module_name_prefix="_rebar_fixture",
-        attribute_name="MANIFEST",
-        load_error_label="Python fixture module",
-        missing_error_label="Python fixture module",
-        type_error_label="fixture manifest",
-    )
+    raw_manifest = _load_fixture_manifest_dict(path)
     schema_version = raw_manifest.get("schema_version")
     if schema_version != FIXTURE_SCHEMA_VERSION:
         raise ValueError(
@@ -602,16 +594,58 @@ def _duplicate_fixture_case_error(
     return f"duplicate fixture case id {case_id!r} in {prior_path} and {current_path}"
 
 
+def _load_fixture_manifest_dict(path: pathlib.Path) -> dict[str, Any]:
+    module_name = f"_rebar_fixture_{path.stem}".replace("-", "_")
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    if spec is None or spec.loader is None:
+        raise ValueError(f"unable to load Python fixture module from {path}")
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    if not hasattr(module, "MANIFEST"):
+        raise ValueError(f"Python fixture module {path} is missing a MANIFEST value")
+
+    payload = getattr(module, "MANIFEST")
+    if not isinstance(payload, dict):
+        raise ValueError(f"fixture manifest in {path} must be a dict")
+    return payload
+
+
 def load_fixture_manifests(paths: Sequence[pathlib.Path]) -> list[FixtureManifest]:
-    return load_unique_record_collection(
-        paths,
-        load_record=load_fixture_manifest,
-        record_id=_fixture_manifest_id,
-        record_path=_fixture_manifest_path,
-        duplicate_record_error=_duplicate_fixture_manifest_error,
-        nested_ids=_fixture_case_ids,
-        duplicate_nested_error=_duplicate_fixture_case_error,
-    )
+    manifests: list[FixtureManifest] = []
+    seen_manifest_paths: dict[str, pathlib.Path] = {}
+    seen_case_paths: dict[str, pathlib.Path] = {}
+
+    for path in paths:
+        manifest = load_fixture_manifest(path)
+        current_path = _fixture_manifest_path(manifest)
+        current_manifest_id = _fixture_manifest_id(manifest)
+        prior_manifest_path = seen_manifest_paths.get(current_manifest_id)
+        if prior_manifest_path is not None:
+            raise ValueError(
+                _duplicate_fixture_manifest_error(
+                    current_manifest_id,
+                    prior_manifest_path,
+                    current_path,
+                )
+            )
+        seen_manifest_paths[current_manifest_id] = current_path
+
+        for case_id in _fixture_case_ids(manifest):
+            prior_case_path = seen_case_paths.get(case_id)
+            if prior_case_path is not None:
+                raise ValueError(
+                    _duplicate_fixture_case_error(
+                        case_id,
+                        prior_case_path,
+                        current_path,
+                    )
+                )
+            seen_case_paths[case_id] = current_path
+
+        manifests.append(manifest)
+
+    return manifests
 
 
 @lru_cache(maxsize=1)

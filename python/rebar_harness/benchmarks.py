@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import importlib
+import importlib.util
 import json
 import math
 import os
@@ -28,8 +29,6 @@ PYTHON_SOURCE = REPO_ROOT / "python"
 from rebar_harness.scorecard_io import (
     build_cpython_baseline,
     build_scorecard_report_descriptor,
-    load_unique_record_collection,
-    load_python_dict_attribute,
     materialize_descriptor_value,
 )
 
@@ -1177,14 +1176,7 @@ def load_manifest(path: pathlib.Path) -> BenchmarkManifest:
         raise ValueError(
             f"unsupported benchmark manifest extension {path.suffix!r} for {path}"
         )
-    raw_manifest = load_python_dict_attribute(
-        path,
-        module_name_prefix="_rebar_benchmark_manifest",
-        attribute_name="MANIFEST",
-        load_error_label="Python benchmark manifest",
-        missing_error_label="Python benchmark manifest module",
-        type_error_label="benchmark manifest",
-    )
+    raw_manifest = _load_benchmark_manifest_dict(path)
     return BenchmarkManifest.from_dict(path=path, raw_manifest=raw_manifest)
 
 
@@ -1216,16 +1208,58 @@ def _duplicate_benchmark_workload_error(
     return f"duplicate benchmark workload id {workload_id!r}"
 
 
+def _load_benchmark_manifest_dict(path: pathlib.Path) -> dict[str, Any]:
+    module_name = f"_rebar_benchmark_manifest_{path.stem}".replace("-", "_")
+    spec = importlib.util.spec_from_file_location(module_name, path)
+    if spec is None or spec.loader is None:
+        raise ValueError(f"unable to load Python benchmark manifest from {path}")
+
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    if not hasattr(module, "MANIFEST"):
+        raise ValueError(f"Python benchmark manifest module {path} is missing a MANIFEST value")
+
+    payload = getattr(module, "MANIFEST")
+    if not isinstance(payload, dict):
+        raise ValueError(f"benchmark manifest in {path} must be a dict")
+    return payload
+
+
 def load_manifests(paths: list[pathlib.Path]) -> list[BenchmarkManifest]:
-    return load_unique_record_collection(
-        paths,
-        load_record=load_manifest,
-        record_id=_benchmark_manifest_id,
-        record_path=_benchmark_manifest_path,
-        duplicate_record_error=_duplicate_benchmark_manifest_error,
-        nested_ids=_benchmark_workload_ids,
-        duplicate_nested_error=_duplicate_benchmark_workload_error,
-    )
+    manifests: list[BenchmarkManifest] = []
+    seen_manifest_paths: dict[str, pathlib.Path] = {}
+    seen_workload_paths: dict[str, pathlib.Path] = {}
+
+    for path in paths:
+        manifest = load_manifest(path)
+        current_path = _benchmark_manifest_path(manifest)
+        current_manifest_id = _benchmark_manifest_id(manifest)
+        prior_manifest_path = seen_manifest_paths.get(current_manifest_id)
+        if prior_manifest_path is not None:
+            raise ValueError(
+                _duplicate_benchmark_manifest_error(
+                    current_manifest_id,
+                    prior_manifest_path,
+                    current_path,
+                )
+            )
+        seen_manifest_paths[current_manifest_id] = current_path
+
+        for workload_id in _benchmark_workload_ids(manifest):
+            prior_workload_path = seen_workload_paths.get(workload_id)
+            if prior_workload_path is not None:
+                raise ValueError(
+                    _duplicate_benchmark_workload_error(
+                        workload_id,
+                        prior_workload_path,
+                        current_path,
+                    )
+                )
+            seen_workload_paths[workload_id] = current_path
+
+        manifests.append(manifest)
+
+    return manifests
 
 
 @cache

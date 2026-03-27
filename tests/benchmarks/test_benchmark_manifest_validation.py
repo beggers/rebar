@@ -421,6 +421,80 @@ def test_standard_benchmark_manifest_loader_rejects_duplicate_ids(
         with pytest.raises(ValueError, match=error_pattern):
             load_manifests([first_path, second_path])
 
+    duplicate_workload_within_manifest = _write_test_manifest(
+        tmp_path,
+        "duplicate_benchmark_workload_within_manifest.py",
+        """
+        MANIFEST = {
+            "schema_version": 1,
+            "manifest_id": "duplicate-benchmark-workload-within-manifest",
+            "workloads": [
+                {
+                    "id": "duplicate-benchmark-workload-id",
+                    "operation": "module.search",
+                    "pattern": "abc",
+                    "haystack": "abc",
+                },
+                {
+                    "id": "duplicate-benchmark-workload-id",
+                    "operation": "module.search",
+                    "pattern": "def",
+                    "haystack": "def",
+                },
+            ],
+        }
+        """,
+    )
+    with pytest.raises(
+        ValueError,
+        match=r"duplicate benchmark workload id .*duplicate-benchmark-workload-id",
+    ):
+        load_manifests([duplicate_workload_within_manifest])
+
+
+def test_standard_benchmark_manifest_loader_surfaces_owner_local_module_load_failures(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+) -> None:
+    manifest_path = tmp_path / "unloadable_manifest.py"
+    fake_spec_without_loader = type("SpecWithoutLoader", (), {"loader": None})()
+
+    for spec in (None, fake_spec_without_loader):
+        monkeypatch.setattr(
+            benchmarks.importlib.util,
+            "spec_from_file_location",
+            lambda *args, **kwargs: spec,
+        )
+        with pytest.raises(
+            ValueError,
+            match=re.escape(
+                f"unable to load Python benchmark manifest from {manifest_path}"
+            ),
+        ):
+            load_manifest(manifest_path)
+        monkeypatch.undo()
+
+    syntax_error_path = _write_test_manifest(
+        tmp_path,
+        "benchmark_manifest_syntax_error.py",
+        "MANIFEST = {\n",
+    )
+    with pytest.raises(SyntaxError) as raised:
+        load_manifest(syntax_error_path)
+    assert raised.value.filename == str(syntax_error_path)
+    assert raised.value.lineno == 1
+
+    runtime_error_path = _write_test_manifest(
+        tmp_path,
+        "benchmark_manifest_runtime_error.py",
+        'raise RuntimeError("boom loading benchmark manifest")\n',
+    )
+    with pytest.raises(
+        RuntimeError,
+        match=re.escape("boom loading benchmark manifest"),
+    ):
+        load_manifest(runtime_error_path)
+
 
 def test_standard_benchmark_manifest_materializes_bytes_template_replacements_for_nested_group_workloads(
     tmp_path: pathlib.Path,

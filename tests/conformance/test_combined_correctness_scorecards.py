@@ -30,11 +30,22 @@ from rebar_harness.correctness import (
     determine_phase,
     evaluate_case,
     load_fixture_manifest,
+    load_fixture_manifests,
     published_fixture_manifests,
 )
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
 TRACKED_REPORT_PATH = correctness.SCORECARD_REPORT.published_path
+
+
+def _write_test_fixture_manifest(
+    tmp_path: pathlib.Path,
+    filename: str,
+    source: str,
+) -> pathlib.Path:
+    path = tmp_path / filename
+    path.write_text(source, encoding="utf-8")
+    return path
 
 
 def manifest_records_by_id(manifests: Iterable[object]) -> dict[str, object]:
@@ -218,6 +229,119 @@ def test_run_harness_scorecard_loads_python_report_via_correctness_scorecard_loa
     assert scorecard == loaded_scorecard
     assert observed_load_paths == [tmp_path / "custom-scorecard.py"]
     fake_report_descriptor.load.assert_called_once_with(tmp_path / "custom-scorecard.py")
+
+
+def test_fixture_manifest_loader_rejects_duplicate_manifest_and_case_ids(
+    tmp_path: pathlib.Path,
+) -> None:
+    duplicate_modules = (
+        (
+            (
+                "duplicate_fixture_manifest_a.py",
+                """MANIFEST = {
+    "schema_version": 1,
+    "manifest_id": "duplicate-fixture-manifest-id",
+    "cases": [{"id": "fixture-case-a", "pattern": "abc"}],
+}\n""",
+            ),
+            (
+                "duplicate_fixture_manifest_b.py",
+                """MANIFEST = {
+    "schema_version": 1,
+    "manifest_id": "duplicate-fixture-manifest-id",
+    "cases": [{"id": "fixture-case-b", "pattern": "def"}],
+}\n""",
+            ),
+            r"duplicate fixture manifest id 'duplicate-fixture-manifest-id' in .*duplicate_fixture_manifest_a.py and .*duplicate_fixture_manifest_b.py",
+        ),
+        (
+            (
+                "duplicate_fixture_case_across_manifests_a.py",
+                """MANIFEST = {
+    "schema_version": 1,
+    "manifest_id": "fixture-manifest-a",
+    "cases": [{"id": "duplicate-fixture-case-id", "pattern": "abc"}],
+}\n""",
+            ),
+            (
+                "duplicate_fixture_case_across_manifests_b.py",
+                """MANIFEST = {
+    "schema_version": 1,
+    "manifest_id": "fixture-manifest-b",
+    "cases": [{"id": "duplicate-fixture-case-id", "pattern": "def"}],
+}\n""",
+            ),
+            r"duplicate fixture case id 'duplicate-fixture-case-id' in .*duplicate_fixture_case_across_manifests_a.py and .*duplicate_fixture_case_across_manifests_b.py",
+        ),
+    )
+
+    for first_module, second_module, error_pattern in duplicate_modules:
+        first_path = _write_test_fixture_manifest(tmp_path, *first_module)
+        second_path = _write_test_fixture_manifest(tmp_path, *second_module)
+        with pytest.raises(ValueError, match=error_pattern):
+            load_fixture_manifests([first_path, second_path])
+
+    duplicate_case_within_manifest = _write_test_fixture_manifest(
+        tmp_path,
+        "duplicate_fixture_case_within_manifest.py",
+        """MANIFEST = {
+    "schema_version": 1,
+    "manifest_id": "fixture-manifest-within",
+    "cases": [
+        {"id": "duplicate-fixture-case-id", "pattern": "abc"},
+        {"id": "duplicate-fixture-case-id", "pattern": "def"},
+    ],
+}\n""",
+    )
+    with pytest.raises(
+        ValueError,
+        match=(
+            r"duplicate fixture case id 'duplicate-fixture-case-id' in "
+            r".*duplicate_fixture_case_within_manifest.py and "
+            r".*duplicate_fixture_case_within_manifest.py"
+        ),
+    ):
+        load_fixture_manifests([duplicate_case_within_manifest])
+
+
+def test_fixture_manifest_loader_surfaces_owner_local_module_load_failures(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: pathlib.Path,
+) -> None:
+    fixture_path = tmp_path / "unloadable_fixture.py"
+    missing_loader_spec = mock.Mock()
+    missing_loader_spec.loader = None
+
+    for label, spec in (("missing-spec", None), ("missing-loader", missing_loader_spec)):
+        with pytest.raises(
+            ValueError,
+            match=re.escape(f"unable to load Python fixture module from {fixture_path}"),
+        ):
+            monkeypatch.setattr(
+                correctness.importlib.util,
+                "spec_from_file_location",
+                lambda *args, **kwargs: spec,
+            )
+            load_fixture_manifest(fixture_path)
+        monkeypatch.undo()
+
+    syntax_error_path = _write_test_fixture_manifest(
+        tmp_path,
+        "fixture_syntax_error.py",
+        "MANIFEST = {\n",
+    )
+    with pytest.raises(SyntaxError) as raised:
+        load_fixture_manifest(syntax_error_path)
+    assert raised.value.filename == str(syntax_error_path)
+    assert raised.value.lineno == 1
+
+    runtime_error_path = _write_test_fixture_manifest(
+        tmp_path,
+        "fixture_runtime_error.py",
+        'raise RuntimeError("boom loading fixture")\n',
+    )
+    with pytest.raises(RuntimeError, match=re.escape("boom loading fixture")):
+        load_fixture_manifest(runtime_error_path)
 
 
 @dataclass(frozen=True)
