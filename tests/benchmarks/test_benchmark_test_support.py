@@ -987,6 +987,44 @@ def test_manifest_workloads_resolve_string_paths_from_workloads_root(
     ]
 
 
+def test_freeze_signature_value_normalizes_nested_dicts_and_lists() -> None:
+    frozen = collection_replacement_support.freeze_signature_value(
+        {
+            "kwargs": {
+                "count": [0, {"enabled": True}],
+                "flags": {"ignorecase": 2, "ascii": 0},
+            },
+            "args": ["pattern", ["haystack", {"nested": ["value"]}]],
+        }
+    )
+
+    assert frozen == (
+        (
+            "args",
+            ("pattern", ("haystack", (("nested", ("value",)),))),
+        ),
+        (
+            "kwargs",
+            (
+                ("count", (0, (("enabled", True),))),
+                ("flags", (("ascii", 0), ("ignorecase", 2))),
+            ),
+        ),
+    )
+
+
+def test_freeze_signature_value_stringifies_sorted_mapping_keys() -> None:
+    frozen = collection_replacement_support.freeze_signature_value(
+        {10: "int-ten", 2: "int-two", 1: "int-one"}
+    )
+
+    assert frozen == (
+        ("1", "int-one"),
+        ("2", "int-two"),
+        ("10", "int-ten"),
+    )
+
+
 def test_clear_anchor_support_caches_resets_shared_and_source_tree_cached_helpers(
     monkeypatch,
     anchor_support_cache_guard: None,
