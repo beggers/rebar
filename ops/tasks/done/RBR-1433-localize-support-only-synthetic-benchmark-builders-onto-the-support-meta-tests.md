@@ -49,3 +49,11 @@ Created: 2026-03-27
 - Verification status in this planning run:
   - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_benchmark_test_support.py -k 'synthetic_workload or contract_source_workloads or compile_proxy or module_pattern_case or anchored_workload_case_pairs or standard_benchmark_anchor_contract_definition' -q` passed with `13 passed, 186 deselected in 0.18s`.
   - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py` passed.
+
+## Completion
+- Moved the synthetic benchmark workload/case builders that were only consumed by `tests/benchmarks/test_benchmark_test_support.py` into that meta-test module and rewired the affected tests to call the local helpers directly.
+- Removed the dead shared-support synthetic helper exports from `tests/benchmarks/benchmark_test_support.py`, including the unused `_synthetic_case(...)` export, and updated the ownership assertion that previously pinned `_module_pattern_case(...)` as a shared helper.
+- Verified with:
+  - `PYTHONPATH=python:. ./.venv/bin/pytest tests/benchmarks/test_benchmark_test_support.py -k 'synthetic_workload or contract_source_workloads or compile_proxy or module_pattern_case or anchored_workload_case_pairs or standard_benchmark_anchor_contract_definition' -q`
+  - `python3 -m py_compile tests/benchmarks/benchmark_test_support.py tests/benchmarks/test_benchmark_test_support.py`
+  - `bash -lc \"! rg -n 'def _synthetic_manifest|def _synthetic_case|def _synthetic_workload|def _synthetic_manifest_loader|def _module_pattern_case|def _synthetic_workload_signature|def _synthetic_workload_is_included|def synthetic_workload' tests/benchmarks/benchmark_test_support.py\"`

@@ -375,13 +375,6 @@ def anchor_support_cache_guard() -> None:
     _clear_anchor_support_caches()
 
 
-def _synthetic_manifest(
-    *,
-    cases: tuple[object, ...] = (),
-    workloads: tuple[object, ...] = (),
-) -> SimpleNamespace:
-    return SimpleNamespace(cases=list(cases), workloads=list(workloads))
-
 def _contract_source_workloads(
     *,
     manifest_path: pathlib.Path,
@@ -441,70 +434,6 @@ COMPILED_PATTERN_MODULE_HELPER_KEYWORD_CONTRACT_PAYLOAD_DROP_FIELDS = frozenset(
         "haystack_text_model",
     }
 )
-
-def _synthetic_case(
-    case_id: str,
-    signature: tuple[Any, ...] | None,
-) -> SimpleNamespace:
-    return SimpleNamespace(case_id=case_id, signature=signature)
-
-
-def _synthetic_workload(
-    workload_id: str,
-    signature: tuple[Any, ...],
-    *,
-    include: bool = True,
-) -> SimpleNamespace:
-    return SimpleNamespace(
-        workload_id=workload_id,
-        signature=signature,
-        include=include,
-    )
-
-
-def _synthetic_manifest_loader(
-    _: pathlib.Path,
-    *,
-    workloads: tuple[Any, ...],
-) -> SimpleNamespace:
-    return _synthetic_manifest(workloads=workloads)
-
-
-def _module_pattern_case(
-    *,
-    helper: str,
-    operation: str,
-    args: tuple[object, ...],
-    case_id: str = "",
-    kwargs: dict[str, object] | None = None,
-    pattern: str = "abc",
-    flags: int = 0,
-    text_model: str | None = "str",
-    use_compiled_pattern: bool = False,
-) -> SimpleNamespace:
-    pattern_value = pattern.encode() if text_model == "bytes" else pattern
-    return SimpleNamespace(
-        case_id=case_id,
-        helper=helper,
-        operation=operation,
-        args=args,
-        kwargs={} if kwargs is None else kwargs,
-        pattern=pattern,
-        flags=flags,
-        text_model=text_model,
-        use_compiled_pattern=use_compiled_pattern,
-        pattern_payload=lambda: pattern_value,
-        serialized_args=lambda: list(args),
-    )
-
-
-def _synthetic_workload_signature(workload: Any) -> tuple[Any, ...]:
-    return workload.signature
-
-
-def _synthetic_workload_is_included(workload: Any) -> bool:
-    return workload.include
-
 
 def freeze_signature_value(value: Any) -> Any:
     if isinstance(value, dict):
@@ -1457,72 +1386,6 @@ def _write_test_manifest(
     path = tmp_path / filename
     path.write_text(textwrap.dedent(source), encoding="utf-8")
     return path
-
-
-def synthetic_workload(
-    *,
-    manifest_id: str,
-    workload_id: str,
-    operation: str,
-    pattern: str = "abc",
-    haystack: str | None = "abc",
-    replacement: Any | None = None,
-    expected_exception: dict[str, str] | None = None,
-    flags: int = 0,
-    use_compiled_pattern: bool = False,
-    count: Any = 0,
-    maxsplit: Any = 0,
-    kwargs: dict[str, Any] | None = None,
-    text_model: str = "str",
-    haystack_text_model: str | None = None,
-    pos: Any | None = None,
-    endpos: Any | None = None,
-    bucket: str | None = None,
-    family: str = "module",
-    cache_mode: str = "warm",
-    timing_scope: str = "module-helper-call",
-    warmup_iterations: int = 1,
-    sample_iterations: int = 1,
-    timed_samples: int = 1,
-    notes: list[str] | None = None,
-    categories: list[str] | None = None,
-    syntax_features: list[str] | None = None,
-    smoke: bool = False,
-) -> benchmarks.Workload:
-    payload: dict[str, Any] = {
-        "manifest_id": manifest_id,
-        "workload_id": workload_id,
-        "bucket": operation.replace(".", "-") if bucket is None else bucket,
-        "family": family,
-        "operation": operation,
-        "pattern": pattern,
-        "haystack": haystack,
-        "replacement": replacement,
-        "expected_exception": expected_exception,
-        "flags": flags,
-        "use_compiled_pattern": use_compiled_pattern,
-        "count": count,
-        "maxsplit": maxsplit,
-        "text_model": text_model,
-        "cache_mode": cache_mode,
-        "timing_scope": timing_scope,
-        "warmup_iterations": warmup_iterations,
-        "sample_iterations": sample_iterations,
-        "timed_samples": timed_samples,
-        "notes": [] if notes is None else notes,
-        "categories": [] if categories is None else categories,
-        "syntax_features": [] if syntax_features is None else syntax_features,
-        "smoke": smoke,
-    }
-    if kwargs is not None:
-        payload["kwargs"] = kwargs
-    if haystack_text_model is not None:
-        payload["haystack_text_model"] = haystack_text_model
-    if pos is not None:
-        payload["pos"] = pos
-    if endpos is not None:
-        payload["endpos"] = endpos
-    return benchmarks.workload_from_payload(payload)
 
 
 def _expected_exception_instance(
