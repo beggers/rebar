@@ -80,6 +80,21 @@ The next parser cohort fixes repeated global flags at the true start, scoped ASC
 
 The complete follow-up records are [native](evidence/rebar-flags.json), [Python](evidence/ast-flags.json), and [Rust](evidence/rust-flags.json). Earlier evidence remains unchanged.
 
+## Unicode case-equivalence follow-up
+
+![Official CPython re compatibility after Unicode fixes](evidence/unicode-correctness.svg)
+
+The next executor cohort fixes case-insensitive literals, sets, and ranges: punctuation boundaries are preserved, ASCII/bytes remain ASCII-only, and CPython's special Unicode equivalence groups are handled correctly. Exactly three previously failing methods now pass in every engine, with no unrelated status changes:
+
+| Engine | Runnable methods passed | Failed | Crashes | Timeouts |
+| --- | ---: | ---: | ---: | ---: |
+| CPython `re` self-check | **144/144** | **0** | **0** | **0** |
+| Native C / `rebar` | 119/144 | 25 | 0 | 2 |
+| Python engine | 115/144 | 29 | 0 | 1 |
+| Rust engine | 115/144 | 29 | 3 | 0 |
+
+The complete follow-up records are [native](evidence/rebar-unicode.json), [Python](evidence/ast-unicode.json), and [Rust](evidence/rust-unicode.json). Earlier evidence remains unchanged.
+
 Reproduce the frozen gate or one stable method ID:
 
 ```sh

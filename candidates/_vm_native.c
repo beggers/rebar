@@ -92,7 +92,28 @@ static Py_UCS4 folded(Py_UCS4 c, int ascii_only) {
     if (c == 0x130 || c == 0x131) return 'i';
     if (c == 0x17f) return 's';
     if (c == 0x212a) return 'k';
+    if (c == 0x1c80) return 0x432;
+    if (c == 0xfb05 || c == 0xfb06) return 0xfb05;
+    if (c == 0xdf || c == 0x1e9e) return 0xdf;
     return Py_UNICODE_TOLOWER(c);
+}
+
+static int range_case_match(Py_UCS4 left, Py_UCS4 right, Py_UCS4 value, int ascii_only) {
+    if (value>=left && value<=right) return 1;
+    if (ascii_only) {
+        Py_UCS4 lower=value<128 && value>='A' && value<='Z' ? value+32 : value;
+        Py_UCS4 upper=value<128 && value>='a' && value<='z' ? value-32 : value;
+        return (lower>=left && lower<=right) || (upper>=left && upper<=right);
+    }
+    Py_UCS4 lower=Py_UNICODE_TOLOWER(value),upper=Py_UNICODE_TOUPPER(value),fold=folded(value,0);
+    if ((lower>=left && lower<=right) || (upper>=left && upper<=right) || (fold>=left && fold<=right)) return 1;
+    if ((value==0x412 || value==0x432 || value==0x1c80) && ((0x412>=left && 0x412<=right) || (0x432>=left && 0x432<=right) || (0x1c80>=left && 0x1c80<=right))) return 1;
+    if ((value=='I' || value=='i' || value==0x130 || value==0x131) && (('I'>=left && 'I'<=right) || ('i'>=left && 'i'<=right) || (0x130>=left && 0x130<=right) || (0x131>=left && 0x131<=right))) return 1;
+    if ((value=='S' || value=='s' || value==0x17f) && (('S'>=left && 'S'<=right) || ('s'>=left && 's'<=right) || (0x17f>=left && 0x17f<=right))) return 1;
+    if ((value=='K' || value=='k' || value==0x212a) && (('K'>=left && 'K'<=right) || ('k'>=left && 'k'<=right) || (0x212a>=left && 0x212a<=right))) return 1;
+    if ((value==0xfb05 || value==0xfb06) && ((0xfb05>=left && 0xfb05<=right) || (0xfb06>=left && 0xfb06<=right))) return 1;
+    if ((value==0xdf || value==0x1e9e) && ((0xdf>=left && 0xdf<=right) || (0x1e9e>=left && 0x1e9e<=right))) return 1;
+    return 0;
 }
 
 static int equal_char(Py_UCS4 a, Py_UCS4 b, Py_ssize_t flags) {
@@ -120,11 +141,7 @@ static int class_match(const VM *vm, Py_ssize_t index, Py_UCS4 c, Py_ssize_t fla
         ClassItem item = cls.items[i];
         if (item.kind == 1) found = equal_char(item.a, c, flags);
         else if (item.kind == 2) {
-            found = c >= item.a && c <= item.b;
-            if (!found && (flags & F_I)) {
-                Py_UCS4 fc = folded(c, ascii_only), fa = folded(item.a, ascii_only), fb = folded(item.b, ascii_only);
-                found = fc >= fa && fc <= fb;
-            }
+            found = (flags & F_I) ? range_case_match(item.a,item.b,c,ascii_only) : (c>=item.a && c<=item.b);
         } else if (item.kind == 3) found = category(c, item.a, flags);
     }
     return negate ? !found : found;

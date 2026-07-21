@@ -143,7 +143,7 @@ class _Native:
             masks = [int(48 <= value <= 57) | (int(value in (9, 10, 11, 12, 13, 32)) << 1) | (int((48 <= value <= 57) or (65 <= value <= 90) or (97 <= value <= 122)) << 2) for value in chars]
         else:
             chars = [ord(char) for char in string]
-            folded = {"İ": ord("i"), "ı": ord("i"), "ſ": ord("s"), "K": ord("k")}
+            folded = {"İ": ord("i"), "ı": ord("i"), "ſ": ord("s"), "K": ord("k"), "ᲀ": ord("в"), "ﬅ": ord("ﬅ"), "ﬆ": ord("ﬅ"), "ß": ord("ß"), "ẞ": ord("ß")}
             folds = [folded.get(char, ord(char.lower()[0])) for char in string]
             masks = [int(char.isdecimal()) | (int(char.isspace()) << 1) | (int(char.isalnum()) << 2) for char in string]
         count = max(len(chars), 1)

@@ -48,6 +48,8 @@ The [public API surface follow-up](evidence/SURFACE-QUALIFIED.md) fixes 11 addit
 
 The [inline/scoped-flags follow-up](evidence/FLAGS-QUALIFIED.md) fixes six more official methods in every engine while retaining **576/576** pre-timing comparisons. Official semantic and safety gaps still block timing.
 
+The [Unicode case-equivalence follow-up](evidence/UNICODE-QUALIFIED.md) fixes three more official methods in every engine while retaining **576/576** pre-timing comparisons. Official semantic and safety gaps still block timing.
+
 Reproduce the freeze and checks with:
 
 ```sh

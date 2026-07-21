@@ -501,8 +501,22 @@ def _fold(char, ascii_only=False):
         return char
     if not ascii_only and char in "İıſK":
         return {"İ": "i", "ı": "i", "ſ": "s", "K": "k"}[char]
-    value = char.lower()
-    return value if len(value) == 1 else value[0]
+    return char.casefold()
+
+
+def _range_case_match(left, right, char, ascii_only):
+    if left <= char <= right:
+        return True
+    if ascii_only:
+        variants = {char, char.lower(), char.upper()} if char.isascii() else {char}
+    else:
+        variants = {char}
+        variants.update(value for value in (char.lower(), char.upper(), char.casefold()) if len(value) == 1)
+        closures = ("Iiİı", "Ssſ", "KkK", "Ввᲀ", "ﬅﬆ", "ßẞ")
+        for closure in closures:
+            if char in closure:
+                variants.update(closure)
+    return any(left <= value <= right for value in variants)
 
 
 def _equal(left, right, flags):
@@ -528,10 +542,7 @@ def _class_match(node, char):
     for item in items:
         if item[0] == "range":
             left, right = item[1], item[2]
-            if ord(left) <= ord(char) <= ord(right):
-                found = True
-            elif flags & int(IGNORECASE) and ord(_fold(left, bool(flags & int(ASCII | LOCALE | _BYTE)))) <= ord(_fold(char, bool(flags & int(ASCII | LOCALE | _BYTE)))) <= ord(_fold(right, bool(flags & int(ASCII | LOCALE | _BYTE)))):
-                found = True
+            found = _range_case_match(left, right, char, bool(flags & int(ASCII | LOCALE | _BYTE))) if flags & int(IGNORECASE) else left <= char <= right
         elif item[0] == "lit" and _equal(item[1], char, flags):
             found = True
         elif item[0] == "category" and _category(char, item[1], flags):

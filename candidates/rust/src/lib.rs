@@ -868,6 +868,9 @@ fn eq_lit(lit: u32, value: u32, flags: u32, ctx: &Context<'_>, pos: usize) -> bo
                 0x130 | 0x131 => b'i' as u32,
                 0x17f => b's' as u32,
                 0x212a => b'k' as u32,
+                0x1c80 => 0x432,
+                0xfb05 | 0xfb06 => 0xfb05,
+                0xdf | 0x1e9e => 0xdf,
                 _ => char::from_u32(lit)
                     .and_then(|c| c.to_lowercase().next())
                     .map_or(lit, |c| c as u32),
@@ -875,6 +878,33 @@ fn eq_lit(lit: u32, value: u32, flags: u32, ctx: &Context<'_>, pos: usize) -> bo
         };
         left == folded(value, flags, ctx, pos)
     }
+}
+
+fn range_case_match(left: u32, right: u32, value: u32, flags: u32, ctx: &Context<'_>, pos: usize) -> bool {
+    if left <= value && value <= right {
+        return true;
+    }
+    let ascii = flags & (A | L | BYTE) != 0;
+    if ascii {
+        let lower = value.to_ascii_lowercase();
+        let upper = if (b'a' as u32..=b'z' as u32).contains(&value) { value - 32 } else { value };
+        return (left <= lower && lower <= right) || (left <= upper && upper <= right);
+    }
+    let lower = char::from_u32(value).and_then(|c| c.to_lowercase().next()).map_or(value, |c| c as u32);
+    let upper = char::from_u32(value).and_then(|c| c.to_uppercase().next()).map_or(value, |c| c as u32);
+    let fold = folded(value, flags, ctx, pos);
+    if (left <= lower && lower <= right) || (left <= upper && upper <= right) || (left <= fold && fold <= right) {
+        return true;
+    }
+    let closures: &[&[u32]] = &[
+        &[b'I' as u32, b'i' as u32, 0x130, 0x131],
+        &[b'S' as u32, b's' as u32, 0x17f],
+        &[b'K' as u32, b'k' as u32, 0x212a],
+        &[0x412, 0x432, 0x1c80],
+        &[0xfb05, 0xfb06],
+        &[0xdf, 0x1e9e],
+    ];
+    closures.iter().any(|closure| closure.contains(&value) && closure.iter().any(|item| left <= *item && *item <= right))
 }
 fn category(code: char, flags: u32, ctx: &Context<'_>, pos: usize) -> bool {
     let value = ctx.chars[pos];
@@ -924,25 +954,7 @@ fn class_match(
         Member::Lit(ch) => eq_lit(ch, value, flags, ctx, pos),
         Member::Cat(ch) => category(ch, flags, ctx, pos),
         Member::Range(left, right) => {
-            (left <= value && value <= right)
-                || (flags & I != 0 && {
-                    let folded_value = folded(value, flags, ctx, pos);
-                    let low = if flags & (A | L | BYTE) != 0 {
-                        left.to_ascii_lowercase()
-                    } else {
-                        char::from_u32(left)
-                            .and_then(|c| c.to_lowercase().next())
-                            .map_or(left, |c| c as u32)
-                    };
-                    let high = if flags & (A | L | BYTE) != 0 {
-                        right.to_ascii_lowercase()
-                    } else {
-                        char::from_u32(right)
-                            .and_then(|c| c.to_lowercase().next())
-                            .map_or(right, |c| c as u32)
-                    };
-                    low <= folded_value && folded_value <= high
-                })
+            if flags & I != 0 { range_case_match(left, right, value, flags, ctx, pos) } else { left <= value && value <= right }
         }
     });
     if negative { !found } else { found }
