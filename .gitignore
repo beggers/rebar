@@ -1,7 +1,0 @@
-.DS_Store
-.rebar/
-__pycache__/
-.pytest_cache/
-.venv/
-target/
-reports/correctness/*.json
