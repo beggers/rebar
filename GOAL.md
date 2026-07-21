@@ -14,10 +14,8 @@ Success requires three correctness-qualified candidates benchmarked; the winner 
 
 A chunk is one oracle category, candidate feature, benchmark cohort, or experiment. After each: run gates; update README/evidence/graphs; make one focused commit; push the feature branch. Bootstrap with "git push -u origin HEAD". Never batch chunks, force-push, rewrite pushed history, mix unrelated work, or push broken/default branches. If blocked, retain commits, show unpushed count, report why, and retry.
 
-README must be scannable and correct at every commit. Lead with phase/gate/verdict, next chunk, versioned correctness tested/total, candidate completion/results, benchmark coverage/ranking, failures/gaps, and evidence links. Use NOT MEASURED, never guesses. Generate reproducible committed charts for correctness, speed/confidence, memory, regressions, and rankings. Never hand-edit, cherry-pick, hide losses, or change denominators silently.
+README must be scannable and correct at every commit. Use simple and comprehensible language; periodically clean up language and delete unneeded sections and sentences. Use NOT MEASURED, never guesses. Generate reproducible committed charts for correctness, speed/confidence, memory, regressions, and rankings. Never hand-edit, cherry-pick, hide losses, or change denominators silently.
 
-Leave source, lockfiles, oracles, data, and candidates. Never release/deploy or use destructive git.
-
-A plan/prototype is not completion. Either all gates pass, or after three serious materially distinct attempts with no evidence-backed next path, preserve everything and push a rigorous negative report explaining why no faster compatible drop-in was achieved.
+Leave source, lockfiles, oracles, data, and candidates. Never release/deploy or use destructive git. A plan/prototype is not completion.
 
 Do this all on the main branch. Delete what's already there.

@@ -1,8 +1,3 @@
-# Experiment amendments
+# Amendments
 
-## A001 — Work directly on `main`
-
-- Date: 2026-07-21
-- Instruction: “Do this all on main”
-- Effect: All experiment commits and pushes from this point use `main`, overriding the feature-branch requirements in `GOAL.md`.
-- Unchanged: Every scientific gate, success criterion, evidence requirement, no-delegation rule, no-history-rewrite rule, and the prohibition on broken pushes remains in force.
+1. **Branch instruction.** The request explicitly requires all work on `main`. This overrides the conflicting objective sentences that require a feature branch and prohibit pushing a default branch. Every focused, passing chunk will therefore be committed and pushed on `main`; history will not be rewritten or force-pushed.
