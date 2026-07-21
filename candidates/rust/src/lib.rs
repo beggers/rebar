@@ -66,6 +66,8 @@ struct Parser {
     byte_mode: bool,
     groups: usize,
     names: Vec<(String, usize)>,
+    widths: Vec<(usize, (usize, usize))>,
+    named: Vec<(usize, u32)>,
 }
 type PResult<T> = Result<T, (String, Option<usize>, bool)>;
 
@@ -311,6 +313,19 @@ impl Parser {
             self.at += count;
             return Ok(Expr::Lit(value, flags));
         }
+        if ch == 'N' && !self.byte_mode && self.now() == Some('{') {
+            self.at += 1;
+            while self.now().is_some() && self.now() != Some('}') {
+                self.at += 1;
+            }
+            if self.take() != Some('}') {
+                return self.fail("missing }, unterminated name".into(), Some(slash + 2), true);
+            }
+            if let Some((_, value)) = self.named.iter().find(|(position, _)| *position == slash) {
+                return Ok(Expr::Lit(*value, flags));
+            }
+            return self.fail("undefined character name".into(), Some(slash), true);
+        }
         if ch.is_ascii_digit() {
             let mut digits = String::from(ch);
             if ch == '0' || in_class {
@@ -457,6 +472,7 @@ impl Parser {
                     true,
                 );
             }
+            self.widths.push((number, width(&child, &self.widths)));
             return Ok(Expr::Group(number, Box::new(child)));
         }
         self.at += 1;
@@ -496,7 +512,7 @@ impl Parser {
                         true,
                     );
                 }
-                let (low, high) = width(&child);
+                let (low, high) = width(&child, &self.widths);
                 if low != high {
                     return self.fail(
                         "look-behind requires fixed-width pattern".into(),
@@ -554,6 +570,7 @@ impl Parser {
                             true,
                         );
                     }
+                    self.widths.push((number, width(&child, &self.widths)));
                     Ok(Expr::Group(number, Box::new(child)))
                 } else if form == '=' {
                     let position = self.at;
@@ -649,7 +666,39 @@ impl Parser {
                             );
                         }
                     };
-                    if removing { off |= flag } else { on |= flag }
+                    if removing {
+                        if matches!(value, 'a' | 'u' | 'L') {
+                            return self.fail(
+                                "bad inline flags: cannot turn off flags 'a', 'u' and 'L'".into(),
+                                Some(self.at),
+                                true,
+                            );
+                        }
+                        off |= flag;
+                    } else {
+                        if value == 'L' && !self.byte_mode {
+                            return self.fail(
+                                "bad inline flags: cannot use 'L' flag with a str pattern".into(),
+                                Some(self.at),
+                                true,
+                            );
+                        }
+                        if matches!(value, 'a' | 'u' | 'L') && on & (A | L | 32) != 0 {
+                            return self.fail(
+                                "bad inline flags: flags 'a', 'u' and 'L' are incompatible".into(),
+                                Some(self.at),
+                                true,
+                            );
+                        }
+                        on |= flag;
+                    }
+                }
+                if on & off != 0 {
+                    return self.fail(
+                        "bad inline flags: flag turned on and off".into(),
+                        Some(self.at),
+                        true,
+                    );
                 }
                 let changed = (flags | on) & !off;
                 let Some(end) = self.take() else {
@@ -686,26 +735,32 @@ impl Parser {
     }
 }
 
-fn width(node: &Expr) -> (usize, usize) {
+fn width(node: &Expr, groups: &[(usize, (usize, usize))]) -> (usize, usize) {
     match node {
         Expr::Lit(_, _) | Expr::Dot(_) | Expr::Cat(_, _) | Expr::Class(_, _, _) => (1, 1),
         Expr::Anchor(_, _) | Expr::Boundary(_, _) | Expr::Look(_, _, _, _) => (0, 0),
-        Expr::Backref(_, _) => (0, usize::MAX / 8),
-        Expr::Group(_, child) | Expr::Atomic(child) => width(child),
-        Expr::Seq(values) => values.iter().map(width).fold((0, 0), |(a, b), (c, d)| {
-            (a.saturating_add(c), b.saturating_add(d))
-        }),
+        Expr::Backref(number, _) => groups
+            .iter()
+            .find(|(item, _)| item == number)
+            .map_or((0, usize::MAX / 8), |(_, value)| *value),
+        Expr::Group(_, child) | Expr::Atomic(child) => width(child, groups),
+        Expr::Seq(values) => values
+            .iter()
+            .map(|item| width(item, groups))
+            .fold((0, 0), |(a, b), (c, d)| {
+                (a.saturating_add(c), b.saturating_add(d))
+            }),
         Expr::Alt(values) => values
             .iter()
-            .map(width)
+            .map(|item| width(item, groups))
             .fold((usize::MAX, 0), |(a, b), (c, d)| (a.min(c), b.max(d))),
         Expr::Cond(_, yes, no) => {
-            let a = width(yes);
-            let b = width(no);
+            let a = width(yes, groups);
+            let b = width(no, groups);
             (a.0.min(b.0), a.1.max(b.1))
         }
         Expr::Repeat(child, min, max, _) => {
-            let value = width(child);
+            let value = width(child, groups);
             (
                 value.0.saturating_mul(*min),
                 max.map_or(usize::MAX / 8, |v| value.1.saturating_mul(v)),
@@ -1036,12 +1091,31 @@ pub unsafe extern "C" fn rebar_compile(
     length: usize,
     flags: u32,
     byte_mode: u8,
+    named_positions: *const usize,
+    named_values: *const u32,
+    named_count: usize,
 ) -> *mut Engine {
     if pattern.is_null() {
         set_error("null pattern".into(), None, false);
         return std::ptr::null_mut();
     }
     let source = unsafe { slice::from_raw_parts(pattern, length) }.to_vec();
+    let named = if named_count == 0 {
+        vec![]
+    } else if named_positions.is_null() || named_values.is_null() {
+        set_error("null named-escape table".into(), None, false);
+        return std::ptr::null_mut();
+    } else {
+        unsafe { slice::from_raw_parts(named_positions, named_count) }
+            .iter()
+            .copied()
+            .zip(
+                unsafe { slice::from_raw_parts(named_values, named_count) }
+                    .iter()
+                    .copied(),
+            )
+            .collect()
+    };
     let mut parser = Parser {
         source,
         at: 0,
@@ -1049,6 +1123,8 @@ pub unsafe extern "C" fn rebar_compile(
         byte_mode: byte_mode != 0,
         groups: 0,
         names: vec![],
+        widths: vec![],
+        named,
     };
     match parser.parse() {
         Ok(root) => {

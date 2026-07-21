@@ -2,7 +2,7 @@
 
 `candidates.rust_candidate` is a third from-scratch family. Its parser and executor live entirely in a dependency-free Rust `cdylib`; they share no semantic parser, compiler, executor, or engine with Candidates A or B. The Rust parser builds an arena-style expression tree, and an eager continuation-set evaluator preserves ordered alternatives, capture states, lookarounds, atomics, possessives, and empty-match behavior. This is deliberately distinct from both Python generators and the native bytecode stack.
 
-The Python layer uses only `ctypes`, `enum`, `os`, and `warnings`. It maps documented Unicode decimal/space/alphanumeric and simple case data across the FFI once per public search, supplies the public `Pattern`/`Match`/scanner/template contract, and never imports stdlib or third-party regex code. Rust has no dependencies; its lockfile is committed.
+The Python layer uses `ctypes`, `enum`, `os`, `types`, `unicodedata`, and `warnings`. It maps documented Unicode decimal/space/alphanumeric, simple case data, and resolved Unicode character names across the FFI, supplies the public `Pattern`/`Match`/scanner/template contract, and never imports stdlib or third-party regex code. Rust has no dependencies; its lockfile is committed.
 
 Build and reproduce the complete gate:
 
@@ -13,4 +13,4 @@ PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 "$PY" tools/oracle.py verify --module can
 PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 "$PY" tools/audit_candidate.py candidates/rust_candidate.py candidates.rust_candidate candidates/rust/src/lib.rs
 ```
 
-The committed [result](evidence/rust-correctness.json) passes 2,048/2,048 cases with zero mismatches or crashes and all 38 obligations mapped. The gate also builds with address sanitization, overflow checks, and debug assertions enabled, then reruns the complete oracle. No sanitizer failure is accepted.
+The original [result](evidence/rust-correctness.json) passes 2,048/2,048 cases with zero mismatches or crashes and all 38 obligations mapped. The [expanded result](../oracle/v2/evidence/RUST-QUALIFIED.md) passes 8,244/8,244 and all 45 obligations, including deeper Unicode cases. The gate also builds with address sanitization, overflow checks, and debug assertions enabled, then reruns the complete oracle. No sanitizer failure is accepted.
