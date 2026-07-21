@@ -1,0 +1,245 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="1469" viewBox="0 0 1140 1469" role="img" aria-label="Speed on every holdout test">
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<text x="28" y="34" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#0f172a">Speed on every holdout test</text>
+<text x="28" y="58" font-family="Arial, sans-serif" font-size="13" fill="#475569">Each dot compares one replacement with Python re. Right of the dark 1× line is faster; bars show the measured 95% range.</text>
+<rect x="18" y="77" width="1104" height="450" rx="8" fill="#fff" stroke="#e2e8f0"/>
+<text x="28" y="96" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0284c7">Native C engine</text>
+<line x1="280" y1="112" x2="280" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<text x="280" y="104" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.0001×</text>
+<line x1="397" y1="112" x2="397" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<text x="397" y="104" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.001×</text>
+<line x1="513" y1="112" x2="513" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<text x="513" y="104" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.01×</text>
+<line x1="630" y1="112" x2="630" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<text x="630" y="104" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.1×</text>
+<line x1="747" y1="112" x2="747" y2="504" stroke="#334155" stroke-width="2"/>
+<text x="747" y="104" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#0f172a">1×</text>
+<line x1="863" y1="112" x2="863" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<text x="863" y="104" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">10×</text>
+<line x1="980" y1="112" x2="980" y2="504" stroke="#cbd5e1" stroke-width="1"/>
+<text x="980" y="104" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">100×</text>
+<text x="30" y="134" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find tokens in bytes</text>
+<line x1="736" y1="131" x2="739" y2="131" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="737" cy="131" r="4" fill="#0284c7"/>
+<text x="996" y="135" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.83×</text>
+<text x="30" y="159" font-family="Arial, sans-serif" font-size="12" fill="#334155">Compile, then search (cold)</text>
+<line x1="776" y1="156" x2="778" y2="156" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="777" cy="156" r="4" fill="#0284c7"/>
+<text x="996" y="160" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">1.83×</text>
+<text x="30" y="184" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find all text tokens</text>
+<line x1="735" y1="181" x2="739" y2="181" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="737" cy="181" r="4" fill="#0284c7"/>
+<text x="996" y="185" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.83×</text>
+<text x="30" y="209" font-family="Arial, sans-serif" font-size="12" fill="#334155">Iterate over captured pairs</text>
+<line x1="761" y1="206" x2="764" y2="206" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="763" cy="206" r="4" fill="#0284c7"/>
+<text x="996" y="210" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">1.38×</text>
+<text x="30" y="234" font-family="Arial, sans-serif" font-size="12" fill="#334155">Check the whole string</text>
+<line x1="731" y1="231" x2="735" y2="231" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="733" cy="231" r="4" fill="#0284c7"/>
+<text x="996" y="235" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.76×</text>
+<text x="30" y="259" font-family="Arial, sans-serif" font-size="12" fill="#334155">Check a formatted prefix</text>
+<line x1="757" y1="256" x2="763" y2="256" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="759" cy="256" r="4" fill="#0284c7"/>
+<text x="996" y="260" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">1.28×</text>
+<text x="30" y="284" font-family="Arial, sans-serif" font-size="12" fill="#334155">Search through the module API</text>
+<line x1="738" y1="281" x2="745" y2="281" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="740" cy="281" r="4" fill="#0284c7"/>
+<text x="996" y="285" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.88×</text>
+<text x="30" y="309" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find a formatted line</text>
+<line x1="749" y1="306" x2="750" y2="306" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="750" cy="306" r="4" fill="#0284c7"/>
+<text x="996" y="310" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">1.07×</text>
+<text x="30" y="334" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find a word (present)</text>
+<line x1="731" y1="331" x2="735" y2="331" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="733" cy="331" r="4" fill="#0284c7"/>
+<text x="996" y="335" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.77×</text>
+<text x="30" y="359" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find a word (absent)</text>
+<line x1="709" y1="356" x2="715" y2="356" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="713" cy="356" r="4" fill="#0284c7"/>
+<text x="996" y="360" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.51×</text>
+<text x="30" y="384" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find the ending in long text</text>
+<line x1="874" y1="381" x2="890" y2="381" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="883" cy="381" r="4" fill="#0284c7"/>
+<text x="996" y="385" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">14.6×</text>
+<text x="30" y="409" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find and capture nearby text</text>
+<line x1="714" y1="406" x2="720" y2="406" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="716" cy="406" r="4" fill="#0284c7"/>
+<text x="996" y="410" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.55×</text>
+<text x="30" y="434" font-family="Arial, sans-serif" font-size="12" fill="#334155">Split and keep separators</text>
+<line x1="751" y1="431" x2="752" y2="431" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="752" cy="431" r="4" fill="#0284c7"/>
+<text x="996" y="435" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">1.10×</text>
+<text x="30" y="459" font-family="Arial, sans-serif" font-size="12" fill="#334155">Reorder captured text</text>
+<line x1="757" y1="456" x2="760" y2="456" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="759" cy="456" r="4" fill="#0284c7"/>
+<text x="996" y="460" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">1.27×</text>
+<text x="30" y="484" font-family="Arial, sans-serif" font-size="12" fill="#334155">Replace with a Python function</text>
+<line x1="748" y1="481" x2="750" y2="481" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="749" cy="481" r="4" fill="#0284c7"/>
+<text x="996" y="485" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">1.05×</text>
+<text x="30" y="509" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find Unicode words/numbers</text>
+<line x1="733" y1="506" x2="737" y2="506" stroke="#0284c7" stroke-width="3" stroke-linecap="round"/>
+<circle cx="736" cy="506" r="4" fill="#0284c7"/>
+<text x="996" y="510" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.81×</text>
+<rect x="18" y="535" width="1104" height="450" rx="8" fill="#fff" stroke="#e2e8f0"/>
+<text x="28" y="554" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#7c3aed">Python backtracker</text>
+<line x1="280" y1="570" x2="280" y2="962" stroke="#cbd5e1" stroke-width="1"/>
+<text x="280" y="562" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.0001×</text>
+<line x1="397" y1="570" x2="397" y2="962" stroke="#cbd5e1" stroke-width="1"/>
+<text x="397" y="562" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.001×</text>
+<line x1="513" y1="570" x2="513" y2="962" stroke="#cbd5e1" stroke-width="1"/>
+<text x="513" y="562" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.01×</text>
+<line x1="630" y1="570" x2="630" y2="962" stroke="#cbd5e1" stroke-width="1"/>
+<text x="630" y="562" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.1×</text>
+<line x1="747" y1="570" x2="747" y2="962" stroke="#334155" stroke-width="2"/>
+<text x="747" y="562" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#0f172a">1×</text>
+<line x1="863" y1="570" x2="863" y2="962" stroke="#cbd5e1" stroke-width="1"/>
+<text x="863" y="562" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">10×</text>
+<line x1="980" y1="570" x2="980" y2="962" stroke="#cbd5e1" stroke-width="1"/>
+<text x="980" y="562" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">100×</text>
+<text x="30" y="592" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find tokens in bytes</text>
+<line x1="516" y1="589" x2="519" y2="589" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="518" cy="589" r="4" fill="#7c3aed"/>
+<text x="996" y="593" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.011×</text>
+<text x="30" y="617" font-family="Arial, sans-serif" font-size="12" fill="#334155">Compile, then search (cold)</text>
+<line x1="713" y1="614" x2="714" y2="614" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="714" cy="614" r="4" fill="#7c3aed"/>
+<text x="996" y="618" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.52×</text>
+<text x="30" y="642" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find all text tokens</text>
+<line x1="513" y1="639" x2="515" y2="639" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="514" cy="639" r="4" fill="#7c3aed"/>
+<text x="996" y="643" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.010×</text>
+<text x="30" y="667" font-family="Arial, sans-serif" font-size="12" fill="#334155">Iterate over captured pairs</text>
+<line x1="522" y1="664" x2="525" y2="664" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="523" cy="664" r="4" fill="#7c3aed"/>
+<text x="996" y="668" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.012×</text>
+<text x="30" y="692" font-family="Arial, sans-serif" font-size="12" fill="#334155">Check the whole string</text>
+<line x1="515" y1="689" x2="518" y2="689" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="516" cy="689" r="4" fill="#7c3aed"/>
+<text x="996" y="693" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.011×</text>
+<text x="30" y="717" font-family="Arial, sans-serif" font-size="12" fill="#334155">Check a formatted prefix</text>
+<line x1="552" y1="714" x2="558" y2="714" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="554" cy="714" r="4" fill="#7c3aed"/>
+<text x="996" y="718" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.022×</text>
+<text x="30" y="742" font-family="Arial, sans-serif" font-size="12" fill="#334155">Search through the module API</text>
+<line x1="543" y1="739" x2="553" y2="739" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="547" cy="739" r="4" fill="#7c3aed"/>
+<text x="996" y="743" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.019×</text>
+<text x="30" y="767" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find a formatted line</text>
+<line x1="513" y1="764" x2="515" y2="764" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="514" cy="764" r="4" fill="#7c3aed"/>
+<text x="996" y="768" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.010×</text>
+<text x="30" y="792" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find a word (present)</text>
+<line x1="506" y1="789" x2="507" y2="789" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="506" cy="789" r="4" fill="#7c3aed"/>
+<text x="996" y="793" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.0087×</text>
+<text x="30" y="817" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find a word (absent)</text>
+<line x1="446" y1="814" x2="448" y2="814" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="447" cy="814" r="4" fill="#7c3aed"/>
+<text x="996" y="818" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.0027×</text>
+<text x="30" y="842" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find the ending in long text</text>
+<line x1="331" y1="839" x2="339" y2="839" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="334" cy="839" r="4" fill="#7c3aed"/>
+<text x="996" y="843" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.0003×</text>
+<text x="30" y="867" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find and capture nearby text</text>
+<line x1="501" y1="864" x2="507" y2="864" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="503" cy="864" r="4" fill="#7c3aed"/>
+<text x="996" y="868" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.0082×</text>
+<text x="30" y="892" font-family="Arial, sans-serif" font-size="12" fill="#334155">Split and keep separators</text>
+<line x1="518" y1="889" x2="518" y2="889" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="518" cy="889" r="4" fill="#7c3aed"/>
+<text x="996" y="893" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.011×</text>
+<text x="30" y="917" font-family="Arial, sans-serif" font-size="12" fill="#334155">Reorder captured text</text>
+<line x1="539" y1="914" x2="540" y2="914" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="540" cy="914" r="4" fill="#7c3aed"/>
+<text x="996" y="918" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.017×</text>
+<text x="30" y="942" font-family="Arial, sans-serif" font-size="12" fill="#334155">Replace with a Python function</text>
+<line x1="559" y1="939" x2="561" y2="939" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="560" cy="939" r="4" fill="#7c3aed"/>
+<text x="996" y="943" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.025×</text>
+<text x="30" y="967" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find Unicode words/numbers</text>
+<line x1="506" y1="964" x2="506" y2="964" stroke="#7c3aed" stroke-width="3" stroke-linecap="round"/>
+<circle cx="506" cy="964" r="4" fill="#7c3aed"/>
+<text x="996" y="968" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.0086×</text>
+<rect x="18" y="993" width="1104" height="450" rx="8" fill="#fff" stroke="#e2e8f0"/>
+<text x="28" y="1012" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#d97706">Rust engine</text>
+<line x1="280" y1="1028" x2="280" y2="1420" stroke="#cbd5e1" stroke-width="1"/>
+<text x="280" y="1020" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.0001×</text>
+<line x1="397" y1="1028" x2="397" y2="1420" stroke="#cbd5e1" stroke-width="1"/>
+<text x="397" y="1020" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.001×</text>
+<line x1="513" y1="1028" x2="513" y2="1420" stroke="#cbd5e1" stroke-width="1"/>
+<text x="513" y="1020" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.01×</text>
+<line x1="630" y1="1028" x2="630" y2="1420" stroke="#cbd5e1" stroke-width="1"/>
+<text x="630" y="1020" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.1×</text>
+<line x1="747" y1="1028" x2="747" y2="1420" stroke="#334155" stroke-width="2"/>
+<text x="747" y="1020" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#0f172a">1×</text>
+<line x1="863" y1="1028" x2="863" y2="1420" stroke="#cbd5e1" stroke-width="1"/>
+<text x="863" y="1020" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">10×</text>
+<line x1="980" y1="1028" x2="980" y2="1420" stroke="#cbd5e1" stroke-width="1"/>
+<text x="980" y="1020" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">100×</text>
+<text x="30" y="1050" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find tokens in bytes</text>
+<line x1="508" y1="1047" x2="510" y2="1047" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="509" cy="1047" r="4" fill="#d97706"/>
+<text x="996" y="1051" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.0091×</text>
+<text x="30" y="1075" font-family="Arial, sans-serif" font-size="12" fill="#334155">Compile, then search (cold)</text>
+<line x1="741" y1="1072" x2="742" y2="1072" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="742" cy="1072" r="4" fill="#d97706"/>
+<text x="996" y="1076" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.90×</text>
+<text x="30" y="1100" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find all text tokens</text>
+<line x1="489" y1="1097" x2="490" y2="1097" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="490" cy="1097" r="4" fill="#d97706"/>
+<text x="996" y="1101" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.0063×</text>
+<text x="30" y="1125" font-family="Arial, sans-serif" font-size="12" fill="#334155">Iterate over captured pairs</text>
+<line x1="510" y1="1122" x2="513" y2="1122" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="512" cy="1122" r="4" fill="#d97706"/>
+<text x="996" y="1126" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.0097×</text>
+<text x="30" y="1150" font-family="Arial, sans-serif" font-size="12" fill="#334155">Check the whole string</text>
+<line x1="547" y1="1147" x2="551" y2="1147" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="549" cy="1147" r="4" fill="#d97706"/>
+<text x="996" y="1151" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.020×</text>
+<text x="30" y="1175" font-family="Arial, sans-serif" font-size="12" fill="#334155">Check a formatted prefix</text>
+<line x1="540" y1="1172" x2="546" y2="1172" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="543" cy="1172" r="4" fill="#d97706"/>
+<text x="996" y="1176" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.018×</text>
+<text x="30" y="1200" font-family="Arial, sans-serif" font-size="12" fill="#334155">Search through the module API</text>
+<line x1="574" y1="1197" x2="584" y2="1197" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="578" cy="1197" r="4" fill="#d97706"/>
+<text x="996" y="1201" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.036×</text>
+<text x="30" y="1225" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find a formatted line</text>
+<line x1="531" y1="1222" x2="532" y2="1222" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="531" cy="1222" r="4" fill="#d97706"/>
+<text x="996" y="1226" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.014×</text>
+<text x="30" y="1250" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find a word (present)</text>
+<line x1="514" y1="1247" x2="516" y2="1247" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="515" cy="1247" r="4" fill="#d97706"/>
+<text x="996" y="1251" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.010×</text>
+<text x="30" y="1275" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find a word (absent)</text>
+<line x1="491" y1="1272" x2="492" y2="1272" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="492" cy="1272" r="4" fill="#d97706"/>
+<text x="996" y="1276" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.0065×</text>
+<text x="30" y="1300" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find the ending in long text</text>
+<line x1="392" y1="1297" x2="400" y2="1297" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="396" cy="1297" r="4" fill="#d97706"/>
+<text x="996" y="1301" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.0010×</text>
+<text x="30" y="1325" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find and capture nearby text</text>
+<line x1="543" y1="1322" x2="549" y2="1322" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="545" cy="1322" r="4" fill="#d97706"/>
+<text x="996" y="1326" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.019×</text>
+<text x="30" y="1350" font-family="Arial, sans-serif" font-size="12" fill="#334155">Split and keep separators</text>
+<line x1="497" y1="1347" x2="497" y2="1347" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="497" cy="1347" r="4" fill="#d97706"/>
+<text x="996" y="1351" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.0072×</text>
+<text x="30" y="1375" font-family="Arial, sans-serif" font-size="12" fill="#334155">Reorder captured text</text>
+<line x1="539" y1="1372" x2="539" y2="1372" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="539" cy="1372" r="4" fill="#d97706"/>
+<text x="996" y="1376" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.017×</text>
+<text x="30" y="1400" font-family="Arial, sans-serif" font-size="12" fill="#334155">Replace with a Python function</text>
+<line x1="555" y1="1397" x2="557" y2="1397" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="556" cy="1397" r="4" fill="#d97706"/>
+<text x="996" y="1401" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.023×</text>
+<text x="30" y="1425" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find Unicode words/numbers</text>
+<line x1="523" y1="1422" x2="524" y2="1422" stroke="#d97706" stroke-width="3" stroke-linecap="round"/>
+<circle cx="523" cy="1422" r="4" fill="#d97706"/>
+<text x="996" y="1426" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#0f172a">0.012×</text>
+</svg>

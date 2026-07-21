@@ -485,7 +485,7 @@ def _class_match(node, char):
 
 
 class _BytecodeCompiler:
-    CHAR, DOT, CAT, CLASS, ANCHOR, BOUNDARY, BACKREF, SAVE_START, SAVE_END, SPLIT, JUMP, LOOK, ATOMIC_START, ATOMIC_END, COND, MATCH = range(1, 17)
+    CHAR, DOT, CAT, CLASS, ANCHOR, BOUNDARY, BACKREF, SAVE_START, SAVE_END, SPLIT, JUMP, LOOK, ATOMIC_START, ATOMIC_END, COND, MATCH, REPEAT1 = range(1, 18)
 
     def __init__(self):
         self.programs = [[]]
@@ -563,6 +563,10 @@ class _BytecodeCompiler:
             self.instruction(self.SAVE_END, node[1])
         elif kind == "repeat":
             child, minimum, maximum, mode = node[1:5]
+            if child[0] in {"lit", "dot", "category", "class"} and (maximum is None or maximum > minimum):
+                self.instruction(self.REPEAT1, minimum, -1 if maximum is None else maximum, {"greedy": 0, "lazy": 1, "possessive": 2}[mode])
+                self.emit(child)
+                return
             atomic = mode == "possessive"
             if atomic:
                 self.instruction(self.ATOMIC_START)
@@ -617,22 +621,28 @@ class _BytecodeCompiler:
         return _vm_native.build([list(map(tuple, program)) for program in self.programs], self.classes, groups)
 
 
-def _template(value, match):
+def _template_parts(value, pattern, byte_mode):
     if not isinstance(value, (str, bytes)):
         raise TypeError("decoding to str: need a bytes-like object, function found")
-    byte_mode = isinstance(match.string, bytes)
     if byte_mode != isinstance(value, bytes):
         expected = "bytes-like object" if byte_mode else "str instance"
         actual = "str" if isinstance(value, str) else "bytes"
         raise TypeError(f"sequence item 0: expected a {expected}, {actual} found")
     text = value.decode("latin1") if isinstance(value, bytes) else value
     output = []
+    literal = []
+
+    def flush():
+        if literal:
+            part = "".join(literal)
+            output.append(part.encode("latin1") if byte_mode else part)
+            literal.clear()
     index = 0
     simple = {"a": "\a", "b": "\b", "f": "\f", "n": "\n", "r": "\r", "t": "\t", "v": "\v", "\\": "\\"}
     while index < len(text):
         char = text[index]
         if char != "\\":
-            output.append(char)
+            literal.append(char)
             index += 1
             continue
         slash = index
@@ -656,133 +666,60 @@ def _template(value, match):
                 raise PatternError("missing group name", value, name_start)
             if name.isdecimal():
                 number = int(name)
-                if number > match.re.groups:
+                if number > pattern.groups:
                     raise PatternError(f"invalid group reference {number}", value, name_start)
             else:
                 if not name.isidentifier() or (byte_mode and not name.isascii()):
                     raise PatternError(f"bad character in group name {name!r}", value, name_start)
-                if name not in match.re.groupindex:
+                if name not in pattern.groupindex:
                     raise IndexError(f"unknown group name {name!r}")
-                number = match.re.groupindex[name]
-            part = match.group(number)
-            output.append("" if part is None else part.decode("latin1") if isinstance(part, bytes) else part)
+                number = pattern.groupindex[name]
+            flush()
+            output.append(number)
         elif char.isdigit():
             digits = char
             if index < len(text) and text[index].isdigit():
                 digits += text[index]
                 index += 1
             number = int(digits)
-            if number > match.re.groups:
+            if number > pattern.groups:
                 raise PatternError(f"invalid group reference {number}", value, slash + 1)
-            part = match.group(number)
-            output.append("" if part is None else part.decode("latin1") if isinstance(part, bytes) else part)
+            flush()
+            output.append(number)
         elif char in simple:
-            output.append(simple[char])
+            literal.append(simple[char])
         elif char.isalpha():
             raise PatternError(f"bad escape \\{char}", value, slash)
         else:
-            output.append("\\" + char)
-    joined = "".join(output)
-    return joined.encode("latin1") if byte_mode else joined
+            literal.append("\\" + char)
+    flush()
+    return tuple(output)
 
 
-class Match:
-    __slots__ = ("_pattern", "_string", "_spans", "_lastindex", "pos", "endpos")
-
-    def __init__(self, pattern, string, spans, lastindex, pos, endpos):
-        self._pattern = pattern
-        self._string = string
-        self._spans = spans
-        self._lastindex = lastindex
-        self.pos = pos
-        self.endpos = endpos
-
-    @property
-    def re(self):
-        return self._pattern
-
-    @property
-    def string(self):
-        return self._string
-
-    @property
-    def regs(self):
-        return tuple((-1, -1) if value is None else value for value in self._spans)
-
-    @property
-    def lastindex(self):
-        return self._lastindex
-
-    @property
-    def lastgroup(self):
-        return next((name for name, index in self._pattern.groupindex.items() if index == self._lastindex), None)
-
-    def _number(self, group):
-        if isinstance(group, str):
-            if group not in self._pattern.groupindex:
-                raise IndexError("no such group")
-            return self._pattern.groupindex[group]
-        if not isinstance(group, int) or group < 0 or group > self._pattern.groups:
-            raise IndexError("no such group")
-        return group
-
-    def group(self, *groups):
-        if not groups:
-            groups = (0,)
-        values = []
-        for group in groups:
-            span = self._spans[self._number(group)]
-            values.append(None if span is None else self._string[span[0]:span[1]])
-        return values[0] if len(values) == 1 else tuple(values)
-
-    def __getitem__(self, group):
-        return self.group(group)
-
-    def groups(self, default=None):
-        return tuple(default if item is None else self._string[item[0]:item[1]] for item in self._spans[1:])
-
-    def groupdict(self, default=None):
-        return {name: default if self._spans[number] is None else self._string[self._spans[number][0]:self._spans[number][1]] for name, number in self._pattern.groupindex.items()}
-
-    def start(self, group=0):
-        span = self._spans[self._number(group)]
-        return -1 if span is None else span[0]
-
-    def end(self, group=0):
-        span = self._spans[self._number(group)]
-        return -1 if span is None else span[1]
-
-    def span(self, group=0):
-        value = self._spans[self._number(group)]
-        return (-1, -1) if value is None else value
-
-    def expand(self, template):
-        return _template(template, self)
+def _template(value, match):
+    byte_mode = isinstance(match.string, bytes)
+    empty = b"" if byte_mode else ""
+    return empty.join(match.group(part) or empty if isinstance(part, int) else part for part in _template_parts(value, match.re, byte_mode))
 
 
 class _Scanner:
-    __slots__ = ("pattern", "_string", "_pos", "_empty")
+    __slots__ = ("pattern", "_string", "_pos", "_empty", "_searches")
 
     def __init__(self, pattern, string):
         self.pattern = pattern
         self._string = string
         self._pos = 0
         self._empty = False
+        self._searches = pattern.finditer(string)
 
     def search(self):
-        result = self.pattern._search(self._string, self._pos, len(self._string), self._empty, 0)
-        if result is None:
-            self._pos = len(self._string) + 1
-            return None
-        self._empty = result.end() == result.start()
-        self._pos = result.end() if not self._empty else result.start()
-        return result
+        return next(self._searches, None)
 
     def match(self):
         if self._pos > len(self._string):
             return None
-        result = self.pattern._at(self._string, self._pos, len(self._string), 0, self._empty)
-        if result is None:
+        result = next(self._searches, None)
+        if result is None or result.start() != self._pos:
             self._pos = len(self._string) + 1
             return None
         self._empty = result.end() == result.start()
@@ -790,15 +727,12 @@ class _Scanner:
         return result
 
 
-class Pattern:
-    __slots__ = ("pattern", "flags", "groups", "groupindex", "_vm")
+Match = _vm_native.Match
+_vm_native.configure(_template, _template_parts)
 
-    def __init__(self, value, flags, vm, groups, groupindex):
-        self.pattern = value
-        self.flags = flags
-        self.groups = groups
-        self.groupindex = groupindex
-        self._vm = vm
+
+class Pattern(_vm_native.Pattern):
+    __slots__ = ()
 
     def __copy__(self):
         return self
@@ -809,90 +743,7 @@ class Pattern:
     def __reduce__(self):
         return compile, (self.pattern, self.flags)
 
-    def _validate_string(self, string):
-        if not isinstance(string, (str, bytes)):
-            raise TypeError(f"expected string or bytes-like object, got '{type(string).__name__}'")
-        if isinstance(self.pattern, str) and isinstance(string, bytes):
-            raise TypeError("cannot use a string pattern on a bytes-like object")
-        if isinstance(self.pattern, bytes) and isinstance(string, str):
-            raise TypeError("cannot use a bytes pattern on a string-like object")
-
-    def _at(self, string, start, endpos, original_pos, require_nonempty=False):
-        self._validate_string(string)
-        result = _vm_native.match(self._vm, string, start, endpos, 1, int(require_nonempty))
-        if result is None:
-            return None
-        found, end, captures, last = result
-        return Match(self, string, tuple(captures), last, original_pos, endpos)
-
-    def _search(self, string, pos, endpos, require_nonempty=False, original_pos=None):
-        self._validate_string(string)
-        if pos > endpos:
-            return None
-        result = _vm_native.match(self._vm, string, pos, endpos, 0, int(require_nonempty))
-        if result is None:
-            return None
-        _, _, captures, last = result
-        return Match(self, string, tuple(captures), last, pos if original_pos is None else original_pos, endpos)
-
-    def search(self, string, pos=0, endpos=None):
-        end = len(string) if endpos is None else min(max(endpos, 0), len(string))
-        return self._search(string, max(pos, 0), end)
-
-    def match(self, string, pos=0, endpos=None):
-        end = len(string) if endpos is None else min(max(endpos, 0), len(string))
-        return self._at(string, max(pos, 0), end, max(pos, 0)) if pos <= end else None
-
-    def fullmatch(self, string, pos=0, endpos=None):
-        end = len(string) if endpos is None else min(max(endpos, 0), len(string))
-        self._validate_string(string)
-        start = max(pos, 0)
-        result = _vm_native.match(self._vm, string, start, end, 2, 0)
-        if result is None:
-            return None
-        found, finish, captures, last = result
-        return Match(self, string, tuple(captures), last, start, end)
-
-    def finditer(self, string, pos=0, endpos=None):
-        end = len(string) if endpos is None else min(max(endpos, 0), len(string))
-        start = max(pos, 0)
-        self._validate_string(string)
-        for captures, last in _vm_native.collect(self._vm, string, start, end, 0, 2):
-            yield Match(self, string, tuple(captures), last, start, end)
-
-    def findall(self, string, pos=0, endpos=None):
-        end = len(string) if endpos is None else min(max(endpos, 0), len(string))
-        self._validate_string(string)
-        return _vm_native.collect(self._vm, string, max(pos, 0), end, 0, 0)
-
-    def split(self, string, maxsplit=0):
-        self._validate_string(string)
-        return _vm_native.collect(self._vm, string, 0, len(string), maxsplit, 1)
-
-    def subn(self, repl, string, count=0):
-        self._validate_string(string)
-        parts = []
-        previous = 0
-        replacements = 0
-        for item in self.finditer(string):
-            if count and replacements >= count:
-                break
-            parts.append(string[previous:item.start()])
-            value = repl(item) if callable(repl) else item.expand(repl)
-            if isinstance(string, bytes) != isinstance(value, bytes):
-                expected = "bytes-like object" if isinstance(string, bytes) else "str instance"
-                raise TypeError(f"sequence item {len(parts)}: expected a {expected}, {type(value).__name__} found")
-            parts.append(value)
-            previous = item.end()
-            replacements += 1
-        parts.append(string[previous:])
-        return (b"" if isinstance(string, bytes) else "").join(parts), replacements
-
-    def sub(self, repl, string, count=0):
-        return self.subn(repl, string, count)[0]
-
     def scanner(self, string):
-        self._validate_string(string)
         return _Scanner(self, string)
 
 
