@@ -87,6 +87,9 @@ class _BytecodeParser:
         self.groups = 0
         self.groupindex = {}
         self.groupwidth = {}
+        self.open_groups = set()
+        self.lookbehind_bases = []
+        self.pending_conditionals = []
 
     def error(self, message, position=None, include_pattern=True):
         raise PatternError(message, self.original if include_pattern else None, position)
@@ -150,6 +153,8 @@ class _BytecodeParser:
     def name(self, terminator, position):
         close = self.source.find(terminator, self.at)
         if close < 0:
+            if self.at == len(self.source):
+                self.error("missing group name", position)
             self.error(f"missing {terminator}, unterminated name", position)
         value = self.source[self.at:close]
         self.at = close + 1
@@ -161,6 +166,20 @@ class _BytecodeParser:
                 self.error(f"bad character in group name '{shown}'", position)
             self.error(f"bad character in group name {value!r}", position)
         return value
+
+    def check_reference(self, number, position, invalid_position=None, forward=False):
+        invalid_position = position if invalid_position is None else invalid_position
+        if self.lookbehind_bases and number > min(self.lookbehind_bases):
+            if number <= self.groups:
+                self.error("cannot refer to group defined in the same lookbehind subpattern", position + 2)
+            self.error("cannot refer to an open group", position + 2)
+        if number in self.open_groups:
+            self.error("cannot refer to an open group", position)
+        if number > self.groups:
+            if forward:
+                self.pending_conditionals.append((number, invalid_position))
+            else:
+                self.error(f"invalid group reference {number}", invalid_position)
 
     def escaped(self, flags, in_set, slash):
         char = self.advance()
@@ -241,8 +260,7 @@ class _BytecodeParser:
             if self.current() is not None and self.current() in "0123456789":
                 digits += self.advance()
             number = int(digits)
-            if number > self.groups:
-                self.error(f"invalid group reference {number}", slash + 1)
+            self.check_reference(number, slash, slash + 1)
             return ("backref", number, flags)
         if char.isalpha():
             self.error(f"bad escape \\{char}", slash)
@@ -351,9 +369,14 @@ class _BytecodeParser:
             if char is None:
                 if len(stack) != 1:
                     self.error("missing ), unterminated subpattern", active["start"])
+                for number, position in self.pending_conditionals:
+                    if number > self.groups:
+                        self.error(f"invalid group reference {number}", position)
                 self.flags = active["flags"]
                 return self.frame_node(active)
             if char == "|":
+                if active["tag"] == "conditional" and len(active["parts"]) >= 2:
+                    self.error("conditional backref with more than two branches", self.at)
                 self.at += 1
                 active["parts"].append([])
                 continue
@@ -361,7 +384,12 @@ class _BytecodeParser:
                 if len(stack) == 1:
                     self.error("unbalanced parenthesis", self.at)
                 self.at += 1
-                node = self.frame_node(stack.pop())
+                closed = stack.pop()
+                node = self.frame_node(closed)
+                if closed["tag"] == "capture":
+                    self.open_groups.remove(closed["value"])
+                if closed["tag"].startswith("behind"):
+                    self.lookbehind_bases.pop()
                 parent = stack[-1]
                 self.insignificant(parent["flags"])
                 parent["parts"][-1].append(self.repeated(node, parent["flags"]))
@@ -371,6 +399,7 @@ class _BytecodeParser:
             if char == "(":
                 if self.current() != "?":
                     self.groups += 1
+                    self.open_groups.add(self.groups)
                     stack.append(self.frame("capture", flags, opening, self.groups))
                     continue
                 self.at += 1
@@ -383,6 +412,7 @@ class _BytecodeParser:
                     continue
                 if extension == "<" and self.current() in {"=", "!"}:
                     sign = self.advance()
+                    self.lookbehind_bases.append(self.groups)
                     stack.append(self.frame("behind+" if sign == "=" else "behind-", flags, opening))
                     continue
                 if extension == ">":
@@ -404,6 +434,7 @@ class _BytecodeParser:
                         if label in self.groupindex:
                             self.error(f"redefinition of group name {label!r} as group {number}; was group {self.groupindex[label]}", name_start)
                         self.groupindex[label] = number
+                        self.open_groups.add(number)
                         stack.append(self.frame("capture", flags, opening, number))
                         continue
                     if form == "=":
@@ -411,26 +442,39 @@ class _BytecodeParser:
                         label = self.name(")", name_start)
                         if label not in self.groupindex:
                             self.error(f"unknown group name {label!r}", name_start)
-                        node = ("backref", self.groupindex[label], flags)
+                        number = self.groupindex[label]
+                        self.check_reference(number, name_start)
+                        node = ("backref", number, flags)
                         self.insignificant(flags)
                         active["parts"][-1].append(self.repeated(node, flags))
                         continue
-                    self.error("unknown extension ?P", opening + 1)
+                    if form is None:
+                        self.error("unexpected end of pattern", self.at)
+                    self.error(f"unknown extension ?P{form}", opening + 1)
                 if extension == "(":
                     reference_start = self.at
                     close = self.source.find(")", self.at)
                     if close < 0:
+                        if self.at == len(self.source):
+                            self.error("missing group name", reference_start)
                         self.error("missing ), unterminated name", reference_start)
                     reference = self.source[self.at:close]
                     self.at = close + 1
-                    if reference.isdecimal():
+                    if not reference:
+                        self.error("missing group name", reference_start)
+                    if all(item in "0123456789" for item in reference):
                         number = int(reference)
-                        if number < 1 or number > self.groups:
-                            self.error(f"invalid group reference {number}", reference_start)
+                        if number == 0:
+                            self.error("bad group number", reference_start)
+                        self.check_reference(number, reference_start, forward=True)
                     else:
+                        if not reference.isidentifier() or (self.byte_mode and not reference.isascii()):
+                            shown = "".join(item if item.isascii() else f"\\x{ord(item):02x}" for item in reference) if self.byte_mode else reference
+                            self.error(f"bad character in group name '{shown}'", reference_start)
                         if reference not in self.groupindex:
                             self.error(f"unknown group name {reference!r}", reference_start)
                         number = self.groupindex[reference]
+                        self.check_reference(number, reference_start)
                     stack.append(self.frame("conditional", flags, opening, number))
                     continue
                 if extension is not None and extension in "aiLmsux-":
@@ -485,6 +529,13 @@ class _BytecodeParser:
                         continue
                     stack.append(self.frame("plain", changed, opening))
                     continue
+                if extension is None:
+                    self.error("unexpected end of pattern", self.at)
+                if extension == "<":
+                    following = self.current()
+                    if following is None:
+                        self.error("unexpected end of pattern", self.at)
+                    self.error(f"unknown extension ?<{following}", opening + 1)
                 self.error(f"unknown extension ?{extension}", opening + 1)
             if char == "[":
                 node = self.set_node(flags, opening)
@@ -754,7 +805,9 @@ def _template_parts(value, pattern, byte_mode):
             raise PatternError("bad escape (end of pattern)", value, slash)
         char = text[index]
         index += 1
-        if char == "g" and index < len(text) and text[index] == "<":
+        if char == "g":
+            if index >= len(text) or text[index] != "<":
+                raise PatternError("missing <", value, index)
             index += 1
             name_start = index
             close = text.find(">", index)
@@ -767,13 +820,14 @@ def _template_parts(value, pattern, byte_mode):
             index = close + 1
             if not name:
                 raise PatternError("missing group name", value, name_start)
-            if name.isdecimal():
+            if all(item in "0123456789" for item in name):
                 number = int(name)
                 if number > pattern.groups:
                     raise PatternError(f"invalid group reference {number}", value, name_start)
             else:
                 if not name.isidentifier() or (byte_mode and not name.isascii()):
-                    raise PatternError(f"bad character in group name {name!r}", value, name_start)
+                    shown = "".join(item if item.isascii() else f"\\x{ord(item):02x}" for item in name) if byte_mode else name
+                    raise PatternError(f"bad character in group name '{shown}'", value, name_start)
                 if name not in pattern.groupindex:
                     raise IndexError(f"unknown group name {name!r}")
                 number = pattern.groupindex[name]

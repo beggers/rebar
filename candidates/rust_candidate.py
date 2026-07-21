@@ -244,7 +244,9 @@ def _template(value, match):
             raise PatternError("bad escape (end of pattern)", value, slash)
         char = text[index]
         index += 1
-        if char == "g" and index < len(text) and text[index] == "<":
+        if char == "g":
+            if index >= len(text) or text[index] != "<":
+                raise PatternError("missing <", value, index)
             index += 1
             name_start = index
             close = text.find(">", index)
@@ -257,13 +259,14 @@ def _template(value, match):
             index = close + 1
             if not name:
                 raise PatternError("missing group name", value, name_start)
-            if name.isdecimal():
+            if all(item in "0123456789" for item in name):
                 number = int(name)
                 if number > match.re.groups:
                     raise PatternError(f"invalid group reference {number}", value, name_start)
             else:
                 if not name.isidentifier() or (byte_mode and not name.isascii()):
-                    raise PatternError(f"bad character in group name {name!r}", value, name_start)
+                    shown = "".join(item if item.isascii() else f"\\x{ord(item):02x}" for item in name) if byte_mode else name
+                    raise PatternError(f"bad character in group name '{shown}'", value, name_start)
                 if name not in match.re.groupindex:
                     raise IndexError(f"unknown group name {name!r}")
                 number = match.re.groupindex[name]

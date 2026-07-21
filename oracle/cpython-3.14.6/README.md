@@ -125,6 +125,21 @@ The next parser cohort fixes valid brace quantifiers appearing without a precedi
 
 The complete follow-up records are [native](evidence/rebar-repeat.json), [Python](evidence/ast-repeat.json), and [Rust](evidence/rust-repeat.json). Earlier evidence remains unchanged.
 
+## Groups, lookarounds, and references follow-up
+
+![Official CPython re compatibility after group/reference fixes](evidence/groups-correctness.svg)
+
+The next parser/API cohort fixes references to open groups, forward conditionals in lookahead, references defined inside the same lookbehind, invalid conditional/group/template names, malformed extension errors, repeated global flags, and the full 403-pattern historical corpus. Exactly eight previously failing methods now pass in every engine, with no unrelated status changes:
+
+| Engine | Runnable methods passed | Failed | Crashes | Timeouts |
+| --- | ---: | ---: | ---: | ---: |
+| CPython `re` self-check | **144/144** | **0** | **0** | **0** |
+| Native C / `rebar` | 136/144 | 8 | 0 | 2 |
+| Python engine | 132/144 | 12 | 0 | 1 |
+| Rust engine | 132/144 | 12 | 3 | 0 |
+
+The complete follow-up records are [native](evidence/rebar-groups.json), [Python](evidence/ast-groups.json), and [Rust](evidence/rust-groups.json). Earlier evidence remains unchanged.
+
 Reproduce the frozen gate or one stable method ID:
 
 ```sh

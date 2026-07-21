@@ -70,6 +70,9 @@ struct Parser {
     named: Vec<(usize, u32)>,
     global_allowed: bool,
     group_depth: usize,
+    open_groups: Vec<usize>,
+    lookbehind_bases: Vec<usize>,
+    pending_conditionals: Vec<(usize, usize)>,
 }
 type PResult<T> = Result<T, (String, Option<usize>, bool)>;
 
@@ -85,6 +88,11 @@ impl Parser {
         value
     }
     fn global_group(&self, start: usize) -> bool {
+        if self.source.get(start) != Some(&(b'(' as u32))
+            || self.source.get(start + 1) != Some(&(b'?' as u32))
+        {
+            return false;
+        }
         let mut cursor = start + 2;
         while let Some(value) = self.source.get(cursor).copied().and_then(char::from_u32) {
             if matches!(value, 'a' | 'i' | 'L' | 'm' | 's' | 'u' | 'x' | '-') {
@@ -120,6 +128,17 @@ impl Parser {
         if self.at != self.source.len() {
             return self.fail("unbalanced parenthesis".into(), Some(self.at), true);
         }
+        if let Some((number, position)) = self
+            .pending_conditionals
+            .iter()
+            .find(|(number, _)| *number > self.groups)
+        {
+            return self.fail(
+                format!("invalid group reference {}", number),
+                Some(*position),
+                true,
+            );
+        }
         Ok(result)
     }
     fn alt(&mut self, flags: u32) -> PResult<Expr> {
@@ -147,6 +166,11 @@ impl Parser {
             let start = self.at;
             let mut node = self.atom(flags)?;
             self.skip(flags);
+            if self.global_group(start)
+                && (matches!(self.now(), Some('*' | '+' | '?')) || self.brace_repeat(self.at))
+            {
+                return self.fail("nothing to repeat".into(), Some(self.at), true);
+            }
             node = self.repeat(node, flags)?;
             if let Expr::Seq(ref values) = node {
                 if values.is_empty()
@@ -413,13 +437,7 @@ impl Parser {
                 digits.push(self.take().unwrap());
             }
             let number: usize = digits.parse().unwrap();
-            if number > self.groups {
-                return self.fail(
-                    format!("invalid group reference {}", number),
-                    Some(slash + 1),
-                    true,
-                );
-            }
+            self.check_reference(number, slash, Some(slash + 1), false)?;
             return Ok(Expr::Backref(number, flags));
         }
         if ch.is_ascii_alphabetic() {
@@ -503,6 +521,9 @@ impl Parser {
             close += 1;
         }
         if close == self.source.len() {
+            if self.at == self.source.len() {
+                return self.fail("missing group name".into(), Some(position), true);
+            }
             return self.fail(
                 format!("missing {}, unterminated name", terminator),
                 Some(position),
@@ -544,6 +565,45 @@ impl Parser {
         }
         Ok(value)
     }
+    fn check_reference(
+        &mut self,
+        number: usize,
+        position: usize,
+        invalid_position: Option<usize>,
+        forward: bool,
+    ) -> PResult<()> {
+        if self
+            .lookbehind_bases
+            .iter()
+            .min()
+            .is_some_and(|base| number > *base)
+        {
+            if number <= self.groups {
+                return self.fail(
+                    "cannot refer to group defined in the same lookbehind subpattern".into(),
+                    Some(position + 2),
+                    true,
+                );
+            }
+            return self.fail("cannot refer to an open group".into(), Some(position + 2), true);
+        }
+        if self.open_groups.contains(&number) {
+            return self.fail("cannot refer to an open group".into(), Some(position), true);
+        }
+        if number > self.groups {
+            let error_position = invalid_position.unwrap_or(position);
+            if forward {
+                self.pending_conditionals.push((number, error_position));
+            } else {
+                return self.fail(
+                    format!("invalid group reference {}", number),
+                    Some(error_position),
+                    true,
+                );
+            }
+        }
+        Ok(())
+    }
     fn group(&mut self, flags: u32, start: usize) -> PResult<Expr> {
         self.group_depth += 1;
         let result = self.group_inner(flags, start);
@@ -555,6 +615,7 @@ impl Parser {
         if self.now() != Some('?') {
             self.groups += 1;
             let number = self.groups;
+            self.open_groups.push(number);
             let child = self.alt(flags)?;
             if self.take() != Some(')') {
                 return self.fail(
@@ -564,11 +625,12 @@ impl Parser {
                 );
             }
             self.widths.push((number, width(&child, &self.widths)));
+            self.open_groups.pop();
             return Ok(Expr::Group(number, Box::new(child)));
         }
         self.at += 1;
         let Some(kind) = self.take() else {
-            return self.fail("unexpected end of pattern".into(), Some(start), true);
+            return self.fail("unexpected end of pattern".into(), Some(self.at), true);
         };
         match kind {
             ':' => {
@@ -595,6 +657,7 @@ impl Parser {
             }
             '<' if matches!(self.now(), Some('=' | '!')) => {
                 let positive = self.take() == Some('=');
+                self.lookbehind_bases.push(self.groups);
                 let child = self.alt(flags)?;
                 if self.take() != Some(')') {
                     return self.fail(
@@ -604,6 +667,7 @@ impl Parser {
                     );
                 }
                 let (low, high) = width(&child, &self.widths);
+                self.lookbehind_bases.pop();
                 if low != high {
                     return self.fail(
                         "look-behind requires fixed-width pattern".into(),
@@ -635,7 +699,7 @@ impl Parser {
             }
             'P' => {
                 let Some(form) = self.take() else {
-                    return self.fail("unknown extension ?P".into(), Some(start + 1), true);
+                    return self.fail("unexpected end of pattern".into(), Some(self.at), true);
                 };
                 if form == '<' {
                     let position = self.at;
@@ -653,6 +717,7 @@ impl Parser {
                         );
                     }
                     self.names.push((name, number));
+                    self.open_groups.push(number);
                     let child = self.alt(flags)?;
                     if self.take() != Some(')') {
                         return self.fail(
@@ -662,6 +727,7 @@ impl Parser {
                         );
                     }
                     self.widths.push((number, width(&child, &self.widths)));
+                    self.open_groups.pop();
                     Ok(Expr::Group(number, Box::new(child)))
                 } else if form == '=' {
                     let position = self.at;
@@ -674,9 +740,11 @@ impl Parser {
                             true,
                         );
                     };
-                    Ok(Expr::Backref(*number, flags))
+                    let number = *number;
+                    self.check_reference(number, position, None, false)?;
+                    Ok(Expr::Backref(number, flags))
                 } else {
-                    self.fail("unknown extension ?P".into(), Some(start + 1), true)
+                    self.fail(format!("unknown extension ?P{}", form), Some(start + 1), true)
                 }
             }
             '(' => {
@@ -686,6 +754,9 @@ impl Parser {
                     close += 1;
                 }
                 if close == self.source.len() {
+                    if self.at == self.source.len() {
+                        return self.fail("missing group name".into(), Some(position), true);
+                    }
                     return self.fail("missing ), unterminated name".into(), Some(position), true);
                 }
                 let reference: String = self.source[self.at..close]
@@ -693,17 +764,45 @@ impl Parser {
                     .filter_map(|v| char::from_u32(*v))
                     .collect();
                 self.at = close + 1;
+                if reference.is_empty() {
+                    return self.fail("missing group name".into(), Some(position), true);
+                }
                 let number = if reference.chars().all(|v| v.is_ascii_digit()) {
                     let value: usize = reference.parse().unwrap();
-                    if value < 1 || value > self.groups {
+                    if value == 0 {
+                        return self.fail("bad group number".into(), Some(position), true);
+                    }
+                    self.check_reference(value, position, None, true)?;
+                    value
+                } else {
+                    let valid = reference.chars().enumerate().all(|(index, value)| {
+                        if index == 0 {
+                            value == '_' || value.is_alphabetic()
+                        } else {
+                            value == '_' || value.is_alphanumeric()
+                        }
+                    }) && (!self.byte_mode || reference.is_ascii());
+                    if !valid {
+                        let shown = if self.byte_mode {
+                            reference
+                                .chars()
+                                .map(|value| {
+                                    if value.is_ascii() {
+                                        value.to_string()
+                                    } else {
+                                        format!("\\x{:02x}", value as u32)
+                                    }
+                                })
+                                .collect::<String>()
+                        } else {
+                            reference.clone()
+                        };
                         return self.fail(
-                            format!("invalid group reference {}", value),
+                            format!("bad character in group name '{}'", shown),
                             Some(position),
                             true,
                         );
                     }
-                    value
-                } else {
                     let Some((_, value)) = self.names.iter().find(|(name, _)| *name == reference)
                     else {
                         return self.fail(
@@ -712,7 +811,9 @@ impl Parser {
                             true,
                         );
                     };
-                    *value
+                    let value = *value;
+                    self.check_reference(value, position, None, false)?;
+                    value
                 };
                 let yes = self.seq(flags)?;
                 let no = if self.now() == Some('|') {
@@ -721,6 +822,13 @@ impl Parser {
                 } else {
                     Expr::Seq(vec![])
                 };
+                if self.now() == Some('|') {
+                    return self.fail(
+                        "conditional backref with more than two branches".into(),
+                        Some(self.at),
+                        true,
+                    );
+                }
                 if self.take() != Some(')') {
                     return self.fail(
                         "missing ), unterminated subpattern".into(),
@@ -847,11 +955,15 @@ impl Parser {
                     Ok(child)
                 }
             }
-            _ => self.fail(
-                format!("unknown extension ?{}", kind),
-                Some(start + 1),
-                true,
-            ),
+            '<' => match self.now() {
+                None => self.fail("unexpected end of pattern".into(), Some(self.at), true),
+                Some(value) => self.fail(
+                    format!("unknown extension ?<{}", value),
+                    Some(start + 1),
+                    true,
+                ),
+            },
+            _ => self.fail(format!("unknown extension ?{}", kind), Some(start + 1), true),
         }
     }
 }
@@ -1260,6 +1372,9 @@ pub unsafe extern "C" fn rebar_compile(
         named,
         global_allowed: true,
         group_depth: 0,
+        open_groups: vec![],
+        lookbehind_bases: vec![],
+        pending_conditionals: vec![],
     };
     match parser.parse() {
         Ok(root) => {

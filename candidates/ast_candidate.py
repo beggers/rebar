@@ -86,6 +86,9 @@ class _Parser:
         self.groupwidth = {}
         self.global_allowed = True
         self.group_depth = 0
+        self.open_groups = set()
+        self.lookbehind_bases = []
+        self.pending_conditionals = []
 
     def fail(self, msg, pos=None, pattern=True):
         raise PatternError(msg, self.original if pattern else None, pos)
@@ -116,6 +119,9 @@ class _Parser:
         self.skip_verbose(self.flags)
         if self.index != len(self.text):
             self.fail("unbalanced parenthesis", self.index)
+        for number, position in self.pending_conditionals:
+            if number > self.groups:
+                self.fail(f"invalid group reference {number}", position)
         return node
 
     def alternation(self, flags, stop=")"):
@@ -140,6 +146,8 @@ class _Parser:
             atom = self.atom(flags)
             self.skip_verbose(flags)
             quant = self.peek()
+            if atom[0] == "setflags" and (quant in {"*", "+", "?"} or self.brace_repeat(self.index)):
+                self.fail("nothing to repeat", self.index)
             if quant in {"*", "+", "?", "{"}:
                 parsed = self.quantifier(atom, flags)
                 if parsed is not None:
@@ -300,8 +308,7 @@ class _Parser:
             if self.peek() is not None and self.peek() in "0123456789":
                 digits += self.take()
             number = int(digits)
-            if number > self.groups:
-                self.fail(f"invalid group reference {number}", slash + 1)
+            self.check_reference(number, slash, slash + 1)
             return ("backref", number, flags)
         if char.isalpha():
             self.fail(f"bad escape \\{char}", slash)
@@ -353,6 +360,8 @@ class _Parser:
     def read_name(self, terminator, name_start):
         end = self.text.find(terminator, self.index)
         if end < 0:
+            if self.index == len(self.text):
+                self.fail("missing group name", name_start)
             self.fail(f"missing {terminator}, unterminated name", name_start)
         name = self.text[self.index:end]
         self.index = end + 1
@@ -365,6 +374,20 @@ class _Parser:
             self.fail(f"bad character in group name {name!r}", name_start)
         return name
 
+    def check_reference(self, number, position, invalid_position=None, forward=False):
+        invalid_position = position if invalid_position is None else invalid_position
+        if self.lookbehind_bases and number > min(self.lookbehind_bases):
+            if number <= self.groups:
+                self.fail("cannot refer to group defined in the same lookbehind subpattern", position + 2)
+            self.fail("cannot refer to an open group", position + 2)
+        if number in self.open_groups:
+            self.fail("cannot refer to an open group", position)
+        if number > self.groups:
+            if forward:
+                self.pending_conditionals.append((number, invalid_position))
+            else:
+                self.fail(f"invalid group reference {number}", invalid_position)
+
     def group(self, flags, start):
         self.group_depth += 1
         try:
@@ -376,10 +399,12 @@ class _Parser:
         if self.peek() != "?":
             self.groups += 1
             number = self.groups
+            self.open_groups.add(number)
             child = self.alternation(flags)
             if self.take() != ")":
                 self.fail("missing ), unterminated subpattern", start)
             self.groupwidth[number] = _width(child, self.groupwidth)
+            self.open_groups.remove(number)
             return ("group", number, child)
         self.index += 1
         char = self.take()
@@ -395,10 +420,12 @@ class _Parser:
             return ("look", "ahead", char == "=", child, None)
         if char == "<" and self.peek() in {"=", "!"}:
             positive = self.take() == "="
+            self.lookbehind_bases.append(self.groups)
             child = self.alternation(flags)
             if self.take() != ")":
                 self.fail("missing ), unterminated subpattern", start)
             minimum, maximum = _width(child, self.groupwidth)
+            self.lookbehind_bases.pop()
             if minimum != maximum:
                 self.fail("look-behind requires fixed-width pattern", pattern=False)
             return ("look", "behind", positive, child, minimum)
@@ -424,38 +451,55 @@ class _Parser:
                     old = self.groupindex[name]
                     self.fail(f"redefinition of group name {name!r} as group {number}; was group {old}", name_start)
                 self.groupindex[name] = number
+                self.open_groups.add(number)
                 child = self.alternation(flags)
                 if self.take() != ")":
                     self.fail("missing ), unterminated subpattern", start)
                 self.groupwidth[number] = _width(child, self.groupwidth)
+                self.open_groups.remove(number)
                 return ("group", number, child)
             if kind == "=":
                 name_start = self.index
                 name = self.read_name(")", name_start)
                 if name not in self.groupindex:
                     self.fail(f"unknown group name {name!r}", name_start)
-                return ("backref", self.groupindex[name], flags)
-            self.fail("unknown extension ?P", start + 1)
+                number = self.groupindex[name]
+                self.check_reference(number, name_start)
+                return ("backref", number, flags)
+            if kind is None:
+                self.fail("unexpected end of pattern", self.index)
+            self.fail(f"unknown extension ?P{kind}", start + 1)
         if char == "(":
             ref_start = self.index
             end = self.text.find(")", self.index)
             if end < 0:
+                if self.index == len(self.text):
+                    self.fail("missing group name", ref_start)
                 self.fail("missing ), unterminated name", ref_start)
             ref = self.text[self.index:end]
             self.index = end + 1
-            if ref.isdecimal():
+            if not ref:
+                self.fail("missing group name", ref_start)
+            if all(item in "0123456789" for item in ref):
                 number = int(ref)
-                if number < 1 or number > self.groups:
-                    self.fail(f"invalid group reference {number}", ref_start)
+                if number == 0:
+                    self.fail("bad group number", ref_start)
+                self.check_reference(number, ref_start, forward=True)
             else:
+                if not ref.isidentifier() or (self.byte_mode and not ref.isascii()):
+                    shown = "".join(item if item.isascii() else f"\\x{ord(item):02x}" for item in ref) if self.byte_mode else ref
+                    self.fail(f"bad character in group name '{shown}'", ref_start)
                 if ref not in self.groupindex:
                     self.fail(f"unknown group name {ref!r}", ref_start)
                 number = self.groupindex[ref]
+                self.check_reference(number, ref_start)
             yes = self.sequence(flags)
             no = ("seq", [])
             if self.peek() == "|":
                 self.index += 1
                 no = self.sequence(flags)
+            if self.peek() == "|":
+                self.fail("conditional backref with more than two branches", self.index)
             if self.take() != ")":
                 self.fail("missing ), unterminated subpattern", start)
             return ("conditional", number, yes, no)
@@ -510,6 +554,13 @@ class _Parser:
             if self.take() != ")":
                 self.fail("missing ), unterminated subpattern", start)
             return child
+        if char is None:
+            self.fail("unexpected end of pattern", self.index)
+        if char == "<":
+            following = self.peek()
+            if following is None:
+                self.fail("unexpected end of pattern", self.index)
+            self.fail(f"unknown extension ?<{following}", start + 1)
         self.fail(f"unknown extension ?{char}", start + 1)
 
 
@@ -748,7 +799,9 @@ def _template(value, match):
             raise PatternError("bad escape (end of pattern)", value, slash)
         char = text[index]
         index += 1
-        if char == "g" and index < len(text) and text[index] == "<":
+        if char == "g":
+            if index >= len(text) or text[index] != "<":
+                raise PatternError("missing <", value, index)
             index += 1
             name_start = index
             close = text.find(">", index)
@@ -761,13 +814,14 @@ def _template(value, match):
             index = close + 1
             if not name:
                 raise PatternError("missing group name", value, name_start)
-            if name.isdecimal():
+            if all(item in "0123456789" for item in name):
                 number = int(name)
                 if number > match.re.groups:
                     raise PatternError(f"invalid group reference {number}", value, name_start)
             else:
                 if not name.isidentifier() or (byte_mode and not name.isascii()):
-                    raise PatternError(f"bad character in group name {name!r}", value, name_start)
+                    shown = "".join(item if item.isascii() else f"\\x{ord(item):02x}" for item in name) if byte_mode else name
+                    raise PatternError(f"bad character in group name '{shown}'", value, name_start)
                 if name not in match.re.groupindex:
                     raise IndexError(f"unknown group name {name!r}")
                 number = match.re.groupindex[name]
