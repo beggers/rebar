@@ -781,7 +781,9 @@ def purge():
 
 
 def search(pattern, string, flags=0):
-    return compile(pattern, flags).search(string)
+    flags = int(flags)
+    cached = _CACHE.get((type(pattern), pattern, flags)) if isinstance(pattern, (str, bytes)) else None
+    return (cached if cached is not None else compile(pattern, flags)).search(string)
 
 
 def match(pattern, string, flags=0):

@@ -21,13 +21,13 @@ The latest holdout contains 16 different tasks that were kept separate from tuni
 
 | Replacement | Overall speed | Clearly faster | Large slowdowns | Plain-language result |
 | --- | ---: | ---: | ---: | --- |
-| Native C engine | **1.12×** | **8/16** | **4/16** | Ahead overall; very fast at finding an ending in long text, but still loses on simple word searches and nearby-text captures. |
+| Native C engine | **1.31×** | **10/16** | **0/16** | Ahead overall, clearly faster on most tasks, and no longer has any large holdout slowdown. |
 | Rust engine | **0.014×** | **0/16** | **15/16** | Much slower; crossing between Python and Rust costs too much on these short calls. |
 | Python backtracker | **0.011×** | **0/16** | **16/16** | Much slower; doing the matching work in Python costs too much. |
 
-![Overall speed compared with Python re](performance/v1/evidence/native-public-overall.svg)
+![Overall speed compared with Python re](performance/v1/evidence/compact-path-overall.svg)
 
-The target is at least **1.5× overall** and clearly faster on at least **10/16** holdout tasks. The native C engine is the only current contender, but it has not reached either target yet. The [full measured report](performance/v1/evidence/NATIVE-PUBLIC.md) includes every result and slowdown.
+The target is at least **1.5× overall** and clearly faster on at least **10/16** holdout tasks. The native C engine has reached the faster-task target and eliminated large holdout slowdowns, but is still short of the overall-speed target. The [full measured report](performance/v1/evidence/COMPACT-PATH.md) includes every result.
 
 The [candidate discovery experiment](candidates/evidence/DISCOVERY.md) and all raw losses are preserved as rejected binding experiments. Three independent, dependency-free families are correctness-qualified: the [recursive AST backtracker](candidates/AST.md), the [iterative parser/native bytecode VM](candidates/VM.md), and the [Rust continuation arena/FFI](candidates/RUST.md). Native gates include sanitizer runs and zero-delegation audits. No performance claim has been made.
 
@@ -40,6 +40,16 @@ The [native batching experiment](performance/v1/evidence/NATIVE-BATCH.md) moves 
 The [stack-state executor experiment](performance/v1/evidence/STACK-STATE-REJECTED.md) is correctness-clean but rejected: copying a large fixed frame on every branch lowers VM holdout to **0.2435x** (2/16 faster) and preserves 90 regressions. All 1,152 paired rows and generated charts remain committed; the slower executor is removed. This isolates compact choice points and public result construction as the next useful experiments.
 
 The [native public API experiment](performance/v1/evidence/NATIVE-PUBLIC.md) removes repeated Python/C conversions, keeps match results in C, handles common repeats with compact choices, and batches replacement work. It passes all correctness gates and retains all 1,152 paired rows. Native C reaches **1.1178×** overall on holdout (95% range **1.1016–1.1355×**), is clearly faster on **8/16**, and has **4** large slowdowns. The results remain below the success target, so winner is NOT MEASURED.
+
+The [compact native path experiment](performance/v1/evidence/COMPACT-PATH.md) adds general fast paths for simple words, fixed nearby-text checks, repeated scans, and small branches. It passes all correctness gates and retains all 1,152 paired rows. Native C reaches **1.3067×** overall on holdout (95% range **1.2897–1.3242×**), is clearly faster on **10/16**, and has **zero** large holdout slowdowns. This meets the faster-task requirement but not the **1.5×** overall target, so winner remains NOT MEASURED.
+
+![Speed on every holdout test](performance/v1/evidence/compact-path-speed.svg)
+
+![Extra memory used during each holdout test](performance/v1/evidence/compact-path-memory.svg)
+
+![Where each replacement wins and loses](performance/v1/evidence/compact-path-regressions.svg)
+
+![Overall results across all test sets](performance/v1/evidence/compact-path-rankings.svg)
 
 ![Speed on every holdout test](performance/v1/evidence/native-public-speed.svg)
 

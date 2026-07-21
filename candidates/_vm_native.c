@@ -11,10 +11,10 @@ enum { OP_CHAR=1, OP_DOT, OP_CAT, OP_CLASS, OP_ANCHOR, OP_BOUNDARY, OP_BACKREF,
 enum { F_I=2, F_L=4, F_M=8, F_S=16, F_A=256, F_BYTE=1<<20 };
 
 typedef struct { int op; Py_ssize_t a, b, c; } Ins;
-typedef struct { Py_ssize_t count, atomic_capacity; int linear; Ins *ins; } Code;
+typedef struct { Py_ssize_t count, atomic_capacity; int linear, compact; Ins *ins; } Code;
 typedef struct { int kind; Py_UCS4 a, b; } ClassItem;
 typedef struct { Py_ssize_t count; ClassItem *items; } CharClass;
-typedef struct { Py_ssize_t code_count, class_count, groups; Code *codes; CharClass *classes; } VM;
+typedef struct { Py_ssize_t code_count, class_count, groups; Code *codes; CharClass *classes; PyObject *literal; } VM;
 typedef struct { PyObject *obj; int byte_mode; Py_ssize_t length; } Subject;
 typedef struct { Py_ssize_t pc, pos, last, repeat_step, repeat_limit; Py_ssize_t *caps, *seen, *barrier; int atomic_depth; } State;
 typedef struct { State **items; Py_ssize_t length, capacity; } Stack;
@@ -222,6 +222,109 @@ static int execute_linear(const VM *vm, Py_ssize_t code_index, const Subject *su
                 caps[2*in.a]=pos; break;
             case OP_SAVE_END:
                 caps[2*in.a+1]=pos; *last=in.a; break;
+            case OP_LOOK: {
+                if (in.a<0 || in.a>=vm->code_count || !vm->codes[in.a].linear) return -2;
+                Py_ssize_t substart=pos;
+                int behind=!!(in.b & 2),positive=!!(in.b & 1);
+                if (behind) substart-=in.c;
+                if (substart<0) { if (positive) return 0; break; }
+                Py_ssize_t local_caps[34],cap_count=2*(vm->groups+1);
+                Py_ssize_t *look_caps=cap_count<=34 ? local_caps : PyMem_Malloc((size_t)cap_count*sizeof(Py_ssize_t));
+                if (!look_caps) return -1;
+                memcpy(look_caps,caps,(size_t)cap_count*sizeof(Py_ssize_t));
+                Py_ssize_t look_last=*last,look_end=-1,look_limit=behind ? pos : endpos;
+                int got=execute_linear(vm,in.a,subject,substart,look_limit,look_caps,&look_last,&look_end,behind,0);
+                if (got<0) { if (look_caps!=local_caps) PyMem_Free(look_caps); return got; }
+                int matched=got && (!behind || look_end==pos);
+                if (positive && matched) { memcpy(caps,look_caps,(size_t)cap_count*sizeof(Py_ssize_t)); *last=look_last; }
+                if (look_caps!=local_caps) PyMem_Free(look_caps);
+                if (matched!=positive) return 0;
+                break;
+            }
+            case OP_MATCH:
+                if ((require_end && pos!=endpos) || (require_nonempty && pos==start)) return 0;
+                *out_pos=pos; return 1;
+            default: return -2;
+        }
+    }
+    return 0;
+}
+
+static int execute_compact_path(const VM *vm, const Code *code, const Subject *subject,
+                                Py_ssize_t pc, Py_ssize_t pos, Py_ssize_t start,
+                                Py_ssize_t endpos, Py_ssize_t *caps, Py_ssize_t *last,
+                                Py_ssize_t *out_pos, int require_end,
+                                int require_nonempty, int depth) {
+    if (depth>128) return -2;
+    Py_ssize_t cap_count=2*(vm->groups+1);
+    while (pc>=0 && pc<code->count) {
+        Ins in=code->ins[pc];
+        switch (in.op) {
+            case OP_CHAR:
+            case OP_DOT:
+            case OP_CAT:
+            case OP_CLASS:
+                if (pos>=endpos || !atom_match(vm,subject,pos,in)) return 0;
+                pos++; pc++; break;
+            case OP_ANCHOR: {
+                int ok=0;
+                if (in.a=='^') ok=pos==0 || ((in.b & F_M) && pos>0 && subject_char(subject,pos-1)=='\n');
+                else if (in.a=='$') ok=pos==endpos || (pos+1==endpos && pos<subject->length && subject_char(subject,pos)=='\n') || ((in.b & F_M) && pos<endpos && subject_char(subject,pos)=='\n');
+                else if (in.a=='A') ok=pos==0;
+                else ok=pos==endpos;
+                if (!ok) return 0;
+                pc++; break;
+            }
+            case OP_BOUNDARY: {
+                int left=pos>0 && category(subject_char(subject,pos-1),'w',in.b);
+                int right=pos<endpos && category(subject_char(subject,pos),'w',in.b);
+                if ((left != right) != !!in.a) return 0;
+                pc++; break;
+            }
+            case OP_BACKREF: {
+                Py_ssize_t begin=caps[2*in.a],finish=caps[2*in.a+1];
+                if (begin<0 || finish<begin || pos+finish-begin>endpos) return 0;
+                for (Py_ssize_t i=0; i<finish-begin; i++) if (!equal_char(subject_char(subject,begin+i),subject_char(subject,pos+i),in.b)) return 0;
+                pos+=finish-begin; pc++; break;
+            }
+            case OP_SAVE_START:
+                caps[2*in.a]=pos; pc++; break;
+            case OP_SAVE_END:
+                caps[2*in.a+1]=pos; *last=in.a; pc++; break;
+            case OP_JUMP:
+                pc=in.a; break;
+            case OP_COND:
+                pc=caps[2*in.a]>=0 ? in.b : in.c; break;
+            case OP_SPLIT: {
+                Py_ssize_t saved_caps[34],saved_last=*last,finish=-1;
+                memcpy(saved_caps,caps,(size_t)cap_count*sizeof(Py_ssize_t));
+                int got=execute_compact_path(vm,code,subject,in.a,pos,start,endpos,caps,last,&finish,require_end,require_nonempty,depth+1);
+                if (got) { if (got>0) *out_pos=finish; return got; }
+                memcpy(caps,saved_caps,(size_t)cap_count*sizeof(Py_ssize_t)); *last=saved_last;
+                pc=in.b; break;
+            }
+            case OP_REPEAT1: {
+                if (pc+1>=code->count || in.a<0 || (in.b>=0 && in.b<in.a)) return -2;
+                Ins atom=code->ins[pc+1];
+                Py_ssize_t maximum=in.b<0 ? endpos-pos : in.b;
+                if (maximum>endpos-pos) maximum=endpos-pos;
+                Py_ssize_t matched=0;
+                while (matched<maximum && atom_match(vm,subject,pos+matched,atom)) matched++;
+                if (matched<in.a) return 0;
+                Py_ssize_t minimum_pos=pos+in.a,maximum_pos=pos+matched;
+                pc+=2;
+                if (in.c==2 || (in.c==0 && !repeat_needs_choice(vm,code,pc,atom))) { pos=maximum_pos; break; }
+                Py_ssize_t first=in.c==1 ? minimum_pos : maximum_pos,step=in.c==1 ? 1 : -1,last_pos=in.c==1 ? maximum_pos : minimum_pos;
+                Py_ssize_t saved_caps[34],saved_last=*last;
+                memcpy(saved_caps,caps,(size_t)cap_count*sizeof(Py_ssize_t));
+                for (Py_ssize_t candidate=first;;candidate+=step) {
+                    Py_ssize_t finish=-1;
+                    int got=execute_compact_path(vm,code,subject,pc,candidate,start,endpos,caps,last,&finish,require_end,require_nonempty,depth+1);
+                    if (got) { if (got>0) *out_pos=finish; return got; }
+                    if (candidate==last_pos) return 0;
+                    memcpy(caps,saved_caps,(size_t)cap_count*sizeof(Py_ssize_t)); *last=saved_last;
+                }
+            }
             case OP_MATCH:
                 if ((require_end && pos!=endpos) || (require_nonempty && pos==start)) return 0;
                 *out_pos=pos; return 1;
@@ -238,6 +341,10 @@ static int execute(const VM *vm, Py_ssize_t code_index, const Subject *subject,
     if (depth > 128 || code_index < 0 || code_index >= vm->code_count) return -2;
     const Code *code = &vm->codes[code_index];
     if (code->linear) return execute_linear(vm,code_index,subject,start,endpos,caps,last,out_pos,require_end,require_nonempty);
+    if (code->compact && vm->groups<=16) {
+        int got=execute_compact_path(vm,code,subject,0,start,start,endpos,caps,last,out_pos,require_end,require_nonempty,0);
+        if (got!=-2) return got;
+    }
     Stack stack = {0};
     State *current = state_new(vm->groups, code, start, caps, *last);
     if (!current) return -1;
@@ -372,6 +479,7 @@ static void vm_free(VM *vm) {
     if (!vm) return;
     for (Py_ssize_t i=0; i<vm->code_count; i++) PyMem_Free(vm->codes[i].ins);
     for (Py_ssize_t i=0; i<vm->class_count; i++) PyMem_Free(vm->classes[i].items);
+    Py_XDECREF(vm->literal);
     PyMem_Free(vm->codes); PyMem_Free(vm->classes); PyMem_Free(vm);
 }
 
@@ -390,7 +498,7 @@ static PyObject *native_build(PyObject *self, PyObject *args) {
     vm->groups=groups; vm->code_count=PySequence_Fast_GET_SIZE(pseq); vm->class_count=PySequence_Fast_GET_SIZE(cseq);
     vm->codes=PyMem_Calloc((size_t)vm->code_count,sizeof(Code)); vm->classes=PyMem_Calloc((size_t)vm->class_count,sizeof(CharClass));
     if (!vm->codes || (!vm->classes && vm->class_count)) { vm_free(vm); Py_DECREF(pseq); Py_DECREF(cseq); return PyErr_NoMemory(); }
-    for (Py_ssize_t p=0; p<vm->code_count; p++) {
+    for (Py_ssize_t p=vm->code_count; p-->0;) {
         PyObject *seq = PySequence_Fast(PySequence_Fast_GET_ITEM(pseq,p),"program must be a sequence");
         if (!seq) goto error;
         vm->codes[p].count=PySequence_Fast_GET_SIZE(seq); vm->codes[p].ins=PyMem_Calloc((size_t)vm->codes[p].count,sizeof(Ins));
@@ -426,15 +534,55 @@ static PyObject *native_build(PyObject *self, PyObject *args) {
     for (Py_ssize_t p=0; p<vm->code_count; p++) {
         Code *code=&vm->codes[p];
         int deterministic=1;
-        for (Py_ssize_t i=0; i<code->count && deterministic; i++) {
+        int compact=1;
+        for (Py_ssize_t i=0; i<code->count; i++) {
             Ins in=code->ins[i];
-            if (in.op==OP_SPLIT || in.op==OP_JUMP || in.op==OP_LOOK || in.op==OP_ATOMIC_START || in.op==OP_ATOMIC_END || in.op==OP_COND) deterministic=0;
+            if (in.op==OP_SPLIT || in.op==OP_JUMP || in.op==OP_ATOMIC_START || in.op==OP_ATOMIC_END || in.op==OP_COND) deterministic=0;
+            if (in.op==OP_LOOK && (in.a<0 || in.a>=vm->code_count || !vm->codes[in.a].linear)) deterministic=0;
+            if (in.op==OP_SPLIT && in.c>=0) {
+                Py_ssize_t close=-1;
+                int consumes=0,nested=0;
+                for (Py_ssize_t j=in.a; j<code->count; j++) {
+                    Ins child=code->ins[j];
+                    if (child.op==OP_JUMP && child.a==i) { close=j; break; }
+                    if (child.op==OP_SPLIT) nested=1;
+                    if (child.op==OP_CHAR || child.op==OP_DOT || child.op==OP_CAT || child.op==OP_CLASS || (child.op==OP_REPEAT1 && child.a>0)) consumes=1;
+                }
+                if (close<0 || nested || !consumes) compact=0;
+            }
+            if (in.op==OP_JUMP && in.a<=i && (in.a<0 || in.a>=code->count || code->ins[in.a].op!=OP_SPLIT || code->ins[in.a].c<0)) compact=0;
+            if (in.op==OP_LOOK || in.op==OP_ATOMIC_START || in.op==OP_ATOMIC_END) compact=0;
             if (in.op==OP_REPEAT1) {
                 if (i+1>=code->count || in.c==1 || repeat_needs_choice(vm,code,i+2,code->ins[i+1])) deterministic=0;
                 i++;
             }
         }
         if (deterministic) code->linear=1;
+        code->compact=compact;
+    }
+    if (vm->code_count && vm->codes[0].count>1) {
+        Code main=vm->codes[0];
+        Py_ssize_t length=main.count-1;
+        int plain=main.ins[main.count-1].op==OP_MATCH,byte_mode=0;
+        Py_UCS4 maximum=0;
+        for (Py_ssize_t i=0; i<length && plain; i++) {
+            Ins in=main.ins[i];
+            if (in.op!=OP_CHAR || (in.b & F_I)) plain=0;
+            else { if (in.b & F_BYTE) byte_mode=1; if ((Py_UCS4)in.a>maximum) maximum=(Py_UCS4)in.a; }
+        }
+        if (plain && length) {
+            if (byte_mode) {
+                vm->literal=PyBytes_FromStringAndSize(NULL,length);
+                if (!vm->literal) goto error;
+                char *data=PyBytes_AS_STRING(vm->literal);
+                for (Py_ssize_t i=0; i<length; i++) data[i]=(char)main.ins[i].a;
+            } else {
+                vm->literal=PyUnicode_New(length,maximum);
+                if (!vm->literal) goto error;
+                int kind=PyUnicode_KIND(vm->literal); void *data=PyUnicode_DATA(vm->literal);
+                for (Py_ssize_t i=0; i<length; i++) PyUnicode_WRITE(kind,data,i,(Py_UCS4)main.ins[i].a);
+            }
+        }
     }
     Py_DECREF(pseq); Py_DECREF(cseq);
     return PyCapsule_New(vm,"rebar.vm",capsule_free);
@@ -446,6 +594,59 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
                     Py_ssize_t endpos, int mode, int require_nonempty,
                     Py_ssize_t *caps, Py_ssize_t *last, Py_ssize_t *found,
                     Py_ssize_t *finish) {
+    if (mode==0 && vm->literal) {
+        Py_ssize_t length=subject->byte_mode ? PyBytes_GET_SIZE(vm->literal) : PyUnicode_GET_LENGTH(vm->literal);
+        Py_ssize_t start=-1;
+        if (subject->byte_mode) {
+            const char *hay=PyBytes_AS_STRING(subject->obj),*needle=PyBytes_AS_STRING(vm->literal);
+            Py_ssize_t cursor=pos,last_start=endpos-length;
+            while (cursor<=last_start) {
+                const char *found_byte=memchr(hay+cursor,(unsigned char)needle[0],(size_t)(last_start-cursor+1));
+                if (!found_byte) break;
+                cursor=(Py_ssize_t)(found_byte-hay);
+                if (!memcmp(hay+cursor,needle,(size_t)length)) { start=cursor; break; }
+                cursor++;
+            }
+        } else start=PyUnicode_Find(subject->obj,vm->literal,pos,endpos,1);
+        if (start<-1) return -2;
+        if (start<0) return 0;
+        caps[0]=start; caps[1]=start+length; *last=-1; *found=start; *finish=start+length;
+        return 1;
+    }
+    if (mode==0 && !vm->groups && vm->code_count && vm->codes[0].count>3) {
+        Code main=vm->codes[0];
+        Py_ssize_t repeat_pc=0;
+        while (repeat_pc<main.count && main.ins[repeat_pc].op==OP_SAVE_START) repeat_pc++;
+        if (repeat_pc+2<main.count && main.ins[repeat_pc].op==OP_REPEAT1 && main.ins[repeat_pc].a>0 && main.ins[repeat_pc].c==0) {
+            Ins repeat=main.ins[repeat_pc],atom=main.ins[repeat_pc+1];
+            Py_ssize_t delimiter_pc=repeat_pc+2;
+            while (delimiter_pc<main.count && main.ins[delimiter_pc].op==OP_SAVE_END) delimiter_pc++;
+            if (delimiter_pc<main.count && main.ins[delimiter_pc].op==OP_CHAR && !atom_accepts(vm,atom,(Py_UCS4)main.ins[delimiter_pc].a)) {
+                Ins delimiter=main.ins[delimiter_pc];
+                Py_ssize_t cursor=pos+repeat.a;
+                while (cursor<endpos) {
+                    Py_ssize_t pivot=-1;
+                    if (subject->byte_mode) {
+                        const char *data=PyBytes_AS_STRING(subject->obj),*found_byte=memchr(data+cursor,(unsigned char)delimiter.a,(size_t)(endpos-cursor));
+                        if (found_byte) pivot=(Py_ssize_t)(found_byte-data);
+                    } else pivot=PyUnicode_FindChar(subject->obj,(Py_UCS4)delimiter.a,cursor,endpos,1);
+                    if (pivot<-1) return -2;
+                    if (pivot<0) return 0;
+                    Py_ssize_t start=pivot;
+                    while (start>pos && atom_match(vm,subject,start-1,atom)) start--;
+                    if (pivot-start>=repeat.a && (repeat.b<0 || pivot-start<=repeat.b)) {
+                        for (Py_ssize_t i=0; i<2*(vm->groups+1); i++) caps[i]=-1;
+                        caps[0]=start; *last=-1; *finish=-1;
+                        int got=execute(vm,0,subject,start,endpos,caps,last,finish,0,require_nonempty && start==pos,0);
+                        if (got<0) return got;
+                        if (got) { caps[1]=*finish; *found=start; return 1; }
+                    }
+                    cursor=pivot+1;
+                }
+                return 0;
+            }
+        }
+    }
     Py_ssize_t first_start = pos, last_start = mode==0 ? endpos : pos;
     if (mode==0 && vm->code_count && vm->codes[0].count>=2) {
         Code main = vm->codes[0];
@@ -466,12 +667,29 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
     for (Py_ssize_t start=first_start; start<=last_start; start++) {
         if (start<pos || start>endpos) continue;
         if (mode==0 && vm->code_count && vm->codes[0].count && start<endpos) {
-            Ins first = vm->codes[0].ins[0];
-            if (first.op==OP_REPEAT1 && first.a>0 && vm->codes[0].count>1) first=vm->codes[0].ins[1];
+            Code main=vm->codes[0];
+            Py_ssize_t first_pc=0;
+            while (first_pc<main.count && main.ins[first_pc].op==OP_SAVE_START) first_pc++;
+            Ins first=main.ins[first_pc];
+            if (first.op==OP_REPEAT1 && first.a>0 && first_pc+1<main.count) first=main.ins[++first_pc];
+            if (first.op==OP_LOOK && (first.b & 1) && (first.b & 2) && first.a>=0 && first.a<vm->code_count) {
+                Code look=vm->codes[first.a];
+                if (look.linear && start>=first.c) {
+                    int possible=1;
+                    Py_ssize_t check=start-first.c;
+                    for (Py_ssize_t pc=0; pc<look.count-1; pc++) {
+                        Ins atom=look.ins[pc];
+                        if (atom.op==OP_CHAR || atom.op==OP_CLASS || atom.op==OP_CAT || atom.op==OP_DOT) {
+                            if (!atom_match(vm,subject,check++,atom)) { possible=0; break; }
+                        } else { possible=1; break; }
+                    }
+                    if (!possible) continue;
+                } else if (start<first.c) continue;
+            }
             if (first.op==OP_ANCHOR && (first.a=='^' || first.a=='A')) {
                 if (first.a=='A' && start!=0) continue;
                 if (first.a=='^' && start!=0 && (!(first.b & F_M) || subject_char(subject,start-1)!='\n')) continue;
-                if (vm->codes[0].count>1) first=vm->codes[0].ins[1];
+                if (first_pc+1<main.count) first=main.ins[++first_pc];
             }
             Py_UCS4 value = subject_char(subject,start);
             if (first.op==OP_CHAR && !equal_char(value,(Py_UCS4)first.a,first.b)) continue;
