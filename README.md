@@ -1,6 +1,6 @@
 # rebar: building a faster Python `re`
 
-`rebar` is an experiment to build a drop-in, faster replacement for Python's regular-expression module. The public import is `import rebar as re`. Three independently written engines are checked against the latest stable CPython and compared on the same tasks; incorrect results are never timed.
+`rebar` is an experiment to build a drop-in, faster replacement for Python's regular-expression module. The public import is `import rebar as re`. Independent engines are checked against the latest stable CPython and compared on the same tasks; incorrect results are never timed. A newly added official CPython test gate has exposed compatibility work still required before a general drop-in claim.
 
 The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`. Scope notes are in [AMENDMENTS.md](AMENDMENTS.md), and the complete chronological record is in the [experiment log](docs/EXPERIMENT-LOG.md).
 
@@ -32,16 +32,17 @@ These show the expanded holdout task by task. Green means clearly faster, red me
 
 ## Correctness and current status
 
-The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). All three independent engines and stdlib pass the [expanded correctness matrix](oracle/v2/P0.md): **8,244/8,244 cases**, **45/45 obligations**, zero unexplained failures. Both native engines pass sanitizer checks and all three pass a no-delegation audit. The original 2,048-case suite also remains green.
+The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). All three original engines and stdlib pass the [expanded seeded matrix](oracle/v2/P0.md): **8,244/8,244 cases**, **45/45 obligations**. The newly vendored [official CPython `re` tests](oracle/cpython-3.14.6/README.md) are stricter: stdlib passes all 144 runnable methods, while the engines still have semantic gaps and native safety failures. Those gaps are preserved and will be fixed before new timings.
 
-![Expanded correctness: native C passes all cases](oracle/v2/evidence/rebar-qualified.svg)
+![Official CPython re compatibility check](oracle/cpython-3.14.6/evidence/initial-correctness.svg)
 
 | Check | Status |
 | --- | --- |
-| Correctness | **PASS** — stdlib, native C, Python, and Rust each pass all 8,244 expanded cases |
+| Seeded correctness | **PASS** — stdlib, native C, Python, and Rust each pass all 8,244 expanded cases |
+| Official CPython tests | **NOT QUALIFIED** — native passes 98/144 runnable methods; Python and Rust pass 94/144; failures are preserved |
 | Original performance | **PASS** — native C reaches 1.56× on the original 16-task holdout |
 | Expanded performance | **MEASURED / OPTIMIZATION NEEDED** — native C reaches 1.16× on 28 holdout tasks; all results are correctness-gated |
-| Public import | **PASS** — `import rebar as re` uses the qualified native C engine |
+| Public import | **AVAILABLE / NOT YET GENERAL-PURPOSE** — `import rebar as re` uses native C; official-suite gaps remain |
 
 The [expanded performance protocol](performance/v2/PROTOCOL.md) explains exactly what is timed, how comparisons are made, and how slowdowns are reported. Full results, raw data, rejected experiments, and older charts are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
 
@@ -54,5 +55,6 @@ RUSTFLAGS='-D warnings' sh tools/build_rust.sh
 
 PYTHONPATH=. "$PY" -c 'import rebar as re; print(re.findall(r"[A-Za-z]+", "a faster python re"))'
 PYTHONPATH=. "$PY" tools/oracle_v2.py verify --module rebar
+PYTHONPATH=. "$PY" tools/cpython_re_oracle.py verify --module rebar
 PYTHONPATH=. "$PY" tools/perf_v2.py verify
 ```

@@ -7,6 +7,7 @@ This log preserves the chronological work behind the concise [README](../README.
 - The [original matrix](../oracle/v1/P0.md) freezes 2,048 CPython 3.14.6 cases and 38 obligations. The original fixture SHA-256 is `983885ee6411fd806edf3d72efbcc989f9b9f7775a6d127dc7c865673eeb0fed`.
 - The [expanded matrix](../oracle/v2/P0.md) freezes 8,244 cases and 45 obligations, adding bytes-like inputs, standard object behavior, warnings/errors, lookbehind references, and deeper seeded cases. Fixture SHA-256 is `ae6a095bc0cd2b3ba1512a04f0d4fbe57916cf2d5b583fd4ecdda5c2c70a5bb2`.
 - The [initial expanded check](../oracle/v2/evidence/INITIAL.md) preserves the 42 native/Python and 386 Rust gaps it exposed. The [native](../oracle/v2/evidence/NATIVE-QUALIFIED.md), [Python](../oracle/v2/evidence/AST-QUALIFIED.md), and [Rust](../oracle/v2/evidence/RUST-QUALIFIED.md) qualification reports close every gap. Both native engines pass sanitizer checks; all three pass the no-delegation audit.
+- The [official CPython 3.14.6 `re` test gate](../oracle/cpython-3.14.6/README.md) adds 146 public test methods, 403 historical patterns, and 11 upstream benchmark patterns. Stdlib self-check is clean (144 pass, two locale skips). Initial results reveal 46 native, 50 Python, and 50 Rust failures, including two native timeouts and three Rust crashes. This invalidates a general drop-in claim until buffer behavior, Unicode/error edge cases, `Scanner`, overflow safety, and historical regressions are fixed.
 
 ## Candidate discovery
 

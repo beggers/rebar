@@ -1,0 +1,894 @@
+{
+  "crashes": 0,
+  "failed": 0,
+  "methods": 146,
+  "module": "re",
+  "passed": 144,
+  "records": [
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ExternalTests.test_re_benchmarks"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ExternalTests.test_re_tests"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_flags_repr"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_inline_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_locale"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_long_pattern"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_multiple_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_quotes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_single_flag"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_unicode_flag"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_unknown_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_without_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ASSERT_NOT_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_MARK_PUSH_macro_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_MIN_REPEAT_ONE_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_MIN_UNTIL_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_REPEAT_ONE_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_anyall"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ascii_and_unicode_flag"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_atomic_grouping"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_backref_group_name_in_exception"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_basic_re_sub"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_big_codesize"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bigcharset"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_branching"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_113254"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_114660"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_117612"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_1661"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_16688"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_20998"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_2537"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_29444"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_34294"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_3629"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_40736"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_418626"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_448951"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_449000"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_449964"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_527371"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_581080"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_612074"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_6509"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_6561"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_725106"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_725149"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_764548"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_817234"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_926075"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_931848"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_gh100061"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_gh101955"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_gh91616"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bytes_str_mixing"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_category"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_character_set_any"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_character_set_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_character_set_none"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_comments"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_compile"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_constants"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_copying"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_dollar_matches_twice"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_empty_array"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_enum"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_error"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_error_is_PatternError_alias"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_expand"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_fail"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_findall_atomic_grouping"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_findall_possessive_quantifiers"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_finditer"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_fullmatch_atomic_grouping"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_fullmatch_possessive_quantifiers"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_getattr"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_group"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_group_name_in_exception"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_groupdict"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ignore_case"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ignore_case_range"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ignore_case_set"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ignore_spaces"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_inline_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_issue17998"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_keep_buffer"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_keyword_parameters"
+    },
+    {
+      "reason": "test needs en_US.iso88591 locale",
+      "skipped": 1,
+      "status": "skipped",
+      "test": "ReTests.test_locale_caching"
+    },
+    {
+      "reason": "test needs en_US.iso88591 locale",
+      "skipped": 1,
+      "status": "skipped",
+      "test": "ReTests.test_locale_compiled"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_locale_flag"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_look_behind_overflow"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_lookahead"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_lookbehind"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_match_getitem"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_match_repr"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_misc_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_misuse_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_multiple_repeat"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_named_unicode_escapes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_not_literal"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_nothing_to_repeat"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_other_escapes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_pattern_compare"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_pattern_compare_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_pickling"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_possessive_quantifiers"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_possible_set_operations"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_qualified_re_split"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_qualified_re_sub"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape_non_ascii"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape_non_ascii_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_findall"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_fullmatch"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_groupref"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_groupref_exists"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_groupref_exists_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_groupref_exists_validation_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_match"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_split"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_subn"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_repeat_minmax"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_repeat_minmax_overflow"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_scanner"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_scoped_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_search_coverage"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_search_dot_unicode"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_search_star_plus"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_special_escapes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_sre_byte_class_literals"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_sre_byte_literals"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_sre_character_class_literals"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_sre_character_literals"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_stack_overflow"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_sub_template_numeric_escape"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_symbolic_groups"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_symbolic_groups_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_symbolic_refs"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_symbolic_refs_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_unlimited_zero_width_repeat"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_weakref"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_word_boundaries"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_zerowidth"
+    }
+  ],
+  "runner_sha256": "d5084fd43352f34267f3ed9b4b5d60a6070e2c50d4b787739270502c856e18bb",
+  "schema": "rebar-cpython-re-result-v1",
+  "skipped": 2,
+  "source_sha256": {
+    "LICENSE": "b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231",
+    "re_tests.py": "ec04a2b2a77338d20b37d931693c7e588a2896d3c73c7b4b47973e24c13b5aab",
+    "test_re.py": "879c8b562a5bddb413e73ad6d026a6199785bd08fa1c2c5db1ef831b4e1c47e2"
+  },
+  "timeouts": 0
+}

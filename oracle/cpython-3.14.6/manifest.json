@@ -1,0 +1,39 @@
+{
+  "benchmark_patterns": 11,
+  "corpus_cases": 403,
+  "corpus_outcomes": {
+    "fail": 74,
+    "succeed": 289,
+    "syntax_error": 40
+  },
+  "goal_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+  "implementation": "CPython",
+  "named_waivers": {
+    "DebugTests": "PRIVATE-DEBUG-TEXT: stdlib opcode/debug text is not a public contract",
+    "ImplementationTest": "PRIVATE-INTERNAL-COMPILER: checks re._compiler, _sre, and deprecated internal modules",
+    "ReTests.test_large_search": "RESOURCE-BIGMEM: requires a multi-gigabyte test resource",
+    "ReTests.test_large_subn": "RESOURCE-BIGMEM: requires a multi-gigabyte test resource",
+    "ReTests.test_memory_leaks": "PRIVATE-DEBUG-HOOK: requires Pattern._fail_after from a debug CPython build",
+    "ReTests.test_re_groupref_overflow": "PRIVATE-CONSTANTS: imports re._constants.MAXGROUPS",
+    "ReTests.test_regression_gh94675": "ENV-MULTIPROCESSING: sandbox cannot create the required forkserver socket",
+    "ReTests.test_search_anchor_at_beginning": "PERFORMANCE-ASSERTION: timing threshold belongs in the frozen performance oracle"
+  },
+  "public_classes": [
+    "ReTests",
+    "PatternReprTests",
+    "ExternalTests"
+  ],
+  "python": "3.14.6",
+  "runner_sha256": "d5084fd43352f34267f3ed9b4b5d60a6070e2c50d4b787739270502c856e18bb",
+  "schema": "rebar-cpython-re-oracle-v1",
+  "selected_methods": 146,
+  "source_sha256": {
+    "LICENSE": "b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231",
+    "re_tests.py": "ec04a2b2a77338d20b37d931693c7e588a2896d3c73c7b4b47973e24c13b5aab",
+    "test_re.py": "879c8b562a5bddb413e73ad6d026a6199785bd08fa1c2c5db1ef831b4e1c47e2"
+  },
+  "source_tarball_sha256": "143b1dddefaec3bd2e21e3b839b34a2b7fb9842272883c576420d605e9f30c63",
+  "source_url": "https://www.python.org/ftp/python/3.14.6/Python-3.14.6.tar.xz",
+  "test_methods": 152,
+  "timeout_seconds": 8
+}
