@@ -13,6 +13,8 @@ This log preserves the chronological work behind the concise [README](../README.
 
 The [discovery report](../candidates/evidence/DISCOVERY.md) preserves rejected binding experiments and their raw losses. The three independent families are the [Python backtracker](../candidates/AST.md), [native bytecode/C engine](../candidates/VM.md), and [Rust continuation/FFI engine](../candidates/RUST.md). Their parsers and executors are independent.
 
+The broader [engine and language survey](../candidates/evidence/ENGINE-SURVEY.md) records 32 focused semantic checks and all 403 official historical patterns across PCRE2, Oniguruma, ICU, POSIX through Zig, Go/RE2, Node, and Perl, plus separate checks of the Python `regex` package. Current PCRE2 comes closest on spans/syntax (399/403) but still differs on important Python rules; Zig/POSIX is incompatible (212/403). These are discovery-only probes: the clarified scope requires every production candidate, including Zig, to implement its parser/compiler/executor from scratch.
+
 ## Original performance experiments
 
 The [original protocol](../performance/v1/PROTOCOL.md) freezes 16 practice and 16 holdout tasks. Each experiment retains all 1,152 paired rows and every loss.
