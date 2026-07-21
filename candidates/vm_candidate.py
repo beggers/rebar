@@ -1,6 +1,7 @@
 """From-scratch bytecode compiler and native C VM candidate for the frozen re P0 contract."""
 
 import enum
+import types
 import unicodedata
 import warnings
 
@@ -73,6 +74,7 @@ class _BytecodeParser:
         self.at = 0
         self.groups = 0
         self.groupindex = {}
+        self.groupwidth = {}
 
     def error(self, message, position=None, include_pattern=True):
         raise PatternError(message, self.original if include_pattern else None, position)
@@ -112,6 +114,7 @@ class _BytecodeParser:
         if tag == "root" or tag == "plain":
             return node
         if tag == "capture":
+            self.groupwidth[value] = _width(node, self.groupwidth)
             return ("group", value, node)
         if tag == "atomic":
             return ("atomic", node)
@@ -119,7 +122,7 @@ class _BytecodeParser:
             behind = tag.startswith("behind")
             width = None
             if behind:
-                minimum, maximum = _width(node)
+                minimum, maximum = _width(node, self.groupwidth)
                 if minimum != maximum:
                     self.error("look-behind requires fixed-width pattern", include_pattern=False)
                 width = minimum
@@ -214,6 +217,12 @@ class _BytecodeParser:
                 intersection = self.source.find("&&", opening, self.at)
                 if intersection >= 0:
                     warnings.warn(f"Possible set intersection at position {intersection}", FutureWarning, stacklevel=5)
+                if self.source[opening + 1:opening + 2] == "[":
+                    warnings.warn(f"Possible nested set at position {opening + 1}", FutureWarning, stacklevel=5)
+                for marker, label in (("||", "union"), ("~~", "symmetric difference"), ("--", "difference")):
+                    location = self.source.find(marker, opening, self.at)
+                    if location >= 0:
+                        warnings.warn(f"Possible set {label} at position {location}", FutureWarning, stacklevel=5)
                 return ("class", members, negative, flags)
             initial = False
             if self.current() == "\\":
@@ -382,11 +391,19 @@ class _BytecodeParser:
                             removing = True
                         elif item in table:
                             if removing:
+                                if item in "aLu":
+                                    self.error("bad inline flags: cannot turn off flags 'a', 'u' and 'L'", self.at)
                                 turn_off |= table[item]
                             else:
+                                if item == "L" and not self.byte_mode:
+                                    self.error("bad inline flags: cannot use 'L' flag with a str pattern", self.at)
+                                if item in "aLu" and turn_on & int(ASCII | LOCALE | UNICODE):
+                                    self.error("bad inline flags: flags 'a', 'u' and 'L' are incompatible", self.at)
                                 turn_on |= table[item]
                         else:
                             self.error(f"unknown flag {item!r}", self.at - 1)
+                    if turn_on & turn_off:
+                        self.error("bad inline flags: flag turned on and off", self.at)
                     changed = (flags | turn_on) & ~turn_off
                     terminator = self.advance()
                     if terminator == ")":
@@ -414,27 +431,27 @@ class _BytecodeParser:
             active["parts"][-1].append(self.repeated(node, flags))
 
 
-def _width(node):
+def _width(node, groupwidth=None):
     kind = node[0]
     if kind in {"lit", "dot", "class", "category"}:
         return 1, 1
     if kind in {"anchor", "boundary", "look", "setflags"}:
         return 0, 0
     if kind == "backref":
-        return 0, 10 ** 9
+        return groupwidth.get(node[1], (0, 10 ** 9)) if groupwidth is not None else (0, 10 ** 9)
     if kind == "group" or kind == "atomic":
-        return _width(node[-1])
+        return _width(node[-1], groupwidth)
     if kind == "conditional":
-        a, b = _width(node[2]), _width(node[3])
+        a, b = _width(node[2], groupwidth), _width(node[3], groupwidth)
         return min(a[0], b[0]), max(a[1], b[1])
     if kind == "seq":
-        values = [_width(item) for item in node[1]]
+        values = [_width(item, groupwidth) for item in node[1]]
         return sum(item[0] for item in values), sum(item[1] for item in values)
     if kind == "alt":
-        values = [_width(item) for item in node[1]]
+        values = [_width(item, groupwidth) for item in node[1]]
         return min(item[0] for item in values), max(item[1] for item in values)
     if kind == "repeat":
-        child = _width(node[1])
+        child = _width(node[1], groupwidth)
         return child[0] * node[2], 10 ** 9 if node[3] is None else child[1] * node[3]
     raise RuntimeError(f"unknown width node {kind}")
 
@@ -622,6 +639,8 @@ class _BytecodeCompiler:
 
 
 def _template_parts(value, pattern, byte_mode):
+    if isinstance(value, (bytearray, memoryview)):
+        value = bytes(value)
     if not isinstance(value, (str, bytes)):
         raise TypeError("decoding to str: need a bytes-like object, function found")
     if byte_mode != isinstance(value, bytes):
@@ -697,7 +716,7 @@ def _template_parts(value, pattern, byte_mode):
 
 
 def _template(value, match):
-    byte_mode = isinstance(match.string, bytes)
+    byte_mode = not isinstance(match.string, str)
     empty = b"" if byte_mode else ""
     return empty.join(match.group(part) or empty if isinstance(part, int) else part for part in _template_parts(value, match.re, byte_mode))
 
@@ -742,6 +761,24 @@ class Pattern(_vm_native.Pattern):
 
     def __reduce__(self):
         return compile, (self.pattern, self.flags)
+
+    @classmethod
+    def __class_getitem__(cls, item):
+        return types.GenericAlias(cls, item)
+
+    def __repr__(self):
+        flags = self.flags & ~int(UNICODE)
+        names = [name for bit, name in ((ASCII, "ASCII"), (IGNORECASE, "IGNORECASE"), (LOCALE, "LOCALE"), (MULTILINE, "MULTILINE"), (DOTALL, "DOTALL"), (VERBOSE, "VERBOSE"), (DEBUG, "DEBUG")) if flags & int(bit)]
+        suffix = ", " + "|".join(f"re.{name}" for name in names) if names else ""
+        return f"re.compile({self.pattern!r}{suffix})"
+
+    def __eq__(self, other):
+        if not isinstance(other, Pattern):
+            return NotImplemented
+        return (type(self.pattern), self.pattern, self.flags) == (type(other.pattern), other.pattern, other.flags)
+
+    def __hash__(self):
+        return hash((type(self.pattern), self.pattern, self.flags))
 
     def scanner(self, string):
         return _Scanner(self, string)
@@ -802,21 +839,37 @@ def finditer(pattern, string, flags=0):
     return compile(pattern, flags).finditer(string)
 
 
-def split(pattern, string, maxsplit=0, flags=0):
+def split(pattern, string, *args, maxsplit=0, flags=0):
+    if args:
+        warnings.warn("'maxsplit' is passed as positional argument", DeprecationWarning, stacklevel=2)
+        if len(args) > 2:
+            raise TypeError("split() takes from 2 to 4 positional arguments")
+        maxsplit, flags = (args + (flags,))[:2]
     return compile(pattern, flags).split(string, maxsplit)
 
 
-def sub(pattern, repl, string, count=0, flags=0):
+def sub(pattern, repl, string, *args, count=0, flags=0):
+    if args:
+        warnings.warn("'count' is passed as positional argument", DeprecationWarning, stacklevel=2)
+        if len(args) > 2:
+            raise TypeError("sub() takes from 3 to 5 positional arguments")
+        count, flags = (args + (flags,))[:2]
     return compile(pattern, flags).sub(repl, string, count)
 
 
-def subn(pattern, repl, string, count=0, flags=0):
+def subn(pattern, repl, string, *args, count=0, flags=0):
+    if args:
+        warnings.warn("'count' is passed as positional argument", DeprecationWarning, stacklevel=2)
+        if len(args) > 2:
+            raise TypeError("subn() takes from 3 to 5 positional arguments")
+        count, flags = (args + (flags,))[:2]
     return compile(pattern, flags).subn(repl, string, count)
 
 
 def escape(pattern):
     special = set("()[]{}?*+-|^$\\.&~# \t\n\r\v\f")
-    if isinstance(pattern, bytes):
+    if isinstance(pattern, (bytes, bytearray, memoryview)):
+        pattern = bytes(pattern)
         return b"".join((b"\\" + bytes([char])) if chr(char) in special else bytes([char]) for char in pattern)
     return "".join("\\" + char if char in special else char for char in pattern)
 

@@ -15,7 +15,7 @@ typedef struct { Py_ssize_t count, atomic_capacity, suffix_width; int linear, co
 typedef struct { int kind; Py_UCS4 a, b; } ClassItem;
 typedef struct { Py_ssize_t count; ClassItem *items; } CharClass;
 typedef struct { Py_ssize_t code_count, class_count, groups; Code *codes; CharClass *classes; PyObject *literal; } VM;
-typedef struct { PyObject *obj; int byte_mode; Py_ssize_t length; } Subject;
+typedef struct { PyObject *obj; int byte_mode; Py_ssize_t length; const char *bytes; } Subject;
 typedef struct { Py_ssize_t pc, pos, last, repeat_step, repeat_limit; Py_ssize_t *caps, *seen, *barrier; int atomic_depth; } State;
 typedef struct { State **items; Py_ssize_t length, capacity; } Stack;
 
@@ -82,7 +82,7 @@ static void stack_trim(Stack *stack, Py_ssize_t length) {
 }
 
 static Py_UCS4 subject_char(const Subject *s, Py_ssize_t pos) {
-    if (s->byte_mode) return (unsigned char)PyBytes_AS_STRING(s->obj)[pos];
+    if (s->byte_mode) return (unsigned char)s->bytes[pos];
     return PyUnicode_READ_CHAR(s->obj, pos);
 }
 
@@ -706,7 +706,7 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
         Py_ssize_t length=subject->byte_mode ? PyBytes_GET_SIZE(vm->literal) : PyUnicode_GET_LENGTH(vm->literal);
         Py_ssize_t start=-1;
         if (subject->byte_mode) {
-            const char *hay=PyBytes_AS_STRING(subject->obj),*needle=PyBytes_AS_STRING(vm->literal);
+            const char *hay=subject->bytes,*needle=PyBytes_AS_STRING(vm->literal);
             Py_ssize_t cursor=pos,last_start=endpos-length;
             while (cursor<=last_start) {
                 const char *found_byte=memchr(hay+cursor,(unsigned char)needle[0],(size_t)(last_start-cursor+1));
@@ -731,7 +731,7 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
             while (cursor<=endpos-width) {
                 Py_ssize_t pivot=-1;
                 if (subject->byte_mode) {
-                    const char *hay=PyBytes_AS_STRING(subject->obj),*needle=PyBytes_AS_STRING(prefix);
+                    const char *hay=subject->bytes,*needle=PyBytes_AS_STRING(prefix);
                     Py_ssize_t final_start=endpos-width;
                     while (cursor<=final_start) {
                         const char *found_byte=memchr(hay+cursor,(unsigned char)needle[0],(size_t)(final_start-cursor+1));
@@ -770,7 +770,7 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
                 while (cursor<endpos) {
                     Py_ssize_t pivot=-1;
                     if (subject->byte_mode) {
-                        const char *data=PyBytes_AS_STRING(subject->obj),*found_byte=memchr(data+cursor,(unsigned char)delimiter.a,(size_t)(endpos-cursor));
+                        const char *data=subject->bytes,*found_byte=memchr(data+cursor,(unsigned char)delimiter.a,(size_t)(endpos-cursor));
                         if (found_byte) pivot=(Py_ssize_t)(found_byte-data);
                     } else pivot=PyUnicode_FindChar(subject->obj,(Py_UCS4)delimiter.a,cursor,endpos,1);
                     if (pivot<-1) return -2;
@@ -844,15 +844,21 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
 }
 
 static int subject_init(Subject *subject, PyObject *string) {
-    subject->obj=string; subject->byte_mode=PyBytes_Check(string); subject->length=0;
-    if (subject->byte_mode) subject->length=PyBytes_GET_SIZE(string);
+    subject->obj=string; subject->byte_mode=0; subject->length=0; subject->bytes=NULL;
+    if (PyBytes_Check(string)) { subject->byte_mode=1; subject->length=PyBytes_GET_SIZE(string); subject->bytes=PyBytes_AS_STRING(string); }
+    else if (PyByteArray_Check(string)) { subject->byte_mode=1; subject->length=PyByteArray_GET_SIZE(string); subject->bytes=PyByteArray_AS_STRING(string); }
+    else if (PyMemoryView_Check(string)) {
+        Py_buffer *view=PyMemoryView_GET_BUFFER(string);
+        if (!PyBuffer_IsContiguous(view,'C')) { PyErr_SetString(PyExc_TypeError,"expected a contiguous bytes-like object"); return 0; }
+        subject->byte_mode=1; subject->length=view->len; subject->bytes=(const char *)view->buf;
+    }
     else if (PyUnicode_Check(string)) subject->length=PyUnicode_GET_LENGTH(string);
     else { PyErr_SetString(PyExc_TypeError,"subject must be str or bytes"); return 0; }
     return 1;
 }
 
 static PyObject *subject_slice(const Subject *subject, Py_ssize_t begin, Py_ssize_t end) {
-    if (subject->byte_mode) return PyBytes_FromStringAndSize(PyBytes_AS_STRING(subject->obj)+begin,end-begin);
+    if (subject->byte_mode) return PyBytes_FromStringAndSize(subject->bytes+begin,end-begin);
     return PyUnicode_Substring(subject->obj,begin,end);
 }
 
@@ -1224,6 +1230,19 @@ static PyObject *match_expand(MatchObject *match, PyObject *template) {
     return PyObject_CallFunctionObjArgs(template_function,template,(PyObject *)match,NULL);
 }
 
+static PyObject *match_copy(MatchObject *match, PyObject *ignored) { (void)ignored; return Py_NewRef(match); }
+static PyObject *match_deepcopy(MatchObject *match, PyObject *memo) { (void)memo; return Py_NewRef(match); }
+static PyObject *match_reduce(MatchObject *match, PyObject *ignored) { (void)match; (void)ignored; PyErr_SetString(PyExc_TypeError,"cannot pickle 're.Match' object"); return NULL; }
+static PyObject *match_class_getitem(PyObject *type, PyObject *item) { return Py_GenericAlias(type,item); }
+
+static PyObject *match_repr(MatchObject *match) {
+    PyObject *value=match_piece(match,0,Py_None);
+    if (!value) return NULL;
+    PyObject *result=PyUnicode_FromFormat("<re.Match object; span=(%zd, %zd), match=%.50R>",match->caps[0],match->caps[1],value);
+    Py_DECREF(value);
+    return result;
+}
+
 static PyObject *match_subscript(PyObject *value, PyObject *key) {
     MatchObject *match=(MatchObject *)value;
     Py_ssize_t number;
@@ -1269,6 +1288,11 @@ static PyMethodDef MatchMethods[]={
     {"end",(PyCFunction)match_end,METH_VARARGS,"Return the end of a group."},
     {"span",(PyCFunction)match_span,METH_VARARGS,"Return the span of a group."},
     {"expand",(PyCFunction)match_expand,METH_O,"Expand a replacement template."},
+    {"__copy__",(PyCFunction)match_copy,METH_NOARGS,"Return the immutable match."},
+    {"__deepcopy__",(PyCFunction)match_deepcopy,METH_O,"Return the immutable match."},
+    {"__reduce__",(PyCFunction)match_reduce,METH_NOARGS,"Matches cannot be pickled."},
+    {"__reduce_ex__",(PyCFunction)match_reduce,METH_O,"Matches cannot be pickled."},
+    {"__class_getitem__",(PyCFunction)match_class_getitem,METH_O|METH_CLASS,"Return a generic match alias."},
     {NULL,NULL,0,NULL}
 };
 
@@ -1284,7 +1308,7 @@ static PyMappingMethods MatchMapping={0,match_subscript,0};
 static PyTypeObject MatchType={
     PyVarObject_HEAD_INIT(NULL,0)
     .tp_name="candidates._vm_native.Match", .tp_basicsize=offsetof(MatchObject,caps), .tp_itemsize=sizeof(Py_ssize_t),
-    .tp_dealloc=(destructor)match_dealloc, .tp_flags=Py_TPFLAGS_DEFAULT, .tp_doc="Native regular expression match.",
+    .tp_dealloc=(destructor)match_dealloc, .tp_repr=(reprfunc)match_repr, .tp_flags=Py_TPFLAGS_DEFAULT, .tp_doc="Native regular expression match.",
     .tp_methods=MatchMethods, .tp_getset=MatchGetSet, .tp_as_mapping=&MatchMapping
 };
 
@@ -1472,18 +1496,25 @@ static PyObject *pattern_substitute(PatternObject *pattern, PyObject *const *arg
     int callable=PyCallable_Check(replacement);
     PyObject *template_parts=NULL;
     if (!callable) {
-        if (!template_compiler) { PyErr_SetString(PyExc_RuntimeError,"native template compiler is not configured"); return NULL; }
-        template_parts=PyDict_GetItemWithError(pattern->templates,replacement);
-        if (!template_parts && PyErr_Occurred()) return NULL;
+        PyObject *owned_key=NULL,*template_key=replacement;
+        if (PyByteArray_Check(replacement) || PyMemoryView_Check(replacement)) {
+            owned_key=PyBytes_FromObject(replacement);
+            if (!owned_key) return NULL;
+            template_key=owned_key;
+        }
+        if (!template_compiler) { Py_XDECREF(owned_key); PyErr_SetString(PyExc_RuntimeError,"native template compiler is not configured"); return NULL; }
+        template_parts=PyDict_GetItemWithError(pattern->templates,template_key);
+        if (!template_parts && PyErr_Occurred()) { Py_XDECREF(owned_key); return NULL; }
         if (!template_parts) {
             PyObject *byte_mode=subject.byte_mode ? Py_True : Py_False;
-            template_parts=PyObject_CallFunctionObjArgs(template_compiler,replacement,(PyObject *)pattern,byte_mode,NULL);
-            if (!template_parts) return NULL;
-            if (PyDict_SetItem(pattern->templates,replacement,template_parts)<0) { Py_DECREF(template_parts); return NULL; }
+            template_parts=PyObject_CallFunctionObjArgs(template_compiler,template_key,(PyObject *)pattern,byte_mode,NULL);
+            if (!template_parts) { Py_XDECREF(owned_key); return NULL; }
+            if (PyDict_SetItem(pattern->templates,template_key,template_parts)<0) { Py_DECREF(template_parts); Py_XDECREF(owned_key); return NULL; }
             Py_DECREF(template_parts);
-            template_parts=PyDict_GetItemWithError(pattern->templates,replacement);
-            if (!template_parts) return NULL;
+            template_parts=PyDict_GetItemWithError(pattern->templates,template_key);
+            if (!template_parts) { Py_XDECREF(owned_key); return NULL; }
         }
+        Py_XDECREF(owned_key);
     }
     if (!subject.byte_mode) return substitute_text(pattern,&subject,callable ? replacement : NULL,template_parts,limit,return_count);
     PyObject *pieces=PyList_New(0);
