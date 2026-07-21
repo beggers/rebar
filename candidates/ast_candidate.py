@@ -187,9 +187,18 @@ class _Parser:
         mode = "greedy"
         if self.peek() in {"?", "+"}:
             mode = "lazy" if self.take() == "?" else "possessive"
-        if self.peek() in {"*", "+", "?"}:
+        if self.peek() in {"*", "+", "?"} or self.brace_repeat(self.index):
             self.fail("multiple repeat", self.index)
         return ("repeat", atom, minimum, maximum, mode, flags)
+
+    def brace_repeat(self, position):
+        if self.text[position:position + 1] != "{":
+            return False
+        close = self.text.find("}", position + 1)
+        if close < 0:
+            return False
+        value = self.text[position + 1:close]
+        return bool(value) and value.count(",") <= 1 and all(item in "0123456789," for item in value)
 
     def atom(self, flags):
         start = self.index
@@ -207,6 +216,8 @@ class _Parser:
         if char == "(":
             return self.group(flags, start)
         if char in {"*", "+", "?"}:
+            self.fail("nothing to repeat", start)
+        if char == "{" and self.brace_repeat(start):
             self.fail("nothing to repeat", start)
         return ("lit", char, flags)
 

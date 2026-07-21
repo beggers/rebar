@@ -328,9 +328,18 @@ class _BytecodeParser:
         mode = "greedy"
         if self.current() in {"?", "+"}:
             mode = "lazy" if self.advance() == "?" else "possessive"
-        if self.current() in {"*", "+", "?"}:
+        if self.current() in {"*", "+", "?"} or self.brace_repeat(self.at):
             self.error("multiple repeat", self.at)
         return ("repeat", node, minimum, maximum, mode, flags)
+
+    def brace_repeat(self, position):
+        if self.source[position:position + 1] != "{":
+            return False
+        close = self.source.find("}", position + 1)
+        if close < 0:
+            return False
+        value = self.source[position + 1:close]
+        return bool(value) and value.count(",") <= 1 and all(item in "0123456789," for item in value)
 
     def parse(self):
         stack = [self.frame("root", self.flags, 0)]
@@ -486,6 +495,8 @@ class _BytecodeParser:
             elif char in "^$":
                 node = ("anchor", char, flags)
             elif char in "*+?":
+                self.error("nothing to repeat", opening)
+            elif char == "{" and self.brace_repeat(opening):
                 self.error("nothing to repeat", opening)
             else:
                 node = ("lit", char, flags)

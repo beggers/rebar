@@ -254,11 +254,27 @@ impl Parser {
             }
             _ => 0,
         };
-        if matches!(self.now(), Some('*' | '+' | '?')) {
+        if matches!(self.now(), Some('*' | '+' | '?')) || self.brace_repeat(self.at) {
             return self.fail("multiple repeat".into(), Some(self.at), true);
         }
         let _ = flags;
         Ok(Expr::Repeat(Box::new(node), min, max, mode))
+    }
+    fn brace_repeat(&self, position: usize) -> bool {
+        if self.source.get(position) != Some(&(b'{' as u32)) {
+            return false;
+        }
+        let mut close = position + 1;
+        let mut commas = 0;
+        while close < self.source.len() && self.source[close] != b'}' as u32 {
+            match char::from_u32(self.source[close]) {
+                Some('0'..='9') => {}
+                Some(',') => commas += 1,
+                _ => return false,
+            }
+            close += 1;
+        }
+        close < self.source.len() && close > position + 1 && commas <= 1
     }
     fn atom(&mut self, flags: u32) -> PResult<Expr> {
         let start = self.at;
@@ -270,6 +286,9 @@ impl Parser {
             '\\' => self.escape(flags, false, start),
             '(' => self.group(flags, start),
             '*' | '+' | '?' => self.fail("nothing to repeat".into(), Some(start), true),
+            '{' if self.brace_repeat(start) => {
+                self.fail("nothing to repeat".into(), Some(start), true)
+            }
             _ => Ok(Expr::Lit(value as u32, flags)),
         }
     }
