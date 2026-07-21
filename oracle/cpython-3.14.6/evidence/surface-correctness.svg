@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1110" height="406" viewBox="0 0 1110 406" role="img" aria-label="CPython re compatibility check">
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<text x="28" y="35" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#0f172a">CPython re compatibility check</text>
+<text x="28" y="60" font-family="Arial, sans-serif" font-size="13" fill="#475569">Official public test methods. Green is passing; red shows failures, crashes, or timeouts. Locale-dependent skips are shown separately.</text>
+<text x="28" y="119" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#15803d">Python re (self-check)</text>
+<rect x="256" y="100" width="550" height="24" rx="5" fill="#fee2e2"/>
+<rect x="256" y="100" width="550" height="24" rx="5" fill="#15803d"/>
+<text x="826" y="117" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0f172a">144/144 passed · 0 failed</text>
+<text x="826" y="136" font-family="Arial, sans-serif" font-size="11" fill="#475569">0 crashes · 0 timeouts · 2 locale skips</text>
+<text x="28" y="189" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0284c7">Native C / rebar</text>
+<rect x="256" y="170" width="550" height="24" rx="5" fill="#fee2e2"/>
+<rect x="256" y="170" width="420" height="24" rx="5" fill="#15803d"/>
+<text x="826" y="187" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0f172a">110/144 passed · 34 failed</text>
+<text x="826" y="206" font-family="Arial, sans-serif" font-size="11" fill="#475569">0 crashes · 2 timeouts · 2 locale skips</text>
+<text x="28" y="259" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#7c3aed">Python engine</text>
+<rect x="256" y="240" width="550" height="24" rx="5" fill="#fee2e2"/>
+<rect x="256" y="240" width="405" height="24" rx="5" fill="#15803d"/>
+<text x="826" y="257" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0f172a">106/144 passed · 38 failed</text>
+<text x="826" y="276" font-family="Arial, sans-serif" font-size="11" fill="#475569">0 crashes · 1 timeouts · 2 locale skips</text>
+<text x="28" y="329" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#d97706">Rust engine</text>
+<rect x="256" y="310" width="550" height="24" rx="5" fill="#fee2e2"/>
+<rect x="256" y="310" width="405" height="24" rx="5" fill="#15803d"/>
+<text x="826" y="327" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0f172a">106/144 passed · 38 failed</text>
+<text x="826" y="346" font-family="Arial, sans-serif" font-size="11" fill="#475569">3 crashes · 0 timeouts · 2 locale skips</text>
+</svg>

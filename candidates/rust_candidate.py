@@ -2,6 +2,7 @@
 
 import ctypes
 import enum
+import operator
 import os
 import types
 import unicodedata
@@ -19,9 +20,18 @@ class RegexFlag(enum.IntFlag):
     DEBUG = 128
 
     def __repr__(self):
-        if not self:
+        value = int(self)
+        if not value:
             return "re.NOFLAG"
-        return super().__repr__()
+        ordered = ((self.ASCII, "ASCII"), (self.IGNORECASE, "IGNORECASE"), (self.LOCALE, "LOCALE"), (self.UNICODE, "UNICODE"), (self.MULTILINE, "MULTILINE"), (self.DOTALL, "DOTALL"), (self.VERBOSE, "VERBOSE"), (self.DEBUG, "DEBUG"))
+        known = sum(int(bit) for bit, _ in ordered)
+        parts = [f"re.{name}" for bit, name in ordered if value & int(bit)]
+        unknown = value & ~known
+        if unknown:
+            parts.append(hex(unknown))
+        return "|".join(parts)
+
+    __str__ = __repr__
 
 
 A = ASCII = RegexFlag.ASCII
@@ -33,7 +43,9 @@ X = VERBOSE = RegexFlag.VERBOSE
 U = UNICODE = RegexFlag.UNICODE
 DEBUG = RegexFlag.DEBUG
 NOFLAG = RegexFlag(0)
-_BYTE = 1 << 20
+_BYTE = 1 << 31
+_MISSING = object()
+_WARNING_PREFIX = (os.path.dirname(__file__),)
 
 
 class PatternError(Exception):
@@ -196,10 +208,10 @@ def _warn_ambiguous(pattern):
             opening = -1
         elif opening >= 0:
             if char == "[" and index == opening + 1:
-                warnings.warn(f"Possible nested set at position {index}", FutureWarning, stacklevel=4)
+                warnings.warn(f"Possible nested set at position {index}", FutureWarning, skip_file_prefixes=_WARNING_PREFIX)
             for marker, label in (("&&", "intersection"), ("||", "union"), ("~~", "symmetric difference"), ("--", "difference")):
                 if text[index:index + 2] == marker:
-                    warnings.warn(f"Possible set {label} at position {index}", FutureWarning, stacklevel=4)
+                    warnings.warn(f"Possible set {label} at position {index}", FutureWarning, skip_file_prefixes=_WARNING_PREFIX)
 
 
 def _template(value, match):
@@ -330,7 +342,11 @@ class Match:
             if group not in self._pattern.groupindex:
                 raise IndexError("no such group")
             return self._pattern.groupindex[group]
-        if not isinstance(group, int) or group < 0 or group > self._pattern.groups:
+        try:
+            group = operator.index(group)
+        except TypeError:
+            raise IndexError("no such group") from None
+        if group < 0 or group > self._pattern.groups:
             raise IndexError("no such group")
         return group
 
@@ -400,13 +416,13 @@ class _Scanner:
 
 
 class Pattern:
-    __slots__ = ("pattern", "flags", "groups", "groupindex", "_handle")
+    __slots__ = ("pattern", "flags", "groups", "groupindex", "_handle", "__weakref__")
 
     def __init__(self, value, flags, handle, groups, groupindex):
         self.pattern = value
         self.flags = flags
         self.groups = groups
-        self.groupindex = groupindex
+        self.groupindex = types.MappingProxyType(dict(groupindex))
         self._handle = handle
 
     def __del__(self):
@@ -430,9 +446,11 @@ class Pattern:
 
     def __repr__(self):
         flags = self.flags & ~int(UNICODE)
-        names = [name for bit, name in ((ASCII, "ASCII"), (IGNORECASE, "IGNORECASE"), (LOCALE, "LOCALE"), (MULTILINE, "MULTILINE"), (DOTALL, "DOTALL"), (VERBOSE, "VERBOSE"), (DEBUG, "DEBUG")) if flags & int(bit)]
-        suffix = ", " + "|".join(f"re.{name}" for name in names) if names else ""
-        return f"re.compile({self.pattern!r}{suffix})"
+        shown = repr(self.pattern)
+        if len(shown) > 200:
+            shown = shown[:200]
+        suffix = f", {RegexFlag(flags)!r}" if flags else ""
+        return f"re.compile({shown}{suffix})"
 
     def __eq__(self, other):
         if not isinstance(other, Pattern):
@@ -608,29 +626,53 @@ def finditer(pattern, string, flags=0):
     return compile(pattern, flags).finditer(string)
 
 
-def split(pattern, string, *args, maxsplit=0, flags=0):
+def split(pattern, string, *args, maxsplit=_MISSING, flags=_MISSING):
+    keyword_maxsplit = maxsplit is not _MISSING
+    keyword_flags = flags is not _MISSING
+    maxsplit = 0 if maxsplit is _MISSING else maxsplit
+    flags = 0 if flags is _MISSING else flags
     if args:
-        warnings.warn("'maxsplit' is passed as positional argument", DeprecationWarning, stacklevel=2)
         if len(args) > 2:
-            raise TypeError("split() takes from 2 to 4 positional arguments")
+            raise TypeError(f"split() takes from 2 to 4 positional arguments but {len(args) + 2} were given")
+        if keyword_maxsplit:
+            raise TypeError("split() got multiple values for argument 'maxsplit'")
+        if len(args) > 1 and keyword_flags:
+            raise TypeError("split() got multiple values for argument 'flags'")
+        warnings.warn("'maxsplit' is passed as positional argument", DeprecationWarning, skip_file_prefixes=_WARNING_PREFIX)
         maxsplit, flags = (args + (flags,))[:2]
     return compile(pattern, flags).split(string, maxsplit)
 
 
-def sub(pattern, repl, string, *args, count=0, flags=0):
+def sub(pattern, repl, string, *args, count=_MISSING, flags=_MISSING):
+    keyword_count = count is not _MISSING
+    keyword_flags = flags is not _MISSING
+    count = 0 if count is _MISSING else count
+    flags = 0 if flags is _MISSING else flags
     if args:
-        warnings.warn("'count' is passed as positional argument", DeprecationWarning, stacklevel=2)
         if len(args) > 2:
-            raise TypeError("sub() takes from 3 to 5 positional arguments")
+            raise TypeError(f"sub() takes from 3 to 5 positional arguments but {len(args) + 3} were given")
+        if keyword_count:
+            raise TypeError("sub() got multiple values for argument 'count'")
+        if len(args) > 1 and keyword_flags:
+            raise TypeError("sub() got multiple values for argument 'flags'")
+        warnings.warn("'count' is passed as positional argument", DeprecationWarning, skip_file_prefixes=_WARNING_PREFIX)
         count, flags = (args + (flags,))[:2]
     return compile(pattern, flags).sub(repl, string, count)
 
 
-def subn(pattern, repl, string, *args, count=0, flags=0):
+def subn(pattern, repl, string, *args, count=_MISSING, flags=_MISSING):
+    keyword_count = count is not _MISSING
+    keyword_flags = flags is not _MISSING
+    count = 0 if count is _MISSING else count
+    flags = 0 if flags is _MISSING else flags
     if args:
-        warnings.warn("'count' is passed as positional argument", DeprecationWarning, stacklevel=2)
         if len(args) > 2:
-            raise TypeError("subn() takes from 3 to 5 positional arguments")
+            raise TypeError(f"subn() takes from 3 to 5 positional arguments but {len(args) + 3} were given")
+        if keyword_count:
+            raise TypeError("subn() got multiple values for argument 'count'")
+        if len(args) > 1 and keyword_flags:
+            raise TypeError("subn() got multiple values for argument 'flags'")
+        warnings.warn("'count' is passed as positional argument", DeprecationWarning, skip_file_prefixes=_WARNING_PREFIX)
         count, flags = (args + (flags,))[:2]
     return compile(pattern, flags).subn(repl, string, count)
 

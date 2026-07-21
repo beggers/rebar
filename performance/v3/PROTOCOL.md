@@ -44,6 +44,8 @@ These are useful compatibility findings, not timing results. **Performance is NO
 
 The [window and multiline follow-up](evidence/WINDOW-QUALIFIED.md) fixes all eight newly exposed cases: the current pre-timing check passes **576/576**. The initial result above is preserved; official-suite failures still block timing.
 
+The [public API surface follow-up](evidence/SURFACE-QUALIFIED.md) fixes 11 additional official methods in every engine while retaining **576/576** pre-timing comparisons. Official semantic and safety gaps still block timing.
+
 Reproduce the freeze and checks with:
 
 ```sh

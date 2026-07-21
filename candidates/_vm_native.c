@@ -8,7 +8,8 @@
 enum { OP_CHAR=1, OP_DOT, OP_CAT, OP_CLASS, OP_ANCHOR, OP_BOUNDARY, OP_BACKREF,
        OP_SAVE_START, OP_SAVE_END, OP_SPLIT, OP_JUMP, OP_LOOK, OP_ATOMIC_START,
        OP_ATOMIC_END, OP_COND, OP_MATCH, OP_REPEAT1 };
-enum { F_I=2, F_L=4, F_M=8, F_S=16, F_A=256, F_BYTE=1<<20 };
+enum { F_I=2, F_L=4, F_M=8, F_S=16, F_A=256 };
+#define F_BYTE ((Py_ssize_t)1 << 31)
 
 typedef struct { int op; Py_ssize_t a, b, c; } Ins;
 typedef struct { Py_ssize_t count, atomic_capacity, suffix_width; int linear, compact, has_suffix, has_loop; Ins *ins; PyObject *literal; } Code;
@@ -1146,9 +1147,11 @@ static int match_number(MatchObject *match, PyObject *value, Py_ssize_t *number)
         *number=PyLong_AsSsize_t(index);
         return !PyErr_Occurred();
     }
-    if (!PyLong_Check(value)) { PyErr_SetString(PyExc_IndexError,"no such group"); return 0; }
-    *number=PyLong_AsSsize_t(value);
-    if (PyErr_Occurred()) return 0;
+    PyObject *index=PyNumber_Index(value);
+    if (!index) { PyErr_Clear(); PyErr_SetString(PyExc_IndexError,"no such group"); return 0; }
+    *number=PyLong_AsSsize_t(index);
+    Py_DECREF(index);
+    if (PyErr_Occurred()) { PyErr_Clear(); PyErr_SetString(PyExc_IndexError,"no such group"); return 0; }
     if (*number<0 || *number>match->pattern->groups) { PyErr_SetString(PyExc_IndexError,"no such group"); return 0; }
     return 1;
 }
@@ -1613,7 +1616,7 @@ static void pattern_dealloc(PatternObject *pattern) { Py_XDECREF(pattern->patter
 static PyObject *pattern_get_pattern(PatternObject *pattern, void *closure) { (void)closure; return Py_NewRef(pattern->pattern); }
 static PyObject *pattern_get_flags(PatternObject *pattern, void *closure) { (void)closure; return PyLong_FromSsize_t(pattern->flags); }
 static PyObject *pattern_get_groups(PatternObject *pattern, void *closure) { (void)closure; return PyLong_FromSsize_t(pattern->groups); }
-static PyObject *pattern_get_groupindex(PatternObject *pattern, void *closure) { (void)closure; return Py_NewRef(pattern->groupindex); }
+static PyObject *pattern_get_groupindex(PatternObject *pattern, void *closure) { (void)closure; return PyDictProxy_New(pattern->groupindex); }
 static PyObject *pattern_get_vm(PatternObject *pattern, void *closure) { (void)closure; return Py_NewRef(pattern->capsule); }
 
 static PyMethodDef PatternMethods[]={

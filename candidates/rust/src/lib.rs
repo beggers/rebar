@@ -7,7 +7,7 @@ const M: u32 = 8;
 const S: u32 = 16;
 const X: u32 = 64;
 const A: u32 = 256;
-const BYTE: u32 = 1 << 20;
+const BYTE: u32 = 1 << 31;
 
 #[derive(Clone)]
 enum Member {

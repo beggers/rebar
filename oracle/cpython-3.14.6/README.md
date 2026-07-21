@@ -50,6 +50,21 @@ The broader performance oracle exposed missing windowed scanners and a native mu
 
 The follow-up records are [native](evidence/rebar-window.json), [Python](evidence/ast-window.json), and [Rust](evidence/rust-window.json); the initial records above remain unchanged.
 
+## Public API surface follow-up
+
+![Official CPython re compatibility after public-surface fixes](evidence/surface-correctness.svg)
+
+The next compatibility cohort fixes canonical flag/pattern representations, unknown flags, immutable `groupindex`, weak references, `__index__` group arguments, duplicate-argument errors, and warning locations. Exactly 11 previously failing methods now pass in each engine, with no unrelated status changes:
+
+| Engine | Runnable methods passed | Failed | Crashes | Timeouts |
+| --- | ---: | ---: | ---: | ---: |
+| CPython `re` self-check | **144/144** | **0** | **0** | **0** |
+| Native C / `rebar` | 110/144 | 34 | 0 | 2 |
+| Python engine | 106/144 | 38 | 0 | 1 |
+| Rust engine | 106/144 | 38 | 3 | 0 |
+
+The complete follow-up records are [native](evidence/rebar-surface.json), [Python](evidence/ast-surface.json), and [Rust](evidence/rust-surface.json). Earlier evidence remains unchanged.
+
 Reproduce the frozen gate or one stable method ID:
 
 ```sh
