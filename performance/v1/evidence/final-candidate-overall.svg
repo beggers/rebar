@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="340" viewBox="0 0 1140 340" role="img" aria-label="Overall speed compared with Python re">
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<text x="28" y="34" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#0f172a">Overall speed compared with Python re</text>
+<text x="28" y="58" font-family="Arial, sans-serif" font-size="13" fill="#475569">Holdout results. 1× is the built-in re module; farther right is faster. Lines show the measured 95% range.</text>
+<line x1="262" y1="98" x2="262" y2="318" stroke="#cbd5e1" stroke-width="1"/>
+<text x="262" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.0001×</text>
+<line x1="360" y1="98" x2="360" y2="318" stroke="#cbd5e1" stroke-width="1"/>
+<text x="360" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.001×</text>
+<line x1="459" y1="98" x2="459" y2="318" stroke="#cbd5e1" stroke-width="1"/>
+<text x="459" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.01×</text>
+<line x1="557" y1="98" x2="557" y2="318" stroke="#cbd5e1" stroke-width="1"/>
+<text x="557" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">0.1×</text>
+<line x1="655" y1="98" x2="655" y2="318" stroke="#334155" stroke-width="2"/>
+<text x="655" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#0f172a">1× baseline</text>
+<line x1="754" y1="98" x2="754" y2="318" stroke="#cbd5e1" stroke-width="1"/>
+<text x="754" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">10×</text>
+<line x1="852" y1="98" x2="852" y2="318" stroke="#cbd5e1" stroke-width="1"/>
+<text x="852" y="90" text-anchor="middle" font-family="Arial, sans-serif" font-size="11" font-weight="400" fill="#64748b">100×</text>
+<text x="28" y="131" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">Native C engine</text>
+<line x1="674" y1="126" x2="675" y2="126" stroke="#0284c7" stroke-width="5" stroke-linecap="round"/>
+<circle cx="674" cy="126" r="6" fill="#0284c7" stroke="#fff" stroke-width="1.5"/>
+<text x="878" y="123" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0f172a">1.56× as fast overall</text>
+<text x="878" y="142" font-family="Arial, sans-serif" font-size="12" fill="#475569">14/16 clearly faster · 0/16 large slowdowns</text>
+<text x="28" y="197" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">Rust engine</text>
+<line x1="473" y1="192" x2="474" y2="192" stroke="#d97706" stroke-width="5" stroke-linecap="round"/>
+<circle cx="474" cy="192" r="6" fill="#d97706" stroke="#fff" stroke-width="1.5"/>
+<text x="878" y="189" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0f172a">0.014× as fast overall</text>
+<text x="878" y="208" font-family="Arial, sans-serif" font-size="12" fill="#475569">0/16 clearly faster · 15/16 large slowdowns</text>
+<text x="28" y="263" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">Python backtracker</text>
+<line x1="463" y1="258" x2="464" y2="258" stroke="#7c3aed" stroke-width="5" stroke-linecap="round"/>
+<circle cx="464" cy="258" r="6" fill="#7c3aed" stroke="#fff" stroke-width="1.5"/>
+<text x="878" y="255" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0f172a">0.011× as fast overall</text>
+<text x="878" y="274" font-family="Arial, sans-serif" font-size="12" fill="#475569">0/16 clearly faster · 16/16 large slowdowns</text>
+</svg>

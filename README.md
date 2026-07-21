@@ -10,8 +10,8 @@ The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2
 | --- | --- |
 | Correctness oracle | PASS v1.1 — 2,048/2,048, 38/38 obligations, zero invalid successes or false properties |
 | Qualified candidates | 3/3 — independent AST, native bytecode VM, and Rust/FFI families each pass 2,048/2,048 |
-| Performance oracle | PASS — 1,152 paired, correctness-gated rows per experiment; native C is ahead overall but below the success target |
-| Winner | NOT MEASURED |
+| Performance oracle | PASS — 1,152 paired, correctness-gated rows per experiment; native C meets the holdout speed and breadth targets |
+| Winner | Native C candidate qualifies; `rebar` exposure NOT MEASURED |
 
 The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The [P0 matrix](oracle/v1/P0.md) covers the complete public API, documented syntax, errors, warnings, seeded differential/property/fuzz cases, and two explicitly named private waivers. The v1.1 fixture SHA-256 is `983885ee6411fd806edf3d72efbcc989f9b9f7775a6d127dc7c865673eeb0fed`; the denominator and all seeds are unchanged. Two isolated stdlib runs agree, and the committed failure list is empty. The pre-candidate strengthening is recorded in [AMENDMENTS.md](AMENDMENTS.md).
 
@@ -21,13 +21,13 @@ The latest holdout contains 16 different tasks that were kept separate from tuni
 
 | Replacement | Overall speed | Clearly faster | Large slowdowns | Plain-language result |
 | --- | ---: | ---: | ---: | --- |
-| Native C engine | **1.31×** | **10/16** | **0/16** | Ahead overall, clearly faster on most tasks, and no longer has any large holdout slowdown. |
+| Native C engine | **1.56×** | **14/16** | **0/16** | Meets both targets: faster overall, clearly faster on almost every task, and no large holdout slowdown. |
 | Rust engine | **0.014×** | **0/16** | **15/16** | Much slower; crossing between Python and Rust costs too much on these short calls. |
 | Python backtracker | **0.011×** | **0/16** | **16/16** | Much slower; doing the matching work in Python costs too much. |
 
-![Overall speed compared with Python re](performance/v1/evidence/compact-path-overall.svg)
+![Overall speed compared with Python re](performance/v1/evidence/final-candidate-overall.svg)
 
-The target is at least **1.5× overall** and clearly faster on at least **10/16** holdout tasks. The native C engine has reached the faster-task target and eliminated large holdout slowdowns, but is still short of the overall-speed target. The [full measured report](performance/v1/evidence/COMPACT-PATH.md) includes every result.
+The target is at least **1.5× overall** and clearly faster on at least **10/16** holdout tasks. The native C engine reaches **1.5597×** overall (95% range **1.5363–1.5840×**) and is clearly faster on **14/16**. The [full measured report](performance/v1/evidence/FINAL-CANDIDATE.md) includes every result and explains the one practice-test slowdown.
 
 The [candidate discovery experiment](candidates/evidence/DISCOVERY.md) and all raw losses are preserved as rejected binding experiments. Three independent, dependency-free families are correctness-qualified: the [recursive AST backtracker](candidates/AST.md), the [iterative parser/native bytecode VM](candidates/VM.md), and the [Rust continuation arena/FFI](candidates/RUST.md). Native gates include sanitizer runs and zero-delegation audits. No performance claim has been made.
 
@@ -42,6 +42,16 @@ The [stack-state executor experiment](performance/v1/evidence/STACK-STATE-REJECT
 The [native public API experiment](performance/v1/evidence/NATIVE-PUBLIC.md) removes repeated Python/C conversions, keeps match results in C, handles common repeats with compact choices, and batches replacement work. It passes all correctness gates and retains all 1,152 paired rows. Native C reaches **1.1178×** overall on holdout (95% range **1.1016–1.1355×**), is clearly faster on **8/16**, and has **4** large slowdowns. The results remain below the success target, so winner is NOT MEASURED.
 
 The [compact native path experiment](performance/v1/evidence/COMPACT-PATH.md) adds general fast paths for simple words, fixed nearby-text checks, repeated scans, and small branches. It passes all correctness gates and retains all 1,152 paired rows. Native C reaches **1.3067×** overall on holdout (95% range **1.2897–1.3242×**), is clearly faster on **10/16**, and has **zero** large holdout slowdowns. This meets the faster-task requirement but not the **1.5×** overall target, so winner remains NOT MEASURED.
+
+The [final native candidate result](performance/v1/evidence/FINAL-CANDIDATE.md) adds one-pass token and separator scanning, direct fixed nearby-text search, compact structured loops, and streaming replacement output. Two earlier near-miss runs are preserved in [one-pass](performance/v1/evidence/ONE-PASS.md) and [structured-loop](performance/v1/evidence/ONE-PASS-LOOP.md). The final run keeps all 1,152 paired rows and passes the target: native C reaches **1.5597×** holdout speed, is clearly faster on **14/16**, and has **zero** large holdout slowdowns. Its single large practice-test slowdown is Unicode word-boundary scanning, explained in the report.
+
+![Speed on every holdout test](performance/v1/evidence/final-candidate-speed.svg)
+
+![Extra memory used during each holdout test](performance/v1/evidence/final-candidate-memory.svg)
+
+![Where each replacement wins and loses](performance/v1/evidence/final-candidate-regressions.svg)
+
+![Overall results across all test sets](performance/v1/evidence/final-candidate-rankings.svg)
 
 ![Speed on every holdout test](performance/v1/evidence/compact-path-speed.svg)
 

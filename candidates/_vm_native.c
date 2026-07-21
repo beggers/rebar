@@ -11,7 +11,7 @@ enum { OP_CHAR=1, OP_DOT, OP_CAT, OP_CLASS, OP_ANCHOR, OP_BOUNDARY, OP_BACKREF,
 enum { F_I=2, F_L=4, F_M=8, F_S=16, F_A=256, F_BYTE=1<<20 };
 
 typedef struct { int op; Py_ssize_t a, b, c; } Ins;
-typedef struct { Py_ssize_t count, atomic_capacity; int linear, compact; Ins *ins; } Code;
+typedef struct { Py_ssize_t count, atomic_capacity, suffix_width; int linear, compact, has_suffix, has_loop; Ins *ins; PyObject *literal; } Code;
 typedef struct { int kind; Py_UCS4 a, b; } ClassItem;
 typedef struct { Py_ssize_t count; ClassItem *items; } CharClass;
 typedef struct { Py_ssize_t code_count, class_count, groups; Code *codes; CharClass *classes; PyObject *literal; } VM;
@@ -334,6 +334,67 @@ static int execute_compact_path(const VM *vm, const Code *code, const Subject *s
     return 0;
 }
 
+static int consume_simple_range(const VM *vm, const Code *code, const Subject *subject,
+                                Py_ssize_t begin, Py_ssize_t end, Py_ssize_t endpos,
+                                Py_ssize_t *position) {
+    Py_ssize_t pos=*position;
+    for (Py_ssize_t pc=begin; pc<end; pc++) {
+        Ins in=code->ins[pc];
+        if (in.op==OP_CHAR || in.op==OP_DOT || in.op==OP_CAT || in.op==OP_CLASS) {
+            if (pos>=endpos || !atom_match(vm,subject,pos,in)) return 0;
+            pos++; continue;
+        }
+        if (in.op==OP_REPEAT1 && pc+1<end && in.c!=1 && !repeat_needs_choice(vm,code,pc+2,code->ins[pc+1])) {
+            Ins atom=code->ins[++pc];
+            Py_ssize_t maximum=in.b<0 ? endpos-pos : in.b;
+            if (maximum>endpos-pos) maximum=endpos-pos;
+            Py_ssize_t matched=0;
+            while (matched<maximum && atom_match(vm,subject,pos+matched,atom)) matched++;
+            if (matched<in.a) return 0;
+            pos+=matched; continue;
+        }
+        return -1;
+    }
+    *position=pos;
+    return 1;
+}
+
+static int execute_simple_loop(const VM *vm, const Code *code, const Subject *subject,
+                               Py_ssize_t start, Py_ssize_t endpos, Py_ssize_t *out_pos,
+                               int require_end, int require_nonempty) {
+    Py_ssize_t split=-1,close=-1;
+    for (Py_ssize_t pc=0; pc<code->count; pc++) {
+        Ins in=code->ins[pc];
+        if (in.op==OP_SPLIT) {
+            if (split>=0 || in.c<0) return -1;
+            split=pc;
+        }
+        if (in.op==OP_JUMP) {
+            if (close>=0 || split<0 || in.a!=split) return -1;
+            close=pc;
+        }
+    }
+    if (split<0 || close<0 || code->ins[split].a!=split+1 || code->ins[split].b!=close+1 || code->ins[code->count-1].op!=OP_MATCH) return -1;
+    Py_ssize_t pos=start;
+    int prefix=consume_simple_range(vm,code,subject,0,split,endpos,&pos);
+    if (prefix<0) return -1;
+    if (!prefix) return 0;
+    for (;;) {
+        Py_ssize_t next=pos;
+        int body=consume_simple_range(vm,code,subject,split+1,close,endpos,&next);
+        if (body<0) return -1;
+        if (!body) break;
+        if (next==pos) return -1;
+        pos=next;
+    }
+    int suffix=consume_simple_range(vm,code,subject,close+1,code->count-1,endpos,&pos);
+    if (suffix<0) return -1;
+    if (!suffix) return 0;
+    if ((require_end && pos!=endpos) || (require_nonempty && pos==start)) return 0;
+    *out_pos=pos;
+    return 1;
+}
+
 static int execute(const VM *vm, Py_ssize_t code_index, const Subject *subject,
                    Py_ssize_t start, Py_ssize_t endpos, Py_ssize_t *caps,
                    Py_ssize_t *last, Py_ssize_t *out_pos, int require_end,
@@ -341,6 +402,10 @@ static int execute(const VM *vm, Py_ssize_t code_index, const Subject *subject,
     if (depth > 128 || code_index < 0 || code_index >= vm->code_count) return -2;
     const Code *code = &vm->codes[code_index];
     if (code->linear) return execute_linear(vm,code_index,subject,start,endpos,caps,last,out_pos,require_end,require_nonempty);
+    if (code->compact && code->has_loop && !vm->groups) {
+        int got=execute_simple_loop(vm,code,subject,start,endpos,out_pos,require_end,require_nonempty);
+        if (got>=0) return got;
+    }
     if (code->compact && vm->groups<=16) {
         int got=execute_compact_path(vm,code,subject,0,start,start,endpos,caps,last,out_pos,require_end,require_nonempty,0);
         if (got!=-2) return got;
@@ -477,7 +542,7 @@ fail:
 
 static void vm_free(VM *vm) {
     if (!vm) return;
-    for (Py_ssize_t i=0; i<vm->code_count; i++) PyMem_Free(vm->codes[i].ins);
+    for (Py_ssize_t i=0; i<vm->code_count; i++) { PyMem_Free(vm->codes[i].ins); Py_XDECREF(vm->codes[i].literal); }
     for (Py_ssize_t i=0; i<vm->class_count; i++) PyMem_Free(vm->classes[i].items);
     Py_XDECREF(vm->literal);
     PyMem_Free(vm->codes); PyMem_Free(vm->classes); PyMem_Free(vm);
@@ -540,6 +605,7 @@ static PyObject *native_build(PyObject *self, PyObject *args) {
             if (in.op==OP_SPLIT || in.op==OP_JUMP || in.op==OP_ATOMIC_START || in.op==OP_ATOMIC_END || in.op==OP_COND) deterministic=0;
             if (in.op==OP_LOOK && (in.a<0 || in.a>=vm->code_count || !vm->codes[in.a].linear)) deterministic=0;
             if (in.op==OP_SPLIT && in.c>=0) {
+                code->has_loop=1;
                 Py_ssize_t close=-1;
                 int consumes=0,nested=0;
                 for (Py_ssize_t j=in.a; j<code->count; j++) {
@@ -560,30 +626,42 @@ static PyObject *native_build(PyObject *self, PyObject *args) {
         if (deterministic) code->linear=1;
         code->compact=compact;
     }
-    if (vm->code_count && vm->codes[0].count>1) {
-        Code main=vm->codes[0];
-        Py_ssize_t length=main.count-1;
-        int plain=main.ins[main.count-1].op==OP_MATCH,byte_mode=0;
+    for (Py_ssize_t p=0; p<vm->code_count; p++) {
+        Code *code=&vm->codes[p];
+        if (code->count<2) continue;
+        Py_ssize_t length=code->count-1;
+        int plain=code->ins[code->count-1].op==OP_MATCH,byte_mode=0;
         Py_UCS4 maximum=0;
         for (Py_ssize_t i=0; i<length && plain; i++) {
-            Ins in=main.ins[i];
+            Ins in=code->ins[i];
             if (in.op!=OP_CHAR || (in.b & F_I)) plain=0;
             else { if (in.b & F_BYTE) byte_mode=1; if ((Py_UCS4)in.a>maximum) maximum=(Py_UCS4)in.a; }
         }
         if (plain && length) {
             if (byte_mode) {
-                vm->literal=PyBytes_FromStringAndSize(NULL,length);
-                if (!vm->literal) goto error;
-                char *data=PyBytes_AS_STRING(vm->literal);
-                for (Py_ssize_t i=0; i<length; i++) data[i]=(char)main.ins[i].a;
+                code->literal=PyBytes_FromStringAndSize(NULL,length);
+                if (!code->literal) goto error;
+                char *data=PyBytes_AS_STRING(code->literal);
+                for (Py_ssize_t i=0; i<length; i++) data[i]=(char)code->ins[i].a;
             } else {
-                vm->literal=PyUnicode_New(length,maximum);
-                if (!vm->literal) goto error;
-                int kind=PyUnicode_KIND(vm->literal); void *data=PyUnicode_DATA(vm->literal);
-                for (Py_ssize_t i=0; i<length; i++) PyUnicode_WRITE(kind,data,i,(Py_UCS4)main.ins[i].a);
+                code->literal=PyUnicode_New(length,maximum);
+                if (!code->literal) goto error;
+                int kind=PyUnicode_KIND(code->literal); void *data=PyUnicode_DATA(code->literal);
+                for (Py_ssize_t i=0; i<length; i++) PyUnicode_WRITE(kind,data,i,(Py_UCS4)code->ins[i].a);
             }
         }
+        if (!p && code->count>=2 && code->ins[code->count-2].op==OP_ANCHOR && code->ins[code->count-2].a=='$' && !(code->ins[code->count-2].b & F_M)) {
+            Py_ssize_t width=0;
+            int fixed=1;
+            for (Py_ssize_t i=0; i<code->count-2; i++) {
+                int op=code->ins[i].op;
+                if (op==OP_CHAR || op==OP_CLASS || op==OP_CAT || op==OP_DOT) width++;
+                else { fixed=0; break; }
+            }
+            if (fixed) { code->has_suffix=1; code->suffix_width=width; }
+        }
     }
+    if (vm->code_count && vm->codes[0].literal) vm->literal=Py_NewRef(vm->codes[0].literal);
     Py_DECREF(pseq); Py_DECREF(cseq);
     return PyCapsule_New(vm,"rebar.vm",capsule_free);
 error:
@@ -594,6 +672,36 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
                     Py_ssize_t endpos, int mode, int require_nonempty,
                     Py_ssize_t *caps, Py_ssize_t *last, Py_ssize_t *found,
                     Py_ssize_t *finish) {
+    if (mode==0 && vm->code_count && vm->groups>=2 && vm->codes[0].count==10) {
+        Code code=vm->codes[0];
+        Ins save1=code.ins[0],repeat1=code.ins[1],atom1=code.ins[2],end1=code.ins[3],separator=code.ins[4],save2=code.ins[5],repeat2=code.ins[6],atom2=code.ins[7],end2=code.ins[8];
+        if (save1.op==OP_SAVE_START && repeat1.op==OP_REPEAT1 && repeat1.a>0 && repeat1.c==0 && end1.op==OP_SAVE_END && end1.a==save1.a && separator.op==OP_CHAR && save2.op==OP_SAVE_START && repeat2.op==OP_REPEAT1 && repeat2.a>0 && repeat2.c==0 && end2.op==OP_SAVE_END && end2.a==save2.a && code.ins[9].op==OP_MATCH && !atom_accepts(vm,atom1,(Py_UCS4)separator.a)) {
+            Py_ssize_t cursor=pos;
+            while (cursor<endpos) {
+                while (cursor<endpos && !atom_match(vm,subject,cursor,atom1)) cursor++;
+                if (cursor>=endpos) return 0;
+                Py_ssize_t start=cursor,maximum1=repeat1.b<0 ? endpos-cursor : repeat1.b;
+                if (maximum1>endpos-cursor) maximum1=endpos-cursor;
+                Py_ssize_t count1=0;
+                while (count1<maximum1 && atom_match(vm,subject,cursor+count1,atom1)) count1++;
+                cursor+=count1;
+                if (count1<repeat1.a || cursor>=endpos || !atom_match(vm,subject,cursor,separator)) continue;
+                Py_ssize_t second_start=++cursor,maximum2=repeat2.b<0 ? endpos-cursor : repeat2.b;
+                if (maximum2>endpos-cursor) maximum2=endpos-cursor;
+                Py_ssize_t count2=0;
+                while (count2<maximum2 && atom_match(vm,subject,cursor+count2,atom2)) count2++;
+                cursor+=count2;
+                if (count2<repeat2.a || (require_nonempty && start==pos && cursor==start)) continue;
+                for (Py_ssize_t i=0; i<2*(vm->groups+1); i++) caps[i]=-1;
+                caps[0]=start; caps[1]=cursor;
+                caps[2*save1.a]=start; caps[2*save1.a+1]=start+count1;
+                caps[2*save2.a]=second_start; caps[2*save2.a+1]=second_start+count2;
+                *last=save2.a; *found=start; *finish=cursor;
+                return 1;
+            }
+            return 0;
+        }
+    }
     if (mode==0 && vm->literal) {
         Py_ssize_t length=subject->byte_mode ? PyBytes_GET_SIZE(vm->literal) : PyUnicode_GET_LENGTH(vm->literal);
         Py_ssize_t start=-1;
@@ -612,6 +720,41 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
         if (start<0) return 0;
         caps[0]=start; caps[1]=start+length; *last=-1; *found=start; *finish=start+length;
         return 1;
+    }
+    if (mode==0 && vm->code_count && vm->codes[0].count>1 && vm->codes[0].ins[0].op==OP_LOOK) {
+        Code main=vm->codes[0];
+        Ins look=main.ins[0];
+        if ((look.b & 1) && (look.b & 2) && look.a>=0 && look.a<vm->code_count && vm->codes[look.a].literal) {
+            PyObject *prefix=vm->codes[look.a].literal;
+            Py_ssize_t width=subject->byte_mode ? PyBytes_GET_SIZE(prefix) : PyUnicode_GET_LENGTH(prefix);
+            Py_ssize_t cursor=pos>width ? pos-width : 0;
+            while (cursor<=endpos-width) {
+                Py_ssize_t pivot=-1;
+                if (subject->byte_mode) {
+                    const char *hay=PyBytes_AS_STRING(subject->obj),*needle=PyBytes_AS_STRING(prefix);
+                    Py_ssize_t final_start=endpos-width;
+                    while (cursor<=final_start) {
+                        const char *found_byte=memchr(hay+cursor,(unsigned char)needle[0],(size_t)(final_start-cursor+1));
+                        if (!found_byte) break;
+                        cursor=(Py_ssize_t)(found_byte-hay);
+                        if (!memcmp(hay+cursor,needle,(size_t)width)) { pivot=cursor; break; }
+                        cursor++;
+                    }
+                } else pivot=PyUnicode_Find(subject->obj,prefix,cursor,endpos,1);
+                if (pivot<-1) return -2;
+                if (pivot<0) return 0;
+                Py_ssize_t start=pivot+width;
+                if (start>=pos) {
+                    for (Py_ssize_t i=0; i<2*(vm->groups+1); i++) caps[i]=-1;
+                    caps[0]=start; *last=-1; *finish=-1;
+                    int got=execute(vm,0,subject,start,endpos,caps,last,finish,0,require_nonempty && start==pos,0);
+                    if (got<0) return got;
+                    if (got) { caps[1]=*finish; *found=start; return 1; }
+                }
+                cursor=pivot+1;
+            }
+            return 0;
+        }
     }
     if (mode==0 && !vm->groups && vm->code_count && vm->codes[0].count>3) {
         Code main=vm->codes[0];
@@ -648,21 +791,11 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
         }
     }
     Py_ssize_t first_start = pos, last_start = mode==0 ? endpos : pos;
-    if (mode==0 && vm->code_count && vm->codes[0].count>=2) {
-        Code main = vm->codes[0];
-        Py_ssize_t width = 0;
-        int fixed = 1;
-        for (Py_ssize_t pc=0; pc<main.count-1; pc++) {
-            int op = main.ins[pc].op;
-            if (op==OP_CHAR || op==OP_CLASS || op==OP_CAT || op==OP_DOT) width++;
-            else if (op==OP_ANCHOR && pc==main.count-2 && main.ins[pc].a!='$') continue;
-            else if (op==OP_ANCHOR && pc==main.count-2 && main.ins[pc].a=='$' && !(main.ins[pc].b & F_M)) continue;
-            else { fixed=0; break; }
-        }
-        if (fixed && main.ins[main.count-2].op==OP_ANCHOR && main.ins[main.count-2].a=='$' && !(main.ins[main.count-2].b & F_M)) {
-            first_start = endpos-width;
-            last_start = first_start;
-        }
+    if (mode==0 && vm->code_count && vm->codes[0].has_suffix) {
+        Code main=vm->codes[0];
+        first_start=endpos-main.suffix_width;
+        last_start=first_start;
+        if (endpos>pos && subject_char(subject,endpos-1)=='\n') first_start--;
     }
     for (Py_ssize_t start=first_start; start<=last_start; start++) {
         if (start<pos || start>endpos) continue;
@@ -771,6 +904,112 @@ static PyObject *collect_core(VM *vm, Subject subject, Py_ssize_t pos, Py_ssize_
     if (pos>endpos) pos=endpos+1;
     PyObject *output=PyList_New(0);
     if (!output) return NULL;
+    if (mode==1 && vm->groups==1 && vm->code_count && vm->codes[0].count==4) {
+        Code code=vm->codes[0];
+        if (code.ins[0].op==OP_SAVE_START && code.ins[0].a==1 && code.ins[2].op==OP_SAVE_END && code.ins[2].a==1 && code.ins[3].op==OP_MATCH && (code.ins[1].op==OP_CHAR || code.ins[1].op==OP_DOT || code.ins[1].op==OP_CAT || code.ins[1].op==OP_CLASS)) {
+            Py_ssize_t cursor=pos,previous=pos,matches=0;
+            Ins atom=code.ins[1];
+            while (cursor<endpos && (!limit || matches<limit)) {
+                if (!atom_match(vm,&subject,cursor,atom)) { cursor++; continue; }
+                PyObject *prefix=subject_slice(&subject,previous,cursor),*capture=subject_slice(&subject,cursor,cursor+1);
+                if (!prefix || !capture || PyList_Append(output,prefix)<0 || PyList_Append(output,capture)<0) { Py_XDECREF(prefix); Py_XDECREF(capture); Py_DECREF(output); return NULL; }
+                Py_DECREF(prefix); Py_DECREF(capture); matches++; previous=++cursor;
+            }
+            PyObject *tail=subject_slice(&subject,previous,subject.length);
+            if (!tail || PyList_Append(output,tail)<0) { Py_XDECREF(tail); Py_DECREF(output); return NULL; }
+            Py_DECREF(tail);
+            return output;
+        }
+    }
+    if (mode==0 && !vm->groups && vm->code_count && vm->codes[0].count>=7) {
+        Code code=vm->codes[0];
+        Ins repeats[32],atoms[32];
+        Py_ssize_t branches=0,pc=0,terminal=code.count-1;
+        int runs=code.ins[terminal].op==OP_MATCH;
+        while (runs && pc<terminal && branches<32) {
+            Py_ssize_t branch_pc=pc,next_pc=terminal;
+            if (code.ins[pc].op==OP_SPLIT && code.ins[pc].c<0) { branch_pc=code.ins[pc].a; next_pc=code.ins[pc].b; }
+            if (branch_pc+1>=terminal || code.ins[branch_pc].op!=OP_REPEAT1 || code.ins[branch_pc].a<1) { runs=0; break; }
+            repeats[branches]=code.ins[branch_pc]; atoms[branches]=code.ins[branch_pc+1]; branches++;
+            Py_ssize_t after=branch_pc+2;
+            if (next_pc==terminal) { if (after!=terminal) runs=0; break; }
+            if (after>=terminal || code.ins[after].op!=OP_JUMP || code.ins[after].a!=terminal || next_pc<=pc || next_pc>=terminal) { runs=0; break; }
+            pc=next_pc;
+        }
+        if (runs && branches>1) {
+            Py_ssize_t cursor=pos,matches=0;
+            while (cursor<endpos && (!limit || matches<limit)) {
+                Py_ssize_t finish=-1;
+                for (Py_ssize_t branch=0; branch<branches; branch++) {
+                    Ins repeat=repeats[branch],atom=atoms[branch];
+                    Py_ssize_t maximum=repeat.b<0 ? endpos-cursor : repeat.b;
+                    if (maximum>endpos-cursor) maximum=endpos-cursor;
+                    Py_ssize_t matched=0;
+                    while (matched<maximum && atom_match(vm,&subject,cursor+matched,atom)) matched++;
+                    if (matched>=repeat.a) { finish=cursor+(repeat.c==1 ? repeat.a : matched); break; }
+                }
+                if (finish<0) { cursor++; continue; }
+                PyObject *item=subject_slice(&subject,cursor,finish);
+                if (!item || PyList_Append(output,item)<0) { Py_XDECREF(item); Py_DECREF(output); return NULL; }
+                Py_DECREF(item); matches++; cursor=finish;
+            }
+            return output;
+        }
+        Py_ssize_t repeat_pc=-1;
+        int simple=code.ins[terminal].op==OP_MATCH;
+        for (Py_ssize_t i=0; i<terminal && simple; i++) {
+            Ins in=code.ins[i];
+            if (in.op==OP_REPEAT1 && i+1<terminal && repeat_pc<0) { repeat_pc=i; i++; continue; }
+            if (in.op!=OP_CHAR && in.op!=OP_DOT && in.op!=OP_CAT && in.op!=OP_CLASS) simple=0;
+        }
+        if (simple && repeat_pc>=0 && repeat_pc+2==terminal) {
+            Py_ssize_t cursor=pos,matches=0;
+            while (cursor<endpos && (!limit || matches<limit)) {
+                Py_ssize_t start=cursor,here=cursor;
+                int matched_prefix=1;
+                for (Py_ssize_t pc=0; pc<repeat_pc; pc++) {
+                    if (here>=endpos || !atom_match(vm,&subject,here,code.ins[pc])) { matched_prefix=0; break; }
+                    here++;
+                }
+                if (!matched_prefix) { cursor++; continue; }
+                Ins repeat=code.ins[repeat_pc],atom=code.ins[repeat_pc+1];
+                Py_ssize_t maximum=repeat.b<0 ? endpos-here : repeat.b;
+                if (maximum>endpos-here) maximum=endpos-here;
+                Py_ssize_t repeated=0;
+                while (repeated<maximum && atom_match(vm,&subject,here+repeated,atom)) repeated++;
+                if (repeated<repeat.a) { cursor++; continue; }
+                here+=repeat.c==1 ? repeat.a : repeated;
+                PyObject *item=subject_slice(&subject,start,here);
+                if (!item || PyList_Append(output,item)<0) { Py_XDECREF(item); Py_DECREF(output); return NULL; }
+                Py_DECREF(item); matches++; cursor=here;
+            }
+            return output;
+        }
+        if (code.count==7 && code.ins[0].op==OP_REPEAT1 && code.ins[0].a>0 && code.ins[0].c==0 && code.ins[2].op==OP_SPLIT && code.ins[2].c<0 && code.ins[2].a==3 && code.ins[2].b==6 && code.ins[3].op==OP_CHAR && code.ins[4].op==OP_REPEAT1 && code.ins[4].a>0 && code.ins[4].c==0 && code.ins[6].op==OP_MATCH && !atom_accepts(vm,code.ins[1],(Py_UCS4)code.ins[3].a)) {
+            Py_ssize_t cursor=pos,matches=0;
+            Ins first_repeat=code.ins[0],first_atom=code.ins[1],delimiter=code.ins[3],second_repeat=code.ins[4],second_atom=code.ins[5];
+            while (cursor<endpos && (!limit || matches<limit)) {
+                if (!atom_match(vm,&subject,cursor,first_atom)) { cursor++; continue; }
+                Py_ssize_t start=cursor,first_max=first_repeat.b<0 ? endpos-cursor : first_repeat.b;
+                if (first_max>endpos-cursor) first_max=endpos-cursor;
+                Py_ssize_t first_count=0;
+                while (first_count<first_max && atom_match(vm,&subject,cursor+first_count,first_atom)) first_count++;
+                if (first_count<first_repeat.a) { cursor++; continue; }
+                Py_ssize_t finish=cursor+first_count;
+                if (finish<endpos && atom_match(vm,&subject,finish,delimiter)) {
+                    Py_ssize_t after=finish+1,second_max=second_repeat.b<0 ? endpos-after : second_repeat.b;
+                    if (second_max>endpos-after) second_max=endpos-after;
+                    Py_ssize_t second_count=0;
+                    while (second_count<second_max && atom_match(vm,&subject,after+second_count,second_atom)) second_count++;
+                    if (second_count>=second_repeat.a) finish=after+second_count;
+                }
+                PyObject *item=subject_slice(&subject,start,finish);
+                if (!item || PyList_Append(output,item)<0) { Py_XDECREF(item); Py_DECREF(output); return NULL; }
+                Py_DECREF(item); matches++; cursor=finish;
+            }
+            return output;
+        }
+    }
     Py_ssize_t local_caps[34];
     Py_ssize_t cap_count=2*(vm->groups+1);
     Py_ssize_t *caps=cap_count<=34 ? local_caps : PyMem_Malloc((size_t)cap_count*sizeof(Py_ssize_t));
@@ -1163,6 +1402,61 @@ static PyObject *pattern_finditer(PatternObject *pattern, PyObject *const *args,
     return (PyObject *)iterator;
 }
 
+static PyObject *substitute_text(PatternObject *pattern, const Subject *subject, PyObject *replacement, PyObject *template_parts, Py_ssize_t limit, int return_count) {
+    PyUnicodeWriter *writer=PyUnicodeWriter_Create(subject->length);
+    if (!writer) return NULL;
+    Py_ssize_t local_caps[34],cap_count=2*(pattern->groups+1);
+    Py_ssize_t *caps=cap_count<=34 ? local_caps : PyMem_Malloc((size_t)cap_count*sizeof(Py_ssize_t));
+    if (!caps) { PyUnicodeWriter_Discard(writer); return PyErr_NoMemory(); }
+    Py_ssize_t cursor=0,previous=0,replacements=0;
+    int nonempty=0;
+    while (cursor<=subject->length && (!limit || replacements<limit)) {
+        Py_ssize_t last=-1,found=-1,finish=-1;
+        int got=find_one(pattern->vm,subject,cursor,subject->length,0,nonempty,caps,&last,&found,&finish);
+        if (got<0) { if (caps!=local_caps) PyMem_Free(caps); PyUnicodeWriter_Discard(writer); PyErr_SetString(PyExc_RuntimeError,got==-1?"native VM allocation failed":"native VM recursion limit"); return NULL; }
+        if (!got) break;
+        if (PyUnicodeWriter_WriteSubstring(writer,subject->obj,previous,found)<0) { if (caps!=local_caps) PyMem_Free(caps); PyUnicodeWriter_Discard(writer); return NULL; }
+        if (template_parts) {
+            Py_ssize_t pieces=PyTuple_GET_SIZE(template_parts);
+            for (Py_ssize_t i=0; i<pieces; i++) {
+                PyObject *part=PyTuple_GET_ITEM(template_parts,i);
+                int written;
+                if (PyLong_Check(part)) {
+                    Py_ssize_t number=PyLong_AsSsize_t(part);
+                    if (PyErr_Occurred()) { if (caps!=local_caps) PyMem_Free(caps); PyUnicodeWriter_Discard(writer); return NULL; }
+                    written=caps[2*number]<0 ? 0 : PyUnicodeWriter_WriteSubstring(writer,subject->obj,caps[2*number],caps[2*number+1]);
+                } else written=PyUnicodeWriter_WriteStr(writer,part);
+                if (written<0) { if (caps!=local_caps) PyMem_Free(caps); PyUnicodeWriter_Discard(writer); return NULL; }
+            }
+        } else {
+            MatchObject *match=match_alloc(pattern,subject->obj,0,subject->length);
+            if (!match) { if (caps!=local_caps) PyMem_Free(caps); PyUnicodeWriter_Discard(writer); return NULL; }
+            memcpy(match->caps,caps,(size_t)cap_count*sizeof(Py_ssize_t)); match->lastindex=last;
+            PyObject *value=PyObject_CallOneArg(replacement,(PyObject *)match);
+            Py_DECREF(match);
+            if (!value) { if (caps!=local_caps) PyMem_Free(caps); PyUnicodeWriter_Discard(writer); return NULL; }
+            if (!PyUnicode_Check(value)) {
+                PyErr_Format(PyExc_TypeError,"sequence item %zd: expected a str instance, %.200s found",2*replacements+1,Py_TYPE(value)->tp_name);
+                Py_DECREF(value); if (caps!=local_caps) PyMem_Free(caps); PyUnicodeWriter_Discard(writer); return NULL;
+            }
+            int written=PyUnicodeWriter_WriteStr(writer,value);
+            Py_DECREF(value);
+            if (written<0) { if (caps!=local_caps) PyMem_Free(caps); PyUnicodeWriter_Discard(writer); return NULL; }
+        }
+        replacements++; previous=finish;
+        if (found==finish) { cursor=found; nonempty=1; }
+        else { cursor=finish; nonempty=0; }
+    }
+    if (caps!=local_caps) PyMem_Free(caps);
+    if (PyUnicodeWriter_WriteSubstring(writer,subject->obj,previous,subject->length)<0) { PyUnicodeWriter_Discard(writer); return NULL; }
+    PyObject *joined=PyUnicodeWriter_Finish(writer);
+    if (!joined) return NULL;
+    if (!return_count) return joined;
+    PyObject *result=Py_BuildValue("On",joined,replacements);
+    Py_DECREF(joined);
+    return result;
+}
+
 static PyObject *pattern_substitute(PatternObject *pattern, PyObject *const *args, Py_ssize_t nargsf, PyObject *kwnames, int return_count) {
     Py_ssize_t nargs=PyVectorcall_NARGS(nargsf),nkeys=kwnames ? PyTuple_GET_SIZE(kwnames) : 0;
     if (nargs<2 || nargs>3 || nkeys>1) { PyErr_SetString(PyExc_TypeError,"expected replacement, string, and optional count"); return NULL; }
@@ -1191,6 +1485,7 @@ static PyObject *pattern_substitute(PatternObject *pattern, PyObject *const *arg
             if (!template_parts) return NULL;
         }
     }
+    if (!subject.byte_mode) return substitute_text(pattern,&subject,callable ? replacement : NULL,template_parts,limit,return_count);
     PyObject *pieces=PyList_New(0);
     if (!pieces) return NULL;
     Py_ssize_t cap_count=2*(pattern->groups+1);

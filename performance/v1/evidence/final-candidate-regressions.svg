@@ -1,0 +1,232 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="928" viewBox="0 0 1140 928" role="img" aria-label="Where each replacement wins and loses">
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<text x="28" y="34" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#0f172a">Where each replacement wins and loses</text>
+<text x="28" y="58" font-family="Arial, sans-serif" font-size="13" fill="#475569">All tests are shown. Green is clearly faster; red is more than 20% slower; grey is close or uncertain.</text>
+<text x="292" y="100" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0284c7">Native C engine</text>
+<text x="567" y="100" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#7c3aed">Python backtracker</text>
+<text x="842" y="100" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#d97706">Rust engine</text>
+<text x="28" y="124" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find tokens in bytes</text>
+<rect x="284" y="108" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.84×</text>
+<rect x="559" y="108" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0078×</text>
+<rect x="834" y="108" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0059×</text>
+<text x="28" y="149" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Compile, then search (cold)</text>
+<rect x="284" y="133" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.81×</text>
+<rect x="559" y="133" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.30×</text>
+<rect x="834" y="133" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.78×</text>
+<text x="28" y="174" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find all text tokens</text>
+<rect x="284" y="158" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.84×</text>
+<rect x="559" y="158" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0093×</text>
+<rect x="834" y="158" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0038×</text>
+<text x="28" y="199" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Iterate over captured pairs</text>
+<rect x="284" y="183" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.50×</text>
+<rect x="559" y="183" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.013×</text>
+<rect x="834" y="183" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<text x="28" y="224" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Check the whole string</text>
+<rect x="284" y="208" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.95×</text>
+<rect x="559" y="208" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<rect x="834" y="208" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.019×</text>
+<text x="28" y="249" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Check a formatted prefix</text>
+<rect x="284" y="233" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.12×</text>
+<rect x="559" y="233" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.019×</text>
+<rect x="834" y="233" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.016×</text>
+<text x="28" y="274" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Search through the module API</text>
+<rect x="284" y="258" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.19×</text>
+<rect x="559" y="258" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<rect x="834" y="258" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.034×</text>
+<text x="28" y="299" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find a formatted line</text>
+<rect x="284" y="283" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.99×</text>
+<rect x="559" y="283" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<rect x="834" y="283" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.015×</text>
+<text x="28" y="324" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find a word (present)</text>
+<rect x="284" y="308" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.13×</text>
+<rect x="559" y="308" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0082×</text>
+<rect x="834" y="308" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0097×</text>
+<text x="28" y="349" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find a word (absent)</text>
+<rect x="284" y="333" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.12×</text>
+<rect x="559" y="333" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0025×</text>
+<rect x="834" y="333" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0062×</text>
+<text x="28" y="374" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find the ending in long text</text>
+<rect x="284" y="358" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">13.0×</text>
+<rect x="559" y="358" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0003×</text>
+<rect x="834" y="358" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0010×</text>
+<text x="28" y="399" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find and capture nearby text</text>
+<rect x="284" y="383" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.23×</text>
+<rect x="559" y="383" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0069×</text>
+<rect x="834" y="383" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.016×</text>
+<text x="28" y="424" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Split and keep separators</text>
+<rect x="284" y="408" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.70×</text>
+<rect x="559" y="408" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.012×</text>
+<rect x="834" y="408" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0071×</text>
+<text x="28" y="449" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Reorder captured text</text>
+<rect x="284" y="433" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.81×</text>
+<rect x="559" y="433" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.017×</text>
+<rect x="834" y="433" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.017×</text>
+<text x="28" y="474" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Replace with a Python function</text>
+<rect x="284" y="458" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.16×</text>
+<rect x="559" y="458" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.022×</text>
+<rect x="834" y="458" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.020×</text>
+<text x="28" y="499" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find Unicode words/numbers</text>
+<rect x="284" y="483" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="293" y="497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.73×</text>
+<rect x="559" y="483" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0067×</text>
+<rect x="834" y="483" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<text x="28" y="524" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find tokens in bytes</text>
+<rect x="284" y="508" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.90×</text>
+<rect x="559" y="508" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<rect x="834" y="508" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0089×</text>
+<text x="28" y="549" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Compile, then search (cold)</text>
+<rect x="284" y="533" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.81×</text>
+<rect x="559" y="533" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.51×</text>
+<rect x="834" y="533" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="843" y="547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.84×</text>
+<text x="28" y="574" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find all text tokens</text>
+<rect x="284" y="558" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.30×</text>
+<rect x="559" y="558" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0095×</text>
+<rect x="834" y="558" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0058×</text>
+<text x="28" y="599" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Iterate over captured pairs</text>
+<rect x="284" y="583" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.42×</text>
+<rect x="559" y="583" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.012×</text>
+<rect x="834" y="583" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0095×</text>
+<text x="28" y="624" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Check the whole string</text>
+<rect x="284" y="608" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.96×</text>
+<rect x="559" y="608" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.010×</text>
+<rect x="834" y="608" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.020×</text>
+<text x="28" y="649" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Check a formatted prefix</text>
+<rect x="284" y="633" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.26×</text>
+<rect x="559" y="633" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.022×</text>
+<rect x="834" y="633" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.017×</text>
+<text x="28" y="674" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Search through the module API</text>
+<rect x="284" y="658" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.04×</text>
+<rect x="559" y="658" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.019×</text>
+<rect x="834" y="658" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.034×</text>
+<text x="28" y="699" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find a formatted line</text>
+<rect x="284" y="683" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.01×</text>
+<rect x="559" y="683" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.010×</text>
+<rect x="834" y="683" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.015×</text>
+<text x="28" y="724" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find a word (present)</text>
+<rect x="284" y="708" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="722" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.16×</text>
+<rect x="559" y="708" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="722" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0085×</text>
+<rect x="834" y="708" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="722" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0098×</text>
+<text x="28" y="749" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find a word (absent)</text>
+<rect x="284" y="733" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="747" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.27×</text>
+<rect x="559" y="733" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="747" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0029×</text>
+<rect x="834" y="733" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="747" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0066×</text>
+<text x="28" y="774" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find the ending in long text</text>
+<rect x="284" y="758" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="772" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">16.9×</text>
+<rect x="559" y="758" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="772" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0003×</text>
+<rect x="834" y="758" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="772" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0010×</text>
+<text x="28" y="799" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find and capture nearby text</text>
+<rect x="284" y="783" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="797" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.07×</text>
+<rect x="559" y="783" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="797" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0078×</text>
+<rect x="834" y="783" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="797" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.018×</text>
+<text x="28" y="824" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Split and keep separators</text>
+<rect x="284" y="808" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="822" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.77×</text>
+<rect x="559" y="808" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="822" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<rect x="834" y="808" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="822" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0071×</text>
+<text x="28" y="849" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Reorder captured text</text>
+<rect x="284" y="833" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="847" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.83×</text>
+<rect x="559" y="833" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="847" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.017×</text>
+<rect x="834" y="833" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="847" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.016×</text>
+<text x="28" y="874" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Replace with a Python function</text>
+<rect x="284" y="858" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="872" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.17×</text>
+<rect x="559" y="858" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="872" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.025×</text>
+<rect x="834" y="858" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="872" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.024×</text>
+<text x="28" y="899" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find Unicode words/numbers</text>
+<rect x="284" y="883" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="897" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.49×</text>
+<rect x="559" y="883" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="897" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0084×</text>
+<rect x="834" y="883" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="897" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.012×</text>
+</svg>

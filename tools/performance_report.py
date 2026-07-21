@@ -24,7 +24,17 @@ def main():
     for row in data["case_results"]:
         result = "REGRESSION" if row["regression_gt_20pct"] else "FASTER" if row["statistically_faster"] else "—"
         lines.append(f"| {row['cohort']} | `{row['case']}` | {short(row['candidate'])} | {row['speedup']:.4f}x | {row['ci95_low']:.4f}–{row['ci95_high']:.4f}x | {row['peak_traced_ratio']:.2f}x | {result} |")
-    lines.extend(["", "## Regression explanation", "", "All listed regressions are retained. The AST family pays Python generator/state-allocation and per-position scanning costs. The native VM improves cold compilation but pays state cloning, Python result construction, and wrapper/template costs. Rust pays per-call FFI conversion plus eager continuation allocation. Long misses amplify scanning/boundary work; `findall`, `finditer`, `split`, and substitutions amplify repeated match/result construction. These mechanisms explain the >20% losses shown above; the raw RSS/HWM and traced peaks remain available for inspection.", ""])
+    native_losses = [row for row in data["regressions"] if row["candidate"] == "candidates.vm_candidate"]
+    native_cases = ", ".join(f"`{row['case']}`" for row in native_losses) or "none"
+    explanation = (
+        "All listed regressions are retained. The Python backtracker spends most of its time creating Python states and scanning one position at a time. "
+        "The Rust engine repeatedly crosses the Python/Rust boundary and creates eager continuation state, which dominates these short calls. "
+        f"The native C engine has {len(native_losses)} large slowdown(s): {native_cases}. "
+        "Its remaining Unicode-word case repeatedly checks Unicode word boundaries and character categories; this path cannot use the simpler one-pass token scan. "
+        "Long misses amplify scanning, while find-all, iteration, splitting, and replacement amplify per-match work. "
+        "The raw memory observations and every case remain available for inspection."
+    )
+    lines.extend(["", "## Regression explanation", "", explanation, ""])
     Path(args.output).write_text("\n".join(lines), encoding="utf-8")
     print(f"wrote {args.output}")
 
