@@ -9,13 +9,13 @@ The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2
 | Gate | Result |
 | --- | --- |
 | Correctness oracle | PASS v1.1 — 2,048/2,048, 38/38 obligations, zero invalid successes or false properties |
-| Qualified candidates | 2/3 — from-scratch AST and native bytecode VM each pass 2,048/2,048 with zero delegation |
+| Qualified candidates | 3/3 — independent AST, native bytecode VM, and Rust/FFI families each pass 2,048/2,048 |
 | Performance oracle | NOT MEASURED |
 | Winner | NOT MEASURED |
 
 The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The [P0 matrix](oracle/v1/P0.md) covers the complete public API, documented syntax, errors, warnings, seeded differential/property/fuzz cases, and two explicitly named private waivers. The v1.1 fixture SHA-256 is `983885ee6411fd806edf3d72efbcc989f9b9f7775a6d127dc7c865673eeb0fed`; the denominator and all seeds are unchanged. Two isolated stdlib runs agree, and the committed failure list is empty. The pre-candidate strengthening is recorded in [AMENDMENTS.md](AMENDMENTS.md).
 
-The [candidate discovery experiment](candidates/evidence/DISCOVERY.md) and all raw losses are preserved as rejected binding experiments. Two independent from-scratch families are correctness-qualified and dependency-free: the [recursive AST backtracker](candidates/AST.md) and the [iterative parser/native bytecode VM](candidates/VM.md). A separate native/FFI family is next. No performance claim has been made.
+The [candidate discovery experiment](candidates/evidence/DISCOVERY.md) and all raw losses are preserved as rejected binding experiments. Three independent, dependency-free families are correctness-qualified: the [recursive AST backtracker](candidates/AST.md), the [iterative parser/native bytecode VM](candidates/VM.md), and the [Rust continuation arena/FFI](candidates/RUST.md). Native gates include sanitizer runs and zero-delegation audits. No performance claim has been made.
 
 ![Correctness oracle status](oracle/v1/evidence/correctness.svg)
 
