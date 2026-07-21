@@ -20,22 +20,22 @@ typedef struct { State **items; Py_ssize_t length, capacity; } Stack;
 
 static void state_free(State *s) {
     if (!s) return;
-    PyMem_Free(s->caps);
-    PyMem_Free(s->seen);
     PyMem_Free(s);
 }
 
 static State *state_new(Py_ssize_t groups, Py_ssize_t code_len, Py_ssize_t pos,
                         const Py_ssize_t *caps, Py_ssize_t last) {
-    State *s = PyMem_Calloc(1, sizeof(State));
+    Py_ssize_t cap_count = 2 * (groups + 1);
+    State *s = PyMem_Malloc(sizeof(State) + (size_t)(cap_count + code_len) * sizeof(Py_ssize_t));
     if (!s) return NULL;
-    s->caps = PyMem_Malloc((size_t)(2 * (groups + 1)) * sizeof(Py_ssize_t));
-    s->seen = PyMem_Malloc((size_t)code_len * sizeof(Py_ssize_t));
-    if (!s->caps || !s->seen) { state_free(s); return NULL; }
-    memcpy(s->caps, caps, (size_t)(2 * (groups + 1)) * sizeof(Py_ssize_t));
+    s->caps = (Py_ssize_t *)(s + 1);
+    s->seen = s->caps + cap_count;
+    memcpy(s->caps, caps, (size_t)cap_count * sizeof(Py_ssize_t));
     for (Py_ssize_t i=0; i<code_len; i++) s->seen[i] = -1;
     s->pos = pos;
+    s->pc = 0;
     s->last = last;
+    s->atomic_depth = 0;
     return s;
 }
 
@@ -272,6 +272,76 @@ error:
     vm_free(vm); Py_DECREF(pseq); Py_DECREF(cseq); return NULL;
 }
 
+static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
+                    Py_ssize_t endpos, int mode, int require_nonempty,
+                    Py_ssize_t *caps, Py_ssize_t *last, Py_ssize_t *found,
+                    Py_ssize_t *finish) {
+    Py_ssize_t first_start = pos, last_start = mode==0 ? endpos : pos;
+    if (mode==0 && vm->code_count && vm->codes[0].count>=2) {
+        Code main = vm->codes[0];
+        Py_ssize_t width = 0;
+        int fixed = 1;
+        for (Py_ssize_t pc=0; pc<main.count-1; pc++) {
+            int op = main.ins[pc].op;
+            if (op==OP_CHAR || op==OP_CLASS || op==OP_CAT || op==OP_DOT) width++;
+            else if (op==OP_ANCHOR && pc==main.count-2 && main.ins[pc].a!='$') continue;
+            else if (op==OP_ANCHOR && pc==main.count-2 && main.ins[pc].a=='$' && !(main.ins[pc].b & F_M)) continue;
+            else { fixed=0; break; }
+        }
+        if (fixed && main.ins[main.count-2].op==OP_ANCHOR && main.ins[main.count-2].a=='$' && !(main.ins[main.count-2].b & F_M)) {
+            first_start = endpos-width;
+            last_start = first_start;
+        }
+    }
+    for (Py_ssize_t start=first_start; start<=last_start; start++) {
+        if (start<pos || start>endpos) continue;
+        if (mode==0 && vm->code_count && vm->codes[0].count && start<endpos) {
+            Ins first = vm->codes[0].ins[0];
+            Py_UCS4 value = subject_char(subject,start);
+            if (first.op==OP_CHAR && !equal_char(value,(Py_UCS4)first.a,first.b)) continue;
+            if (first.op==OP_CLASS && !class_match(vm,first.a,value,first.b,(int)first.c)) continue;
+            if (first.op==OP_CAT && !category(value,first.a,first.b)) continue;
+        }
+        for (Py_ssize_t i=0; i<2*(vm->groups+1); i++) caps[i]=-1;
+        caps[0]=start;
+        *last=-1; *finish=-1;
+        int got=execute(vm,0,subject,start,endpos,caps,last,finish,mode==2,require_nonempty && start==pos,0);
+        if (got<0) return got;
+        if (got) {
+            caps[1]=*finish; *found=start;
+            return 1;
+        }
+        if (mode!=0) break;
+    }
+    return 0;
+}
+
+static int subject_init(Subject *subject, PyObject *string) {
+    subject->obj=string; subject->byte_mode=PyBytes_Check(string); subject->length=0;
+    if (subject->byte_mode) subject->length=PyBytes_GET_SIZE(string);
+    else if (PyUnicode_Check(string)) subject->length=PyUnicode_GET_LENGTH(string);
+    else { PyErr_SetString(PyExc_TypeError,"subject must be str or bytes"); return 0; }
+    return 1;
+}
+
+static PyObject *subject_slice(const Subject *subject, Py_ssize_t begin, Py_ssize_t end) {
+    if (subject->byte_mode) return PyBytes_FromStringAndSize(PyBytes_AS_STRING(subject->obj)+begin,end-begin);
+    return PyUnicode_Substring(subject->obj,begin,end);
+}
+
+static PyObject *span_list(const VM *vm, const Py_ssize_t *caps) {
+    PyObject *spans=PyList_New(vm->groups+1);
+    if (!spans) return NULL;
+    for (Py_ssize_t g=0; g<=vm->groups; g++) {
+        PyObject *item;
+        if (caps[2*g]<0) item=Py_NewRef(Py_None);
+        else item=Py_BuildValue("(nn)",caps[2*g],caps[2*g+1]);
+        if (!item) { Py_DECREF(spans); return NULL; }
+        PyList_SET_ITEM(spans,g,item);
+    }
+    return spans;
+}
+
 static PyObject *native_match(PyObject *self, PyObject *args) {
     (void)self;
     PyObject *capsule,*string;
@@ -280,42 +350,97 @@ static PyObject *native_match(PyObject *self, PyObject *args) {
     if (!PyArg_ParseTuple(args,"OOnnii",&capsule,&string,&pos,&endpos,&mode,&require_nonempty)) return NULL;
     VM *vm=PyCapsule_GetPointer(capsule,"rebar.vm");
     if (!vm) return NULL;
-    Subject subject={string,PyBytes_Check(string),0};
-    if (subject.byte_mode) subject.length=PyBytes_GET_SIZE(string);
-    else if (PyUnicode_Check(string)) subject.length=PyUnicode_GET_LENGTH(string);
-    else { PyErr_SetString(PyExc_TypeError,"subject must be str or bytes"); return NULL; }
+    Subject subject;
+    if (!subject_init(&subject,string)) return NULL;
     if (pos<0) pos=0;
     if (endpos<0) endpos=0;
     if (endpos>subject.length) endpos=subject.length;
     if (pos>endpos) Py_RETURN_NONE;
     Py_ssize_t *caps=PyMem_Malloc((size_t)(2*(vm->groups+1))*sizeof(Py_ssize_t));
     if (!caps) return PyErr_NoMemory();
-    for (Py_ssize_t start=pos; start<=endpos; start++) {
-        for (Py_ssize_t i=0; i<2*(vm->groups+1); i++) caps[i]=-1;
-        caps[0]=start;
-        Py_ssize_t last=-1,finish=-1;
-        int got=execute(vm,0,&subject,start,endpos,caps,&last,&finish,mode==2,require_nonempty && start==pos,0);
-        if (got<0) { PyMem_Free(caps); PyErr_SetString(PyExc_RuntimeError,got==-1?"native VM allocation failed":"native VM recursion limit"); return NULL; }
-        if (got) {
-            caps[1]=finish;
-            PyObject *spans=PyList_New(vm->groups+1);
-            if (!spans) { PyMem_Free(caps); return NULL; }
-            for (Py_ssize_t g=0; g<=vm->groups; g++) {
-                PyObject *item;
-                if (caps[2*g]<0) { item=Py_None; Py_INCREF(item); }
-                else item=Py_BuildValue("(nn)",caps[2*g],caps[2*g+1]);
-                if (!item) { Py_DECREF(spans); PyMem_Free(caps); return NULL; }
-                PyList_SET_ITEM(spans,g,item);
-            }
-            PyObject *last_obj = last<0 ? Py_NewRef(Py_None) : PyLong_FromSsize_t(last);
-            PyObject *result=Py_BuildValue("nnOO",start,finish,spans,last_obj);
-            Py_DECREF(spans); Py_DECREF(last_obj); PyMem_Free(caps); return result;
-        }
-        if (mode!=0) break;
-    }
-    PyMem_Free(caps); Py_RETURN_NONE;
+    Py_ssize_t last=-1,found=-1,finish=-1;
+    int got=find_one(vm,&subject,pos,endpos,mode,require_nonempty,caps,&last,&found,&finish);
+    if (got<0) { PyMem_Free(caps); PyErr_SetString(PyExc_RuntimeError,got==-1?"native VM allocation failed":"native VM recursion limit"); return NULL; }
+    if (!got) { PyMem_Free(caps); Py_RETURN_NONE; }
+    PyObject *spans=span_list(vm,caps);
+    if (!spans) { PyMem_Free(caps); return NULL; }
+    PyObject *last_obj=last<0 ? Py_NewRef(Py_None) : PyLong_FromSsize_t(last);
+    if (!last_obj) { Py_DECREF(spans); PyMem_Free(caps); return NULL; }
+    PyObject *result=Py_BuildValue("nnOO",found,finish,spans,last_obj);
+    Py_DECREF(spans); Py_DECREF(last_obj); PyMem_Free(caps); return result;
 }
 
-static PyMethodDef Methods[]={{"build",native_build,METH_VARARGS,"Build a native bytecode program."},{"match",native_match,METH_VARARGS,"Execute a native bytecode program."},{NULL,NULL,0,NULL}};
+static PyObject *native_collect(PyObject *self, PyObject *args) {
+    (void)self;
+    PyObject *capsule,*string;
+    Py_ssize_t pos,endpos,limit;
+    int mode;
+    if (!PyArg_ParseTuple(args,"OOnnni",&capsule,&string,&pos,&endpos,&limit,&mode)) return NULL;
+    VM *vm=PyCapsule_GetPointer(capsule,"rebar.vm");
+    if (!vm) return NULL;
+    Subject subject;
+    if (!subject_init(&subject,string)) return NULL;
+    if (pos<0) pos=0;
+    if (endpos<0) endpos=0;
+    if (endpos>subject.length) endpos=subject.length;
+    if (pos>endpos) pos=endpos+1;
+    PyObject *output=PyList_New(0);
+    if (!output) return NULL;
+    Py_ssize_t *caps=PyMem_Malloc((size_t)(2*(vm->groups+1))*sizeof(Py_ssize_t));
+    if (!caps) { Py_DECREF(output); return PyErr_NoMemory(); }
+    Py_ssize_t cursor=pos,previous=pos,matches=0;
+    int nonempty=0;
+    while (cursor<=endpos && (!limit || matches<limit)) {
+        Py_ssize_t last=-1,found=-1,finish=-1;
+        int got=find_one(vm,&subject,cursor,endpos,0,nonempty,caps,&last,&found,&finish);
+        if (got<0) { PyMem_Free(caps); Py_DECREF(output); PyErr_SetString(PyExc_RuntimeError,got==-1?"native VM allocation failed":"native VM recursion limit"); return NULL; }
+        if (!got) break;
+        PyObject *item=NULL;
+        if (mode==0) {
+            if (!vm->groups) item=subject_slice(&subject,found,finish);
+            else if (vm->groups==1) item=caps[2]<0 ? subject_slice(&subject,0,0) : subject_slice(&subject,caps[2],caps[3]);
+            else {
+                item=PyTuple_New(vm->groups);
+                if (item) for (Py_ssize_t g=1; g<=vm->groups; g++) {
+                    PyObject *part=caps[2*g]<0 ? subject_slice(&subject,0,0) : subject_slice(&subject,caps[2*g],caps[2*g+1]);
+                    if (!part) { Py_CLEAR(item); break; }
+                    PyTuple_SET_ITEM(item,g-1,part);
+                }
+            }
+        } else if (mode==1) {
+            item=subject_slice(&subject,previous,found);
+            if (!item || PyList_Append(output,item)<0) { Py_XDECREF(item); PyMem_Free(caps); Py_DECREF(output); return NULL; }
+            Py_DECREF(item); item=NULL;
+            for (Py_ssize_t g=1; g<=vm->groups; g++) {
+                item=caps[2*g]<0 ? Py_NewRef(Py_None) : subject_slice(&subject,caps[2*g],caps[2*g+1]);
+                if (!item || PyList_Append(output,item)<0) { Py_XDECREF(item); PyMem_Free(caps); Py_DECREF(output); return NULL; }
+                Py_DECREF(item); item=NULL;
+            }
+            previous=finish;
+        } else {
+            PyObject *spans=span_list(vm,caps);
+            PyObject *last_obj=last<0 ? Py_NewRef(Py_None) : PyLong_FromSsize_t(last);
+            if (!spans || !last_obj) { Py_XDECREF(spans); Py_XDECREF(last_obj); PyMem_Free(caps); Py_DECREF(output); return NULL; }
+            item=PyTuple_Pack(2,spans,last_obj);
+            Py_DECREF(spans); Py_DECREF(last_obj);
+        }
+        if (mode!=1) {
+            if (!item || PyList_Append(output,item)<0) { Py_XDECREF(item); PyMem_Free(caps); Py_DECREF(output); return NULL; }
+            Py_DECREF(item);
+        }
+        matches++;
+        if (found==finish) { cursor=found; nonempty=1; }
+        else { cursor=finish; nonempty=0; }
+    }
+    PyMem_Free(caps);
+    if (mode==1) {
+        PyObject *tail=subject_slice(&subject,previous,subject.length);
+        if (!tail || PyList_Append(output,tail)<0) { Py_XDECREF(tail); Py_DECREF(output); return NULL; }
+        Py_DECREF(tail);
+    }
+    return output;
+}
+
+static PyMethodDef Methods[]={{"build",native_build,METH_VARARGS,"Build a native bytecode program."},{"match",native_match,METH_VARARGS,"Execute a native bytecode program."},{"collect",native_collect,METH_VARARGS,"Collect non-overlapping native matches."},{NULL,NULL,0,NULL}};
 static struct PyModuleDef Module={PyModuleDef_HEAD_INIT,"_vm_native","From-scratch bytecode regex VM.",-1,Methods,NULL,NULL,NULL,NULL};
 PyMODINIT_FUNC PyInit__vm_native(void) { return PyModule_Create(&Module); }

@@ -819,7 +819,6 @@ class Pattern:
 
     def _at(self, string, start, endpos, original_pos, require_nonempty=False):
         self._validate_string(string)
-        text = string.decode("latin1") if isinstance(string, bytes) else string
         result = _vm_native.match(self._vm, string, start, endpos, 1, int(require_nonempty))
         if result is None:
             return None
@@ -856,46 +855,19 @@ class Pattern:
 
     def finditer(self, string, pos=0, endpos=None):
         end = len(string) if endpos is None else min(max(endpos, 0), len(string))
-        current = max(pos, 0)
-        empty = False
-        while current <= end:
-            result = self._search(string, current, end, empty, max(pos, 0))
-            if result is None:
-                break
-            yield result
-            if result.start() == result.end():
-                empty = True
-                current = result.start()
-            else:
-                current = result.end()
-                empty = False
+        start = max(pos, 0)
+        self._validate_string(string)
+        for captures, last in _vm_native.collect(self._vm, string, start, end, 0, 2):
+            yield Match(self, string, tuple(captures), last, start, end)
 
     def findall(self, string, pos=0, endpos=None):
-        empty = b"" if isinstance(string, bytes) else ""
-        output = []
-        for item in self.finditer(string, pos, endpos):
-            if self.groups == 0:
-                output.append(item.group(0))
-            elif self.groups == 1:
-                value = item.group(1)
-                output.append(empty if value is None else value)
-            else:
-                output.append(tuple(empty if value is None else value for value in item.groups()))
-        return output
+        end = len(string) if endpos is None else min(max(endpos, 0), len(string))
+        self._validate_string(string)
+        return _vm_native.collect(self._vm, string, max(pos, 0), end, 0, 0)
 
     def split(self, string, maxsplit=0):
-        result = []
-        previous = 0
-        count = 0
-        for item in self.finditer(string):
-            if maxsplit and count >= maxsplit:
-                break
-            result.append(string[previous:item.start()])
-            result.extend(item.groups())
-            previous = item.end()
-            count += 1
-        result.append(string[previous:])
-        return result
+        self._validate_string(string)
+        return _vm_native.collect(self._vm, string, 0, len(string), maxsplit, 1)
 
     def subn(self, repl, string, count=0):
         self._validate_string(string)

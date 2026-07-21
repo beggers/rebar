@@ -13,4 +13,4 @@ PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 "$PY" tools/oracle.py verify --module can
 PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 "$PY" tools/audit_candidate.py candidates/vm_candidate.py candidates.vm_candidate candidates/_vm_native.c
 ```
 
-The committed [result](evidence/vm-correctness.json) passes 2,048/2,048 cases with zero mismatches or crashes and all 38 obligations mapped. Search scans starts inside the VM, so one public call crosses the native boundary once. The native gate is also run with address and undefined-behavior sanitizers; no sanitizer failure is accepted.
+The committed [result](evidence/vm-correctness.json) passes 2,048/2,048 cases with zero mismatches or crashes and all 38 obligations mapped. Search scans starts inside the VM, and `findall`, `finditer`, and `split` collect all non-overlapping results in one native call. Fixed suffixes and leading character constraints reject impossible starts before allocating execution state. The native gate is also run with address and undefined-behavior sanitizers; no sanitizer failure is accepted.
