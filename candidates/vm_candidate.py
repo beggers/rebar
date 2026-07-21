@@ -722,24 +722,31 @@ def _template(value, match):
 
 
 class _Scanner:
-    __slots__ = ("pattern", "_string", "_pos", "_empty", "_searches")
+    __slots__ = ("pattern", "_string", "_pos", "_end", "_empty", "_searches")
 
-    def __init__(self, pattern, string):
+    def __init__(self, pattern, string, pos=0, endpos=None):
         self.pattern = pattern
         self._string = string
-        self._pos = 0
+        self._pos = max(pos, 0)
+        self._end = len(string) if endpos is None else min(max(endpos, 0), len(string))
         self._empty = False
-        self._searches = pattern.finditer(string)
+        self._searches = pattern.finditer(string, self._pos, self._end)
 
     def search(self):
-        return next(self._searches, None)
+        result = next(self._searches, None)
+        if result is None:
+            self._pos = self._end + 1
+            return None
+        self._empty = result.end() == result.start()
+        self._pos = result.end() if not self._empty else result.start()
+        return result
 
     def match(self):
-        if self._pos > len(self._string):
+        if self._pos > self._end:
             return None
         result = next(self._searches, None)
         if result is None or result.start() != self._pos:
-            self._pos = len(self._string) + 1
+            self._pos = self._end + 1
             return None
         self._empty = result.end() == result.start()
         self._pos = result.end() if not self._empty else result.start() + 1
@@ -780,8 +787,8 @@ class Pattern(_vm_native.Pattern):
     def __hash__(self):
         return hash((type(self.pattern), self.pattern, self.flags))
 
-    def scanner(self, string):
-        return _Scanner(self, string)
+    def scanner(self, string, pos=0, endpos=None):
+        return _Scanner(self, string, pos, endpos)
 
 
 _CACHE = {}

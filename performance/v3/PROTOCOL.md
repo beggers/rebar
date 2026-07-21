@@ -42,6 +42,8 @@ The frozen fixture is deterministic, preserves all earlier records, and passes s
 
 These are useful compatibility findings, not timing results. **Performance is NOT MEASURED for v3 until these cases and the official CPython correctness gate are clean.**
 
+The [window and multiline follow-up](evidence/WINDOW-QUALIFIED.md) fixes all eight newly exposed cases: the current pre-timing check passes **576/576**. The initial result above is preserved; official-suite failures still block timing.
+
 Reproduce the freeze and checks with:
 
 ```sh

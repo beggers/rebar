@@ -35,6 +35,21 @@ No public semantic failure is waived.
 
 The complete records are [stdlib](evidence/self.json), [native](evidence/rebar-initial.json), [Python](evidence/ast-initial.json), and [Rust](evidence/rust-initial.json). The failures expose real gaps missing from the earlier seeded oracle: arbitrary buffers and buffer locking, weak references, `re.Scanner`, Unicode case/range behavior, flag and error details, keyword handling, subclass normalization, overflow protection, and historical matching regressions. Native/Rust crashes and timeouts must be eliminated before further performance claims are accepted.
 
+## Window and keyword follow-up
+
+![Official CPython re compatibility after window fixes](evidence/window-correctness.svg)
+
+The broader performance oracle exposed missing windowed scanners and a native multiline backtracking error. Fixing those also makes the official `ReTests.test_keyword_parameters` method pass in every engine. Native compiled methods now accept documented keyword forms. Full reruns preserve all remaining failures and improve the counts by one method each:
+
+| Engine | Runnable methods passed | Failed | Crashes | Timeouts |
+| --- | ---: | ---: | ---: | ---: |
+| CPython `re` self-check | **144/144** | **0** | **0** | **0** |
+| Native C / `rebar` | 99/144 | 45 | 0 | 2 |
+| Python engine | 95/144 | 49 | 0 | 1 |
+| Rust engine | 95/144 | 49 | 3 | 0 |
+
+The follow-up records are [native](evidence/rebar-window.json), [Python](evidence/ast-window.json), and [Rust](evidence/rust-window.json); the initial records above remain unchanged.
+
 Reproduce the frozen gate or one stable method ID:
 
 ```sh

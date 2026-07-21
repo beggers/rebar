@@ -64,11 +64,23 @@ def main():
         ])
     checks = correctness["checks"]
     passed = checks - correctness["failed"]
+    status_line = "Current status: NOT MEASURED"
+    details = [
+        f"The pre-timing check passes {passed}/{checks} comparisons.",
+        "Windowed scanners need support in all engines; native C also misses",
+        "the first line of two multiline configuration examples.",
+    ]
+    if correctness["failed"] == 0:
+        details = [
+            f"All {passed}/{checks} pre-timing comparisons now pass.",
+            "Windowed scanners and multiline first-line matching are fixed.",
+            "The official CPython compatibility suite still needs work before timing.",
+        ]
     body.extend([
-        f'<text x="590" y="248" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">Current status: NOT MEASURED</text>',
-        f'<text x="590" y="273" font-family="Arial, sans-serif" font-size="13" fill="#475569">The pre-timing check passes {passed}/{checks} comparisons.</text>',
-        '<text x="590" y="297" font-family="Arial, sans-serif" font-size="13" fill="#475569">Windowed scanners need support in all engines; native C also misses</text>',
-        '<text x="590" y="319" font-family="Arial, sans-serif" font-size="13" fill="#475569">the first line of two multiline configuration examples.</text>',
+        f'<text x="590" y="248" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">{esc(status_line)}</text>',
+        f'<text x="590" y="273" font-family="Arial, sans-serif" font-size="13" fill="#475569">{esc(details[0])}</text>',
+        f'<text x="590" y="297" font-family="Arial, sans-serif" font-size="13" fill="#475569">{esc(details[1])}</text>',
+        f'<text x="590" y="319" font-family="Arial, sans-serif" font-size="13" fill="#475569">{esc(details[2])}</text>',
         '<text x="28" y="376" font-family="Arial, sans-serif" font-size="12" fill="#64748b">Incorrect cases are never timed. Once correctness is clean, the same frozen holdout will provide clearer overall and task-by-task speed evidence.</text>',
         '</svg>\n',
     ])

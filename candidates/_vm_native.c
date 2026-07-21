@@ -153,7 +153,10 @@ static int repeat_needs_choice_inner(const VM *vm, const Code *code, Py_ssize_t 
     Ins next=code->ins[next_pc];
     if (next.op==OP_JUMP) return repeat_needs_choice_inner(vm,code,next.a,atom,depth+1);
     if (next.op==OP_SPLIT) return repeat_needs_choice_inner(vm,code,next.a,atom,depth+1) || repeat_needs_choice_inner(vm,code,next.b,atom,depth+1);
-    if (next.op==OP_ANCHOR && (next.a=='$' || next.a=='Z')) return 0;
+    if (next.op==OP_ANCHOR && (next.a=='$' || next.a=='Z')) {
+        if (next.a=='$' && (next.b & F_M) && atom_accepts(vm,atom,'\n')) return 1;
+        return 0;
+    }
     if (next.op==OP_CHAR && !atom_accepts(vm,atom,(Py_UCS4)next.a)) return 0;
     if (next.op==OP_LOOK && (next.b & 1) && !(next.b & 2) && next.a>=0 && next.a<vm->code_count) {
         Code look=vm->codes[next.a];
@@ -1322,18 +1325,20 @@ static int fast_index(PyObject *value, Py_ssize_t *result) {
 
 static int pattern_window(PatternObject *pattern, PyObject *const *args, Py_ssize_t nargsf, PyObject *kwnames, Subject *subject, Py_ssize_t *pos, Py_ssize_t *endpos) {
     Py_ssize_t nargs=PyVectorcall_NARGS(nargsf),nkeys=kwnames ? PyTuple_GET_SIZE(kwnames) : 0;
-    if (nargs<1 || nargs>3) { PyErr_SetString(PyExc_TypeError,"expected string and optional pos/endpos"); return 0; }
-    PyObject *string=args[0],*pos_value=nargs>1 ? args[1] : NULL,*end_value=nargs>2 ? args[2] : Py_None;
+    if (nargs>3 || nkeys>3) { PyErr_SetString(PyExc_TypeError,"expected string and optional pos/endpos"); return 0; }
+    PyObject *string=nargs>0 ? args[0] : NULL,*pos_value=nargs>1 ? args[1] : NULL,*end_value=nargs>2 ? args[2] : NULL;
     for (Py_ssize_t i=0; i<nkeys; i++) {
         PyObject *key=PyTuple_GET_ITEM(kwnames,i),*value=args[nargs+i];
-        if (PyUnicode_CompareWithASCIIString(key,"pos")==0 && !pos_value) pos_value=value;
-        else if (PyUnicode_CompareWithASCIIString(key,"endpos")==0 && end_value==Py_None) end_value=value;
+        if (PyUnicode_CompareWithASCIIString(key,"string")==0 && !string) string=value;
+        else if (PyUnicode_CompareWithASCIIString(key,"pos")==0 && !pos_value) pos_value=value;
+        else if (PyUnicode_CompareWithASCIIString(key,"endpos")==0 && !end_value) end_value=value;
         else { PyErr_SetString(PyExc_TypeError,"invalid or repeated keyword argument"); return 0; }
     }
+    if (!string) { PyErr_SetString(PyExc_TypeError,"missing required argument 'string'"); return 0; }
     *pos=0;
     if (pos_value && !fast_index(pos_value,pos)) return 0;
     if (!pattern_subject(pattern,string,subject)) return 0;
-    if (end_value==Py_None) *endpos=subject->length;
+    if (!end_value) *endpos=subject->length;
     else if (!fast_index(end_value,endpos)) return 0;
     if (*pos<0) *pos=0;
     if (*endpos<0) *endpos=0;
@@ -1373,12 +1378,15 @@ static PyObject *pattern_collect(PatternObject *pattern, PyObject *const *args, 
         if (!pattern_window(pattern,args,nargsf,kwnames,&subject,&pos,&endpos)) return NULL;
     } else {
         Py_ssize_t nargs=PyVectorcall_NARGS(nargsf),nkeys=kwnames ? PyTuple_GET_SIZE(kwnames) : 0;
-        if (nargs<1 || nargs>2 || nkeys>1) { PyErr_SetString(PyExc_TypeError,"expected string and optional maxsplit"); return NULL; }
-        PyObject *string=args[0],*limit_value=nargs>1 ? args[1] : NULL;
-        if (nkeys) {
-            if (limit_value || PyUnicode_CompareWithASCIIString(PyTuple_GET_ITEM(kwnames,0),"maxsplit")!=0) { PyErr_SetString(PyExc_TypeError,"invalid or repeated keyword argument"); return NULL; }
-            limit_value=args[nargs];
+        if (nargs>2 || nkeys>2) { PyErr_SetString(PyExc_TypeError,"expected string and optional maxsplit"); return NULL; }
+        PyObject *string=nargs>0 ? args[0] : NULL,*limit_value=nargs>1 ? args[1] : NULL;
+        for (Py_ssize_t i=0; i<nkeys; i++) {
+            PyObject *key=PyTuple_GET_ITEM(kwnames,i),*value=args[nargs+i];
+            if (PyUnicode_CompareWithASCIIString(key,"string")==0 && !string) string=value;
+            else if (PyUnicode_CompareWithASCIIString(key,"maxsplit")==0 && !limit_value) limit_value=value;
+            else { PyErr_SetString(PyExc_TypeError,"invalid or repeated keyword argument"); return NULL; }
         }
+        if (!string) { PyErr_SetString(PyExc_TypeError,"missing required argument 'string'"); return NULL; }
         if (limit_value && !fast_index(limit_value,&limit)) return NULL;
         if (!pattern_subject(pattern,string,&subject)) return NULL;
         endpos=subject.length;
@@ -1483,13 +1491,17 @@ static PyObject *substitute_text(PatternObject *pattern, const Subject *subject,
 
 static PyObject *pattern_substitute(PatternObject *pattern, PyObject *const *args, Py_ssize_t nargsf, PyObject *kwnames, int return_count) {
     Py_ssize_t nargs=PyVectorcall_NARGS(nargsf),nkeys=kwnames ? PyTuple_GET_SIZE(kwnames) : 0;
-    if (nargs<2 || nargs>3 || nkeys>1) { PyErr_SetString(PyExc_TypeError,"expected replacement, string, and optional count"); return NULL; }
-    PyObject *replacement=args[0],*string=args[1],*limit_value=nargs>2 ? args[2] : NULL;
+    if (nargs>3 || nkeys>3) { PyErr_SetString(PyExc_TypeError,"expected replacement, string, and optional count"); return NULL; }
+    PyObject *replacement=nargs>0 ? args[0] : NULL,*string=nargs>1 ? args[1] : NULL,*limit_value=nargs>2 ? args[2] : NULL;
     Py_ssize_t limit=0;
-    if (nkeys) {
-        if (limit_value || PyUnicode_CompareWithASCIIString(PyTuple_GET_ITEM(kwnames,0),"count")!=0) { PyErr_SetString(PyExc_TypeError,"invalid or repeated keyword argument"); return NULL; }
-        limit_value=args[nargs];
+    for (Py_ssize_t i=0; i<nkeys; i++) {
+        PyObject *key=PyTuple_GET_ITEM(kwnames,i),*value=args[nargs+i];
+        if (PyUnicode_CompareWithASCIIString(key,"repl")==0 && !replacement) replacement=value;
+        else if (PyUnicode_CompareWithASCIIString(key,"string")==0 && !string) string=value;
+        else if (PyUnicode_CompareWithASCIIString(key,"count")==0 && !limit_value) limit_value=value;
+        else { PyErr_SetString(PyExc_TypeError,"invalid or repeated keyword argument"); return NULL; }
     }
+    if (!replacement || !string) { PyErr_SetString(PyExc_TypeError,"missing required replacement or string argument"); return NULL; }
     if (limit_value && !fast_index(limit_value,&limit)) return NULL;
     Subject subject;
     if (!pattern_subject(pattern,string,&subject)) return NULL;

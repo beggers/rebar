@@ -369,29 +369,30 @@ class Match:
 
 
 class _Scanner:
-    __slots__ = ("pattern", "_string", "_pos", "_empty")
+    __slots__ = ("pattern", "_string", "_pos", "_start", "_end", "_empty")
 
-    def __init__(self, pattern, string):
+    def __init__(self, pattern, string, pos=0, endpos=None):
         self.pattern = pattern
         self._string = string
-        self._pos = 0
+        self._start = self._pos = max(pos, 0)
+        self._end = len(string) if endpos is None else min(max(endpos, 0), len(string))
         self._empty = False
 
     def search(self):
-        result = self.pattern._search(self._string, self._pos, len(self._string), self._empty, 0)
+        result = self.pattern._search(self._string, self._pos, self._end, self._empty, self._start)
         if result is None:
-            self._pos = len(self._string) + 1
+            self._pos = self._end + 1
             return None
         self._empty = result.end() == result.start()
         self._pos = result.end() if not self._empty else result.start()
         return result
 
     def match(self):
-        if self._pos > len(self._string):
+        if self._pos > self._end:
             return None
-        result = self.pattern._at(self._string, self._pos, len(self._string), 0, self._empty)
+        result = self.pattern._at(self._string, self._pos, self._end, self._start, self._empty)
         if result is None:
-            self._pos = len(self._string) + 1
+            self._pos = self._end + 1
             return None
         self._empty = result.end() == result.start()
         self._pos = result.end() if not self._empty else result.start() + 1
@@ -550,9 +551,9 @@ class Pattern:
     def sub(self, repl, string, count=0):
         return self.subn(repl, string, count)[0]
 
-    def scanner(self, string):
+    def scanner(self, string, pos=0, endpos=None):
         self._validate_string(string)
-        return _Scanner(self, string)
+        return _Scanner(self, string, pos, endpos)
 
 
 _CACHE = {}
