@@ -182,6 +182,32 @@ def execute(module, case):
         return pattern_info(module.compile(case["pattern"], flags_value(module, case["flags"])))
     if kind == "call":
         return result_info(call_case(module, case))
+    if kind == "property":
+        flags = flags_value(module, case["flags"])
+        pattern = module.compile(case["pattern"], flags)
+        string = case["string"]
+        matches = list(pattern.finditer(string))
+        if pattern.groups == 0:
+            derived_findall = [item.group(0) for item in matches]
+        elif pattern.groups == 1:
+            empty = b"" if isinstance(string, bytes) else ""
+            derived_findall = [item.group(1) if item.group(1) is not None else empty for item in matches]
+        else:
+            empty = b"" if isinstance(string, bytes) else ""
+            derived_findall = [tuple(value if value is not None else empty for value in item.groups()) for item in matches]
+        repl = b"#" if isinstance(string, bytes) else "#"
+        substituted, replacement_count = pattern.subn(repl, string, count=case["count"])
+        return {
+            "search_surface_equal": result_info(module.search(case["pattern"], string, flags)) == result_info(pattern.search(string)),
+            "match_surface_equal": result_info(module.match(case["pattern"], string, flags)) == result_info(pattern.match(string)),
+            "fullmatch_surface_equal": result_info(module.fullmatch(case["pattern"], string, flags)) == result_info(pattern.fullmatch(string)),
+            "finditer_surface_equal": result_info(module.finditer(case["pattern"], string, flags)) == result_info(iter(matches)),
+            "findall_from_finditer": jsonable(pattern.findall(string)) == jsonable(derived_findall),
+            "split_surface_equal": jsonable(module.split(case["pattern"], string, flags=flags)) == jsonable(pattern.split(string)),
+            "sub_equals_subn": jsonable(pattern.sub(repl, string, count=case["count"])) == jsonable(substituted),
+            "subn_count_bounded": replacement_count >= 0 and (case["count"] == 0 or replacement_count <= case["count"]),
+            "escape_roundtrip": pattern_info(module.compile(module.escape(string))) is not None and module.fullmatch(module.escape(string), string) is not None,
+        }
     if kind == "escape":
         return jsonable(module.escape(case["value"]))
     if kind == "scanner":
@@ -232,6 +258,9 @@ def validate_suite(suite, cases):
     missing = sorted(set(suite.OBLIGATIONS) - mapped)
     if missing:
         raise RuntimeError(f"unmapped obligations: {missing}")
+    seeds_path = ROOT / "oracle" / "v1" / "seeds.json"
+    if seeds_path.exists() and json.loads(seeds_path.read_text(encoding="utf-8")) != suite.SEEDS:
+        raise RuntimeError("frozen seeds.json differs from suite seeds")
     if hashlib.sha256((ROOT / "GOAL.md").read_bytes()).hexdigest() != GOAL_HASH:
         raise RuntimeError("GOAL.md hash changed")
 
@@ -275,12 +304,14 @@ def freeze(args):
         "locale": "C",
         "goal_sha256": GOAL_HASH,
         "suite_sha256": hashlib.sha256(SUITE_PATH.read_bytes()).hexdigest(),
+        "runner_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
         "expected_sha256": hashlib.sha256(first).hexdigest(),
         "cases": len(cases),
         "obligations": len(suite.OBLIGATIONS),
         "mapped_obligations": len({item for case in cases for item in case["obligations"]}),
         "kinds": dict(sorted(counts.items())),
         "private_waivers": ["PRIVATE-CACHE-LAYOUT", "PRIVATE-DEBUG-TEXT"],
+        "seeds": dict(sorted(suite.SEEDS.items())),
     }
     MANIFEST.write_text(json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps(manifest, sort_keys=True))
@@ -295,11 +326,19 @@ def verify(args):
     expected_bytes = EXPECTED.read_bytes()
     if hashlib.sha256(SUITE_PATH.read_bytes()).hexdigest() != manifest["suite_sha256"]:
         raise RuntimeError("suite differs from frozen manifest")
+    if hashlib.sha256(Path(__file__).read_bytes()).hexdigest() != manifest["runner_sha256"]:
+        raise RuntimeError("runner differs from frozen manifest")
     if hashlib.sha256(expected_bytes).hexdigest() != manifest["expected_sha256"]:
         raise RuntimeError("expected fixture differs from frozen manifest")
     expected = [json.loads(line) for line in expected_bytes.splitlines()]
     if len(expected) != len(cases) or len(cases) != manifest["cases"]:
         raise RuntimeError("case count differs from frozen manifest")
+    if args.case:
+        selected = [(case, want) for case, want in zip(cases, expected, strict=True) if case["id"] == args.case]
+        if len(selected) != 1:
+            raise RuntimeError(f"case ID not found exactly once: {args.case}")
+        cases = [selected[0][0]]
+        expected = [selected[0][1]]
     module = importlib.import_module(args.module)
     failures = []
     passed = 0
@@ -350,6 +389,7 @@ def main():
     verify_parser = subparsers.add_parser("verify")
     verify_parser.add_argument("--module", default="re")
     verify_parser.add_argument("--output")
+    verify_parser.add_argument("--case", help="reproduce one frozen case by its stable ID")
     verify_parser.set_defaults(function=verify)
     chart_parser = subparsers.add_parser("chart")
     chart_parser.add_argument("--input", required=True)

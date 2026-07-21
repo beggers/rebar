@@ -1,17 +1,18 @@
 {
-  "cases": 80,
-  "expected_sha256": "538fde96fcbfc4fcfc3919e0fde7b5636aeb6acb4c407eb82d566b8d64bf8b8e",
+  "cases": 2048,
+  "expected_sha256": "68daa831d0579a07585727216346db0841a26036d12e0311acba85a54d696709",
   "goal_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
   "implementation": "CPython",
   "kinds": {
     "cache": 1,
-    "call": 53,
+    "call": 1205,
     "compile": 2,
     "debug": 1,
-    "error": 15,
+    "error": 447,
     "escape": 2,
     "exports": 1,
     "flags": 1,
+    "property": 384,
     "roundtrip": 1,
     "scanner": 2,
     "warning": 1
@@ -24,7 +25,15 @@
     "PRIVATE-DEBUG-TEXT"
   ],
   "python": "3.14.6",
+  "runner_sha256": "97df047e0ee46c7ce90ca3a3e74b3581f6cfc569c9d4f3c81e2491b57c957cf4",
   "schema": "rebar-correctness-v1",
-  "suite_sha256": "f081f18bc18b62c4000552f51b09a70c3228bc77a78bd422db3947ad7db21dec",
+  "seeds": {
+    "invalid_patterns": 1511506921,
+    "invalid_templates": 1511506922,
+    "properties": 1511506920,
+    "valid_bytes": 1511506919,
+    "valid_str": 1511506918
+  },
+  "suite_sha256": "4bbbf2acae5983207839224c336d15d2b7c9c06515d2c142a94a6f7ca9cb48f9",
   "unicode": "16.0.0"
 }

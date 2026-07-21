@@ -1,5 +1,15 @@
 """Frozen, versioned correctness cases for the CPython 3.14.6 re contract."""
 
+import random
+
+SEEDS = {
+    "valid_str": 1511506918,
+    "valid_bytes": 1511506919,
+    "properties": 1511506920,
+    "invalid_patterns": 1511506921,
+    "invalid_templates": 1511506922,
+}
+
 OBLIGATIONS = {
     "API-EXPORTS": "exact public exports and aliases",
     "API-FLAGS": "flag names, values, and combinations",
@@ -130,5 +140,120 @@ STATIC_CASES = [
 ]
 
 
+def subject(rng, *, byte_mode):
+    alphabet = "abcXYZ019 _,-.!\n" if byte_mode else "abcXYZ019 _,-.!\näßİıſK٣雪\u2003"
+    value = "".join(rng.choice(alphabet) for _ in range(rng.randrange(0, 30)))
+    return value.encode("ascii") if byte_mode else value
+
+
+def expression(rng, depth=0):
+    atoms = ["a", "b", "c", "X", "0", "_", "\\.", "\\-", ".", "[abc]", "[^x\\n]", "[a-z0-9_]", "\\d", "\\D", "\\s", "\\S", "\\w", "\\W", "\\b", "\\B", "^", "$", "\\A", "\\Z", "(?:ab|c)", "(?=a)a", "(?!z)[ab]", "(?<=a)b", "(?<!z)c", "(?>ab|a)"]
+    quantifiers = ["", "", "?", "*", "+", "{2}", "{0,2}", "{1,3}", "??", "*?", "+?", "{0,2}?", "?+", "*+", "++", "{0,2}+"]
+    pieces = []
+    for _ in range(rng.randrange(1, 5)):
+        atom = rng.choice(atoms)
+        if depth < 1 and rng.randrange(7) == 0:
+            atom = "(" + expression(rng, depth + 1) + ")"
+        if atom not in {"^", "$", "\\A", "\\Z", "\\b", "\\B"} and not atom.startswith("(?=") and not atom.startswith("(?<=") and not atom.startswith("(?<!"):
+            atom += rng.choice(quantifiers)
+        pieces.append(atom)
+    result = "".join(pieces)
+    if depth == 0 and rng.randrange(4) == 0:
+        result += "|" + "".join(rng.choice(["a", "b", "[0-9]", "\\w", "(?:ab|c)"]) for _ in range(rng.randrange(1, 4)))
+    return result
+
+
+def generated_valid(seed, count, *, byte_mode):
+    rng = random.Random(seed)
+    apis = ["search", "match", "fullmatch", "findall", "finditer", "split", "sub", "subn"]
+    api_obligation = {"search": "API-SEARCH", "match": "API-MATCH", "fullmatch": "API-FULLMATCH", "findall": "API-FINDALL", "finditer": "API-FINDITER", "split": "API-SPLIT", "sub": "API-SUB", "subn": "API-SUBN"}
+    prefix = "fuzz.bytes" if byte_mode else "fuzz.str"
+    syntax = "S-LITERAL S-DOT-CLASS S-ANCHOR S-QUANTIFIER S-POSSESSIVE S-ALTERNATION S-GROUP S-LOOKAROUND S-ATOMIC S-EMPTY S-ASCII" if byte_mode else "S-LITERAL S-DOT-CLASS S-ANCHOR S-QUANTIFIER S-POSSESSIVE S-ALTERNATION S-GROUP S-LOOKAROUND S-ATOMIC S-EMPTY S-UNICODE"
+    for index in range(count):
+        pattern = expression(rng)
+        string = subject(rng, byte_mode=byte_mode)
+        if byte_mode:
+            pattern = pattern.encode("ascii")
+        api = apis[index % len(apis)]
+        flags = [name for name in ("I", "M", "S") if rng.randrange(4) == 0]
+        if not byte_mode and rng.randrange(4) == 0:
+            flags.append("A")
+        surface = "pattern" if index % 2 else "module"
+        values = {"surface": surface, "api": api, "pattern": pattern, "string": string, "flags": flags}
+        if surface == "pattern" and api in {"search", "match", "fullmatch", "findall", "finditer"} and rng.randrange(3) == 0:
+            start = rng.randrange(0, len(string) + 1)
+            values["pos"] = start
+            values["endpos"] = rng.randrange(start, len(string) + 1)
+        if api == "split":
+            values["maxsplit"] = rng.randrange(0, 4)
+        if api in {"sub", "subn"}:
+            values["repl"] = {"callable": "bracket_upper"} if index % 3 == 0 else (b"#" if byte_mode else "#")
+            values["count"] = rng.randrange(0, 4)
+        extra = " API-MATCH-OBJECT" if api in {"search", "match", "fullmatch", "finditer"} else ""
+        extra += " S-WINDOW" if "pos" in values else ""
+        yield C(f"{prefix}.{index:04d}", "call", f"{api_obligation[api]} {syntax}{extra}", **values)
+
+
+def generated_properties(seed, count):
+    rng = random.Random(seed)
+    for index in range(count):
+        byte_mode = index % 3 == 0
+        pattern = expression(rng)
+        string = subject(rng, byte_mode=byte_mode)
+        if byte_mode:
+            pattern = pattern.encode("ascii")
+        flags = [name for name in ("I", "M", "S") if rng.randrange(4) == 0]
+        if not byte_mode and rng.randrange(5) == 0:
+            flags.append("A")
+        syntax = "S-ASCII" if byte_mode or "A" in flags else "S-UNICODE"
+        yield C(f"property.{index:04d}", "property", f"API-COMPILE API-SEARCH API-MATCH API-FULLMATCH API-FINDALL API-FINDITER API-SPLIT API-SUB API-SUBN API-ESCAPE API-PATTERN API-MATCH-OBJECT S-EMPTY {syntax}", pattern=pattern, string=string, flags=flags, count=rng.randrange(0, 4))
+
+
+def generated_invalid_patterns(seed, count):
+    rng = random.Random(seed)
+    forms = [
+        lambda tail: "\\q" + tail,
+        lambda tail: "[abc" + tail,
+        lambda tail: "(" + tail,
+        lambda tail: "a**" + tail,
+        lambda tail: "a{3,1}" + tail,
+        lambda tail: "(?P<x>a)(?P<x>b)" + tail,
+        lambda tail: "(a)\\2" + tail,
+        lambda tail: "(?<=a+)b" + tail,
+        lambda tail: "a(?i)b" + tail,
+        lambda tail: "(?P<bad-name>a)" + tail,
+        lambda tail: "(?P=x)" + tail,
+        lambda tail: "(?(99)a|b)" + tail,
+    ]
+    tails = ["", "x", "ab", "|z", "[0-9]", "(?:q)"]
+    for index in range(count):
+        pattern = forms[index % len(forms)](rng.choice(tails))
+        byte_mode = index % 4 == 0
+        if byte_mode:
+            pattern = pattern.encode("ascii")
+        yield C(f"fuzz.invalid-pattern.{index:04d}", "error", "E-PATTERN S-LOOKAROUND S-INLINE S-GROUP S-BACKREF S-CONDITIONAL", action="compile", pattern=pattern, flags=[])
+
+
+def generated_invalid_templates(seed, count):
+    rng = random.Random(seed)
+    templates = ["\\2", "\\9", "\\q", "\\g<missing>", "\\g<2>", "\\g<", "\\g<bad-name>", "\\g<-1>"]
+    tails = ["", "x", "-tail", "\\n"]
+    for index in range(count):
+        byte_mode = index % 3 == 0
+        repl = templates[index % len(templates)] + rng.choice(tails)
+        pattern = "(a)"
+        string = "a"
+        if byte_mode:
+            repl, pattern, string = repl.encode("ascii"), pattern.encode("ascii"), string.encode("ascii")
+        yield C(f"fuzz.invalid-template.{index:04d}", "error", "E-TEMPLATE API-SUB S-GROUP", action="sub", pattern=pattern, repl=repl, string=string, flags=[])
+
+
 def cases():
-    return list(STATIC_CASES)
+    return [
+        *STATIC_CASES,
+        *generated_valid(SEEDS["valid_str"], 768, byte_mode=False),
+        *generated_valid(SEEDS["valid_bytes"], 384, byte_mode=True),
+        *generated_properties(SEEDS["properties"], 384),
+        *generated_invalid_patterns(SEEDS["invalid_patterns"], 240),
+        *generated_invalid_templates(SEEDS["invalid_templates"], 192),
+    ]

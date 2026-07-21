@@ -1,11 +1,11 @@
 {
-  "cases": 80,
-  "expected_sha256": "538fde96fcbfc4fcfc3919e0fde7b5636aeb6acb4c407eb82d566b8d64bf8b8e",
+  "cases": 2048,
+  "expected_sha256": "68daa831d0579a07585727216346db0841a26036d12e0311acba85a54d696709",
   "failed": 0,
   "failures": [],
   "mapped_obligations": 38,
   "module": "re",
   "obligations": 38,
-  "passed": 80,
+  "passed": 2048,
   "schema": "rebar-correctness-result-v1"
 }

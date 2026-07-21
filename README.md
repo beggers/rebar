@@ -8,12 +8,12 @@ The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2
 
 | Gate | Result |
 | --- | --- |
-| Correctness oracle | IN PROGRESS — 80/80 static cases pass, 38/38 obligations mapped; generated cases next |
+| Correctness oracle | PASS — 2,048/2,048, 38/38 obligations, zero unexplained self-oracle failures |
 | Qualified candidates | NOT MEASURED |
 | Performance oracle | NOT MEASURED |
 | Winner | NOT MEASURED |
 
-The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The [P0 matrix](oracle/v1/P0.md) covers the complete public API, documented syntax, errors, warnings, and two explicitly named private waivers. The current fixture and self-oracle result are committed; candidate code and performance claims do not exist yet.
+The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The [P0 matrix](oracle/v1/P0.md) covers the complete public API, documented syntax, errors, warnings, seeded differential/property/fuzz cases, and two explicitly named private waivers. The fixture SHA-256 is `68daa831d0579a07585727216346db0841a26036d12e0311acba85a54d696709`; two isolated stdlib runs agree, and the committed failure list is empty. Candidate code and performance claims do not exist yet.
 
 ![Correctness oracle status](oracle/v1/evidence/correctness.svg)
 
@@ -24,4 +24,6 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" tools/oracle.py freeze
 "$PY" tools/oracle.py verify --module re --output oracle/v1/evidence/correctness-self.json
 "$PY" tools/oracle.py chart --input oracle/v1/evidence/correctness-self.json --output oracle/v1/evidence/correctness.svg
+# Reproduce a single stable case ID, including fuzz/property cases:
+"$PY" tools/oracle.py verify --module re --case fuzz.str.0377
 ```
