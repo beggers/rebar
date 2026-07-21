@@ -1,6 +1,7 @@
 """From-scratch recursive AST/backtracking candidate for the frozen re P0 contract."""
 
 import enum
+import types
 import unicodedata
 import warnings
 
@@ -69,6 +70,7 @@ class _Parser:
         self.index = 0
         self.groups = 0
         self.groupindex = {}
+        self.groupwidth = {}
 
     def fail(self, msg, pos=None, pattern=True):
         raise PatternError(msg, self.original if pattern else None, pos)
@@ -256,6 +258,12 @@ class _Parser:
                 self.index += 1
                 if "&&" in self.text[start:self.index]:
                     warnings.warn(f"Possible set intersection at position {self.text.find('&&', start, self.index)}", FutureWarning, stacklevel=5)
+                if self.text[start + 1:start + 2] == "[":
+                    warnings.warn(f"Possible nested set at position {start + 1}", FutureWarning, stacklevel=5)
+                for marker, label in (("||", "union"), ("~~", "symmetric difference"), ("--", "difference")):
+                    location = self.text.find(marker, start, self.index)
+                    if location >= 0:
+                        warnings.warn(f"Possible set {label} at position {location}", FutureWarning, stacklevel=5)
                 return ("class", items, negate, flags)
             first = False
             if self.peek() == "\\":
@@ -303,6 +311,7 @@ class _Parser:
             child = self.alternation(flags)
             if self.take() != ")":
                 self.fail("missing ), unterminated subpattern", start)
+            self.groupwidth[number] = _width(child, self.groupwidth)
             return ("group", number, child)
         self.index += 1
         char = self.take()
@@ -321,7 +330,7 @@ class _Parser:
             child = self.alternation(flags)
             if self.take() != ")":
                 self.fail("missing ), unterminated subpattern", start)
-            minimum, maximum = _width(child)
+            minimum, maximum = _width(child, self.groupwidth)
             if minimum != maximum:
                 self.fail("look-behind requires fixed-width pattern", pattern=False)
             return ("look", "behind", positive, child, minimum)
@@ -350,6 +359,7 @@ class _Parser:
                 child = self.alternation(flags)
                 if self.take() != ")":
                     self.fail("missing ), unterminated subpattern", start)
+                self.groupwidth[number] = _width(child, self.groupwidth)
                 return ("group", number, child)
             if kind == "=":
                 name_start = self.index
@@ -393,11 +403,19 @@ class _Parser:
                     negative = True
                 elif item in mapping:
                     if negative:
+                        if item in "aLu":
+                            self.fail("bad inline flags: cannot turn off flags 'a', 'u' and 'L'", self.index)
                         disabled |= mapping[item]
                     else:
+                        if item == "L" and not self.byte_mode:
+                            self.fail("bad inline flags: cannot use 'L' flag with a str pattern", self.index)
+                        if item in "aLu" and enabled & int(ASCII | LOCALE | UNICODE):
+                            self.fail("bad inline flags: flags 'a', 'u' and 'L' are incompatible", self.index)
                         enabled |= mapping[item]
                 else:
                     self.fail(f"unknown flag {item!r}", self.index - 1)
+            if enabled & disabled:
+                self.fail("bad inline flags: flag turned on and off", self.index)
             new_flags = (flags | enabled) & ~disabled
             if self.take() == ")":
                 return ("setflags", new_flags)
@@ -408,27 +426,27 @@ class _Parser:
         self.fail(f"unknown extension ?{char}", start + 1)
 
 
-def _width(node):
+def _width(node, groupwidth=None):
     kind = node[0]
     if kind in {"lit", "dot", "class", "category"}:
         return 1, 1
     if kind in {"anchor", "boundary", "look", "setflags"}:
         return 0, 0
     if kind == "backref":
-        return 0, 10 ** 9
+        return groupwidth.get(node[1], (0, 10 ** 9)) if groupwidth is not None else (0, 10 ** 9)
     if kind == "group" or kind == "atomic":
-        return _width(node[-1])
+        return _width(node[-1], groupwidth)
     if kind == "conditional":
-        a, b = _width(node[2]), _width(node[3])
+        a, b = _width(node[2], groupwidth), _width(node[3], groupwidth)
         return min(a[0], b[0]), max(a[1], b[1])
     if kind == "seq":
-        values = [_width(item) for item in node[1]]
+        values = [_width(item, groupwidth) for item in node[1]]
         return sum(item[0] for item in values), sum(item[1] for item in values)
     if kind == "alt":
-        values = [_width(item) for item in node[1]]
+        values = [_width(item, groupwidth) for item in node[1]]
         return min(item[0] for item in values), max(item[1] for item in values)
     if kind == "repeat":
-        child = _width(node[1])
+        child = _width(node[1], groupwidth)
         return child[0] * node[2], 10 ** 9 if node[3] is None else child[1] * node[3]
     raise RuntimeError(f"unknown width node {kind}")
 
@@ -607,9 +625,11 @@ class _Engine:
 
 
 def _template(value, match):
+    if isinstance(value, (bytearray, memoryview)):
+        value = bytes(value)
     if not isinstance(value, (str, bytes)):
         raise TypeError("decoding to str: need a bytes-like object, function found")
-    byte_mode = isinstance(match.string, bytes)
+    byte_mode = not isinstance(match.string, str)
     if byte_mode != isinstance(value, bytes):
         expected = "bytes-like object" if byte_mode else "str instance"
         actual = "str" if isinstance(value, str) else "bytes"
@@ -675,6 +695,11 @@ def _template(value, match):
     return joined.encode("latin1") if byte_mode else joined
 
 
+def _slice(value, start, end):
+    result = value[start:end]
+    return bytes(result) if isinstance(result, (bytearray, memoryview)) else result
+
+
 class Match:
     __slots__ = ("_pattern", "_string", "_spans", "_lastindex", "pos", "endpos")
 
@@ -685,6 +710,22 @@ class Match:
         self._lastindex = lastindex
         self.pos = pos
         self.endpos = endpos
+
+    @classmethod
+    def __class_getitem__(cls, item):
+        return types.GenericAlias(cls, item)
+
+    def __copy__(self):
+        return self
+
+    def __deepcopy__(self, memo):
+        return self
+
+    def __reduce__(self):
+        raise TypeError("cannot pickle 're.Match' object")
+
+    def __repr__(self):
+        return f"<re.Match object; span={self.span()}, match={repr(self.group(0))[:50]}>"
 
     @property
     def re(self):
@@ -721,17 +762,17 @@ class Match:
         values = []
         for group in groups:
             span = self._spans[self._number(group)]
-            values.append(None if span is None else self._string[span[0]:span[1]])
+            values.append(None if span is None else _slice(self._string, span[0], span[1]))
         return values[0] if len(values) == 1 else tuple(values)
 
     def __getitem__(self, group):
         return self.group(group)
 
     def groups(self, default=None):
-        return tuple(default if item is None else self._string[item[0]:item[1]] for item in self._spans[1:])
+        return tuple(default if item is None else _slice(self._string, item[0], item[1]) for item in self._spans[1:])
 
     def groupdict(self, default=None):
-        return {name: default if self._spans[number] is None else self._string[self._spans[number][0]:self._spans[number][1]] for name, number in self._pattern.groupindex.items()}
+        return {name: default if self._spans[number] is None else _slice(self._string, self._spans[number][0], self._spans[number][1]) for name, number in self._pattern.groupindex.items()}
 
     def start(self, group=0):
         span = self._spans[self._number(group)]
@@ -798,17 +839,35 @@ class Pattern:
     def __reduce__(self):
         return compile, (self.pattern, self.flags)
 
+    @classmethod
+    def __class_getitem__(cls, item):
+        return types.GenericAlias(cls, item)
+
+    def __repr__(self):
+        flags = self.flags & ~int(UNICODE)
+        names = [name for bit, name in ((ASCII, "ASCII"), (IGNORECASE, "IGNORECASE"), (LOCALE, "LOCALE"), (MULTILINE, "MULTILINE"), (DOTALL, "DOTALL"), (VERBOSE, "VERBOSE"), (DEBUG, "DEBUG")) if flags & int(bit)]
+        suffix = ", " + "|".join(f"re.{name}" for name in names) if names else ""
+        return f"re.compile({self.pattern!r}{suffix})"
+
+    def __eq__(self, other):
+        if not isinstance(other, Pattern):
+            return NotImplemented
+        return (type(self.pattern), self.pattern, self.flags) == (type(other.pattern), other.pattern, other.flags)
+
+    def __hash__(self):
+        return hash((type(self.pattern), self.pattern, self.flags))
+
     def _validate_string(self, string):
-        if not isinstance(string, (str, bytes)):
+        if not isinstance(string, (str, bytes, bytearray, memoryview)):
             raise TypeError(f"expected string or bytes-like object, got '{type(string).__name__}'")
-        if isinstance(self.pattern, str) and isinstance(string, bytes):
+        if isinstance(self.pattern, str) and not isinstance(string, str):
             raise TypeError("cannot use a string pattern on a bytes-like object")
         if isinstance(self.pattern, bytes) and isinstance(string, str):
             raise TypeError("cannot use a bytes pattern on a string-like object")
 
     def _at(self, string, start, endpos, original_pos, require_nonempty=False):
         self._validate_string(string)
-        text = string.decode("latin1") if isinstance(string, bytes) else string
+        text = bytes(string).decode("latin1") if not isinstance(string, str) else string
         engine = _Engine(self._node, text, endpos)
         state = (start, tuple([None] * (self.groups + 1)), None)
         for result in engine.run(self._node, state):
@@ -841,7 +900,7 @@ class Pattern:
     def fullmatch(self, string, pos=0, endpos=None):
         end = len(string) if endpos is None else min(max(endpos, 0), len(string))
         self._validate_string(string)
-        text = string.decode("latin1") if isinstance(string, bytes) else string
+        text = bytes(string).decode("latin1") if not isinstance(string, str) else string
         start = max(pos, 0)
         state = (start, tuple([None] * (self.groups + 1)), None)
         for result in _Engine(self._node, text, end).run(self._node, state):
@@ -868,7 +927,7 @@ class Pattern:
                 empty = False
 
     def findall(self, string, pos=0, endpos=None):
-        empty = b"" if isinstance(string, bytes) else ""
+        empty = b"" if not isinstance(string, str) else ""
         output = []
         for item in self.finditer(string, pos, endpos):
             if self.groups == 0:
@@ -887,11 +946,11 @@ class Pattern:
         for item in self.finditer(string):
             if maxsplit and count >= maxsplit:
                 break
-            result.append(string[previous:item.start()])
+            result.append(_slice(string, previous, item.start()))
             result.extend(item.groups())
             previous = item.end()
             count += 1
-        result.append(string[previous:])
+        result.append(_slice(string, previous, len(string)))
         return result
 
     def subn(self, repl, string, count=0):
@@ -902,16 +961,16 @@ class Pattern:
         for item in self.finditer(string):
             if count and replacements >= count:
                 break
-            parts.append(string[previous:item.start()])
+            parts.append(_slice(string, previous, item.start()))
             value = repl(item) if callable(repl) else item.expand(repl)
-            if isinstance(string, bytes) != isinstance(value, bytes):
-                expected = "bytes-like object" if isinstance(string, bytes) else "str instance"
+            if (not isinstance(string, str)) != isinstance(value, bytes):
+                expected = "bytes-like object" if not isinstance(string, str) else "str instance"
                 raise TypeError(f"sequence item {len(parts)}: expected a {expected}, {type(value).__name__} found")
             parts.append(value)
             previous = item.end()
             replacements += 1
-        parts.append(string[previous:])
-        return (b"" if isinstance(string, bytes) else "").join(parts), replacements
+        parts.append(_slice(string, previous, len(string)))
+        return (b"" if not isinstance(string, str) else "").join(parts), replacements
 
     def sub(self, repl, string, count=0):
         return self.subn(repl, string, count)[0]
@@ -973,21 +1032,37 @@ def finditer(pattern, string, flags=0):
     return compile(pattern, flags).finditer(string)
 
 
-def split(pattern, string, maxsplit=0, flags=0):
+def split(pattern, string, *args, maxsplit=0, flags=0):
+    if args:
+        warnings.warn("'maxsplit' is passed as positional argument", DeprecationWarning, stacklevel=2)
+        if len(args) > 2:
+            raise TypeError("split() takes from 2 to 4 positional arguments")
+        maxsplit, flags = (args + (flags,))[:2]
     return compile(pattern, flags).split(string, maxsplit)
 
 
-def sub(pattern, repl, string, count=0, flags=0):
+def sub(pattern, repl, string, *args, count=0, flags=0):
+    if args:
+        warnings.warn("'count' is passed as positional argument", DeprecationWarning, stacklevel=2)
+        if len(args) > 2:
+            raise TypeError("sub() takes from 3 to 5 positional arguments")
+        count, flags = (args + (flags,))[:2]
     return compile(pattern, flags).sub(repl, string, count)
 
 
-def subn(pattern, repl, string, count=0, flags=0):
+def subn(pattern, repl, string, *args, count=0, flags=0):
+    if args:
+        warnings.warn("'count' is passed as positional argument", DeprecationWarning, stacklevel=2)
+        if len(args) > 2:
+            raise TypeError("subn() takes from 3 to 5 positional arguments")
+        count, flags = (args + (flags,))[:2]
     return compile(pattern, flags).subn(repl, string, count)
 
 
 def escape(pattern):
     special = set("()[]{}?*+-|^$\\.&~# \t\n\r\v\f")
-    if isinstance(pattern, bytes):
+    if isinstance(pattern, (bytes, bytearray, memoryview)):
+        pattern = bytes(pattern)
         return b"".join((b"\\" + bytes([char])) if chr(char) in special else bytes([char]) for char in pattern)
     return "".join("\\" + char if char in special else char for char in pattern)
 
