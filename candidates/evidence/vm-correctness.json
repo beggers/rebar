@@ -1,0 +1,11 @@
+{
+  "cases": 2048,
+  "expected_sha256": "983885ee6411fd806edf3d72efbcc989f9b9f7775a6d127dc7c865673eeb0fed",
+  "failed": 0,
+  "failures": [],
+  "mapped_obligations": 38,
+  "module": "candidates.vm_candidate",
+  "obligations": 38,
+  "passed": 2048,
+  "schema": "rebar-correctness-result-v1"
+}
