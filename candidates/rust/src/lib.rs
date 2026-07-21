@@ -306,35 +306,53 @@ impl Parser {
             return Ok(Expr::Anchor(ch, flags));
         }
         if ch == 'x' {
-            if self.at + 2 > self.source.len() {
-                return self.fail("incomplete escape \\x".into(), Some(slash), true);
-            }
-            let text: String = self.source[self.at..self.at + 2]
+            let end = (self.at + 2).min(self.source.len());
+            let text: String = self.source[self.at..end]
                 .iter()
                 .filter_map(|v| char::from_u32(*v))
                 .collect();
+            let valid: String = text.chars().take_while(|v| v.is_ascii_hexdigit()).collect();
+            if text.len() != 2 || valid.len() != 2 {
+                return self.fail(format!("incomplete escape \\x{}", valid), Some(slash), true);
+            }
             let Ok(value) = u32::from_str_radix(&text, 16) else {
-                return self.fail("incomplete escape \\x".into(), Some(slash), true);
+                return self.fail(format!("incomplete escape \\x{}", valid), Some(slash), true);
             };
             self.at += 2;
             return Ok(Expr::Lit(value, flags));
         }
         if matches!(ch, 'u' | 'U') && !self.byte_mode {
             let count = if ch == 'u' { 4 } else { 8 };
-            if self.at + count > self.source.len() {
-                return self.fail(format!("incomplete escape \\{}", ch), Some(slash), true);
-            }
-            let text: String = self.source[self.at..self.at + count]
+            let end = (self.at + count).min(self.source.len());
+            let text: String = self.source[self.at..end]
                 .iter()
                 .filter_map(|v| char::from_u32(*v))
                 .collect();
+            let valid: String = text.chars().take_while(|v| v.is_ascii_hexdigit()).collect();
+            if text.len() != count || valid.len() != count {
+                return self.fail(
+                    format!("incomplete escape \\{}{}", ch, valid),
+                    Some(slash),
+                    true,
+                );
+            }
             let Ok(value) = u32::from_str_radix(&text, 16) else {
-                return self.fail(format!("incomplete escape \\{}", ch), Some(slash), true);
+                return self.fail(
+                    format!("incomplete escape \\{}{}", ch, valid),
+                    Some(slash),
+                    true,
+                );
             };
             self.at += count;
+            if value > 0x10ffff {
+                return self.fail(format!("bad escape \\{}{}", ch, text), Some(slash), true);
+            }
             return Ok(Expr::Lit(value, flags));
         }
-        if ch == 'N' && !self.byte_mode && self.now() == Some('{') {
+        if ch == 'N' && !self.byte_mode {
+            if self.now() != Some('{') {
+                return self.fail("missing {".into(), Some(slash + 2), true);
+            }
             self.at += 1;
             while self.now().is_some() && self.now() != Some('}') {
                 self.at += 1;
@@ -349,11 +367,28 @@ impl Parser {
         }
         if ch.is_ascii_digit() {
             let mut digits = String::from(ch);
-            if ch == '0' || in_class {
+            let octal = ch == '0'
+                || in_class
+                || (matches!(ch, '1'..='7')
+                    && self.at + 1 < self.source.len()
+                    && matches!(char::from_u32(self.source[self.at]), Some('0'..='7'))
+                    && matches!(char::from_u32(self.source[self.at + 1]), Some('0'..='7')));
+            if octal {
+                if !matches!(ch, '0'..='7') {
+                    return self.fail(format!("bad escape \\{}", ch), Some(slash), true);
+                }
                 while digits.len() < 3 && self.now().is_some_and(|v| matches!(v, '0'..='7')) {
                     digits.push(self.take().unwrap());
                 }
-                return Ok(Expr::Lit(u32::from_str_radix(&digits, 8).unwrap(), flags));
+                let value = u32::from_str_radix(&digits, 8).unwrap();
+                if value > 0o377 {
+                    return self.fail(
+                        format!("octal escape value \\{} outside of range 0-0o377", digits),
+                        Some(slash),
+                        true,
+                    );
+                }
+                return Ok(Expr::Lit(value, flags));
             }
             if self.now().is_some_and(|v| v.is_ascii_digit()) {
                 digits.push(self.take().unwrap());
@@ -389,6 +424,7 @@ impl Parser {
                 return Ok(Expr::Class(values, negate, flags));
             }
             first = false;
+            let left_start = self.at;
             let left = if ch == '\\' {
                 let slash = self.at;
                 self.at += 1;
@@ -411,7 +447,15 @@ impl Parser {
                     Expr::Lit(self.take().unwrap() as u32, flags)
                 };
                 let (Expr::Lit(a, _), Expr::Lit(b, _)) = (left, right) else {
-                    return self.fail("bad character range".into(), Some(dash), true);
+                    let text: String = self.source[left_start..self.at]
+                        .iter()
+                        .filter_map(|v| char::from_u32(*v))
+                        .collect();
+                    return self.fail(
+                        format!("bad character range {}", text),
+                        Some(left_start),
+                        true,
+                    );
                 };
                 if a > b {
                     return self.fail(

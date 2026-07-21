@@ -95,6 +95,21 @@ The next executor cohort fixes case-insensitive literals, sets, and ranges: punc
 
 The complete follow-up records are [native](evidence/rebar-unicode.json), [Python](evidence/ast-unicode.json), and [Rust](evidence/rust-unicode.json). Earlier evidence remains unchanged.
 
+## Pattern and replacement escapes follow-up
+
+![Official CPython re compatibility after escape fixes](evidence/escapes-correctness.svg)
+
+The next parser/API cohort fixes three-digit octal escapes, invalid character-class escapes, partial hexadecimal errors, out-of-range Unicode escapes, named Unicode characters, replacement-string escapes, and replacement validation when the input is empty. Exactly seven previously failing methods now pass in every engine, with no unrelated status changes:
+
+| Engine | Runnable methods passed | Failed | Crashes | Timeouts |
+| --- | ---: | ---: | ---: | ---: |
+| CPython `re` self-check | **144/144** | **0** | **0** | **0** |
+| Native C / `rebar` | 126/144 | 18 | 0 | 2 |
+| Python engine | 122/144 | 22 | 0 | 1 |
+| Rust engine | 122/144 | 22 | 3 | 0 |
+
+The complete follow-up records are [native](evidence/rebar-escapes.json), [Python](evidence/ast-escapes.json), and [Rust](evidence/rust-escapes.json). Earlier evidence remains unchanged.
+
 Reproduce the frozen gate or one stable method ID:
 
 ```sh

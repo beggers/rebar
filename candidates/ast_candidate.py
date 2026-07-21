@@ -228,35 +228,65 @@ class _Parser:
         if char == "x":
             digits = self.text[self.index:self.index + 2]
             if len(digits) != 2 or any(ch not in "0123456789abcdefABCDEF" for ch in digits):
-                self.fail("incomplete escape \\x", slash)
+                valid = []
+                for item in digits:
+                    if item not in "0123456789abcdefABCDEF":
+                        break
+                    valid.append(item)
+                self.fail(f"incomplete escape \\x{''.join(valid)}", slash)
             self.index += 2
             return ("lit", chr(int(digits, 16)), flags)
         if char in {"u", "U"} and not self.byte_mode:
             size = 4 if char == "u" else 8
             digits = self.text[self.index:self.index + size]
             if len(digits) != size or any(ch not in "0123456789abcdefABCDEF" for ch in digits):
-                self.fail(f"incomplete escape \\{char}", slash)
+                valid = []
+                for item in digits:
+                    if item not in "0123456789abcdefABCDEF":
+                        break
+                    valid.append(item)
+                self.fail(f"incomplete escape \\{char}{''.join(valid)}", slash)
             self.index += size
-            return ("lit", chr(int(digits, 16)), flags)
-        if char == "N" and not self.byte_mode and self.peek() == "{":
+            value = int(digits, 16)
+            if value > 0x10FFFF:
+                self.fail(f"bad escape \\{char}{digits}", slash)
+            return ("lit", chr(value), flags)
+        if char == "N" and not self.byte_mode:
+            if self.peek() != "{":
+                self.fail("missing {", slash + 2)
             self.index += 1
             end = self.text.find("}", self.index)
+            if end == self.index or (end < 0 and self.index == len(self.text)):
+                self.fail("missing character name", slash + 3)
             if end < 0:
-                self.fail("missing }, unterminated name", slash + 2)
+                self.fail("missing }, unterminated name", slash + 3)
             name = self.text[self.index:end]
             self.index = end + 1
             try:
-                return ("lit", unicodedata.lookup(name), flags)
+                value = unicodedata.lookup(name)
             except KeyError:
                 self.fail(f"undefined character name {name!r}", slash)
-        if char.isdigit():
-            if char == "0" or in_class:
-                digits = char
+            if len(value) != 1:
+                self.fail(f"undefined character name {name!r}", slash)
+            return ("lit", value, flags)
+        if char in "0123456789":
+            digits = char
+            octal = char == "0" or in_class or (
+                char in "1234567"
+                and self.index + 1 < len(self.text)
+                and self.text[self.index] in "01234567"
+                and self.text[self.index + 1] in "01234567"
+            )
+            if octal:
+                if char not in "01234567":
+                    self.fail(f"bad escape \\{char}", slash)
                 while len(digits) < 3 and self.peek() is not None and self.peek() in "01234567":
                     digits += self.take()
-                return ("lit", chr(int(digits, 8)), flags)
-            digits = char
-            if self.peek() is not None and self.peek().isdigit():
+                value = int(digits, 8)
+                if value > 0o377:
+                    self.fail(f"octal escape value \\{digits} outside of range 0-0o377", slash)
+                return ("lit", chr(value), flags)
+            if self.peek() is not None and self.peek() in "0123456789":
                 digits += self.take()
             number = int(digits)
             if number > self.groups:
@@ -285,6 +315,7 @@ class _Parser:
                         warnings.warn(f"Possible set {label} at position {location}", FutureWarning, skip_file_prefixes=_WARNING_PREFIX)
                 return ("class", items, negate, flags)
             first = False
+            left_start = self.index
             if self.peek() == "\\":
                 slash = self.index
                 self.index += 1
@@ -300,7 +331,7 @@ class _Parser:
                 else:
                     right = ("lit", self.take(), flags)
                 if left[0] != "lit" or right[0] != "lit":
-                    self.fail("bad character range", dash)
+                    self.fail(f"bad character range {self.text[left_start:self.index]}", left_start)
                 if ord(left[1]) > ord(right[1]):
                     self.fail(f"bad character range {left[1]}-{right[1]}", dash - 1)
                 items.append(("range", left[1], right[1]))
@@ -731,9 +762,24 @@ def _template(value, match):
                 number = match.re.groupindex[name]
             part = match.group(number)
             output.append("" if part is None else part.decode("latin1") if isinstance(part, bytes) else part)
-        elif char.isdigit():
+        elif char in "0123456789":
             digits = char
-            if index < len(text) and text[index].isdigit():
+            octal = char == "0" or (
+                char in "1234567"
+                and index + 1 < len(text)
+                and text[index] in "01234567"
+                and text[index + 1] in "01234567"
+            )
+            if octal:
+                while len(digits) < 3 and index < len(text) and text[index] in "01234567":
+                    digits += text[index]
+                    index += 1
+                number = int(digits, 8)
+                if number > 0o377:
+                    raise PatternError(f"octal escape value \\{digits} outside of range 0-0o377", value, slash)
+                output.append(chr(number))
+                continue
+            if index < len(text) and text[index] in "0123456789":
                 digits += text[index]
                 index += 1
             number = int(digits)
@@ -1018,6 +1064,8 @@ class Pattern:
 
     def subn(self, repl, string, count=0):
         self._validate_string(string)
+        if not callable(repl):
+            _template(repl, Match(self, string, [(0, 0)] + [None] * self.groups, None, 0, len(string)))
         parts = []
         previous = 0
         replacements = 0

@@ -180,13 +180,17 @@ def _named_escapes(pattern):
             index += bool(pattern[index:index + 1])
             continue
         close = pattern.find("}", index + 2)
+        if close == index + 2 or (close < 0 and index + 2 == len(pattern)):
+            raise PatternError("missing character name", pattern, slash + 3)
         if close < 0:
-            raise PatternError("missing }, unterminated name", pattern, slash + 2)
+            raise PatternError("missing }, unterminated name", pattern, slash + 3)
         name = pattern[index + 2:close]
         try:
             value = unicodedata.lookup(name)
         except KeyError:
             raise PatternError(f"undefined character name {name!r}", pattern, slash) from None
+        if len(value) != 1:
+            raise PatternError(f"undefined character name {name!r}", pattern, slash)
         found.append((slash, ord(value)))
         index = close + 1
     return found
@@ -265,9 +269,24 @@ def _template(value, match):
                 number = match.re.groupindex[name]
             part = match.group(number)
             output.append("" if part is None else part.decode("latin1") if isinstance(part, bytes) else part)
-        elif char.isdigit():
+        elif char in "0123456789":
             digits = char
-            if index < len(text) and text[index].isdigit():
+            octal = char == "0" or (
+                char in "1234567"
+                and index + 1 < len(text)
+                and text[index] in "01234567"
+                and text[index + 1] in "01234567"
+            )
+            if octal:
+                while len(digits) < 3 and index < len(text) and text[index] in "01234567":
+                    digits += text[index]
+                    index += 1
+                number = int(digits, 8)
+                if number > 0o377:
+                    raise PatternError(f"octal escape value \\{digits} outside of range 0-0o377", value, slash)
+                output.append(chr(number))
+                continue
+            if index < len(text) and text[index] in "0123456789":
                 digits += text[index]
                 index += 1
             number = int(digits)
@@ -549,6 +568,8 @@ class Pattern:
 
     def subn(self, repl, string, count=0):
         self._validate_string(string)
+        if not callable(repl):
+            _template(repl, Match(self, string, [(0, 0)] + [None] * self.groups, None, 0, len(string)))
         parts = []
         previous = 0
         replacements = 0

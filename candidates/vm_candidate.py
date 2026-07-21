@@ -180,34 +180,65 @@ class _BytecodeParser:
         if char == "x":
             digits = self.source[self.at:self.at + 2]
             if len(digits) != 2 or any(item not in "0123456789abcdefABCDEF" for item in digits):
-                self.error("incomplete escape \\x", slash)
+                valid = []
+                for item in digits:
+                    if item not in "0123456789abcdefABCDEF":
+                        break
+                    valid.append(item)
+                self.error(f"incomplete escape \\x{''.join(valid)}", slash)
             self.at += 2
             return ("lit", chr(int(digits, 16)), flags)
         if char in {"u", "U"} and not self.byte_mode:
             count = 4 if char == "u" else 8
             digits = self.source[self.at:self.at + count]
             if len(digits) != count or any(item not in "0123456789abcdefABCDEF" for item in digits):
-                self.error(f"incomplete escape \\{char}", slash)
+                valid = []
+                for item in digits:
+                    if item not in "0123456789abcdefABCDEF":
+                        break
+                    valid.append(item)
+                self.error(f"incomplete escape \\{char}{''.join(valid)}", slash)
             self.at += count
-            return ("lit", chr(int(digits, 16)), flags)
-        if char == "N" and not self.byte_mode and self.current() == "{":
+            value = int(digits, 16)
+            if value > 0x10FFFF:
+                self.error(f"bad escape \\{char}{digits}", slash)
+            return ("lit", chr(value), flags)
+        if char == "N" and not self.byte_mode:
+            if self.current() != "{":
+                self.error("missing {", slash + 2)
             self.at += 1
             close = self.source.find("}", self.at)
+            if close == self.at or (close < 0 and self.at == len(self.source)):
+                self.error("missing character name", slash + 3)
             if close < 0:
-                self.error("missing }, unterminated name", slash + 2)
+                self.error("missing }, unterminated name", slash + 3)
             label = self.source[self.at:close]
             self.at = close + 1
             try:
-                return ("lit", unicodedata.lookup(label), flags)
+                value = unicodedata.lookup(label)
             except KeyError:
                 self.error(f"undefined character name {label!r}", slash)
-        if char.isdigit():
+            if len(value) != 1:
+                self.error(f"undefined character name {label!r}", slash)
+            return ("lit", value, flags)
+        if char in "0123456789":
             digits = char
-            if char == "0" or in_set:
+            octal = char == "0" or in_set or (
+                char in "1234567"
+                and self.at + 1 < len(self.source)
+                and self.source[self.at] in "01234567"
+                and self.source[self.at + 1] in "01234567"
+            )
+            if octal:
+                if char not in "01234567":
+                    self.error(f"bad escape \\{char}", slash)
                 while len(digits) < 3 and self.current() is not None and self.current() in "01234567":
                     digits += self.advance()
-                return ("lit", chr(int(digits, 8)), flags)
-            if self.current() is not None and self.current().isdigit():
+                value = int(digits, 8)
+                if value > 0o377:
+                    self.error(f"octal escape value \\{digits} outside of range 0-0o377", slash)
+                return ("lit", chr(value), flags)
+            if self.current() is not None and self.current() in "0123456789":
                 digits += self.advance()
             number = int(digits)
             if number > self.groups:
@@ -237,6 +268,7 @@ class _BytecodeParser:
                         warnings.warn(f"Possible set {label} at position {location}", FutureWarning, skip_file_prefixes=_WARNING_PREFIX)
                 return ("class", members, negative, flags)
             initial = False
+            left_start = self.at
             if self.current() == "\\":
                 slash = self.at
                 self.at += 1
@@ -253,7 +285,7 @@ class _BytecodeParser:
                 else:
                     right = ("lit", self.advance(), flags)
                 if left[0] != "lit" or right[0] != "lit":
-                    self.error("bad character range", dash)
+                    self.error(f"bad character range {self.source[left_start:self.at]}", left_start)
                 if ord(left[1]) > ord(right[1]):
                     self.error(f"bad character range {left[1]}-{right[1]}", dash - 1)
                 members.append(("range", left[1], right[1]))
@@ -736,9 +768,24 @@ def _template_parts(value, pattern, byte_mode):
                 number = pattern.groupindex[name]
             flush()
             output.append(number)
-        elif char.isdigit():
+        elif char in "0123456789":
             digits = char
-            if index < len(text) and text[index].isdigit():
+            octal = char == "0" or (
+                char in "1234567"
+                and index + 1 < len(text)
+                and text[index] in "01234567"
+                and text[index + 1] in "01234567"
+            )
+            if octal:
+                while len(digits) < 3 and index < len(text) and text[index] in "01234567":
+                    digits += text[index]
+                    index += 1
+                number = int(digits, 8)
+                if number > 0o377:
+                    raise PatternError(f"octal escape value \\{digits} outside of range 0-0o377", value, slash)
+                literal.append(chr(number))
+                continue
+            if index < len(text) and text[index] in "0123456789":
                 digits += text[index]
                 index += 1
             number = int(digits)
