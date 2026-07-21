@@ -6,29 +6,29 @@ The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2
 
 ## Headline results
 
-The latest completed holdout contains 16 tasks kept separate from tuning. **1× means the same speed as Python `re`; higher is faster.** The native C engine is **1.56× as fast overall**, clearly faster on **14/16** tasks, with **no** large holdout slowdown. Python and Rust are much slower on these short calls.
+The expanded holdout contains 28 tasks kept separate from tuning. **1× means the same speed as Python `re`; higher is faster.** The native C engine is **1.16× as fast overall** and clearly faster on **19/28** tasks, but four newly covered tasks are more than 20% slower. Python and Rust are much slower on short calls. These results identify what to optimize next.
 
-![Overall speed compared with Python re](performance/v1/evidence/final-candidate-overall.svg)
+![Overall speed compared with Python re](performance/v2/evidence/initial-overall.svg)
 
 | Engine | Overall speed | Clearly faster | Large slowdowns |
 | --- | ---: | ---: | ---: |
-| Native C | **1.56×** | **14/16** | **0/16** |
-| Rust | 0.014× | 0/16 | 15/16 |
-| Python | 0.011× | 0/16 | 16/16 |
+| Native C | **1.16×** | **19/28** | **4/28** |
+| Rust | 0.018× | 1/28 | 27/28 |
+| Python | 0.014× | 1/28 | 27/28 |
 
-An expanded 56-task performance check is now frozen and correctness-gated; its timings are **NOT MEASURED** yet. It will provide the next headline comparison using 28 new holdout tasks and clearer, compact charts.
+The [full expanded report](performance/v2/evidence/INITIAL.md) retains all 2,464 timing rows, every task, memory observations, and every slowdown. The headline graph and compact task grids below show the same results in plain language.
 
 ## Detailed graphs
 
-These show the latest completed holdout task by task. Green means clearly faster, red means more than 20% slower, and grey means close or uncertain. The lines on the speed chart show the measured range.
+These show the expanded holdout task by task. Green means clearly faster, red means more than 20% slower, and grey means close or uncertain. Each speed cell includes the measured range.
 
-![Speed on every holdout task](performance/v1/evidence/final-candidate-speed.svg)
+![Speed on every holdout task](performance/v2/evidence/initial-speed.svg)
 
-![Memory used on every holdout task](performance/v1/evidence/final-candidate-memory.svg)
+![Memory used on every holdout task](performance/v2/evidence/initial-memory.svg)
 
-![Where each engine is faster or slower](performance/v1/evidence/final-candidate-regressions.svg)
+![Where each engine is faster or slower](performance/v2/evidence/initial-regressions.svg)
 
-![Overall results across all task sets](performance/v1/evidence/final-candidate-rankings.svg)
+![Overall results across all task sets](performance/v2/evidence/initial-rankings.svg)
 
 ## Correctness and current status
 
@@ -39,8 +39,8 @@ The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). All three independent e
 | Check | Status |
 | --- | --- |
 | Correctness | **PASS** — stdlib, native C, Python, and Rust each pass all 8,244 expanded cases |
-| Original performance | **PASS** — native C meets the 1.5× overall and breadth targets |
-| Expanded performance | **FROZEN / NOT MEASURED** — 28 practice + 28 holdout tasks, all correctness-gated |
+| Original performance | **PASS** — native C reaches 1.56× on the original 16-task holdout |
+| Expanded performance | **MEASURED / OPTIMIZATION NEEDED** — native C reaches 1.16× on 28 holdout tasks; all results are correctness-gated |
 | Public import | **PASS** — `import rebar as re` uses the qualified native C engine |
 
 The [expanded performance protocol](performance/v2/PROTOCOL.md) explains exactly what is timed, how comparisons are made, and how slowdowns are reported. Full results, raw data, rejected experiments, and older charts are linked from the [experiment log](docs/EXPERIMENT-LOG.md).

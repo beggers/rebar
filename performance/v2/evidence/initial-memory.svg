@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1246" height="969" viewBox="0 0 1246 969" role="img" aria-label="Memory used on each holdout task">
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<text x="28" y="34" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#0f172a">Memory used on each holdout task</text>
+<text x="28" y="59" font-family="Arial, sans-serif" font-size="13" fill="#475569">Compared with Python re. Green uses no more traced Python memory; red uses over twice as much.</text>
+<text x="306" y="96" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0284c7">Native C engine</text>
+<text x="610" y="96" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#7c3aed">Python engine</text>
+<text x="914" y="96" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#d97706">Rust engine</text>
+<rect x="18" y="106" width="1210" height="30" fill="#fff"/>
+<text x="28" y="126" font-family="Arial, sans-serif" font-size="12" fill="#334155">Search with controlled branches</text>
+<rect x="296" y="109" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Search with controlled branches: 0.072×</title></rect>
+<text x="305" y="125" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.072×</text>
+<rect x="600" y="109" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Search with controlled branches: 11.7×</title></rect>
+<text x="609" y="125" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">11.7×</text>
+<rect x="904" y="109" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Search with controlled branches: 3.02×</title></rect>
+<text x="913" y="125" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">3.02×</text>
+<text x="28" y="156" font-family="Arial, sans-serif" font-size="12" fill="#334155">Check repeated captured text</text>
+<rect x="296" y="139" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Check repeated captured text: 0.083×</title></rect>
+<text x="305" y="155" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.083×</text>
+<rect x="600" y="139" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Check repeated captured text: 10.4×</title></rect>
+<text x="609" y="155" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">10.4×</text>
+<rect x="904" y="139" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Check repeated captured text: 2.93×</title></rect>
+<text x="913" y="155" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">2.93×</text>
+<rect x="18" y="166" width="1210" height="30" fill="#fff"/>
+<text x="28" y="186" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find tokens in bytes</text>
+<rect x="296" y="169" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Find tokens in bytes: 0.18×</title></rect>
+<text x="305" y="185" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.18×</text>
+<rect x="600" y="169" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Find tokens in bytes: 14.6×</title></rect>
+<text x="609" y="185" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">14.6×</text>
+<rect x="904" y="169" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Find tokens in bytes: 2.66×</title></rect>
+<text x="913" y="185" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">2.66×</text>
+<text x="28" y="216" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find in a byte array or view</text>
+<rect x="296" y="199" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Find in a byte array or view: 0.18×</title></rect>
+<text x="305" y="215" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.18×</text>
+<rect x="600" y="199" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Find in a byte array or view: 12.1×</title></rect>
+<text x="609" y="215" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">12.1×</text>
+<rect x="904" y="199" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Find in a byte array or view: 2.69×</title></rect>
+<text x="913" y="215" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">2.69×</text>
+<rect x="18" y="226" width="1210" height="30" fill="#fff"/>
+<text x="28" y="246" font-family="Arial, sans-serif" font-size="12" fill="#334155">Compile and search from cold</text>
+<rect x="296" y="229" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Compile and search from cold: 0.69×</title></rect>
+<text x="305" y="245" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.69×</text>
+<rect x="600" y="229" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Compile and search from cold: 10.0×</title></rect>
+<text x="609" y="245" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">10.0×</text>
+<rect x="904" y="229" width="295" height="24" rx="4" fill="#f1f5f9"><title>Rust engine / Compile and search from cold: 1.77×</title></rect>
+<text x="913" y="245" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#334155">1.77×</text>
+<text x="28" y="276" font-family="Arial, sans-serif" font-size="12" fill="#334155">Compile a new pattern</text>
+<rect x="296" y="259" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Compile a new pattern: 0.83×</title></rect>
+<text x="305" y="275" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.83×</text>
+<rect x="600" y="259" width="295" height="24" rx="4" fill="#dcfce7"><title>Python engine / Compile a new pattern: 0.37×</title></rect>
+<text x="609" y="275" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.37×</text>
+<rect x="904" y="259" width="295" height="24" rx="4" fill="#dcfce7"><title>Rust engine / Compile a new pattern: 0.60×</title></rect>
+<text x="913" y="275" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.60×</text>
+<rect x="18" y="286" width="1210" height="30" fill="#fff"/>
+<text x="28" y="306" font-family="Arial, sans-serif" font-size="12" fill="#334155">Check an optional wrapper</text>
+<rect x="296" y="289" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Check an optional wrapper: 0.080×</title></rect>
+<text x="305" y="305" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.080×</text>
+<rect x="600" y="289" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Check an optional wrapper: 13.1×</title></rect>
+<text x="609" y="305" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">13.1×</text>
+<rect x="904" y="289" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Check an optional wrapper: 2.83×</title></rect>
+<text x="913" y="305" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">2.83×</text>
+<text x="28" y="336" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find empty-position matches</text>
+<rect x="296" y="319" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Find empty-position matches: 0.57×</title></rect>
+<text x="305" y="335" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.57×</text>
+<rect x="600" y="319" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Find empty-position matches: 8.22×</title></rect>
+<text x="609" y="335" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">8.22×</text>
+<rect x="904" y="319" width="295" height="24" rx="4" fill="#f1f5f9"><title>Rust engine / Find empty-position matches: 1.52×</title></rect>
+<text x="913" y="335" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#334155">1.52×</text>
+<rect x="18" y="346" width="1210" height="30" fill="#fff"/>
+<text x="28" y="366" font-family="Arial, sans-serif" font-size="12" fill="#334155">Escape special byte characters</text>
+<rect x="296" y="349" width="295" height="24" rx="4" fill="#fee2e2"><title>Native C engine / Escape special byte characters: 24.4×</title></rect>
+<text x="305" y="365" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">24.4×</text>
+<rect x="600" y="349" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Escape special byte characters: 24.4×</title></rect>
+<text x="609" y="365" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">24.4×</text>
+<rect x="904" y="349" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Escape special byte characters: 24.4×</title></rect>
+<text x="913" y="365" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">24.4×</text>
+<text x="28" y="396" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find all text tokens</text>
+<rect x="296" y="379" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Find all text tokens: 0.21×</title></rect>
+<text x="305" y="395" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.21×</text>
+<rect x="600" y="379" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Find all text tokens: 20.6×</title></rect>
+<text x="609" y="395" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">20.6×</text>
+<rect x="904" y="379" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Find all text tokens: 2.96×</title></rect>
+<text x="913" y="395" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">2.96×</text>
+<rect x="18" y="406" width="1210" height="30" fill="#fff"/>
+<text x="28" y="426" font-family="Arial, sans-serif" font-size="12" fill="#334155">Iterate over captured pairs</text>
+<rect x="296" y="409" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Iterate over captured pairs: 0.35×</title></rect>
+<text x="305" y="425" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.35×</text>
+<rect x="600" y="409" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Iterate over captured pairs: 13.5×</title></rect>
+<text x="609" y="425" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">13.5×</text>
+<rect x="904" y="409" width="295" height="24" rx="4" fill="#f1f5f9"><title>Rust engine / Iterate over captured pairs: 1.86×</title></rect>
+<text x="913" y="425" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#334155">1.86×</text>
+<text x="28" y="456" font-family="Arial, sans-serif" font-size="12" fill="#334155">Check the whole string</text>
+<rect x="296" y="439" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Check the whole string: 0.070×</title></rect>
+<text x="305" y="455" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.070×</text>
+<rect x="600" y="439" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Check the whole string: 24.9×</title></rect>
+<text x="609" y="455" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">24.9×</text>
+<rect x="904" y="439" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Check the whole string: 2.93×</title></rect>
+<text x="913" y="455" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">2.93×</text>
+<rect x="18" y="466" width="1210" height="30" fill="#fff"/>
+<text x="28" y="486" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find text ignoring case</text>
+<rect x="296" y="469" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Find text ignoring case: 0.16×</title></rect>
+<text x="305" y="485" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.16×</text>
+<rect x="600" y="469" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Find text ignoring case: 10.5×</title></rect>
+<text x="609" y="485" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">10.5×</text>
+<rect x="904" y="469" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Find text ignoring case: 2.81×</title></rect>
+<text x="913" y="485" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">2.81×</text>
+<text x="28" y="516" font-family="Arial, sans-serif" font-size="12" fill="#334155">Split many small pieces</text>
+<rect x="296" y="499" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Split many small pieces: 0.20×</title></rect>
+<text x="305" y="515" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.20×</text>
+<rect x="600" y="499" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Split many small pieces: 8.67×</title></rect>
+<text x="609" y="515" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">8.67×</text>
+<rect x="904" y="499" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Split many small pieces: 2.70×</title></rect>
+<text x="913" y="515" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">2.70×</text>
+<rect x="18" y="526" width="1210" height="30" fill="#fff"/>
+<text x="28" y="546" font-family="Arial, sans-serif" font-size="12" fill="#334155">Check a formatted prefix</text>
+<rect x="296" y="529" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Check a formatted prefix: 0.072×</title></rect>
+<text x="305" y="545" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.072×</text>
+<rect x="600" y="529" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Check a formatted prefix: 9.08×</title></rect>
+<text x="609" y="545" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">9.08×</text>
+<rect x="904" y="529" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Check a formatted prefix: 3.03×</title></rect>
+<text x="913" y="545" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">3.03×</text>
+<text x="28" y="576" font-family="Arial, sans-serif" font-size="12" fill="#334155">Read groups and expand a match</text>
+<rect x="296" y="559" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Read groups and expand a match: 0.97×</title></rect>
+<text x="305" y="575" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.97×</text>
+<rect x="600" y="559" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Read groups and expand a match: 21.3×</title></rect>
+<text x="609" y="575" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">21.3×</text>
+<rect x="904" y="559" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Read groups and expand a match: 3.14×</title></rect>
+<text x="913" y="575" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">3.14×</text>
+<rect x="18" y="586" width="1210" height="30" fill="#fff"/>
+<text x="28" y="606" font-family="Arial, sans-serif" font-size="12" fill="#334155">Search through the module API</text>
+<rect x="296" y="589" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Search through the module API: 0.072×</title></rect>
+<text x="305" y="605" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.072×</text>
+<rect x="600" y="589" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Search through the module API: 16.5×</title></rect>
+<text x="609" y="605" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">16.5×</text>
+<rect x="904" y="589" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Search through the module API: 3.27×</title></rect>
+<text x="913" y="605" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">3.27×</text>
+<text x="28" y="636" font-family="Arial, sans-serif" font-size="12" fill="#334155">Scan repeated matches</text>
+<rect x="296" y="619" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Scan repeated matches: 0.35×</title></rect>
+<text x="305" y="635" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.35×</text>
+<rect x="600" y="619" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Scan repeated matches: 13.3×</title></rect>
+<text x="609" y="635" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">13.3×</text>
+<rect x="904" y="619" width="295" height="24" rx="4" fill="#f1f5f9"><title>Rust engine / Scan repeated matches: 1.89×</title></rect>
+<text x="913" y="635" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#334155">1.89×</text>
+<rect x="18" y="646" width="1210" height="30" fill="#fff"/>
+<text x="28" y="666" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find a formatted line</text>
+<rect x="296" y="649" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Find a formatted line: 0.072×</title></rect>
+<text x="305" y="665" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.072×</text>
+<rect x="600" y="649" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Find a formatted line: 14.4×</title></rect>
+<text x="609" y="665" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">14.4×</text>
+<rect x="904" y="649" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Find a formatted line: 3.28×</title></rect>
+<text x="913" y="665" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">3.28×</text>
+<text x="28" y="696" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find a word (present)</text>
+<rect x="296" y="679" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Find a word (present): 0.73×</title></rect>
+<text x="305" y="695" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.73×</text>
+<rect x="600" y="679" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Find a word (present): 94.5×</title></rect>
+<text x="609" y="695" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">94.5×</text>
+<rect x="904" y="679" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Find a word (present): 32.8×</title></rect>
+<text x="913" y="695" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">32.8×</text>
+<rect x="18" y="706" width="1210" height="30" fill="#fff"/>
+<text x="28" y="726" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find a word (absent)</text>
+<rect x="296" y="709" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Find a word (absent): 0.0000×</title></rect>
+<text x="305" y="725" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.0000×</text>
+<rect x="600" y="709" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Find a word (absent): 14152.0×</title></rect>
+<text x="609" y="725" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">14152.0×</text>
+<rect x="904" y="709" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Find a word (absent): 4239.0×</title></rect>
+<text x="913" y="725" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">4239.0×</text>
+<text x="28" y="756" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find the ending in long text</text>
+<rect x="296" y="739" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Find the ending in long text: 0.072×</title></rect>
+<text x="305" y="755" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.072×</text>
+<rect x="600" y="739" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Find the ending in long text: 130.0×</title></rect>
+<text x="609" y="755" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">130.0×</text>
+<rect x="904" y="739" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Find the ending in long text: 218.1×</title></rect>
+<text x="913" y="755" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">218.1×</text>
+<rect x="18" y="766" width="1210" height="30" fill="#fff"/>
+<text x="28" y="786" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find and capture nearby text</text>
+<rect x="296" y="769" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Find and capture nearby text: 0.083×</title></rect>
+<text x="305" y="785" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.083×</text>
+<rect x="600" y="769" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Find and capture nearby text: 23.8×</title></rect>
+<text x="609" y="785" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">23.8×</text>
+<rect x="904" y="769" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Find and capture nearby text: 3.15×</title></rect>
+<text x="913" y="785" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">3.15×</text>
+<text x="28" y="816" font-family="Arial, sans-serif" font-size="12" fill="#334155">Split and keep separators</text>
+<rect x="296" y="799" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Split and keep separators: 0.20×</title></rect>
+<text x="305" y="815" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.20×</text>
+<rect x="600" y="799" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Split and keep separators: 11.0×</title></rect>
+<text x="609" y="815" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">11.0×</text>
+<rect x="904" y="799" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Split and keep separators: 2.47×</title></rect>
+<text x="913" y="815" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">2.47×</text>
+<rect x="18" y="826" width="1210" height="30" fill="#fff"/>
+<text x="28" y="846" font-family="Arial, sans-serif" font-size="12" fill="#334155">Reorder captured text</text>
+<rect x="296" y="829" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Reorder captured text: 0.12×</title></rect>
+<text x="305" y="845" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.12×</text>
+<rect x="600" y="829" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Reorder captured text: 14.7×</title></rect>
+<text x="609" y="845" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">14.7×</text>
+<rect x="904" y="829" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Reorder captured text: 2.29×</title></rect>
+<text x="913" y="845" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">2.29×</text>
+<text x="28" y="876" font-family="Arial, sans-serif" font-size="12" fill="#334155">Replace using a Python function</text>
+<rect x="296" y="859" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Replace using a Python function: 0.25×</title></rect>
+<text x="305" y="875" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.25×</text>
+<rect x="600" y="859" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Replace using a Python function: 10.5×</title></rect>
+<text x="609" y="875" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">10.5×</text>
+<rect x="904" y="859" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Replace using a Python function: 2.43×</title></rect>
+<text x="913" y="875" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">2.43×</text>
+<rect x="18" y="886" width="1210" height="30" fill="#fff"/>
+<text x="28" y="906" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find a named Unicode character</text>
+<rect x="296" y="889" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Find a named Unicode character: 0.072×</title></rect>
+<text x="305" y="905" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.072×</text>
+<rect x="600" y="889" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Find a named Unicode character: 9.80×</title></rect>
+<text x="609" y="905" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">9.80×</text>
+<rect x="904" y="889" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Find a named Unicode character: 3.03×</title></rect>
+<text x="913" y="905" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">3.03×</text>
+<text x="28" y="936" font-family="Arial, sans-serif" font-size="12" fill="#334155">Find Unicode words or numbers</text>
+<rect x="296" y="919" width="295" height="24" rx="4" fill="#dcfce7"><title>Native C engine / Find Unicode words or numbers: 0.20×</title></rect>
+<text x="305" y="935" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#166534">0.20×</text>
+<rect x="600" y="919" width="295" height="24" rx="4" fill="#fee2e2"><title>Python engine / Find Unicode words or numbers: 12.0×</title></rect>
+<text x="609" y="935" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">12.0×</text>
+<rect x="904" y="919" width="295" height="24" rx="4" fill="#fee2e2"><title>Rust engine / Find Unicode words or numbers: 2.54×</title></rect>
+<text x="913" y="935" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#991b1b">2.54×</text>
+</svg>

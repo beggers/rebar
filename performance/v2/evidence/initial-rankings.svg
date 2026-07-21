@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1236" height="332" viewBox="0 0 1236 332" role="img" aria-label="Overall results across all task sets">
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<text x="28" y="34" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#0f172a">Overall results across all task sets</text>
+<text x="28" y="59" font-family="Arial, sans-serif" font-size="13" fill="#475569">1× is Python re. Each card shows overall speed, the measured range, clearly faster tasks, and large slowdowns.</text>
+<text x="230" y="96" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0284c7">Native C engine</text>
+<text x="558" y="96" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#d97706">Rust engine</text>
+<text x="886" y="96" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#7c3aed">Python engine</text>
+<text x="28" y="134" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0f172a">Practice tasks</text>
+<rect x="220" y="106" width="318" height="58" rx="6" fill="#dcfce7"/>
+<text x="230" y="128" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">1.10× overall · 1.08×–1.11×</text>
+<text x="230" y="148" font-family="Arial, sans-serif" font-size="11" fill="#475569">17/28 clearly faster · 7 large slowdowns</text>
+<rect x="548" y="106" width="318" height="58" rx="6" fill="#fee2e2"/>
+<text x="558" y="128" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">0.017× overall · 0.017×–0.018×</text>
+<text x="558" y="148" font-family="Arial, sans-serif" font-size="11" fill="#475569">1/28 clearly faster · 27 large slowdowns</text>
+<rect x="876" y="106" width="318" height="58" rx="6" fill="#fee2e2"/>
+<text x="886" y="128" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">0.014× overall · 0.014×–0.014×</text>
+<text x="886" y="148" font-family="Arial, sans-serif" font-size="11" fill="#475569">1/28 clearly faster · 27 large slowdowns</text>
+<text x="28" y="204" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0f172a">Holdout tasks</text>
+<rect x="220" y="176" width="318" height="58" rx="6" fill="#dcfce7"/>
+<text x="230" y="198" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">1.16× overall · 1.15×–1.18×</text>
+<text x="230" y="218" font-family="Arial, sans-serif" font-size="11" fill="#475569">19/28 clearly faster · 4 large slowdowns</text>
+<rect x="548" y="176" width="318" height="58" rx="6" fill="#fee2e2"/>
+<text x="558" y="198" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">0.018× overall · 0.018×–0.018×</text>
+<text x="558" y="218" font-family="Arial, sans-serif" font-size="11" fill="#475569">1/28 clearly faster · 27 large slowdowns</text>
+<rect x="876" y="176" width="318" height="58" rx="6" fill="#fee2e2"/>
+<text x="886" y="198" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">0.014× overall · 0.014×–0.015×</text>
+<text x="886" y="218" font-family="Arial, sans-serif" font-size="11" fill="#475569">1/28 clearly faster · 27 large slowdowns</text>
+<text x="28" y="274" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#0f172a">All tasks</text>
+<rect x="220" y="246" width="318" height="58" rx="6" fill="#dcfce7"/>
+<text x="230" y="268" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">1.13× overall · 1.12×–1.14×</text>
+<text x="230" y="288" font-family="Arial, sans-serif" font-size="11" fill="#475569">36/56 clearly faster · 11 large slowdowns</text>
+<rect x="548" y="246" width="318" height="58" rx="6" fill="#fee2e2"/>
+<text x="558" y="268" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">0.018× overall · 0.017×–0.018×</text>
+<text x="558" y="288" font-family="Arial, sans-serif" font-size="11" fill="#475569">2/56 clearly faster · 54 large slowdowns</text>
+<rect x="876" y="246" width="318" height="58" rx="6" fill="#fee2e2"/>
+<text x="886" y="268" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">0.014× overall · 0.014×–0.014×</text>
+<text x="886" y="288" font-family="Arial, sans-serif" font-size="11" fill="#475569">2/56 clearly faster · 54 large slowdowns</text>
+</svg>

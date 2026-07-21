@@ -1,0 +1,402 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="1610" viewBox="0 0 880 1610" role="img" aria-label="Where each engine is faster or slower">
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<text x="28" y="34" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#0f172a">Where each engine is faster or slower</text>
+<text x="28" y="59" font-family="Arial, sans-serif" font-size="13" fill="#475569">Every task is shown. Green is clearly faster; red is more than 20% slower; grey is close or uncertain.</text>
+<text x="305" y="95" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0284c7">Native C engine</text>
+<text x="487" y="95" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#7c3aed">Python engine</text>
+<text x="669" y="95" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#d97706">Rust engine</text>
+<text x="28" y="124" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0f172a">Practice tasks</text>
+<text x="28" y="150" font-family="Arial, sans-serif" font-size="11" fill="#334155">Search with controlled branches</text>
+<rect x="298" y="134" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="306" y="148" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.49×</text>
+<rect x="480" y="134" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="148" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0096×</text>
+<rect x="662" y="134" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="148" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.019×</text>
+<text x="28" y="175" font-family="Arial, sans-serif" font-size="11" fill="#334155">Check repeated captured text</text>
+<rect x="298" y="159" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="173" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.09×</text>
+<rect x="480" y="159" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="173" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.017×</text>
+<rect x="662" y="159" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="173" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.019×</text>
+<text x="28" y="200" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find tokens in bytes</text>
+<rect x="298" y="184" width="175" height="20" rx="4" fill="#64748b"/>
+<text x="306" y="198" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.95×</text>
+<rect x="480" y="184" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="198" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0080×</text>
+<rect x="662" y="184" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="198" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0061×</text>
+<text x="28" y="225" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find in a byte array or view</text>
+<rect x="298" y="209" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="223" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.00×</text>
+<rect x="480" y="209" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="223" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<rect x="662" y="209" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="223" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0084×</text>
+<text x="28" y="250" font-family="Arial, sans-serif" font-size="11" fill="#334155">Compile and search from cold</text>
+<rect x="298" y="234" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="248" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.57×</text>
+<rect x="480" y="234" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="248" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.28×</text>
+<rect x="662" y="234" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="248" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.71×</text>
+<text x="28" y="275" font-family="Arial, sans-serif" font-size="11" fill="#334155">Compile a new pattern</text>
+<rect x="298" y="259" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="273" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.73×</text>
+<rect x="480" y="259" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="488" y="273" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.39×</text>
+<rect x="662" y="259" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="670" y="273" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.86×</text>
+<text x="28" y="300" font-family="Arial, sans-serif" font-size="11" fill="#334155">Check an optional wrapper</text>
+<rect x="298" y="284" width="175" height="20" rx="4" fill="#64748b"/>
+<text x="306" y="298" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.94×</text>
+<rect x="480" y="284" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="298" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.014×</text>
+<rect x="662" y="284" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="298" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.017×</text>
+<text x="28" y="325" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find empty-position matches</text>
+<rect x="298" y="309" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="306" y="323" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.71×</text>
+<rect x="480" y="309" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="323" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<rect x="662" y="309" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="323" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.022×</text>
+<text x="28" y="350" font-family="Arial, sans-serif" font-size="11" fill="#334155">Escape special text characters</text>
+<rect x="298" y="334" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="306" y="348" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.24×</text>
+<rect x="480" y="334" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="348" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.23×</text>
+<rect x="662" y="334" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="348" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.24×</text>
+<text x="28" y="375" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find all text tokens</text>
+<rect x="298" y="359" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="306" y="373" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.77×</text>
+<rect x="480" y="359" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="373" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0087×</text>
+<rect x="662" y="359" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="373" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0038×</text>
+<text x="28" y="400" font-family="Arial, sans-serif" font-size="11" fill="#334155">Iterate over captured pairs</text>
+<rect x="298" y="384" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="398" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.52×</text>
+<rect x="480" y="384" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="398" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.012×</text>
+<rect x="662" y="384" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="398" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.010×</text>
+<text x="28" y="425" font-family="Arial, sans-serif" font-size="11" fill="#334155">Check the whole string</text>
+<rect x="298" y="409" width="175" height="20" rx="4" fill="#64748b"/>
+<text x="306" y="423" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.91×</text>
+<rect x="480" y="409" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="423" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.010×</text>
+<rect x="662" y="409" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="423" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.018×</text>
+<text x="28" y="450" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find text ignoring case</text>
+<rect x="298" y="434" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="448" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.07×</text>
+<rect x="480" y="434" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="448" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0070×</text>
+<rect x="662" y="434" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="448" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0082×</text>
+<text x="28" y="475" font-family="Arial, sans-serif" font-size="11" fill="#334155">Split many small pieces</text>
+<rect x="298" y="459" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="473" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.18×</text>
+<rect x="480" y="459" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="473" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.012×</text>
+<rect x="662" y="459" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="473" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0044×</text>
+<text x="28" y="500" font-family="Arial, sans-serif" font-size="11" fill="#334155">Check a formatted prefix</text>
+<rect x="298" y="484" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="498" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.16×</text>
+<rect x="480" y="484" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="498" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.018×</text>
+<rect x="662" y="484" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="498" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.015×</text>
+<text x="28" y="525" font-family="Arial, sans-serif" font-size="11" fill="#334155">Read groups and expand a match</text>
+<rect x="298" y="509" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="306" y="523" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.36×</text>
+<rect x="480" y="509" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="523" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.013×</text>
+<rect x="662" y="509" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="523" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.047×</text>
+<text x="28" y="550" font-family="Arial, sans-serif" font-size="11" fill="#334155">Search through the module API</text>
+<rect x="298" y="534" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="548" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.17×</text>
+<rect x="480" y="534" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="548" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0096×</text>
+<rect x="662" y="534" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="548" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.030×</text>
+<text x="28" y="575" font-family="Arial, sans-serif" font-size="11" fill="#334155">Scan repeated matches</text>
+<rect x="298" y="559" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="306" y="573" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.74×</text>
+<rect x="480" y="559" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="573" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<rect x="662" y="559" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="573" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0084×</text>
+<text x="28" y="600" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find a formatted line</text>
+<rect x="298" y="584" width="175" height="20" rx="4" fill="#64748b"/>
+<text x="306" y="598" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.94×</text>
+<rect x="480" y="584" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="598" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<rect x="662" y="584" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="598" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.014×</text>
+<text x="28" y="625" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find a word (present)</text>
+<rect x="298" y="609" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="623" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.18×</text>
+<rect x="480" y="609" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="623" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0083×</text>
+<rect x="662" y="609" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="623" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0095×</text>
+<text x="28" y="650" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find a word (absent)</text>
+<rect x="298" y="634" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="648" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.15×</text>
+<rect x="480" y="634" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="648" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0023×</text>
+<rect x="662" y="634" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="648" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0059×</text>
+<text x="28" y="675" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find the ending in long text</text>
+<rect x="298" y="659" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="673" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">12.2×</text>
+<rect x="480" y="659" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="673" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0003×</text>
+<rect x="662" y="659" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="673" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0010×</text>
+<text x="28" y="700" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find and capture nearby text</text>
+<rect x="298" y="684" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="698" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.23×</text>
+<rect x="480" y="684" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="698" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0067×</text>
+<rect x="662" y="684" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="698" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.016×</text>
+<text x="28" y="725" font-family="Arial, sans-serif" font-size="11" fill="#334155">Split and keep separators</text>
+<rect x="298" y="709" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="723" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.86×</text>
+<rect x="480" y="709" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="723" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.010×</text>
+<rect x="662" y="709" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="723" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0068×</text>
+<text x="28" y="750" font-family="Arial, sans-serif" font-size="11" fill="#334155">Reorder captured text</text>
+<rect x="298" y="734" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="748" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.78×</text>
+<rect x="480" y="734" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="748" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.016×</text>
+<rect x="662" y="734" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="748" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.016×</text>
+<text x="28" y="775" font-family="Arial, sans-serif" font-size="11" fill="#334155">Replace using a Python function</text>
+<rect x="298" y="759" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="773" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.15×</text>
+<rect x="480" y="759" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="773" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.021×</text>
+<rect x="662" y="759" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="773" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.020×</text>
+<text x="28" y="800" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find a named Unicode character</text>
+<rect x="298" y="784" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="798" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.29×</text>
+<rect x="480" y="784" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="798" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.013×</text>
+<rect x="662" y="784" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="798" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.020×</text>
+<text x="28" y="825" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find Unicode words or numbers</text>
+<rect x="298" y="809" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="306" y="823" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.73×</text>
+<rect x="480" y="809" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="823" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0060×</text>
+<rect x="662" y="809" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="823" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0097×</text>
+<text x="28" y="856" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0f172a">Holdout tasks</text>
+<text x="28" y="882" font-family="Arial, sans-serif" font-size="11" fill="#334155">Search with controlled branches</text>
+<rect x="298" y="866" width="175" height="20" rx="4" fill="#64748b"/>
+<text x="306" y="880" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.81×</text>
+<rect x="480" y="866" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="880" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0099×</text>
+<rect x="662" y="866" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="880" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.021×</text>
+<text x="28" y="907" font-family="Arial, sans-serif" font-size="11" fill="#334155">Check repeated captured text</text>
+<rect x="298" y="891" width="175" height="20" rx="4" fill="#64748b"/>
+<text x="306" y="905" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.97×</text>
+<rect x="480" y="891" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="905" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.015×</text>
+<rect x="662" y="891" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="905" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.018×</text>
+<text x="28" y="932" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find tokens in bytes</text>
+<rect x="298" y="916" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="930" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.78×</text>
+<rect x="480" y="916" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="930" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0090×</text>
+<rect x="662" y="916" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="930" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0077×</text>
+<text x="28" y="957" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find in a byte array or view</text>
+<rect x="298" y="941" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="955" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.90×</text>
+<rect x="480" y="941" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="955" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.010×</text>
+<rect x="662" y="941" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="955" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0081×</text>
+<text x="28" y="982" font-family="Arial, sans-serif" font-size="11" fill="#334155">Compile and search from cold</text>
+<rect x="298" y="966" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="980" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.59×</text>
+<rect x="480" y="966" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="980" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.48×</text>
+<rect x="662" y="966" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="980" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.76×</text>
+<text x="28" y="1007" font-family="Arial, sans-serif" font-size="11" fill="#334155">Compile a new pattern</text>
+<rect x="298" y="991" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1005" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.51×</text>
+<rect x="480" y="991" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="488" y="1005" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.20×</text>
+<rect x="662" y="991" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="670" y="1005" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.74×</text>
+<text x="28" y="1032" font-family="Arial, sans-serif" font-size="11" fill="#334155">Check an optional wrapper</text>
+<rect x="298" y="1016" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1030" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.08×</text>
+<rect x="480" y="1016" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1030" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.015×</text>
+<rect x="662" y="1016" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1030" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.019×</text>
+<text x="28" y="1057" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find empty-position matches</text>
+<rect x="298" y="1041" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="306" y="1055" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.66×</text>
+<rect x="480" y="1041" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1055" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0099×</text>
+<rect x="662" y="1041" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1055" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.022×</text>
+<text x="28" y="1082" font-family="Arial, sans-serif" font-size="11" fill="#334155">Escape special byte characters</text>
+<rect x="298" y="1066" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="306" y="1080" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.17×</text>
+<rect x="480" y="1066" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1080" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.17×</text>
+<rect x="662" y="1066" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1080" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.17×</text>
+<text x="28" y="1107" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find all text tokens</text>
+<rect x="298" y="1091" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1105" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.39×</text>
+<rect x="480" y="1091" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1105" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0092×</text>
+<rect x="662" y="1091" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1105" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0058×</text>
+<text x="28" y="1132" font-family="Arial, sans-serif" font-size="11" fill="#334155">Iterate over captured pairs</text>
+<rect x="298" y="1116" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1130" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.32×</text>
+<rect x="480" y="1116" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1130" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<rect x="662" y="1116" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1130" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0087×</text>
+<text x="28" y="1157" font-family="Arial, sans-serif" font-size="11" fill="#334155">Check the whole string</text>
+<rect x="298" y="1141" width="175" height="20" rx="4" fill="#64748b"/>
+<text x="306" y="1155" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.92×</text>
+<rect x="480" y="1141" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1155" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.010×</text>
+<rect x="662" y="1141" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1155" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.019×</text>
+<text x="28" y="1182" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find text ignoring case</text>
+<rect x="298" y="1166" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1180" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.04×</text>
+<rect x="480" y="1166" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1180" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0060×</text>
+<rect x="662" y="1166" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1180" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0087×</text>
+<text x="28" y="1207" font-family="Arial, sans-serif" font-size="11" fill="#334155">Split many small pieces</text>
+<rect x="298" y="1191" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1205" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.20×</text>
+<rect x="480" y="1191" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1205" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.013×</text>
+<rect x="662" y="1191" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1205" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0046×</text>
+<text x="28" y="1232" font-family="Arial, sans-serif" font-size="11" fill="#334155">Check a formatted prefix</text>
+<rect x="298" y="1216" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1230" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.15×</text>
+<rect x="480" y="1216" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1230" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.020×</text>
+<rect x="662" y="1216" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1230" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.016×</text>
+<text x="28" y="1257" font-family="Arial, sans-serif" font-size="11" fill="#334155">Read groups and expand a match</text>
+<rect x="298" y="1241" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="306" y="1255" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.29×</text>
+<rect x="480" y="1241" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1255" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.020×</text>
+<rect x="662" y="1241" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1255" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.042×</text>
+<text x="28" y="1282" font-family="Arial, sans-serif" font-size="11" fill="#334155">Search through the module API</text>
+<rect x="298" y="1266" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1280" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.11×</text>
+<rect x="480" y="1266" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1280" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.018×</text>
+<rect x="662" y="1266" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1280" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.033×</text>
+<text x="28" y="1307" font-family="Arial, sans-serif" font-size="11" fill="#334155">Scan repeated matches</text>
+<rect x="298" y="1291" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="306" y="1305" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.74×</text>
+<rect x="480" y="1291" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1305" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<rect x="662" y="1291" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1305" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0082×</text>
+<text x="28" y="1332" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find a formatted line</text>
+<rect x="298" y="1316" width="175" height="20" rx="4" fill="#64748b"/>
+<text x="306" y="1330" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.12×</text>
+<rect x="480" y="1316" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1330" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.012×</text>
+<rect x="662" y="1316" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1330" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.016×</text>
+<text x="28" y="1357" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find a word (present)</text>
+<rect x="298" y="1341" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1355" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.10×</text>
+<rect x="480" y="1341" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1355" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0076×</text>
+<rect x="662" y="1341" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1355" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0090×</text>
+<text x="28" y="1382" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find a word (absent)</text>
+<rect x="298" y="1366" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1380" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.15×</text>
+<rect x="480" y="1366" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1380" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0024×</text>
+<rect x="662" y="1366" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1380" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0058×</text>
+<text x="28" y="1407" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find the ending in long text</text>
+<rect x="298" y="1391" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1405" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">18.2×</text>
+<rect x="480" y="1391" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1405" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0003×</text>
+<rect x="662" y="1391" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1405" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0010×</text>
+<text x="28" y="1432" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find and capture nearby text</text>
+<rect x="298" y="1416" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1430" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.05×</text>
+<rect x="480" y="1416" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1430" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0075×</text>
+<rect x="662" y="1416" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1430" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.017×</text>
+<text x="28" y="1457" font-family="Arial, sans-serif" font-size="11" fill="#334155">Split and keep separators</text>
+<rect x="298" y="1441" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1455" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.64×</text>
+<rect x="480" y="1441" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1455" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0091×</text>
+<rect x="662" y="1441" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1455" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0061×</text>
+<text x="28" y="1482" font-family="Arial, sans-serif" font-size="11" fill="#334155">Reorder captured text</text>
+<rect x="298" y="1466" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1480" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.69×</text>
+<rect x="480" y="1466" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1480" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.015×</text>
+<rect x="662" y="1466" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1480" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.015×</text>
+<text x="28" y="1507" font-family="Arial, sans-serif" font-size="11" fill="#334155">Replace using a Python function</text>
+<rect x="298" y="1491" width="175" height="20" rx="4" fill="#64748b"/>
+<text x="306" y="1505" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.04×</text>
+<rect x="480" y="1491" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1505" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.022×</text>
+<rect x="662" y="1491" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1505" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.021×</text>
+<text x="28" y="1532" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find a named Unicode character</text>
+<rect x="298" y="1516" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1530" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.24×</text>
+<rect x="480" y="1516" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1530" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.012×</text>
+<rect x="662" y="1516" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1530" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.019×</text>
+<text x="28" y="1557" font-family="Arial, sans-serif" font-size="11" fill="#334155">Find Unicode words or numbers</text>
+<rect x="298" y="1541" width="175" height="20" rx="4" fill="#15803d"/>
+<text x="306" y="1555" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.57×</text>
+<rect x="480" y="1541" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="488" y="1555" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0083×</text>
+<rect x="662" y="1541" width="175" height="20" rx="4" fill="#b91c1c"/>
+<text x="670" y="1555" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+</svg>

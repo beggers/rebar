@@ -29,4 +29,6 @@ The [original protocol](../performance/v1/PROTOCOL.md) freezes 16 practice and 1
 
 ## Expanded performance oracle
 
-The [expanded protocol](../performance/v2/PROTOCOL.md) freezes 28 practice and 28 distinct holdout tasks, covering more APIs, inputs, compilation, scanning, empty matches, backreferences, conditionals, and Python/native boundary costs. Its fixture SHA-256 is `ec2f7194e8bfb4f5438a61abc3d893e18e5fcada13d2de583801b7e28e7b8f1a`. Expanded timings are **NOT MEASURED** at this freeze commit.
+The [expanded protocol](../performance/v2/PROTOCOL.md) freezes 28 practice and 28 distinct holdout tasks, covering more APIs, inputs, compilation, scanning, empty matches, backreferences, conditionals, and Python/native boundary costs. Its fixture SHA-256 is `ec2f7194e8bfb4f5438a61abc3d893e18e5fcada13d2de583801b7e28e7b8f1a`.
+
+The [initial expanded result](../performance/v2/evidence/INITIAL.md) retains all 2,464 correctness-gated rows and 119 large slowdowns. Native C is **1.1619×** overall on holdout (1.1482–1.1758× measured range), clearly faster on **19/28**, with four holdout slowdowns: empty-position iteration, escaping bytes, scanning, and repeated match-object access/expansion. Practice adds general token/Unicode matching and controlled branches. Python and Rust are clearly faster only on cold compilation and are much slower on matching calls. These measurements motivate profiling the native boundaries and general paths before the next run.

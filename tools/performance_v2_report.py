@@ -39,7 +39,19 @@ def main():
             values = [row for row in data["regressions"] if row["candidate"] == candidate]
             cases = ", ".join(f"`{row['case']}` ({row['speedup']:.3f}×)" for row in values)
             lines.append(f"- {name(candidate)}: {cases}.")
-        lines.extend(["", "The Python engine performs matching work in Python, and the Rust engine repeatedly prepares data and crosses the Python/Rust boundary; both costs dominate short tasks. Native-C slowdowns, if present, remain explicit targets for profiling. No loss is removed from the denominator or hidden from the charts."])
+        native = [row for row in data["regressions"] if row["candidate"] == "candidates.vm_candidate"]
+        lines.extend(["", "The Python engine performs matching work in Python, and the Rust engine repeatedly prepares data and crosses the Python/Rust boundary; both costs dominate short tasks. Native-C losses expose specific boundary and general-path costs:"])
+        if any("findall.tokens" in row["case"] or "unicode.words" in row["case"] for row in native):
+            lines.append("- Repeated text/Unicode matching needs character-category and word-boundary checks that cannot use the simplest one-pass scan.")
+        if any("empty.finditer" in row["case"] or "atomic.search" in row["case"] for row in native):
+            lines.append("- Empty matches and controlled branches use the general backtracking/iterator path and construct more match state.")
+        if any("escape." in row["case"] for row in native):
+            lines.append("- Escaping currently loops over every character in Python, explaining both the time and extra traced-memory cost.")
+        if any("scanner.search" in row["case"] for row in native):
+            lines.append("- Scanning repeatedly returns through a small Python wrapper, so per-match boundary and object costs accumulate.")
+        if any("match.surface" in row["case"] for row in native):
+            lines.append("- Reading many groups and expanding a template makes several Python/C and Python-template calls for one match.")
+        lines.extend(["", "No loss is removed from the denominator or hidden from the charts."])
     lines.append("")
     Path(args.output).write_text("\n".join(lines), encoding="utf-8")
     print(f"wrote {args.output}")
