@@ -1,0 +1,232 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="740" viewBox="0 0 840 740" role="img" aria-label="Regression map — all cases and candidates">
+<rect width="100%" height="100%" fill="#fff"/>
+<text x="24" y="30" font-family="sans-serif" font-size="20" font-weight="700" fill="#172033">Regression map — all cases and candidates</text>
+<text x="24" y="52" font-family="sans-serif" font-size="12" fill="#42526e">Red: >20% slower (speedup <0.8); green: statistically faster; grey: neither.</text>
+<text x="250" y="78" font-family="monospace" font-size="11" fill="#172033">ast</text>
+<text x="400" y="78" font-family="monospace" font-size="11" fill="#172033">rust</text>
+<text x="550" y="78" font-family="monospace" font-size="11" fill="#172033">vm</text>
+<text x="24" y="100" font-family="monospace" font-size="10" fill="#172033">cal.bytes.tokens</text>
+<rect x="246" y="88" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="99" font-family="monospace" font-size="9" fill="#fff">0.008053x</text>
+<rect x="396" y="88" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="99" font-family="monospace" font-size="9" fill="#fff">0.005891x</text>
+<rect x="546" y="88" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="99" font-family="monospace" font-size="9" fill="#fff">0.2324x</text>
+<text x="24" y="120" font-family="monospace" font-size="10" fill="#172033">cal.cold.compile-search</text>
+<rect x="246" y="108" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="119" font-family="monospace" font-size="9" fill="#fff">0.296x</text>
+<rect x="396" y="108" width="145" height="16" rx="2" fill="#94a3b8"/>
+<text x="402" y="119" font-family="monospace" font-size="9" fill="#fff">0.8214x</text>
+<rect x="546" y="108" width="145" height="16" rx="2" fill="#15803d"/>
+<text x="552" y="119" font-family="monospace" font-size="9" fill="#fff">1.297x</text>
+<text x="24" y="140" font-family="monospace" font-size="10" fill="#172033">cal.findall.tokens</text>
+<rect x="246" y="128" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="139" font-family="monospace" font-size="9" fill="#fff">0.009666x</text>
+<rect x="396" y="128" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="139" font-family="monospace" font-size="9" fill="#fff">0.00402x</text>
+<rect x="546" y="128" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="139" font-family="monospace" font-size="9" fill="#fff">0.2598x</text>
+<text x="24" y="160" font-family="monospace" font-size="10" fill="#172033">cal.finditer.groups</text>
+<rect x="246" y="148" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="159" font-family="monospace" font-size="9" fill="#fff">0.01263x</text>
+<rect x="396" y="148" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="159" font-family="monospace" font-size="9" fill="#fff">0.01098x</text>
+<rect x="546" y="148" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="159" font-family="monospace" font-size="9" fill="#fff">0.2346x</text>
+<text x="24" y="180" font-family="monospace" font-size="10" fill="#172033">cal.fullmatch.structured</text>
+<rect x="246" y="168" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="179" font-family="monospace" font-size="9" fill="#fff">0.01098x</text>
+<rect x="396" y="168" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="179" font-family="monospace" font-size="9" fill="#fff">0.01937x</text>
+<rect x="546" y="168" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="179" font-family="monospace" font-size="9" fill="#fff">0.2005x</text>
+<text x="24" y="200" font-family="monospace" font-size="10" fill="#172033">cal.match.prefix</text>
+<rect x="246" y="188" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="199" font-family="monospace" font-size="9" fill="#fff">0.01917x</text>
+<rect x="396" y="188" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="199" font-family="monospace" font-size="9" fill="#fff">0.01669x</text>
+<rect x="546" y="188" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="199" font-family="monospace" font-size="9" fill="#fff">0.1962x</text>
+<text x="24" y="220" font-family="monospace" font-size="10" fill="#172033">cal.module.warm</text>
+<rect x="246" y="208" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="219" font-family="monospace" font-size="9" fill="#fff">0.01062x</text>
+<rect x="396" y="208" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="219" font-family="monospace" font-size="9" fill="#fff">0.0329x</text>
+<rect x="546" y="208" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="219" font-family="monospace" font-size="9" fill="#fff">0.171x</text>
+<text x="24" y="240" font-family="monospace" font-size="10" fill="#172033">cal.search.class-anchor</text>
+<rect x="246" y="228" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="239" font-family="monospace" font-size="9" fill="#fff">0.01263x</text>
+<rect x="396" y="228" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="239" font-family="monospace" font-size="9" fill="#fff">0.01627x</text>
+<rect x="546" y="228" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="239" font-family="monospace" font-size="9" fill="#fff">0.1228x</text>
+<text x="24" y="260" font-family="monospace" font-size="10" fill="#172033">cal.search.literal.hit</text>
+<rect x="246" y="248" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="259" font-family="monospace" font-size="9" fill="#fff">0.009011x</text>
+<rect x="396" y="248" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="259" font-family="monospace" font-size="9" fill="#fff">0.01033x</text>
+<rect x="546" y="248" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="259" font-family="monospace" font-size="9" fill="#fff">0.1476x</text>
+<text x="24" y="280" font-family="monospace" font-size="10" fill="#172033">cal.search.literal.miss</text>
+<rect x="246" y="268" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="279" font-family="monospace" font-size="9" fill="#fff">0.002575x</text>
+<rect x="396" y="268" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="279" font-family="monospace" font-size="9" fill="#fff">0.006434x</text>
+<rect x="546" y="268" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="279" font-family="monospace" font-size="9" fill="#fff">0.1313x</text>
+<text x="24" y="300" font-family="monospace" font-size="10" fill="#172033">cal.search.long-boundary</text>
+<rect x="246" y="288" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="299" font-family="monospace" font-size="9" fill="#fff">0.0002886x</text>
+<rect x="396" y="288" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="299" font-family="monospace" font-size="9" fill="#fff">0.0009423x</text>
+<rect x="546" y="288" width="145" height="16" rx="2" fill="#15803d"/>
+<text x="552" y="299" font-family="monospace" font-size="9" fill="#fff">1.892x</text>
+<text x="24" y="320" font-family="monospace" font-size="10" fill="#172033">cal.search.look-capture</text>
+<rect x="246" y="308" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="319" font-family="monospace" font-size="9" fill="#fff">0.006844x</text>
+<rect x="396" y="308" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="319" font-family="monospace" font-size="9" fill="#fff">0.01797x</text>
+<rect x="546" y="308" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="319" font-family="monospace" font-size="9" fill="#fff">0.07079x</text>
+<text x="24" y="340" font-family="monospace" font-size="10" fill="#172033">cal.split.capture</text>
+<rect x="246" y="328" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="339" font-family="monospace" font-size="9" fill="#fff">0.01079x</text>
+<rect x="396" y="328" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="339" font-family="monospace" font-size="9" fill="#fff">0.006943x</text>
+<rect x="546" y="328" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="339" font-family="monospace" font-size="9" fill="#fff">0.1945x</text>
+<text x="24" y="360" font-family="monospace" font-size="10" fill="#172033">cal.sub.template</text>
+<rect x="246" y="348" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="359" font-family="monospace" font-size="9" fill="#fff">0.01685x</text>
+<rect x="396" y="348" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="359" font-family="monospace" font-size="9" fill="#fff">0.01662x</text>
+<rect x="546" y="348" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="359" font-family="monospace" font-size="9" fill="#fff">0.09486x</text>
+<text x="24" y="380" font-family="monospace" font-size="10" fill="#172033">cal.subn.callable</text>
+<rect x="246" y="368" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="379" font-family="monospace" font-size="9" fill="#fff">0.0226x</text>
+<rect x="396" y="368" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="379" font-family="monospace" font-size="9" fill="#fff">0.02106x</text>
+<rect x="546" y="368" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="379" font-family="monospace" font-size="9" fill="#fff">0.2183x</text>
+<text x="24" y="400" font-family="monospace" font-size="10" fill="#172033">cal.unicode.words</text>
+<rect x="246" y="388" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="399" font-family="monospace" font-size="9" fill="#fff">0.006868x</text>
+<rect x="396" y="388" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="399" font-family="monospace" font-size="9" fill="#fff">0.01091x</text>
+<rect x="546" y="388" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="399" font-family="monospace" font-size="9" fill="#fff">0.2586x</text>
+<text x="24" y="420" font-family="monospace" font-size="10" fill="#172033">hold.bytes.tokens</text>
+<rect x="246" y="408" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="419" font-family="monospace" font-size="9" fill="#fff">0.01039x</text>
+<rect x="396" y="408" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="419" font-family="monospace" font-size="9" fill="#fff">0.008778x</text>
+<rect x="546" y="408" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="419" font-family="monospace" font-size="9" fill="#fff">0.2356x</text>
+<text x="24" y="440" font-family="monospace" font-size="10" fill="#172033">hold.cold.compile-search</text>
+<rect x="246" y="428" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="439" font-family="monospace" font-size="9" fill="#fff">0.5202x</text>
+<rect x="396" y="428" width="145" height="16" rx="2" fill="#94a3b8"/>
+<text x="402" y="439" font-family="monospace" font-size="9" fill="#fff">0.8697x</text>
+<rect x="546" y="428" width="145" height="16" rx="2" fill="#15803d"/>
+<text x="552" y="439" font-family="monospace" font-size="9" fill="#fff">1.377x</text>
+<text x="24" y="460" font-family="monospace" font-size="10" fill="#172033">hold.findall.tokens</text>
+<rect x="246" y="448" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="459" font-family="monospace" font-size="9" fill="#fff">0.009767x</text>
+<rect x="396" y="448" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="459" font-family="monospace" font-size="9" fill="#fff">0.006048x</text>
+<rect x="546" y="448" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="459" font-family="monospace" font-size="9" fill="#fff">0.2872x</text>
+<text x="24" y="480" font-family="monospace" font-size="10" fill="#172033">hold.finditer.groups</text>
+<rect x="246" y="468" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="479" font-family="monospace" font-size="9" fill="#fff">0.01239x</text>
+<rect x="396" y="468" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="479" font-family="monospace" font-size="9" fill="#fff">0.009787x</text>
+<rect x="546" y="468" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="479" font-family="monospace" font-size="9" fill="#fff">0.2337x</text>
+<text x="24" y="500" font-family="monospace" font-size="10" fill="#172033">hold.fullmatch.structured</text>
+<rect x="246" y="488" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="499" font-family="monospace" font-size="9" fill="#fff">0.01072x</text>
+<rect x="396" y="488" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="499" font-family="monospace" font-size="9" fill="#fff">0.01986x</text>
+<rect x="546" y="488" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="499" font-family="monospace" font-size="9" fill="#fff">0.2102x</text>
+<text x="24" y="520" font-family="monospace" font-size="10" fill="#172033">hold.match.prefix</text>
+<rect x="246" y="508" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="519" font-family="monospace" font-size="9" fill="#fff">0.02159x</text>
+<rect x="396" y="508" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="519" font-family="monospace" font-size="9" fill="#fff">0.01732x</text>
+<rect x="546" y="508" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="519" font-family="monospace" font-size="9" fill="#fff">0.1859x</text>
+<text x="24" y="540" font-family="monospace" font-size="10" fill="#172033">hold.module.warm</text>
+<rect x="246" y="528" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="539" font-family="monospace" font-size="9" fill="#fff">0.0184x</text>
+<rect x="396" y="528" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="539" font-family="monospace" font-size="9" fill="#fff">0.03449x</text>
+<rect x="546" y="528" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="539" font-family="monospace" font-size="9" fill="#fff">0.3256x</text>
+<text x="24" y="560" font-family="monospace" font-size="10" fill="#172033">hold.search.class-anchor</text>
+<rect x="246" y="548" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="559" font-family="monospace" font-size="9" fill="#fff">0.01021x</text>
+<rect x="396" y="548" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="559" font-family="monospace" font-size="9" fill="#fff">0.01425x</text>
+<rect x="546" y="548" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="559" font-family="monospace" font-size="9" fill="#fff">0.1029x</text>
+<text x="24" y="580" font-family="monospace" font-size="10" fill="#172033">hold.search.literal.hit</text>
+<rect x="246" y="568" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="579" font-family="monospace" font-size="9" fill="#fff">0.008726x</text>
+<rect x="396" y="568" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="579" font-family="monospace" font-size="9" fill="#fff">0.01013x</text>
+<rect x="546" y="568" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="579" font-family="monospace" font-size="9" fill="#fff">0.1397x</text>
+<text x="24" y="600" font-family="monospace" font-size="10" fill="#172033">hold.search.literal.miss</text>
+<rect x="246" y="588" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="599" font-family="monospace" font-size="9" fill="#fff">0.002773x</text>
+<rect x="396" y="588" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="599" font-family="monospace" font-size="9" fill="#fff">0.006444x</text>
+<rect x="546" y="588" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="599" font-family="monospace" font-size="9" fill="#fff">0.1563x</text>
+<text x="24" y="620" font-family="monospace" font-size="10" fill="#172033">hold.search.long-boundary</text>
+<rect x="246" y="608" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="619" font-family="monospace" font-size="9" fill="#fff">0.0002866x</text>
+<rect x="396" y="608" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="619" font-family="monospace" font-size="9" fill="#fff">0.0009344x</text>
+<rect x="546" y="608" width="145" height="16" rx="2" fill="#15803d"/>
+<text x="552" y="619" font-family="monospace" font-size="9" fill="#fff">2.398x</text>
+<text x="24" y="640" font-family="monospace" font-size="10" fill="#172033">hold.search.look-capture</text>
+<rect x="246" y="628" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="639" font-family="monospace" font-size="9" fill="#fff">0.007902x</text>
+<rect x="396" y="628" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="639" font-family="monospace" font-size="9" fill="#fff">0.01762x</text>
+<rect x="546" y="628" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="639" font-family="monospace" font-size="9" fill="#fff">0.08485x</text>
+<text x="24" y="660" font-family="monospace" font-size="10" fill="#172033">hold.split.capture</text>
+<rect x="246" y="648" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="659" font-family="monospace" font-size="9" fill="#fff">0.0111x</text>
+<rect x="396" y="648" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="659" font-family="monospace" font-size="9" fill="#fff">0.007144x</text>
+<rect x="546" y="648" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="659" font-family="monospace" font-size="9" fill="#fff">0.2124x</text>
+<text x="24" y="680" font-family="monospace" font-size="10" fill="#172033">hold.sub.template</text>
+<rect x="246" y="668" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="679" font-family="monospace" font-size="9" fill="#fff">0.0169x</text>
+<rect x="396" y="668" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="679" font-family="monospace" font-size="9" fill="#fff">0.01648x</text>
+<rect x="546" y="668" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="679" font-family="monospace" font-size="9" fill="#fff">0.09699x</text>
+<text x="24" y="700" font-family="monospace" font-size="10" fill="#172033">hold.subn.callable</text>
+<rect x="246" y="688" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="699" font-family="monospace" font-size="9" fill="#fff">0.02488x</text>
+<rect x="396" y="688" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="699" font-family="monospace" font-size="9" fill="#fff">0.0231x</text>
+<rect x="546" y="688" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="699" font-family="monospace" font-size="9" fill="#fff">0.2108x</text>
+<text x="24" y="720" font-family="monospace" font-size="10" fill="#172033">hold.unicode.words</text>
+<rect x="246" y="708" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="252" y="719" font-family="monospace" font-size="9" fill="#fff">0.009054x</text>
+<rect x="396" y="708" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="402" y="719" font-family="monospace" font-size="9" fill="#fff">0.01237x</text>
+<rect x="546" y="708" width="145" height="16" rx="2" fill="#b91c1c"/>
+<text x="552" y="719" font-family="monospace" font-size="9" fill="#fff">0.2784x</text>
+</svg>

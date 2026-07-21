@@ -23,6 +23,8 @@ The [initial paired report](performance/v1/evidence/INITIAL-RESULTS.md) retains 
 
 The [native batching experiment](performance/v1/evidence/NATIVE-BATCH.md) moves repeated `findall`, `finditer`, and `split` searches across the C boundary once, reduces VM state allocation, and adds general prefix/suffix rejection. It passes both correctness oracles and preserves all 1,152 paired rows and 90 regressions. VM holdout improves to **0.3291x** with 2/16 statistically faster cases (long-boundary and cold); AST is **0.0112x** and Rust is **0.0141x**. The result still falsifies a speed win and points to public-result construction and execution-state cost as the next boundary. Winner remains NOT MEASURED.
 
+The [stack-state executor experiment](performance/v1/evidence/STACK-STATE-REJECTED.md) is correctness-clean but rejected: copying a large fixed frame on every branch lowers VM holdout to **0.2435x** (2/16 faster) and preserves 90 regressions. All 1,152 paired rows and generated charts remain committed; the slower executor is removed. This isolates compact choice points and public result construction as the next useful experiments.
+
 ![Native batching holdout speed and confidence](performance/v1/evidence/native-batch-speed.svg)
 
 ![Native batching holdout memory](performance/v1/evidence/native-batch-memory.svg)
@@ -30,6 +32,14 @@ The [native batching experiment](performance/v1/evidence/NATIVE-BATCH.md) moves 
 ![Native batching regressions](performance/v1/evidence/native-batch-regressions.svg)
 
 ![Native batching rankings](performance/v1/evidence/native-batch-rankings.svg)
+
+![Rejected stack-state holdout speed and confidence](performance/v1/evidence/stack-state-rejected-speed.svg)
+
+![Rejected stack-state holdout memory](performance/v1/evidence/stack-state-rejected-memory.svg)
+
+![Rejected stack-state regressions](performance/v1/evidence/stack-state-rejected-regressions.svg)
+
+![Rejected stack-state rankings](performance/v1/evidence/stack-state-rejected-rankings.svg)
 
 ![Initial holdout speed and confidence](performance/v1/evidence/initial-speed.svg)
 

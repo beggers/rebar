@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="482" viewBox="0 0 1040 482" role="img" aria-label="Holdout memory — all cases">
+<rect width="100%" height="100%" fill="#fff"/>
+<text x="24" y="30" font-family="sans-serif" font-size="20" font-weight="700" fill="#172033">Holdout memory — all cases</text>
+<text x="24" y="52" font-family="sans-serif" font-size="12" fill="#42526e">Median tracemalloc peak ratio (candidate / stdlib) on a log10 axis; /proc RSS/HWM remains in raw data.</text>
+<line x1="242" y1="65" x2="242" y2="464" stroke="#cbd5e1"/>
+<text x="242" y="78" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">1e-1</text>
+<line x1="391" y1="65" x2="391" y2="464" stroke="#cbd5e1"/>
+<text x="391" y="78" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">1e0</text>
+<line x1="540" y1="65" x2="540" y2="464" stroke="#cbd5e1"/>
+<text x="540" y="78" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">1e1</text>
+<line x1="688" y1="65" x2="688" y2="464" stroke="#cbd5e1"/>
+<text x="688" y="78" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">1e2</text>
+<line x1="837" y1="65" x2="837" y2="464" stroke="#cbd5e1"/>
+<text x="837" y="78" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">1e3</text>
+<line x1="986" y1="65" x2="986" y2="464" stroke="#cbd5e1"/>
+<text x="986" y="78" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">1e4</text>
+<text x="24" y="98" font-family="monospace" font-size="11" fill="#172033">hold.bytes.tokens</text>
+<circle cx="564" cy="89" r="2.7" fill="#7c3aed"/>
+<circle cx="454" cy="94" r="2.7" fill="#d97706"/>
+<circle cx="284" cy="99" r="2.7" fill="#0284c7"/>
+<text x="24" y="122" font-family="monospace" font-size="11" fill="#172033">hold.cold.compile-search</text>
+<circle cx="540" cy="113" r="2.7" fill="#7c3aed"/>
+<circle cx="429" cy="118" r="2.7" fill="#d97706"/>
+<circle cx="382" cy="123" r="2.7" fill="#0284c7"/>
+<text x="24" y="146" font-family="monospace" font-size="11" fill="#172033">hold.findall.tokens</text>
+<circle cx="586" cy="137" r="2.7" fill="#7c3aed"/>
+<circle cx="462" cy="142" r="2.7" fill="#d97706"/>
+<circle cx="293" cy="147" r="2.7" fill="#0284c7"/>
+<text x="24" y="170" font-family="monospace" font-size="11" fill="#172033">hold.finditer.groups</text>
+<circle cx="559" cy="161" r="2.7" fill="#7c3aed"/>
+<circle cx="432" cy="166" r="2.7" fill="#d97706"/>
+<circle cx="330" cy="171" r="2.7" fill="#0284c7"/>
+<text x="24" y="194" font-family="monospace" font-size="11" fill="#172033">hold.fullmatch.structured</text>
+<circle cx="599" cy="185" r="2.7" fill="#7c3aed"/>
+<circle cx="461" cy="190" r="2.7" fill="#d97706"/>
+<circle cx="242" cy="195" r="2.7" fill="#0284c7"/>
+<text x="24" y="218" font-family="monospace" font-size="11" fill="#172033">hold.match.prefix</text>
+<circle cx="533" cy="209" r="2.7" fill="#7c3aed"/>
+<circle cx="464" cy="214" r="2.7" fill="#d97706"/>
+<circle cx="242" cy="219" r="2.7" fill="#0284c7"/>
+<text x="24" y="242" font-family="monospace" font-size="11" fill="#172033">hold.module.warm</text>
+<circle cx="572" cy="233" r="2.7" fill="#7c3aed"/>
+<circle cx="468" cy="238" r="2.7" fill="#d97706"/>
+<circle cx="242" cy="243" r="2.7" fill="#0284c7"/>
+<text x="24" y="266" font-family="monospace" font-size="11" fill="#172033">hold.search.class-anchor</text>
+<circle cx="563" cy="257" r="2.7" fill="#7c3aed"/>
+<circle cx="469" cy="262" r="2.7" fill="#d97706"/>
+<circle cx="242" cy="267" r="2.7" fill="#0284c7"/>
+<text x="24" y="290" font-family="monospace" font-size="11" fill="#172033">hold.search.literal.hit</text>
+<circle cx="685" cy="281" r="2.7" fill="#7c3aed"/>
+<circle cx="618" cy="286" r="2.7" fill="#d97706"/>
+<circle cx="371" cy="291" r="2.7" fill="#0284c7"/>
+<text x="24" y="314" font-family="monospace" font-size="11" fill="#172033">hold.search.literal.miss</text>
+<circle cx="986" cy="305" r="2.7" fill="#7c3aed"/>
+<circle cx="932" cy="310" r="2.7" fill="#d97706"/>
+<circle cx="570" cy="315" r="2.7" fill="#0284c7"/>
+<text x="24" y="338" font-family="monospace" font-size="11" fill="#172033">hold.search.long-boundary</text>
+<circle cx="706" cy="329" r="2.7" fill="#7c3aed"/>
+<circle cx="739" cy="334" r="2.7" fill="#d97706"/>
+<circle cx="242" cy="339" r="2.7" fill="#0284c7"/>
+<text x="24" y="362" font-family="monospace" font-size="11" fill="#172033">hold.search.look-capture</text>
+<circle cx="596" cy="353" r="2.7" fill="#7c3aed"/>
+<circle cx="466" cy="358" r="2.7" fill="#d97706"/>
+<circle cx="242" cy="363" r="2.7" fill="#0284c7"/>
+<text x="24" y="386" font-family="monospace" font-size="11" fill="#172033">hold.split.capture</text>
+<circle cx="546" cy="377" r="2.7" fill="#7c3aed"/>
+<circle cx="449" cy="382" r="2.7" fill="#d97706"/>
+<circle cx="293" cy="387" r="2.7" fill="#0284c7"/>
+<text x="24" y="410" font-family="monospace" font-size="11" fill="#172033">hold.sub.template</text>
+<circle cx="565" cy="401" r="2.7" fill="#7c3aed"/>
+<circle cx="445" cy="406" r="2.7" fill="#d97706"/>
+<circle cx="370" cy="411" r="2.7" fill="#0284c7"/>
+<text x="24" y="434" font-family="monospace" font-size="11" fill="#172033">hold.subn.callable</text>
+<circle cx="543" cy="425" r="2.7" fill="#7c3aed"/>
+<circle cx="452" cy="430" r="2.7" fill="#d97706"/>
+<circle cx="350" cy="435" r="2.7" fill="#0284c7"/>
+<text x="24" y="458" font-family="monospace" font-size="11" fill="#172033">hold.unicode.words</text>
+<circle cx="551" cy="449" r="2.7" fill="#7c3aed"/>
+<circle cx="452" cy="454" r="2.7" fill="#d97706"/>
+<circle cx="292" cy="459" r="2.7" fill="#0284c7"/>
+</svg>
