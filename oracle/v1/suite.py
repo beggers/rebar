@@ -213,7 +213,7 @@ def generated_invalid_patterns(seed, count):
     rng = random.Random(seed)
     forms = [
         lambda tail: "\\q" + tail,
-        lambda tail: "[abc" + tail,
+        lambda tail: "[abc" + tail.replace("]", ""),
         lambda tail: "(" + tail,
         lambda tail: "a**" + tail,
         lambda tail: "a{3,1}" + tail,

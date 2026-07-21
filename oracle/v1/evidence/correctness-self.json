@@ -1,6 +1,6 @@
 {
   "cases": 2048,
-  "expected_sha256": "68daa831d0579a07585727216346db0841a26036d12e0311acba85a54d696709",
+  "expected_sha256": "983885ee6411fd806edf3d72efbcc989f9b9f7775a6d127dc7c865673eeb0fed",
   "failed": 0,
   "failures": [],
   "mapped_obligations": 38,

@@ -1,3 +1,4 @@
 # Amendments
 
 1. **Branch instruction.** The request explicitly requires all work on `main`. This overrides the conflicting objective sentences that require a feature branch and prohibit pushing a default branch. Every focused, passing chunk will therefore be committed and pushed on `main`; history will not be rewritten or force-pushed.
+2. **Correctness-oracle strengthening (v1.1).** Before candidate code, an audit found that the invalid-pattern generator could append a closing bracket and make `fuzz.invalid-pattern.0193` valid. The generator now removes appended closing brackets, and freeze/verify reject every unexpected-success error case and every false property. This changes no denominator or seed, removes no case, weakens no obligation, and supersedes the earlier v1 fixture.

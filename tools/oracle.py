@@ -267,7 +267,12 @@ def validate_suite(suite, cases):
 
 def output_records(module, cases):
     for case in cases:
-        yield {"id": case["id"], "kind": case["kind"], "obligations": case["obligations"], "result": execute(module, case)}
+        result = execute(module, case)
+        if case["kind"] == "error" and result.get("unexpected_success"):
+            raise RuntimeError(f"invalid-input case unexpectedly succeeds: {case['id']}")
+        if case["kind"] == "property" and not all(result.values()):
+            raise RuntimeError(f"self-oracle property is false: {case['id']}")
+        yield {"id": case["id"], "kind": case["kind"], "obligations": case["obligations"], "result": result}
 
 
 def encoded_records(records):
@@ -297,7 +302,7 @@ def freeze(args):
     for case in cases:
         counts[case["kind"]] = counts.get(case["kind"], 0) + 1
     manifest = {
-        "schema": "rebar-correctness-v1",
+        "schema": "rebar-correctness-v1.1",
         "python": "3.14.6",
         "implementation": "CPython",
         "unicode": "16.0.0",
@@ -333,6 +338,10 @@ def verify(args):
     expected = [json.loads(line) for line in expected_bytes.splitlines()]
     if len(expected) != len(cases) or len(cases) != manifest["cases"]:
         raise RuntimeError("case count differs from frozen manifest")
+    invalid_expected = [item["id"] for item in expected if item["kind"] == "error" and item["result"].get("unexpected_success")]
+    false_properties = [item["id"] for item in expected if item["kind"] == "property" and not all(item["result"].values())]
+    if invalid_expected or false_properties:
+        raise RuntimeError(f"invalid frozen self-oracle records: unexpected-success={invalid_expected}, false-properties={false_properties}")
     if args.case:
         selected = [(case, want) for case, want in zip(cases, expected, strict=True) if case["id"] == args.case]
         if len(selected) != 1:

@@ -4,12 +4,12 @@ This experiment was run only after correctness oracle v1 was frozen and pushed. 
 
 | Family | Engine/build observed | Raw P0 result | Decision |
 | --- | --- | --- | --- |
-| `regex` | `regex==2026.7.10`, bundled C engine | 1,341/2,048 pass; 707 fail | retain: broad syntax and CPython wheel; needs a compatibility adapter |
-| PCRE2 | `pcre2==0.7.0`, bundled PCRE2/Cython with JIT | 947/2,048 pass; 1,101 fail | retain: distinct JIT-capable backtracker; missing public helpers/metadata |
+| `regex` | `regex==2026.7.10`, bundled C engine | 1,340/2,048 pass; 708 fail | retain: broad syntax and CPython wheel; needs a compatibility adapter |
+| PCRE2 | `pcre2==0.7.0`, bundled PCRE2/Cython with JIT | 946/2,048 pass; 1,102 fail | retain: distinct JIT-capable backtracker; missing public helpers/metadata |
 | Oniguruma | `onigurumacffi==1.5.0`, bundled Oniguruma 6.9.10 | NOT MEASURED against full oracle | retain low-level `_onigurumacffi` only; public wrapper imports and executes stdlib `re` and is rejected |
 | ICU | system ICU 74.2 C API | NOT MEASURED against full oracle | reject for this round: UTF-16-only API makes exact bytes and code-point offsets a separate binding project |
 
-The raw failure records are [discovery-regex.json](discovery-regex.json) and [discovery-pcre2.json](discovery-pcre2.json); all losses are preserved. Their chart is generated, never hand-edited.
+The raw failure records are [discovery-regex.json](discovery-regex.json) and [discovery-pcre2.json](discovery-pcre2.json); all losses are preserved against correctness v1.1. Their chart is generated, never hand-edited.
 
 The unadapted failures are informative. `regex` exposes extra APIs/flags, differs on `lastgroup`, Unicode `IGNORECASE` for dotless i, ambiguous-set warnings, error positions, and accepts variable-width lookbehind. PCRE2 lacks `escape`, `purge`, `scanner`, and `Match.regs`; all 384 property cases therefore fail before semantic comparison. Both need an explicit CPython-facing contract and error normalization.
 

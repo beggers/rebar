@@ -1,7 +1,7 @@
 {
   "cases": 2048,
-  "expected_sha256": "68daa831d0579a07585727216346db0841a26036d12e0311acba85a54d696709",
-  "failed": 1101,
+  "expected_sha256": "983885ee6411fd806edf3d72efbcc989f9b9f7775a6d127dc7c865673eeb0fed",
+  "failed": 1102,
   "failures": [
     {
       "actual": {
@@ -114770,6 +114770,54 @@
     },
     {
       "actual": {
+        "id": "fuzz.invalid-pattern.0193",
+        "kind": "error",
+        "obligations": [
+          "E-PATTERN",
+          "S-LOOKAROUND",
+          "S-INLINE",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL"
+        ],
+        "result": {
+          "args": [
+            "compilation failed at position 8; missing terminating ] for character class"
+          ],
+          "msg": "compilation failed at position 8; missing terminating ] for character class",
+          "pos": 8,
+          "str": "compilation failed at position 8; missing terminating ] for character class",
+          "type": "PatternError"
+        }
+      },
+      "expected": {
+        "id": "fuzz.invalid-pattern.0193",
+        "kind": "error",
+        "obligations": [
+          "E-PATTERN",
+          "S-LOOKAROUND",
+          "S-INLINE",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL"
+        ],
+        "result": {
+          "args": [
+            "unterminated character set at position 0"
+          ],
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unterminated character set",
+          "pattern": "[abc[0-9",
+          "pos": 0,
+          "str": "unterminated character set at position 0",
+          "type": "PatternError"
+        }
+      },
+      "id": "fuzz.invalid-pattern.0193"
+    },
+    {
+      "actual": {
         "id": "fuzz.invalid-pattern.0194",
         "kind": "error",
         "obligations": [
@@ -124842,6 +124890,6 @@
   "mapped_obligations": 38,
   "module": "pcre2",
   "obligations": 38,
-  "passed": 947,
+  "passed": 946,
   "schema": "rebar-correctness-result-v1"
 }
