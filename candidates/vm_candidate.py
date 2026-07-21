@@ -409,17 +409,35 @@ class _BytecodeParser:
                             else:
                                 if item == "L" and not self.byte_mode:
                                     self.error("bad inline flags: cannot use 'L' flag with a str pattern", self.at)
+                                if item == "u" and self.byte_mode:
+                                    self.error("bad inline flags: cannot use 'u' flag with a bytes pattern", self.at)
                                 if item in "aLu" and turn_on & int(ASCII | LOCALE | UNICODE):
                                     self.error("bad inline flags: flags 'a', 'u' and 'L' are incompatible", self.at)
                                 turn_on |= table[item]
                         else:
-                            self.error(f"unknown flag {item!r}", self.at - 1)
+                            if removing and not turn_off and item in "+*?{":
+                                self.error("missing flag", self.at - 1)
+                            if removing and item in "+*?{":
+                                self.error("missing :", self.at - 1)
+                            if not removing and item in "+*?{":
+                                self.error("missing -, : or )", self.at - 1)
+                            self.error("unknown flag", self.at - 1)
                     if turn_on & turn_off:
                         self.error("bad inline flags: flag turned on and off", self.at)
                     changed = (flags | turn_on) & ~turn_off
+                    if turn_on & int(ASCII | LOCALE):
+                        changed &= ~int(UNICODE)
+                    elif turn_on & int(UNICODE):
+                        changed &= ~int(ASCII | LOCALE)
                     terminator = self.advance()
+                    if removing and not turn_off:
+                        self.error("missing flag", self.at)
+                    if removing and terminator in {None, ")"}:
+                        self.error("missing :", self.at - (terminator == ")"))
+                    if terminator is None:
+                        self.error("missing -, : or )", self.at)
                     if terminator == ")":
-                        if opening != 0 or len(stack) != 1:
+                        if len(stack) != 1 or len(active["parts"]) != 1 or active["parts"][0]:
                             self.error("global flags not at the start of the expression", opening)
                         active["flags"] = changed
                         self.flags = changed
@@ -820,12 +838,20 @@ def compile(pattern, flags=0):
         raise ValueError("cannot use LOCALE flag with a str pattern")
     if isinstance(pattern, bytes) and flags & int(UNICODE):
         raise ValueError("cannot use UNICODE flag with a bytes pattern")
+    if isinstance(pattern, str) and flags & int(ASCII) and flags & int(UNICODE):
+        raise ValueError("ASCII and UNICODE flags are incompatible")
+    if isinstance(pattern, bytes) and flags & int(ASCII) and flags & int(LOCALE):
+        raise ValueError("ASCII and LOCALE flags are incompatible")
     key = (type(pattern), pattern, flags)
     if key in _CACHE:
         return _CACHE[key]
     implicit_unicode = int(UNICODE) if isinstance(pattern, str) and not flags & int(ASCII) else 0
     parser = _BytecodeParser(pattern, flags | implicit_unicode)
     node = parser.parse()
+    if isinstance(pattern, str) and ((flags & int(ASCII) and parser.flags & int(UNICODE)) or (flags & int(UNICODE) and parser.flags & int(ASCII))):
+        raise ValueError("ASCII and UNICODE flags are incompatible")
+    if isinstance(pattern, bytes) and ((flags & int(ASCII) and parser.flags & int(LOCALE)) or (flags & int(LOCALE) and parser.flags & int(ASCII))):
+        raise ValueError("ASCII and LOCALE flags are incompatible")
     vm = _BytecodeCompiler().build(node, parser.groups)
     result = Pattern(pattern, parser.flags & ~_BYTE, vm, parser.groups, dict(parser.groupindex))
     _CACHE[key] = result

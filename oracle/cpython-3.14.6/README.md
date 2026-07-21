@@ -65,6 +65,21 @@ The next compatibility cohort fixes canonical flag/pattern representations, unkn
 
 The complete follow-up records are [native](evidence/rebar-surface.json), [Python](evidence/ast-surface.json), and [Rust](evidence/rust-surface.json). Earlier evidence remains unchanged.
 
+## Inline and scoped flags follow-up
+
+![Official CPython re compatibility after flag fixes](evidence/flags-correctness.svg)
+
+The next parser cohort fixes repeated global flags at the true start, scoped ASCII/Unicode/LOCALE switching, verbose spaces/comments and alternatives, incompatibility checks, and exact malformed-flag errors. Exactly six previously failing methods now pass in every engine, with no unrelated status changes:
+
+| Engine | Runnable methods passed | Failed | Crashes | Timeouts |
+| --- | ---: | ---: | ---: | ---: |
+| CPython `re` self-check | **144/144** | **0** | **0** | **0** |
+| Native C / `rebar` | 116/144 | 28 | 0 | 2 |
+| Python engine | 112/144 | 32 | 0 | 1 |
+| Rust engine | 112/144 | 32 | 3 | 0 |
+
+The complete follow-up records are [native](evidence/rebar-flags.json), [Python](evidence/ast-flags.json), and [Rust](evidence/rust-flags.json). Earlier evidence remains unchanged.
+
 Reproduce the frozen gate or one stable method ID:
 
 ```sh

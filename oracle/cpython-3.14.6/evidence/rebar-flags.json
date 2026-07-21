@@ -1,0 +1,1118 @@
+{
+  "crashes": 0,
+  "failed": 28,
+  "methods": 146,
+  "module": "rebar",
+  "passed": 116,
+  "records": [
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ExternalTests.test_re_benchmarks"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_re_tests (rebar_cpython_re_oracle.ExternalTests.test_re_tests) (pattern='((.)\\\\1+)', string='')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 3064, in test_re_tests\n    with self.assertRaises(re.PatternError):\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: PatternError not raised\n"
+        },
+        {
+          "test": "test_re_tests (rebar_cpython_re_oracle.ExternalTests.test_re_tests) (pattern='\\\\141', string='a')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 3068, in test_re_tests\n    obj = re.compile(pattern)\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 850, in compile\n    node = parser.parse()\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 451, in parse\n    node = self.escaped(flags, False, opening)\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 214, in escaped\n    self.error(f\"invalid group reference {number}\", slash + 1)\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 92, in error\n    raise PatternError(message, self.original if include_pattern else None, position)\ncandidates.vm_candidate.PatternError: invalid group reference 14 at position 1\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ExternalTests.test_re_tests"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_flags_repr"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_inline_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_locale"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_long_pattern"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_multiple_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_quotes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_single_flag"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_unicode_flag"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_unknown_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_without_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ASSERT_NOT_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_MARK_PUSH_macro_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_MIN_REPEAT_ONE_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_MIN_UNTIL_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_REPEAT_ONE_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_anyall"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ascii_and_unicode_flag"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_atomic_grouping"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_backref_group_name_in_exception"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_basic_re_sub"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_big_codesize"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bigcharset"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_branching"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_113254"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_114660"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_117612"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_1661"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_16688"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_20998"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_2537"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_bug_29444 (rebar_cpython_re_oracle.ReTests.test_bug_29444)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 2362, in test_bug_29444\n    self.assertEqual(m.group(), b'xyz')\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\nAssertionError: b'xyz\\x00\\x00\\x00\\x00\\x00' != b'xyz'\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_bug_29444"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_34294"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_3629"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_bug_40736 (rebar_cpython_re_oracle.ReTests.test_bug_40736)",
+          "trace": "TypeError: subject must be str or bytes\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 2469, in test_bug_40736\n    with self.assertRaisesRegex(TypeError, \"got 'int'\"):\n         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: \"got 'int'\" does not match \"subject must be str or bytes\"\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_bug_40736"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_418626"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_448951"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_449000"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_449964"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_527371"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_581080"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_612074"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_6509"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_6561"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_725106"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_725149"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_764548"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_817234"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_926075"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_931848"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_gh100061"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_gh101955"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_gh91616"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bytes_str_mixing"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_category"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_character_set_any"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_character_set_errors (rebar_cpython_re_oracle.ReTests.test_character_set_errors) (pattern='[\\\\w-b]')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 'bad character range' != 'bad character range \\\\w-b'\n- bad character range\n+ bad character range \\w-b\n?                    +++++\n\n"
+        },
+        {
+          "test": "test_character_set_errors (rebar_cpython_re_oracle.ReTests.test_character_set_errors) (pattern='[a-\\\\w]')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 'bad character range' != 'bad character range a-\\\\w'\n- bad character range\n+ bad character range a-\\w\n?                    +++++\n\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_character_set_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_character_set_none"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_comments"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_compile"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_constants"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_copying"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_dollar_matches_twice"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_empty_array (rebar_cpython_re_oracle.ReTests.test_empty_array)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/tools/cpython_re_oracle.py\", line 67, in wrapped\n    return function(*args, **kwargs)\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1759, in test_empty_array\n    self.assertIsNone(re.compile(b\"bla\").match(a))\n                      ~~~~~~~~~~~~~~~~~~~~~~~~^^^\nTypeError: subject must be str or bytes\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_empty_array"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_enum"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_error"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_error_is_PatternError_alias"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_expand"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_fail"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_findall_atomic_grouping"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_findall_possessive_quantifiers"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_finditer"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_fullmatch_atomic_grouping"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_fullmatch_possessive_quantifiers"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_getattr"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_group"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_group_name_in_exception"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_groupdict"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_ignore_case (rebar_cpython_re_oracle.ReTests.test_ignore_case)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1121, in test_ignore_case\n    self.assertTrue(re.match(r'\\u0412', '\\u1c80', re.I))\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: None is not true\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_ignore_case"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_ignore_case_range (rebar_cpython_re_oracle.ReTests.test_ignore_case_range)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1206, in test_ignore_case_range\n    self.assertIsNone(re.match(r'[9-A]', '_', re.I))\n    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: <re.Match object; span=(0, 1), match='_'> is not None\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_ignore_case_range"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_ignore_case_set (rebar_cpython_re_oracle.ReTests.test_ignore_case_set)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1192, in test_ignore_case_set\n    self.assertTrue(re.match(r'[19\\u0412]', '\\u1c80', re.I))\n    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: None is not true\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_ignore_case_set"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ignore_spaces"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_inline_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_issue17998"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_keep_buffer (rebar_cpython_re_oracle.ReTests.test_keep_buffer)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 73, in test_keep_buffer\n    with self.assertRaises(BufferError):\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^\nAssertionError: BufferError not raised\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_keep_buffer"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_keyword_parameters"
+    },
+    {
+      "reason": "test needs en_US.iso88591 locale",
+      "skipped": 1,
+      "status": "skipped",
+      "test": "ReTests.test_locale_caching"
+    },
+    {
+      "reason": "test needs en_US.iso88591 locale",
+      "skipped": 1,
+      "status": "skipped",
+      "test": "ReTests.test_locale_compiled"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_locale_flag"
+    },
+    {
+      "seconds": 10,
+      "status": "timeout",
+      "test": "ReTests.test_look_behind_overflow"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_lookahead (rebar_cpython_re_oracle.ReTests.test_lookahead)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1062, in test_lookahead\n    self.assertTrue(re.match(r'(a)b(?=(?(2)x|c))(c)', 'abc'))\n                    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 874, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 850, in compile\n    node = parser.parse()\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 388, in parse\n    self.error(f\"invalid group reference {number}\", reference_start)\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 92, in error\n    raise PatternError(message, self.original if include_pattern else None, position)\ncandidates.vm_candidate.PatternError: invalid group reference 2 at position 10\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_lookahead"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_lookbehind (rebar_cpython_re_oracle.ReTests.test_lookbehind)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1087, in test_lookbehind\n    self.assertRaises(re.PatternError, re.compile, r'(a)b(?<=(.)\\2)(c)')\n    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: PatternError not raised by compile\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_lookbehind"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_match_getitem"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_match_repr (rebar_cpython_re_oracle.ReTests.test_match_repr)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 2107, in test_match_repr\n    self.assertRegex(repr(m), pattern)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\nAssertionError: Regex didn't match: \"<(candidates._vm_native\\\\.)?Match object; span=\\\\(1, 12\\\\), match='abracadabra'>\" not found in \"<re.Match object; span=(1, 12), match='abracadabra'>\"\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_match_repr"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_misc_errors (rebar_cpython_re_oracle.ReTests.test_misc_errors) (pattern='(?P')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 'unknown extension ?P' != 'unexpected end of pattern'\n- unknown extension ?P\n+ unexpected end of pattern\n\n"
+        },
+        {
+          "test": "test_misc_errors (rebar_cpython_re_oracle.ReTests.test_misc_errors) (pattern='(?<')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 'unknown extension ?<' != 'unexpected end of pattern'\n- unknown extension ?<\n+ unexpected end of pattern\n\n"
+        },
+        {
+          "test": "test_misc_errors (rebar_cpython_re_oracle.ReTests.test_misc_errors) (pattern='(?<>)')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 'unknown extension ?<' != 'unknown extension ?<>'\n- unknown extension ?<\n+ unknown extension ?<>\n?                     +\n\n"
+        },
+        {
+          "test": "test_misc_errors (rebar_cpython_re_oracle.ReTests.test_misc_errors) (pattern='(?')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 'unknown extension ?None' != 'unexpected end of pattern'\n- unknown extension ?None\n+ unexpected end of pattern\n\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_misc_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_misuse_flags"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_multiple_repeat (rebar_cpython_re_oracle.ReTests.test_multiple_repeat)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1610, in test_multiple_repeat\n    self.checkPatternError(r'x%s%s' % (inner_op, outer_op),\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            'multiple repeat', 1 + len(inner_op))\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 49, in checkPatternError\n    with self.assertRaises(re.PatternError) as cm:\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: PatternError not raised\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_multiple_repeat"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_named_unicode_escapes (rebar_cpython_re_oracle.ReTests.test_named_unicode_escapes) (pattern='\\\\N')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 'bad escape \\\\N' != 'missing {'\n- bad escape \\N\n+ missing {\n\n"
+        },
+        {
+          "test": "test_named_unicode_escapes (rebar_cpython_re_oracle.ReTests.test_named_unicode_escapes) (pattern='[\\\\N]')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 'bad escape \\\\N' != 'missing {'\n- bad escape \\N\n+ missing {\n\n"
+        },
+        {
+          "test": "test_named_unicode_escapes (rebar_cpython_re_oracle.ReTests.test_named_unicode_escapes) (pattern='\\\\N{')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 'missing }, unterminated name' != 'missing character name'\n- missing }, unterminated name\n+ missing character name\n\n"
+        },
+        {
+          "test": "test_named_unicode_escapes (rebar_cpython_re_oracle.ReTests.test_named_unicode_escapes) (pattern='[\\\\N{')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 'missing }, unterminated name' != 'missing character name'\n- missing }, unterminated name\n+ missing character name\n\n"
+        },
+        {
+          "test": "test_named_unicode_escapes (rebar_cpython_re_oracle.ReTests.test_named_unicode_escapes) (pattern='\\\\N{}')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: \"undefined character name ''\" != 'missing character name'\n- undefined character name ''\n+ missing character name\n\n"
+        },
+        {
+          "test": "test_named_unicode_escapes (rebar_cpython_re_oracle.ReTests.test_named_unicode_escapes) (pattern='[\\\\N{}]')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: \"undefined character name ''\" != 'missing character name'\n- undefined character name ''\n+ missing character name\n\n"
+        },
+        {
+          "test": "test_named_unicode_escapes (rebar_cpython_re_oracle.ReTests.test_named_unicode_escapes) (pattern='\\\\NSNAKE}')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 'bad escape \\\\N' != 'missing {'\n- bad escape \\N\n+ missing {\n\n"
+        },
+        {
+          "test": "test_named_unicode_escapes (rebar_cpython_re_oracle.ReTests.test_named_unicode_escapes) (pattern='[\\\\NSNAKE}]')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 'bad escape \\\\N' != 'missing {'\n- bad escape \\N\n+ missing {\n\n"
+        },
+        {
+          "test": "test_named_unicode_escapes (rebar_cpython_re_oracle.ReTests.test_named_unicode_escapes) (pattern='\\\\N{SNAKE')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 55, in checkPatternError\n    self.assertEqual(err.pos, pos)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^\nAssertionError: 2 != 3\n"
+        },
+        {
+          "test": "test_named_unicode_escapes (rebar_cpython_re_oracle.ReTests.test_named_unicode_escapes) (pattern='[\\\\N{SNAKE]')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 55, in checkPatternError\n    self.assertEqual(err.pos, pos)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^\nAssertionError: 3 != 4\n"
+        },
+        {
+          "test": "test_named_unicode_escapes (rebar_cpython_re_oracle.ReTests.test_named_unicode_escapes)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 884, in test_named_unicode_escapes\n    self.checkPatternError(r'\\N{KEYCAP NUMBER SIGN}',\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                        \"undefined character name 'KEYCAP NUMBER SIGN'\", 0)\n                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 50, in checkPatternError\n    re.compile(pattern)\n    ~~~~~~~~~~^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 855, in compile\n    vm = _BytecodeCompiler().build(node, parser.groups)\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 666, in build\n    self.emit(node)\n    ~~~~~~~~~^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 593, in emit\n    self.emit(child)\n    ~~~~~~~~~^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 568, in emit\n    self.instruction(self.CHAR, ord(node[1]), node[2])\n                                ~~~^^^^^^^^^\nTypeError: ord() expected a character, but string of length 3 found\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_named_unicode_escapes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_not_literal"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_nothing_to_repeat (rebar_cpython_re_oracle.ReTests.test_nothing_to_repeat)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1596, in test_nothing_to_repeat\n    self.checkPatternError('%s%s' % (reps, mod),\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n                           'nothing to repeat', 0)\n                           ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 49, in checkPatternError\n    with self.assertRaises(re.PatternError) as cm:\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: PatternError not raised\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_nothing_to_repeat"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_other_escapes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_pattern_compare"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_pattern_compare_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_pickling"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_possessive_quantifiers"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_possible_set_operations"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_qualified_re_split"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_qualified_re_sub"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape_non_ascii"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape_non_ascii_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_findall"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_fullmatch"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_re_groupref (rebar_cpython_re_oracle.ReTests.test_re_groupref)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 721, in test_re_groupref\n    self.checkPatternError(r'(abc\\1)', 'cannot refer to an open group', 4)\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 49, in checkPatternError\n    with self.assertRaises(re.PatternError) as cm:\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: PatternError not raised\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_re_groupref"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_groupref_exists"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_re_groupref_exists_errors (rebar_cpython_re_oracle.ReTests.test_re_groupref_exists_errors) (pattern='(?P<a>)(?(0)a|b)')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 'invalid group reference 0' != 'bad group number'\n- invalid group reference 0\n+ bad group number\n\n"
+        },
+        {
+          "test": "test_re_groupref_exists_errors (rebar_cpython_re_oracle.ReTests.test_re_groupref_exists_errors) (pattern='()(?(-1)a|b)')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: \"unknown group name '-1'\" != \"bad character in group name '-1'\"\n- unknown group name '-1'\n+ bad character in group name '-1'\n\n"
+        },
+        {
+          "test": "test_re_groupref_exists_errors (rebar_cpython_re_oracle.ReTests.test_re_groupref_exists_errors) (pattern='()(?(+1)a|b)')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: \"unknown group name '+1'\" != \"bad character in group name '+1'\"\n- unknown group name '+1'\n+ bad character in group name '+1'\n\n"
+        },
+        {
+          "test": "test_re_groupref_exists_errors (rebar_cpython_re_oracle.ReTests.test_re_groupref_exists_errors) (pattern='()()()()()()()()()()(?(1_0)a|b)')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: \"unknown group name '1_0'\" != \"bad character in group name '1_0'\"\n- unknown group name '1_0'\n+ bad character in group name '1_0'\n\n"
+        },
+        {
+          "test": "test_re_groupref_exists_errors (rebar_cpython_re_oracle.ReTests.test_re_groupref_exists_errors) (pattern='()(?( 1 )a|b)')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: \"unknown group name ' 1 '\" != \"bad character in group name ' 1 '\"\n- unknown group name ' 1 '\n+ bad character in group name ' 1 '\n\n"
+        },
+        {
+          "test": "test_re_groupref_exists_errors (rebar_cpython_re_oracle.ReTests.test_re_groupref_exists_errors) (pattern='()(?(㊀)a|b)')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: \"unknown group name '㊀'\" != \"bad character in group name '㊀'\"\n- unknown group name '㊀'\n+ bad character in group name '㊀'\n\n"
+        },
+        {
+          "test": "test_re_groupref_exists_errors (rebar_cpython_re_oracle.ReTests.test_re_groupref_exists_errors) (pattern='()(?(¹)a|b)')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 53, in checkPatternError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: \"unknown group name '¹'\" != \"bad character in group name '¹'\"\n- unknown group name '¹'\n+ bad character in group name '¹'\n\n"
+        },
+        {
+          "test": "test_re_groupref_exists_errors (rebar_cpython_re_oracle.ReTests.test_re_groupref_exists_errors)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 680, in test_re_groupref_exists_errors\n    self.checkPatternError(r'()(?(१)a|b)',\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^\n                           \"bad character in group name '१'\", 5)\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 49, in checkPatternError\n    with self.assertRaises(re.PatternError) as cm:\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: PatternError not raised\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_re_groupref_exists_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_groupref_exists_validation_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_match"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_split"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_subn"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_repeat_minmax"
+    },
+    {
+      "seconds": 10,
+      "status": "timeout",
+      "test": "ReTests.test_repeat_minmax_overflow"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_scanner (rebar_cpython_re_oracle.ReTests.test_scanner)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1628, in test_scanner\n    scanner = Scanner([\n        (r\"[a-zA-Z_]\\w*\", s_ident),\n    ...<3 lines>...\n        (r\"\\s+\", None),\n        ])\nTypeError: 'NoneType' object is not callable\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_scanner"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_scoped_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_search_coverage"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_search_dot_unicode"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_search_star_plus"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_special_escapes"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_sre_byte_class_literals (rebar_cpython_re_oracle.ReTests.test_sre_byte_class_literals)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1540, in test_sre_byte_class_literals\n    self.checkPatternError(br\"[\\567]\",\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\n                           r'octal escape value \\567 outside of '\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                           r'range 0-0o377', 1)\n                           ^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 49, in checkPatternError\n    with self.assertRaises(re.PatternError) as cm:\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: PatternError not raised\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_sre_byte_class_literals"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_sre_byte_literals (rebar_cpython_re_oracle.ReTests.test_sre_byte_literals)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1509, in test_sre_byte_literals\n    self.assertTrue(re.match((r\"\\%03o\" % i).encode(), bytes([i])))\n                    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 874, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 850, in compile\n    node = parser.parse()\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 451, in parse\n    node = self.escaped(flags, False, opening)\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 214, in escaped\n    self.error(f\"invalid group reference {number}\", slash + 1)\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 92, in error\n    raise PatternError(message, self.original if include_pattern else None, position)\ncandidates.vm_candidate.PatternError: invalid group reference 10 at position 1\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_sre_byte_literals"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_sre_character_class_literals (rebar_cpython_re_oracle.ReTests.test_sre_character_class_literals)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1497, in test_sre_character_class_literals\n    self.checkPatternError(r\"[\\567]\",\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^\n                           r'octal escape value \\567 outside of '\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                           r'range 0-0o377', 1)\n                           ^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 49, in checkPatternError\n    with self.assertRaises(re.PatternError) as cm:\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: PatternError not raised\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_sre_character_class_literals"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_sre_character_literals (rebar_cpython_re_oracle.ReTests.test_sre_character_literals)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1450, in test_sre_character_literals\n    self.assertTrue(re.match(r\"\\%03o\" % i, chr(i)))\n                    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 874, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 850, in compile\n    node = parser.parse()\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 451, in parse\n    node = self.escaped(flags, False, opening)\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 214, in escaped\n    self.error(f\"invalid group reference {number}\", slash + 1)\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/vm_candidate.py\", line 92, in error\n    raise PatternError(message, self.original if include_pattern else None, position)\ncandidates.vm_candidate.PatternError: invalid group reference 10 at position 1\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_sre_character_literals"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_stack_overflow"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_sub_template_numeric_escape (rebar_cpython_re_oracle.ReTests.test_sub_template_numeric_escape)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 194, in test_sub_template_numeric_escape\n    self.assertEqual(re.sub('x', r'\\0', 'x'), '\\0')\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 'x' != '\\x00'\n- x\n+ \u0000\n\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_sub_template_numeric_escape"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_symbolic_groups"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_symbolic_groups_errors (rebar_cpython_re_oracle.ReTests.test_symbolic_groups_errors)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 299, in test_symbolic_groups_errors\n    self.checkPatternError(r'(?P<a>(?P=a))',\n    ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\n                           \"cannot refer to an open group\", 10)\n                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 49, in checkPatternError\n    with self.assertRaises(re.PatternError) as cm:\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: PatternError not raised\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_symbolic_groups_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_symbolic_refs"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_symbolic_refs_errors (rebar_cpython_re_oracle.ReTests.test_symbolic_refs_errors) (pattern='(?P<a>x)', repl='\\\\g')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 62, in checkTemplateError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: 'bad escape \\\\g' != 'missing <'\n- bad escape \\g\n+ missing <\n\n"
+        },
+        {
+          "test": "test_symbolic_refs_errors (rebar_cpython_re_oracle.ReTests.test_symbolic_refs_errors) (pattern=b'(?P<a>x)', repl=b'\\\\g<\\xc2\\xb5>')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 62, in checkTemplateError\n    self.assertEqual(err.msg, errmsg)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: \"bad character in group name 'Âµ'\" != \"bad character in group name '\\\\xc2\\\\xb5'\"\n- bad character in group name 'Âµ'\n?                              ^^\n+ bad character in group name '\\xc2\\xb5'\n?                              ^^^^^^^^\n\n"
+        },
+        {
+          "test": "test_symbolic_refs_errors (rebar_cpython_re_oracle.ReTests.test_symbolic_refs_errors)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 376, in test_symbolic_refs_errors\n    self.checkTemplateError('(?P<a>x)', r'\\g<१>', 'xx',\n    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n                            \"bad character in group name '१'\", 3)\n                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 58, in checkTemplateError\n    with self.assertRaises(re.PatternError) as cm:\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^\nAssertionError: PatternError not raised\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_symbolic_refs_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_unlimited_zero_width_repeat"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_weakref"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_word_boundaries"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_zerowidth"
+    }
+  ],
+  "runner_sha256": "d5084fd43352f34267f3ed9b4b5d60a6070e2c50d4b787739270502c856e18bb",
+  "schema": "rebar-cpython-re-result-v1",
+  "skipped": 2,
+  "source_sha256": {
+    "LICENSE": "b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231",
+    "re_tests.py": "ec04a2b2a77338d20b37d931693c7e588a2896d3c73c7b4b47973e24c13b5aab",
+    "test_re.py": "879c8b562a5bddb413e73ad6d026a6199785bd08fa1c2c5db1ef831b4e1c47e2"
+  },
+  "timeouts": 2
+}

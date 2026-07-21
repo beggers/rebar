@@ -68,6 +68,8 @@ struct Parser {
     names: Vec<(String, usize)>,
     widths: Vec<(usize, (usize, usize))>,
     named: Vec<(usize, u32)>,
+    global_allowed: bool,
+    group_depth: usize,
 }
 type PResult<T> = Result<T, (String, Option<usize>, bool)>;
 
@@ -81,6 +83,17 @@ impl Parser {
             self.at += 1;
         }
         value
+    }
+    fn global_group(&self, start: usize) -> bool {
+        let mut cursor = start + 2;
+        while let Some(value) = self.source.get(cursor).copied().and_then(char::from_u32) {
+            if matches!(value, 'a' | 'i' | 'L' | 'm' | 's' | 'u' | 'x' | '-') {
+                cursor += 1;
+                continue;
+            }
+            return value == ')';
+        }
+        false
     }
     fn fail<T>(&self, msg: String, pos: Option<usize>, include: bool) -> PResult<T> {
         Err((msg, pos, include))
@@ -112,8 +125,10 @@ impl Parser {
     fn alt(&mut self, flags: u32) -> PResult<Expr> {
         let mut branches = vec![self.seq(flags)?];
         while self.now() == Some('|') {
+            self.global_allowed = false;
             self.at += 1;
-            branches.push(self.seq(flags)?);
+            let branch_flags = if self.group_depth == 0 { self.flags } else { flags };
+            branches.push(self.seq(branch_flags)?);
         }
         Ok(if branches.len() == 1 {
             branches.pop().unwrap()
@@ -137,9 +152,9 @@ impl Parser {
                 if values.is_empty()
                     && self.at > start
                     && self.source.get(start + 1) == Some(&(b'?' as u32))
-                    && self.source.get(self.at.saturating_sub(1)) == Some(&(b')' as u32))
+                    && self.global_group(start)
                 {
-                    if start != 0 {
+                    if self.group_depth != 0 || !self.global_allowed {
                         return self.fail(
                             "global flags not at the start of the expression".into(),
                             Some(start),
@@ -149,6 +164,12 @@ impl Parser {
                     flags = self.flags;
                     continue;
                 }
+            }
+            let comment = matches!(&node, Expr::Seq(values) if values.is_empty())
+                && self.source.get(start + 1) == Some(&(b'?' as u32))
+                && self.source.get(start + 2) == Some(&(b'#' as u32));
+            if !comment {
+                self.global_allowed = false;
             }
             result.push(node);
         }
@@ -461,6 +482,13 @@ impl Parser {
         Ok(value)
     }
     fn group(&mut self, flags: u32, start: usize) -> PResult<Expr> {
+        self.group_depth += 1;
+        let result = self.group_inner(flags, start);
+        self.group_depth -= 1;
+        result
+    }
+
+    fn group_inner(&mut self, flags: u32, start: usize) -> PResult<Expr> {
         if self.now() != Some('?') {
             self.groups += 1;
             let number = self.groups;
@@ -659,8 +687,17 @@ impl Parser {
                         'u' => 32,
                         'x' => X,
                         _ => {
+                            if removing && off == 0 && matches!(value, '+' | '*' | '?' | '{') {
+                                return self.fail("missing flag".into(), Some(self.at - 1), true);
+                            }
+                            if removing && matches!(value, '+' | '*' | '?' | '{') {
+                                return self.fail("missing :".into(), Some(self.at - 1), true);
+                            }
+                            if !removing && matches!(value, '+' | '*' | '?' | '{') {
+                                return self.fail("missing -, : or )".into(), Some(self.at - 1), true);
+                            }
                             return self.fail(
-                                format!("unknown flag '{}'", value),
+                                "unknown flag".into(),
                                 Some(self.at - 1),
                                 true,
                             );
@@ -683,6 +720,13 @@ impl Parser {
                                 true,
                             );
                         }
+                        if value == 'u' && self.byte_mode {
+                            return self.fail(
+                                "bad inline flags: cannot use 'u' flag with a bytes pattern".into(),
+                                Some(self.at),
+                                true,
+                            );
+                        }
                         if matches!(value, 'a' | 'u' | 'L') && on & (A | L | 32) != 0 {
                             return self.fail(
                                 "bad inline flags: flags 'a', 'u' and 'L' are incompatible".into(),
@@ -700,12 +744,26 @@ impl Parser {
                         true,
                     );
                 }
-                let changed = (flags | on) & !off;
+                let mut changed = (flags | on) & !off;
+                if on & (A | L) != 0 {
+                    changed &= !32;
+                } else if on & 32 != 0 {
+                    changed &= !(A | L);
+                }
                 let Some(end) = self.take() else {
+                    if removing && off == 0 {
+                        return self.fail("missing flag".into(), Some(self.at), true);
+                    }
+                    if removing {
+                        return self.fail("missing :".into(), Some(self.at), true);
+                    }
                     return self.fail("missing -, : or )".into(), Some(self.at), true);
                 };
                 if end == ')' {
-                    if start != 0 {
+                    if removing {
+                        return self.fail("missing :".into(), Some(self.at - 1), true);
+                    }
+                    if self.group_depth != 1 || !self.global_allowed {
                         return self.fail(
                             "global flags not at the start of the expression".into(),
                             Some(start),
@@ -1125,6 +1183,8 @@ pub unsafe extern "C" fn rebar_compile(
         names: vec![],
         widths: vec![],
         named,
+        global_allowed: true,
+        group_depth: 0,
     };
     match parser.parse() {
         Ok(root) => {

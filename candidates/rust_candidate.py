@@ -589,12 +589,22 @@ def compile(pattern, flags=0):
         raise ValueError("cannot use LOCALE flag with a str pattern")
     if isinstance(pattern, bytes) and flags & int(UNICODE):
         raise ValueError("cannot use UNICODE flag with a bytes pattern")
+    if isinstance(pattern, str) and flags & int(ASCII) and flags & int(UNICODE):
+        raise ValueError("ASCII and UNICODE flags are incompatible")
+    if isinstance(pattern, bytes) and flags & int(ASCII) and flags & int(LOCALE):
+        raise ValueError("ASCII and LOCALE flags are incompatible")
     key = (type(pattern), pattern, flags)
     if key in _CACHE:
         return _CACHE[key]
     implicit_unicode = int(UNICODE) if isinstance(pattern, str) and not flags & int(ASCII) else 0
     _warn_ambiguous(pattern)
     handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)
+    if isinstance(pattern, str) and ((flags & int(ASCII) and effective_flags & int(UNICODE)) or (flags & int(UNICODE) and effective_flags & int(ASCII))):
+        _NATIVE.library.rebar_free(handle)
+        raise ValueError("ASCII and UNICODE flags are incompatible")
+    if isinstance(pattern, bytes) and ((flags & int(ASCII) and effective_flags & int(LOCALE)) or (flags & int(LOCALE) and effective_flags & int(ASCII))):
+        _NATIVE.library.rebar_free(handle)
+        raise ValueError("ASCII and LOCALE flags are incompatible")
     result = Pattern(pattern, effective_flags, handle, groups, groupindex)
     _CACHE[key] = result
     if flags & int(DEBUG):

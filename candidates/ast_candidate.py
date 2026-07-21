@@ -84,6 +84,8 @@ class _Parser:
         self.groups = 0
         self.groupindex = {}
         self.groupwidth = {}
+        self.global_allowed = True
+        self.group_depth = 0
 
     def fail(self, msg, pos=None, pattern=True):
         raise PatternError(msg, self.original if pattern else None, pos)
@@ -119,8 +121,10 @@ class _Parser:
     def alternation(self, flags, stop=")"):
         branches = [self.sequence(flags, stop)]
         while self.peek() == "|":
+            self.global_allowed = False
             self.index += 1
-            branches.append(self.sequence(flags, stop))
+            branch_flags = self.flags if self.group_depth == 0 else flags
+            branches.append(self.sequence(branch_flags, stop))
         if len(branches) == 1:
             return branches[0]
         return ("alt", branches)
@@ -141,11 +145,13 @@ class _Parser:
                 if parsed is not None:
                     atom = parsed
             if atom[0] == "setflags":
-                if start != 0:
+                if self.group_depth or not self.global_allowed:
                     self.fail("global flags not at the start of the expression", start)
                 flags = atom[1]
                 self.flags = flags
             else:
+                if atom != ("seq", []) or self.text[start + 1:start + 3] != "?#":
+                    self.global_allowed = False
                 nodes.append(atom)
         return ("seq", nodes)
 
@@ -318,6 +324,13 @@ class _Parser:
         return name
 
     def group(self, flags, start):
+        self.group_depth += 1
+        try:
+            return self._group(flags, start)
+        finally:
+            self.group_depth -= 1
+
+    def _group(self, flags, start):
         if self.peek() != "?":
             self.groups += 1
             number = self.groups
@@ -422,15 +435,34 @@ class _Parser:
                     else:
                         if item == "L" and not self.byte_mode:
                             self.fail("bad inline flags: cannot use 'L' flag with a str pattern", self.index)
+                        if item == "u" and self.byte_mode:
+                            self.fail("bad inline flags: cannot use 'u' flag with a bytes pattern", self.index)
                         if item in "aLu" and enabled & int(ASCII | LOCALE | UNICODE):
                             self.fail("bad inline flags: flags 'a', 'u' and 'L' are incompatible", self.index)
                         enabled |= mapping[item]
                 else:
-                    self.fail(f"unknown flag {item!r}", self.index - 1)
+                    if negative and not disabled and item in "+*?{":
+                        self.fail("missing flag", self.index - 1)
+                    if negative and item in "+*?{":
+                        self.fail("missing :", self.index - 1)
+                    if not negative and item in "+*?{":
+                        self.fail("missing -, : or )", self.index - 1)
+                    self.fail("unknown flag", self.index - 1)
             if enabled & disabled:
                 self.fail("bad inline flags: flag turned on and off", self.index)
             new_flags = (flags | enabled) & ~disabled
-            if self.take() == ")":
+            if enabled & int(ASCII | LOCALE):
+                new_flags &= ~int(UNICODE)
+            elif enabled & int(UNICODE):
+                new_flags &= ~int(ASCII | LOCALE)
+            terminator = self.take()
+            if negative and not disabled:
+                self.fail("missing flag", self.index)
+            if negative and terminator in {None, ")"}:
+                self.fail("missing :", self.index - (terminator == ")"))
+            if terminator is None:
+                self.fail("missing -, : or )", self.index)
+            if terminator == ")":
                 return ("setflags", new_flags)
             child = self.alternation(new_flags)
             if self.take() != ")":
@@ -1015,12 +1047,20 @@ def compile(pattern, flags=0):
         raise ValueError("cannot use LOCALE flag with a str pattern")
     if isinstance(pattern, bytes) and flags & int(UNICODE):
         raise ValueError("cannot use UNICODE flag with a bytes pattern")
+    if isinstance(pattern, str) and flags & int(ASCII) and flags & int(UNICODE):
+        raise ValueError("ASCII and UNICODE flags are incompatible")
+    if isinstance(pattern, bytes) and flags & int(ASCII) and flags & int(LOCALE):
+        raise ValueError("ASCII and LOCALE flags are incompatible")
     key = (type(pattern), pattern, flags)
     if key in _CACHE:
         return _CACHE[key]
     implicit_unicode = int(UNICODE) if isinstance(pattern, str) and not flags & int(ASCII) else 0
     parser = _Parser(pattern, flags | implicit_unicode)
     node = parser.parse()
+    if isinstance(pattern, str) and ((flags & int(ASCII) and parser.flags & int(UNICODE)) or (flags & int(UNICODE) and parser.flags & int(ASCII))):
+        raise ValueError("ASCII and UNICODE flags are incompatible")
+    if isinstance(pattern, bytes) and ((flags & int(ASCII) and parser.flags & int(LOCALE)) or (flags & int(LOCALE) and parser.flags & int(ASCII))):
+        raise ValueError("ASCII and LOCALE flags are incompatible")
     result = Pattern(pattern, parser.flags & ~_BYTE, node, parser.groups, dict(parser.groupindex))
     _CACHE[key] = result
     if flags & int(DEBUG):
