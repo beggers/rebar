@@ -9,6 +9,8 @@ from pathlib import Path
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", required=True)
+    parser.add_argument("--title", default="Candidate correctness — raw discovery")
+    parser.add_argument("--subtitle", default="All cases and failures retained; no compatibility adapter applied.")
     parser.add_argument("results", nargs="+")
     args = parser.parse_args()
     rows = []
@@ -17,7 +19,7 @@ def main():
         rows.append((result["module"], result["passed"], result["failed"], result["cases"]))
     width = 800
     height = 104 + 62 * len(rows)
-    body = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="Raw candidate correctness results">', '<rect width="100%" height="100%" fill="#fff"/>', '<text x="28" y="36" font-family="sans-serif" font-size="22" font-weight="700" fill="#172033">Candidate correctness — raw discovery</text>', '<text x="28" y="59" font-family="sans-serif" font-size="13" fill="#42526e">All cases and failures retained; no compatibility adapter applied.</text>']
+    body = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" role="img" aria-label="Candidate correctness results">', '<rect width="100%" height="100%" fill="#fff"/>', f'<text x="28" y="36" font-family="sans-serif" font-size="22" font-weight="700" fill="#172033">{args.title}</text>', f'<text x="28" y="59" font-family="sans-serif" font-size="13" fill="#42526e">{args.subtitle}</text>']
     for index, (name, passed, failed, cases) in enumerate(rows):
         y = 82 + index * 62
         total_width = 520
