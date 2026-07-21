@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="166" viewBox="0 0 760 166" role="img" aria-label="Correctness gate: 80 passed, 0 failed, 38 of 38 obligations mapped">
+<rect width="760" height="166" fill="#ffffff"/>
+<text x="28" y="36" font-family="sans-serif" font-size="22" font-weight="700" fill="#172033">Correctness oracle v1</text>
+<text x="28" y="62" font-family="sans-serif" font-size="14" fill="#42526e">re: 80/80 cases passed · 38/38 obligations mapped</text>
+<rect x="28" y="82" width="680" height="28" rx="4" fill="#e5e7eb"/>
+<rect x="28" y="82" width="680" height="28" rx="4" fill="#15803d"/>
+<rect x="708" y="82" width="0" height="28" fill="#b91c1c"/>
+<text x="28" y="139" font-family="monospace" font-size="13" fill="#172033">failed: 0 · fixture: 538fde96fcbfc4fc…</text>
+</svg>

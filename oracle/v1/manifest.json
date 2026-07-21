@@ -1,0 +1,30 @@
+{
+  "cases": 80,
+  "expected_sha256": "538fde96fcbfc4fcfc3919e0fde7b5636aeb6acb4c407eb82d566b8d64bf8b8e",
+  "goal_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+  "implementation": "CPython",
+  "kinds": {
+    "cache": 1,
+    "call": 53,
+    "compile": 2,
+    "debug": 1,
+    "error": 15,
+    "escape": 2,
+    "exports": 1,
+    "flags": 1,
+    "roundtrip": 1,
+    "scanner": 2,
+    "warning": 1
+  },
+  "locale": "C",
+  "mapped_obligations": 38,
+  "obligations": 38,
+  "private_waivers": [
+    "PRIVATE-CACHE-LAYOUT",
+    "PRIVATE-DEBUG-TEXT"
+  ],
+  "python": "3.14.6",
+  "schema": "rebar-correctness-v1",
+  "suite_sha256": "f081f18bc18b62c4000552f51b09a70c3228bc77a78bd422db3947ad7db21dec",
+  "unicode": "16.0.0"
+}
