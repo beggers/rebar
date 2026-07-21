@@ -1,0 +1,63 @@
+{
+  "cases_per_module": 144,
+  "checks": 576,
+  "expected_sha256": "f3ab490e351648118e522035c8624976203c777d9c1a7f7d44ad98233f2056bf",
+  "failed": 8,
+  "failures": [
+    {
+      "case": "cal.window.scanner",
+      "message": "Pattern.scanner() takes 2 positional arguments but 4 were given",
+      "module": "candidates.ast_candidate",
+      "type": "TypeError"
+    },
+    {
+      "case": "hold.window.scanner",
+      "message": "Pattern.scanner() takes 2 positional arguments but 4 were given",
+      "module": "candidates.ast_candidate",
+      "type": "TypeError"
+    },
+    {
+      "case": "cal.real.config",
+      "message": "performance correctness mismatch: candidates.vm_candidate cal.real.config",
+      "module": "candidates.vm_candidate",
+      "type": "RuntimeError"
+    },
+    {
+      "case": "cal.window.scanner",
+      "message": "Pattern.scanner() takes 2 positional arguments but 4 were given",
+      "module": "candidates.vm_candidate",
+      "type": "TypeError"
+    },
+    {
+      "case": "hold.real.config",
+      "message": "performance correctness mismatch: candidates.vm_candidate hold.real.config",
+      "module": "candidates.vm_candidate",
+      "type": "RuntimeError"
+    },
+    {
+      "case": "hold.window.scanner",
+      "message": "Pattern.scanner() takes 2 positional arguments but 4 were given",
+      "module": "candidates.vm_candidate",
+      "type": "TypeError"
+    },
+    {
+      "case": "cal.window.scanner",
+      "message": "Pattern.scanner() takes 2 positional arguments but 4 were given",
+      "module": "candidates.rust_candidate",
+      "type": "TypeError"
+    },
+    {
+      "case": "hold.window.scanner",
+      "message": "Pattern.scanner() takes 2 positional arguments but 4 were given",
+      "module": "candidates.rust_candidate",
+      "type": "TypeError"
+    }
+  ],
+  "modules": [
+    "re",
+    "candidates.ast_candidate",
+    "candidates.vm_candidate",
+    "candidates.rust_candidate"
+  ],
+  "schema": "rebar-performance-correctness-v3"
+}

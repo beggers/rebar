@@ -1,0 +1,30 @@
+{
+  "bootstrap_seed": 1979121404,
+  "bootstraps": 5000,
+  "cases": 144,
+  "cohorts": {
+    "calibration": 72,
+    "holdout": 72
+  },
+  "correctness_expected_sha256": "ae6a095bc0cd2b3ba1512a04f0d4fbe57916cf2d5b583fd4ecdda5c2c70a5bb2",
+  "expected_sha256": "f3ab490e351648118e522035c8624976203c777d9c1a7f7d44ad98233f2056bf",
+  "goal_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+  "implementation": "CPython",
+  "modules": [
+    "re",
+    "candidates.ast_candidate",
+    "candidates.vm_candidate",
+    "candidates.rust_candidate"
+  ],
+  "order_seed": 1979121403,
+  "python": "3.14.6",
+  "runner_sha256": "76686ce5918b9d5c697a2eec8f7b3e7aff7b0d1d285d6b26c14c8b897b649192",
+  "schema": "rebar-performance-v3",
+  "suite_sha256": "bd6979590b3fbdcbfcfd582f0097630781d572f003bfc980f8f68368bb5bf7a3",
+  "trials": 13,
+  "warmups": 4,
+  "weights": {
+    "calibration": 72,
+    "holdout": 72
+  }
+}

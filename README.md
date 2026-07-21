@@ -18,6 +18,10 @@ The expanded holdout contains 28 tasks kept separate from tuning. **1× means th
 
 The [full expanded report](performance/v2/evidence/INITIAL.md) retains all 2,464 timing rows, every task, memory observations, and every slowdown. The headline graph and compact task grids below show the same results in plain language.
 
+The next, broader holdout is now frozen at **72 separate tasks** (144 including practice), adding realistic logs, URLs, configuration/text-cleanup work, byte inputs, API boundaries, and windowed calls. It is **NOT MEASURED** yet: the pre-timing check exposed eight compatibility gaps that must be fixed first.
+
+![Broader performance coverage and current status](performance/v3/evidence/coverage.svg)
+
 ## Detailed graphs
 
 These show the expanded holdout task by task. Green means clearly faster, red means more than 20% slower, and grey means close or uncertain. Each speed cell includes the measured range.
@@ -42,6 +46,7 @@ The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). All three original engi
 | Official CPython tests | **NOT QUALIFIED** — native passes 98/144 runnable methods; Python and Rust pass 94/144; failures are preserved |
 | Original performance | **PASS** — native C reaches 1.56× on the original 16-task holdout |
 | Expanded performance | **MEASURED / OPTIMIZATION NEEDED** — native C reaches 1.16× on 28 holdout tasks; all results are correctness-gated |
+| Broader performance | **FROZEN / NOT MEASURED** — 72 holdout tasks; the first pre-timing check exposes eight compatibility gaps |
 | Public import | **AVAILABLE / NOT YET GENERAL-PURPOSE** — `import rebar as re` uses native C; official-suite gaps remain |
 
 The [expanded performance protocol](performance/v2/PROTOCOL.md) explains exactly what is timed, how comparisons are made, and how slowdowns are reported. Full results, raw data, rejected experiments, and older charts are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
@@ -57,4 +62,5 @@ PYTHONPATH=. "$PY" -c 'import rebar as re; print(re.findall(r"[A-Za-z]+", "a fas
 PYTHONPATH=. "$PY" tools/oracle_v2.py verify --module rebar
 PYTHONPATH=. "$PY" tools/cpython_re_oracle.py verify --module rebar
 PYTHONPATH=. "$PY" tools/perf_v2.py verify
+PYTHONPATH=. "$PY" tools/perf_v3.py verify
 ```
