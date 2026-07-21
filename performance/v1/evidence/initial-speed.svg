@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="534" viewBox="0 0 1040 534" role="img" aria-label="Holdout speed and 95% confidence — all cases">
+<rect width="100%" height="100%" fill="#fff"/>
+<text x="24" y="30" font-family="sans-serif" font-size="20" font-weight="700" fill="#172033">Holdout speed and 95% confidence — all cases</text>
+<text x="24" y="52" font-family="sans-serif" font-size="12" fill="#42526e">Paired stdlib / candidate ratios on a log10 axis; right of 1.0 is faster.</text>
+<line x1="242" y1="65" x2="242" y2="516" stroke="#cbd5e1"/>
+<text x="242" y="78" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">1e-4</text>
+<line x1="391" y1="65" x2="391" y2="516" stroke="#cbd5e1"/>
+<text x="391" y="78" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">1e-3</text>
+<line x1="540" y1="65" x2="540" y2="516" stroke="#cbd5e1"/>
+<text x="540" y="78" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">1e-2</text>
+<line x1="688" y1="65" x2="688" y2="516" stroke="#cbd5e1"/>
+<text x="688" y="78" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">1e-1</text>
+<line x1="837" y1="65" x2="837" y2="516" stroke="#cbd5e1"/>
+<text x="837" y="78" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">1e0</text>
+<line x1="986" y1="65" x2="986" y2="516" stroke="#cbd5e1"/>
+<text x="986" y="78" text-anchor="middle" font-family="monospace" font-size="10" fill="#64748b">1e1</text>
+<text x="24" y="100" font-family="monospace" font-size="11" fill="#172033">hold.bytes.tokens</text>
+<line x1="541" y1="90" x2="543" y2="90" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="542" cy="90" r="2.5" fill="#7c3aed"/>
+<line x1="528" y1="96" x2="529" y2="96" stroke="#d97706" stroke-width="2"/>
+<circle cx="529" cy="96" r="2.5" fill="#d97706"/>
+<line x1="664" y1="102" x2="666" y2="102" stroke="#0284c7" stroke-width="2"/>
+<circle cx="665" cy="102" r="2.5" fill="#0284c7"/>
+<text x="24" y="127" font-family="monospace" font-size="11" fill="#172033">hold.cold.compile-search</text>
+<line x1="795" y1="117" x2="796" y2="117" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="796" cy="117" r="2.5" fill="#7c3aed"/>
+<line x1="830" y1="123" x2="831" y2="123" stroke="#d97706" stroke-width="2"/>
+<circle cx="831" cy="123" r="2.5" fill="#d97706"/>
+<line x1="861" y1="129" x2="862" y2="129" stroke="#0284c7" stroke-width="2"/>
+<circle cx="862" cy="129" r="2.5" fill="#0284c7"/>
+<text x="24" y="154" font-family="monospace" font-size="11" fill="#172033">hold.findall.tokens</text>
+<line x1="535" y1="144" x2="537" y2="144" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="536" cy="144" r="2.5" fill="#7c3aed"/>
+<line x1="504" y1="150" x2="506" y2="150" stroke="#d97706" stroke-width="2"/>
+<circle cx="505" cy="150" r="2.5" fill="#d97706"/>
+<line x1="668" y1="156" x2="670" y2="156" stroke="#0284c7" stroke-width="2"/>
+<circle cx="669" cy="156" r="2.5" fill="#0284c7"/>
+<text x="24" y="181" font-family="monospace" font-size="11" fill="#172033">hold.finditer.groups</text>
+<line x1="549" y1="171" x2="552" y2="171" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="550" cy="171" r="2.5" fill="#7c3aed"/>
+<line x1="534" y1="177" x2="538" y2="177" stroke="#d97706" stroke-width="2"/>
+<circle cx="536" cy="177" r="2.5" fill="#d97706"/>
+<line x1="701" y1="183" x2="705" y2="183" stroke="#0284c7" stroke-width="2"/>
+<circle cx="703" cy="183" r="2.5" fill="#0284c7"/>
+<text x="24" y="208" font-family="monospace" font-size="11" fill="#172033">hold.fullmatch.structured</text>
+<line x1="541" y1="198" x2="543" y2="198" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="542" cy="198" r="2.5" fill="#7c3aed"/>
+<line x1="582" y1="204" x2="583" y2="204" stroke="#d97706" stroke-width="2"/>
+<circle cx="583" cy="204" r="2.5" fill="#d97706"/>
+<line x1="719" y1="210" x2="721" y2="210" stroke="#0284c7" stroke-width="2"/>
+<circle cx="720" cy="210" r="2.5" fill="#0284c7"/>
+<text x="24" y="235" font-family="monospace" font-size="11" fill="#172033">hold.match.prefix</text>
+<line x1="587" y1="225" x2="589" y2="225" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="588" cy="225" r="2.5" fill="#7c3aed"/>
+<line x1="572" y1="231" x2="572" y2="231" stroke="#d97706" stroke-width="2"/>
+<circle cx="572" cy="231" r="2.5" fill="#d97706"/>
+<line x1="731" y1="237" x2="733" y2="237" stroke="#0284c7" stroke-width="2"/>
+<circle cx="732" cy="237" r="2.5" fill="#0284c7"/>
+<text x="24" y="262" font-family="monospace" font-size="11" fill="#172033">hold.module.warm</text>
+<line x1="579" y1="252" x2="582" y2="252" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="580" cy="252" r="2.5" fill="#7c3aed"/>
+<line x1="617" y1="258" x2="620" y2="258" stroke="#d97706" stroke-width="2"/>
+<circle cx="618" cy="258" r="2.5" fill="#d97706"/>
+<line x1="749" y1="264" x2="751" y2="264" stroke="#0284c7" stroke-width="2"/>
+<circle cx="750" cy="264" r="2.5" fill="#0284c7"/>
+<text x="24" y="289" font-family="monospace" font-size="11" fill="#172033">hold.search.class-anchor</text>
+<line x1="539" y1="279" x2="540" y2="279" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="540" cy="279" r="2.5" fill="#7c3aed"/>
+<line x1="560" y1="285" x2="561" y2="285" stroke="#d97706" stroke-width="2"/>
+<circle cx="560" cy="285" r="2.5" fill="#d97706"/>
+<line x1="726" y1="291" x2="728" y2="291" stroke="#0284c7" stroke-width="2"/>
+<circle cx="727" cy="291" r="2.5" fill="#0284c7"/>
+<text x="24" y="316" font-family="monospace" font-size="11" fill="#172033">hold.search.literal.hit</text>
+<line x1="529" y1="306" x2="530" y2="306" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="529" cy="306" r="2.5" fill="#7c3aed"/>
+<line x1="537" y1="312" x2="539" y2="312" stroke="#d97706" stroke-width="2"/>
+<circle cx="538" cy="312" r="2.5" fill="#d97706"/>
+<line x1="696" y1="318" x2="697" y2="318" stroke="#0284c7" stroke-width="2"/>
+<circle cx="696" cy="318" r="2.5" fill="#0284c7"/>
+<text x="24" y="343" font-family="monospace" font-size="11" fill="#172033">hold.search.literal.miss</text>
+<line x1="455" y1="333" x2="456" y2="333" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="456" cy="333" r="2.5" fill="#7c3aed"/>
+<line x1="510" y1="339" x2="510" y2="339" stroke="#d97706" stroke-width="2"/>
+<circle cx="510" cy="339" r="2.5" fill="#d97706"/>
+<line x1="659" y1="345" x2="663" y2="345" stroke="#0284c7" stroke-width="2"/>
+<circle cx="661" cy="345" r="2.5" fill="#0284c7"/>
+<text x="24" y="370" font-family="monospace" font-size="11" fill="#172033">hold.search.long-boundary</text>
+<line x1="307" y1="360" x2="318" y2="360" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="312" cy="360" r="2.5" fill="#7c3aed"/>
+<line x1="383" y1="366" x2="394" y2="366" stroke="#d97706" stroke-width="2"/>
+<circle cx="388" cy="366" r="2.5" fill="#d97706"/>
+<line x1="535" y1="372" x2="547" y2="372" stroke="#0284c7" stroke-width="2"/>
+<circle cx="540" cy="372" r="2.5" fill="#0284c7"/>
+<text x="24" y="397" font-family="monospace" font-size="11" fill="#172033">hold.search.look-capture</text>
+<line x1="522" y1="387" x2="523" y2="387" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="523" cy="387" r="2.5" fill="#7c3aed"/>
+<line x1="574" y1="393" x2="575" y2="393" stroke="#d97706" stroke-width="2"/>
+<circle cx="575" cy="393" r="2.5" fill="#d97706"/>
+<line x1="711" y1="399" x2="714" y2="399" stroke="#0284c7" stroke-width="2"/>
+<circle cx="713" cy="399" r="2.5" fill="#0284c7"/>
+<text x="24" y="424" font-family="monospace" font-size="11" fill="#172033">hold.split.capture</text>
+<line x1="543" y1="414" x2="544" y2="414" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="544" cy="414" r="2.5" fill="#7c3aed"/>
+<line x1="515" y1="420" x2="515" y2="420" stroke="#d97706" stroke-width="2"/>
+<circle cx="515" cy="420" r="2.5" fill="#d97706"/>
+<line x1="637" y1="426" x2="639" y2="426" stroke="#0284c7" stroke-width="2"/>
+<circle cx="638" cy="426" r="2.5" fill="#0284c7"/>
+<text x="24" y="451" font-family="monospace" font-size="11" fill="#172033">hold.sub.template</text>
+<line x1="573" y1="441" x2="575" y2="441" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="574" cy="441" r="2.5" fill="#7c3aed"/>
+<line x1="570" y1="447" x2="573" y2="447" stroke="#d97706" stroke-width="2"/>
+<circle cx="572" cy="447" r="2.5" fill="#d97706"/>
+<line x1="671" y1="453" x2="673" y2="453" stroke="#0284c7" stroke-width="2"/>
+<circle cx="672" cy="453" r="2.5" fill="#0284c7"/>
+<text x="24" y="478" font-family="monospace" font-size="11" fill="#172033">hold.subn.callable</text>
+<line x1="597" y1="468" x2="612" y2="468" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="603" cy="468" r="2.5" fill="#7c3aed"/>
+<line x1="593" y1="474" x2="605" y2="474" stroke="#d97706" stroke-width="2"/>
+<circle cx="597" cy="474" r="2.5" fill="#d97706"/>
+<line x1="714" y1="480" x2="721" y2="480" stroke="#0284c7" stroke-width="2"/>
+<circle cx="717" cy="480" r="2.5" fill="#0284c7"/>
+<text x="24" y="505" font-family="monospace" font-size="11" fill="#172033">hold.unicode.words</text>
+<line x1="528" y1="495" x2="533" y2="495" stroke="#7c3aed" stroke-width="2"/>
+<circle cx="530" cy="495" r="2.5" fill="#7c3aed"/>
+<line x1="548" y1="501" x2="554" y2="501" stroke="#d97706" stroke-width="2"/>
+<circle cx="550" cy="501" r="2.5" fill="#d97706"/>
+<line x1="683" y1="507" x2="688" y2="507" stroke="#0284c7" stroke-width="2"/>
+<circle cx="685" cy="507" r="2.5" fill="#0284c7"/>
+<text x="242" y="529" font-family="sans-serif" font-size="10" fill="#42526e">ast: #7c3aed · rust: #d97706 · vm: #0284c7</text>
+</svg>
