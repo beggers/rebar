@@ -19,3 +19,5 @@ README must be scannable and correct at every commit. Lead with phase/gate/verdi
 Leave source, lockfiles, oracles, data, and candidates. Never release/deploy or use destructive git.
 
 A plan/prototype is not completion. Either all gates pass, or after three serious materially distinct attempts with no evidence-backed next path, preserve everything and push a rigorous negative report explaining why no faster compatible drop-in was achieved.
+
+Do this all on the main branch. Delete what's already there.
