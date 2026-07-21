@@ -383,11 +383,11 @@ class Pattern:
         self._validate_string(string)
         if pos > endpos:
             return None
-        for start in range(pos, endpos + 1):
-            result = self._at(string, start, endpos, pos if original_pos is None else original_pos, require_nonempty and start == pos)
-            if result is not None:
-                return result
-        return None
+        result = _NATIVE.run(self._handle, string, self.groups, pos, endpos, 0, require_nonempty)
+        if result is None:
+            return None
+        spans, last = result
+        return Match(self, string, spans, last, pos if original_pos is None else original_pos, endpos)
 
     def search(self, string, pos=0, endpos=None):
         end = len(string) if endpos is None else min(max(endpos, 0), len(string))

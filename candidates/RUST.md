@@ -2,7 +2,7 @@
 
 `candidates.rust_candidate` is a third from-scratch family. Its parser and executor live entirely in a dependency-free Rust `cdylib`; they share no semantic parser, compiler, executor, or engine with Candidates A or B. The Rust parser builds an arena-style expression tree, and an eager continuation-set evaluator preserves ordered alternatives, capture states, lookarounds, atomics, possessives, and empty-match behavior. This is deliberately distinct from both Python generators and the native bytecode stack.
 
-The Python layer uses only `ctypes`, `enum`, `os`, and `warnings`. It maps documented Unicode decimal/space/alphanumeric and simple case data across the FFI, supplies the public `Pattern`/`Match`/scanner/template contract, and never imports stdlib or third-party regex code. Rust has no dependencies; its lockfile is committed.
+The Python layer uses only `ctypes`, `enum`, `os`, and `warnings`. It maps documented Unicode decimal/space/alphanumeric and simple case data across the FFI once per public search, supplies the public `Pattern`/`Match`/scanner/template contract, and never imports stdlib or third-party regex code. Rust has no dependencies; its lockfile is committed.
 
 Build and reproduce the complete gate:
 
