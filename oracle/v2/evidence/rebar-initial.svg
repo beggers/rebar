@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="170" viewBox="0 0 800 170" role="img" aria-label="Correctness gate: 8202 passed, 42 failed">
+<rect width="800" height="170" fill="#fff"/>
+<text x="28" y="36" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#0f172a">Expanded correctness oracle v2</text>
+<text x="28" y="62" font-family="Arial, sans-serif" font-size="14" fill="#475569">rebar: 8202/8244 cases passed · 45/45 obligations mapped</text>
+<rect x="28" y="82" width="680" height="28" rx="4" fill="#b91c1c"/><rect x="28" y="82" width="676" height="28" rx="4" fill="#15803d"/>
+<text x="28" y="142" font-family="monospace" font-size="13" fill="#334155">failed: 42 · fixture: ae6a095bc0cd2b3b…</text></svg>

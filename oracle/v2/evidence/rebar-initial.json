@@ -1,0 +1,2224 @@
+{
+  "cases": 8244,
+  "expected_sha256": "ae6a095bc0cd2b3ba1512a04f0d4fbe57916cf2d5b583fd4ecdda5c2c70a5bb2",
+  "failed": 42,
+  "failures": [
+    {
+      "actual": {
+        "id": "v2.generic.pattern-str",
+        "kind": "generic",
+        "obligations": [
+          "API-GENERIC",
+          "API-PATTERN"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "type 'Pattern' is not subscriptable"
+          ],
+          "str": "type 'Pattern' is not subscriptable",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.generic.pattern-str",
+        "kind": "generic",
+        "obligations": [
+          "API-GENERIC",
+          "API-PATTERN"
+        ],
+        "result": {
+          "arguments": [
+            "str"
+          ],
+          "origin": "Pattern",
+          "type": "GenericAlias"
+        }
+      },
+      "id": "v2.generic.pattern-str"
+    },
+    {
+      "actual": {
+        "id": "v2.generic.pattern-bytes",
+        "kind": "generic",
+        "obligations": [
+          "API-GENERIC",
+          "API-PATTERN"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "type 'Pattern' is not subscriptable"
+          ],
+          "str": "type 'Pattern' is not subscriptable",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.generic.pattern-bytes",
+        "kind": "generic",
+        "obligations": [
+          "API-GENERIC",
+          "API-PATTERN"
+        ],
+        "result": {
+          "arguments": [
+            "bytes"
+          ],
+          "origin": "Pattern",
+          "type": "GenericAlias"
+        }
+      },
+      "id": "v2.generic.pattern-bytes"
+    },
+    {
+      "actual": {
+        "id": "v2.generic.match-str",
+        "kind": "generic",
+        "obligations": [
+          "API-GENERIC",
+          "API-MATCH-OBJECT"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "type 'candidates._vm_native.Match' is not subscriptable"
+          ],
+          "str": "type 'candidates._vm_native.Match' is not subscriptable",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.generic.match-str",
+        "kind": "generic",
+        "obligations": [
+          "API-GENERIC",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "arguments": [
+            "str"
+          ],
+          "origin": "Match",
+          "type": "GenericAlias"
+        }
+      },
+      "id": "v2.generic.match-str"
+    },
+    {
+      "actual": {
+        "id": "v2.generic.match-bytes",
+        "kind": "generic",
+        "obligations": [
+          "API-GENERIC",
+          "API-MATCH-OBJECT"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "type 'candidates._vm_native.Match' is not subscriptable"
+          ],
+          "str": "type 'candidates._vm_native.Match' is not subscriptable",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.generic.match-bytes",
+        "kind": "generic",
+        "obligations": [
+          "API-GENERIC",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "arguments": [
+            "bytes"
+          ],
+          "origin": "Match",
+          "type": "GenericAlias"
+        }
+      },
+      "id": "v2.generic.match-bytes"
+    },
+    {
+      "actual": {
+        "id": "v2.byteslike.bytearray-search",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-SEARCH",
+          "API-MATCH-OBJECT"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "subject must be str or bytes"
+          ],
+          "str": "subject must be str or bytes",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.byteslike.bytearray-search",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-SEARCH",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "bool": true,
+          "endpos": 5,
+          "ends": [
+            4
+          ],
+          "expand": {
+            "bytes_hex": "3c6161613e"
+          },
+          "group0": {
+            "bytes_hex": "616161"
+          },
+          "groupdict": {},
+          "groupdict_default": {},
+          "groups": [],
+          "groups_default": [],
+          "items": [
+            {
+              "bytes_hex": "616161"
+            }
+          ],
+          "lastgroup": null,
+          "lastindex": null,
+          "pos": 0,
+          "public": [
+            "end",
+            "endpos",
+            "expand",
+            "group",
+            "groupdict",
+            "groups",
+            "lastgroup",
+            "lastindex",
+            "pos",
+            "re",
+            "regs",
+            "span",
+            "start",
+            "string"
+          ],
+          "re": {
+            "flags": 0,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": {
+              "bytes_hex": "612b"
+            },
+            "public": [
+              "findall",
+              "finditer",
+              "flags",
+              "fullmatch",
+              "groupindex",
+              "groups",
+              "match",
+              "pattern",
+              "scanner",
+              "search",
+              "split",
+              "sub",
+              "subn"
+            ]
+          },
+          "regs": [
+            [
+              1,
+              4
+            ]
+          ],
+          "spans": [
+            [
+              1,
+              4
+            ]
+          ],
+          "starts": [
+            1
+          ],
+          "string": {
+            "bytes_hex": "7a61616121",
+            "type": "bytearray"
+          },
+          "string_is_subject": true
+        }
+      },
+      "id": "v2.byteslike.bytearray-search"
+    },
+    {
+      "actual": {
+        "id": "v2.byteslike.memoryview-search",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-SEARCH",
+          "API-MATCH-OBJECT"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "subject must be str or bytes"
+          ],
+          "str": "subject must be str or bytes",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.byteslike.memoryview-search",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-SEARCH",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "bool": true,
+          "endpos": 5,
+          "ends": [
+            4
+          ],
+          "expand": {
+            "bytes_hex": "3c6161613e"
+          },
+          "group0": {
+            "bytes_hex": "616161"
+          },
+          "groupdict": {},
+          "groupdict_default": {},
+          "groups": [],
+          "groups_default": [],
+          "items": [
+            {
+              "bytes_hex": "616161"
+            }
+          ],
+          "lastgroup": null,
+          "lastindex": null,
+          "pos": 0,
+          "public": [
+            "end",
+            "endpos",
+            "expand",
+            "group",
+            "groupdict",
+            "groups",
+            "lastgroup",
+            "lastindex",
+            "pos",
+            "re",
+            "regs",
+            "span",
+            "start",
+            "string"
+          ],
+          "re": {
+            "flags": 0,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": {
+              "bytes_hex": "612b"
+            },
+            "public": [
+              "findall",
+              "finditer",
+              "flags",
+              "fullmatch",
+              "groupindex",
+              "groups",
+              "match",
+              "pattern",
+              "scanner",
+              "search",
+              "split",
+              "sub",
+              "subn"
+            ]
+          },
+          "regs": [
+            [
+              1,
+              4
+            ]
+          ],
+          "spans": [
+            [
+              1,
+              4
+            ]
+          ],
+          "starts": [
+            1
+          ],
+          "string": {
+            "bytes_hex": "7a61616121",
+            "type": "memoryview"
+          },
+          "string_is_subject": true
+        }
+      },
+      "id": "v2.byteslike.memoryview-search"
+    },
+    {
+      "actual": {
+        "id": "v2.byteslike.bytearray-match",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-MATCH",
+          "API-MATCH-OBJECT"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "subject must be str or bytes"
+          ],
+          "str": "subject must be str or bytes",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.byteslike.bytearray-match",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-MATCH",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "bool": true,
+          "endpos": 4,
+          "ends": [
+            3
+          ],
+          "expand": {
+            "bytes_hex": "3c6161613e"
+          },
+          "group0": {
+            "bytes_hex": "616161"
+          },
+          "groupdict": {},
+          "groupdict_default": {},
+          "groups": [],
+          "groups_default": [],
+          "items": [
+            {
+              "bytes_hex": "616161"
+            }
+          ],
+          "lastgroup": null,
+          "lastindex": null,
+          "pos": 0,
+          "public": [
+            "end",
+            "endpos",
+            "expand",
+            "group",
+            "groupdict",
+            "groups",
+            "lastgroup",
+            "lastindex",
+            "pos",
+            "re",
+            "regs",
+            "span",
+            "start",
+            "string"
+          ],
+          "re": {
+            "flags": 0,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": {
+              "bytes_hex": "612b"
+            },
+            "public": [
+              "findall",
+              "finditer",
+              "flags",
+              "fullmatch",
+              "groupindex",
+              "groups",
+              "match",
+              "pattern",
+              "scanner",
+              "search",
+              "split",
+              "sub",
+              "subn"
+            ]
+          },
+          "regs": [
+            [
+              0,
+              3
+            ]
+          ],
+          "spans": [
+            [
+              0,
+              3
+            ]
+          ],
+          "starts": [
+            0
+          ],
+          "string": {
+            "bytes_hex": "6161617a",
+            "type": "bytearray"
+          },
+          "string_is_subject": true
+        }
+      },
+      "id": "v2.byteslike.bytearray-match"
+    },
+    {
+      "actual": {
+        "id": "v2.byteslike.memoryview-fullmatch",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-FULLMATCH",
+          "API-MATCH-OBJECT"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "subject must be str or bytes"
+          ],
+          "str": "subject must be str or bytes",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.byteslike.memoryview-fullmatch",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-FULLMATCH",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "bool": true,
+          "endpos": 3,
+          "ends": [
+            3
+          ],
+          "expand": {
+            "bytes_hex": "3c6161613e"
+          },
+          "group0": {
+            "bytes_hex": "616161"
+          },
+          "groupdict": {},
+          "groupdict_default": {},
+          "groups": [],
+          "groups_default": [],
+          "items": [
+            {
+              "bytes_hex": "616161"
+            }
+          ],
+          "lastgroup": null,
+          "lastindex": null,
+          "pos": 0,
+          "public": [
+            "end",
+            "endpos",
+            "expand",
+            "group",
+            "groupdict",
+            "groups",
+            "lastgroup",
+            "lastindex",
+            "pos",
+            "re",
+            "regs",
+            "span",
+            "start",
+            "string"
+          ],
+          "re": {
+            "flags": 0,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": {
+              "bytes_hex": "612b"
+            },
+            "public": [
+              "findall",
+              "finditer",
+              "flags",
+              "fullmatch",
+              "groupindex",
+              "groups",
+              "match",
+              "pattern",
+              "scanner",
+              "search",
+              "split",
+              "sub",
+              "subn"
+            ]
+          },
+          "regs": [
+            [
+              0,
+              3
+            ]
+          ],
+          "spans": [
+            [
+              0,
+              3
+            ]
+          ],
+          "starts": [
+            0
+          ],
+          "string": {
+            "bytes_hex": "616161",
+            "type": "memoryview"
+          },
+          "string_is_subject": true
+        }
+      },
+      "id": "v2.byteslike.memoryview-fullmatch"
+    },
+    {
+      "actual": {
+        "id": "v2.byteslike.bytearray-findall",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-FINDALL"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "subject must be str or bytes"
+          ],
+          "str": "subject must be str or bytes",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.byteslike.bytearray-findall",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-FINDALL"
+        ],
+        "result": [
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": "61"
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          }
+        ]
+      },
+      "id": "v2.byteslike.bytearray-findall"
+    },
+    {
+      "actual": {
+        "id": "v2.byteslike.memoryview-finditer",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-FINDITER",
+          "API-MATCH-OBJECT"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "subject must be str or bytes"
+          ],
+          "str": "subject must be str or bytes",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.byteslike.memoryview-finditer",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-FINDITER",
+          "API-MATCH-OBJECT"
+        ],
+        "result": [
+          {
+            "bool": true,
+            "endpos": 5,
+            "ends": [
+              3,
+              3
+            ],
+            "expand": {
+              "bytes_hex": "3c61613e"
+            },
+            "group0": {
+              "bytes_hex": "6161"
+            },
+            "groupdict": {
+              "x": {
+                "bytes_hex": "6161"
+              }
+            },
+            "groupdict_default": {
+              "x": {
+                "bytes_hex": "6161"
+              }
+            },
+            "groups": [
+              {
+                "bytes_hex": "6161"
+              }
+            ],
+            "groups_default": [
+              {
+                "bytes_hex": "6161"
+              }
+            ],
+            "items": [
+              {
+                "bytes_hex": "6161"
+              },
+              {
+                "bytes_hex": "6161"
+              }
+            ],
+            "lastgroup": "x",
+            "lastindex": 1,
+            "pos": 0,
+            "public": [
+              "end",
+              "endpos",
+              "expand",
+              "group",
+              "groupdict",
+              "groups",
+              "lastgroup",
+              "lastindex",
+              "pos",
+              "re",
+              "regs",
+              "span",
+              "start",
+              "string"
+            ],
+            "re": {
+              "flags": 0,
+              "groupindex": {
+                "x": 1
+              },
+              "groups": 1,
+              "pattern": {
+                "bytes_hex": "283f503c783e612b29"
+              },
+              "public": [
+                "findall",
+                "finditer",
+                "flags",
+                "fullmatch",
+                "groupindex",
+                "groups",
+                "match",
+                "pattern",
+                "scanner",
+                "search",
+                "split",
+                "sub",
+                "subn"
+              ]
+            },
+            "regs": [
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            "spans": [
+              [
+                1,
+                3
+              ],
+              [
+                1,
+                3
+              ]
+            ],
+            "starts": [
+              1,
+              1
+            ],
+            "string": {
+              "bytes_hex": "7a61612061",
+              "type": "memoryview"
+            },
+            "string_is_subject": true
+          },
+          {
+            "bool": true,
+            "endpos": 5,
+            "ends": [
+              5,
+              5
+            ],
+            "expand": {
+              "bytes_hex": "3c613e"
+            },
+            "group0": {
+              "bytes_hex": "61"
+            },
+            "groupdict": {
+              "x": {
+                "bytes_hex": "61"
+              }
+            },
+            "groupdict_default": {
+              "x": {
+                "bytes_hex": "61"
+              }
+            },
+            "groups": [
+              {
+                "bytes_hex": "61"
+              }
+            ],
+            "groups_default": [
+              {
+                "bytes_hex": "61"
+              }
+            ],
+            "items": [
+              {
+                "bytes_hex": "61"
+              },
+              {
+                "bytes_hex": "61"
+              }
+            ],
+            "lastgroup": "x",
+            "lastindex": 1,
+            "pos": 0,
+            "public": [
+              "end",
+              "endpos",
+              "expand",
+              "group",
+              "groupdict",
+              "groups",
+              "lastgroup",
+              "lastindex",
+              "pos",
+              "re",
+              "regs",
+              "span",
+              "start",
+              "string"
+            ],
+            "re": {
+              "flags": 0,
+              "groupindex": {
+                "x": 1
+              },
+              "groups": 1,
+              "pattern": {
+                "bytes_hex": "283f503c783e612b29"
+              },
+              "public": [
+                "findall",
+                "finditer",
+                "flags",
+                "fullmatch",
+                "groupindex",
+                "groups",
+                "match",
+                "pattern",
+                "scanner",
+                "search",
+                "split",
+                "sub",
+                "subn"
+              ]
+            },
+            "regs": [
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ]
+            ],
+            "spans": [
+              [
+                4,
+                5
+              ],
+              [
+                4,
+                5
+              ]
+            ],
+            "starts": [
+              4,
+              4
+            ],
+            "string": {
+              "bytes_hex": "7a61612061",
+              "type": "memoryview"
+            },
+            "string_is_subject": true
+          }
+        ]
+      },
+      "id": "v2.byteslike.memoryview-finditer"
+    },
+    {
+      "actual": {
+        "id": "v2.byteslike.memoryview-split",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-SPLIT"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "subject must be str or bytes"
+          ],
+          "str": "subject must be str or bytes",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.byteslike.memoryview-split",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-SPLIT"
+        ],
+        "result": [
+          {
+            "bytes_hex": "61"
+          },
+          {
+            "bytes_hex": "2c"
+          },
+          {
+            "bytes_hex": "62"
+          },
+          {
+            "bytes_hex": "2c"
+          },
+          {
+            "bytes_hex": "63"
+          }
+        ]
+      },
+      "id": "v2.byteslike.memoryview-split"
+    },
+    {
+      "actual": {
+        "id": "v2.byteslike.bytearray-sub",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-SUB"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "subject must be str or bytes"
+          ],
+          "str": "subject must be str or bytes",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.byteslike.bytearray-sub",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-SUB"
+        ],
+        "result": {
+          "bytes_hex": "586258"
+        }
+      },
+      "id": "v2.byteslike.bytearray-sub"
+    },
+    {
+      "actual": {
+        "id": "v2.byteslike.memoryview-subn",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-SUBN"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "subject must be str or bytes"
+          ],
+          "str": "subject must be str or bytes",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.byteslike.memoryview-subn",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-SUBN"
+        ],
+        "result": [
+          {
+            "bytes_hex": "586261"
+          },
+          1
+        ]
+      },
+      "id": "v2.byteslike.memoryview-subn"
+    },
+    {
+      "actual": {
+        "id": "v2.byteslike.bytearray-replacement",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-SUB"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "cannot use 'bytearray' as a dict key (unhashable type: 'bytearray')"
+          ],
+          "str": "cannot use 'bytearray' as a dict key (unhashable type: 'bytearray')",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.byteslike.bytearray-replacement",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-SUB"
+        ],
+        "result": {
+          "bytes_hex": "586258"
+        }
+      },
+      "id": "v2.byteslike.bytearray-replacement"
+    },
+    {
+      "actual": {
+        "id": "v2.byteslike.memoryview-replacement",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-SUBN"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "decoding to str: need a bytes-like object, function found"
+          ],
+          "str": "decoding to str: need a bytes-like object, function found",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.byteslike.memoryview-replacement",
+        "kind": "byteslike",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-SUBN"
+        ],
+        "result": [
+          {
+            "bytes_hex": "586258"
+          },
+          2
+        ]
+      },
+      "id": "v2.byteslike.memoryview-replacement"
+    },
+    {
+      "actual": {
+        "id": "v2.byteslike.escape-bytearray",
+        "kind": "byteslike-escape",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-ESCAPE"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "sequence item 0: expected str instance, int found"
+          ],
+          "str": "sequence item 0: expected str instance, int found",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.byteslike.escape-bytearray",
+        "kind": "byteslike-escape",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-ESCAPE"
+        ],
+        "result": {
+          "bytes_hex": "615c2b625c205c5b785c5d"
+        }
+      },
+      "id": "v2.byteslike.escape-bytearray"
+    },
+    {
+      "actual": {
+        "id": "v2.byteslike.escape-memoryview",
+        "kind": "byteslike-escape",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-ESCAPE"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "sequence item 0: expected str instance, int found"
+          ],
+          "str": "sequence item 0: expected str instance, int found",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.byteslike.escape-memoryview",
+        "kind": "byteslike-escape",
+        "obligations": [
+          "API-BYTESLIKE",
+          "API-ESCAPE"
+        ],
+        "result": {
+          "bytes_hex": "615c2b625c205c5b785c5d"
+        }
+      },
+      "id": "v2.byteslike.escape-memoryview"
+    },
+    {
+      "actual": {
+        "id": "v2.repr.pattern-flags",
+        "kind": "representation",
+        "obligations": [
+          "API-REPRESENTATION",
+          "API-PATTERN",
+          "API-FLAGS"
+        ],
+        "result": "<candidates.vm_candidate.Pattern object at 0x7f00d42e1c60>"
+      },
+      "expected": {
+        "id": "v2.repr.pattern-flags",
+        "kind": "representation",
+        "obligations": [
+          "API-REPRESENTATION",
+          "API-PATTERN",
+          "API-FLAGS"
+        ],
+        "result": "re.compile('(?i)a+', re.IGNORECASE|re.MULTILINE)"
+      },
+      "id": "v2.repr.pattern-flags"
+    },
+    {
+      "actual": {
+        "id": "v2.repr.pattern-bytes",
+        "kind": "representation",
+        "obligations": [
+          "API-REPRESENTATION",
+          "API-PATTERN"
+        ],
+        "result": "<candidates.vm_candidate.Pattern object at 0x7f00d42e1960>"
+      },
+      "expected": {
+        "id": "v2.repr.pattern-bytes",
+        "kind": "representation",
+        "obligations": [
+          "API-REPRESENTATION",
+          "API-PATTERN"
+        ],
+        "result": "re.compile(b'a+')"
+      },
+      "id": "v2.repr.pattern-bytes"
+    },
+    {
+      "actual": {
+        "id": "v2.repr.match-text",
+        "kind": "representation",
+        "obligations": [
+          "API-REPRESENTATION",
+          "API-MATCH-OBJECT"
+        ],
+        "result": "<candidates._vm_native.Match object at 0x7f00d42e1d10>"
+      },
+      "expected": {
+        "id": "v2.repr.match-text",
+        "kind": "representation",
+        "obligations": [
+          "API-REPRESENTATION",
+          "API-MATCH-OBJECT"
+        ],
+        "result": "<re.Match object; span=(1, 3), match='aa'>"
+      },
+      "id": "v2.repr.match-text"
+    },
+    {
+      "actual": {
+        "id": "v2.repr.match-bytes",
+        "kind": "representation",
+        "obligations": [
+          "API-REPRESENTATION",
+          "API-MATCH-OBJECT"
+        ],
+        "result": "<candidates._vm_native.Match object at 0x7f00d42e1d10>"
+      },
+      "expected": {
+        "id": "v2.repr.match-bytes",
+        "kind": "representation",
+        "obligations": [
+          "API-REPRESENTATION",
+          "API-MATCH-OBJECT"
+        ],
+        "result": "<re.Match object; span=(1, 3), match=b'aa'>"
+      },
+      "id": "v2.repr.match-bytes"
+    },
+    {
+      "actual": {
+        "id": "v2.repr.match-long",
+        "kind": "representation",
+        "obligations": [
+          "API-REPRESENTATION",
+          "API-MATCH-OBJECT"
+        ],
+        "result": "<candidates._vm_native.Match object at 0x7f00d42e1d10>"
+      },
+      "expected": {
+        "id": "v2.repr.match-long",
+        "kind": "representation",
+        "obligations": [
+          "API-REPRESENTATION",
+          "API-MATCH-OBJECT"
+        ],
+        "result": "<re.Match object; span=(1, 81), match='aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa>"
+      },
+      "id": "v2.repr.match-long"
+    },
+    {
+      "actual": {
+        "id": "v2.pattern.equality-hash",
+        "kind": "pattern-equality",
+        "obligations": [
+          "API-PATTERN",
+          "API-COMPILE"
+        ],
+        "result": {
+          "different_pattern_unequal": true,
+          "equal_after_purge": false,
+          "hash_equal_after_purge": false
+        }
+      },
+      "expected": {
+        "id": "v2.pattern.equality-hash",
+        "kind": "pattern-equality",
+        "obligations": [
+          "API-PATTERN",
+          "API-COMPILE"
+        ],
+        "result": {
+          "different_pattern_unequal": true,
+          "equal_after_purge": true,
+          "hash_equal_after_purge": true
+        }
+      },
+      "id": "v2.pattern.equality-hash"
+    },
+    {
+      "actual": {
+        "id": "v2.match.copy",
+        "kind": "match-copy",
+        "obligations": [
+          "API-MATCH-COPY",
+          "API-MATCH-OBJECT"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "cannot pickle 'candidates._vm_native.Match' object"
+          ],
+          "str": "cannot pickle 'candidates._vm_native.Match' object",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.match.copy",
+        "kind": "match-copy",
+        "obligations": [
+          "API-MATCH-COPY",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "match": {
+            "bool": true,
+            "endpos": 2,
+            "ends": [
+              2,
+              2
+            ],
+            "expand": "<a>",
+            "group0": "a",
+            "groupdict": {},
+            "groupdict_default": {},
+            "groups": [
+              "a"
+            ],
+            "groups_default": [
+              "a"
+            ],
+            "items": [
+              "a",
+              "a"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "pos": 0,
+            "public": [
+              "end",
+              "endpos",
+              "expand",
+              "group",
+              "groupdict",
+              "groups",
+              "lastgroup",
+              "lastindex",
+              "pos",
+              "re",
+              "regs",
+              "span",
+              "start",
+              "string"
+            ],
+            "re": {
+              "flags": 32,
+              "groupindex": {},
+              "groups": 1,
+              "pattern": "(a)",
+              "public": [
+                "findall",
+                "finditer",
+                "flags",
+                "fullmatch",
+                "groupindex",
+                "groups",
+                "match",
+                "pattern",
+                "scanner",
+                "search",
+                "split",
+                "sub",
+                "subn"
+              ]
+            },
+            "regs": [
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "spans": [
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "starts": [
+              1,
+              1
+            ],
+            "string": "za"
+          },
+          "same": true
+        }
+      },
+      "id": "v2.match.copy"
+    },
+    {
+      "actual": {
+        "id": "v2.match.deepcopy",
+        "kind": "match-copy",
+        "obligations": [
+          "API-MATCH-COPY",
+          "API-MATCH-OBJECT"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "cannot pickle 'candidates._vm_native.Match' object"
+          ],
+          "str": "cannot pickle 'candidates._vm_native.Match' object",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.match.deepcopy",
+        "kind": "match-copy",
+        "obligations": [
+          "API-MATCH-COPY",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "match": {
+            "bool": true,
+            "endpos": 2,
+            "ends": [
+              2,
+              2
+            ],
+            "expand": "<a>",
+            "group0": "a",
+            "groupdict": {},
+            "groupdict_default": {},
+            "groups": [
+              "a"
+            ],
+            "groups_default": [
+              "a"
+            ],
+            "items": [
+              "a",
+              "a"
+            ],
+            "lastgroup": null,
+            "lastindex": 1,
+            "pos": 0,
+            "public": [
+              "end",
+              "endpos",
+              "expand",
+              "group",
+              "groupdict",
+              "groups",
+              "lastgroup",
+              "lastindex",
+              "pos",
+              "re",
+              "regs",
+              "span",
+              "start",
+              "string"
+            ],
+            "re": {
+              "flags": 32,
+              "groupindex": {},
+              "groups": 1,
+              "pattern": "(a)",
+              "public": [
+                "findall",
+                "finditer",
+                "flags",
+                "fullmatch",
+                "groupindex",
+                "groups",
+                "match",
+                "pattern",
+                "scanner",
+                "search",
+                "split",
+                "sub",
+                "subn"
+              ]
+            },
+            "regs": [
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "spans": [
+              [
+                1,
+                2
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "starts": [
+              1,
+              1
+            ],
+            "string": "za"
+          },
+          "same": true
+        }
+      },
+      "id": "v2.match.deepcopy"
+    },
+    {
+      "actual": {
+        "id": "v2.match.pickle",
+        "kind": "match-copy",
+        "obligations": [
+          "API-MATCH-COPY",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "args": [
+            "cannot pickle 'candidates._vm_native.Match' object"
+          ],
+          "str": "cannot pickle 'candidates._vm_native.Match' object",
+          "type": "TypeError"
+        }
+      },
+      "expected": {
+        "id": "v2.match.pickle",
+        "kind": "match-copy",
+        "obligations": [
+          "API-MATCH-COPY",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "args": [
+            "cannot pickle 're.Match' object"
+          ],
+          "str": "cannot pickle 're.Match' object",
+          "type": "TypeError"
+        }
+      },
+      "id": "v2.match.pickle"
+    },
+    {
+      "actual": {
+        "id": "v2.lookbehind.number-ref",
+        "kind": "call",
+        "obligations": [
+          "S-LOOKBEHIND-REF",
+          "S-LOOKAROUND",
+          "S-BACKREF",
+          "API-SEARCH",
+          "API-MATCH-OBJECT"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "look-behind requires fixed-width pattern"
+          ],
+          "colno": null,
+          "lineno": null,
+          "msg": "look-behind requires fixed-width pattern",
+          "pattern": null,
+          "pos": null,
+          "str": "look-behind requires fixed-width pattern",
+          "type": "PatternError"
+        }
+      },
+      "expected": {
+        "id": "v2.lookbehind.number-ref",
+        "kind": "call",
+        "obligations": [
+          "S-LOOKBEHIND-REF",
+          "S-LOOKAROUND",
+          "S-BACKREF",
+          "API-SEARCH",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "bool": true,
+          "endpos": 2,
+          "ends": [
+            2,
+            1
+          ],
+          "expand": "<ab>",
+          "group0": "ab",
+          "groupdict": {},
+          "groupdict_default": {},
+          "groups": [
+            "a"
+          ],
+          "groups_default": [
+            "a"
+          ],
+          "items": [
+            "ab",
+            "a"
+          ],
+          "lastgroup": null,
+          "lastindex": 1,
+          "pos": 0,
+          "public": [
+            "end",
+            "endpos",
+            "expand",
+            "group",
+            "groupdict",
+            "groups",
+            "lastgroup",
+            "lastindex",
+            "pos",
+            "re",
+            "regs",
+            "span",
+            "start",
+            "string"
+          ],
+          "re": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1,
+            "pattern": "(a)(?<=\\1)b",
+            "public": [
+              "findall",
+              "finditer",
+              "flags",
+              "fullmatch",
+              "groupindex",
+              "groups",
+              "match",
+              "pattern",
+              "scanner",
+              "search",
+              "split",
+              "sub",
+              "subn"
+            ]
+          },
+          "regs": [
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "spans": [
+            [
+              0,
+              2
+            ],
+            [
+              0,
+              1
+            ]
+          ],
+          "starts": [
+            0,
+            0
+          ],
+          "string": "ab"
+        }
+      },
+      "id": "v2.lookbehind.number-ref"
+    },
+    {
+      "actual": {
+        "id": "v2.lookbehind.named-ref",
+        "kind": "call",
+        "obligations": [
+          "S-LOOKBEHIND-REF",
+          "S-LOOKAROUND",
+          "S-BACKREF",
+          "API-SEARCH",
+          "API-MATCH-OBJECT"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "look-behind requires fixed-width pattern"
+          ],
+          "colno": null,
+          "lineno": null,
+          "msg": "look-behind requires fixed-width pattern",
+          "pattern": null,
+          "pos": null,
+          "str": "look-behind requires fixed-width pattern",
+          "type": "PatternError"
+        }
+      },
+      "expected": {
+        "id": "v2.lookbehind.named-ref",
+        "kind": "call",
+        "obligations": [
+          "S-LOOKBEHIND-REF",
+          "S-LOOKAROUND",
+          "S-BACKREF",
+          "API-SEARCH",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "bool": true,
+          "endpos": 3,
+          "ends": [
+            3,
+            2
+          ],
+          "expand": "<abc>",
+          "group0": "abc",
+          "groupdict": {
+            "x": "ab"
+          },
+          "groupdict_default": {
+            "x": "ab"
+          },
+          "groups": [
+            "ab"
+          ],
+          "groups_default": [
+            "ab"
+          ],
+          "items": [
+            "abc",
+            "ab"
+          ],
+          "lastgroup": "x",
+          "lastindex": 1,
+          "pos": 0,
+          "public": [
+            "end",
+            "endpos",
+            "expand",
+            "group",
+            "groupdict",
+            "groups",
+            "lastgroup",
+            "lastindex",
+            "pos",
+            "re",
+            "regs",
+            "span",
+            "start",
+            "string"
+          ],
+          "re": {
+            "flags": 32,
+            "groupindex": {
+              "x": 1
+            },
+            "groups": 1,
+            "pattern": "(?P<x>ab)(?<=(?P=x))c",
+            "public": [
+              "findall",
+              "finditer",
+              "flags",
+              "fullmatch",
+              "groupindex",
+              "groups",
+              "match",
+              "pattern",
+              "scanner",
+              "search",
+              "split",
+              "sub",
+              "subn"
+            ]
+          },
+          "regs": [
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          "spans": [
+            [
+              0,
+              3
+            ],
+            [
+              0,
+              2
+            ]
+          ],
+          "starts": [
+            0,
+            0
+          ],
+          "string": "abc"
+        }
+      },
+      "id": "v2.lookbehind.named-ref"
+    },
+    {
+      "actual": {
+        "id": "v2.lookbehind.negative-ref",
+        "kind": "call",
+        "obligations": [
+          "S-LOOKBEHIND-REF",
+          "S-LOOKAROUND",
+          "S-BACKREF",
+          "API-SEARCH"
+        ],
+        "unexplained_exception": {
+          "args": [
+            "look-behind requires fixed-width pattern"
+          ],
+          "colno": null,
+          "lineno": null,
+          "msg": "look-behind requires fixed-width pattern",
+          "pattern": null,
+          "pos": null,
+          "str": "look-behind requires fixed-width pattern",
+          "type": "PatternError"
+        }
+      },
+      "expected": {
+        "id": "v2.lookbehind.negative-ref",
+        "kind": "call",
+        "obligations": [
+          "S-LOOKBEHIND-REF",
+          "S-LOOKAROUND",
+          "S-BACKREF",
+          "API-SEARCH"
+        ],
+        "result": null
+      },
+      "id": "v2.lookbehind.negative-ref"
+    },
+    {
+      "actual": {
+        "id": "v2.error.inline-au",
+        "kind": "error",
+        "obligations": [
+          "S-INLINE",
+          "E-PATTERN"
+        ],
+        "result": {
+          "unexpected_success": true
+        }
+      },
+      "expected": {
+        "id": "v2.error.inline-au",
+        "kind": "error",
+        "obligations": [
+          "S-INLINE",
+          "E-PATTERN"
+        ],
+        "result": {
+          "args": [
+            "bad inline flags: flags 'a', 'u' and 'L' are incompatible at position 4"
+          ],
+          "colno": 5,
+          "lineno": 1,
+          "msg": "bad inline flags: flags 'a', 'u' and 'L' are incompatible",
+          "pattern": "(?au:a)",
+          "pos": 4,
+          "str": "bad inline flags: flags 'a', 'u' and 'L' are incompatible at position 4",
+          "type": "PatternError"
+        }
+      },
+      "id": "v2.error.inline-au"
+    },
+    {
+      "actual": {
+        "id": "v2.error.inline-a-u",
+        "kind": "error",
+        "obligations": [
+          "S-INLINE",
+          "E-PATTERN"
+        ],
+        "result": {
+          "unexpected_success": true
+        }
+      },
+      "expected": {
+        "id": "v2.error.inline-a-u",
+        "kind": "error",
+        "obligations": [
+          "S-INLINE",
+          "E-PATTERN"
+        ],
+        "result": {
+          "args": [
+            "bad inline flags: cannot turn off flags 'a', 'u' and 'L' at position 5"
+          ],
+          "colno": 6,
+          "lineno": 1,
+          "msg": "bad inline flags: cannot turn off flags 'a', 'u' and 'L'",
+          "pattern": "(?a-u:a)",
+          "pos": 5,
+          "str": "bad inline flags: cannot turn off flags 'a', 'u' and 'L' at position 5",
+          "type": "PatternError"
+        }
+      },
+      "id": "v2.error.inline-a-u"
+    },
+    {
+      "actual": {
+        "id": "v2.error.inline-u-a",
+        "kind": "error",
+        "obligations": [
+          "S-INLINE",
+          "E-PATTERN"
+        ],
+        "result": {
+          "unexpected_success": true
+        }
+      },
+      "expected": {
+        "id": "v2.error.inline-u-a",
+        "kind": "error",
+        "obligations": [
+          "S-INLINE",
+          "E-PATTERN"
+        ],
+        "result": {
+          "args": [
+            "bad inline flags: cannot turn off flags 'a', 'u' and 'L' at position 5"
+          ],
+          "colno": 6,
+          "lineno": 1,
+          "msg": "bad inline flags: cannot turn off flags 'a', 'u' and 'L'",
+          "pattern": "(?u-a:a)",
+          "pos": 5,
+          "str": "bad inline flags: cannot turn off flags 'a', 'u' and 'L' at position 5",
+          "type": "PatternError"
+        }
+      },
+      "id": "v2.error.inline-u-a"
+    },
+    {
+      "actual": {
+        "id": "v2.error.inline-minus-a",
+        "kind": "error",
+        "obligations": [
+          "S-INLINE",
+          "E-PATTERN"
+        ],
+        "result": {
+          "unexpected_success": true
+        }
+      },
+      "expected": {
+        "id": "v2.error.inline-minus-a",
+        "kind": "error",
+        "obligations": [
+          "S-INLINE",
+          "E-PATTERN"
+        ],
+        "result": {
+          "args": [
+            "bad inline flags: cannot turn off flags 'a', 'u' and 'L' at position 4"
+          ],
+          "colno": 5,
+          "lineno": 1,
+          "msg": "bad inline flags: cannot turn off flags 'a', 'u' and 'L'",
+          "pattern": "(?-a:a)",
+          "pos": 4,
+          "str": "bad inline flags: cannot turn off flags 'a', 'u' and 'L' at position 4",
+          "type": "PatternError"
+        }
+      },
+      "id": "v2.error.inline-minus-a"
+    },
+    {
+      "actual": {
+        "id": "v2.error.inline-L-str",
+        "kind": "error",
+        "obligations": [
+          "S-INLINE",
+          "E-PATTERN",
+          "E-TYPE"
+        ],
+        "result": {
+          "unexpected_success": true
+        }
+      },
+      "expected": {
+        "id": "v2.error.inline-L-str",
+        "kind": "error",
+        "obligations": [
+          "S-INLINE",
+          "E-PATTERN",
+          "E-TYPE"
+        ],
+        "result": {
+          "args": [
+            "bad inline flags: cannot use 'L' flag with a str pattern at position 3"
+          ],
+          "colno": 4,
+          "lineno": 1,
+          "msg": "bad inline flags: cannot use 'L' flag with a str pattern",
+          "pattern": "(?L:a)",
+          "pos": 3,
+          "str": "bad inline flags: cannot use 'L' flag with a str pattern at position 3",
+          "type": "PatternError"
+        }
+      },
+      "id": "v2.error.inline-L-str"
+    },
+    {
+      "actual": {
+        "id": "v2.error.inline-i-i",
+        "kind": "error",
+        "obligations": [
+          "S-INLINE",
+          "E-PATTERN"
+        ],
+        "result": {
+          "unexpected_success": true
+        }
+      },
+      "expected": {
+        "id": "v2.error.inline-i-i",
+        "kind": "error",
+        "obligations": [
+          "S-INLINE",
+          "E-PATTERN"
+        ],
+        "result": {
+          "args": [
+            "bad inline flags: flag turned on and off at position 5"
+          ],
+          "colno": 6,
+          "lineno": 1,
+          "msg": "bad inline flags: flag turned on and off",
+          "pattern": "(?i-i:a)",
+          "pos": 5,
+          "str": "bad inline flags: flag turned on and off at position 5",
+          "type": "PatternError"
+        }
+      },
+      "id": "v2.error.inline-i-i"
+    },
+    {
+      "actual": {
+        "id": "v2.warning.nested-set",
+        "kind": "warning",
+        "obligations": [
+          "E-WARNING",
+          "S-DOT-CLASS"
+        ],
+        "result": []
+      },
+      "expected": {
+        "id": "v2.warning.nested-set",
+        "kind": "warning",
+        "obligations": [
+          "E-WARNING",
+          "S-DOT-CLASS"
+        ],
+        "result": [
+          {
+            "message": "Possible nested set at position 1",
+            "type": "FutureWarning"
+          }
+        ]
+      },
+      "id": "v2.warning.nested-set"
+    },
+    {
+      "actual": {
+        "id": "v2.warning.double-pipe",
+        "kind": "warning",
+        "obligations": [
+          "E-WARNING",
+          "S-DOT-CLASS"
+        ],
+        "result": []
+      },
+      "expected": {
+        "id": "v2.warning.double-pipe",
+        "kind": "warning",
+        "obligations": [
+          "E-WARNING",
+          "S-DOT-CLASS"
+        ],
+        "result": [
+          {
+            "message": "Possible set union at position 2",
+            "type": "FutureWarning"
+          }
+        ]
+      },
+      "id": "v2.warning.double-pipe"
+    },
+    {
+      "actual": {
+        "id": "v2.warning.double-tilde",
+        "kind": "warning",
+        "obligations": [
+          "E-WARNING",
+          "S-DOT-CLASS"
+        ],
+        "result": []
+      },
+      "expected": {
+        "id": "v2.warning.double-tilde",
+        "kind": "warning",
+        "obligations": [
+          "E-WARNING",
+          "S-DOT-CLASS"
+        ],
+        "result": [
+          {
+            "message": "Possible set symmetric difference at position 2",
+            "type": "FutureWarning"
+          }
+        ]
+      },
+      "id": "v2.warning.double-tilde"
+    },
+    {
+      "actual": {
+        "id": "v2.warning.double-minus",
+        "kind": "warning",
+        "obligations": [
+          "E-WARNING",
+          "S-DOT-CLASS"
+        ],
+        "result": []
+      },
+      "expected": {
+        "id": "v2.warning.double-minus",
+        "kind": "warning",
+        "obligations": [
+          "E-WARNING",
+          "S-DOT-CLASS"
+        ],
+        "result": [
+          {
+            "message": "Possible set difference at position 4",
+            "type": "FutureWarning"
+          }
+        ]
+      },
+      "id": "v2.warning.double-minus"
+    },
+    {
+      "actual": {
+        "id": "v2.deprecation.split-positional",
+        "kind": "positional-warning",
+        "obligations": [
+          "E-DEPRECATION",
+          "API-SPLIT"
+        ],
+        "result": {
+          "result": [
+            "a",
+            "b,c"
+          ],
+          "warnings": []
+        }
+      },
+      "expected": {
+        "id": "v2.deprecation.split-positional",
+        "kind": "positional-warning",
+        "obligations": [
+          "E-DEPRECATION",
+          "API-SPLIT"
+        ],
+        "result": {
+          "result": [
+            "a",
+            "b,c"
+          ],
+          "warnings": [
+            {
+              "message": "'maxsplit' is passed as positional argument",
+              "type": "DeprecationWarning"
+            }
+          ]
+        }
+      },
+      "id": "v2.deprecation.split-positional"
+    },
+    {
+      "actual": {
+        "id": "v2.deprecation.sub-positional",
+        "kind": "positional-warning",
+        "obligations": [
+          "E-DEPRECATION",
+          "API-SUB"
+        ],
+        "result": {
+          "result": "Xba",
+          "warnings": []
+        }
+      },
+      "expected": {
+        "id": "v2.deprecation.sub-positional",
+        "kind": "positional-warning",
+        "obligations": [
+          "E-DEPRECATION",
+          "API-SUB"
+        ],
+        "result": {
+          "result": "Xba",
+          "warnings": [
+            {
+              "message": "'count' is passed as positional argument",
+              "type": "DeprecationWarning"
+            }
+          ]
+        }
+      },
+      "id": "v2.deprecation.sub-positional"
+    },
+    {
+      "actual": {
+        "id": "v2.deprecation.subn-positional",
+        "kind": "positional-warning",
+        "obligations": [
+          "E-DEPRECATION",
+          "API-SUBN"
+        ],
+        "result": {
+          "result": [
+            "Xba",
+            1
+          ],
+          "warnings": []
+        }
+      },
+      "expected": {
+        "id": "v2.deprecation.subn-positional",
+        "kind": "positional-warning",
+        "obligations": [
+          "E-DEPRECATION",
+          "API-SUBN"
+        ],
+        "result": {
+          "result": [
+            "Xba",
+            1
+          ],
+          "warnings": [
+            {
+              "message": "'count' is passed as positional argument",
+              "type": "DeprecationWarning"
+            }
+          ]
+        }
+      },
+      "id": "v2.deprecation.subn-positional"
+    }
+  ],
+  "mapped_obligations": 45,
+  "module": "rebar",
+  "obligations": 45,
+  "passed": 8202,
+  "schema": "rebar-correctness-result-v2"
+}

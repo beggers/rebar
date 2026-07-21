@@ -1,0 +1,11 @@
+{
+  "cases": 8244,
+  "expected_sha256": "ae6a095bc0cd2b3ba1512a04f0d4fbe57916cf2d5b583fd4ecdda5c2c70a5bb2",
+  "failed": 0,
+  "failures": [],
+  "mapped_obligations": 45,
+  "module": "re",
+  "obligations": 45,
+  "passed": 8244,
+  "schema": "rebar-correctness-result-v2"
+}

@@ -1,0 +1,49 @@
+{
+  "cases": 8244,
+  "expected_sha256": "ae6a095bc0cd2b3ba1512a04f0d4fbe57916cf2d5b583fd4ecdda5c2c70a5bb2",
+  "goal_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+  "implementation": "CPython",
+  "kinds": {
+    "byteslike": 11,
+    "byteslike-escape": 2,
+    "cache": 1,
+    "call": 7359,
+    "compile": 2,
+    "debug": 1,
+    "error": 456,
+    "escape": 2,
+    "exports": 1,
+    "flags": 1,
+    "generic": 4,
+    "match-copy": 3,
+    "pattern-equality": 1,
+    "positional-warning": 3,
+    "property": 384,
+    "representation": 5,
+    "roundtrip": 1,
+    "scanner": 2,
+    "warning": 5
+  },
+  "locale": "C",
+  "mapped_obligations": 45,
+  "obligations": 45,
+  "parent_expected_sha256": "983885ee6411fd806edf3d72efbcc989f9b9f7775a6d127dc7c865673eeb0fed",
+  "private_waivers": [
+    "PRIVATE-CACHE-LAYOUT",
+    "PRIVATE-DEBUG-TEXT"
+  ],
+  "python": "3.14.6",
+  "runner_sha256": "f038145dc0527f802203e18556f03b4bba636bb219105dc38c675c52a23e0fbb",
+  "schema": "rebar-correctness-v2",
+  "seeds": {
+    "deep_bytes": 1979121302,
+    "deep_str": 1979121301,
+    "invalid_patterns": 1511506921,
+    "invalid_templates": 1511506922,
+    "properties": 1511506920,
+    "valid_bytes": 1511506919,
+    "valid_str": 1511506918
+  },
+  "suite_sha256": "a05912d8f3ef01e3f8ccd5e421647afd55a72963fefbfd431140ac5977b333a1",
+  "unicode": "16.0.0"
+}
