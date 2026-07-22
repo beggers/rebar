@@ -55,7 +55,7 @@ const CharClass = struct {
     negative: bool = false,
     locale_multi: bool = false,
 };
-const Op = enum(u8) { literal, dot, class, begin, end, absolute_begin, absolute_end, boundary, split, jump, save_begin, save_end, backref, conditional, atomic_begin, atomic_end, look, run, accept };
+const Op = enum(u8) { literal, dot, class, begin, end, absolute_begin, absolute_end, boundary, split, start_split, jump, save_begin, save_end, backref, conditional, atomic_begin, atomic_end, look, run, lazy_dot, accept };
 const Instruction = struct { op: Op, left: u32 = 0, right: u32 = 0, extra: u32 = 0, value: u32 = 0 };
 const CaptureLayout = struct { number: u16, begin: usize, end: usize };
 const Run = struct { atom: u32, flags: u32, width: usize, minimum: usize, maximum: usize, lazy: bool, possessive: bool, layout_start: u32, layout_count: u16 };
@@ -75,6 +75,7 @@ const Program = struct {
     nullable: bool = false,
     single_start: u16 = 256,
     scoped_prefix: u32 = std.math.maxInt(u32),
+    prefix_run: u32 = std.math.maxInt(u32),
     groups: u16 = 0,
     references: bool = false,
     nullable_loops: bool = false,
@@ -1109,6 +1110,67 @@ fn canBeEmpty(program: *const Program, index: u32) bool {
     };
 }
 
+fn literalPrefixMask(program: *const Program, index: u32, flags: u32) ?u32 {
+    return switch (program.nodes.items[index]) {
+        .literal => |value| blk: {
+            if (flags & 2 == 0) break :blk @as(u32, 1) << @intCast(value & 31);
+            if (value >= 128) break :blk null;
+            const byte: u8 = @intCast(value);
+            const lower = std.ascii.toLower(byte);
+            var mask = (@as(u32, 1) << @intCast(lower & 31)) | (@as(u32, 1) << @intCast(std.ascii.toUpper(byte) & 31));
+            if (!asciiMode(flags)) switch (lower) {
+                'i' => mask |= (@as(u32, 1) << @intCast(0x130 & 31)) | (@as(u32, 1) << @intCast(0x131 & 31)),
+                's' => mask |= @as(u32, 1) << @intCast(0x17f & 31),
+                'k' => mask |= @as(u32, 1) << @intCast(0x212a & 31),
+                else => {},
+            };
+            break :blk mask;
+        },
+        .class => |class_index| blk: {
+            const class = &program.classes.items[class_index];
+            if (class.negative or class.categories != 0 or (flags & 2 != 0 and !asciiMode(flags) and class.range_count != 0)) break :blk null;
+            var mask: u32 = 0;
+            for (0..256) |raw| {
+                if (classMatch(program, class, @intCast(raw), flags)) mask |= @as(u32, 1) << @intCast(raw & 31);
+            }
+            if (flags & 2 != 0 and !asciiMode(flags)) {
+                for ([_]u32{ 0x130, 0x131, 0x17f, 0x212a }) |value| {
+                    if (classMatch(program, class, value, flags)) mask |= @as(u32, 1) << @intCast(value & 31);
+                }
+            }
+            for (program.ranges.items[class.range_start..@as(usize, class.range_start) + class.range_count]) |range| {
+                if (range.right - range.left >= 31) break :blk std.math.maxInt(u32);
+                var value = range.left;
+                while (value <= range.right) : (value += 1) mask |= @as(u32, 1) << @intCast(value & 31);
+            }
+            break :blk mask;
+        },
+        .sequence => |pair| literalPrefixMask(program, pair.left, flags),
+        .alternative => |pair| blk: {
+            const left = literalPrefixMask(program, pair.left, flags) orelse break :blk null;
+            const right = literalPrefixMask(program, pair.right, flags) orelse break :blk null;
+            break :blk left | right;
+        },
+        .repeat => |repeat| if (repeat.minimum == 0) null else literalPrefixMask(program, repeat.child, flags),
+        .group => |group| literalPrefixMask(program, group.child, flags),
+        .atomic => |child| literalPrefixMask(program, child, flags),
+        .scoped => |scoped| literalPrefixMask(program, scoped.child, scoped.flags),
+        else => null,
+    };
+}
+
+fn prefixRunAccepts(program: *const Program, instruction_index: u32, value: u32) bool {
+    const instruction = program.code.items[instruction_index];
+    return switch (instruction.op) {
+        .run => blk: {
+            const run = program.runs.items[instruction.value];
+            break :blk atomMatch(program, run.atom, value, run.flags);
+        },
+        .class => classMatch(program, &program.classes.items[instruction.left], value, instruction.extra),
+        else => false,
+    };
+}
+
 const Compiler = struct {
     program: *Program,
     flags: u32,
@@ -1172,6 +1234,11 @@ const Compiler = struct {
                 const finish: u32 = @intCast(self.program.code.items.len);
                 self.program.code.items[split].left = first;
                 self.program.code.items[split].right = second;
+                if (literalPrefixMask(self.program, pair.left, self.flags)) |mask| {
+                    self.program.code.items[split].op = .start_split;
+                    self.program.code.items[split].extra = mask;
+                    self.program.code.items[split].value = literalPrefixMask(self.program, pair.right, self.flags) orelse std.math.maxInt(u32);
+                }
                 self.program.code.items[jump].left = finish;
             },
             .repeat => |repeat| {
@@ -1541,6 +1608,41 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
                 pc = instruction.left;
                 continue;
             },
+            .start_split => {
+                if (pos >= endpos) {
+                    pc = instruction.right;
+                    continue;
+                }
+                const bit = @as(u32, 1) << @intCast(text.at(pos) & 31);
+                if (instruction.extra & bit == 0) {
+                    pc = instruction.right;
+                    continue;
+                }
+                if (instruction.value & bit == 0) {
+                    pc = instruction.left;
+                    continue;
+                }
+                if (stack_count >= stack.len) {
+                    const capacity = std.math.mul(usize, stack.len, 2) catch return -2;
+                    const grown = std.heap.c_allocator.alloc(State, capacity) catch return -2;
+                    @memcpy(grown[0..stack_count], stack[0..stack_count]);
+                    if (stack_heap) |items| std.heap.c_allocator.free(items);
+                    stack_heap = grown;
+                    stack = grown;
+                    if (program.nullable_loops) {
+                        const grown_marks = std.heap.c_allocator.alloc(usize, capacity) catch return -2;
+                        @memcpy(grown_marks[0..stack_count], guard_marks[0..stack_count]);
+                        if (marks_heap) |items| std.heap.c_allocator.free(items);
+                        marks_heap = grown_marks;
+                        guard_marks = grown_marks;
+                    }
+                }
+                if (program.nullable_loops) guard_marks[stack_count] = guard_count;
+                stack[stack_count] = .{ .pc = instruction.right, .pos = pos, .atomic = @intCast(atomic_depth) };
+                stack_count += 1;
+                pc = instruction.left;
+                continue;
+            },
             .jump => {
                 const target = program.code.items[instruction.left];
                 if (target.op == .split and target.value != 0 and guards[instruction.left] == @as(isize, @intCast(pos))) {
@@ -1593,6 +1695,51 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
                     }
                 }
                 pos += chosen * run.width;
+                pc += 1;
+                continue;
+            },
+            .lazy_dot => blk: {
+                const run = program.runs.items[instruction.value];
+                const room = endpos - pos;
+                const allowed = if (run.maximum == unbounded) room else @min(run.maximum, room);
+                const from = if (resumed_limit != unbounded) resumed_limit else run.minimum;
+                resumed_limit = unbounded;
+                resumed_max = 0;
+                if (from > allowed) break :blk;
+                const want = instruction.extra;
+                const candidate: ?usize = if (text.kind == 1 and want < 256)
+                    if (pos + from < endpos) std.mem.indexOfScalarPos(u8, text.data[0..@min(endpos, pos + allowed +| 1)], pos + from, @intCast(want)) else null
+                else blk_find: {
+                    var at = pos + from;
+                    const finish = @min(endpos, pos + allowed +| 1);
+                    while (at < finish) : (at += 1) {
+                        if (text.at(at) == want) break :blk_find at;
+                    }
+                    break :blk_find null;
+                };
+                const found = candidate orelse break :blk;
+                const chosen = found - pos;
+                if (chosen < allowed) {
+                    if (stack_count >= stack.len) {
+                        const capacity = std.math.mul(usize, stack.len, 2) catch return -2;
+                        const grown = std.heap.c_allocator.alloc(State, capacity) catch return -2;
+                        @memcpy(grown[0..stack_count], stack[0..stack_count]);
+                        if (stack_heap) |items| std.heap.c_allocator.free(items);
+                        stack_heap = grown;
+                        stack = grown;
+                        if (program.nullable_loops) {
+                            const grown_marks = std.heap.c_allocator.alloc(usize, capacity) catch return -2;
+                            @memcpy(grown_marks[0..stack_count], guard_marks[0..stack_count]);
+                            if (marks_heap) |items| std.heap.c_allocator.free(items);
+                            marks_heap = grown_marks;
+                            guard_marks = grown_marks;
+                        }
+                    }
+                    if (program.nullable_loops) guard_marks[stack_count] = guard_count;
+                    stack[stack_count] = .{ .pc = pc, .pos = pos, .atomic = @intCast(atomic_depth), .run_limit = chosen + 1, .run_max = allowed };
+                    stack_count += 1;
+                }
+                pos += chosen;
                 pc += 1;
                 continue;
             },
@@ -1743,6 +1890,41 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                     guard_undo[guard_count] = .{ .pc = pc, .previous = guards[pc] };
                     guard_count += 1;
                     guards[pc] = @intCast(pos);
+                }
+                if (program.nullable_loops) guard_marks[stack_count] = guard_count;
+                stack[stack_count] = .{ .pc = instruction.right, .pos = pos, .undo = undo_count, .atomic = @intCast(atomic_depth) };
+                stack_count += 1;
+                pc = instruction.left;
+                continue;
+            },
+            .start_split => {
+                if (pos >= endpos) {
+                    pc = instruction.right;
+                    continue;
+                }
+                const bit = @as(u32, 1) << @intCast(text.at(pos) & 31);
+                if (instruction.extra & bit == 0) {
+                    pc = instruction.right;
+                    continue;
+                }
+                if (instruction.value & bit == 0) {
+                    pc = instruction.left;
+                    continue;
+                }
+                if (stack_count >= stack.len) {
+                    const capacity = std.math.mul(usize, stack.len, 2) catch return -2;
+                    const grown = std.heap.c_allocator.alloc(CaptureState, capacity) catch return -2;
+                    @memcpy(grown[0..stack_count], stack[0..stack_count]);
+                    if (stack_heap) |items| std.heap.c_allocator.free(items);
+                    stack_heap = grown;
+                    stack = grown;
+                    if (program.nullable_loops) {
+                        const grown_marks = std.heap.c_allocator.alloc(usize, capacity) catch return -2;
+                        @memcpy(grown_marks[0..stack_count], guard_marks[0..stack_count]);
+                        if (marks_heap) |items| std.heap.c_allocator.free(items);
+                        marks_heap = grown_marks;
+                        guard_marks = grown_marks;
+                    }
                 }
                 if (program.nullable_loops) guard_marks[stack_count] = guard_count;
                 stack[stack_count] = .{ .pc = instruction.right, .pos = pos, .undo = undo_count, .atomic = @intCast(atomic_depth) };
@@ -1917,6 +2099,51 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                 pc += 1;
                 continue;
             },
+            .lazy_dot => blk: {
+                const run = program.runs.items[instruction.value];
+                const room = endpos - pos;
+                const allowed = if (run.maximum == unbounded) room else @min(run.maximum, room);
+                const from = if (resumed_limit != unbounded) resumed_limit else run.minimum;
+                resumed_limit = unbounded;
+                resumed_max = 0;
+                if (from > allowed) break :blk;
+                const want = instruction.extra;
+                const candidate: ?usize = if (text.kind == 1 and want < 256)
+                    if (pos + from < endpos) std.mem.indexOfScalarPos(u8, text.data[0..@min(endpos, pos + allowed +| 1)], pos + from, @intCast(want)) else null
+                else blk_find: {
+                    var at = pos + from;
+                    const finish = @min(endpos, pos + allowed +| 1);
+                    while (at < finish) : (at += 1) {
+                        if (text.at(at) == want) break :blk_find at;
+                    }
+                    break :blk_find null;
+                };
+                const found = candidate orelse break :blk;
+                const chosen = found - pos;
+                if (chosen < allowed) {
+                    if (stack_count >= stack.len) {
+                        const capacity = std.math.mul(usize, stack.len, 2) catch return -2;
+                        const grown = std.heap.c_allocator.alloc(CaptureState, capacity) catch return -2;
+                        @memcpy(grown[0..stack_count], stack[0..stack_count]);
+                        if (stack_heap) |items| std.heap.c_allocator.free(items);
+                        stack_heap = grown;
+                        stack = grown;
+                        if (program.nullable_loops) {
+                            const grown_marks = std.heap.c_allocator.alloc(usize, capacity) catch return -2;
+                            @memcpy(grown_marks[0..stack_count], guard_marks[0..stack_count]);
+                            if (marks_heap) |items| std.heap.c_allocator.free(items);
+                            marks_heap = grown_marks;
+                            guard_marks = grown_marks;
+                        }
+                    }
+                    if (program.nullable_loops) guard_marks[stack_count] = guard_count;
+                    stack[stack_count] = .{ .pc = pc, .pos = pos, .undo = undo_count, .atomic = @intCast(atomic_depth), .run_limit = chosen + 1, .run_max = allowed };
+                    stack_count += 1;
+                }
+                pos += chosen;
+                pc += 1;
+                continue;
+            },
             .accept => if ((!full or pos == endpos) and !(nonempty and pos == start)) return @intCast(pos),
         }
         if (stack_count == 0) return -1;
@@ -1981,6 +2208,39 @@ pub export fn rebar_zig_compile(pattern: [*]const u8, length: usize, flags: u32)
         return null;
     };
     prepareClasses(program, program.root, program.flags);
+    for (program.code.items, 0..) |*instruction, pc| {
+        if (instruction.op != .run) continue;
+        const run = program.runs.items[instruction.value];
+        if (!run.lazy or run.possessive or run.width != 1 or run.layout_count != 0 or run.flags & 16 == 0 or program.nodes.items[run.atom] != .dot) continue;
+        var next = pc + 1;
+        while (next < program.code.items.len and program.code.items[next].op == .save_end) : (next += 1) {}
+        if (next >= program.code.items.len or program.code.items[next].op != .literal or program.code.items[next].extra & 2 != 0) continue;
+        instruction.op = .lazy_dot;
+        instruction.extra = program.code.items[next].value;
+    }
+    if (!program.references and program.groups != 0) {
+        var first: usize = 0;
+        while (first < program.code.items.len and program.code.items[first].op == .save_begin) : (first += 1) {}
+        if (first < program.code.items.len and program.code.items[first].op == .run) {
+            const run_index = program.code.items[first].value;
+            const run = program.runs.items[run_index];
+            if (run.width == 1 and run.minimum != 0 and run.maximum == unbounded) program.prefix_run = @intCast(first);
+        } else if (first + 1 < program.code.items.len and program.code.items[first].op == .class and program.code.items[first + 1].op == .run) {
+            const head = program.code.items[first];
+            const class = &program.classes.items[head.left];
+            const run = program.runs.items[program.code.items[first + 1].value];
+            if (head.extra & 2 == 0 and !class.negative and class.categories == 0 and class.range_count == 0 and run.width == 1 and run.maximum == unbounded and run.flags == head.extra) {
+                var subset = true;
+                for (0..256) |raw| {
+                    if (classMatch(program, class, @intCast(raw), head.extra) and !atomMatch(program, run.atom, @intCast(raw), run.flags)) {
+                        subset = false;
+                        break;
+                    }
+                }
+                if (subset) program.prefix_run = @intCast(first);
+            }
+        }
+    }
     program.nullable = addStarts(program, program.root, &program.starts, program.flags);
     if (!program.nullable) {
         var count: usize = 0;
@@ -2150,6 +2410,9 @@ pub export fn rebar_zig_match_captures_wide(program_value: ?*const Program, text
             if (first < 256 and start + 1 < endpos) {
                 const second = text.at(start + 1);
                 if (second < 256 and program.single[first] == 0 and !hasSecond(&program.seconds, second)) continue;
+            }
+            if (program.prefix_run != std.math.maxInt(u32) and start > pos) {
+                if (prefixRunAccepts(program, program.prefix_run, text.at(start - 1))) continue;
             }
         }
         const finish = runCaptured(program, text, endpos, start, mode == 2, &captures, last, nonempty != 0 and start == pos);
