@@ -36,6 +36,10 @@ These show the broader holdout task by task. Green means clearly faster, red mea
 
 ![Overall results across all task sets](performance/v3/evidence/start-filter-rankings.svg)
 
+The separate [from-scratch Zig trial](candidates/evidence/ZIG-PROBE.md) shows why the Python/native boundary matters: the compiled Zig matcher is faster than Python `re` on all six small tasks once repeated calls cross that boundary only once, but individual Python calls remain much slower. Zig is an architecture experiment, **not** a complete replacement candidate.
+
+![Zig architecture speed compared with Python re](candidates/evidence/zig-probe-speed.svg)
+
 ## Correctness and current status
 
 The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). Stdlib and all three engines pass the [expanded seeded matrix](oracle/v2/P0.md): **8,244/8,244 cases**, **45/45 obligations**. They also pass all **144** runnable [official CPython `re` methods](oracle/cpython-3.14.6/README.md), with two environment-dependent locale skips.

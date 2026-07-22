@@ -15,6 +15,8 @@ The [discovery report](../candidates/evidence/DISCOVERY.md) preserves rejected b
 
 The broader [engine and language survey](../candidates/evidence/ENGINE-SURVEY.md) records 32 focused semantic checks and all 403 official historical patterns across PCRE2, Oniguruma, ICU, POSIX through Zig, Go/RE2, Node, and Perl, plus separate checks of the Python `regex` package. Current PCRE2 comes closest on spans/syntax (399/403) but still differs on important Python rules; Zig/POSIX is incompatible (212/403). These are discovery-only probes: the clarified scope requires every production candidate, including Zig, to implement its parser/compiler/executor from scratch.
 
+The separate [from-scratch Zig architecture probe](../candidates/evidence/ZIG-PROBE.md) implements its own parser, character classes, repeats, alternatives, anchors, a tree executor, and an independently compiled/backtracking executor with general one/two-character start filters. Both paths pass **5,856/5,856** seeded span comparisons in optimized and safety-checked builds, and the binary links no regex engine. On six paired tasks the compiled matcher is **2.92×** as fast overall when repeated work crosses Python only once, but only **0.143×** with one FFI call per match; the tree executor is **0.022×**. This isolates boundary cost and rejects the tree design. Zig is not correctness-qualified: captures, full Unicode, lookaround/references, replacements, and the public object/API surface remain deliberately unimplemented.
+
 ## Original performance experiments
 
 The [original protocol](../performance/v1/PROTOCOL.md) freezes 16 practice and 16 holdout tasks. Each experiment retains all 1,152 paired rows and every loss.
