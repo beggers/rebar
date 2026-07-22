@@ -56,6 +56,8 @@ The [long-repeat, lookbehind, and overflow follow-up](evidence/LONG-REPEAT-QUALI
 
 The first fully qualified run retains all **7,488** paired rows in [initial-raw.jsonl](evidence/initial-raw.jsonl), SHA-256 `da85b31715d0c460fb0e09a2357db147a72d9a3ec7765e99047d328cfdee99a2`, and all results in [INITIAL.md](evidence/INITIAL.md). Native C reaches **0.8997×** overall on the 72-task holdout (0.8927–0.9068× measured range), clearly faster on **30/72**, with **25** large holdout slowdowns. Rust and Python each clearly win only two cold-compilation tasks and have 70 large holdout slowdowns. Every slowdown is retained and explained; none is removed from the denominator.
 
+The [API-boundary follow-up](evidence/BOUNDARY-QUALIFIED.md) retains a second full run of **7,488** paired rows in [boundary-raw.jsonl](evidence/boundary-raw.jsonl), SHA-256 `5754989a48db93cc5e31688595352bfb1457b466baac78ca2c92db4bdb8d1c14`, with all results in [BOUNDARY.md](evidence/BOUNDARY.md). Native C improves to **0.9735×** overall (0.9676–0.9795×), clearly faster on **37/72**, with **19** large holdout slowdowns. The same frozen denominator, pairing, memory protocol, and correctness gates are used.
+
 Reproduce the freeze and checks with:
 
 ```sh

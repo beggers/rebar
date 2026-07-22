@@ -44,6 +44,7 @@ U = UNICODE = RegexFlag.UNICODE
 DEBUG = RegexFlag.DEBUG
 NOFLAG = RegexFlag(0)
 _BYTE = 1 << 31
+_ESCAPE_MAP = {ord(char): "\\" + char for char in "()[]{}?*+-|^$\\.&~# \t\n\r\v\f"}
 _MISSING = object()
 _WARNING_PREFIX = (os.path.dirname(__file__),)
 
@@ -444,7 +445,7 @@ class _Scanner:
             self._pos = self._end + 1
             return None
         self._empty = result.end() == result.start()
-        self._pos = result.end() if not self._empty else result.start() + 1
+        self._pos = result.end()
         return result
 
 
@@ -779,11 +780,9 @@ def subn(pattern, repl, string, *args, count=_MISSING, flags=_MISSING):
 
 
 def escape(pattern):
-    special = set("()[]{}?*+-|^$\\.&~# \t\n\r\v\f")
-    if isinstance(pattern, (bytes, bytearray, memoryview)):
-        pattern = bytes(pattern)
-        return b"".join((b"\\" + bytes([char])) if chr(char) in special else bytes([char]) for char in pattern)
-    return "".join("\\" + char if char in special else char for char in pattern)
+    if isinstance(pattern, str):
+        return pattern.translate(_ESCAPE_MAP)
+    return str(pattern, "latin1").translate(_ESCAPE_MAP).encode("latin1")
 
 
 __all__ = ["match", "fullmatch", "search", "sub", "subn", "split", "findall", "finditer", "compile", "purge", "escape", "error", "Pattern", "Match", "A", "I", "L", "M", "S", "X", "U", "ASCII", "IGNORECASE", "LOCALE", "MULTILINE", "DOTALL", "VERBOSE", "UNICODE", "NOFLAG", "RegexFlag", "PatternError"]

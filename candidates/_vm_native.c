@@ -1157,6 +1157,7 @@ typedef struct {
 static PyTypeObject PatternType;
 static PyTypeObject MatchType;
 static PyTypeObject FindIterType;
+static PyTypeObject ScannerType;
 static PyObject *template_function=NULL;
 static PyObject *template_compiler=NULL;
 
@@ -1273,8 +1274,60 @@ static PyObject *match_end(MatchObject *match, PyObject *args) { return match_bo
 static PyObject *match_span(MatchObject *match, PyObject *args) { return match_bound(match,args,2); }
 
 static PyObject *match_expand(MatchObject *match, PyObject *template) {
-    if (!template_function) { PyErr_SetString(PyExc_RuntimeError,"native template function is not configured"); return NULL; }
-    return PyObject_CallFunctionObjArgs(template_function,template,(PyObject *)match,NULL);
+    PyObject *owned_key=NULL,*template_key=template;
+    if (PyByteArray_Check(template) || PyMemoryView_Check(template)) {
+        owned_key=PyBytes_FromObject(template);
+        if (!owned_key) return NULL;
+        template_key=owned_key;
+    }
+    if (!template_compiler) { Py_XDECREF(owned_key); PyErr_SetString(PyExc_RuntimeError,"native template compiler is not configured"); return NULL; }
+    PyObject *parts=PyDict_GetItemWithError(match->pattern->templates,template_key);
+    if (!parts && PyErr_Occurred()) { Py_XDECREF(owned_key); return NULL; }
+    if (!parts) {
+        PyObject *byte_mode=PyUnicode_Check(match->string) ? Py_False : Py_True;
+        parts=PyObject_CallFunctionObjArgs(template_compiler,template_key,(PyObject *)match->pattern,byte_mode,NULL);
+        if (!parts) { Py_XDECREF(owned_key); return NULL; }
+        if (PyDict_SetItem(match->pattern->templates,template_key,parts)<0) { Py_DECREF(parts); Py_XDECREF(owned_key); return NULL; }
+        Py_DECREF(parts);
+        parts=PyDict_GetItemWithError(match->pattern->templates,template_key);
+        if (!parts) { Py_XDECREF(owned_key); return NULL; }
+    }
+    Py_XDECREF(owned_key);
+    Py_ssize_t count=PyTuple_GET_SIZE(parts);
+    if (PyUnicode_Check(match->string)) {
+        PyUnicodeWriter *writer=PyUnicodeWriter_Create(16);
+        if (!writer) return NULL;
+        for (Py_ssize_t i=0; i<count; i++) {
+            PyObject *part=PyTuple_GET_ITEM(parts,i);
+            int written;
+            if (PyLong_Check(part)) {
+                Py_ssize_t number=PyLong_AsSsize_t(part);
+                if (PyErr_Occurred()) { PyUnicodeWriter_Discard(writer); return NULL; }
+                Py_ssize_t begin=match->caps[2*number],end=match->caps[2*number+1];
+                written=begin<0 ? 0 : PyUnicodeWriter_WriteSubstring(writer,match->string,begin,end);
+            } else written=PyUnicodeWriter_WriteStr(writer,part);
+            if (written<0) { PyUnicodeWriter_Discard(writer); return NULL; }
+        }
+        return PyUnicodeWriter_Finish(writer);
+    }
+    PyObject *pieces=PyList_New(count);
+    if (!pieces) return NULL;
+    for (Py_ssize_t i=0; i<count; i++) {
+        PyObject *part=PyTuple_GET_ITEM(parts,i),*value=NULL;
+        if (PyLong_Check(part)) {
+            Py_ssize_t number=PyLong_AsSsize_t(part);
+            if (PyErr_Occurred()) { Py_DECREF(pieces); return NULL; }
+            value=match_piece(match,number,Py_None);
+            if (value==Py_None) { Py_SETREF(value,PyBytes_FromStringAndSize("",0)); }
+        } else value=Py_NewRef(part);
+        if (!value) { Py_DECREF(pieces); return NULL; }
+        PyList_SET_ITEM(pieces,i,value);
+    }
+    PyObject *empty=PyBytes_FromStringAndSize("",0);
+    if (!empty) { Py_DECREF(pieces); return NULL; }
+    PyObject *result=PyBytes_Join(empty,pieces);
+    Py_DECREF(empty); Py_DECREF(pieces);
+    return result;
 }
 
 static PyObject *match_copy(MatchObject *match, PyObject *ignored) { (void)ignored; return Py_NewRef(match); }
@@ -1462,17 +1515,58 @@ static PyObject *finditer_next(FindIterObject *iterator) {
     return (PyObject *)match;
 }
 
+static PyObject *scanner_search(FindIterObject *iterator, PyObject *ignored) {
+    (void)ignored;
+    PyObject *result=finditer_next(iterator);
+    if (result || PyErr_Occurred()) return result;
+    Py_RETURN_NONE;
+}
+
+static PyObject *scanner_match(FindIterObject *iterator, PyObject *ignored) {
+    (void)ignored;
+    if (iterator->done || iterator->cursor>iterator->endpos) Py_RETURN_NONE;
+    Subject subject;
+    if (!pattern_subject(iterator->pattern,iterator->string,&subject)) return NULL;
+    MatchObject *match=match_alloc(iterator->pattern,iterator->string,iterator->original_pos,iterator->endpos);
+    if (!match) return NULL;
+    Py_ssize_t found=-1,finish=-1;
+    int got=find_one(iterator->pattern->vm,&subject,iterator->cursor,iterator->endpos,1,iterator->nonempty,match->caps,&match->lastindex,&found,&finish);
+    if (got<0) { Py_DECREF(match); PyErr_SetString(PyExc_RuntimeError,got==-1?"native VM allocation failed":"native VM recursion limit"); return NULL; }
+    if (!got) { Py_DECREF(match); iterator->done=1; Py_RETURN_NONE; }
+    if (found==finish) { iterator->cursor=found; iterator->nonempty=1; }
+    else { iterator->cursor=finish; iterator->nonempty=0; }
+    return (PyObject *)match;
+}
+
+static PyMethodDef ScannerMethods[]={
+    {"search",(PyCFunction)scanner_search,METH_NOARGS,"Scan for the next match."},
+    {"match",(PyCFunction)scanner_match,METH_NOARGS,"Match at the current scanner position."},
+    {NULL,NULL,0,NULL}
+};
+
+static PyObject *scanner_get_pattern(FindIterObject *iterator, void *closure) { (void)closure; return Py_NewRef(iterator->pattern); }
+static PyGetSetDef ScannerGetSet[]={
+    {"pattern",(getter)scanner_get_pattern,NULL,"Compiled pattern.",NULL},
+    {NULL,NULL,NULL,NULL,NULL}
+};
+
+static PyTypeObject ScannerType={
+    PyVarObject_HEAD_INIT(NULL,0)
+    .tp_name="candidates._vm_native._Scanner", .tp_basicsize=sizeof(FindIterObject), .tp_dealloc=(destructor)finditer_dealloc,
+    .tp_flags=Py_TPFLAGS_DEFAULT, .tp_doc="Native compiled-pattern scanner.", .tp_methods=ScannerMethods, .tp_getset=ScannerGetSet
+};
+
 static PyTypeObject FindIterType={
     PyVarObject_HEAD_INIT(NULL,0)
     .tp_name="candidates._vm_native._FindIter", .tp_basicsize=sizeof(FindIterObject), .tp_dealloc=(destructor)finditer_dealloc,
     .tp_flags=Py_TPFLAGS_DEFAULT, .tp_doc="Native non-overlapping match iterator.", .tp_iter=finditer_iter, .tp_iternext=(iternextfunc)finditer_next
 };
 
-static PyObject *pattern_finditer(PatternObject *pattern, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+static PyObject *pattern_iterator(PatternObject *pattern, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames, PyTypeObject *type) {
     Subject subject;
     Py_ssize_t pos,endpos;
     if (!pattern_window(pattern,args,nargs,kwnames,&subject,&pos,&endpos)) return NULL;
-    FindIterObject *iterator=PyObject_New(FindIterObject,&FindIterType);
+    FindIterObject *iterator=PyObject_New(FindIterObject,type);
     if (!iterator) return NULL;
     iterator->pattern=pattern; Py_INCREF(pattern);
     iterator->string=subject.obj; Py_INCREF(subject.obj);
@@ -1485,6 +1579,9 @@ static PyObject *pattern_finditer(PatternObject *pattern, PyObject *const *args,
     iterator->nonempty=0; iterator->done=pos>endpos;
     return (PyObject *)iterator;
 }
+
+static PyObject *pattern_finditer(PatternObject *pattern, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) { return pattern_iterator(pattern,args,nargs,kwnames,&FindIterType); }
+static PyObject *pattern_scanner(PatternObject *pattern, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) { return pattern_iterator(pattern,args,nargs,kwnames,&ScannerType); }
 
 static PyObject *substitute_text(PatternObject *pattern, const Subject *subject, PyObject *replacement, PyObject *template_parts, Py_ssize_t limit, int return_count) {
     PyUnicodeWriter *writer=PyUnicodeWriter_Create(subject->length);
@@ -1674,6 +1771,7 @@ static PyMethodDef PatternMethods[]={
     {"fullmatch",(PyCFunction)(void(*)(void))pattern_fullmatch,METH_FASTCALL|METH_KEYWORDS,"Match the complete window."},
     {"findall",(PyCFunction)(void(*)(void))pattern_findall,METH_FASTCALL|METH_KEYWORDS,"Return all non-overlapping matches."},
     {"finditer",(PyCFunction)(void(*)(void))pattern_finditer,METH_FASTCALL|METH_KEYWORDS,"Iterate over non-overlapping matches."},
+    {"scanner",(PyCFunction)(void(*)(void))pattern_scanner,METH_FASTCALL|METH_KEYWORDS,"Create a native pattern scanner."},
     {"split",(PyCFunction)(void(*)(void))pattern_split,METH_FASTCALL|METH_KEYWORDS,"Split around non-overlapping matches."},
     {"sub",(PyCFunction)(void(*)(void))pattern_sub,METH_FASTCALL|METH_KEYWORDS,"Replace non-overlapping matches."},
     {"subn",(PyCFunction)(void(*)(void))pattern_subn,METH_FASTCALL|METH_KEYWORDS,"Replace non-overlapping matches and return the count."},
@@ -1706,7 +1804,7 @@ static PyObject *native_configure(PyObject *self, PyObject *args) {
 static PyMethodDef Methods[]={{"build",native_build,METH_VARARGS,"Build a native bytecode program."},{"match",native_match,METH_VARARGS,"Execute a native bytecode program."},{"collect",native_collect,METH_VARARGS,"Collect non-overlapping native matches."},{"configure",native_configure,METH_VARARGS,"Configure native public helpers."},{NULL,NULL,0,NULL}};
 static struct PyModuleDef Module={PyModuleDef_HEAD_INIT,"_vm_native","From-scratch bytecode regex VM.",-1,Methods,NULL,NULL,NULL,NULL};
 PyMODINIT_FUNC PyInit__vm_native(void) {
-    if (PyType_Ready(&PatternType)<0 || PyType_Ready(&MatchType)<0 || PyType_Ready(&FindIterType)<0) return NULL;
+    if (PyType_Ready(&PatternType)<0 || PyType_Ready(&MatchType)<0 || PyType_Ready(&FindIterType)<0 || PyType_Ready(&ScannerType)<0) return NULL;
     PyObject *module=PyModule_Create(&Module);
     if (!module) return NULL;
     if (PyModule_AddObjectRef(module,"Pattern",(PyObject *)&PatternType)<0 || PyModule_AddObjectRef(module,"Match",(PyObject *)&MatchType)<0) { Py_DECREF(module); return NULL; }

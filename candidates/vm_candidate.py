@@ -45,6 +45,7 @@ DEBUG = RegexFlag.DEBUG
 NOFLAG = RegexFlag(0)
 _BYTE = 1 << 31
 _MAXREPEAT = (1 << 32) - 1
+_ESCAPE_MAP = {ord(char): "\\" + char for char in "()[]{}?*+-|^$\\.&~# \t\n\r\v\f"}
 _MISSING = object()
 _WARNING_PREFIX = (os.path.dirname(__file__),)
 
@@ -925,38 +926,6 @@ def _template(value, match):
     return empty.join(match.group(part) or empty if isinstance(part, int) else part for part in _template_parts(value, match.re, byte_mode))
 
 
-class _Scanner:
-    __slots__ = ("pattern", "_string", "_pos", "_end", "_empty", "_searches")
-
-    def __init__(self, pattern, string, pos=0, endpos=None):
-        self.pattern = pattern
-        self._string = string
-        self._pos = max(pos, 0)
-        self._end = len(string) if endpos is None else min(max(endpos, 0), len(string))
-        self._empty = False
-        self._searches = pattern.finditer(string, self._pos, self._end)
-
-    def search(self):
-        result = next(self._searches, None)
-        if result is None:
-            self._pos = self._end + 1
-            return None
-        self._empty = result.end() == result.start()
-        self._pos = result.end() if not self._empty else result.start()
-        return result
-
-    def match(self):
-        if self._pos > self._end:
-            return None
-        result = next(self._searches, None)
-        if result is None or result.start() != self._pos:
-            self._pos = self._end + 1
-            return None
-        self._empty = result.end() == result.start()
-        self._pos = result.end() if not self._empty else result.start() + 1
-        return result
-
-
 Match = _vm_native.Match
 _vm_native.configure(_template, _template_parts)
 
@@ -992,10 +961,6 @@ class Pattern(_vm_native.Pattern):
 
     def __hash__(self):
         return hash((type(self.pattern), self.pattern, self.flags))
-
-    def scanner(self, string, pos=0, endpos=None):
-        return _Scanner(self, string, pos, endpos)
-
 
 class Scanner:
     def __init__(self, lexicon, flags=0):
@@ -1153,11 +1118,9 @@ def subn(pattern, repl, string, *args, count=_MISSING, flags=_MISSING):
 
 
 def escape(pattern):
-    special = set("()[]{}?*+-|^$\\.&~# \t\n\r\v\f")
-    if isinstance(pattern, (bytes, bytearray, memoryview)):
-        pattern = bytes(pattern)
-        return b"".join((b"\\" + bytes([char])) if chr(char) in special else bytes([char]) for char in pattern)
-    return "".join("\\" + char if char in special else char for char in pattern)
+    if isinstance(pattern, str):
+        return pattern.translate(_ESCAPE_MAP)
+    return str(pattern, "latin1").translate(_ESCAPE_MAP).encode("latin1")
 
 
 __all__ = ["match", "fullmatch", "search", "sub", "subn", "split", "findall", "finditer", "compile", "purge", "escape", "error", "Pattern", "Match", "A", "I", "L", "M", "S", "X", "U", "ASCII", "IGNORECASE", "LOCALE", "MULTILINE", "DOTALL", "VERBOSE", "UNICODE", "NOFLAG", "RegexFlag", "PatternError"]
