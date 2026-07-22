@@ -185,6 +185,21 @@ The next API cohort aligns the public match type/module and representation with 
 
 The complete follow-up records are [native](evidence/rebar-results.json), [Python](evidence/ast-results.json), and [Rust](evidence/rust-results.json). Earlier evidence remains unchanged.
 
+## Long repeats, lookbehind, and overflow follow-up
+
+![Official CPython re compatibility after long-repeat fixes](evidence/long-repeat-correctness.svg)
+
+The final compatibility cohort removes the remaining native/Python timeouts and Rust crashes. Repeated single-character expressions and repeated capture groups now use compact or iterative matching, large fixed-width lookbehind is compiled without unrolling millions of operations, invalid repeat/width values fail safely, and Rust character sets accept valid surrogate code points. All three independent engines now pass every runnable method:
+
+| Engine | Runnable methods passed | Failed | Crashes | Timeouts |
+| --- | ---: | ---: | ---: | ---: |
+| CPython `re` self-check | **144/144** | **0** | **0** | **0** |
+| Native C / `rebar` | **144/144** | **0** | **0** | **0** |
+| Python engine | **144/144** | **0** | **0** | **0** |
+| Rust engine | **144/144** | **0** | **0** | **0** |
+
+The complete records are [native](evidence/rebar-long-repeat.json), [Python](evidence/ast-long-repeat.json), and [Rust](evidence/rust-long-repeat.json). The deterministic [differential controls](evidence/long-repeat-controls.json) preserve seed `20260721` and pass all **3,060** comparisons across repeated groups, quantifier modes, captures, replacements, and lookbehind windows. Earlier evidence remains unchanged.
+
 Reproduce the frozen gate or one stable method ID:
 
 ```sh

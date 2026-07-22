@@ -112,6 +112,8 @@ class _Native:
         output = (ctypes.c_uint8 * max(size, 1))()
         self.library.rebar_error_copy(output, size)
         message = bytes(output[:size]).decode("utf-8")
+        if message == "the repetition number is too large":
+            raise OverflowError(message)
         position = self.library.rebar_error_pos()
         include = bool(self.library.rebar_error_include())
         raise PatternError(message, pattern if include else None, position if position >= 0 else None)

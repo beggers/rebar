@@ -43,6 +43,7 @@ U = UNICODE = RegexFlag.UNICODE
 DEBUG = RegexFlag.DEBUG
 NOFLAG = RegexFlag(0)
 _BYTE = 1 << 31
+_MAXREPEAT = (1 << 32) - 1
 _MISSING = object()
 _WARNING_PREFIX = (os.path.dirname(__file__),)
 
@@ -189,6 +190,8 @@ class _Parser:
                 left, right = spec.split(",", 1)
                 minimum = int(left) if left else 0
                 maximum = int(right) if right else None
+            if minimum >= _MAXREPEAT or (maximum is not None and maximum >= _MAXREPEAT):
+                raise OverflowError("the repetition number is too large")
             self.index = close + 1
             if maximum is not None and minimum > maximum:
                 self.fail("min repeat greater than max repeat", start + 1)
@@ -428,6 +431,8 @@ class _Parser:
             self.lookbehind_bases.pop()
             if minimum != maximum:
                 self.fail("look-behind requires fixed-width pattern", pattern=False)
+            if minimum > _MAXREPEAT:
+                self.fail("looks too much behind", pattern=False)
             return ("look", "behind", positive, child, minimum)
         if char == ">":
             child = self.alternation(flags)
@@ -645,6 +650,52 @@ def _class_match(node, char):
     return not found if negate else found
 
 
+def _repeat_layout(node):
+    kind = node[0]
+    if kind in {"lit", "dot", "category", "class"}:
+        return node, 1, []
+    if kind == "seq" and len(node[1]) == 1:
+        return _repeat_layout(node[1][0])
+    if kind == "alt":
+        leaves = []
+        for branch in node[1]:
+            value = _repeat_layout(branch)
+            if value is None or value[1] != 1 or value[2]:
+                return None
+            leaves.append(value[0])
+        return ("choice", leaves), 1, []
+    if kind == "group":
+        value = _repeat_layout(node[2])
+        if value is None:
+            return None
+        atom, width, captures = value
+        return atom, width, captures + [(node[1], 0, width)]
+    if kind == "repeat" and node[3] == node[2]:
+        value = _repeat_layout(node[1])
+        if value is None:
+            return None
+        atom, width, captures = value
+        count = node[2]
+        shifted = [(number, begin + width * (count - 1), end + width * (count - 1)) for number, begin, end in captures] if count else []
+        return atom, width * count, shifted
+    return None
+
+
+def _repeat_atom_match(node, char):
+    kind = node[0]
+    if kind == "lit":
+        return _equal(node[1], char, node[2])
+    if kind == "dot":
+        return bool(node[1] & int(DOTALL)) or char != "\n"
+    if kind == "category":
+        return _category(char, node[1], node[2])
+    if kind == "class":
+        return _class_match(node, char)
+    if kind == "choice":
+        return any(_repeat_atom_match(item, char) for item in node[1])
+    return False
+
+
 class _Engine:
     def __init__(self, node, text, endpos):
         self.node = node
@@ -721,6 +772,32 @@ class _Engine:
             return
         if kind == "repeat":
             child, minimum, maximum, mode = node[1:5]
+            layout = _repeat_layout(child)
+            if layout is not None and layout[1] > 0:
+                atom, width, saved = layout
+                available = (self.endpos - pos) // width
+                limit = available if maximum is None else min(maximum, available)
+                matched = 0
+                while matched < limit:
+                    begin = pos + matched * width
+                    if not all(_repeat_atom_match(atom, self.text[index]) for index in range(begin, begin + width)):
+                        break
+                    matched += 1
+                if matched < minimum:
+                    return
+                counts = range(minimum, matched + 1) if mode == "lazy" else range(matched, minimum - 1, -1)
+                if mode == "possessive":
+                    counts = (matched,)
+                for count in counts:
+                    values = list(captures)
+                    last_value = last
+                    if count:
+                        base = pos + (count - 1) * width
+                        for number, begin, end in saved:
+                            values[number] = (base + begin, base + end)
+                            last_value = number
+                    yield pos + count * width, tuple(values), last_value
+                return
             limit = self.endpos - pos + minimum + 1 if maximum is None else maximum
 
             def repeat(current, count):
@@ -1071,7 +1148,13 @@ class Pattern:
         self._validate_string(string)
         if pos > endpos:
             return None
-        for start in range(pos, endpos + 1):
+        first_start = pos
+        first = self._node
+        if first[0] == "seq" and first[1]:
+            first = first[1][0]
+        if first[0] == "look" and first[1] == "behind" and first[2]:
+            first_start = max(pos, first[4])
+        for start in range(first_start, endpos + 1):
             result = self._at(string, start, endpos, pos if original_pos is None else original_pos, require_nonempty and start == pos)
             if result is not None:
                 return result

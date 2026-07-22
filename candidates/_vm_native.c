@@ -818,6 +818,10 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
         last_start=first_start;
         if (endpos>pos && subject_char(subject,endpos-1)=='\n') first_start--;
     }
+    if (mode==0 && vm->code_count && vm->codes[0].count) {
+        Ins first=vm->codes[0].ins[0];
+        if (first.op==OP_LOOK && (first.b&3)==3 && first_start<first.c) first_start=first.c;
+    }
     for (Py_ssize_t start=first_start; start<=last_start; start++) {
         if (start<pos || start>endpos) continue;
         if (mode==0 && vm->code_count && vm->codes[0].count && start<endpos) {

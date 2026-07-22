@@ -44,6 +44,7 @@ U = UNICODE = RegexFlag.UNICODE
 DEBUG = RegexFlag.DEBUG
 NOFLAG = RegexFlag(0)
 _BYTE = 1 << 31
+_MAXREPEAT = (1 << 32) - 1
 _MISSING = object()
 _WARNING_PREFIX = (os.path.dirname(__file__),)
 
@@ -140,6 +141,8 @@ class _BytecodeParser:
                 minimum, maximum = _width(node, self.groupwidth)
                 if minimum != maximum:
                     self.error("look-behind requires fixed-width pattern", include_pattern=False)
+                if minimum > _MAXREPEAT:
+                    self.error("looks too much behind", include_pattern=False)
                 width = minimum
             return ("look", "behind" if behind else "ahead", tag.endswith("+"), node, width)
         if tag == "conditional":
@@ -341,6 +344,8 @@ class _BytecodeParser:
                 left, right = value.split(",", 1)
                 minimum = int(left) if left else 0
                 maximum = int(right) if right else None
+            if minimum >= _MAXREPEAT or (maximum is not None and maximum >= _MAXREPEAT):
+                raise OverflowError("the repetition number is too large")
             if maximum is not None and minimum > maximum:
                 self.error("min repeat greater than max repeat", opening + 1)
         mode = "greedy"
@@ -636,6 +641,29 @@ def _class_match(node, char):
     return not found if negate else found
 
 
+def _fixed_layout(node):
+    kind = node[0]
+    if kind in {"lit", "dot", "category", "class"}:
+        return node, 1, []
+    if kind == "seq" and len(node[1]) == 1:
+        return _fixed_layout(node[1][0])
+    if kind == "group":
+        value = _fixed_layout(node[2])
+        if value is None:
+            return None
+        atom, width, captures = value
+        return atom, width, [(node[1], 0, width)] + captures
+    if kind == "repeat" and node[3] == node[2]:
+        value = _fixed_layout(node[1])
+        if value is None:
+            return None
+        atom, width, captures = value
+        count = node[2]
+        shifted = [(number, begin + width * (count - 1), end + width * (count - 1)) for number, begin, end in captures] if count else []
+        return atom, width * count, shifted
+    return None
+
+
 class _BytecodeCompiler:
     CHAR, DOT, CAT, CLASS, ANCHOR, BOUNDARY, BACKREF, SAVE_START, SAVE_END, SPLIT, JUMP, LOOK, ATOMIC_START, ATOMIC_END, COND, MATCH, REPEAT1 = range(1, 18)
 
@@ -666,6 +694,25 @@ class _BytecodeCompiler:
         self.instruction(self.MATCH)
         self.current = saved
         return index
+
+    def emit_fixed_layout(self, atom, width, captures):
+        boundaries = {0, width}
+        for _number, begin, end in captures:
+            boundaries.add(begin)
+            boundaries.add(end)
+        cursor = 0
+        for position in sorted(boundaries):
+            count = position - cursor
+            if count:
+                self.instruction(self.REPEAT1, count, count, 0)
+                self.emit(atom)
+                cursor = position
+            ending = sorted((item for item in captures if item[2] == position), key=lambda item: item[1], reverse=True)
+            starting = sorted((item for item in captures if item[1] == position), key=lambda item: item[2], reverse=True)
+            for number, _begin, _end in ending:
+                self.instruction(self.SAVE_END, number)
+            for number, _begin, _end in starting:
+                self.instruction(self.SAVE_START, number)
 
     def emit(self, node):
         kind = node[0]
@@ -715,7 +762,11 @@ class _BytecodeCompiler:
             self.instruction(self.SAVE_END, node[1])
         elif kind == "repeat":
             child, minimum, maximum, mode = node[1:5]
-            if child[0] in {"lit", "dot", "category", "class"} and (maximum is None or maximum > minimum):
+            layout = _fixed_layout(node)
+            if layout is not None:
+                self.emit_fixed_layout(*layout)
+                return
+            if child[0] in {"lit", "dot", "category", "class"}:
                 self.instruction(self.REPEAT1, minimum, -1 if maximum is None else maximum, {"greedy": 0, "lazy": 1, "possessive": 2}[mode])
                 self.emit(child)
                 return

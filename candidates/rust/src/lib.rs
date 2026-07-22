@@ -239,21 +239,27 @@ impl Parser {
                     return Ok(node);
                 }
                 self.at = close + 1;
+                let parse_number = |text: &str| {
+                    text.parse::<usize>()
+                        .ok()
+                        .filter(|value| *value < 0xffff_ffff)
+                        .ok_or_else(|| ("the repetition number is too large".into(), None, false))
+                };
                 let pair = if let Some((left, right)) = spec.split_once(',') {
                     (
                         if left.is_empty() {
                             0
                         } else {
-                            left.parse().unwrap()
+                            parse_number(left)?
                         },
                         if right.is_empty() {
                             None
                         } else {
-                            Some(right.parse().unwrap())
+                            Some(parse_number(right)?)
                         },
                     )
                 } else {
-                    let n = spec.parse().unwrap();
+                    let n = parse_number(&spec)?;
                     (n, Some(n))
                 };
                 if pair.1.is_some_and(|right| pair.0 > right) {
@@ -453,22 +459,22 @@ impl Parser {
         let mut first = true;
         let mut values = Vec::new();
         loop {
-            let Some(ch) = self.now() else {
+            let Some(raw) = self.source.get(self.at).copied() else {
                 return self.fail("unterminated character set".into(), Some(start), true);
             };
-            if ch == ']' && !first {
+            if raw == b']' as u32 && !first {
                 self.at += 1;
                 return Ok(Expr::Class(values, negate, flags));
             }
             first = false;
             let left_start = self.at;
-            let left = if ch == '\\' {
+            let left = if raw == b'\\' as u32 {
                 let slash = self.at;
                 self.at += 1;
                 self.escape(flags, true, slash)?
             } else {
                 self.at += 1;
-                Expr::Lit(ch as u32, flags)
+                Expr::Lit(raw, flags)
             };
             if self.now() == Some('-')
                 && self.at + 1 < self.source.len()
@@ -481,7 +487,9 @@ impl Parser {
                     self.at += 1;
                     self.escape(flags, true, slash)?
                 } else {
-                    Expr::Lit(self.take().unwrap() as u32, flags)
+                    let value = self.source[self.at];
+                    self.at += 1;
+                    Expr::Lit(value, flags)
                 };
                 let (Expr::Lit(a, _), Expr::Lit(b, _)) = (left, right) else {
                     let text: String = self.source[left_start..self.at]
@@ -674,6 +682,9 @@ impl Parser {
                         None,
                         false,
                     );
+                }
+                if low > 0xffff_ffff {
+                    return self.fail("looks too much behind".into(), None, false);
                 }
                 Ok(Expr::Look(true, positive, Box::new(child), low))
             }
@@ -1135,6 +1146,69 @@ fn class_match(
     if negative { !found } else { found }
 }
 
+fn repeat_layout(node: &Expr) -> Option<(Expr, usize, Vec<(usize, usize, usize)>)> {
+    match node {
+        Expr::Lit(_, _) | Expr::Dot(_) | Expr::Cat(_, _) | Expr::Class(_, _, _) => {
+            Some((node.clone(), 1, Vec::new()))
+        }
+        Expr::Seq(values) if values.len() == 1 => repeat_layout(&values[0]),
+        Expr::Alt(values) => {
+            let mut leaves = Vec::with_capacity(values.len());
+            for value in values {
+                let (leaf, width, captures) = repeat_layout(value)?;
+                if width != 1 || !captures.is_empty() {
+                    return None;
+                }
+                leaves.push(leaf);
+            }
+            Some((Expr::Alt(leaves), 1, Vec::new()))
+        }
+        Expr::Group(number, child) => {
+            let (leaf, width, mut captures) = repeat_layout(child)?;
+            captures.push((*number, 0, width));
+            Some((leaf, width, captures))
+        }
+        Expr::Repeat(child, minimum, Some(maximum), _) if minimum == maximum => {
+            let (leaf, width, captures) = repeat_layout(child)?;
+            let total = width.checked_mul(*minimum)?;
+            let offset = if *minimum == 0 {
+                0
+            } else {
+                width.checked_mul(*minimum - 1)?
+            };
+            Some((
+                leaf,
+                total,
+                captures
+                    .into_iter()
+                    .map(|(number, begin, end)| (number, begin + offset, end + offset))
+                    .collect(),
+            ))
+        }
+        _ => None,
+    }
+}
+
+fn repeat_atom_match(node: &Expr, ctx: &Context<'_>, pos: usize) -> bool {
+    match node {
+        Expr::Lit(value, flags) => eq_lit(*value, ctx.chars[pos], *flags, ctx, pos),
+        Expr::Dot(flags) => *flags & S != 0 || ctx.chars[pos] != 10,
+        Expr::Cat(code, flags) => category(*code, *flags, ctx, pos),
+        Expr::Class(values, negative, flags) => class_match(values, *negative, *flags, ctx, pos),
+        Expr::Alt(values) => values.iter().any(|value| repeat_atom_match(value, ctx, pos)),
+        _ => false,
+    }
+}
+
+fn leading_lookbehind(node: &Expr) -> Option<usize> {
+    match node {
+        Expr::Look(true, true, _, width) => Some(*width),
+        Expr::Seq(values) => values.first().and_then(leading_lookbehind),
+        Expr::Group(_, child) | Expr::Atomic(child) => leading_lookbehind(child),
+        _ => None,
+    }
+}
+
 fn eval(node: &Expr, state: &State, ctx: &Context<'_>) -> Vec<State> {
     match node {
         Expr::Lit(value, flags) => {
@@ -1249,6 +1323,44 @@ fn eval(node: &Expr, state: &State, ctx: &Context<'_>) -> Vec<State> {
             }
         }
         Expr::Repeat(child, min, max, mode) => {
+            if let Some((leaf, width, captures)) = repeat_layout(child)
+                && width > 0
+            {
+                let available = (ctx.end - state.pos) / width;
+                let limit = max.map_or(available, |value| value.min(available));
+                let mut matched = 0;
+                while matched < limit {
+                    let begin = state.pos + matched * width;
+                    if !(begin..begin + width).all(|pos| repeat_atom_match(&leaf, ctx, pos)) {
+                        break;
+                    }
+                    matched += 1;
+                }
+                if matched < *min {
+                    return vec![];
+                }
+                let counts: Box<dyn Iterator<Item = usize>> = if *mode == 1 {
+                    Box::new(*min..=matched)
+                } else if *mode == 2 {
+                    Box::new(std::iter::once(matched))
+                } else {
+                    Box::new((*min..=matched).rev())
+                };
+                return counts
+                    .map(|count| {
+                        let mut value = state.clone();
+                        value.pos += count * width;
+                        if count > 0 {
+                            let base = state.pos + (count - 1) * width;
+                            for (number, begin, end) in &captures {
+                                value.caps[*number] = Some((base + begin, base + end));
+                                value.last = Some(*number);
+                            }
+                        }
+                        value
+                    })
+                    .collect();
+            }
             fn walk(
                 child: &Expr,
                 state: &State,
@@ -1522,7 +1634,12 @@ pub unsafe extern "C" fn rebar_match(
         return 0;
     }
     let last_start = if mode == 0 { context.end } else { pos };
-    for start in pos..=last_start {
+    let first_start = if mode == 0 {
+        leading_lookbehind(&engine.root).map_or(pos, |width| pos.max(width))
+    } else {
+        pos
+    };
+    for start in first_start..=last_start {
         let state = State {
             pos: start,
             caps: vec![None; engine.groups + 1],

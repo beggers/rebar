@@ -1,0 +1,13 @@
+{
+  "cases_per_module": 1020,
+  "checks": 3060,
+  "failed": 0,
+  "failures": [],
+  "modules": [
+    "rebar",
+    "candidates.ast_candidate",
+    "candidates.rust_candidate"
+  ],
+  "schema": "rebar-long-repeat-controls-v1",
+  "seed": 20260721
+}
