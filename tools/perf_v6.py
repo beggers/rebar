@@ -216,6 +216,7 @@ def measure(args):
                     finally:
                         if enabled:
                             gc.enable()
+                    after = proc_memory()
                     timed_result = snapshot(sink)
                     if digest(timed_result) != expected_digest or timed_result != want["result"]:
                         raise RuntimeError(f"post-timing correctness mismatch: {name} {case['id']}")

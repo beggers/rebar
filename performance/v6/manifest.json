@@ -47,7 +47,7 @@
   "parent_cases": 6288,
   "parent_expected_sha256": "67a4d07ee260bc58456290d76e040b78ba769d1b63cd3b21f0879daa063c2f92",
   "python": "3.14.6",
-  "runner_sha256": "fe71d373784d9162d5851ad69e487c9aec7add355cda1422c70b3bd71e0a5d85",
+  "runner_sha256": "b5cfbc15e913411c08b4f6a5a44da92bdff8eb9833d6c361b90ac139fa9a06d5",
   "schema": "rebar-performance-v6",
   "seeds": {
     "calibration": 1985072211,
