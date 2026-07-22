@@ -1,0 +1,10 @@
+{
+  "correctness_checks": 1785,
+  "failed": 0,
+  "failures": [],
+  "manual_cases": 39,
+  "membership_checks": 449,
+  "schema": "rebar-zig-groups-classes-v1",
+  "seed": 2026073107,
+  "seeded_cases": 1024
+}

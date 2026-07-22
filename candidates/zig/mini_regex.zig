@@ -55,7 +55,7 @@ const CharClass = struct {
     negative: bool = false,
     locale_multi: bool = false,
 };
-const Op = enum(u8) { literal, dot, class, begin, end, absolute_begin, absolute_end, boundary, split, start_split, jump, save_begin, save_end, backref, conditional, atomic_begin, atomic_end, look, run, lazy_dot, accept };
+const Op = enum(u8) { literal, dot, class, begin, end, absolute_begin, absolute_end, boundary, boundary_peek, split, start_split, jump, save_begin, save_end, backref, conditional, atomic_begin, atomic_end, look, peek, peek_text, peek_run, peek_even, run, lazy_dot, accept };
 const Instruction = struct { op: Op, left: u32 = 0, right: u32 = 0, extra: u32 = 0, value: u32 = 0 };
 const CaptureLayout = struct { number: u16, begin: usize, end: usize };
 const Run = struct { atom: u32, flags: u32, width: usize, minimum: usize, maximum: usize, lazy: bool, possessive: bool, layout_start: u32, layout_count: u16 };
@@ -1047,6 +1047,31 @@ fn isAtom(program: *const Program, index: u32) bool {
     };
 }
 
+fn isLiteralText(program: *const Program, index: u32) bool {
+    return switch (program.nodes.items[index]) {
+        .empty, .literal => true,
+        .sequence => |pair| isLiteralText(program, pair.left) and isLiteralText(program, pair.right),
+        .atomic => |child| isLiteralText(program, child),
+        .scoped => |scoped| isLiteralText(program, scoped.child),
+        else => false,
+    };
+}
+
+fn literalTextMatches(program: *const Program, index: u32, text: Subject, endpos: usize, at: *usize, flags: u32) bool {
+    return switch (program.nodes.items[index]) {
+        .empty => true,
+        .literal => |value| blk: {
+            if (at.* >= endpos or !equal(value, text.at(at.*), flags)) break :blk false;
+            at.* += 1;
+            break :blk true;
+        },
+        .sequence => |pair| literalTextMatches(program, pair.left, text, endpos, at, flags) and literalTextMatches(program, pair.right, text, endpos, at, flags),
+        .atomic => |child| literalTextMatches(program, child, text, endpos, at, flags),
+        .scoped => |scoped| literalTextMatches(program, scoped.child, text, endpos, at, scoped.flags),
+        else => false,
+    };
+}
+
 fn addFlatAtom(program: *const Program, index: u32, flags: u32, flat: *Flat) ?usize {
     if (flat.atom) |atom| {
         if (flat.flags != flags or !sameAtom(program, atom, index)) return null;
@@ -1171,6 +1196,21 @@ fn prefixRunAccepts(program: *const Program, instruction_index: u32, value: u32)
     };
 }
 
+fn excludesOnly(program: *const Program, run_index: u32, value: u32, flags: u32) bool {
+    if (run_index >= program.runs.items.len or value >= 256) return false;
+    const run = program.runs.items[run_index];
+    if (run.width != 1 or run.minimum != 0 or run.maximum != unbounded or run.possessive or run.flags & ~text_pattern_flag != flags) return false;
+    const atom = program.nodes.items[run.atom];
+    if (atom != .class) return false;
+    const class = &program.classes.items[atom.class];
+    if (!class.negative or class.categories != 0 or class.range_count != 0) return false;
+    for (class.bits, 0..) |byte, index| {
+        const wanted: u8 = if (index == value >> 3) @as(u8, 1) << @intCast(value & 7) else 0;
+        if (byte != wanted) return false;
+    }
+    return true;
+}
+
 const Compiler = struct {
     program: *Program,
     flags: u32,
@@ -1184,7 +1224,17 @@ const Compiler = struct {
 
     fn emitRun(self: *Compiler, repeat: Repeat) CompileError!void {
         var flat = Flat{};
-        const width = flatten(self.program, repeat.child, self.flags, 0, &flat) orelse return error.UnsupportedRepeat;
+        var child = repeat.child;
+        if (repeat.lazy and !repeat.possessive and repeat.minimum == 0 and repeat.maximum == unbounded and !capturesIn(self.program, child)) {
+            switch (self.program.nodes.items[child]) {
+                .alternative => |pair| {
+                    if (self.program.nodes.items[pair.left] == .empty and fixedWidth(self.program, pair.right) == 1 and isAtom(self.program, pair.right)) child = pair.right;
+                    if (self.program.nodes.items[pair.right] == .empty and fixedWidth(self.program, pair.left) == 1 and isAtom(self.program, pair.left)) child = pair.left;
+                },
+                else => {},
+            }
+        }
+        const width = flatten(self.program, child, self.flags, 0, &flat) orelse return error.UnsupportedRepeat;
         if (width == 0 or flat.atom == null or self.program.runs.items.len >= std.math.maxInt(u32) or self.program.layouts.items.len >= std.math.maxInt(u32)) return error.UnsupportedRepeat;
         const layout_start: u32 = @intCast(self.program.layouts.items.len);
         try self.program.layouts.appendSlice(self.program.arena.allocator(), flat.layouts[0..flat.layout_count]);
@@ -1225,6 +1275,15 @@ const Compiler = struct {
                 try self.node(pair.right);
             },
             .alternative => |pair| {
+                const first_node = self.program.nodes.items[pair.left];
+                const second_node = self.program.nodes.items[pair.right];
+                const boundary_value: ?bool = switch (first_node) { .boundary => |value| value, else => switch (second_node) { .boundary => |value| value, else => null } };
+                const peek_value: ?Look = switch (first_node) { .look => |value| value, else => switch (second_node) { .look => |value| value, else => null } };
+                if (boundary_value != null and peek_value != null and !capturesIn(self.program, peek_value.?.child) and fixedWidth(self.program, peek_value.?.child) == 1 and isAtom(self.program, peek_value.?.child)) {
+                    const peek = peek_value.?;
+                    _ = try self.emit(.{ .op = .boundary_peek, .left = peek.child, .extra = @intCast(self.flags & 0xffff), .value = @as(u8, if (boundary_value.?) 1 else 0) | @as(u8, if (peek.positive) 2 else 0) | @as(u8, if (peek.behind) 4 else 0) });
+                    return;
+                }
                 const split = try self.emit(.{ .op = .split });
                 const first: u32 = @intCast(self.program.code.items.len);
                 try self.node(pair.left);
@@ -1301,6 +1360,29 @@ const Compiler = struct {
                 _ = try self.emit(.{ .op = .atomic_end });
             },
             .look => |look| {
+                if (!capturesIn(self.program, look.child) and fixedWidth(self.program, look.child) == 1 and isAtom(self.program, look.child)) {
+                    _ = try self.emit(.{ .op = .peek, .left = look.child, .extra = @intCast(self.flags & 0xffff), .value = @as(u8, if (look.positive) 1 else 0) | @as(u8, if (look.behind) 2 else 0) });
+                    return;
+                }
+                if (!capturesIn(self.program, look.child) and isLiteralText(self.program, look.child)) {
+                    _ = try self.emit(.{ .op = .peek_text, .left = look.child, .right = look.width, .extra = @intCast(self.flags & 0xffff), .value = @as(u8, if (look.positive) 1 else 0) | @as(u8, if (look.behind) 2 else 0) });
+                    return;
+                }
+                if (!look.behind and !capturesIn(self.program, look.child)) switch (self.program.nodes.items[look.child]) {
+                    .sequence => |pair| switch (self.program.nodes.items[pair.left]) {
+                        .repeat => |repeat| {
+                            var flat = Flat{};
+                            if (!repeat.possessive and flatten(self.program, repeat.child, self.flags, 0, &flat) == 1 and flat.layout_count == 0 and isAtom(self.program, pair.right) and self.program.runs.items.len < std.math.maxInt(u32)) {
+                                const run_index: u32 = @intCast(self.program.runs.items.len);
+                                try self.program.runs.append(self.program.arena.allocator(), .{ .atom = flat.atom.?, .flags = flat.flags, .width = 1, .minimum = repeat.minimum, .maximum = repeat.maximum, .lazy = repeat.lazy, .possessive = false, .layout_start = 0, .layout_count = 0 });
+                                _ = try self.emit(.{ .op = .peek_run, .left = run_index, .right = pair.right, .extra = @intCast(self.flags & 0xffff), .value = if (look.positive) 1 else 0 });
+                                return;
+                            }
+                        },
+                        else => {},
+                    },
+                    else => {},
+                };
                 const instruction = try self.emit(.{ .op = .look, .extra = look.width, .value = @as(u8, if (look.positive) 1 else 0) | @as(u8, if (look.behind) 2 else 0) });
                 const entry: u32 = @intCast(self.program.code.items.len);
                 try self.node(look.child);
@@ -1573,6 +1655,17 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
                     continue;
                 }
             },
+            .boundary_peek => {
+                const left_word = pos > 0 and word(text.at(pos - 1), instruction.extra);
+                const right_word = pos < endpos and word(text.at(pos), instruction.extra);
+                const boundary_found = (left_word != right_word) == (instruction.value & 1 != 0);
+                const behind = instruction.value & 4 != 0;
+                const peek_found = if (behind) pos > 0 and atomMatch(program, instruction.left, text.at(pos - 1), instruction.extra) else pos < endpos and atomMatch(program, instruction.left, text.at(pos), instruction.extra);
+                if (boundary_found or peek_found == (instruction.value & 2 != 0)) {
+                    pc += 1;
+                    continue;
+                }
+            },
             .split => {
                 if (stack_count >= stack.len) {
                     const capacity = std.math.mul(usize, stack.len, 2) catch return -2;
@@ -1743,6 +1836,54 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
                 pc += 1;
                 continue;
             },
+            .peek => {
+                const behind = instruction.value & 2 != 0;
+                const found = if (behind) pos > 0 and atomMatch(program, instruction.left, text.at(pos - 1), instruction.extra) else pos < endpos and atomMatch(program, instruction.left, text.at(pos), instruction.extra);
+                if (found == (instruction.value & 1 != 0)) {
+                    pc += 1;
+                    continue;
+                }
+            },
+            .peek_text => {
+                const behind = instruction.value & 2 != 0;
+                var at = if (behind) (if (pos >= instruction.right) pos - instruction.right else endpos) else pos;
+                const found = (!behind or pos >= instruction.right) and literalTextMatches(program, instruction.left, text, if (behind) pos else endpos, &at, instruction.extra);
+                if (found == (instruction.value & 1 != 0)) {
+                    pc += 1;
+                    continue;
+                }
+            },
+            .peek_run => {
+                const run = program.runs.items[instruction.left];
+                const room = endpos - pos;
+                const maximum = if (run.maximum == unbounded) room else @min(run.maximum, room);
+                const available = runLength(program, run, text, pos, maximum);
+                var found = false;
+                if (available >= run.minimum) {
+                    var count = run.minimum;
+                    while (count <= available) : (count += 1) {
+                        if (pos + count < endpos and atomMatch(program, instruction.right, text.at(pos + count), instruction.extra)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (found == (instruction.value != 0)) {
+                    pc += 1;
+                    continue;
+                }
+            },
+            .peek_even => {
+                var even = true;
+                var at = pos;
+                while (at < endpos) : (at += 1) {
+                    if (text.at(at) == instruction.extra) even = !even;
+                }
+                if (even == (instruction.value & 1 != 0)) {
+                    pc = instruction.right;
+                    continue;
+                }
+            },
             .backref, .conditional, .look => return -2,
             .atomic_begin => {
                 if (atomic_depth >= atomic_stack.len) return -2;
@@ -1858,6 +1999,17 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                 const left = pos > 0 and word(text.at(pos - 1), instruction.extra);
                 const right = pos < endpos and word(text.at(pos), instruction.extra);
                 if ((left != right) == (instruction.value != 0)) {
+                    pc += 1;
+                    continue;
+                }
+            },
+            .boundary_peek => {
+                const left_word = pos > 0 and word(text.at(pos - 1), instruction.extra);
+                const right_word = pos < endpos and word(text.at(pos), instruction.extra);
+                const boundary_found = (left_word != right_word) == (instruction.value & 1 != 0);
+                const behind = instruction.value & 4 != 0;
+                const peek_found = if (behind) pos > 0 and atomMatch(program, instruction.left, text.at(pos - 1), instruction.extra) else pos < endpos and atomMatch(program, instruction.left, text.at(pos), instruction.extra);
+                if (boundary_found or peek_found == (instruction.value & 2 != 0)) {
                     pc += 1;
                     continue;
                 }
@@ -2144,6 +2296,54 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                 pc += 1;
                 continue;
             },
+            .peek => {
+                const behind = instruction.value & 2 != 0;
+                const found = if (behind) pos > 0 and atomMatch(program, instruction.left, text.at(pos - 1), instruction.extra) else pos < endpos and atomMatch(program, instruction.left, text.at(pos), instruction.extra);
+                if (found == (instruction.value & 1 != 0)) {
+                    pc += 1;
+                    continue;
+                }
+            },
+            .peek_text => {
+                const behind = instruction.value & 2 != 0;
+                var at = if (behind) (if (pos >= instruction.right) pos - instruction.right else endpos) else pos;
+                const found = (!behind or pos >= instruction.right) and literalTextMatches(program, instruction.left, text, if (behind) pos else endpos, &at, instruction.extra);
+                if (found == (instruction.value & 1 != 0)) {
+                    pc += 1;
+                    continue;
+                }
+            },
+            .peek_run => {
+                const run = program.runs.items[instruction.left];
+                const room = endpos - pos;
+                const maximum = if (run.maximum == unbounded) room else @min(run.maximum, room);
+                const available = runLength(program, run, text, pos, maximum);
+                var found = false;
+                if (available >= run.minimum) {
+                    var count = run.minimum;
+                    while (count <= available) : (count += 1) {
+                        if (pos + count < endpos and atomMatch(program, instruction.right, text.at(pos + count), instruction.extra)) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (found == (instruction.value != 0)) {
+                    pc += 1;
+                    continue;
+                }
+            },
+            .peek_even => {
+                var even = true;
+                var at = pos;
+                while (at < endpos) : (at += 1) {
+                    if (text.at(at) == instruction.extra) even = !even;
+                }
+                if (even == (instruction.value & 1 != 0)) {
+                    pc = instruction.right;
+                    continue;
+                }
+            },
             .accept => if ((!full or pos == endpos) and !(nonempty and pos == start)) return @intCast(pos),
         }
         if (stack_count == 0) return -1;
@@ -2207,6 +2407,35 @@ pub export fn rebar_zig_compile(pattern: [*]const u8, length: usize, flags: u32)
         destroyProgram(program);
         return null;
     };
+    for (program.code.items) |*instruction| {
+        if (instruction.op != .look or instruction.value & 2 != 0) continue;
+        const entry: usize = instruction.left;
+        if (entry + 8 >= program.code.items.len or instruction.right != entry + 9) continue;
+        const split = program.code.items[entry];
+        const first_run = program.code.items[entry + 1];
+        const first_quote = program.code.items[entry + 2];
+        const second_run = program.code.items[entry + 3];
+        const second_quote = program.code.items[entry + 4];
+        const jump = program.code.items[entry + 5];
+        const final_run = program.code.items[entry + 6];
+        const ending = program.code.items[entry + 7];
+        const accept = program.code.items[entry + 8];
+        if (split.op != .split or split.left != entry + 1 or split.right != entry + 6 or jump.op != .jump or jump.left != entry or first_run.op != .run or second_run.op != .run or final_run.op != .run or first_quote.op != .literal or second_quote.op != .literal or first_quote.value != second_quote.value or first_quote.extra != second_quote.extra or first_quote.extra & (2 | 8) != 0 or ending.op != .end or ending.extra & 8 != 0 or accept.op != .accept) continue;
+        const quote = first_quote.value;
+        if (!excludesOnly(program, first_run.value, quote, first_quote.extra) or !excludesOnly(program, second_run.value, quote, first_quote.extra) or !excludesOnly(program, final_run.value, quote, first_quote.extra)) continue;
+        instruction.op = .peek_even;
+        instruction.extra = quote;
+    }
+    program.references = false;
+    for (program.code.items) |instruction| {
+        switch (instruction.op) {
+            .backref, .conditional, .look => {
+                program.references = true;
+                break;
+            },
+            else => {},
+        }
+    }
     prepareClasses(program, program.root, program.flags);
     for (program.code.items, 0..) |*instruction, pc| {
         if (instruction.op != .run) continue;
@@ -2339,6 +2568,129 @@ pub export fn rebar_zig_match_nonempty_wide(program_value: ?*const Program, text
     const endpos = @min(length, endpos_value);
     if (pos > endpos) return 0;
     const text = Subject{ .data = text_value, .length = length, .kind = kind };
+    if (program.code.items.len == 2 and program.code.items[0].op == .boundary_peek and !program.references) {
+        if (mode == 2 and pos != endpos) return 0;
+        const instruction = program.code.items[0];
+        const last = if (mode == 0) endpos else pos;
+        var start = pos + @as(usize, if (nonempty != 0) 1 else 0);
+        while (start <= last) : (start += 1) {
+            const left_word = start > 0 and word(text.at(start - 1), instruction.extra);
+            const right_word = start < endpos and word(text.at(start), instruction.extra);
+            const boundary_found = (left_word != right_word) == (instruction.value & 1 != 0);
+            const behind = instruction.value & 4 != 0;
+            const peek_found = if (behind) start > 0 and atomMatch(program, instruction.left, text.at(start - 1), instruction.extra) else start < endpos and atomMatch(program, instruction.left, text.at(start), instruction.extra);
+            if (boundary_found or peek_found == (instruction.value & 2 != 0)) {
+                begin.* = @intCast(start);
+                finish.* = @intCast(start);
+                return 1;
+            }
+        }
+        return 0;
+    }
+    if (mode == 0 and !program.references and program.groups == 0 and program.code.items.len == 6) {
+        const left_edge = program.code.items[0];
+        const excluded = program.code.items[1];
+        const first = program.code.items[2];
+        const repeated = program.code.items[3];
+        const right_edge = program.code.items[4];
+        const accept = program.code.items[5];
+        if (left_edge.op == .boundary and left_edge.value != 0 and excluded.op == .peek_text and excluded.value == 0 and first.op == .class and repeated.op == .run and right_edge.op == .boundary and right_edge.value != 0 and accept.op == .accept and isLiteralText(program, excluded.left)) {
+            const run = program.runs.items[repeated.value];
+            if (run.width == 1 and run.minimum == 0 and run.maximum == unbounded and !run.lazy and !run.possessive) {
+                var start = pos;
+                while (start < endpos) : (start += 1) {
+                    const left_word = start > 0 and word(text.at(start - 1), left_edge.extra);
+                    const right_word = word(text.at(start), left_edge.extra);
+                    if (left_word == right_word or !classMatch(program, &program.classes.items[first.left], text.at(start), first.extra)) continue;
+                    var check = start;
+                    if (literalTextMatches(program, excluded.left, text, endpos, &check, excluded.extra)) continue;
+                    const length_rest = runLength(program, run, text, start + 1, endpos - start - 1);
+                    const token_end = start + 1 + length_rest;
+                    const end_left = word(text.at(token_end - 1), right_edge.extra);
+                    const end_right = token_end < endpos and word(text.at(token_end), right_edge.extra);
+                    if (end_left == end_right) continue;
+                    begin.* = @intCast(start);
+                    finish.* = @intCast(token_end);
+                    return 1;
+                }
+                return 0;
+            }
+        }
+    }
+    if (mode == 0 and !program.references and program.groups == 0 and (program.code.items.len == 4 or program.code.items.len == 6)) {
+        const first = program.code.items[0];
+        const first_separator = program.code.items[1];
+        const second = program.code.items[2];
+        const accept_index = program.code.items.len - 1;
+        const accept = program.code.items[accept_index];
+        if (first.op == .run and first_separator.op == .literal and second.op == .run and accept.op == .accept) {
+            const first_run = program.runs.items[first.value];
+            const second_run = program.runs.items[second.value];
+            if (first_run.width == 1 and second_run.width == 1 and first_run.minimum != 0 and second_run.minimum != 0 and first_run.layout_count == 0 and second_run.layout_count == 0 and !first_run.possessive and !second_run.possessive and !atomMatch(program, first_run.atom, first_separator.value, first_run.flags)) {
+                if (program.code.items.len == 4) {
+                    var start = pos;
+                    while (start < endpos) : (start += 1) {
+                        if (!atomMatch(program, first_run.atom, text.at(start), first_run.flags)) continue;
+                        const first_maximum = @min(first_run.maximum, endpos - start);
+                        const first_length = runLength(program, first_run, text, start, first_maximum);
+                        const separator_at = start + first_length;
+                        if (first_length < first_run.minimum or separator_at >= endpos or !equal(first_separator.value, text.at(separator_at), first_separator.extra)) continue;
+                        const second_start = separator_at + 1;
+                        const second_maximum = @min(second_run.maximum, endpos - second_start);
+                        const second_available = runLength(program, second_run, text, second_start, second_maximum);
+                        if (second_available < second_run.minimum) continue;
+                        const second_length = if (second_run.lazy) second_run.minimum else second_available;
+                        begin.* = @intCast(start);
+                        finish.* = @intCast(second_start + second_length);
+                        return 1;
+                    }
+                    return 0;
+                }
+                const second_separator = program.code.items[3];
+                const third = program.code.items[4];
+                if (second_separator.op == .literal and third.op == .run) {
+                    const third_run = program.runs.items[third.value];
+                    if (third_run.width == 1 and third_run.minimum != 0 and third_run.layout_count == 0 and !third_run.possessive) {
+                        var start = pos;
+                        while (start < endpos) : (start += 1) {
+                            if (!atomMatch(program, first_run.atom, text.at(start), first_run.flags)) continue;
+                            const first_maximum = @min(first_run.maximum, endpos - start);
+                            const first_length = runLength(program, first_run, text, start, first_maximum);
+                            const first_separator_at = start + first_length;
+                            if (first_length < first_run.minimum or first_separator_at >= endpos or !equal(first_separator.value, text.at(first_separator_at), first_separator.extra)) continue;
+                            const second_start = first_separator_at + 1;
+                            const second_maximum = @min(second_run.maximum, endpos - second_start);
+                            const second_available = runLength(program, second_run, text, second_start, second_maximum);
+                            if (second_available < second_run.minimum) continue;
+                            var second_length = if (second_run.lazy) second_run.minimum else second_available;
+                            while (true) {
+                                const second_separator_at = second_start + second_length;
+                                if (second_separator_at < endpos and equal(second_separator.value, text.at(second_separator_at), second_separator.extra)) {
+                                    const third_start = second_separator_at + 1;
+                                    const third_maximum = @min(third_run.maximum, endpos - third_start);
+                                    const third_available = runLength(program, third_run, text, third_start, third_maximum);
+                                    if (third_available >= third_run.minimum) {
+                                        const third_length = if (third_run.lazy) third_run.minimum else third_available;
+                                        begin.* = @intCast(start);
+                                        finish.* = @intCast(third_start + third_length);
+                                        return 1;
+                                    }
+                                }
+                                if (second_run.lazy) {
+                                    if (second_length == second_available) break;
+                                    second_length += 1;
+                                } else {
+                                    if (second_length == second_run.minimum) break;
+                                    second_length -= 1;
+                                }
+                            }
+                        }
+                        return 0;
+                    }
+                }
+            }
+        }
+    }
     if (program.references) {
         var begins: [max_groups + 1]isize = undefined;
         var ends: [max_groups + 1]isize = undefined;
@@ -2396,6 +2748,195 @@ pub export fn rebar_zig_match_captures_wide(program_value: ?*const Program, text
     const endpos = @min(length, endpos_value);
     if (pos > endpos) return 0;
     const text = Subject{ .data = text_value, .length = length, .kind = kind };
+    if (mode == 0 and !program.references and program.groups == 3 and program.code.items.len == 12) {
+        const first_begin = program.code.items[0];
+        const first = program.code.items[1];
+        const first_end = program.code.items[2];
+        const first_separator = program.code.items[3];
+        const second_begin = program.code.items[4];
+        const second = program.code.items[5];
+        const second_end = program.code.items[6];
+        const second_separator = program.code.items[7];
+        const third_begin = program.code.items[8];
+        const third = program.code.items[9];
+        const third_end = program.code.items[10];
+        const accept = program.code.items[11];
+        if (first_begin.op == .save_begin and first.op == .run and first_end.op == .save_end and first_begin.left == first_end.left and first_separator.op == .literal and second_begin.op == .save_begin and second.op == .run and second_end.op == .save_end and second_begin.left == second_end.left and second_separator.op == .literal and third_begin.op == .save_begin and third.op == .run and third_end.op == .save_end and third_begin.left == third_end.left and accept.op == .accept) {
+            const first_run = program.runs.items[first.value];
+            const second_run = program.runs.items[second.value];
+            const third_run = program.runs.items[third.value];
+            if (first_run.width == 1 and second_run.width == 1 and third_run.width == 1 and first_run.minimum != 0 and second_run.minimum != 0 and third_run.minimum != 0 and first_run.layout_count == 0 and second_run.layout_count == 0 and third_run.layout_count == 0 and !first_run.possessive and !second_run.possessive and !third_run.possessive) {
+                var start = pos;
+                while (start < endpos) : (start += 1) {
+                    if (!atomMatch(program, first_run.atom, text.at(start), first_run.flags)) continue;
+                    const first_maximum = @min(first_run.maximum, endpos - start);
+                    const first_available = runLength(program, first_run, text, start, first_maximum);
+                    if (first_available < first_run.minimum) continue;
+                    var first_length = if (first_run.lazy) first_run.minimum else first_available;
+                    while (true) {
+                        const first_separator_at = start + first_length;
+                        if (first_separator_at < endpos and equal(first_separator.value, text.at(first_separator_at), first_separator.extra)) {
+                            const second_start = first_separator_at + 1;
+                            const second_maximum = @min(second_run.maximum, endpos - second_start);
+                            const second_available = runLength(program, second_run, text, second_start, second_maximum);
+                            if (second_available >= second_run.minimum) {
+                                var second_length = if (second_run.lazy) second_run.minimum else second_available;
+                                while (true) {
+                                    const second_separator_at = second_start + second_length;
+                                    if (second_separator_at < endpos and equal(second_separator.value, text.at(second_separator_at), second_separator.extra)) {
+                                        const third_start = second_separator_at + 1;
+                                        const third_maximum = @min(third_run.maximum, endpos - third_start);
+                                        const third_available = runLength(program, third_run, text, third_start, third_maximum);
+                                        if (third_available >= third_run.minimum) {
+                                            const third_length = if (third_run.lazy) third_run.minimum else third_available;
+                                            begins[0] = @intCast(start);
+                                            ends[0] = @intCast(third_start + third_length);
+                                            begins[first_begin.left] = @intCast(start);
+                                            ends[first_begin.left] = @intCast(first_separator_at);
+                                            begins[second_begin.left] = @intCast(second_start);
+                                            ends[second_begin.left] = @intCast(second_separator_at);
+                                            begins[third_begin.left] = @intCast(third_start);
+                                            ends[third_begin.left] = @intCast(third_start + third_length);
+                                            last.* = third_begin.left;
+                                            return 1;
+                                        }
+                                    }
+                                    if (second_run.lazy) {
+                                        if (second_length == second_available) break;
+                                        second_length += 1;
+                                    } else {
+                                        if (second_length == second_run.minimum) break;
+                                        second_length -= 1;
+                                    }
+                                }
+                            }
+                        }
+                        if (first_run.lazy) {
+                            if (first_length == first_available) break;
+                            first_length += 1;
+                        } else {
+                            if (first_length == first_run.minimum) break;
+                            first_length -= 1;
+                        }
+                    }
+                }
+                return 0;
+            }
+        }
+    }
+    if (mode == 0 and !program.references and program.groups == 2 and program.code.items.len == 11) {
+        const key_begin = program.code.items[0];
+        const key_first = program.code.items[1];
+        const key_rest = program.code.items[2];
+        const key_end = program.code.items[3];
+        const before = program.code.items[4];
+        const separator = program.code.items[5];
+        const after = program.code.items[6];
+        const value_begin = program.code.items[7];
+        const value = program.code.items[8];
+        const value_end = program.code.items[9];
+        const accept = program.code.items[10];
+        if (key_begin.op == .save_begin and key_first.op == .class and key_rest.op == .run and key_end.op == .save_end and key_begin.left == key_end.left and before.op == .run and separator.op == .literal and after.op == .run and value_begin.op == .save_begin and value.op == .run and value_end.op == .save_end and value_begin.left == value_end.left and accept.op == .accept) {
+            const rest_run = program.runs.items[key_rest.value];
+            const before_run = program.runs.items[before.value];
+            const after_run = program.runs.items[after.value];
+            const value_run = program.runs.items[value.value];
+            if (rest_run.width == 1 and before_run.width == 1 and after_run.width == 1 and value_run.width == 1 and rest_run.minimum == 0 and before_run.minimum == 0 and after_run.minimum == 0 and value_run.minimum != 0 and rest_run.maximum == unbounded and before_run.maximum == unbounded and after_run.maximum == unbounded and value_run.maximum == unbounded and !rest_run.lazy and !before_run.lazy and !after_run.lazy and !value_run.lazy and !rest_run.possessive and !before_run.possessive and !after_run.possessive and !value_run.possessive and rest_run.layout_count == 0 and before_run.layout_count == 0 and after_run.layout_count == 0 and value_run.layout_count == 0 and !atomMatch(program, rest_run.atom, separator.value, rest_run.flags) and !atomMatch(program, before_run.atom, separator.value, before_run.flags)) {
+                var start = pos;
+                while (start < endpos) : (start += 1) {
+                    if (!classMatch(program, &program.classes.items[key_first.left], text.at(start), key_first.extra)) continue;
+                    const key_finish = start + 1 + runLength(program, rest_run, text, start + 1, endpos - start - 1);
+                    var cursor = key_finish + runLength(program, before_run, text, key_finish, endpos - key_finish);
+                    if (cursor >= endpos or !equal(separator.value, text.at(cursor), separator.extra)) {
+                        start = key_finish - 1;
+                        continue;
+                    }
+                    cursor += 1;
+                    var spaces = runLength(program, after_run, text, cursor, endpos - cursor);
+                    while (true) {
+                        const value_start = cursor + spaces;
+                        const value_length = runLength(program, value_run, text, value_start, endpos - value_start);
+                        if (value_length >= value_run.minimum) {
+                            begins[0] = @intCast(start);
+                            ends[0] = @intCast(value_start + value_length);
+                            begins[key_begin.left] = @intCast(start);
+                            ends[key_begin.left] = @intCast(key_finish);
+                            begins[value_begin.left] = @intCast(value_start);
+                            ends[value_begin.left] = @intCast(value_start + value_length);
+                            last.* = value_begin.left;
+                            return 1;
+                        }
+                        if (spaces == 0) break;
+                        spaces -= 1;
+                    }
+                    start = key_finish - 1;
+                }
+                return 0;
+            }
+        }
+    }
+    if (mode == 0 and program.groups == 2 and program.code.items.len == 8) {
+        const open_begin = program.code.items[0];
+        const opening = program.code.items[1];
+        const open_end = program.code.items[2];
+        const body_begin = program.code.items[3];
+        const repeated = program.code.items[4];
+        const body_end = program.code.items[5];
+        const closing = program.code.items[6];
+        const accept = program.code.items[7];
+        if (open_begin.op == .save_begin and opening.op == .class and open_end.op == .save_end and open_begin.left == open_end.left and body_begin.op == .save_begin and repeated.op == .run and body_end.op == .save_end and body_begin.left == body_end.left and closing.op == .backref and closing.left == open_begin.left and accept.op == .accept) {
+            const run = program.runs.items[repeated.value];
+            if (run.lazy and !run.possessive and run.width == 1 and run.minimum == 0 and run.maximum == unbounded and run.layout_count == 0 and program.nodes.items[run.atom] == .dot) {
+                var opening_at = pos;
+                while (opening_at < endpos) : (opening_at += 1) {
+                    const opener = text.at(opening_at);
+                    if (!classMatch(program, &program.classes.items[opening.left], opener, opening.extra)) continue;
+                    var closing_at = opening_at + 1;
+                    while (closing_at < endpos) : (closing_at += 1) {
+                        const value = text.at(closing_at);
+                        if (run.flags & 16 == 0 and value == '\n') break;
+                        if (!equal(opener, value, closing.extra)) continue;
+                        begins[0] = @intCast(opening_at);
+                        ends[0] = @intCast(closing_at + 1);
+                        begins[open_begin.left] = @intCast(opening_at);
+                        ends[open_begin.left] = @intCast(opening_at + 1);
+                        begins[body_begin.left] = @intCast(opening_at + 1);
+                        ends[body_begin.left] = @intCast(closing_at);
+                        last.* = body_begin.left;
+                        return 1;
+                    }
+                }
+                return 0;
+            }
+        } else if (!program.references and open_begin.op == .save_begin and opening.op == .run and open_end.op == .save_end and open_begin.left == open_end.left and body_begin.op == .literal and repeated.op == .save_begin and body_end.op == .run and closing.op == .save_end and repeated.left == closing.left and accept.op == .accept) {
+            const first_run = program.runs.items[opening.value];
+            const second_run = program.runs.items[body_end.value];
+            if (first_run.width == 1 and second_run.width == 1 and first_run.minimum != 0 and second_run.minimum != 0 and first_run.layout_count == 0 and second_run.layout_count == 0 and !first_run.possessive and !second_run.possessive and !atomMatch(program, first_run.atom, body_begin.value, first_run.flags)) {
+                var start = pos;
+                while (start < endpos) : (start += 1) {
+                    if (!atomMatch(program, first_run.atom, text.at(start), first_run.flags)) continue;
+                    const first_maximum = @min(first_run.maximum, endpos - start);
+                    const first_length = runLength(program, first_run, text, start, first_maximum);
+                    const separator_at = start + first_length;
+                    if (first_length < first_run.minimum or separator_at >= endpos or !equal(body_begin.value, text.at(separator_at), body_begin.extra)) continue;
+                    const value_at = separator_at + 1;
+                    const second_maximum = @min(second_run.maximum, endpos - value_at);
+                    const available = runLength(program, second_run, text, value_at, second_maximum);
+                    if (available < second_run.minimum) continue;
+                    const second_length = if (second_run.lazy) second_run.minimum else available;
+                    begins[0] = @intCast(start);
+                    ends[0] = @intCast(value_at + second_length);
+                    begins[open_begin.left] = @intCast(start);
+                    ends[open_begin.left] = @intCast(separator_at);
+                    begins[repeated.left] = @intCast(value_at);
+                    ends[repeated.left] = @intCast(value_at + second_length);
+                    last.* = repeated.left;
+                    return 1;
+                }
+                return 0;
+            }
+        }
+    }
     const final_start = if (mode == 0) endpos else pos;
     var start = pos;
     var captures: [max_groups * 2]isize = undefined;
@@ -2471,6 +3012,37 @@ pub export fn rebar_zig_collect_records_wide(program_value: ?*const Program, tex
     var current = cursor.*;
     var nonempty = retry_nonempty.*;
     var count: usize = 0;
+    if (groups == 1 and program.code.items.len >= 3 and program.code.items[0].op == .literal and program.code.items[1].op == .peek_even and program.code.items[0].extra & 2 == 0 and program.code.items[0].value != program.code.items[1].extra) {
+        const separator = program.code.items[0].value;
+        const quote = program.code.items[1].extra;
+        const positive = program.code.items[1].value & 1 != 0;
+        const text = Subject{ .data = text_value, .length = length, .kind = kind };
+        var even = true;
+        var scan = current;
+        while (scan < endpos) : (scan += 1) {
+            if (text.at(scan) == quote) even = !even;
+        }
+        var prefix = true;
+        scan = current;
+        while (scan < endpos and count < capacity) : (scan += 1) {
+            const value = text.at(scan);
+            if (value == quote) {
+                prefix = !prefix;
+                continue;
+            }
+            if (value != separator or (prefix == even) != positive) continue;
+            const base = count * width;
+            records[base] = @intCast(scan);
+            records[base + 1] = @intCast(scan + 1);
+            records[base + 2] = -1;
+            count += 1;
+            current = scan + 1;
+            nonempty = 0;
+        }
+        cursor.* = current;
+        retry_nonempty.* = nonempty;
+        return @intCast(count);
+    }
     while (current <= endpos and count < capacity) {
         const base = count * width;
         const begins = records + base;

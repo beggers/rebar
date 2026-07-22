@@ -1,0 +1,9 @@
+{
+  "correctness_checks": 8275,
+  "failed": 0,
+  "failures": [],
+  "manual_cases": 83,
+  "schema": "rebar-zig-large-pattern-v1",
+  "seed": 2026073108,
+  "seeded_cases": 8192
+}

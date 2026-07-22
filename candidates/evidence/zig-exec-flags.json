@@ -1,0 +1,9 @@
+{
+  "correctness_checks": 16552,
+  "failed": 0,
+  "failures": [],
+  "manual_cases": 21,
+  "schema": "rebar-zig-flags-probe-v1",
+  "seed": 2026073102,
+  "seeded_cases": 16384
+}

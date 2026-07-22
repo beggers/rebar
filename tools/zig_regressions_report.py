@@ -43,6 +43,16 @@ def main():
     groups = defaultdict(list)
     for row in rows:
         groups[row["category"]].append(row)
+    if not rows:
+        lines = [
+            "# Every large Zig slowdown",
+            "",
+            "The final expanded holdout has **0** tasks below 0.8×. There are no large slowdowns to explain or omit.",
+            "",
+        ]
+        Path(args.output).write_text("\n".join(lines), encoding="utf-8")
+        print(f"wrote {args.output} (0 slowdowns)")
+        return
     lines = [
         "# Every large Zig slowdown",
         "",

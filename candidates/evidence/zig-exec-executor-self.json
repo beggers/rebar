@@ -1,0 +1,10 @@
+{
+  "correctness_checks": 20292,
+  "failed": 0,
+  "failures": [],
+  "manual_cases": 44,
+  "module": "re",
+  "schema": "rebar-zig-executor-probe-v1",
+  "seed": 2026072203,
+  "seeded_cases": 1024
+}
