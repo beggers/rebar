@@ -22,6 +22,10 @@ The [complete results](performance/v4/evidence/INITIAL.md) retain all **127,296*
 
 ![Large performance holdout coverage](performance/v4/evidence/coverage.svg)
 
+An [expanded follow-up holdout](performance/v5/PROTOCOL.md) is now frozen with **3,144 unseen tasks** and **3,144 matching practice tasks**, adding 40 balanced families for logs, markup, source/config parsing, addresses, structured data, cleanup, replacements, Unicode, byte buffers, advanced matching, scanners, compilation, and boundary costs. All **31,440/31,440** pre-timing comparisons across CPython and the four from-scratch engines pass. Performance on this new holdout is **NOT MEASURED**.
+
+![Expanded performance holdout coverage](performance/v5/evidence/coverage.svg)
+
 All three engines pass the frozen **44,084-case** correctness matrix, including **35,840** previously unused cases across deeper patterns, everyday inputs, Unicode/bytes/buffers, scanner sequences, properties, and invalid inputs. They also pass **155,313** focused checks and all **144** runnable official CPython `re` tests, with zero unexplained failures, crashes, or release-build timeouts. The [qualification report](oracle/v3/evidence/QUALIFIED.md) preserves the compatibility gaps the larger suite found and their fixes.
 
 ![Large correctness holdout coverage and results](oracle/v3/evidence/qualified-correctness.svg)
@@ -62,10 +66,13 @@ The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The public import selec
 | Focused checks | **PASS** — 155,313 replacement, buffer, long-input, lookaround, collection, separator, newline, and locale checks |
 | Official CPython tests | **PASS** — all three engines pass 144/144 runnable methods; zero failures, crashes, or timeouts |
 | Large performance holdout | **PASS** — native C reaches 1.56× on 1,224 tasks and is clearly faster on 92%; all 11 large holdout slowdowns are explained |
+| Expanded performance holdout | **FROZEN / NOT MEASURED** — 3,144 unseen tasks, 40 new everyday families, all 31,440 pre-timing comparisons pass across CPython and four engines |
 | Zig experiment | **IN PROGRESS** — all 44,084 frozen cases and 2,448 performance tasks pass; 135/144 official methods; 0.447x holdout speed; valid large-pattern/compiler gaps remain |
 | Public import | **AVAILABLE / WINNER** — `import rebar as re` uses the independent native C engine |
 
 The [large performance protocol](performance/v4/PROTOCOL.md) explains exactly what is timed, how comparisons are made, and how slowdowns are reported.
+
+The [expanded performance protocol](performance/v5/PROTOCOL.md) preserves every earlier task and records the larger unseen set, fixed seeds, weights, timing rules, and correctness gate.
 
 ## Try it or reproduce the checks
 
