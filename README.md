@@ -24,13 +24,13 @@ All three engines now pass every runnable official CPython `re` test, including 
 
 ![Official CPython re compatibility check](oracle/cpython-3.14.6/evidence/long-repeat-correctness.svg)
 
-They also pass **66,033** focused differential checks, including **39,000** replacement checks covering `sub`, `subn`, match expansion, text/bytes/buffers, callbacks, empty inputs, and exact error behavior.
+They also pass **155,313** focused differential checks, including **39,000** replacement checks covering `sub`, `subn`, match expansion, text/bytes/buffers, callbacks, empty inputs, and exact error behavior.
 
 ![Replacement compatibility before and after the fix](oracle/v2/evidence/replacement-correctness.svg)
 
-A newly frozen [large correctness holdout](oracle/v3/P0.md) adds **35,840 previously unused cases** across deeper patterns, everyday inputs, Unicode/bytes/buffers, scanner sequences, properties, and invalid inputs. Stdlib self-check passes **44,084/44,084** with every obligation mapped; candidate results on this new holdout are **NOT MEASURED** until the next correctness gate.
+A newly frozen [large correctness holdout](oracle/v3/P0.md) adds **35,840 previously unused cases** across deeper patterns, everyday inputs, Unicode/bytes/buffers, scanner sequences, properties, and invalid inputs. Stdlib and all three engines now pass **44,084/44,084** with every obligation mapped. The [qualification report](oracle/v3/evidence/QUALIFIED.md) preserves the compatibility gaps it found, their fixes, and **89,280** new focused checks.
 
-![Large correctness holdout coverage](oracle/v3/evidence/self-correctness.svg)
+![Large correctness holdout coverage and results](oracle/v3/evidence/qualified-correctness.svg)
 
 ## Detailed graphs
 
@@ -66,8 +66,8 @@ The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). Stdlib and all three en
 | --- | --- |
 | Seeded correctness | **PASS** — stdlib, native C, Python, and Rust each pass all 8,244 expanded cases |
 | Official CPython tests | **PASS** — all three engines pass 144/144 runnable methods; zero failures, crashes, or timeouts |
-| Focused differential checks | **PASS** — 66,033 replacement, buffer, long-input, lookaround, structured, and collection checks |
-| Large correctness holdout | **FROZEN / SELF-PASS** — 44,084 cases; candidates **NOT MEASURED** on the 35,840 new holdout cases |
+| Focused differential checks | **PASS** — 155,313 replacement, buffer, long-input, lookaround, structured, collection, separator, newline, and locale checks |
+| Large correctness holdout | **PASS** — stdlib, native C, Python, and Rust each pass all 44,084 cases |
 | Original performance | **PASS** — native C reaches 1.56× on the original 16-task holdout |
 | Expanded performance | **MEASURED / OPTIMIZATION NEEDED** — native C reaches 1.16× on 28 holdout tasks; all results are correctness-gated |
 | Broader performance | **PASS** — native C reaches 1.57× on 72 holdout tasks, clearly faster on 68/72 with zero large slowdowns |
@@ -84,9 +84,11 @@ RUSTFLAGS='-D warnings' sh tools/build_rust.sh
 
 PYTHONPATH=. "$PY" -c 'import rebar as re; print(re.findall(r"[A-Za-z]+", "a faster python re"))'
 PYTHONPATH=. "$PY" tools/oracle_v2.py verify --module rebar
+PYTHONPATH=. "$PY" tools/oracle_v3.py verify --module rebar
 PYTHONPATH=. "$PY" tools/cpython_re_oracle.py verify --module rebar
 PYTHONPATH=. "$PY" tools/replacement_controls.py --output /tmp/replacement-controls.json
 PYTHONPATH=. "$PY" tools/collection_controls.py --output /tmp/collection-controls.json
+PYTHONPATH=. "$PY" tools/holdout_regression_controls.py --output /tmp/holdout-regression.json
 PYTHONPATH=. "$PY" tools/perf_v2.py verify
 PYTHONPATH=. "$PY" tools/perf_v3.py verify
 PYTHONPATH=. "$PY" tools/engine_pilot.py --output /tmp/engine-pilot.json --module candidates.ast_candidate --module candidates.rust_candidate

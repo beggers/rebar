@@ -640,17 +640,24 @@ def _category(char, code, flags):
 
 def _class_match(node, char):
     _, items, negate, flags = node
-    found = False
-    for item in items:
-        if item[0] == "range":
-            left, right = item[1], item[2]
-            found = _range_case_match(left, right, char, bool(flags & _ASCII_MODES)) if flags & _IGNORE else left <= char <= right
-        elif item[0] == "lit" and _equal(item[1], char, flags):
-            found = True
-        elif item[0] == "category" and _category(char, item[1], flags):
-            found = True
-        if found:
-            break
+
+    def contains(value, active_flags):
+        for item in items:
+            if item[0] == "range":
+                left, right = item[1], item[2]
+                if _range_case_match(left, right, value, bool(active_flags & _ASCII_MODES)) if active_flags & _IGNORE else left <= value <= right:
+                    return True
+            elif item[0] == "lit" and _equal(item[1], value, active_flags):
+                return True
+            elif item[0] == "category" and _category(value, item[1], active_flags):
+                return True
+        return False
+
+    if negate and flags & int(LOCALE) and flags & _IGNORE and not (len(items) == 1 and items[0][0] == "lit"):
+        other = chr(ord(char) + 32) if "A" <= char <= "Z" else chr(ord(char) - 32) if "a" <= char <= "z" else char
+        raw_flags = flags & ~_IGNORE
+        return not contains(char, raw_flags) or not contains(other, raw_flags)
+    found = contains(char, flags)
     return not found if negate else found
 
 

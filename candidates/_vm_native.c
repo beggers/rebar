@@ -147,6 +147,12 @@ static int category(Py_UCS4 c, Py_ssize_t code, Py_ssize_t flags) {
 static int class_match_slow(const VM *vm, Py_ssize_t index, Py_UCS4 c, Py_ssize_t flags, int negate) {
     if (index < 0 || index >= vm->class_count) return 0;
     CharClass cls = vm->classes[index];
+    if (negate && (flags & (F_I|F_L))==(F_I|F_L) && !(cls.count==1 && cls.items[0].kind==1)) {
+        Py_UCS4 other=c;
+        if (c>='A' && c<='Z') other=c+32;
+        else if (c>='a' && c<='z') other=c-32;
+        return class_match_slow(vm,index,c,flags & ~F_I,1) || class_match_slow(vm,index,other,flags & ~F_I,1);
+    }
     int found = 0;
     int ascii_only = !!(flags & (F_A|F_L|F_BYTE));
     for (Py_ssize_t i=0; i<cls.count && !found; i++) {
@@ -162,6 +168,7 @@ static int class_match_slow(const VM *vm, Py_ssize_t index, Py_UCS4 c, Py_ssize_
 static int class_match(const VM *vm, Py_ssize_t index, Py_UCS4 c, Py_ssize_t flags, int negate) {
     PROFILE_ADD(PROFILE_CLASS,1);
     if (index < 0 || index >= vm->class_count) return 0;
+    if (negate && (flags & (F_I|F_L))==(F_I|F_L)) return class_match_slow(vm,index,c,flags,negate);
     if (c<256 && vm->cache_classes) {
         CharClass *cls=&vm->classes[index];
         int table=!(flags&F_I) ? 0 : (flags&(F_A|F_L|F_BYTE)) ? 1 : 2;
@@ -940,13 +947,13 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
                 while (line_end<endpos && subject_char(subject,line_end)!='\n') line_end++;
                 Py_ssize_t comment_at=line_end;
                 for (Py_ssize_t offset=cursor; offset<line_end; offset++) if (equal_char(subject_char(subject,offset),(Py_UCS4)main.ins[18].a,main.ins[18].b)) { comment_at=offset; break; }
+                if (comment_at==line_end && line_end<endpos) { safe=0; break; }
                 Py_ssize_t value_finish=comment_at;
                 while (value_finish>value_start && atom_match(vm,subject,value_finish-1,trail)) value_finish--;
                 int valid=1;
                 for (Py_ssize_t offset=value_start; valid && offset<value_finish; offset++) valid=atom_match(vm,subject,offset,value);
                 if (!valid) continue;
                 Py_ssize_t finish_match=line_end;
-                if (line_end+1==endpos && subject_char(subject,line_end)=='\n') finish_match=endpos;
                 caps[0]=start; caps[1]=finish_match;
                 caps[2*key_save.a]=start; caps[2*key_save.a+1]=key_finish;
                 caps[2*value_save.a]=value_start; caps[2*value_save.a+1]=value_finish;
@@ -1285,7 +1292,8 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
                     if (pivot<0) return 0;
                     Py_ssize_t start=pivot;
                     while (start>pos && atom_match(vm,subject,start-1,atom)) start--;
-                    if (pivot-start>=repeat.a && (repeat.b<0 || pivot-start<=repeat.b)) {
+                    if (pivot-start>=repeat.a) {
+                        if (repeat.b>=0 && pivot-start>repeat.b) start=pivot-repeat.b;
                         for (Py_ssize_t i=0; i<2*(vm->groups+1); i++) caps[i]=-1;
                         caps[0]=start; *last=-1; *finish=-1;
                         int got=execute(vm,0,subject,start,endpos,caps,last,finish,0,require_nonempty && start==pos,0);

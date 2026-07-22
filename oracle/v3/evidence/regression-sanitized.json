@@ -1,0 +1,17 @@
+{
+  "checks": 89280,
+  "failed": 0,
+  "failures": [],
+  "families": {
+    "bounded-separator": 82944,
+    "final-newline-config": 576,
+    "locale-negated-set": 5760
+  },
+  "modules": [
+    "rebar",
+    "candidates.ast_candidate",
+    "candidates.rust_candidate"
+  ],
+  "schema": "rebar-large-holdout-controls-v1",
+  "seed": 2026072909
+}

@@ -1,0 +1,2104 @@
+{
+  "cases": 35840,
+  "cohort": "holdout",
+  "expected_sha256": "782c41ff0b1239eeb0bb5312b4a893b41d7882c7fdcf64b29587518839e51669",
+  "failed": 12,
+  "failures": [
+    {
+      "actual": {
+        "id": "v3.hold.deep.text.07964",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-FINDITER",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-UNICODE",
+          "API-MATCH-OBJECT"
+        ],
+        "result": []
+      },
+      "expected": {
+        "id": "v3.hold.deep.text.07964",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-FINDITER",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-UNICODE",
+          "API-MATCH-OBJECT"
+        ],
+        "result": [
+          {
+            "bool": true,
+            "endpos": 72,
+            "ends": [
+              10
+            ],
+            "expand": "<X\tb0KXaſ,>",
+            "group0": "X\tb0KXaſ,",
+            "groupdict": {},
+            "groupdict_default": {},
+            "groups": [],
+            "groups_default": [],
+            "items": [
+              "X\tb0KXaſ,"
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "public": [
+              "end",
+              "endpos",
+              "expand",
+              "group",
+              "groupdict",
+              "groups",
+              "lastgroup",
+              "lastindex",
+              "pos",
+              "re",
+              "regs",
+              "span",
+              "start",
+              "string"
+            ],
+            "re": {
+              "flags": 40,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "(?:[^,\\n]{1,8},){1,4}(?:|a){0,2}+\\.*+(?-i:a)?+(?:ab|c)*",
+              "public": [
+                "findall",
+                "finditer",
+                "flags",
+                "fullmatch",
+                "groupindex",
+                "groups",
+                "match",
+                "pattern",
+                "scanner",
+                "search",
+                "split",
+                "sub",
+                "subn"
+              ]
+            },
+            "regs": [
+              [
+                1,
+                10
+              ]
+            ],
+            "spans": [
+              [
+                1,
+                10
+              ]
+            ],
+            "starts": [
+              1
+            ],
+            "string": "/X\tb0KXaſ,b=́=cſı0ß😀=ſ٣☃X9:ä!☃,\na☃ X9Z=:.ı//a☃.,c/-\tZ.bıc91-ſı_K,./\tX Y-"
+          },
+          {
+            "bool": true,
+            "endpos": 72,
+            "ends": [
+              31
+            ],
+            "expand": "<٣☃X9:ä!☃,>",
+            "group0": "٣☃X9:ä!☃,",
+            "groupdict": {},
+            "groupdict_default": {},
+            "groups": [],
+            "groups_default": [],
+            "items": [
+              "٣☃X9:ä!☃,"
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "public": [
+              "end",
+              "endpos",
+              "expand",
+              "group",
+              "groupdict",
+              "groups",
+              "lastgroup",
+              "lastindex",
+              "pos",
+              "re",
+              "regs",
+              "span",
+              "start",
+              "string"
+            ],
+            "re": {
+              "flags": 40,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "(?:[^,\\n]{1,8},){1,4}(?:|a){0,2}+\\.*+(?-i:a)?+(?:ab|c)*",
+              "public": [
+                "findall",
+                "finditer",
+                "flags",
+                "fullmatch",
+                "groupindex",
+                "groups",
+                "match",
+                "pattern",
+                "scanner",
+                "search",
+                "split",
+                "sub",
+                "subn"
+              ]
+            },
+            "regs": [
+              [
+                22,
+                31
+              ]
+            ],
+            "spans": [
+              [
+                22,
+                31
+              ]
+            ],
+            "starts": [
+              22
+            ],
+            "string": "/X\tb0KXaſ,b=́=cſı0ß😀=ſ٣☃X9:ä!☃,\na☃ X9Z=:.ı//a☃.,c/-\tZ.bıc91-ſı_K,./\tX Y-"
+          },
+          {
+            "bool": true,
+            "endpos": 72,
+            "ends": [
+              49
+            ],
+            "expand": "<:.ı//a☃.,c>",
+            "group0": ":.ı//a☃.,c",
+            "groupdict": {},
+            "groupdict_default": {},
+            "groups": [],
+            "groups_default": [],
+            "items": [
+              ":.ı//a☃.,c"
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "public": [
+              "end",
+              "endpos",
+              "expand",
+              "group",
+              "groupdict",
+              "groups",
+              "lastgroup",
+              "lastindex",
+              "pos",
+              "re",
+              "regs",
+              "span",
+              "start",
+              "string"
+            ],
+            "re": {
+              "flags": 40,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "(?:[^,\\n]{1,8},){1,4}(?:|a){0,2}+\\.*+(?-i:a)?+(?:ab|c)*",
+              "public": [
+                "findall",
+                "finditer",
+                "flags",
+                "fullmatch",
+                "groupindex",
+                "groups",
+                "match",
+                "pattern",
+                "scanner",
+                "search",
+                "split",
+                "sub",
+                "subn"
+              ]
+            },
+            "regs": [
+              [
+                39,
+                49
+              ]
+            ],
+            "spans": [
+              [
+                39,
+                49
+              ]
+            ],
+            "starts": [
+              39
+            ],
+            "string": "/X\tb0KXaſ,b=́=cſı0ß😀=ſ٣☃X9:ä!☃,\na☃ X9Z=:.ı//a☃.,c/-\tZ.bıc91-ſı_K,./\tX Y-"
+          },
+          {
+            "bool": true,
+            "endpos": 72,
+            "ends": [
+              66
+            ],
+            "expand": "<c91-ſı_K,.>",
+            "group0": "c91-ſı_K,.",
+            "groupdict": {},
+            "groupdict_default": {},
+            "groups": [],
+            "groups_default": [],
+            "items": [
+              "c91-ſı_K,."
+            ],
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "public": [
+              "end",
+              "endpos",
+              "expand",
+              "group",
+              "groupdict",
+              "groups",
+              "lastgroup",
+              "lastindex",
+              "pos",
+              "re",
+              "regs",
+              "span",
+              "start",
+              "string"
+            ],
+            "re": {
+              "flags": 40,
+              "groupindex": {},
+              "groups": 0,
+              "pattern": "(?:[^,\\n]{1,8},){1,4}(?:|a){0,2}+\\.*+(?-i:a)?+(?:ab|c)*",
+              "public": [
+                "findall",
+                "finditer",
+                "flags",
+                "fullmatch",
+                "groupindex",
+                "groups",
+                "match",
+                "pattern",
+                "scanner",
+                "search",
+                "split",
+                "sub",
+                "subn"
+              ]
+            },
+            "regs": [
+              [
+                56,
+                66
+              ]
+            ],
+            "spans": [
+              [
+                56,
+                66
+              ]
+            ],
+            "starts": [
+              56
+            ],
+            "string": "/X\tb0KXaſ,b=́=cſı0ß😀=ſ٣☃X9:ä!☃,\na☃ X9Z=:.ı//a☃.,c/-\tZ.bıc91-ſı_K,./\tX Y-"
+          }
+        ]
+      },
+      "id": "v3.hold.deep.text.07964"
+    },
+    {
+      "actual": {
+        "id": "v3.hold.deep.text.09366",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SUB",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-UNICODE"
+        ],
+        "result": "٣b!Yc0-☃٣,٣ß1_Kß_☃Z ☃雪 cX 0ä9İa_☃b0KZb9X ä😀1:٣ ٣_a☃X .\t YZ٣ \nİK0\nK9= "
+      },
+      "expected": {
+        "id": "v3.hold.deep.text.09366",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SUB",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-UNICODE"
+        ],
+        "result": "٣<b!Yc0-☃٣,>٣ß1_Kß_☃Z ☃雪 cX 0ä9İa_☃b0KZb9X ä😀1:٣ ٣_a☃X .\t YZ٣ \nİK0\nK9= "
+      },
+      "id": "v3.hold.deep.text.09366"
+    },
+    {
+      "actual": {
+        "id": "v3.hold.deep.text.12895",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SUBN",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-UNICODE"
+        ],
+        "result": [
+          "9ſ=a0Zİß90ßİb/=,ſ\n[SS,]٣\ta\n !Z/_\n-9",
+          1
+        ]
+      },
+      "expected": {
+        "id": "v3.hold.deep.text.12895",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SUBN",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-UNICODE"
+        ],
+        "result": [
+          "9ſ=a0Zİ[SS90SSİB/=,]ſ\n[SS,]٣\ta\n !Z/_\n-9",
+          2
+        ]
+      },
+      "id": "v3.hold.deep.text.12895"
+    },
+    {
+      "actual": {
+        "id": "v3.hold.deep.text.16264",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SEARCH",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-UNICODE",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "bool": true,
+          "endpos": 96,
+          "ends": [
+            95
+          ],
+          "expand": "<!a0:,>",
+          "group0": "!a0:,",
+          "groupdict": {},
+          "groupdict_default": {},
+          "groups": [],
+          "groups_default": [],
+          "items": [
+            "!a0:,"
+          ],
+          "lastgroup": null,
+          "lastindex": null,
+          "pos": 0,
+          "public": [
+            "end",
+            "endpos",
+            "expand",
+            "group",
+            "groupdict",
+            "groups",
+            "lastgroup",
+            "lastindex",
+            "pos",
+            "re",
+            "regs",
+            "span",
+            "start",
+            "string"
+          ],
+          "re": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "(?:[^,\\n]{1,8},){1,4}_??",
+            "public": [
+              "findall",
+              "finditer",
+              "flags",
+              "fullmatch",
+              "groupindex",
+              "groups",
+              "match",
+              "pattern",
+              "scanner",
+              "search",
+              "split",
+              "sub",
+              "subn"
+            ]
+          },
+          "regs": [
+            [
+              90,
+              95
+            ]
+          ],
+          "spans": [
+            [
+              90,
+              95
+            ]
+          ],
+          "starts": [
+            90
+          ],
+          "string": ":☃雪ä:ſ!0!_!X.,ß ́.9́ä😀ß=☃äß1 1,\tſXáZ.́Y☃a0.☃Z.,K -😀- cba_a:Y😀X-1İäİİXc01: 0!\n1雪́_äb1́ßb́,!a0:,٣"
+        }
+      },
+      "expected": {
+        "id": "v3.hold.deep.text.16264",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SEARCH",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-UNICODE",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "bool": true,
+          "endpos": 96,
+          "ends": [
+            14
+          ],
+          "expand": "<ſ!0!_!X.,>",
+          "group0": "ſ!0!_!X.,",
+          "groupdict": {},
+          "groupdict_default": {},
+          "groups": [],
+          "groups_default": [],
+          "items": [
+            "ſ!0!_!X.,"
+          ],
+          "lastgroup": null,
+          "lastindex": null,
+          "pos": 0,
+          "public": [
+            "end",
+            "endpos",
+            "expand",
+            "group",
+            "groupdict",
+            "groups",
+            "lastgroup",
+            "lastindex",
+            "pos",
+            "re",
+            "regs",
+            "span",
+            "start",
+            "string"
+          ],
+          "re": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "(?:[^,\\n]{1,8},){1,4}_??",
+            "public": [
+              "findall",
+              "finditer",
+              "flags",
+              "fullmatch",
+              "groupindex",
+              "groups",
+              "match",
+              "pattern",
+              "scanner",
+              "search",
+              "split",
+              "sub",
+              "subn"
+            ]
+          },
+          "regs": [
+            [
+              5,
+              14
+            ]
+          ],
+          "spans": [
+            [
+              5,
+              14
+            ]
+          ],
+          "starts": [
+            5
+          ],
+          "string": ":☃雪ä:ſ!0!_!X.,ß ́.9́ä😀ß=☃äß1 1,\tſXáZ.́Y☃a0.☃Z.,K -😀- cba_a:Y😀X-1İäİİXc01: 0!\n1雪́_äb1́ßb́,!a0:,٣"
+        }
+      },
+      "id": "v3.hold.deep.text.16264"
+    },
+    {
+      "actual": {
+        "id": "v3.hold.deep.bytes.00389",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SPLIT",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-BYTESLIKE"
+        ],
+        "result": [
+          {
+            "bytes_hex": "590a80096361392f8080632f632f2c2f312e313109802e61395a3a2cff2d"
+          }
+        ]
+      },
+      "expected": {
+        "id": "v3.hold.deep.bytes.00389",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SPLIT",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-BYTESLIKE"
+        ],
+        "result": [
+          {
+            "bytes_hex": "590a80096361"
+          },
+          {
+            "bytes_hex": "2f312e31"
+          },
+          {
+            "bytes_hex": "ff2d"
+          }
+        ]
+      },
+      "id": "v3.hold.deep.bytes.00389"
+    },
+    {
+      "actual": {
+        "id": "v3.hold.deep.bytes.02067",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-FINDALL",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-BYTESLIKE"
+        ],
+        "result": [
+          {
+            "bytes_hex": "09ff3063313d2c"
+          },
+          {
+            "bytes_hex": "2d2c"
+          }
+        ]
+      },
+      "expected": {
+        "id": "v3.hold.deep.bytes.02067",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-FINDALL",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-BYTESLIKE"
+        ],
+        "result": [
+          {
+            "bytes_hex": "09ff3063313d2c"
+          },
+          {
+            "bytes_hex": "2d2c"
+          },
+          {
+            "bytes_hex": "2f2d5f5f623131392c"
+          }
+        ]
+      },
+      "id": "v3.hold.deep.bytes.02067"
+    },
+    {
+      "actual": {
+        "id": "v3.hold.deep.bytes.03307",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-FINDALL",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-BYTESLIKE"
+        ],
+        "result": [
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          }
+        ]
+      },
+      "expected": {
+        "id": "v3.hold.deep.bytes.03307",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-FINDALL",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-BYTESLIKE"
+        ],
+        "result": [
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          }
+        ]
+      },
+      "id": "v3.hold.deep.bytes.03307"
+    },
+    {
+      "actual": {
+        "id": "v3.hold.deep.bytes.05943",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SUBN",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-BYTESLIKE"
+        ],
+        "result": [
+          {
+            "bytes_hex": "31095f2e3d5909213a5a21625f09612031395f5880ffff305a5a3a5a585f312e2e595fff2059393959802c212d0a0a5b8063095a622c5a6209215a2c6331ff3d5a58393a39205a2eff203980593d5d"
+          },
+          1
+        ]
+      },
+      "expected": {
+        "id": "v3.hold.deep.bytes.05943",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SUBN",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-BYTESLIKE"
+        ],
+        "result": [
+          {
+            "bytes_hex": "31095f2e3d5909213a5a21625f09612031395f5880ffff305a5a3a5a585f312e2e590a5b5fff2059393959802c212d5d0a8063095a622c5a6209215a2c6331ff3d5a58393a39205a2eff203980593d"
+          },
+          1
+        ]
+      },
+      "id": "v3.hold.deep.bytes.05943"
+    },
+    {
+      "actual": {
+        "id": "v3.hold.deep.bytes.06821",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SPLIT",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-BYTESLIKE"
+        ],
+        "result": [
+          {
+            "bytes_hex": "592d09598058ff3d5f5a613d30ff61ff31312f5f583d30302f3009613a6120392cff3d2d633a206161633a2f2c200a30212e392180803d5858316261632059392f090a3131633dff0a633d310a3d3121630a58"
+          }
+        ]
+      },
+      "expected": {
+        "id": "v3.hold.deep.bytes.06821",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SPLIT",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-BYTESLIKE"
+        ],
+        "result": [
+          {
+            "bytes_hex": "592d09598058ff3d5f5a613d30ff61ff31312f5f583d3030"
+          },
+          {
+            "bytes_hex": "ff3d2d"
+          },
+          {
+            "bytes_hex": "200a30212e392180803d5858316261632059392f090a3131633dff0a633d310a3d3121630a58"
+          }
+        ]
+      },
+      "id": "v3.hold.deep.bytes.06821"
+    },
+    {
+      "actual": {
+        "id": "v3.hold.deep.bytes.08102",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SUB",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-BYTESLIKE"
+        ],
+        "result": {
+          "bytes_hex": "5a5839312f302d636258302c59635a0a2109"
+        }
+      },
+      "expected": {
+        "id": "v3.hold.deep.bytes.08102",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SUB",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-BYTESLIKE"
+        ],
+        "result": {
+          "bytes_hex": "5a58392359635a0a2109"
+        }
+      },
+      "id": "v3.hold.deep.bytes.08102"
+    },
+    {
+      "actual": {
+        "id": "v3.hold.real.text.00752",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SEARCH",
+          "S-REAL-WORLD",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-LOOKAROUND",
+          "S-EMPTY",
+          "S-UNICODE",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "bool": true,
+          "endpos": 23,
+          "ends": [
+            23,
+            5,
+            12
+          ],
+          "expand": "<PORT = 8080 # service\n>",
+          "group0": "PORT = 8080 # service\n",
+          "groupdict": {
+            "key": "PORT",
+            "value": "8080"
+          },
+          "groupdict_default": {
+            "key": "PORT",
+            "value": "8080"
+          },
+          "groups": [
+            "PORT",
+            "8080"
+          ],
+          "groups_default": [
+            "PORT",
+            "8080"
+          ],
+          "items": [
+            "PORT = 8080 # service\n",
+            "PORT",
+            "8080"
+          ],
+          "lastgroup": "value",
+          "lastindex": 2,
+          "pos": 0,
+          "public": [
+            "end",
+            "endpos",
+            "expand",
+            "group",
+            "groupdict",
+            "groups",
+            "lastgroup",
+            "lastindex",
+            "pos",
+            "re",
+            "regs",
+            "span",
+            "start",
+            "string"
+          ],
+          "re": {
+            "flags": 40,
+            "groupindex": {
+              "key": 1,
+              "value": 2
+            },
+            "groups": 2,
+            "pattern": "^(?P<key>[A-Za-z_][A-Za-z0-9_]*)\\s*=\\s*(?P<value>[^#\\n]*?)\\s*(?:#.*)?$",
+            "public": [
+              "findall",
+              "finditer",
+              "flags",
+              "fullmatch",
+              "groupindex",
+              "groups",
+              "match",
+              "pattern",
+              "scanner",
+              "search",
+              "split",
+              "sub",
+              "subn"
+            ]
+          },
+          "regs": [
+            [
+              1,
+              23
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              8,
+              12
+            ]
+          ],
+          "spans": [
+            [
+              1,
+              23
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              8,
+              12
+            ]
+          ],
+          "starts": [
+            1,
+            1,
+            8
+          ],
+          "string": "\nPORT = 8080 # service\n"
+        }
+      },
+      "expected": {
+        "id": "v3.hold.real.text.00752",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SEARCH",
+          "S-REAL-WORLD",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-LOOKAROUND",
+          "S-EMPTY",
+          "S-UNICODE",
+          "API-MATCH-OBJECT"
+        ],
+        "result": {
+          "bool": true,
+          "endpos": 23,
+          "ends": [
+            22,
+            5,
+            12
+          ],
+          "expand": "<PORT = 8080 # service>",
+          "group0": "PORT = 8080 # service",
+          "groupdict": {
+            "key": "PORT",
+            "value": "8080"
+          },
+          "groupdict_default": {
+            "key": "PORT",
+            "value": "8080"
+          },
+          "groups": [
+            "PORT",
+            "8080"
+          ],
+          "groups_default": [
+            "PORT",
+            "8080"
+          ],
+          "items": [
+            "PORT = 8080 # service",
+            "PORT",
+            "8080"
+          ],
+          "lastgroup": "value",
+          "lastindex": 2,
+          "pos": 0,
+          "public": [
+            "end",
+            "endpos",
+            "expand",
+            "group",
+            "groupdict",
+            "groups",
+            "lastgroup",
+            "lastindex",
+            "pos",
+            "re",
+            "regs",
+            "span",
+            "start",
+            "string"
+          ],
+          "re": {
+            "flags": 40,
+            "groupindex": {
+              "key": 1,
+              "value": 2
+            },
+            "groups": 2,
+            "pattern": "^(?P<key>[A-Za-z_][A-Za-z0-9_]*)\\s*=\\s*(?P<value>[^#\\n]*?)\\s*(?:#.*)?$",
+            "public": [
+              "findall",
+              "finditer",
+              "flags",
+              "fullmatch",
+              "groupindex",
+              "groups",
+              "match",
+              "pattern",
+              "scanner",
+              "search",
+              "split",
+              "sub",
+              "subn"
+            ]
+          },
+          "regs": [
+            [
+              1,
+              22
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              8,
+              12
+            ]
+          ],
+          "spans": [
+            [
+              1,
+              22
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              8,
+              12
+            ]
+          ],
+          "starts": [
+            1,
+            1,
+            8
+          ],
+          "string": "\nPORT = 8080 # service\n"
+        }
+      },
+      "id": "v3.hold.real.text.00752"
+    },
+    {
+      "actual": {
+        "id": "v3.hold.real.bytes.00512",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SEARCH",
+          "S-REAL-WORLD",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-LOOKAROUND",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-MATCH-OBJECT",
+          "API-BYTESLIKE"
+        ],
+        "result": {
+          "bool": true,
+          "endpos": 23,
+          "ends": [
+            23,
+            5,
+            12
+          ],
+          "expand": {
+            "bytes_hex": "3c504f5254203d2038303830202320736572766963650a3e"
+          },
+          "group0": {
+            "bytes_hex": "504f5254203d2038303830202320736572766963650a"
+          },
+          "groupdict": {
+            "key": {
+              "bytes_hex": "504f5254"
+            },
+            "value": {
+              "bytes_hex": "38303830"
+            }
+          },
+          "groupdict_default": {
+            "key": {
+              "bytes_hex": "504f5254"
+            },
+            "value": {
+              "bytes_hex": "38303830"
+            }
+          },
+          "groups": [
+            {
+              "bytes_hex": "504f5254"
+            },
+            {
+              "bytes_hex": "38303830"
+            }
+          ],
+          "groups_default": [
+            {
+              "bytes_hex": "504f5254"
+            },
+            {
+              "bytes_hex": "38303830"
+            }
+          ],
+          "items": [
+            {
+              "bytes_hex": "504f5254203d2038303830202320736572766963650a"
+            },
+            {
+              "bytes_hex": "504f5254"
+            },
+            {
+              "bytes_hex": "38303830"
+            }
+          ],
+          "lastgroup": "value",
+          "lastindex": 2,
+          "pos": 0,
+          "public": [
+            "end",
+            "endpos",
+            "expand",
+            "group",
+            "groupdict",
+            "groups",
+            "lastgroup",
+            "lastindex",
+            "pos",
+            "re",
+            "regs",
+            "span",
+            "start",
+            "string"
+          ],
+          "re": {
+            "flags": 8,
+            "groupindex": {
+              "key": 1,
+              "value": 2
+            },
+            "groups": 2,
+            "pattern": {
+              "bytes_hex": "5e283f503c6b65793e5b412d5a612d7a5f5d5b412d5a612d7a302d395f5d2a295c732a3d5c732a283f503c76616c75653e5b5e235c6e5d2a3f295c732a283f3a232e2a293f24"
+            },
+            "public": [
+              "findall",
+              "finditer",
+              "flags",
+              "fullmatch",
+              "groupindex",
+              "groups",
+              "match",
+              "pattern",
+              "scanner",
+              "search",
+              "split",
+              "sub",
+              "subn"
+            ]
+          },
+          "regs": [
+            [
+              1,
+              23
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              8,
+              12
+            ]
+          ],
+          "spans": [
+            [
+              1,
+              23
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              8,
+              12
+            ]
+          ],
+          "starts": [
+            1,
+            1,
+            8
+          ],
+          "string": {
+            "bytes_hex": "0a504f5254203d2038303830202320736572766963650a",
+            "type": "memoryview"
+          },
+          "string_is_subject": true
+        }
+      },
+      "expected": {
+        "id": "v3.hold.real.bytes.00512",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-SEARCH",
+          "S-REAL-WORLD",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-LOOKAROUND",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-MATCH-OBJECT",
+          "API-BYTESLIKE"
+        ],
+        "result": {
+          "bool": true,
+          "endpos": 23,
+          "ends": [
+            22,
+            5,
+            12
+          ],
+          "expand": {
+            "bytes_hex": "3c504f5254203d2038303830202320736572766963653e"
+          },
+          "group0": {
+            "bytes_hex": "504f5254203d203830383020232073657276696365"
+          },
+          "groupdict": {
+            "key": {
+              "bytes_hex": "504f5254"
+            },
+            "value": {
+              "bytes_hex": "38303830"
+            }
+          },
+          "groupdict_default": {
+            "key": {
+              "bytes_hex": "504f5254"
+            },
+            "value": {
+              "bytes_hex": "38303830"
+            }
+          },
+          "groups": [
+            {
+              "bytes_hex": "504f5254"
+            },
+            {
+              "bytes_hex": "38303830"
+            }
+          ],
+          "groups_default": [
+            {
+              "bytes_hex": "504f5254"
+            },
+            {
+              "bytes_hex": "38303830"
+            }
+          ],
+          "items": [
+            {
+              "bytes_hex": "504f5254203d203830383020232073657276696365"
+            },
+            {
+              "bytes_hex": "504f5254"
+            },
+            {
+              "bytes_hex": "38303830"
+            }
+          ],
+          "lastgroup": "value",
+          "lastindex": 2,
+          "pos": 0,
+          "public": [
+            "end",
+            "endpos",
+            "expand",
+            "group",
+            "groupdict",
+            "groups",
+            "lastgroup",
+            "lastindex",
+            "pos",
+            "re",
+            "regs",
+            "span",
+            "start",
+            "string"
+          ],
+          "re": {
+            "flags": 8,
+            "groupindex": {
+              "key": 1,
+              "value": 2
+            },
+            "groups": 2,
+            "pattern": {
+              "bytes_hex": "5e283f503c6b65793e5b412d5a612d7a5f5d5b412d5a612d7a302d395f5d2a295c732a3d5c732a283f503c76616c75653e5b5e235c6e5d2a3f295c732a283f3a232e2a293f24"
+            },
+            "public": [
+              "findall",
+              "finditer",
+              "flags",
+              "fullmatch",
+              "groupindex",
+              "groups",
+              "match",
+              "pattern",
+              "scanner",
+              "search",
+              "split",
+              "sub",
+              "subn"
+            ]
+          },
+          "regs": [
+            [
+              1,
+              22
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              8,
+              12
+            ]
+          ],
+          "spans": [
+            [
+              1,
+              22
+            ],
+            [
+              1,
+              5
+            ],
+            [
+              8,
+              12
+            ]
+          ],
+          "starts": [
+            1,
+            1,
+            8
+          ],
+          "string": {
+            "bytes_hex": "0a504f5254203d2038303830202320736572766963650a",
+            "type": "memoryview"
+          },
+          "string_is_subject": true
+        }
+      },
+      "id": "v3.hold.real.bytes.00512"
+    }
+  ],
+  "families": {
+    "deep-bytes": {
+      "cases": 8192,
+      "failed": 6,
+      "passed": 8186
+    },
+    "deep-text": {
+      "cases": 16384,
+      "failed": 4,
+      "passed": 16380
+    },
+    "invalid-pattern": {
+      "cases": 1024,
+      "failed": 0,
+      "passed": 1024
+    },
+    "invalid-template": {
+      "cases": 1024,
+      "failed": 0,
+      "passed": 1024
+    },
+    "properties": {
+      "cases": 2048,
+      "failed": 0,
+      "passed": 2048
+    },
+    "real-bytes": {
+      "cases": 2048,
+      "failed": 1,
+      "passed": 2047
+    },
+    "real-text": {
+      "cases": 4096,
+      "failed": 1,
+      "passed": 4095
+    },
+    "scanner": {
+      "cases": 1024,
+      "failed": 0,
+      "passed": 1024
+    }
+  },
+  "family": null,
+  "mapped_obligations": 51,
+  "module": "rebar",
+  "obligations": 51,
+  "passed": 35828,
+  "schema": "rebar-correctness-result-v3"
+}

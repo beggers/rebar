@@ -1209,6 +1209,27 @@ fn class_match(
     {
         return table[(value / 64) as usize] & (1_u64 << (value % 64)) != 0;
     }
+    if negative
+        && flags & (I | L) == I | L
+        && !(values.len() == 1 && matches!(values.first(), Some(Member::Lit(_))))
+    {
+        let other = if (b'A' as u32..=b'Z' as u32).contains(&value) {
+            value + 32
+        } else if (b'a' as u32..=b'z' as u32).contains(&value) {
+            value - 32
+        } else {
+            value
+        };
+        let raw_found = |candidate| {
+            values.iter().any(|item| match *item {
+                Member::Lit(ch) => ch == candidate,
+                Member::Cat(ch) => category(ch, flags & !I, ctx, pos),
+                Member::Range(left, right) => left <= candidate && candidate <= right,
+                Member::Table(_) => false,
+            })
+        };
+        return !raw_found(value) || !raw_found(other);
+    }
     let found = values.iter().any(|item| match *item {
         Member::Lit(ch) => eq_lit(ch, value, flags, ctx, pos),
         Member::Cat(ch) => category(ch, flags, ctx, pos),

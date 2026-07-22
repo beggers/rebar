@@ -1,0 +1,543 @@
+{
+  "cases": 35840,
+  "cohort": "holdout",
+  "expected_sha256": "782c41ff0b1239eeb0bb5312b4a893b41d7882c7fdcf64b29587518839e51669",
+  "failed": 1,
+  "failures": [
+    {
+      "actual": {
+        "id": "v3.hold.deep.bytes.03307",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-FINDALL",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-BYTESLIKE"
+        ],
+        "result": [
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          }
+        ]
+      },
+      "expected": {
+        "id": "v3.hold.deep.bytes.03307",
+        "kind": "hold-call",
+        "obligations": [
+          "API-HOLDOUT",
+          "API-FINDALL",
+          "S-STRESS-HOLDOUT",
+          "S-LITERAL",
+          "S-DOT-CLASS",
+          "S-ANCHOR",
+          "S-QUANTIFIER",
+          "S-POSSESSIVE",
+          "S-ALTERNATION",
+          "S-GROUP",
+          "S-BACKREF",
+          "S-CONDITIONAL",
+          "S-LOOKAROUND",
+          "S-ATOMIC",
+          "S-INLINE",
+          "S-EMPTY",
+          "S-ASCII",
+          "API-BYTESLIKE"
+        ],
+        "result": [
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          },
+          {
+            "bytes_hex": ""
+          }
+        ]
+      },
+      "id": "v3.hold.deep.bytes.03307"
+    }
+  ],
+  "families": {
+    "deep-bytes": {
+      "cases": 8192,
+      "failed": 1,
+      "passed": 8191
+    },
+    "deep-text": {
+      "cases": 16384,
+      "failed": 0,
+      "passed": 16384
+    },
+    "invalid-pattern": {
+      "cases": 1024,
+      "failed": 0,
+      "passed": 1024
+    },
+    "invalid-template": {
+      "cases": 1024,
+      "failed": 0,
+      "passed": 1024
+    },
+    "properties": {
+      "cases": 2048,
+      "failed": 0,
+      "passed": 2048
+    },
+    "real-bytes": {
+      "cases": 2048,
+      "failed": 0,
+      "passed": 2048
+    },
+    "real-text": {
+      "cases": 4096,
+      "failed": 0,
+      "passed": 4096
+    },
+    "scanner": {
+      "cases": 1024,
+      "failed": 0,
+      "passed": 1024
+    }
+  },
+  "family": null,
+  "mapped_obligations": 51,
+  "module": "candidates.rust_candidate",
+  "obligations": 51,
+  "passed": 35839,
+  "schema": "rebar-correctness-result-v3"
+}
