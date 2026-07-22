@@ -101,11 +101,25 @@ class _Native:
         lib.rebar_zig_name_copy.restype = ctypes.c_size_t
 
     def compile(self, pattern, flags):
-        try:
-            raw = pattern if isinstance(pattern, bytes) else pattern.encode("ascii")
-        except UnicodeEncodeError:
-            raise PatternError("Zig engine currently requires an ASCII pattern", pattern, 0) from None
-        handle = self.library.rebar_zig_compile(raw, len(raw), flags)
+        native_flags = flags
+        if isinstance(pattern, bytes):
+            raw = pattern
+        else:
+            named = _named_escapes(pattern)
+            if named:
+                pieces = []
+                previous = 0
+                for slash, value in named:
+                    close = pattern.index("}", slash + 3)
+                    pieces.extend((pattern[previous:slash], chr(value)))
+                    previous = close + 1
+                pieces.append(pattern[previous:])
+                native_pattern = "".join(pieces)
+            else:
+                native_pattern = pattern
+            raw = native_pattern.encode("utf-8", "surrogatepass")
+            native_flags |= 0x80000000
+        handle = self.library.rebar_zig_compile(raw, len(raw), native_flags)
         if not handle:
             raise PatternError("unsupported or invalid Zig pattern", pattern, 0)
         groups = self.library.rebar_zig_groups(handle)
@@ -138,6 +152,8 @@ def _named_escapes(pattern):
             continue
         slash = index
         index += 1
+        if pattern[index:index + 1] == "N" and pattern[index + 1:index + 2] != "{":
+            raise PatternError("missing {", pattern, slash + 2)
         if pattern[index:index + 2] != "N{":
             index += bool(pattern[index:index + 1])
             continue

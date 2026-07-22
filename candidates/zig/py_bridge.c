@@ -2,11 +2,10 @@
 #include <Python.h>
 #include <stdint.h>
 
-extern int rebar_zig_match(const void *, const uint8_t *, size_t, size_t, size_t, uint8_t, intptr_t *, intptr_t *);
+extern int rebar_zig_match_wide(const void *, const uint8_t *, size_t, uint8_t, size_t, size_t, uint8_t, intptr_t *, intptr_t *);
 extern size_t rebar_zig_groups(const void *);
-extern int rebar_zig_match_captures(const void *, const uint8_t *, size_t, size_t, size_t, uint8_t, uint8_t, intptr_t *, intptr_t *, intptr_t *);
-extern intptr_t rebar_zig_collect_captures(const void *, const uint8_t *, size_t, size_t, size_t, size_t, intptr_t *, intptr_t *, intptr_t *);
-extern intptr_t rebar_zig_collect_records(const void *, const uint8_t *, size_t, size_t, size_t, intptr_t *, size_t *, uint8_t *);
+extern int rebar_zig_match_captures_wide(const void *, const uint8_t *, size_t, uint8_t, size_t, size_t, uint8_t, uint8_t, intptr_t *, intptr_t *, intptr_t *);
+extern intptr_t rebar_zig_collect_records_wide(const void *, const uint8_t *, size_t, uint8_t, size_t, size_t, intptr_t *, size_t *, uint8_t *);
 
 #define ZIG_LOCAL_CAPTURE_WORDS 1024
 #define ZIG_INITIAL_CAPTURE_COUNT 64
@@ -28,7 +27,7 @@ static void zig_capture_release(ZigCaptureBuffer *buffer) {
  * matcher fills it. Records are append-only and matching resumes at the
  * exact cursor/empty-retry state, so dense calls never rescan prior input.
  */
-static intptr_t zig_collect_growing(const void *handle, const uint8_t *data, size_t length,
+static intptr_t zig_collect_growing(const void *handle, const uint8_t *data, size_t length, uint8_t kind,
                                     size_t pos, size_t end, size_t groups, size_t limit,
                                     ZigCaptureBuffer *buffer) {
     buffer->storage = NULL;
@@ -66,7 +65,7 @@ static intptr_t zig_collect_growing(const void *handle, const uint8_t *data, siz
             }
             buffer->storage = storage;
         }
-        intptr_t count = rebar_zig_collect_records(handle, data, length, end, capacity - used, buffer->storage + used * words_per_match, &cursor, &retry_nonempty);
+        intptr_t count = rebar_zig_collect_records_wide(handle, data, length, kind, end, capacity - used, buffer->storage + used * words_per_match, &cursor, &retry_nonempty);
         if (count < 0) {
             zig_capture_release(buffer);
             return -1;
@@ -95,13 +94,11 @@ static PyObject *bridge_span(PyObject *module, PyObject *const *args, Py_ssize_t
     Py_buffer view = {0};
     const uint8_t *data;
     size_t length;
+    uint8_t kind = 1;
     if (PyUnicode_Check(subject)) {
-        if (!PyUnicode_IS_ASCII(subject)) {
-            PyErr_SetString(PyExc_ValueError, "Zig bytecode probe currently requires ASCII text");
-            return NULL;
-        }
-        data = PyUnicode_1BYTE_DATA(subject);
+        data = PyUnicode_DATA(subject);
         length = (size_t)PyUnicode_GET_LENGTH(subject);
+        kind = (uint8_t)PyUnicode_KIND(subject);
     } else {
         if (PyObject_GetBuffer(subject, &view, PyBUF_SIMPLE) != 0) return NULL;
         data = view.buf;
@@ -109,7 +106,7 @@ static PyObject *bridge_span(PyObject *module, PyObject *const *args, Py_ssize_t
     }
     intptr_t begin = -1;
     intptr_t finish = -1;
-    int result = rebar_zig_match(handle, data, length, pos, endpos, (uint8_t)mode, &begin, &finish);
+    int result = rebar_zig_match_wide(handle, data, length, kind, pos, endpos, (uint8_t)mode, &begin, &finish);
     if (view.obj != NULL) PyBuffer_Release(&view);
     if (result < 0) {
         PyErr_SetString(PyExc_RuntimeError, "Zig bytecode matcher rejected the bridge call");
@@ -138,13 +135,11 @@ static PyObject *bridge_match(PyObject *module, PyObject *const *args, Py_ssize_
     Py_buffer view = {0};
     const uint8_t *data;
     size_t length;
+    uint8_t kind = 1;
     if (PyUnicode_Check(subject)) {
-        if (!PyUnicode_IS_ASCII(subject)) {
-            PyErr_SetString(PyExc_ValueError, "Zig capture probe currently requires ASCII text");
-            return NULL;
-        }
-        data = PyUnicode_1BYTE_DATA(subject);
+        data = PyUnicode_DATA(subject);
         length = (size_t)PyUnicode_GET_LENGTH(subject);
+        kind = (uint8_t)PyUnicode_KIND(subject);
     } else {
         if (PyObject_GetBuffer(subject, &view, PyBUF_SIMPLE) != 0) return NULL;
         data = view.buf;
@@ -161,7 +156,7 @@ static PyObject *bridge_match(PyObject *module, PyObject *const *args, Py_ssize_
         return NULL;
     }
     intptr_t last = -1;
-    int result = rebar_zig_match_captures(handle, data, length, pos, endpos, (uint8_t)mode, (uint8_t)nonempty, begins, ends, &last);
+    int result = rebar_zig_match_captures_wide(handle, data, length, kind, pos, endpos, (uint8_t)mode, (uint8_t)nonempty, begins, ends, &last);
     if (view.obj != NULL) PyBuffer_Release(&view);
     if (result < 0) {
         PyErr_SetString(PyExc_RuntimeError, "Zig capture matcher rejected the bridge call");
@@ -212,10 +207,11 @@ static PyObject *bridge_collect(PyObject *module, PyObject *const *args, Py_ssiz
     Py_buffer view = {0};
     const uint8_t *data;
     size_t length;
+    uint8_t kind = 1;
     if (PyUnicode_Check(subject)) {
-        if (!PyUnicode_IS_ASCII(subject)) Py_RETURN_NONE;
-        data = PyUnicode_1BYTE_DATA(subject);
+        data = PyUnicode_DATA(subject);
         length = (size_t)PyUnicode_GET_LENGTH(subject);
+        kind = (uint8_t)PyUnicode_KIND(subject);
     } else {
         if (PyObject_GetBuffer(subject, &view, PyBUF_SIMPLE) != 0) return NULL;
         data = view.buf;
@@ -223,7 +219,7 @@ static PyObject *bridge_collect(PyObject *module, PyObject *const *args, Py_ssiz
     }
     size_t end = endpos < length ? endpos : length;
     ZigCaptureBuffer buffer;
-    intptr_t count = zig_collect_growing(handle, data, length, pos, end, groups, 0, &buffer);
+    intptr_t count = zig_collect_growing(handle, data, length, kind, pos, end, groups, 0, &buffer);
     if (view.obj != NULL) PyBuffer_Release(&view);
     if (count < 0) {
         if (count == -2) return PyErr_NoMemory();
@@ -295,11 +291,12 @@ static PyObject *bridge_findall(PyObject *module, PyObject *const *args, Py_ssiz
     Py_buffer view = {0};
     const uint8_t *data;
     size_t length;
+    uint8_t kind = 1;
     int text_mode = PyUnicode_Check(subject);
     if (text_mode) {
-        if (!PyUnicode_IS_ASCII(subject)) Py_RETURN_NONE;
-        data = PyUnicode_1BYTE_DATA(subject);
+        data = PyUnicode_DATA(subject);
         length = (size_t)PyUnicode_GET_LENGTH(subject);
+        kind = (uint8_t)PyUnicode_KIND(subject);
     } else {
         if (PyObject_GetBuffer(subject, &view, PyBUF_SIMPLE) != 0) return NULL;
         data = view.buf;
@@ -307,7 +304,7 @@ static PyObject *bridge_findall(PyObject *module, PyObject *const *args, Py_ssiz
     }
     size_t end = endpos < length ? endpos : length;
     ZigCaptureBuffer buffer;
-    intptr_t count = zig_collect_growing(handle, data, length, pos, end, groups, 0, &buffer);
+    intptr_t count = zig_collect_growing(handle, data, length, kind, pos, end, groups, 0, &buffer);
     if (count < 0) {
         if (view.obj != NULL) PyBuffer_Release(&view);
         if (count == -2) return PyErr_NoMemory();
@@ -373,11 +370,12 @@ static PyObject *bridge_split(PyObject *module, PyObject *const *args, Py_ssize_
     Py_buffer view = {0};
     const uint8_t *data;
     size_t length;
+    uint8_t kind = 1;
     int text_mode = PyUnicode_Check(subject);
     if (text_mode) {
-        if (!PyUnicode_IS_ASCII(subject)) Py_RETURN_NONE;
-        data = PyUnicode_1BYTE_DATA(subject);
+        data = PyUnicode_DATA(subject);
         length = (size_t)PyUnicode_GET_LENGTH(subject);
+        kind = (uint8_t)PyUnicode_KIND(subject);
     } else {
         if (PyObject_GetBuffer(subject, &view, PyBUF_SIMPLE) != 0) return NULL;
         data = view.buf;
@@ -396,7 +394,7 @@ static PyObject *bridge_split(PyObject *module, PyObject *const *args, Py_ssize_
         return result;
     }
     ZigCaptureBuffer buffer;
-    intptr_t count = zig_collect_growing(handle, data, length, 0, length, groups, maxsplit > 0 ? (size_t)maxsplit : 0, &buffer);
+    intptr_t count = zig_collect_growing(handle, data, length, kind, 0, length, groups, maxsplit > 0 ? (size_t)maxsplit : 0, &buffer);
     if (count < 0) {
         if (view.obj != NULL) PyBuffer_Release(&view);
         if (count == -2) return PyErr_NoMemory();
@@ -474,11 +472,12 @@ static PyObject *bridge_subn(PyObject *module, PyObject *const *args, Py_ssize_t
     Py_buffer view = {0};
     const uint8_t *data;
     size_t length;
+    uint8_t kind = 1;
     int text_mode = PyUnicode_Check(subject);
     if (text_mode) {
-        if (!PyUnicode_IS_ASCII(subject)) Py_RETURN_NONE;
-        data = PyUnicode_1BYTE_DATA(subject);
+        data = PyUnicode_DATA(subject);
         length = (size_t)PyUnicode_GET_LENGTH(subject);
+        kind = (uint8_t)PyUnicode_KIND(subject);
     } else {
         if (PyObject_GetBuffer(subject, &view, PyBUF_SIMPLE) != 0) return NULL;
         data = view.buf;
@@ -491,7 +490,7 @@ static PyObject *bridge_subn(PyObject *module, PyObject *const *args, Py_ssize_t
         return Py_BuildValue("(Nn)", unchanged, (Py_ssize_t)0);
     }
     ZigCaptureBuffer buffer;
-    intptr_t count = zig_collect_growing(handle, data, length, 0, length, groups, limit > 0 ? (size_t)limit : 0, &buffer);
+    intptr_t count = zig_collect_growing(handle, data, length, kind, 0, length, groups, limit > 0 ? (size_t)limit : 0, &buffer);
     if (count < 0) {
         if (view.obj != NULL) PyBuffer_Release(&view);
         if (count == -2) return PyErr_NoMemory();

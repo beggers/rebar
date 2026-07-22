@@ -26,6 +26,12 @@ All three engines pass the frozen **44,084-case** correctness matrix, including 
 
 ![Large correctness holdout coverage and results](oracle/v3/evidence/qualified-correctness.svg)
 
+The separate from-scratch Zig engine is under active development. It now passes **all 2,448 large performance tasks**, improves the large correctness holdout from **12,912 to 30,290/35,840**, and has zero new failures or crashes. On the full **1,224-task** performance holdout it is **0.463x** as fast as Python `re`; cold compilation and some cleanup/splitting paths win, while scanners and short searches remain slow. The [Zig report](candidates/evidence/ZIG-UNICODE.md) keeps every result and explains the remaining gaps.
+
+![Zig compatibility gained from Unicode support](candidates/evidence/zig-unicode-correctness.svg)
+
+![Overall Zig speed and the main holdout families](candidates/evidence/zig-unicode-v4-family.svg)
+
 ## Detailed graphs
 
 The family view makes the larger benchmark readable: each row combines the matching variations of one kind of task. The all-case plots then show every individual holdout result and its measured range or memory use. Green indicates clearly faster, red indicates a slowdown greater than 20%, and grey indicates close or uncertain.
@@ -40,9 +46,15 @@ The family view makes the larger benchmark readable: each row combines the match
 
 ![Overall results across all task sets](performance/v4/evidence/initial-rankings.svg)
 
+The Zig experiment's detailed memory and win/loss views retain every legacy and generated holdout task family:
+
+![Zig temporary memory across the large holdout](candidates/evidence/zig-unicode-v4-memory.svg)
+
+![Zig wins and losses across the large holdout](candidates/evidence/zig-unicode-v4-regressions.svg)
+
 ## Current status
 
-The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The public import selects the correctness-qualified native C winner. A separate, independently written [Zig experiment](candidates/evidence/ZIG-ALLOCATION.md) now avoids large temporary allocations for long misses and sparse results; it is preserved as an architecture result but is not ranked because Unicode and exact error behavior remain incomplete. Earlier language/FFI experiments, optimizations, rejections, and raw evidence are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
+The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The public import selects the correctness-qualified native C winner. The independently written [Zig experiment](candidates/evidence/ZIG-UNICODE.md) now supports Unicode and avoids large temporary allocations for long misses/sparse results; it is not ranked with the qualified engines because exact errors, large repeats, and some deeper behavior remain incomplete. Earlier language/FFI experiments, optimizations, rejections, and raw evidence are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
 
 | Check | Status |
 | --- | --- |
@@ -50,6 +62,7 @@ The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The public import selec
 | Focused checks | **PASS** — 155,313 replacement, buffer, long-input, lookaround, collection, separator, newline, and locale checks |
 | Official CPython tests | **PASS** — all three engines pass 144/144 runnable methods; zero failures, crashes, or timeouts |
 | Large performance holdout | **PASS** — native C reaches 1.56× on 1,224 tasks and is clearly faster on 92%; all 11 large holdout slowdowns are explained |
+| Zig experiment | **IN PROGRESS** — 30,290/35,840 large correctness cases and all 2,448 performance tasks pass; 0.463x holdout speed; exact errors/repeats remain |
 | Public import | **AVAILABLE / WINNER** — `import rebar as re` uses the independent native C engine |
 
 The [large performance protocol](performance/v4/PROTOCOL.md) explains exactly what is timed, how comparisons are made, and how slowdowns are reported.
