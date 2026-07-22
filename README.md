@@ -52,6 +52,10 @@ The separate [from-scratch Zig trial](candidates/evidence/ZIG-PROBE.md) shows wh
 
 ![Zig architecture speed compared with Python re](candidates/evidence/zig-probe-speed.svg)
 
+The follow-on [Zig native-bridge trial](candidates/evidence/ZIG-NATIVE-BRIDGE.md) removes most of that boundary cost. Individual Zig calls are now **1.19×** as fast as Python `re` overall on the six tasks and clearly faster on **5/6**; the remaining absent-word loss is visible below. Zig still lacks complete `re` compatibility, so these results are not included in the headline ranking.
+
+![Zig native bridge speed compared with Python re](candidates/evidence/zig-native-bridge.svg)
+
 ## Correctness and current status
 
 The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). Stdlib and all three engines pass the [expanded seeded matrix](oracle/v2/P0.md): **8,244/8,244 cases**, **45/45 obligations**. They also pass all **144** runnable [official CPython `re` methods](oracle/cpython-3.14.6/README.md), with two environment-dependent locale skips.

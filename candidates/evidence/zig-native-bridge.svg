@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1120 746" width="1120" height="746">
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:ui-sans-serif,system-ui,sans-serif;fill:#1f2937}.small{font-size:12px}.label{font-size:14px}.title{font-size:20px;font-weight:700}</style>
+<text x="24" y="32" class="title">Zig design probe: speed compared with Python re</text>
+<text x="24" y="54" class="small">Values above 1× are faster. The green rows show matching cost when repeated calls cross the Python boundary once.</text>
+<line x1="260.0" y1="82" x2="260.0" y2="714" stroke="#e5e7eb" stroke-width="1"/>
+<text x="260.0" y="74" text-anchor="middle" class="small">0.001×</text>
+<line x1="447.5" y1="82" x2="447.5" y2="714" stroke="#e5e7eb" stroke-width="1"/>
+<text x="447.5" y="74" text-anchor="middle" class="small">0.01×</text>
+<line x1="635.0" y1="82" x2="635.0" y2="714" stroke="#e5e7eb" stroke-width="1"/>
+<text x="635.0" y="74" text-anchor="middle" class="small">0.1×</text>
+<line x1="822.5" y1="82" x2="822.5" y2="714" stroke="#111827" stroke-width="2"/>
+<text x="822.5" y="74" text-anchor="middle" class="small">1× baseline</text>
+<line x1="1010.0" y1="82" x2="1010.0" y2="714" stroke="#e5e7eb" stroke-width="1"/>
+<text x="1010.0" y="74" text-anchor="middle" class="small">10×</text>
+<text x="246" y="124" text-anchor="end" class="label">Find a word (present)</text>
+<rect x="260.0" y="94" width="293.4" height="14" rx="3" fill="#d97706" opacity="0.88"/>
+<text x="560.4" y="105" class="small">0.037×</text>
+<rect x="260.0" y="114" width="364.9" height="14" rx="3" fill="#2563eb" opacity="0.88"/>
+<text x="631.9" y="125" class="small">0.088×</text>
+<rect x="260.0" y="134" width="574.2" height="14" rx="3" fill="#7c3aed" opacity="0.88"/>
+<text x="841.2" y="145" class="small">1.154×</text>
+<rect x="260.0" y="154" width="731.2" height="14" rx="3" fill="#059669" opacity="0.88"/>
+<text x="998.2" y="165" class="small">7.938×</text>
+<text x="246" y="226" text-anchor="end" class="label">Find a word (absent)</text>
+<rect x="260.0" y="196" width="191.9" height="14" rx="3" fill="#d97706" opacity="0.88"/>
+<text x="458.9" y="207" class="small">0.011×</text>
+<rect x="260.0" y="216" width="337.0" height="14" rx="3" fill="#2563eb" opacity="0.88"/>
+<text x="604.0" y="227" class="small">0.063×</text>
+<rect x="260.0" y="236" width="553.8" height="14" rx="3" fill="#7c3aed" opacity="0.88"/>
+<text x="820.8" y="247" class="small">0.899×</text>
+<rect x="260.0" y="256" width="661.0" height="14" rx="3" fill="#059669" opacity="0.88"/>
+<text x="928.0" y="267" class="small">3.354×</text>
+<text x="246" y="328" text-anchor="end" class="label">Find one of many words (absent)</text>
+<rect x="260.0" y="298" width="117.5" height="14" rx="3" fill="#d97706" opacity="0.88"/>
+<text x="384.5" y="309" class="small">0.004×</text>
+<rect x="260.0" y="318" width="453.0" height="14" rx="3" fill="#2563eb" opacity="0.88"/>
+<text x="720.0" y="329" class="small">0.261×</text>
+<rect x="260.0" y="338" width="585.2" height="14" rx="3" fill="#7c3aed" opacity="0.88"/>
+<text x="852.2" y="349" class="small">1.321×</text>
+<rect x="260.0" y="358" width="607.0" height="14" rx="3" fill="#059669" opacity="0.88"/>
+<text x="874.0" y="369" class="small">1.728×</text>
+<text x="246" y="430" text-anchor="end" class="label">Check a structured value</text>
+<rect x="260.0" y="400" width="326.8" height="14" rx="3" fill="#d97706" opacity="0.88"/>
+<text x="593.8" y="411" class="small">0.055×</text>
+<rect x="260.0" y="420" width="454.8" height="14" rx="3" fill="#2563eb" opacity="0.88"/>
+<text x="721.8" y="431" class="small">0.267×</text>
+<rect x="260.0" y="440" width="607.3" height="14" rx="3" fill="#7c3aed" opacity="0.88"/>
+<text x="874.3" y="451" class="small">1.733×</text>
+<rect x="260.0" y="460" width="648.0" height="14" rx="3" fill="#059669" opacity="0.88"/>
+<text x="915.0" y="471" class="small">2.856×</text>
+<text x="246" y="532" text-anchor="end" class="label">Find an address</text>
+<rect x="260.0" y="502" width="280.3" height="14" rx="3" fill="#d97706" opacity="0.88"/>
+<text x="547.3" y="513" class="small">0.031×</text>
+<rect x="260.0" y="522" width="428.6" height="14" rx="3" fill="#2563eb" opacity="0.88"/>
+<text x="695.6" y="533" class="small">0.193×</text>
+<rect x="260.0" y="542" width="565.9" height="14" rx="3" fill="#7c3aed" opacity="0.88"/>
+<text x="832.9" y="553" class="small">1.042×</text>
+<rect x="260.0" y="562" width="596.5" height="14" rx="3" fill="#059669" opacity="0.88"/>
+<text x="863.5" y="573" class="small">1.518×</text>
+<text x="246" y="634" text-anchor="end" class="label">Find a line comment</text>
+<rect x="260.0" y="604" width="308.3" height="14" rx="3" fill="#d97706" opacity="0.88"/>
+<text x="575.3" y="615" class="small">0.044×</text>
+<rect x="260.0" y="624" width="385.0" height="14" rx="3" fill="#2563eb" opacity="0.88"/>
+<text x="652.0" y="635" class="small">0.113×</text>
+<rect x="260.0" y="644" width="573.6" height="14" rx="3" fill="#7c3aed" opacity="0.88"/>
+<text x="840.6" y="655" class="small">1.146×</text>
+<rect x="260.0" y="664" width="655.2" height="14" rx="3" fill="#059669" opacity="0.88"/>
+<text x="922.2" y="675" class="small">3.120×</text>
+<rect x="24" y="725" width="15" height="11" rx="2" fill="#d97706"/><text x="45" y="735" class="small">Zig tree executor</text>
+<rect x="294" y="725" width="15" height="11" rx="2" fill="#2563eb"/><text x="315" y="735" class="small">Zig compiled / ctypes</text>
+<rect x="564" y="725" width="15" height="11" rx="2" fill="#7c3aed"/><text x="585" y="735" class="small">Zig compiled / native bridge</text>
+<rect x="834" y="725" width="15" height="11" rx="2" fill="#059669"/><text x="855" y="735" class="small">Zig compiled, one Python call</text>
+</svg>

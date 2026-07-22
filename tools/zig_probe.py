@@ -11,6 +11,8 @@ import time
 from html import escape
 from pathlib import Path
 
+from candidates import _zig_bridge
+
 
 SEED = 20260724
 TRIALS = 13
@@ -61,6 +63,8 @@ class Zig:
         return handle
 
     def span(self, handle, text, pos, end, mode, backend="bytecode"):
+        if backend == "native":
+            return _zig_bridge.span(handle, text, pos, end, mode)
         raw = text if isinstance(text, bytes) else text.encode("ascii")
         begin, finish = ctypes.c_ssize_t(-1), ctypes.c_ssize_t(-1)
         function = self.lib.rebar_zig_match if backend == "bytecode" else self.lib.rebar_zig_match_tree
@@ -115,7 +119,7 @@ def controls(zig):
             for mode, name in ((0, "search"), (1, "match"), (2, "fullmatch")):
                 expected_match = getattr(baseline, name)(text, pos, end)
                 expected = expected_match.span() if expected_match else None
-                for backend in ("bytecode", "tree"):
+                for backend in ("bytecode", "tree", "native"):
                     checks += 1
                     actual = zig.span(handle, text, pos, end, mode, backend)
                     if actual != expected:
@@ -125,7 +129,7 @@ def controls(zig):
     return len(cases), checks, failures
 
 
-def measure(zig):
+def measure(zig, trials, operations):
     results = []
     raw = []
     for name, pattern, text, mode in BENCHMARKS:
@@ -134,16 +138,15 @@ def measure(zig):
         baseline = re.compile(pattern, flags)
         expected_match = (baseline.search if mode == 0 else baseline.fullmatch)(text)
         expected = expected_match.span() if expected_match else None
-        for backend in ("bytecode", "tree"):
+        for backend in ("bytecode", "tree", "native"):
             actual = zig.span(handle, text, 0, len(text), mode, backend)
             if actual != expected:
                 zig.lib.rebar_zig_free(handle)
                 raise RuntimeError(f"benchmark correctness mismatch: {name} {backend}: {actual} != {expected}")
-        operations = 8000
         pairs = []
-        for trial in range(TRIALS):
+        for trial in range(trials):
             values = {}
-            engines = ("re", "zig-bytecode", "zig-tree", "zig-batched")
+            engines = ("re", "zig-bytecode", "zig-native", "zig-tree", "zig-batched")
             shift = trial % len(engines)
             order = engines[shift:] + engines[:shift]
             if trial % 2:
@@ -157,7 +160,7 @@ def measure(zig):
                 elif engine == "zig-batched":
                     span = zig.batch(handle, text, 0, len(text), mode, operations)
                 else:
-                    backend = "tree" if engine == "zig-tree" else "bytecode"
+                    backend = "tree" if engine == "zig-tree" else "native" if engine == "zig-native" else "bytecode"
                     for _ in range(operations):
                         span = zig.span(handle, text, 0, len(text), mode, backend)
                 elapsed = time.perf_counter_ns() - started
@@ -178,9 +181,9 @@ def measure(zig):
 
 def chart(results, output):
     labels = {"literal-hit": "Find a word (present)", "literal-miss": "Find a word (absent)", "alternatives-miss": "Find one of many words (absent)", "structured-match": "Check a structured value", "url-search": "Find an address", "multiline-comment": "Find a line comment"}
-    colors = {"zig-tree": "#d97706", "zig-bytecode": "#2563eb", "zig-batched": "#059669"}
-    names = {"zig-tree": "Zig tree executor", "zig-bytecode": "Zig compiled executor", "zig-batched": "Zig compiled, one Python call"}
-    width, left, right, top, row = 1000, 260, 70, 94, 82
+    colors = {"zig-tree": "#d97706", "zig-bytecode": "#2563eb", "zig-native": "#7c3aed", "zig-batched": "#059669"}
+    names = {"zig-tree": "Zig tree executor", "zig-bytecode": "Zig compiled / ctypes", "zig-native": "Zig compiled / native bridge", "zig-batched": "Zig compiled, one Python call"}
+    width, left, right, top, row = 1120, 260, 110, 94, 102
     height = top + len(BENCHMARKS) * row + 40
     min_log, max_log = -3.0, 1.0
     plot_width = width - left - right
@@ -193,7 +196,7 @@ def chart(results, output):
         stroke = "#111827" if value == 1 else "#e5e7eb"
         body.append(f'<line x1="{px:.1f}" y1="{top-12}" x2="{px:.1f}" y2="{height-32}" stroke="{stroke}" stroke-width="{2 if value == 1 else 1}"/>')
         body.append(f'<text x="{px:.1f}" y="{top-20}" text-anchor="middle" class="small">{label}</text>')
-    order = ("zig-tree", "zig-bytecode", "zig-batched")
+    order = ("zig-tree", "zig-bytecode", "zig-native", "zig-batched")
     for index, (case, _, _, _) in enumerate(BENCHMARKS):
         base_y = top + index * row
         body.append(f'<text x="{left-14}" y="{base_y+30}" text-anchor="end" class="label">{escape(labels[case])}</text>')
@@ -207,7 +210,7 @@ def chart(results, output):
             body.append(f'<text x="{min(px+7,width-right+18):.1f}" y="{y+11}" class="small">{speed:.3f}×</text>')
     legend_y = height - 10
     for index, engine in enumerate(order):
-        lx = 24 + index * 260
+        lx = 24 + index * 270
         body.append(f'<rect x="{lx}" y="{legend_y-11}" width="15" height="11" rx="2" fill="{colors[engine]}"/><text x="{lx+21}" y="{legend_y-1}" class="small">{escape(names[engine])}</text>')
     body.append('</svg>')
     Path(output).write_text("\n".join(body) + "\n", encoding="utf-8")
@@ -219,26 +222,30 @@ def main():
     parser.add_argument("--library", default=str(LIBRARY))
     parser.add_argument("--chart")
     parser.add_argument("--verify-only", action="store_true")
+    parser.add_argument("--trials", type=int, default=TRIALS)
+    parser.add_argument("--operations", type=int, default=8000)
     args = parser.parse_args()
     zig = Zig(args.library)
     case_count, checks, failures = controls(zig)
     if failures:
-        result = {"schema": "rebar-zig-probe-v2", "seed": SEED, "correctness_cases": case_count, "correctness_checks": checks, "failed": len(failures), "failures": failures}
+        result = {"schema": "rebar-zig-probe-v3", "seed": SEED, "correctness_cases": case_count, "correctness_checks": checks, "failed": len(failures), "failures": failures}
         Path(args.output).write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         print(json.dumps({key: value for key, value in result.items() if key != "failures"}, sort_keys=True))
         return 1
     if args.verify_only:
-        result = {"schema": "rebar-zig-probe-v2", "seed": SEED, "correctness_cases": case_count, "correctness_checks": checks, "failed": 0, "program_bytes": zig.lib.rebar_zig_program_size()}
+        result = {"schema": "rebar-zig-probe-v3", "seed": SEED, "correctness_cases": case_count, "correctness_checks": checks, "failed": 0, "program_bytes": zig.lib.rebar_zig_program_size()}
         Path(args.output).write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         print(json.dumps(result, sort_keys=True))
         return 0
-    results, raw = measure(zig)
-    overall = {engine: statistics.geometric_mean(item["speedup"] for item in results if item["engine"] == engine) for engine in ("zig-tree", "zig-bytecode", "zig-batched")}
-    result = {"schema": "rebar-zig-probe-v2", "seed": SEED, "correctness_cases": case_count, "correctness_checks": checks, "failed": 0, "trials": TRIALS, "program_bytes": zig.lib.rebar_zig_program_size(), "overall": overall, "results": results, "raw": raw}
+    if args.trials < 1 or args.operations < 1:
+        raise ValueError("--trials and --operations must be positive")
+    results, raw = measure(zig, args.trials, args.operations)
+    overall = {engine: statistics.geometric_mean(item["speedup"] for item in results if item["engine"] == engine) for engine in ("zig-tree", "zig-bytecode", "zig-native", "zig-batched")}
+    result = {"schema": "rebar-zig-probe-v3", "seed": SEED, "correctness_cases": case_count, "correctness_checks": checks, "failed": 0, "trials": args.trials, "operations": args.operations, "program_bytes": zig.lib.rebar_zig_program_size(), "overall": overall, "results": results, "raw": raw}
     Path(args.output).write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     if args.chart:
         chart(results, args.chart)
-    print(json.dumps({"correctness_checks": checks, "failed": 0, "overall": overall, "program_bytes": result["program_bytes"], "results": results, "trials": TRIALS}, sort_keys=True))
+    print(json.dumps({"correctness_checks": checks, "failed": 0, "overall": overall, "program_bytes": result["program_bytes"], "results": results, "trials": args.trials}, sort_keys=True))
     return 0
 
 
