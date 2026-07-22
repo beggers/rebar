@@ -1,0 +1,72 @@
+{
+  "cases_per_module": 144,
+  "checks": 144,
+  "expected_sha256": "f3ab490e351648118e522035c8624976203c777d9c1a7f7d44ad98233f2056bf",
+  "failed": 10,
+  "failures": [
+    {
+      "case": "cal.unicode.words",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.unicode-name.search",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.unicode.words",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.unicode-name.search",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.mode.ascii",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.mode.casefold",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.mode.astral",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.mode.ascii",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.mode.casefold",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.mode.astral",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    }
+  ],
+  "modules": [
+    "candidates.zig_candidate"
+  ],
+  "schema": "rebar-performance-correctness-v3"
+}

@@ -29,6 +29,25 @@ TARGETS = (
     (r"(a(b(c)?){0,2})+", "abcbcabc", 0),
     (r"\b([A-Za-z_][A-Za-z0-9_]*)\b", "skip_one ready item_3", re.ASCII),
     (r"\B((ab|xy)+)\B", "zababq xxyy", re.ASCII),
+    (r"([A-Za-z]{2,4})-\1", "skip echo-echo end", 0),
+    (r"([A-Z]+):\1", "xx ECHO:echo yy", re.IGNORECASE),
+    (r"(a(b)?)+-\2", "aba-b", 0),
+    (r"(\[)?([0-9]+)(?(1)\]|;)", "[2048] next 91;", 0),
+    (r"(a)?(?(1)b|c)", "c ab", 0),
+    (r"(?P<word>[A-Za-z]{2,4})-(?P=word)", "echo-echo", 0),
+    (r"(?P<bracket>\[)?(?P<num>[0-9]+)(?(bracket)\]|;)", "[2048] next", 0),
+    (r"(?>a*)a", "aaaa", 0),
+    (r"a*+a", "aaaa", 0),
+    (r"((?>ab|a))b+", "xx abbbb yy", 0),
+    (r"((?:a|b){1,3}+)b", "abbb", 0),
+    (r"\A([A-Z_]+)\Z", "TAG_VALUE", re.ASCII),
+    (r"(?x) (?P<name>[A-Z]+) \s* : \s* (?P<num>[0-9]+) # field", "ITEM : 730", 0),
+    (r"([\x41-\x5a\040]+)", "AA BB CC", re.ASCII),
+    (r"(?<=code:)(?P<code>[A-Z]{2}[0-9]+)(?=,)", "x,code:ZX9021,next", 0),
+    (r"\b(?!skip_)([A-Za-z_][A-Za-z0-9_]*)\b", "skip_one ready item_3", re.ASCII),
+    (r"(?<![A-Za-z0-9_])(@[A-Za-z][A-Za-z0-9_]*)", "@one x@skip @two_2", re.ASCII),
+    (r"(?=(a(b)?))ab", "ab", 0),
+    (r"(?:|a)", "a", 0),
 )
 BENCHMARKS = (
     ("literal-capture", r"(needle)", "prefix needle suffix", 0, 0),
@@ -37,6 +56,8 @@ BENCHMARKS = (
     ("structured-capture", r"([A-Z]+)(?:-([0-9]+))?(?:\.([A-Z]+)(?:-([0-9]+))?)*", "ALPHA-1.BETA.GAMMA-22.DELTA", 2, 0),
     ("url-capture", r"(https?|ftp)://([A-Za-z0-9.-]+)(?::([0-9]+))?(/[^ ?#]*)?", "link ftp://files.example.net:2121/releases/v4.2.tar?q=no", 0, 0),
     ("line-capture", r"^([A-Z]+)\s+([A-Z]{3}[0-9]{2})\s+([^\n]+)$", "TRACE NET01 connected\nDEBUG CFG20 loaded", 0, re.MULTILINE),
+    ("backref-capture", r"([A-Za-z]{2,5})-\1", "prefix echo-echo suffix", 0, 0),
+    ("conditional-capture", r"(\[)?([0-9]+)(?(1)\]|;)", "prefix [2048] suffix", 0, 0),
 )
 
 
@@ -48,6 +69,14 @@ class Zig:
         self.lib.rebar_zig_free.argtypes = (ctypes.c_void_p,)
         self.lib.rebar_zig_groups.argtypes = (ctypes.c_void_p,)
         self.lib.rebar_zig_groups.restype = ctypes.c_size_t
+        self.lib.rebar_zig_name_count.argtypes = (ctypes.c_void_p,)
+        self.lib.rebar_zig_name_count.restype = ctypes.c_size_t
+        self.lib.rebar_zig_name_length.argtypes = (ctypes.c_void_p, ctypes.c_size_t)
+        self.lib.rebar_zig_name_length.restype = ctypes.c_size_t
+        self.lib.rebar_zig_name_group.argtypes = (ctypes.c_void_p, ctypes.c_size_t)
+        self.lib.rebar_zig_name_group.restype = ctypes.c_size_t
+        self.lib.rebar_zig_name_copy.argtypes = (ctypes.c_void_p, ctypes.c_size_t, ctypes.c_void_p, ctypes.c_size_t)
+        self.lib.rebar_zig_name_copy.restype = ctypes.c_size_t
 
     def compile(self, pattern, flags):
         raw = pattern if isinstance(pattern, bytes) else pattern.encode("ascii")
@@ -58,6 +87,15 @@ class Zig:
 
     def run(self, handle, text, pos, end, mode):
         return _zig_bridge.match(handle, text, pos, end, mode)
+
+    def names(self, handle):
+        result = {}
+        for index in range(self.lib.rebar_zig_name_count(handle)):
+            length = self.lib.rebar_zig_name_length(handle, index)
+            value = ctypes.create_string_buffer(length)
+            self.lib.rebar_zig_name_copy(handle, index, value, length)
+            result[value.raw.decode("ascii")] = self.lib.rebar_zig_name_group(handle, index)
+        return result
 
 
 def expected_value(compiled, text, pos, end, mode):
@@ -92,6 +130,24 @@ def controls(zig):
     for pattern, text, flags in TARGETS:
         cases.append((pattern, text, flags, 0, len(text)))
         cases.append((pattern.encode("ascii"), text.encode("ascii"), flags | re.ASCII, 0, len(text)))
+    for _ in range(480):
+        atom = rng.choice(("a", "b", "[ab]", "[A-Za-z]", r"\d"))
+        quantifier = rng.choice(("+", "{1,3}", "{2,4}"))
+        pattern = rng.choice((
+            f"({atom}{quantifier})-\\1",
+            f"({atom})?({atom}{quantifier})(?(1)x|y)",
+            f"(({atom}){{1,3}})-\\2",
+            f"({atom}{quantifier})?(?(1)-\\1|z)",
+        ))
+        flags = rng.choice((0, re.IGNORECASE, re.ASCII, re.IGNORECASE | re.ASCII))
+        text = "".join(rng.choice("abxyzAB0123_- .") for _ in range(rng.randint(0, 26)))
+        if rng.randrange(2):
+            text += rng.choice(("ab-ab", "A-A", "12-12", "bbby", "z", "axa"))
+        if rng.randrange(2):
+            pattern, text = pattern.encode("ascii"), text.encode("ascii")
+        pos = rng.randint(0, len(text))
+        end = rng.randint(pos, len(text))
+        cases.append((pattern, text, flags, pos, end))
     failures = []
     checks = 0
     for index, (pattern, text, flags, pos, end) in enumerate(cases):
@@ -104,6 +160,8 @@ def controls(zig):
         try:
             if zig.lib.rebar_zig_groups(handle) != baseline.groups:
                 failures.append({"case": index, "stage": "groups", "pattern": repr(pattern), "expected": baseline.groups, "actual": zig.lib.rebar_zig_groups(handle)})
+            if zig.names(handle) != dict(baseline.groupindex):
+                failures.append({"case": index, "stage": "groupindex", "pattern": repr(pattern), "expected": dict(baseline.groupindex), "actual": zig.names(handle)})
             for mode, name in enumerate(("search", "match", "fullmatch")):
                 checks += 1
                 expected = expected_value(baseline, text, pos, end, mode)
@@ -152,8 +210,9 @@ def measure(zig, trials, operations):
 
 
 def chart(results, output):
-    labels = {"literal-capture": "Find a captured word", "optional-capture": "Find optional captured fields", "alternatives-capture": "Search captured alternatives (absent)", "structured-capture": "Check repeated captured fields", "url-capture": "Find a captured address", "line-capture": "Find captured line fields"}
-    width, height, left, top, row = 960, 460, 290, 100, 55
+    labels = {"literal-capture": "Find a captured word", "optional-capture": "Find optional captured fields", "alternatives-capture": "Search captured alternatives (absent)", "structured-capture": "Check repeated captured fields", "url-capture": "Find a captured address", "line-capture": "Find captured line fields", "backref-capture": "Find a repeated captured word", "conditional-capture": "Find a conditional captured field"}
+    width, left, top, row = 960, 290, 100, 55
+    height = top + len(results) * row + 28
     plot = 520
     minimum, maximum = .05, 5
     def x(value):

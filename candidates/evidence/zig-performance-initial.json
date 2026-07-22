@@ -1,0 +1,168 @@
+{
+  "cases_per_module": 144,
+  "checks": 144,
+  "expected_sha256": "f3ab490e351648118e522035c8624976203c777d9c1a7f7d44ad98233f2056bf",
+  "failed": 26,
+  "failures": [
+    {
+      "case": "cal.search.look-capture",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.unicode.words",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.empty.finditer",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.atomic.search",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.unicode-name.search",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.search.look-capture",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.unicode.words",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.empty.finditer",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.atomic.search",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.unicode-name.search",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.real.csv",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.pattern.verbose",
+      "message": "performance correctness mismatch: candidates.zig_candidate cal.pattern.verbose",
+      "module": "candidates.zig_candidate",
+      "type": "RuntimeError"
+    },
+    {
+      "case": "cal.mode.ascii",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.mode.casefold",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.mode.astral",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.look.negative-ahead",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.look.negative-behind",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.zero.boundary",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.real.csv",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.pattern.verbose",
+      "message": "performance correctness mismatch: candidates.zig_candidate hold.pattern.verbose",
+      "module": "candidates.zig_candidate",
+      "type": "RuntimeError"
+    },
+    {
+      "case": "hold.mode.ascii",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.mode.casefold",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.mode.astral",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.look.negative-ahead",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.look.negative-behind",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.zero.boundary",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    }
+  ],
+  "modules": [
+    "candidates.zig_candidate"
+  ],
+  "schema": "rebar-performance-correctness-v3"
+}

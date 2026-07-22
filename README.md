@@ -48,17 +48,11 @@ The matching [Rust-engine optimization pilot](performance/v3/evidence/RUST-ENGIN
 
 ![Rust engine before and after](performance/v3/evidence/rust-engine-pilot.svg)
 
-The separate [from-scratch Zig trial](candidates/evidence/ZIG-PROBE.md) shows why the Python/native boundary matters: the compiled Zig matcher is faster than Python `re` on all six small tasks once repeated calls cross that boundary only once, but individual Python calls remain much slower. Zig is an architecture experiment, **not** a complete replacement candidate.
+The separate [from-scratch Zig engine trial](candidates/evidence/ZIG-REFERENCES.md) now covers captures, references, conditionals, lookaround, and the public collection APIs. It passes **2,651/8,244** compatibility cases and **134/144** broader tasks; Unicode and exact errors remain incomplete. On the supported broader holdout it reaches **0.460×** of Python `re` (0.459–0.462×), so it is preserved as an architecture result and excluded from the headline ranking.
 
-![Zig architecture speed compared with Python re](candidates/evidence/zig-probe-speed.svg)
+![Zig compatibility and speed progress](candidates/evidence/zig-progress.svg)
 
-The follow-on [Zig native-bridge trial](candidates/evidence/ZIG-NATIVE-BRIDGE.md) removes most of that boundary cost. Individual Zig calls are now **1.19×** as fast as Python `re` overall on the six tasks and clearly faster on **5/6**; the remaining absent-word loss is visible below. Zig still lacks complete `re` compatibility, so these results are not included in the headline ranking.
-
-![Zig native bridge speed compared with Python re](candidates/evidence/zig-native-bridge.svg)
-
-The latest [Zig capture trial](candidates/evidence/ZIG-CAPTURES.md) adds real numbered captures, correct backtracking restoration, `lastindex`, and word boundaries. When each call returns all capture spans, Zig is **3.01×** as fast overall on six tasks and clearly faster on **6/6**, with **12,480** seeded span/capture comparisons clean. This remains an incomplete engine, not a drop-in claim.
-
-![Zig capture-aware speed compared with Python re](candidates/evidence/zig-capture.svg)
+![Zig speed on every supported broader task](candidates/evidence/zig-holdout-pilot.svg)
 
 ## Correctness and current status
 

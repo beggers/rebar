@@ -38,6 +38,9 @@ TARGETS = (
     (r"\A\w+(?:-\d+)?\Z", "name-42", re.ASCII),
     (r"\b[A-Za-z_][A-Za-z0-9_]*\b", "skip_one ready item_3", re.ASCII),
     (r"\B(?:ab|xy)+\B", "zababq xxyy", re.ASCII),
+    (r"\A[A-Z_]+\Z", "TAG_VALUE", re.ASCII),
+    (r"(?x) [A-Z]+ \s* : \s* [0-9]+ # field", "prefix ITEM : 730", 0),
+    (r"[\x41-\x5a\040]+", "AA BB CC", re.ASCII),
 )
 
 
