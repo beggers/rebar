@@ -1,0 +1,10 @@
+{
+  "correctness_checks": 18168,
+  "failed": 0,
+  "failures": [],
+  "manual_cases": 31,
+  "octal_checks": 1536,
+  "schema": "rebar-zig-syntax-v1",
+  "seed": 2026073106,
+  "seeded_cases": 16384
+}

@@ -101,8 +101,13 @@ const Parser = struct {
     }
 
     fn skip(self: *Parser) void {
-        if (self.program.flags & 64 == 0) return;
         while (self.at < self.source.len) {
+            if (self.at + 2 < self.source.len and self.source[self.at] == '(' and self.source[self.at + 1] == '?' and self.source[self.at + 2] == '#') {
+                const close = std.mem.indexOfScalarPos(u8, self.source, self.at + 3, ')') orelse return;
+                self.at = close + 1;
+                continue;
+            }
+            if (self.program.flags & 64 == 0) return;
             const value = self.source[self.at];
             if (value == ' ' or value == '\t' or value == '\n' or value == '\r' or value == 11 or value == 12) {
                 self.at += 1;
@@ -295,7 +300,7 @@ const Parser = struct {
                     } else if (self.source[self.at + 1] == '(') {
                         self.at += 2;
                         const reference_number = try self.reference();
-                        if (reference_number == 0 or reference_number > self.program.groups or self.at >= self.source.len or self.source[self.at] != ')') return error.Unsupported;
+                        if (reference_number == 0 or reference_number > max_groups or self.at >= self.source.len or self.source[self.at] != ')') return error.Unsupported;
                         if (self.lookbehind_depth != 0 and reference_number > self.lookbehind_bases[0]) return error.InvalidPattern;
                         self.at += 1;
                         const yes = try self.sequence();
@@ -393,10 +398,16 @@ const Parser = struct {
                 if (code == 'Z' or code == 'z') break :blk self.add(.absolute_end);
                 if (code == 'b' or code == 'B') break :blk self.add(.{ .boundary = code == 'b' });
                 if (code >= '1' and code <= '9') {
+                    if (code <= '7' and self.at + 1 < self.source.len and self.source[self.at] >= '0' and self.source[self.at] <= '7' and self.source[self.at + 1] >= '0' and self.source[self.at + 1] <= '7') {
+                        const octal: u32 = @as(u32, code - '0') * 64 + @as(u32, self.source[self.at] - '0') * 8 + @as(u32, self.source[self.at + 1] - '0');
+                        if (octal > 255) return error.InvalidPattern;
+                        self.at += 2;
+                        break :blk self.add(.{ .literal = octal });
+                    }
                     var reference_number: usize = code - '0';
-                    while (self.at < self.source.len and std.ascii.isDigit(self.source[self.at])) : (self.at += 1) {
-                        reference_number = std.math.mul(usize, reference_number, 10) catch return error.InvalidPattern;
-                        reference_number = std.math.add(usize, reference_number, self.source[self.at] - '0') catch return error.InvalidPattern;
+                    if (self.at < self.source.len and std.ascii.isDigit(self.source[self.at])) {
+                        reference_number = reference_number * 10 + self.source[self.at] - '0';
+                        self.at += 1;
                     }
                     if (reference_number > self.program.groups) return error.Unsupported;
                     if (reference_number <= max_groups and self.open_groups[reference_number]) return error.InvalidPattern;
@@ -461,6 +472,7 @@ const Parser = struct {
         const child = try self.atom();
         if (self.at >= self.source.len) return child;
         const mark = self.source[self.at];
+        if (mark == '{' and !self.braceRepeat()) return child;
         if (mark == '*' or mark == '+' or mark == '?' or mark == '{') {
             switch (self.program.nodes[child]) {
                 .begin, .end, .absolute_begin, .absolute_end, .boundary => return error.InvalidPattern,
@@ -508,8 +520,23 @@ const Parser = struct {
             possessive = true;
             self.at += 1;
         }
-        if (self.at < self.source.len and (self.source[self.at] == '*' or self.source[self.at] == '+' or self.source[self.at] == '?' or self.source[self.at] == '{')) return error.InvalidPattern;
+        if (self.at < self.source.len and (self.source[self.at] == '*' or self.source[self.at] == '+' or self.source[self.at] == '?' or self.source[self.at] == '{' and self.braceRepeat())) return error.InvalidPattern;
         return self.add(.{ .repeat = .{ .child = child, .minimum = minimum, .maximum = maximum, .lazy = lazy, .possessive = possessive } });
+    }
+
+    fn braceRepeat(self: *const Parser) bool {
+        if (self.at >= self.source.len or self.source[self.at] != '{') return false;
+        var cursor = self.at + 1;
+        const left = cursor;
+        while (cursor < self.source.len and std.ascii.isDigit(self.source[cursor])) : (cursor += 1) {}
+        const has_left = cursor != left;
+        var has_comma = false;
+        if (cursor < self.source.len and self.source[cursor] == ',') {
+            has_comma = true;
+            cursor += 1;
+            while (cursor < self.source.len and std.ascii.isDigit(self.source[cursor])) : (cursor += 1) {}
+        }
+        return (has_left or has_comma) and cursor < self.source.len and self.source[cursor] == '}';
     }
 
     fn sequence(self: *Parser) ParseError!u16 {
@@ -1591,6 +1618,15 @@ pub export fn rebar_zig_compile(pattern: [*]const u8, length: usize, flags: u32)
     if (parser.at != parser.source.len) {
         std.heap.c_allocator.destroy(program);
         return null;
+    }
+    for (program.nodes[0..program.node_count]) |node| {
+        switch (node) {
+            .conditional => |conditional| if (conditional.number > program.groups) {
+                std.heap.c_allocator.destroy(program);
+                return null;
+            },
+            else => {},
+        }
     }
     var compiler = Compiler{ .program = program, .flags = program.flags };
     compiler.node(program.root) catch {

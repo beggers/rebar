@@ -1,0 +1,1 @@
+{"blocked_attempts": 0, "forbidden_markers": 0, "imports": ["candidates", "ctypes", "enum", "operator", "os", "types", "unicodedata", "warnings"], "module": "candidates.zig_candidate", "native_source": "candidates/zig/mini_regex.zig", "smoke": "pass", "source": "candidates/zig_candidate.py"}
