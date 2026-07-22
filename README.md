@@ -1,101 +1,71 @@
 # rebar: building a faster Python `re`
 
-`rebar` is an experiment to build a drop-in, faster replacement for Python's regular-expression module. The public import is `import rebar as re`. Three independent, from-scratch engines are checked against the latest stable CPython and compared on the same tasks; incorrect results are never timed.
+`rebar` is an experiment to build a compatible, faster replacement for Python's regular-expression module. Use it with `import rebar as re`. Three independent engines were written from scratch and checked against the latest stable CPython; none wraps or delegates matching to an external package or Python's regex engine.
 
 The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`. Scope notes are in [AMENDMENTS.md](AMENDMENTS.md), and the complete chronological record is in the [experiment log](docs/EXPERIMENT-LOG.md).
 
 ## Headline results
 
-The broader holdout contains **72 separate tasks** kept apart from tuning, including logs, URLs, configuration/text cleanup, byte inputs, Unicode, replacements, scanners, and windowed calls. **1× means the same speed as Python `re`; higher is faster.** The native C engine is **1.57× as fast overall** (1.56–1.58× measured range), clearly faster on **68/72** tasks, with **zero** tasks more than 20% slower. It meets every experiment target. Rust is now **13× faster than its earlier version** and Python **2.4× faster**, although both remain slower than stdlib on short calls.
+The large holdout contains **1,224 separate, unseen tasks** spanning everyday text and byte processing, every common API, compilation, Unicode, captures, replacements, scanners, windows, hits, misses, and short/long inputs. **1× means the same speed as Python `re`; higher is faster.**
 
-![Overall speed compared with Python re](performance/v3/evidence/engines-final-overall.svg)
+The native C engine is **1.56× as fast overall** (1.559–1.564× measured range) and clearly faster on **1,130/1,224** tasks (**92%**). It meets the experiment's speed and coverage targets. Its **11** large holdout slowdowns are all email-like multi-result searches; they are retained, profiled, and explained.
+
+![Overall speed compared with Python re](performance/v4/evidence/initial-overall.svg)
 
 | Engine | Overall speed | Clearly faster | Large slowdowns |
 | --- | ---: | ---: | ---: |
-| Native C | **1.57×** | **68/72** | **0/72** |
-| Rust | 0.178× | 4/72 | 68/72 |
-| Python | 0.027× | 3/72 | 69/72 |
+| Native C / `rebar` | **1.56×** | **1,130/1,224** | **11/1,224** |
+| Rust | 0.181× | 72/1,224 | 1,124/1,224 |
+| Python | 0.033× | 36/1,224 | 1,157/1,224 |
 
-The [refreshed broader report](performance/v3/evidence/ENGINES-FINAL.md) and [plain-language notes](performance/v3/evidence/ENGINES-FINAL-NOTES.md) retain all **7,488** correctness-gated timing rows, every task, memory observation, confidence range, and all **274** Python/Rust slowdowns with their causes. General native paths remove repeated state creation, character/class checks, boundary calls, and rescanning across common workloads while preserving compatibility. The pre-timing check passes **576/576** comparisons.
-
-![Broader performance coverage and current status](performance/v3/evidence/coverage-final.svg)
-
-All three engines now pass every runnable official CPython `re` test, including long inputs, deep lookbehind, mutable buffers, Unicode behavior, and the 403-pattern historical corpus. There are no failures, crashes, or timeouts.
-
-![Official CPython re compatibility check](oracle/cpython-3.14.6/evidence/long-repeat-correctness.svg)
-
-They also pass **155,313** focused differential checks, including **39,000** replacement checks covering `sub`, `subn`, match expansion, text/bytes/buffers, callbacks, empty inputs, and exact error behavior.
-
-![Replacement compatibility before and after the fix](oracle/v2/evidence/replacement-correctness.svg)
-
-A newly frozen [large correctness holdout](oracle/v3/P0.md) adds **35,840 previously unused cases** across deeper patterns, everyday inputs, Unicode/bytes/buffers, scanner sequences, properties, and invalid inputs. Stdlib and all three engines now pass **44,084/44,084** with every obligation mapped. The [qualification report](oracle/v3/evidence/QUALIFIED.md) preserves the compatibility gaps it found, their fixes, and **89,280** new focused checks.
-
-![Large correctness holdout coverage and results](oracle/v3/evidence/qualified-correctness.svg)
-
-The new [large performance holdout](performance/v4/PROTOCOL.md) expands the comparison to **1,224 unseen tasks**, with a matching practice set and all earlier tasks preserved. It covers common calls, realistic text and byte workloads, buffers, Unicode, compilation, captures, replacements, scanners, windows, hits, misses, and short/long inputs. All **9,792/9,792** pre-timing comparisons pass. Timing on this larger set is **NOT MEASURED** until the next chunk.
+The [complete results](performance/v4/evidence/INITIAL.md) retain all **127,296** paired timing rows, every task, memory observation, measured range, and all **4,616** practice/holdout slowdowns. The [plain-language notes](performance/v4/evidence/INITIAL-NOTES.md) explain the native losses and the remaining Python/Rust costs. Every timed batch is checked against frozen CPython output both before and after timing.
 
 ![Large performance holdout coverage](performance/v4/evidence/coverage.svg)
 
+All three engines pass the frozen **44,084-case** correctness matrix, including **35,840** previously unused cases across deeper patterns, everyday inputs, Unicode/bytes/buffers, scanner sequences, properties, and invalid inputs. They also pass **155,313** focused checks and all **144** runnable official CPython `re` tests, with zero unexplained failures, crashes, or release-build timeouts. The [qualification report](oracle/v3/evidence/QUALIFIED.md) preserves the compatibility gaps the larger suite found and their fixes.
+
+![Large correctness holdout coverage and results](oracle/v3/evidence/qualified-correctness.svg)
+
 ## Detailed graphs
 
-These show the broader holdout task by task. Green means clearly faster, red means more than 20% slower, and grey means close or uncertain. Each speed cell includes the measured range.
+The family view makes the larger benchmark readable: each row combines the matching variations of one kind of task. The all-case plots then show every individual holdout result and its measured range or memory use. Green indicates clearly faster, red indicates a slowdown greater than 20%, and grey indicates close or uncertain.
 
-![Speed on every holdout task](performance/v3/evidence/engines-final-speed.svg)
+![Speed by kind of holdout task](performance/v4/evidence/initial-family-speed.svg)
 
-![Memory used on every holdout task](performance/v3/evidence/engines-final-memory.svg)
+![Speed and confidence on every holdout task](performance/v4/evidence/initial-speed-cloud.svg)
 
-![Where each engine is faster or slower](performance/v3/evidence/engines-final-regressions.svg)
+![Memory on every holdout task](performance/v4/evidence/initial-memory-cloud.svg)
 
-![Overall results across all task sets](performance/v3/evidence/engines-final-rankings.svg)
+![Where each engine wins and loses](performance/v4/evidence/initial-regressions.svg)
 
-A follow-on [Python-engine optimization pilot](performance/v3/evidence/PYTHON-ENGINE.md) makes the pure-Python engine **2.37× faster than before** across the same 72 holdout tasks while keeping every correctness gate clean. The chart shows every task and makes the remaining gap to Python `re` explicit.
+![Overall results across all task sets](performance/v4/evidence/initial-rankings.svg)
 
-![Python engine before and after](performance/v3/evidence/python-engine-pilot.svg)
+## Current status
 
-The matching [Rust-engine optimization pilot](performance/v3/evidence/RUST-ENGINE.md) makes the independent Rust engine **12.90× faster than before** on the same tasks. A small native bridge and general matching/collection improvements remove most conversion and boundary overhead; the remaining gap is shown for every task.
-
-![Rust engine before and after](performance/v3/evidence/rust-engine-pilot.svg)
-
-The separate [from-scratch Zig engine trial](candidates/evidence/ZIG-REFERENCES.md) now covers captures, references, conditionals, lookaround, and the public collection APIs. It passes **2,651/8,244** compatibility cases and **134/144** broader tasks; Unicode and exact errors remain incomplete. On the supported broader holdout it reaches **0.460×** of Python `re` (0.459–0.462×), so it is preserved as an architecture result and excluded from the headline ranking.
-
-![Zig compatibility and speed progress](candidates/evidence/zig-progress.svg)
-
-![Zig speed on every supported broader task](candidates/evidence/zig-holdout-pilot.svg)
-
-## Correctness and current status
-
-The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). Stdlib and all three engines pass the [expanded seeded matrix](oracle/v2/P0.md): **8,244/8,244 cases**, **45/45 obligations**. They also pass all **144** runnable [official CPython `re` methods](oracle/cpython-3.14.6/README.md), with two environment-dependent locale skips.
+The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The public import selects the correctness-qualified native C winner. A separate, independently written [Zig experiment](candidates/evidence/ZIG-REFERENCES.md) was also built and measured; it is preserved as an architecture result but is not ranked because Unicode and exact error behavior remain incomplete. Earlier language/FFI experiments, optimizations, rejections, and raw evidence are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
 
 | Check | Status |
 | --- | --- |
-| Seeded correctness | **PASS** — stdlib, native C, Python, and Rust each pass all 8,244 expanded cases |
+| Large correctness matrix | **PASS** — stdlib, native C, Python, and Rust each pass all 44,084 cases |
+| Focused checks | **PASS** — 155,313 replacement, buffer, long-input, lookaround, collection, separator, newline, and locale checks |
 | Official CPython tests | **PASS** — all three engines pass 144/144 runnable methods; zero failures, crashes, or timeouts |
-| Focused differential checks | **PASS** — 155,313 replacement, buffer, long-input, lookaround, structured, collection, separator, newline, and locale checks |
-| Large correctness holdout | **PASS** — stdlib, native C, Python, and Rust each pass all 44,084 cases |
-| Original performance | **PASS** — native C reaches 1.56× on the original 16-task holdout |
-| Expanded performance | **MEASURED / OPTIMIZATION NEEDED** — native C reaches 1.16× on 28 holdout tasks; all results are correctness-gated |
-| Broader performance | **PASS** — native C reaches 1.57× on 72 holdout tasks, clearly faster on 68/72 with zero large slowdowns |
-| Large performance holdout | **FROZEN / CORRECTNESS PASS** — 1,224 holdout tasks; all 9,792 pre-timing comparisons pass; speed **NOT MEASURED** |
-| Public import | **AVAILABLE / WINNER** — `import rebar as re` uses the correctness-qualified native C engine |
+| Large performance holdout | **PASS** — native C reaches 1.56× on 1,224 tasks and is clearly faster on 92%; all 11 large holdout slowdowns are explained |
+| Public import | **AVAILABLE / WINNER** — `import rebar as re` uses the independent native C engine |
 
-The [broader performance protocol](performance/v3/PROTOCOL.md) explains exactly what is timed, how comparisons are made, and how slowdowns are reported. Full results, raw data, rejected experiments, and older charts are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
+The [large performance protocol](performance/v4/PROTOCOL.md) explains exactly what is timed, how comparisons are made, and how slowdowns are reported.
 
 ## Try it or reproduce the checks
 
 ```sh
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 PYTHON="$PY" sh tools/build_vm.sh
-RUSTFLAGS='-D warnings' sh tools/build_rust.sh
+PYTHON="$PY" RUSTFLAGS='-D warnings' sh tools/build_rust.sh
 
 PYTHONPATH=. "$PY" -c 'import rebar as re; print(re.findall(r"[A-Za-z]+", "a faster python re"))'
-PYTHONPATH=. "$PY" tools/oracle_v2.py verify --module rebar
 PYTHONPATH=. "$PY" tools/oracle_v3.py verify --module rebar
 PYTHONPATH=. "$PY" tools/cpython_re_oracle.py verify --module rebar
-PYTHONPATH=. "$PY" tools/replacement_controls.py --output /tmp/replacement-controls.json
-PYTHONPATH=. "$PY" tools/collection_controls.py --output /tmp/collection-controls.json
 PYTHONPATH=. "$PY" tools/holdout_regression_controls.py --output /tmp/holdout-regression.json
-PYTHONPATH=. "$PY" tools/perf_v2.py verify
-PYTHONPATH=. "$PY" tools/perf_v3.py verify
 PYTHONPATH=. "$PY" tools/perf_v4.py verify
-PYTHONPATH=. "$PY" tools/engine_pilot.py --output /tmp/engine-pilot.json --module candidates.ast_candidate --module candidates.rust_candidate
+PYTHONPATH=. "$PY" tools/perf_v4.py measure --output /tmp/rebar-performance.jsonl
+PYTHONPATH=. "$PY" tools/perf_v4.py analyze --input /tmp/rebar-performance.jsonl --output /tmp/rebar-summary.json
 ```

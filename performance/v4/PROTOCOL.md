@@ -32,11 +32,17 @@ The success threshold remains: at least **1.5× overall on holdout**, clearly fa
 
 ## Pre-timing correctness check
 
-The fixture is deterministic, preserves all earlier records, and passes stdlib-vs-stdlib. The pre-timing check of stdlib and all three engines completes **9,792/9,792** comparisons with zero failures; the complete result is [initial-correctness.json](evidence/initial-correctness.json). **Performance is NOT MEASURED in this freeze chunk.**
+The fixture is deterministic, preserves all earlier records, and passes stdlib-vs-stdlib. The pre-timing check of stdlib and all three engines completes **9,792/9,792** comparisons with zero failures; the complete result is [initial-correctness.json](evidence/initial-correctness.json). Performance was **NOT MEASURED** when this fixture was frozen; the first fully gated result is recorded below.
+
+## Initial large result
+
+The first full paired run retains all **127,296** correctness-gated rows in [initial-raw.jsonl](evidence/initial-raw.jsonl), SHA-256 `e2c320457eeeecec63efbcc80c3ab0a17b1e27332a45d34155fa9819ffd13f2b`, and every result/slowdown in [INITIAL.md](evidence/INITIAL.md). The independent post-run check again passes [9,792/9,792 comparisons](evidence/final-correctness.json). Native C reaches **1.5613×** overall on the **1,224-task** holdout (1.5589–1.5638× measured range), is clearly faster on **1,130/1,224**, and has **11** large holdout slowdowns. All 11 are email-like multi-result calls; the correctness-checked profile shows repeated character-class/collection work with no general-backtracking state creation. Rust reaches **0.1814×** (72 clearly faster, 1,124 slowdowns), and Python reaches **0.0329×** (36 clearly faster, 1,157 slowdowns). The [plain-language notes](evidence/INITIAL-NOTES.md), memory observations, every case, and all **4,616** practice/holdout slowdowns are retained.
 
 ```sh
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 PYTHONPATH=. "$PY" tools/perf_v4.py freeze
 head -n 144 performance/v4/expected.jsonl | cmp performance/v3/expected.jsonl -
 PYTHONPATH=. "$PY" tools/perf_v4.py verify --output /tmp/v4-correctness.json
+PYTHONPATH=. "$PY" tools/perf_v4.py measure --output /tmp/v4-raw.jsonl
+PYTHONPATH=. "$PY" tools/perf_v4.py analyze --input /tmp/v4-raw.jsonl --output /tmp/v4-summary.json
 ```
