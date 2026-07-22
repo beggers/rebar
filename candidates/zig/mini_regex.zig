@@ -25,6 +25,7 @@ const Repeat = struct { child: u16, minimum: usize, maximum: usize, lazy: bool, 
 const Group = struct { child: u16, number: u16 };
 const Conditional = struct { number: u16, yes: u16, no: u16 };
 const Look = struct { child: u16, behind: bool, positive: bool, width: u16 };
+const Scoped = struct { child: u16, flags: u32 };
 const Name = struct { bytes: [max_name_length]u8 = undefined, length: u8 = 0, group: u16 = 0 };
 const Node = union(enum) {
     empty,
@@ -44,6 +45,7 @@ const Node = union(enum) {
     conditional: Conditional,
     atomic: u16,
     look: Look,
+    scoped: Scoped,
 };
 const ClassRange = struct { left: u32, right: u32 };
 const CharClass = struct {
@@ -68,6 +70,7 @@ const Program = struct {
     single: [256]u8 = [_]u8{0} ** 256,
     pairs: [8192]u8 = [_]u8{0} ** 8192,
     nullable: bool = false,
+    scoped_prefix: u16 = std.math.maxInt(u16),
     groups: u16 = 0,
     references: bool = false,
     names: [max_groups]Name = undefined,
@@ -299,20 +302,50 @@ const Parser = struct {
                         self.at += 1;
                         self.program.references = true;
                         break :blk self.add(.{ .backref = @intCast(reference_number) });
-                    } else if (self.source[self.at + 1] == 'i' or self.source[self.at + 1] == 'm' or self.source[self.at + 1] == 's' or self.source[self.at + 1] == 'x' or self.source[self.at + 1] == 'a') {
+                    } else if (self.source[self.at + 1] == 'i' or self.source[self.at + 1] == 'm' or self.source[self.at + 1] == 's' or self.source[self.at + 1] == 'x' or self.source[self.at + 1] == 'a' or self.source[self.at + 1] == 'u' or self.source[self.at + 1] == 'L' or self.source[self.at + 1] == '-') {
                         self.at += 1;
                         var flags: u32 = self.program.flags;
-                        while (self.at < self.source.len and self.source[self.at] != ')') : (self.at += 1) {
-                            flags |= switch (self.source[self.at]) {
+                        var removing = false;
+                        var saw_flag = false;
+                        while (self.at < self.source.len and self.source[self.at] != ')' and self.source[self.at] != ':') : (self.at += 1) {
+                            const mark = self.source[self.at];
+                            if (mark == '-') {
+                                if (removing) return error.InvalidPattern;
+                                removing = true;
+                                continue;
+                            }
+                            const bit: u32 = switch (mark) {
                                 'i' => 2,
+                                'L' => 4,
                                 'm' => 8,
                                 's' => 16,
                                 'x' => 64,
                                 'a' => 256,
+                                'u' => 32,
                                 else => return error.Unsupported,
                             };
+                            if (removing and bit & (4 | 32 | 256) != 0) return error.InvalidPattern;
+                            if (!removing and bit & (4 | 32 | 256) != 0) flags &= ~@as(u32, 4 | 32 | 256);
+                            if (removing) flags &= ~bit else flags |= bit;
+                            saw_flag = true;
                         }
-                        if (self.at >= self.source.len) return error.InvalidPattern;
+                        if (!saw_flag or self.at >= self.source.len) return error.InvalidPattern;
+                        if (self.source[self.at] == ':') {
+                            self.at += 1;
+                            const previous = self.program.flags;
+                            self.program.flags = flags;
+                            const child = self.alternative() catch |err| {
+                                self.program.flags = previous;
+                                return err;
+                            };
+                            if (self.at >= self.source.len or self.source[self.at] != ')') {
+                                self.program.flags = previous;
+                                return error.InvalidPattern;
+                            }
+                            self.at += 1;
+                            self.program.flags = previous;
+                            break :blk self.add(.{ .scoped = .{ .child = child, .flags = flags } });
+                        }
                         self.at += 1;
                         self.program.flags = flags;
                         break :blk self.add(.empty);
@@ -490,6 +523,7 @@ fn fixedWidth(program: *const Program, index: u16) ?usize {
         },
         .group => |group| fixedWidth(program, group.child),
         .atomic => |child| fixedWidth(program, child),
+        .scoped => |scoped| fixedWidth(program, scoped.child),
         .conditional => |conditional| blk: {
             const yes = fixedWidth(program, conditional.yes) orelse break :blk null;
             const no = fixedWidth(program, conditional.no) orelse break :blk null;
@@ -707,62 +741,62 @@ fn word(value: u32, flags: u32) bool {
     return category('w', value, flags);
 }
 
-fn repeatWalk(program: *const Program, repeat: Repeat, text: Subject, endpos: usize, pos: usize, count: usize, maximum: usize, out: *Positions, depth: usize) void {
+fn repeatWalk(program: *const Program, repeat: Repeat, text: Subject, endpos: usize, pos: usize, count: usize, maximum: usize, out: *Positions, depth: usize, flags: u32) void {
     if (depth > 512) return;
     if (repeat.lazy and count >= repeat.minimum) out.add(pos);
     if (count < maximum) {
         var next = Positions{};
-        eval(program, repeat.child, text, endpos, pos, &next, depth + 1);
+        eval(program, repeat.child, text, endpos, pos, &next, depth + 1, flags);
         for (next.values[0..next.count]) |value| {
             if (value == pos) {
                 if (count + 1 >= repeat.minimum) out.add(value);
                 continue;
             }
-            repeatWalk(program, repeat, text, endpos, value, count + 1, maximum, out, depth + 1);
+            repeatWalk(program, repeat, text, endpos, value, count + 1, maximum, out, depth + 1, flags);
         }
     }
     if (!repeat.lazy and count >= repeat.minimum) out.add(pos);
 }
 
-fn eval(program: *const Program, node_index: u16, text: Subject, endpos: usize, pos: usize, out: *Positions, depth: usize) void {
+fn eval(program: *const Program, node_index: u16, text: Subject, endpos: usize, pos: usize, out: *Positions, depth: usize, flags: u32) void {
     if (depth > 512) return;
     switch (program.nodes[node_index]) {
         .empty => out.add(pos),
-        .literal => |value| if (pos < endpos and equal(value, text.at(pos), program.flags)) out.add(pos + 1),
-        .dot => if (pos < endpos and (program.flags & 16 != 0 or text.at(pos) != '\n')) out.add(pos + 1),
-        .class => |index| if (pos < endpos and classMatch(&program.classes[index], text.at(pos), program.flags)) out.add(pos + 1),
-        .begin => if (pos == 0 or (program.flags & 8 != 0 and pos > 0 and text.at(pos - 1) == '\n')) out.add(pos),
-        .end => if (pos == endpos or (pos + 1 == endpos and text.at(pos) == '\n') or (program.flags & 8 != 0 and pos < endpos and text.at(pos) == '\n')) out.add(pos),
+        .literal => |value| if (pos < endpos and equal(value, text.at(pos), flags)) out.add(pos + 1),
+        .dot => if (pos < endpos and (flags & 16 != 0 or text.at(pos) != '\n')) out.add(pos + 1),
+        .class => |index| if (pos < endpos and classMatch(&program.classes[index], text.at(pos), flags)) out.add(pos + 1),
+        .begin => if (pos == 0 or (flags & 8 != 0 and pos > 0 and text.at(pos - 1) == '\n')) out.add(pos),
+        .end => if (pos == endpos or (pos + 1 == endpos and text.at(pos) == '\n') or (flags & 8 != 0 and pos < endpos and text.at(pos) == '\n')) out.add(pos),
         .absolute_begin => if (pos == 0) out.add(pos),
         .absolute_end => if (pos == endpos) out.add(pos),
         .boundary => |want| {
-            const left = pos > 0 and word(text.at(pos - 1), program.flags);
-            const right = pos < endpos and word(text.at(pos), program.flags);
+            const left = pos > 0 and word(text.at(pos - 1), flags);
+            const right = pos < endpos and word(text.at(pos), flags);
             if ((left != right) == want) out.add(pos);
         },
         .alternative => |pair| {
-            eval(program, pair.left, text, endpos, pos, out, depth + 1);
-            eval(program, pair.right, text, endpos, pos, out, depth + 1);
+            eval(program, pair.left, text, endpos, pos, out, depth + 1, flags);
+            eval(program, pair.right, text, endpos, pos, out, depth + 1, flags);
         },
         .sequence => |pair| {
             var left = Positions{};
-            eval(program, pair.left, text, endpos, pos, &left, depth + 1);
-            for (left.values[0..left.count]) |value| eval(program, pair.right, text, endpos, value, out, depth + 1);
+            eval(program, pair.left, text, endpos, pos, &left, depth + 1, flags);
+            for (left.values[0..left.count]) |value| eval(program, pair.right, text, endpos, value, out, depth + 1, flags);
         },
         .repeat => |repeat| {
             var maximum = repeat.maximum;
             if (maximum == unbounded or maximum > endpos - pos + repeat.minimum + 1) maximum = endpos - pos + repeat.minimum + 1;
             if (repeat.possessive) {
                 var positions = Positions{};
-                repeatWalk(program, repeat, text, endpos, pos, 0, maximum, &positions, depth + 1);
+                repeatWalk(program, repeat, text, endpos, pos, 0, maximum, &positions, depth + 1, flags);
                 if (positions.count > 0) out.add(positions.values[0]);
-            } else repeatWalk(program, repeat, text, endpos, pos, 0, maximum, out, depth + 1);
+            } else repeatWalk(program, repeat, text, endpos, pos, 0, maximum, out, depth + 1, flags);
         },
-        .group => |group| eval(program, group.child, text, endpos, pos, out, depth + 1),
+        .group => |group| eval(program, group.child, text, endpos, pos, out, depth + 1, flags),
         .backref, .conditional => {},
         .atomic => |child| {
             var positions = Positions{};
-            eval(program, child, text, endpos, pos, &positions, depth + 1);
+            eval(program, child, text, endpos, pos, &positions, depth + 1, flags);
             if (positions.count > 0) out.add(positions.values[0]);
         },
         .look => |look| {
@@ -771,7 +805,7 @@ fn eval(program: *const Program, node_index: u16, text: Subject, endpos: usize, 
                 if (pos < look.width) break :blk null;
                 break :blk pos - look.width;
             } else pos;
-            if (begin) |value| eval(program, look.child, text, if (look.behind) pos else endpos, value, &positions, depth + 1);
+            if (begin) |value| eval(program, look.child, text, if (look.behind) pos else endpos, value, &positions, depth + 1, flags);
             var found = false;
             for (positions.values[0..positions.count]) |value| {
                 if (!look.behind or value == pos) {
@@ -781,12 +815,14 @@ fn eval(program: *const Program, node_index: u16, text: Subject, endpos: usize, 
             }
             if (found == look.positive) out.add(pos);
         },
+        .scoped => |scoped| eval(program, scoped.child, text, endpos, pos, out, depth + 1, scoped.flags),
     }
 }
 
 const CompileError = error{ TooMuchCode, UnsupportedRepeat };
 const Compiler = struct {
     program: *Program,
+    flags: u32,
 
     fn emit(self: *Compiler, instruction: Instruction) CompileError!u16 {
         if (self.program.code_count >= max_code) return error.TooMuchCode;
@@ -800,19 +836,19 @@ const Compiler = struct {
         switch (self.program.nodes[index]) {
             .empty => {},
             .literal => |value| {
-                _ = try self.emit(.{ .op = .literal, .value = value });
+                _ = try self.emit(.{ .op = .literal, .value = value, .extra = @intCast(self.flags & 0xffff) });
             },
             .dot => {
-                _ = try self.emit(.{ .op = .dot });
+                _ = try self.emit(.{ .op = .dot, .extra = @intCast(self.flags & 0xffff) });
             },
             .class => |value| {
-                _ = try self.emit(.{ .op = .class, .left = value });
+                _ = try self.emit(.{ .op = .class, .left = value, .extra = @intCast(self.flags & 0xffff) });
             },
             .begin => {
-                _ = try self.emit(.{ .op = .begin });
+                _ = try self.emit(.{ .op = .begin, .extra = @intCast(self.flags & 0xffff) });
             },
             .end => {
-                _ = try self.emit(.{ .op = .end });
+                _ = try self.emit(.{ .op = .end, .extra = @intCast(self.flags & 0xffff) });
             },
             .absolute_begin => {
                 _ = try self.emit(.{ .op = .absolute_begin });
@@ -821,7 +857,7 @@ const Compiler = struct {
                 _ = try self.emit(.{ .op = .absolute_end });
             },
             .boundary => |want| {
-                _ = try self.emit(.{ .op = .boundary, .value = if (want) 1 else 0 });
+                _ = try self.emit(.{ .op = .boundary, .value = if (want) 1 else 0, .extra = @intCast(self.flags & 0xffff) });
             },
             .sequence => |pair| {
                 try self.node(pair.left);
@@ -869,7 +905,7 @@ const Compiler = struct {
                 _ = try self.emit(.{ .op = .save_end, .left = group.number });
             },
             .backref => |number| {
-                _ = try self.emit(.{ .op = .backref, .left = number });
+                _ = try self.emit(.{ .op = .backref, .left = number, .extra = @intCast(self.flags & 0xffff) });
             },
             .conditional => |conditional| {
                 const branch = try self.emit(.{ .op = .conditional, .value = @intCast(conditional.number) });
@@ -897,18 +933,27 @@ const Compiler = struct {
                 self.program.code[instruction].left = entry;
                 self.program.code[instruction].right = finish;
             },
+            .scoped => |scoped| {
+                const previous = self.flags;
+                self.flags = scoped.flags;
+                self.node(scoped.child) catch |err| {
+                    self.flags = previous;
+                    return err;
+                };
+                self.flags = previous;
+            },
         }
     }
 };
 
-fn addStarts(program: *const Program, index: u16, starts: *[256]u8) bool {
+fn addStarts(program: *const Program, index: u16, starts: *[256]u8, flags: u32) bool {
     return switch (program.nodes[index]) {
         .empty, .begin, .end, .absolute_begin, .absolute_end, .boundary => true,
         .literal => |value| blk: {
             if (value < 256) {
                 const byte: u8 = @intCast(value);
                 starts[value] = 1;
-                if (program.flags & 2 != 0) {
+                if (flags & 2 != 0) {
                     starts[std.ascii.toLower(byte)] = 1;
                     starts[std.ascii.toUpper(byte)] = 1;
                 }
@@ -917,39 +962,50 @@ fn addStarts(program: *const Program, index: u16, starts: *[256]u8) bool {
         },
         .dot => blk: {
             for (0..256) |raw| {
-                if (program.flags & 16 != 0 or raw != '\n') starts[raw] = 1;
+                if (flags & 16 != 0 or raw != '\n') starts[raw] = 1;
             }
             break :blk false;
         },
         .class => |value| blk: {
             for (0..256) |raw| {
-                if (classMatch(&program.classes[value], @intCast(raw), program.flags)) starts[raw] = 1;
+                if (classMatch(&program.classes[value], @intCast(raw), flags)) starts[raw] = 1;
             }
             break :blk false;
         },
         .alternative => |pair| blk: {
-            const left_empty = addStarts(program, pair.left, starts);
-            const right_empty = addStarts(program, pair.right, starts);
+            const left_empty = addStarts(program, pair.left, starts, flags);
+            const right_empty = addStarts(program, pair.right, starts, flags);
             break :blk left_empty or right_empty;
         },
         .sequence => |pair| blk: {
-            const left_empty = addStarts(program, pair.left, starts);
+            const left_empty = addStarts(program, pair.left, starts, flags);
             if (!left_empty) break :blk false;
-            break :blk addStarts(program, pair.right, starts);
+            break :blk addStarts(program, pair.right, starts, flags);
         },
         .repeat => |repeat| blk: {
-            const child_empty = addStarts(program, repeat.child, starts);
+            const child_empty = addStarts(program, repeat.child, starts, flags);
             break :blk repeat.minimum == 0 or child_empty;
         },
-        .group => |group| addStarts(program, group.child, starts),
+        .group => |group| addStarts(program, group.child, starts, flags),
         .backref => true,
         .conditional => |conditional| blk: {
-            const yes = addStarts(program, conditional.yes, starts);
-            const no = addStarts(program, conditional.no, starts);
+            const yes = addStarts(program, conditional.yes, starts, flags);
+            const no = addStarts(program, conditional.no, starts, flags);
             break :blk yes or no;
         },
-        .atomic => |child| addStarts(program, child, starts),
+        .atomic => |child| addStarts(program, child, starts, flags),
         .look => true,
+        .scoped => |scoped| addStarts(program, scoped.child, starts, scoped.flags),
+    };
+}
+
+fn scopedCategoryPrefix(program: *const Program, index: u16, switched: bool) ?u16 {
+    return switch (program.nodes[index]) {
+        .class => |class| if (switched and program.classes[class].categories != 0) class else null,
+        .sequence => |pair| scopedCategoryPrefix(program, pair.left, switched),
+        .group => |group| scopedCategoryPrefix(program, group.child, switched),
+        .scoped => |scoped| scopedCategoryPrefix(program, scoped.child, switched or scoped.flags & (4 | 32 | 256) != program.flags & (4 | 32 | 256)),
+        else => null,
     };
 }
 
@@ -994,7 +1050,7 @@ fn joinPrefix(left: *const Prefix, right: *const Prefix) Prefix {
     return result;
 }
 
-fn prefixes(program: *const Program, index: u16) Prefix {
+fn prefixes(program: *const Program, index: u16, flags: u32) Prefix {
     return switch (program.nodes[index]) {
         .empty, .begin, .end, .absolute_begin, .absolute_end, .boundary => Prefix{ .empty = true },
         .literal => |value| blk: {
@@ -1003,7 +1059,7 @@ fn prefixes(program: *const Program, index: u16) Prefix {
                 const byte: u8 = @intCast(value);
                 result.first[value] = 1;
                 result.single[value] = 1;
-                if (program.flags & 2 != 0) {
+                if (flags & 2 != 0) {
                     result.first[std.ascii.toLower(byte)] = 1;
                     result.first[std.ascii.toUpper(byte)] = 1;
                     result.single[std.ascii.toLower(byte)] = 1;
@@ -1014,7 +1070,7 @@ fn prefixes(program: *const Program, index: u16) Prefix {
         },
         .dot => blk: {
             var result = Prefix{};
-            for (0..256) |raw| if (program.flags & 16 != 0 or raw != '\n') {
+            for (0..256) |raw| if (flags & 16 != 0 or raw != '\n') {
                 result.first[raw] = 1;
                 result.single[raw] = 1;
             };
@@ -1022,25 +1078,25 @@ fn prefixes(program: *const Program, index: u16) Prefix {
         },
         .class => |value| blk: {
             var result = Prefix{};
-            for (0..256) |raw| if (classMatch(&program.classes[value], @intCast(raw), program.flags)) {
+            for (0..256) |raw| if (classMatch(&program.classes[value], @intCast(raw), flags)) {
                 result.first[raw] = 1;
                 result.single[raw] = 1;
             };
             break :blk result;
         },
         .alternative => |pair| blk: {
-            var result = prefixes(program, pair.left);
-            const right = prefixes(program, pair.right);
+            var result = prefixes(program, pair.left, flags);
+            const right = prefixes(program, pair.right, flags);
             mergePrefix(&result, &right);
             break :blk result;
         },
         .sequence => |pair| blk: {
-            const left = prefixes(program, pair.left);
-            const right = prefixes(program, pair.right);
+            const left = prefixes(program, pair.left, flags);
+            const right = prefixes(program, pair.right, flags);
             break :blk joinPrefix(&left, &right);
         },
         .repeat => |repeat| blk: {
-            const child = prefixes(program, repeat.child);
+            const child = prefixes(program, repeat.child, flags);
             var current = Prefix{ .empty = true };
             for (0..repeat.minimum) |_| current = joinPrefix(&current, &child);
             var result = current;
@@ -1054,16 +1110,17 @@ fn prefixes(program: *const Program, index: u16) Prefix {
             }
             break :blk result;
         },
-        .group => |group| prefixes(program, group.child),
+        .group => |group| prefixes(program, group.child, flags),
         .backref => Prefix{ .empty = true },
         .conditional => |conditional| blk: {
-            var result = prefixes(program, conditional.yes);
-            const no = prefixes(program, conditional.no);
+            var result = prefixes(program, conditional.yes, flags);
+            const no = prefixes(program, conditional.no, flags);
             mergePrefix(&result, &no);
             break :blk result;
         },
-        .atomic => |child| prefixes(program, child),
+        .atomic => |child| prefixes(program, child, flags),
         .look => Prefix{ .empty = true },
+        .scoped => |scoped| prefixes(program, scoped.child, scoped.flags),
     };
 }
 
@@ -1079,26 +1136,26 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
     while (true) {
         const instruction = program.code[pc];
         switch (instruction.op) {
-            .literal => if (pos < endpos and equal(instruction.value, text.at(pos), program.flags)) {
+            .literal => if (pos < endpos and equal(instruction.value, text.at(pos), instruction.extra)) {
                 pos += 1;
                 pc += 1;
                 continue;
             },
-            .dot => if (pos < endpos and (program.flags & 16 != 0 or text.at(pos) != '\n')) {
+            .dot => if (pos < endpos and (instruction.extra & 16 != 0 or text.at(pos) != '\n')) {
                 pos += 1;
                 pc += 1;
                 continue;
             },
-            .class => if (pos < endpos and classMatch(&program.classes[instruction.left], text.at(pos), program.flags)) {
+            .class => if (pos < endpos and classMatch(&program.classes[instruction.left], text.at(pos), instruction.extra)) {
                 pos += 1;
                 pc += 1;
                 continue;
             },
-            .begin => if (pos == 0 or (program.flags & 8 != 0 and pos > 0 and text.at(pos - 1) == '\n')) {
+            .begin => if (pos == 0 or (instruction.extra & 8 != 0 and pos > 0 and text.at(pos - 1) == '\n')) {
                 pc += 1;
                 continue;
             },
-            .end => if (pos == endpos or (pos + 1 == endpos and text.at(pos) == '\n') or (program.flags & 8 != 0 and pos < endpos and text.at(pos) == '\n')) {
+            .end => if (pos == endpos or (pos + 1 == endpos and text.at(pos) == '\n') or (instruction.extra & 8 != 0 and pos < endpos and text.at(pos) == '\n')) {
                 pc += 1;
                 continue;
             },
@@ -1111,8 +1168,8 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
                 continue;
             },
             .boundary => {
-                const left = pos > 0 and word(text.at(pos - 1), program.flags);
-                const right = pos < endpos and word(text.at(pos), program.flags);
+                const left = pos > 0 and word(text.at(pos - 1), instruction.extra);
+                const right = pos < endpos and word(text.at(pos), instruction.extra);
                 if ((left != right) == (instruction.value != 0)) {
                     pc += 1;
                     continue;
@@ -1177,26 +1234,26 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
     while (true) {
         const instruction = program.code[pc];
         switch (instruction.op) {
-            .literal => if (pos < endpos and equal(instruction.value, text.at(pos), program.flags)) {
+            .literal => if (pos < endpos and equal(instruction.value, text.at(pos), instruction.extra)) {
                 pos += 1;
                 pc += 1;
                 continue;
             },
-            .dot => if (pos < endpos and (program.flags & 16 != 0 or text.at(pos) != '\n')) {
+            .dot => if (pos < endpos and (instruction.extra & 16 != 0 or text.at(pos) != '\n')) {
                 pos += 1;
                 pc += 1;
                 continue;
             },
-            .class => if (pos < endpos and classMatch(&program.classes[instruction.left], text.at(pos), program.flags)) {
+            .class => if (pos < endpos and classMatch(&program.classes[instruction.left], text.at(pos), instruction.extra)) {
                 pos += 1;
                 pc += 1;
                 continue;
             },
-            .begin => if (pos == 0 or (program.flags & 8 != 0 and pos > 0 and text.at(pos - 1) == '\n')) {
+            .begin => if (pos == 0 or (instruction.extra & 8 != 0 and pos > 0 and text.at(pos - 1) == '\n')) {
                 pc += 1;
                 continue;
             },
-            .end => if (pos == endpos or (pos + 1 == endpos and text.at(pos) == '\n') or (program.flags & 8 != 0 and pos < endpos and text.at(pos) == '\n')) {
+            .end => if (pos == endpos or (pos + 1 == endpos and text.at(pos) == '\n') or (instruction.extra & 8 != 0 and pos < endpos and text.at(pos) == '\n')) {
                 pc += 1;
                 continue;
             },
@@ -1209,8 +1266,8 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                 continue;
             },
             .boundary => {
-                const left = pos > 0 and word(text.at(pos - 1), program.flags);
-                const right = pos < endpos and word(text.at(pos), program.flags);
+                const left = pos > 0 and word(text.at(pos - 1), instruction.extra);
+                const right = pos < endpos and word(text.at(pos), instruction.extra);
                 if ((left != right) == (instruction.value != 0)) {
                     pc += 1;
                     continue;
@@ -1247,7 +1304,7 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                     if (width <= endpos - pos) {
                         var matched = true;
                         for (0..width) |offset| {
-                            if (!equal(text.at(@as(usize, @intCast(begin)) + offset), text.at(pos + offset), program.flags)) {
+                            if (!equal(text.at(@as(usize, @intCast(begin)) + offset), text.at(pos + offset), instruction.extra)) {
                                 matched = false;
                                 break;
                             }
@@ -1338,7 +1395,7 @@ pub export fn rebar_zig_compile(pattern: [*]const u8, length: usize, flags: u32)
         std.heap.c_allocator.destroy(program);
         return null;
     }
-    var compiler = Compiler{ .program = program };
+    var compiler = Compiler{ .program = program, .flags = program.flags };
     compiler.node(program.root) catch {
         std.heap.c_allocator.destroy(program);
         return null;
@@ -1347,9 +1404,12 @@ pub export fn rebar_zig_compile(pattern: [*]const u8, length: usize, flags: u32)
         std.heap.c_allocator.destroy(program);
         return null;
     };
-    program.nullable = addStarts(program, program.root, &program.starts);
+    program.nullable = addStarts(program, program.root, &program.starts, program.flags);
+    if (!program.nullable) {
+        if (scopedCategoryPrefix(program, program.root, false)) |class| program.scoped_prefix = class;
+    }
     if (program.node_count <= 20) {
-        const start_prefix = prefixes(program, program.root);
+        const start_prefix = prefixes(program, program.root, program.flags);
         program.single = start_prefix.single;
         program.pairs = start_prefix.pairs;
     } else {
@@ -1403,7 +1463,7 @@ pub export fn rebar_zig_match_tree(program_value: ?*const Program, text_value: [
     var start = pos;
     while (start <= last) : (start += 1) {
         var out = Positions{};
-        eval(program, program.root, text, endpos, start, &out, 0);
+        eval(program, program.root, text, endpos, start, &out, 0, program.flags);
         for (out.values[0..out.count]) |value| {
             if (mode == 2 and value != endpos) continue;
             begin.* = @intCast(start);
@@ -1441,6 +1501,7 @@ pub export fn rebar_zig_match_wide(program_value: ?*const Program, text_value: [
         if (mode == 0 and !program.nullable and start < endpos) {
             const first = text.at(start);
             if (first < 256 and program.starts[first] == 0) continue;
+            if (program.scoped_prefix != std.math.maxInt(u16) and !classMatch(&program.classes[program.scoped_prefix], first, program.flags)) continue;
             if (first < 256 and start + 1 < endpos) {
                 const second = text.at(start + 1);
                 if (second < 256 and program.single[first] == 0 and !hasPair(&program.pairs, first, second)) continue;
@@ -1484,6 +1545,7 @@ pub export fn rebar_zig_match_captures_wide(program_value: ?*const Program, text
         if (mode == 0 and !program.nullable and start < endpos) {
             const first = text.at(start);
             if (first < 256 and program.starts[first] == 0) continue;
+            if (program.scoped_prefix != std.math.maxInt(u16) and !classMatch(&program.classes[program.scoped_prefix], first, program.flags)) continue;
             if (first < 256 and start + 1 < endpos) {
                 const second = text.at(start + 1);
                 if (second < 256 and program.single[first] == 0 and !hasPair(&program.pairs, first, second)) continue;
