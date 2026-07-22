@@ -74,4 +74,5 @@ PYTHONPATH=. "$PY" tools/replacement_controls.py --output /tmp/replacement-contr
 PYTHONPATH=. "$PY" tools/collection_controls.py --output /tmp/collection-controls.json
 PYTHONPATH=. "$PY" tools/perf_v2.py verify
 PYTHONPATH=. "$PY" tools/perf_v3.py verify
+PYTHONPATH=. "$PY" tools/engine_pilot.py --output /tmp/engine-pilot.json --module candidates.ast_candidate --module candidates.rust_candidate
 ```
