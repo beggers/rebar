@@ -36,6 +36,8 @@ TARGETS = (
     (r"a.*?b", "a one b a two b", re.DOTALL),
     (r"^[A-Z_-]+$", "Alpha_VALUE", re.IGNORECASE),
     (r"\A\w+(?:-\d+)?\Z", "name-42", re.ASCII),
+    (r"\b[A-Za-z_][A-Za-z0-9_]*\b", "skip_one ready item_3", re.ASCII),
+    (r"\B(?:ab|xy)+\B", "zababq xxyy", re.ASCII),
 )
 
 

@@ -5,10 +5,13 @@ const max_classes = 128;
 const max_positions = 512;
 const max_code = 16384;
 const max_stack = 8192;
+const max_groups = 128;
+const max_undo = 65536;
 const unbounded = std.math.maxInt(usize);
 
 const Pair = struct { left: u16, right: u16 };
 const Repeat = struct { child: u16, minimum: usize, maximum: usize, lazy: bool };
+const Group = struct { child: u16, number: u16 };
 const Node = union(enum) {
     empty,
     literal: u8,
@@ -16,12 +19,14 @@ const Node = union(enum) {
     class: u16,
     begin,
     end,
+    boundary: bool,
     sequence: Pair,
     alternative: Pair,
     repeat: Repeat,
+    group: Group,
 };
 const CharClass = struct { bits: [32]u8 = [_]u8{0} ** 32, negative: bool = false };
-const Op = enum(u8) { literal, dot, class, begin, end, split, jump, accept };
+const Op = enum(u8) { literal, dot, class, begin, end, boundary, split, jump, save_begin, save_end, accept };
 const Instruction = struct { op: Op, left: u16 = 0, right: u16 = 0, value: u8 = 0 };
 const Program = struct {
     nodes: [max_nodes]Node = undefined,
@@ -36,6 +41,7 @@ const Program = struct {
     single: [256]u8 = [_]u8{0} ** 256,
     pairs: [8192]u8 = [_]u8{0} ** 8192,
     nullable: bool = false,
+    groups: u16 = 0,
 };
 
 const ParseError = error{ TooManyNodes, TooManyClasses, InvalidPattern, Unsupported };
@@ -113,7 +119,12 @@ const Parser = struct {
                     }
                     continue;
                 }
-                left = switch (left) { 'n' => '\n', 'r' => '\r', 't' => '\t', else => left };
+                left = switch (left) {
+                    'n' => '\n',
+                    'r' => '\r',
+                    't' => '\t',
+                    else => left,
+                };
             }
             if (self.at + 1 < self.source.len and self.source[self.at] == '-' and self.source[self.at + 1] != ']') {
                 self.at += 1;
@@ -141,14 +152,22 @@ const Parser = struct {
             '$' => self.add(.end),
             '[' => self.parseClass(),
             '(' => blk: {
+                var capturing = true;
                 if (self.at < self.source.len and self.source[self.at] == '?') {
                     if (self.at + 1 >= self.source.len or self.source[self.at + 1] != ':') return error.Unsupported;
                     self.at += 2;
+                    capturing = false;
+                }
+                var group_number: u16 = 0;
+                if (capturing) {
+                    if (self.program.groups >= max_groups) return error.Unsupported;
+                    self.program.groups += 1;
+                    group_number = self.program.groups;
                 }
                 const child = try self.alternative();
                 if (self.at >= self.source.len or self.source[self.at] != ')') return error.InvalidPattern;
                 self.at += 1;
-                break :blk child;
+                break :blk if (capturing) try self.add(.{ .group = .{ .child = child, .number = group_number } }) else child;
             },
             '\\' => blk: {
                 if (self.at >= self.source.len) return error.InvalidPattern;
@@ -157,8 +176,13 @@ const Parser = struct {
                 if (code == 'd' or code == 'D' or code == 's' or code == 'S' or code == 'w' or code == 'W') break :blk self.category(code);
                 if (code == 'A') break :blk self.add(.begin);
                 if (code == 'Z' or code == 'z') break :blk self.add(.end);
-                if (code == 'b' or code == 'B') return error.Unsupported;
-                break :blk self.add(.{ .literal = switch (code) { 'n' => '\n', 'r' => '\r', 't' => '\t', else => code } });
+                if (code == 'b' or code == 'B') break :blk self.add(.{ .boundary = code == 'b' });
+                break :blk self.add(.{ .literal = switch (code) {
+                    'n' => '\n',
+                    'r' => '\r',
+                    't' => '\t',
+                    else => code,
+                } });
             },
             '*', '+', '?', ')' => error.InvalidPattern,
             else => self.add(.{ .literal = value }),
@@ -183,9 +207,21 @@ const Parser = struct {
         var minimum: usize = 0;
         var maximum: usize = 0;
         switch (mark) {
-            '*' => { minimum = 0; maximum = unbounded; self.at += 1; },
-            '+' => { minimum = 1; maximum = unbounded; self.at += 1; },
-            '?' => { minimum = 0; maximum = 1; self.at += 1; },
+            '*' => {
+                minimum = 0;
+                maximum = unbounded;
+                self.at += 1;
+            },
+            '+' => {
+                minimum = 1;
+                maximum = unbounded;
+                self.at += 1;
+            },
+            '?' => {
+                minimum = 0;
+                maximum = 1;
+                self.at += 1;
+            },
             '{' => {
                 self.at += 1;
                 minimum = if (self.at < self.source.len and self.source[self.at] == ',') 0 else try self.number();
@@ -199,7 +235,10 @@ const Parser = struct {
             else => return child,
         }
         var lazy = false;
-        if (self.at < self.source.len and self.source[self.at] == '?') { lazy = true; self.at += 1; }
+        if (self.at < self.source.len and self.source[self.at] == '?') {
+            lazy = true;
+            self.at += 1;
+        }
         if (self.at < self.source.len and self.source[self.at] == '+') return error.Unsupported;
         return self.add(.{ .repeat = .{ .child = child, .minimum = minimum, .maximum = maximum, .lazy = lazy } });
     }
@@ -226,7 +265,12 @@ const Parser = struct {
 const Positions = struct {
     values: [max_positions]usize = undefined,
     count: usize = 0,
-    fn add(self: *Positions, value: usize) void { if (self.count < max_positions) { self.values[self.count] = value; self.count += 1; } }
+    fn add(self: *Positions, value: usize) void {
+        if (self.count < max_positions) {
+            self.values[self.count] = value;
+            self.count += 1;
+        }
+    }
 };
 
 fn equal(left: u8, right: u8, flags: u32) bool {
@@ -243,6 +287,10 @@ fn classMatch(class: CharClass, value: u8, flags: u32) bool {
     return if (class.negative) !found else found;
 }
 
+fn word(value: u8) bool {
+    return std.ascii.isAlphanumeric(value) or value == '_';
+}
+
 fn repeatWalk(program: *const Program, repeat: Repeat, text: []const u8, endpos: usize, pos: usize, count: usize, maximum: usize, out: *Positions, depth: usize) void {
     if (depth > 512) return;
     if (repeat.lazy and count >= repeat.minimum) out.add(pos);
@@ -250,7 +298,10 @@ fn repeatWalk(program: *const Program, repeat: Repeat, text: []const u8, endpos:
         var next = Positions{};
         eval(program, repeat.child, text, endpos, pos, &next, depth + 1);
         for (next.values[0..next.count]) |value| {
-            if (value == pos) { if (count + 1 >= repeat.minimum) out.add(value); continue; }
+            if (value == pos) {
+                if (count + 1 >= repeat.minimum) out.add(value);
+                continue;
+            }
             repeatWalk(program, repeat, text, endpos, value, count + 1, maximum, out, depth + 1);
         }
     }
@@ -266,7 +317,15 @@ fn eval(program: *const Program, node_index: u16, text: []const u8, endpos: usiz
         .class => |index| if (pos < endpos and classMatch(program.classes[index], text[pos], program.flags)) out.add(pos + 1),
         .begin => if (pos == 0 or (program.flags & 8 != 0 and pos > 0 and text[pos - 1] == '\n')) out.add(pos),
         .end => if (pos == endpos or (pos + 1 == endpos and text[pos] == '\n') or (program.flags & 8 != 0 and pos < endpos and text[pos] == '\n')) out.add(pos),
-        .alternative => |pair| { eval(program, pair.left, text, endpos, pos, out, depth + 1); eval(program, pair.right, text, endpos, pos, out, depth + 1); },
+        .boundary => |want| {
+            const left = pos > 0 and word(text[pos - 1]);
+            const right = pos < endpos and word(text[pos]);
+            if ((left != right) == want) out.add(pos);
+        },
+        .alternative => |pair| {
+            eval(program, pair.left, text, endpos, pos, out, depth + 1);
+            eval(program, pair.right, text, endpos, pos, out, depth + 1);
+        },
         .sequence => |pair| {
             var left = Positions{};
             eval(program, pair.left, text, endpos, pos, &left, depth + 1);
@@ -277,6 +336,7 @@ fn eval(program: *const Program, node_index: u16, text: []const u8, endpos: usiz
             if (maximum == unbounded or maximum > endpos - pos + repeat.minimum + 1) maximum = endpos - pos + repeat.minimum + 1;
             repeatWalk(program, repeat, text, endpos, pos, 0, maximum, out, depth + 1);
         },
+        .group => |group| eval(program, group.child, text, endpos, pos, out, depth + 1),
     }
 }
 
@@ -295,12 +355,28 @@ const Compiler = struct {
     fn node(self: *Compiler, index: u16) CompileError!void {
         switch (self.program.nodes[index]) {
             .empty => {},
-            .literal => |value| { _ = try self.emit(.{ .op = .literal, .value = value }); },
-            .dot => { _ = try self.emit(.{ .op = .dot }); },
-            .class => |value| { _ = try self.emit(.{ .op = .class, .left = value }); },
-            .begin => { _ = try self.emit(.{ .op = .begin }); },
-            .end => { _ = try self.emit(.{ .op = .end }); },
-            .sequence => |pair| { try self.node(pair.left); try self.node(pair.right); },
+            .literal => |value| {
+                _ = try self.emit(.{ .op = .literal, .value = value });
+            },
+            .dot => {
+                _ = try self.emit(.{ .op = .dot });
+            },
+            .class => |value| {
+                _ = try self.emit(.{ .op = .class, .left = value });
+            },
+            .begin => {
+                _ = try self.emit(.{ .op = .begin });
+            },
+            .end => {
+                _ = try self.emit(.{ .op = .end });
+            },
+            .boundary => |want| {
+                _ = try self.emit(.{ .op = .boundary, .value = if (want) 1 else 0 });
+            },
+            .sequence => |pair| {
+                try self.node(pair.left);
+                try self.node(pair.right);
+            },
             .alternative => |pair| {
                 const split = try self.emit(.{ .op = .split });
                 const first = self.program.code_count;
@@ -335,13 +411,18 @@ const Compiler = struct {
                     }
                 }
             },
+            .group => |group| {
+                _ = try self.emit(.{ .op = .save_begin, .left = group.number });
+                try self.node(group.child);
+                _ = try self.emit(.{ .op = .save_end, .left = group.number });
+            },
         }
     }
 };
 
 fn addStarts(program: *const Program, index: u16, starts: *[256]u8) bool {
     return switch (program.nodes[index]) {
-        .empty, .begin, .end => true,
+        .empty, .begin, .end, .boundary => true,
         .literal => |value| blk: {
             starts[value] = 1;
             if (program.flags & 2 != 0) {
@@ -376,6 +457,7 @@ fn addStarts(program: *const Program, index: u16, starts: *[256]u8) bool {
             const child_empty = addStarts(program, repeat.child, starts);
             break :blk repeat.minimum == 0 or child_empty;
         },
+        .group => |group| addStarts(program, group.child, starts),
     };
 }
 
@@ -386,7 +468,9 @@ const Prefix = struct {
     pairs: [8192]u8 = [_]u8{0} ** 8192,
 };
 
-fn pairIndex(first: usize, second: usize) usize { return first * 256 + second; }
+fn pairIndex(first: usize, second: usize) usize {
+    return first * 256 + second;
+}
 fn hasPair(pairs: *const [8192]u8, first: usize, second: usize) bool {
     const index = pairIndex(first, second);
     return pairs[index >> 3] & (@as(u8, 1) << @intCast(index & 7)) != 0;
@@ -420,7 +504,7 @@ fn joinPrefix(left: *const Prefix, right: *const Prefix) Prefix {
 
 fn prefixes(program: *const Program, index: u16) Prefix {
     return switch (program.nodes[index]) {
-        .empty, .begin, .end => Prefix{ .empty = true },
+        .empty, .begin, .end, .boundary => Prefix{ .empty = true },
         .literal => |value| blk: {
             var result = Prefix{};
             result.first[value] = 1;
@@ -475,6 +559,7 @@ fn prefixes(program: *const Program, index: u16) Prefix {
             }
             break :blk result;
         },
+        .group => |group| prefixes(program, group.child),
     };
 }
 
@@ -488,11 +573,37 @@ fn runBytecode(program: *const Program, text: []const u8, endpos: usize, start: 
     while (true) {
         const instruction = program.code[pc];
         switch (instruction.op) {
-            .literal => if (pos < endpos and equal(instruction.value, text[pos], program.flags)) { pos += 1; pc += 1; continue; },
-            .dot => if (pos < endpos and (program.flags & 16 != 0 or text[pos] != '\n')) { pos += 1; pc += 1; continue; },
-            .class => if (pos < endpos and classMatch(program.classes[instruction.left], text[pos], program.flags)) { pos += 1; pc += 1; continue; },
-            .begin => if (pos == 0 or (program.flags & 8 != 0 and pos > 0 and text[pos - 1] == '\n')) { pc += 1; continue; },
-            .end => if (pos == endpos or (pos + 1 == endpos and text[pos] == '\n') or (program.flags & 8 != 0 and pos < endpos and text[pos] == '\n')) { pc += 1; continue; },
+            .literal => if (pos < endpos and equal(instruction.value, text[pos], program.flags)) {
+                pos += 1;
+                pc += 1;
+                continue;
+            },
+            .dot => if (pos < endpos and (program.flags & 16 != 0 or text[pos] != '\n')) {
+                pos += 1;
+                pc += 1;
+                continue;
+            },
+            .class => if (pos < endpos and classMatch(program.classes[instruction.left], text[pos], program.flags)) {
+                pos += 1;
+                pc += 1;
+                continue;
+            },
+            .begin => if (pos == 0 or (program.flags & 8 != 0 and pos > 0 and text[pos - 1] == '\n')) {
+                pc += 1;
+                continue;
+            },
+            .end => if (pos == endpos or (pos + 1 == endpos and text[pos] == '\n') or (program.flags & 8 != 0 and pos < endpos and text[pos] == '\n')) {
+                pc += 1;
+                continue;
+            },
+            .boundary => {
+                const left = pos > 0 and word(text[pos - 1]);
+                const right = pos < endpos and word(text[pos]);
+                if ((left != right) == (instruction.value != 0)) {
+                    pc += 1;
+                    continue;
+                }
+            },
             .split => {
                 if (stack_count >= max_stack) return -2;
                 stack[stack_count] = .{ .pc = instruction.right, .pos = pos };
@@ -500,7 +611,14 @@ fn runBytecode(program: *const Program, text: []const u8, endpos: usize, start: 
                 pc = instruction.left;
                 continue;
             },
-            .jump => { pc = instruction.left; continue; },
+            .jump => {
+                pc = instruction.left;
+                continue;
+            },
+            .save_begin, .save_end => {
+                pc += 1;
+                continue;
+            },
             .accept => if (!full or pos == endpos) return @intCast(pos),
         }
         if (stack_count == 0) return -1;
@@ -510,15 +628,110 @@ fn runBytecode(program: *const Program, text: []const u8, endpos: usize, start: 
     }
 }
 
+const CaptureState = struct { pc: u16, pos: usize, undo: usize };
+const Undo = struct { slot: u16, previous: isize, last: isize };
+
+fn runCaptured(program: *const Program, text: []const u8, endpos: usize, start: usize, full: bool, captures: *[max_groups * 2]isize, last: *isize) isize {
+    var stack: [max_stack]CaptureState = undefined;
+    var stack_count: usize = 0;
+    var undo: [max_undo]Undo = undefined;
+    var undo_count: usize = 0;
+    @memset(captures, -1);
+    last.* = -1;
+    var pc: u16 = 0;
+    var pos = start;
+    while (true) {
+        const instruction = program.code[pc];
+        switch (instruction.op) {
+            .literal => if (pos < endpos and equal(instruction.value, text[pos], program.flags)) {
+                pos += 1;
+                pc += 1;
+                continue;
+            },
+            .dot => if (pos < endpos and (program.flags & 16 != 0 or text[pos] != '\n')) {
+                pos += 1;
+                pc += 1;
+                continue;
+            },
+            .class => if (pos < endpos and classMatch(program.classes[instruction.left], text[pos], program.flags)) {
+                pos += 1;
+                pc += 1;
+                continue;
+            },
+            .begin => if (pos == 0 or (program.flags & 8 != 0 and pos > 0 and text[pos - 1] == '\n')) {
+                pc += 1;
+                continue;
+            },
+            .end => if (pos == endpos or (pos + 1 == endpos and text[pos] == '\n') or (program.flags & 8 != 0 and pos < endpos and text[pos] == '\n')) {
+                pc += 1;
+                continue;
+            },
+            .boundary => {
+                const left = pos > 0 and word(text[pos - 1]);
+                const right = pos < endpos and word(text[pos]);
+                if ((left != right) == (instruction.value != 0)) {
+                    pc += 1;
+                    continue;
+                }
+            },
+            .split => {
+                if (stack_count >= max_stack) return -2;
+                stack[stack_count] = .{ .pc = instruction.right, .pos = pos, .undo = undo_count };
+                stack_count += 1;
+                pc = instruction.left;
+                continue;
+            },
+            .jump => {
+                pc = instruction.left;
+                continue;
+            },
+            .save_begin, .save_end => {
+                if (undo_count >= max_undo or instruction.left == 0 or instruction.left > max_groups) return -2;
+                const slot: u16 = (instruction.left - 1) * 2 + (if (instruction.op == .save_end) @as(u16, 1) else @as(u16, 0));
+                undo[undo_count] = .{ .slot = slot, .previous = captures[slot], .last = last.* };
+                undo_count += 1;
+                captures[slot] = @intCast(pos);
+                if (instruction.op == .save_end) last.* = instruction.left;
+                pc += 1;
+                continue;
+            },
+            .accept => if (!full or pos == endpos) return @intCast(pos),
+        }
+        if (stack_count == 0) return -1;
+        stack_count -= 1;
+        const state = stack[stack_count];
+        while (undo_count > state.undo) {
+            undo_count -= 1;
+            const item = undo[undo_count];
+            captures[item.slot] = item.previous;
+            last.* = item.last;
+        }
+        pc = state.pc;
+        pos = state.pos;
+    }
+}
+
 pub export fn rebar_zig_compile(pattern: [*]const u8, length: usize, flags: u32) ?*Program {
     const program = std.heap.c_allocator.create(Program) catch return null;
     program.* = Program{ .flags = flags };
     var parser = Parser{ .source = pattern[0..length], .program = program };
-    program.root = parser.alternative() catch { std.heap.c_allocator.destroy(program); return null; };
-    if (parser.at != parser.source.len) { std.heap.c_allocator.destroy(program); return null; }
+    program.root = parser.alternative() catch {
+        std.heap.c_allocator.destroy(program);
+        return null;
+    };
+    if (parser.at != parser.source.len) {
+        std.heap.c_allocator.destroy(program);
+        return null;
+    }
     var compiler = Compiler{ .program = program };
-    compiler.node(program.root) catch { std.heap.c_allocator.destroy(program); return null; };
-    _ = compiler.emit(.{ .op = .accept }) catch { std.heap.c_allocator.destroy(program); return null; };
+    compiler.node(program.root) catch {
+        std.heap.c_allocator.destroy(program);
+        return null;
+    };
+    _ = compiler.emit(.{ .op = .accept }) catch {
+        std.heap.c_allocator.destroy(program);
+        return null;
+    };
     program.nullable = addStarts(program, program.root, &program.starts);
     const start_prefix = prefixes(program, program.root);
     program.single = start_prefix.single;
@@ -526,8 +739,15 @@ pub export fn rebar_zig_compile(pattern: [*]const u8, length: usize, flags: u32)
     return program;
 }
 
-pub export fn rebar_zig_free(program: ?*Program) void { if (program) |value| std.heap.c_allocator.destroy(value); }
-pub export fn rebar_zig_program_size() usize { return @sizeOf(Program); }
+pub export fn rebar_zig_free(program: ?*Program) void {
+    if (program) |value| std.heap.c_allocator.destroy(value);
+}
+pub export fn rebar_zig_program_size() usize {
+    return @sizeOf(Program);
+}
+pub export fn rebar_zig_groups(program: ?*const Program) usize {
+    return if (program) |value| value.groups else 0;
+}
 
 pub export fn rebar_zig_match_tree(program_value: ?*const Program, text_value: [*]const u8, length: usize, pos: usize, endpos_value: usize, mode: u8, begin: *isize, finish: *isize) c_int {
     const program = program_value orelse return -1;
@@ -578,4 +798,29 @@ pub export fn rebar_zig_batch(program: ?*const Program, text: [*]const u8, lengt
         std.mem.doNotOptimizeAway(finish.*);
     }
     return result;
+}
+
+pub export fn rebar_zig_match_captures(program_value: ?*const Program, text_value: [*]const u8, length: usize, pos: usize, endpos_value: usize, mode: u8, begins: [*]isize, ends: [*]isize, last: *isize) c_int {
+    const program = program_value orelse return -1;
+    const endpos = @min(length, endpos_value);
+    if (pos > endpos) return 0;
+    const text = text_value[0..length];
+    const final_start = if (mode == 0) endpos else pos;
+    var start = pos;
+    var captures: [max_groups * 2]isize = undefined;
+    while (start <= final_start) : (start += 1) {
+        if (mode == 0 and !program.nullable and start < endpos and program.starts[text[start]] == 0) continue;
+        if (mode == 0 and !program.nullable and start + 1 < endpos and program.single[text[start]] == 0 and !hasPair(&program.pairs, text[start], text[start + 1])) continue;
+        const finish = runCaptured(program, text, endpos, start, mode == 2, &captures, last);
+        if (finish == -2) return -1;
+        if (finish < 0) continue;
+        begins[0] = @intCast(start);
+        ends[0] = finish;
+        for (0..program.groups) |index| {
+            begins[index + 1] = captures[index * 2];
+            ends[index + 1] = captures[index * 2 + 1];
+        }
+        return 1;
+    }
+    return 0;
 }

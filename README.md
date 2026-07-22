@@ -56,6 +56,10 @@ The follow-on [Zig native-bridge trial](candidates/evidence/ZIG-NATIVE-BRIDGE.md
 
 ![Zig native bridge speed compared with Python re](candidates/evidence/zig-native-bridge.svg)
 
+The latest [Zig capture trial](candidates/evidence/ZIG-CAPTURES.md) adds real numbered captures, correct backtracking restoration, `lastindex`, and word boundaries. When each call returns all capture spans, Zig is **3.01×** as fast overall on six tasks and clearly faster on **6/6**, with **12,480** seeded span/capture comparisons clean. This remains an incomplete engine, not a drop-in claim.
+
+![Zig capture-aware speed compared with Python re](candidates/evidence/zig-capture.svg)
+
 ## Correctness and current status
 
 The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). Stdlib and all three engines pass the [expanded seeded matrix](oracle/v2/P0.md): **8,244/8,244 cases**, **45/45 obligations**. They also pass all **144** runnable [official CPython `re` methods](oracle/cpython-3.14.6/README.md), with two environment-dependent locale skips.
