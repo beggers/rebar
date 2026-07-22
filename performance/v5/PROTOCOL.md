@@ -1,6 +1,6 @@
 # Expanded performance holdout v5
 
-This version expands the performance comparison to **3,144 unseen holdout tasks** and **3,144 matching practice tasks**. All **2,448** v4 records are preserved byte-for-byte; the **3,840** new tasks add **40** everyday workload families with **48** deterministic variations in each set. Every task has weight 1, so the holdout denominator is always **3,144**. Performance is **NOT MEASURED** in this freeze chunk.
+This version expands the performance comparison to **3,144 unseen holdout tasks** and **3,144 matching practice tasks**. All **2,448** v4 records are preserved byte-for-byte; the **3,840** new tasks add **40** everyday workload families with **48** deterministic variations in each set. Every task has weight 1, so the holdout denominator is always **3,144**. Performance was **NOT MEASURED** in the freeze chunk; the first fully gated result is recorded below.
 
 The baseline is the pinned, unmodified CPython **3.14.6** `re` module. The independently written native C, Python, Rust, and Zig engines are included; production code does not wrap or delegate matching to an external package or Python's regex engine. The fixture is generated twice with stdlib and agrees exactly, preserves the complete v4 prefix, and is pinned to the **44,084-case** correctness oracle. Fixture SHA-256: `67a4d07ee260bc58456290d76e040b78ba769d1b63cd3b21f0879daa063c2f92`.
 
@@ -32,7 +32,11 @@ The success threshold remains: at least **1.5× overall on holdout**, clearly fa
 
 ## Pre-timing correctness check
 
-The fixture is deterministic, preserves all earlier records, and passes stdlib-vs-stdlib twice. The pre-timing check of stdlib and all four independent engines completes **31,440/31,440** comparisons with zero failures; the complete result is [initial-correctness.json](evidence/initial-correctness.json). The [six source/import delegation audits](evidence/delegation-audit.jsonl) report zero forbidden markers or blocked imports and all smoke checks pass. Performance is **NOT MEASURED**.
+The fixture is deterministic, preserves all earlier records, and passes stdlib-vs-stdlib twice. The pre-timing check of stdlib and all four independent engines completes **31,440/31,440** comparisons with zero failures; the complete result is [initial-correctness.json](evidence/initial-correctness.json). The [six source/import delegation audits](evidence/delegation-audit.jsonl) report zero forbidden markers or blocked imports and all smoke checks pass.
+
+## Initial expanded result
+
+The first full paired run retains all **408,720** correctness-gated rows in [initial-raw.jsonl.gz](evidence/initial-raw.jsonl.gz), decompressed SHA-256 `c905fa024c5ee6990cf4af7145af9a06432e9f22667e434c728e571de6334308`, and every result/slowdown in [INITIAL.md](evidence/INITIAL.md). The independent [post-run check](evidence/final-correctness.json) again passes **31,440/31,440** comparisons. Native C reaches **1.3507x** on the **3,144-task** holdout (1.3494--1.3520x), is clearly faster on **2,482/3,144 (79%)**, and has **226** large holdout slowdowns; it no longer reaches the 1.5x overall target. Zig reaches **0.4807x** (370 clearly faster, 2,486 losses), Rust **0.1492x** (167 clearly faster, 2,948 losses), and Python **0.0241x** (86 clearly faster, 3,021 losses). The [plain-language notes](evidence/INITIAL-NOTES.md), readable graphs, eight correctness-checked native profiles, memory observations, every interval, and all **17,416** practice/holdout slowdowns are retained.
 
 ```sh
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
