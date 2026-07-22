@@ -1,0 +1,17 @@
+{
+  "deep_bytes": 1979121302,
+  "deep_str": 1979121301,
+  "hold_deep_bytes": 2026072902,
+  "hold_deep_text": 2026072901,
+  "hold_invalid_patterns": 2026072907,
+  "hold_invalid_templates": 2026072908,
+  "hold_properties": 2026072906,
+  "hold_real_bytes": 2026072904,
+  "hold_real_text": 2026072903,
+  "hold_scanner": 2026072905,
+  "invalid_patterns": 1511506921,
+  "invalid_templates": 1511506922,
+  "properties": 1511506920,
+  "valid_bytes": 1511506919,
+  "valid_str": 1511506918
+}
