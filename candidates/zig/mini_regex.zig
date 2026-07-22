@@ -54,6 +54,7 @@ const CharClass = struct {
     range_count: u8 = 0,
     categories: u8 = 0,
     negative: bool = false,
+    locale_multi: bool = false,
 };
 const Op = enum(u8) { literal, dot, class, begin, end, absolute_begin, absolute_end, boundary, split, jump, save_begin, save_end, backref, conditional, atomic_begin, atomic_end, look, accept };
 const Instruction = struct { op: Op, left: u16 = 0, right: u16 = 0, extra: u16 = 0, value: u32 = 0 };
@@ -73,6 +74,7 @@ const Program = struct {
     scoped_prefix: u16 = std.math.maxInt(u16),
     groups: u16 = 0,
     references: bool = false,
+    nullable_loops: bool = false,
     names: [max_groups]Name = undefined,
     name_count: u16 = 0,
 };
@@ -197,6 +199,9 @@ const Parser = struct {
         while (self.at < self.source.len) {
             if (self.source[self.at] == ']' and !first) {
                 self.at += 1;
+                var literals: usize = 0;
+                for (class.bits) |byte| literals += @popCount(byte);
+                class.locale_multi = class.range_count != 0 or class.categories != 0 or literals != 1;
                 self.program.classes[index] = class;
                 return self.add(.{ .class = index });
             }
@@ -737,7 +742,22 @@ fn classBit(class: *const CharClass, value: u32) bool {
     return value < 256 and class.bits[@as(usize, @intCast(value)) >> 3] & (@as(u8, 1) << @intCast(value & 7)) != 0;
 }
 
+fn classRaw(class: *const CharClass, value: u32, flags: u32) bool {
+    if (classBit(class, value)) return true;
+    for (class.ranges[0..class.range_count]) |range| if (value >= range.left and value <= range.right) return true;
+    if (class.categories != 0) {
+        const codes = [_]u8{ 'd', 'D', 's', 'S', 'w', 'W' };
+        for (codes) |code| if (class.categories & categoryBit(code) != 0 and category(code, value, flags)) return true;
+    }
+    return false;
+}
+
 fn classMatch(class: *const CharClass, value: u32, flags: u32) bool {
+    if (class.negative and class.locale_multi and flags & 6 == 6 and flags & text_pattern_flag == 0) {
+        const lower: u32 = if (value >= 'A' and value <= 'Z') value + 32 else value;
+        const upper: u32 = if (value >= 'a' and value <= 'z') value - 32 else value;
+        return !classRaw(class, value, flags) or !classRaw(class, lower, flags) or !classRaw(class, upper, flags);
+    }
     var found = classBit(class, value);
     if (!found and flags & 2 != 0) {
         const ascii_only = asciiMode(flags);
@@ -854,6 +874,20 @@ fn eval(program: *const Program, node_index: u16, text: Subject, endpos: usize, 
 }
 
 const CompileError = error{ TooMuchCode, UnsupportedRepeat };
+
+fn canBeEmpty(program: *const Program, index: u16) bool {
+    return switch (program.nodes[index]) {
+        .empty, .begin, .end, .absolute_begin, .absolute_end, .boundary, .look, .backref => true,
+        .literal, .dot, .class => false,
+        .sequence => |pair| canBeEmpty(program, pair.left) and canBeEmpty(program, pair.right),
+        .alternative => |pair| canBeEmpty(program, pair.left) or canBeEmpty(program, pair.right),
+        .repeat => |repeat| repeat.minimum == 0 or canBeEmpty(program, repeat.child),
+        .group => |group| canBeEmpty(program, group.child),
+        .conditional => |conditional| canBeEmpty(program, conditional.yes) or canBeEmpty(program, conditional.no),
+        .atomic => |child| canBeEmpty(program, child),
+        .scoped => |scoped| canBeEmpty(program, scoped.child),
+    };
+}
 const Compiler = struct {
     program: *Program,
     flags: u32,
@@ -914,6 +948,7 @@ const Compiler = struct {
                 if (repeat.minimum > 128 or (repeat.maximum != unbounded and repeat.maximum > 128)) return error.UnsupportedRepeat;
                 for (0..repeat.minimum) |_| try self.node(repeat.child);
                 if (repeat.maximum == unbounded) {
+                    const guarded = canBeEmpty(self.program, repeat.child);
                     const split = try self.emit(.{ .op = .split });
                     const body = self.program.code_count;
                     try self.node(repeat.child);
@@ -921,6 +956,10 @@ const Compiler = struct {
                     const finish = self.program.code_count;
                     self.program.code[split].left = if (repeat.lazy) finish else body;
                     self.program.code[split].right = if (repeat.lazy) body else finish;
+                    if (guarded) {
+                        self.program.code[split].value = finish;
+                        self.program.nullable_loops = true;
+                    }
                 } else {
                     for (0..repeat.maximum - repeat.minimum) |_| {
                         const split = try self.emit(.{ .op = .split });
@@ -1158,13 +1197,28 @@ fn prefixes(program: *const Program, index: u16, flags: u32) Prefix {
     };
 }
 
+const GuardUndo = struct { pc: u16, previous: isize };
 const State = struct { pc: u16, pos: usize, atomic: usize };
 
 fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usize, full: bool) isize {
-    var stack: [max_stack]State = undefined;
+    var stack_local: [max_stack]State = undefined;
+    var stack: []State = &stack_local;
+    var stack_heap: ?[]State = null;
+    defer if (stack_heap) |items| std.heap.c_allocator.free(items);
+    var marks_local: [max_stack]usize = undefined;
+    var guard_marks: []usize = &marks_local;
+    var marks_heap: ?[]usize = null;
+    defer if (marks_heap) |items| std.heap.c_allocator.free(items);
     var stack_count: usize = 0;
     var atomic_stack: [256]usize = undefined;
     var atomic_depth: usize = 0;
+    var guards: [max_code]isize = undefined;
+    var guard_local: [max_stack]GuardUndo = undefined;
+    var guard_undo: []GuardUndo = &guard_local;
+    var guard_heap: ?[]GuardUndo = null;
+    defer if (guard_heap) |items| std.heap.c_allocator.free(items);
+    var guard_count: usize = 0;
+    if (program.nullable_loops) @memset(&guards, -1);
     var pc: u16 = 0;
     var pos = start;
     while (true) {
@@ -1210,13 +1264,46 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
                 }
             },
             .split => {
-                if (stack_count >= max_stack) return -2;
+                if (stack_count >= stack.len) {
+                    const capacity = std.math.mul(usize, stack.len, 2) catch return -2;
+                    const grown = std.heap.c_allocator.alloc(State, capacity) catch return -2;
+                    @memcpy(grown[0..stack_count], stack[0..stack_count]);
+                    if (stack_heap) |items| std.heap.c_allocator.free(items);
+                    stack_heap = grown;
+                    stack = grown;
+                    if (program.nullable_loops) {
+                        const grown_marks = std.heap.c_allocator.alloc(usize, capacity) catch return -2;
+                        @memcpy(grown_marks[0..stack_count], guard_marks[0..stack_count]);
+                        if (marks_heap) |items| std.heap.c_allocator.free(items);
+                        marks_heap = grown_marks;
+                        guard_marks = grown_marks;
+                    }
+                }
+                if (instruction.value != 0) {
+                    if (guard_count >= guard_undo.len) {
+                        const capacity = std.math.mul(usize, guard_undo.len, 2) catch return -2;
+                        const grown = std.heap.c_allocator.alloc(GuardUndo, capacity) catch return -2;
+                        @memcpy(grown[0..guard_count], guard_undo[0..guard_count]);
+                        if (guard_heap) |items| std.heap.c_allocator.free(items);
+                        guard_heap = grown;
+                        guard_undo = grown;
+                    }
+                    guard_undo[guard_count] = .{ .pc = pc, .previous = guards[pc] };
+                    guard_count += 1;
+                    guards[pc] = @intCast(pos);
+                }
+                if (program.nullable_loops) guard_marks[stack_count] = guard_count;
                 stack[stack_count] = .{ .pc = instruction.right, .pos = pos, .atomic = atomic_depth };
                 stack_count += 1;
                 pc = instruction.left;
                 continue;
             },
             .jump => {
+                const target = program.code[instruction.left];
+                if (target.op == .split and target.value != 0 and guards[instruction.left] == @as(isize, @intCast(pos))) {
+                    pc = @intCast(target.value);
+                    continue;
+                }
                 pc = instruction.left;
                 continue;
             },
@@ -1243,9 +1330,15 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
         }
         if (stack_count == 0) return -1;
         stack_count -= 1;
-        pc = stack[stack_count].pc;
-        pos = stack[stack_count].pos;
-        atomic_depth = stack[stack_count].atomic;
+        const state = stack[stack_count];
+        while (program.nullable_loops and guard_count > guard_marks[stack_count]) {
+            guard_count -= 1;
+            const item = guard_undo[guard_count];
+            guards[item.pc] = item.previous;
+        }
+        pc = state.pc;
+        pos = state.pos;
+        atomic_depth = state.atomic;
     }
 }
 
@@ -1253,12 +1346,29 @@ const CaptureState = struct { pc: u16, pos: usize, undo: usize, atomic: usize };
 const Undo = struct { slot: u16, previous: isize, last: isize };
 
 fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: usize, entry: u16, full: bool, captures: *[max_groups * 2]isize, last: *isize, reset: bool, nonempty: bool) isize {
-    var stack: [max_stack]CaptureState = undefined;
+    var stack_local: [max_stack]CaptureState = undefined;
+    var stack: []CaptureState = &stack_local;
+    var stack_heap: ?[]CaptureState = null;
+    defer if (stack_heap) |items| std.heap.c_allocator.free(items);
+    var marks_local: [max_stack]usize = undefined;
+    var guard_marks: []usize = &marks_local;
+    var marks_heap: ?[]usize = null;
+    defer if (marks_heap) |items| std.heap.c_allocator.free(items);
     var stack_count: usize = 0;
-    var undo: [max_undo]Undo = undefined;
+    var undo_local: [max_undo]Undo = undefined;
+    var undo: []Undo = &undo_local;
+    var undo_heap: ?[]Undo = null;
+    defer if (undo_heap) |items| std.heap.c_allocator.free(items);
     var undo_count: usize = 0;
     var atomic_stack: [256]usize = undefined;
     var atomic_depth: usize = 0;
+    var guards: [max_code]isize = undefined;
+    var guard_local: [max_stack]GuardUndo = undefined;
+    var guard_undo: []GuardUndo = &guard_local;
+    var guard_heap: ?[]GuardUndo = null;
+    defer if (guard_heap) |items| std.heap.c_allocator.free(items);
+    var guard_count: usize = 0;
+    if (program.nullable_loops) @memset(&guards, -1);
     if (reset) {
         @memset(captures, -1);
         last.* = -1;
@@ -1308,18 +1418,59 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                 }
             },
             .split => {
-                if (stack_count >= max_stack) return -2;
+                if (stack_count >= stack.len) {
+                    const capacity = std.math.mul(usize, stack.len, 2) catch return -2;
+                    const grown = std.heap.c_allocator.alloc(CaptureState, capacity) catch return -2;
+                    @memcpy(grown[0..stack_count], stack[0..stack_count]);
+                    if (stack_heap) |items| std.heap.c_allocator.free(items);
+                    stack_heap = grown;
+                    stack = grown;
+                    if (program.nullable_loops) {
+                        const grown_marks = std.heap.c_allocator.alloc(usize, capacity) catch return -2;
+                        @memcpy(grown_marks[0..stack_count], guard_marks[0..stack_count]);
+                        if (marks_heap) |items| std.heap.c_allocator.free(items);
+                        marks_heap = grown_marks;
+                        guard_marks = grown_marks;
+                    }
+                }
+                if (instruction.value != 0) {
+                    if (guard_count >= guard_undo.len) {
+                        const capacity = std.math.mul(usize, guard_undo.len, 2) catch return -2;
+                        const grown = std.heap.c_allocator.alloc(GuardUndo, capacity) catch return -2;
+                        @memcpy(grown[0..guard_count], guard_undo[0..guard_count]);
+                        if (guard_heap) |items| std.heap.c_allocator.free(items);
+                        guard_heap = grown;
+                        guard_undo = grown;
+                    }
+                    guard_undo[guard_count] = .{ .pc = pc, .previous = guards[pc] };
+                    guard_count += 1;
+                    guards[pc] = @intCast(pos);
+                }
+                if (program.nullable_loops) guard_marks[stack_count] = guard_count;
                 stack[stack_count] = .{ .pc = instruction.right, .pos = pos, .undo = undo_count, .atomic = atomic_depth };
                 stack_count += 1;
                 pc = instruction.left;
                 continue;
             },
             .jump => {
+                const target = program.code[instruction.left];
+                if (target.op == .split and target.value != 0 and guards[instruction.left] == @as(isize, @intCast(pos))) {
+                    pc = @intCast(target.value);
+                    continue;
+                }
                 pc = instruction.left;
                 continue;
             },
             .save_begin, .save_end => {
-                if (undo_count >= max_undo or instruction.left == 0 or instruction.left > max_groups) return -2;
+                if (instruction.left == 0 or instruction.left > max_groups) return -2;
+                if (undo_count >= undo.len) {
+                    const capacity = std.math.mul(usize, undo.len, 2) catch return -2;
+                    const grown = std.heap.c_allocator.alloc(Undo, capacity) catch return -2;
+                    @memcpy(grown[0..undo_count], undo[0..undo_count]);
+                    if (undo_heap) |items| std.heap.c_allocator.free(items);
+                    undo_heap = grown;
+                    undo = grown;
+                }
                 const slot: u16 = (instruction.left - 1) * 2 + (if (instruction.op == .save_end) @as(u16, 1) else @as(u16, 0));
                 undo[undo_count] = .{ .slot = slot, .previous = captures[slot], .last = last.* };
                 undo_count += 1;
@@ -1384,7 +1535,14 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                     if (positive) {
                         for (0..program.groups * 2) |slot| {
                             if (captures[slot] != looked[slot]) {
-                                if (undo_count >= max_undo) return -2;
+                                if (undo_count >= undo.len) {
+                                    const capacity = std.math.mul(usize, undo.len, 2) catch return -2;
+                                    const grown = std.heap.c_allocator.alloc(Undo, capacity) catch return -2;
+                                    @memcpy(grown[0..undo_count], undo[0..undo_count]);
+                                    if (undo_heap) |items| std.heap.c_allocator.free(items);
+                                    undo_heap = grown;
+                                    undo = grown;
+                                }
                                 undo[undo_count] = .{ .slot = @intCast(slot), .previous = captures[slot], .last = last.* };
                                 undo_count += 1;
                                 captures[slot] = looked[slot];
@@ -1401,6 +1559,11 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
         if (stack_count == 0) return -1;
         stack_count -= 1;
         const state = stack[stack_count];
+        while (program.nullable_loops and guard_count > guard_marks[stack_count]) {
+            guard_count -= 1;
+            const item = guard_undo[guard_count];
+            guards[item.pc] = item.previous;
+        }
         while (undo_count > state.undo) {
             undo_count -= 1;
             const item = undo[undo_count];

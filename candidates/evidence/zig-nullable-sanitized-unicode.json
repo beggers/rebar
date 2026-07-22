@@ -1,0 +1,14 @@
+{
+  "case_equivalence_checks": 333,
+  "chunk": 4096,
+  "codepoints": 1114112,
+  "correctness_checks": 1437,
+  "failed": 0,
+  "failures": [],
+  "membership_patterns": 16,
+  "membership_stride": 64,
+  "schema": "rebar-zig-unicode-probe-v1",
+  "seed": 2026073101,
+  "seeded_cases": 1024,
+  "unicode_version": "16.0.0"
+}

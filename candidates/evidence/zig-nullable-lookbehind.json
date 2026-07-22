@@ -1,0 +1,10 @@
+{
+  "correctness_checks": 16528,
+  "error_cases": 16,
+  "failed": 0,
+  "failures": [],
+  "manual_cases": 16,
+  "schema": "rebar-zig-lookbehind-refs-v1",
+  "seed": 2026073104,
+  "seeded_cases": 16384
+}

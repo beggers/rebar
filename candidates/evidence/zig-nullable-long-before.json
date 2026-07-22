@@ -1,0 +1,138 @@
+{
+  "correctness_checks": 205,
+  "failed": 4,
+  "failures": [
+    {
+      "actual": {
+        "display": "Zig capture matcher rejected the bridge call",
+        "error": "RuntimeError",
+        "message": "Zig capture matcher rejected the bridge call",
+        "position": null
+      },
+      "api": "match",
+      "expected": {
+        "metadata": [
+          32,
+          1,
+          {}
+        ],
+        "result": {
+          "groups": [
+            "x"
+          ],
+          "lastgroup": null,
+          "lastindex": 1,
+          "span": [
+            0,
+            50000
+          ]
+        }
+      },
+      "flags": 0,
+      "index": 0,
+      "kind": "long",
+      "pattern": "'(x)*'",
+      "subject": "'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "actual": {
+        "display": "Zig capture matcher rejected the bridge call",
+        "error": "RuntimeError",
+        "message": "Zig capture matcher rejected the bridge call",
+        "position": null
+      },
+      "api": "match",
+      "expected": {
+        "metadata": [
+          32,
+          1,
+          {}
+        ],
+        "result": {
+          "groups": [
+            "x"
+          ],
+          "lastgroup": null,
+          "lastindex": 1,
+          "span": [
+            0,
+            50001
+          ]
+        }
+      },
+      "flags": 0,
+      "index": 1,
+      "kind": "long",
+      "pattern": "'(x)*y'",
+      "subject": "'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "actual": {
+        "display": "Zig capture matcher rejected the bridge call",
+        "error": "RuntimeError",
+        "message": "Zig capture matcher rejected the bridge call",
+        "position": null
+      },
+      "api": "match",
+      "expected": {
+        "metadata": [
+          32,
+          1,
+          {}
+        ],
+        "result": {
+          "groups": [
+            "x"
+          ],
+          "lastgroup": null,
+          "lastindex": 1,
+          "span": [
+            0,
+            50001
+          ]
+        }
+      },
+      "flags": 0,
+      "index": 2,
+      "kind": "long",
+      "pattern": "'(x)*?y'",
+      "subject": "'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    },
+    {
+      "actual": {
+        "display": "Zig capture matcher rejected the bridge call",
+        "error": "RuntimeError",
+        "message": "Zig capture matcher rejected the bridge call",
+        "position": null
+      },
+      "api": "match",
+      "expected": {
+        "metadata": [
+          32,
+          0,
+          {}
+        ],
+        "result": {
+          "groups": [],
+          "lastgroup": null,
+          "lastindex": null,
+          "span": [
+            0,
+            50001
+          ]
+        }
+      },
+      "flags": 0,
+      "index": 4,
+      "kind": "long",
+      "pattern": "'(?:|x)*y'",
+      "subject": "'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+    }
+  ],
+  "long_cases": 5,
+  "long_length": 50000,
+  "manual_cases": 25,
+  "schema": "rebar-zig-nullable-repeat-v1",
+  "seed": 2026073105,
+  "seeded_cases": 0
+}
