@@ -65,7 +65,7 @@ class PatternError(Exception):
             self.lineno = scan.count("\n", 0, pos) + 1
             self.colno = pos - scan.rfind("\n", 0, pos)
             text = f"{msg} at position {pos}"
-            if self.lineno > 1:
+            if "\n" in scan:
                 text += f" (line {self.lineno}, column {self.colno})"
         super().__init__(text)
 
@@ -194,6 +194,437 @@ def _warn_ambiguous(pattern):
             for marker, label in (("&&", "intersection"), ("||", "union"), ("~~", "symmetric difference"), ("--", "difference")):
                 if text[index:index + 2] == marker:
                     warnings.warn(f"Possible set {label} at position {index}", FutureWarning, skip_file_prefixes=_WARNING_PREFIX)
+
+
+def _preflight_pattern(pattern, flags):
+    """Validate syntax and preserve Python-compatible errors before Zig compilation."""
+    byte_mode = isinstance(pattern, bytes)
+    text = pattern.decode("latin1") if byte_mode else pattern
+    length = len(text)
+    groups = {}
+    group_count = 0
+    open_groups = []
+    conditionals = []
+    conditional_branches = {}
+    stack = []
+    active_flags = flags
+    root_prefix = True
+    can_repeat = False
+    repeated = False
+
+    def fail(message, position=None, keep_pattern=True):
+        raise PatternError(message, pattern if keep_pattern else None, position)
+
+    def group_name(name, position):
+        valid = bool(name) and (name.isascii() and name.isidentifier() if byte_mode else name.isidentifier())
+        if not valid:
+            shown = ascii(name) if byte_mode else repr(name)
+            fail(f"bad character in group name {shown}", position)
+
+    def escape_at(start, in_class=False):
+        if start + 1 >= length:
+            fail("bad escape (end of pattern)", start)
+        code = text[start + 1]
+        if code in "xXuU":
+            widths = {"x": 2, "u": 4, "U": 8}
+            if code == "X":
+                fail(r"bad escape \X", start)
+            if byte_mode and code in "uU":
+                fail(f"bad escape \\{code}", start)
+            width = widths[code]
+            end = start + 2
+            while end < length and end < start + 2 + width and text[end] in "0123456789abcdefABCDEF":
+                end += 1
+            if end != start + 2 + width:
+                fail(f"incomplete escape {text[start:end]}", start)
+            value = int(text[start + 2:end], 16)
+            if code == "U" and value > 0x10ffff:
+                fail(f"bad escape {text[start:end]}", start)
+            return end, False, text[start:end]
+        if code == "N":
+            if byte_mode:
+                fail(r"bad escape \N", start)
+            if start + 2 >= length or text[start + 2] != "{":
+                fail("missing {", start + 2)
+            close = text.find("}", start + 3)
+            if close == start + 3:
+                fail("missing character name", start + 3)
+            if close < 0:
+                fail("missing character name" if start + 3 == length else "missing }, unterminated name", start + 3)
+            name = text[start + 3:close]
+            try:
+                value = unicodedata.lookup(name)
+            except KeyError:
+                fail(f"undefined character name {name!r}", start)
+            if len(value) != 1:
+                fail(f"undefined character name {name!r}", start)
+            return close + 1, False, text[start:close + 1]
+        if code in "dDsSwW":
+            return start + 2, True, "\\" + code
+        if code.isdigit():
+            end = start + 2
+            while end < length and text[end] in "01234567" and end < start + 4:
+                end += 1
+            digits = text[start + 1:end]
+            if code == "0" or in_class or len(digits) == 3 and code in "01234567":
+                if code not in "01234567":
+                    fail(f"bad escape \\{code}", start)
+                value = int(digits, 8)
+                if value > 0o377:
+                    fail(f"octal escape value \\{digits} outside of range 0-0o377", start)
+                return end, False, text[start:end]
+            if in_class:
+                fail(f"bad escape \\{code}", start)
+            number = int(digits[:2])
+            if number > group_count:
+                fail(f"invalid group reference {number}", start + 1)
+            if number in open_groups:
+                fail("cannot refer to an open group", start)
+            return start + 1 + len(str(number)), False, text[start:start + 1 + len(str(number))]
+        allowed = "abfnrtv" if in_class else "abfnrtvABZzb"
+        if code.isascii() and code.isalpha() and code not in allowed:
+            fail(f"bad escape \\{code}", start)
+        return start + 2, False, "\\" + code
+
+    def scalar(value):
+        if not value.startswith("\\"):
+            return ord(value)
+        code = value[1]
+        if code in "xuU":
+            return int(value[2:], 16)
+        if code == "N":
+            return ord(unicodedata.lookup(value[3:-1]))
+        if code in "01234567":
+            return int(value[1:], 8)
+        return ord({"a": "\a", "b": "\b", "f": "\f", "n": "\n", "r": "\r", "t": "\t", "v": "\v"}.get(code, code))
+
+    def scan_class(opening):
+        index = opening + 1
+        if index < length and text[index] == "^":
+            index += 1
+        first = True
+        previous = None
+        previous_category = False
+        while index < length:
+            if text[index] == "]" and not first:
+                return index + 1
+            first = False
+            if text[index] == "\\":
+                end, category_value, value = escape_at(index, True)
+            else:
+                end, category_value, value = index + 1, False, text[index]
+            if value == "-" and previous is not None and end < length and text[end] != "]":
+                if previous_category:
+                    fail(f"bad character range {previous}-" + (text[end:end + 2] if text[end:end + 1] == "\\" else text[end:end + 1]), opening + 1)
+                if text[end] == "\\":
+                    right_end, right_category, right = escape_at(end, True)
+                else:
+                    right_end, right_category, right = end + 1, False, text[end]
+                if right_category:
+                    fail(f"bad character range {previous}-{right}", opening + 1)
+                if scalar(right) < scalar(previous):
+                    fail(f"bad character range {previous}-{right}", opening + 1)
+                index = right_end
+                previous = None
+                previous_category = False
+                continue
+            previous, previous_category = value, category_value
+            index = end
+        fail("unterminated character set", opening)
+
+    index = 0
+    while index < length:
+        char = text[index]
+        if active_flags & int(VERBOSE):
+            if char in " \t\n\r\v\f":
+                index += 1
+                continue
+            if char == "#":
+                end = text.find("\n", index)
+                index = length if end < 0 else end + 1
+                continue
+        if char == "\\":
+            index, _, _ = escape_at(index)
+            can_repeat, repeated, root_prefix = True, False, False
+            continue
+        if char == "[":
+            index = scan_class(index)
+            can_repeat, repeated, root_prefix = True, False, False
+            continue
+        if char == "(":
+            opening = index
+            if text.startswith("(?#", index):
+                close = text.find(")", index + 3)
+                if close < 0:
+                    fail("missing ), unterminated comment", opening)
+                index = close + 1
+                continue
+            capture = False
+            group_number = None
+            kind = "group"
+            if text.startswith("(?P<", index):
+                close = text.find(">", index + 4)
+                if close < 0:
+                    fail("missing group name" if index + 4 == length else "missing >, unterminated name", index + 4)
+                name = text[index + 4:close]
+                if not name:
+                    fail("missing group name", index + 4)
+                group_name(name, index + 4)
+                group_count += 1
+                group_number = group_count
+                if name in groups:
+                    fail(f"redefinition of group name {name!r} as group {group_number}; was group {groups[name]}", index + 4)
+                groups[name] = group_number
+                capture = True
+                index = close + 1
+            elif text.startswith("(?P=", index):
+                close = text.find(")", index + 4)
+                if close < 0:
+                    fail("missing group name" if index + 4 == length else "missing ), unterminated name", index + 4)
+                name = text[index + 4:close]
+                if not name:
+                    fail("missing group name", index + 4)
+                group_name(name, index + 4)
+                if name not in groups:
+                    fail(f"unknown group name {name!r}", index + 4)
+                if groups[name] in open_groups:
+                    fail(f"cannot refer to an open group", index + 4)
+                index = close + 1
+                can_repeat, repeated, root_prefix = True, False, False
+                continue
+            elif text.startswith("(?(", index):
+                close = text.find(")", index + 3)
+                if close < 0:
+                    fail("missing group name" if index + 3 == length else "missing ), unterminated name", index + 3)
+                reference = text[index + 3:close]
+                if not reference:
+                    fail("missing group name", index + 3)
+                if reference.isascii() and reference.isdigit():
+                    number = int(reference)
+                    if number == 0:
+                        fail("bad group number", index + 3)
+                    conditionals.append((number, index + 3))
+                else:
+                    group_name(reference, index + 3)
+                    if reference not in groups:
+                        fail(f"unknown group name {reference!r}", index + 3)
+                kind = "conditional"
+                conditional_branches[opening] = 0
+                index = close + 1
+            elif text.startswith(("(?<=", "(?<!"), index):
+                index += 4
+                stack.append((opening, active_flags, can_repeat, repeated, None, "lookbehind"))
+                can_repeat = repeated = False
+                root_prefix = False
+                continue
+            elif text.startswith(("(?=", "(?!", "(?:", "(?>"), index):
+                index += 3
+            elif text.startswith("(?", index):
+                if index + 2 >= length:
+                    fail("unexpected end of pattern", index + 2)
+                first = text[index + 2]
+                if first == "P" and not text.startswith(("(?P<", "(?P="), index):
+                    if index + 3 >= length:
+                        fail("unexpected end of pattern", index + 3)
+                    fail(f"unknown extension ?P{text[index + 3]}", index + 1)
+                if first == "<" and not text.startswith(("(?<=", "(?<!"), index):
+                    if index + 3 >= length:
+                        fail("unexpected end of pattern", index + 3)
+                    fail(f"unknown extension ?<{text[index + 3]}", index + 1)
+                if first not in "aiLmsux-":
+                    fail(f"unknown extension ?{first}", index + 1)
+                cursor = index + 2
+                adding = set()
+                removing = set()
+                removed = False
+                while cursor < length and text[cursor] not in ":)":
+                    mark = text[cursor]
+                    if mark == "-":
+                        if removed:
+                            fail("missing flag", cursor)
+                        removed = True
+                        cursor += 1
+                        continue
+                    allowed = "aiLmsux" if byte_mode else "aLimsux"
+                    if mark not in allowed:
+                        if mark in "*+?{":
+                            if not removed:
+                                fail("missing -, : or )", cursor)
+                            fail("missing :" if removing else "missing flag", cursor)
+                        fail("unknown flag", cursor)
+                    target = removing if removed else adding
+                    target.add(mark)
+                    cursor += 1
+                if cursor >= length:
+                    if removed and not removing:
+                        fail("missing flag", cursor)
+                    fail("missing :" if removed else "missing -, : or )", cursor)
+                if removed and not removing:
+                    fail("missing flag", cursor)
+                common = adding & removing
+                if common:
+                    fail("bad inline flags: flag turned on and off", cursor)
+                type_flags = (adding | removing) & {"a", "u", "L"}
+                if type_flags & removing:
+                    fail("bad inline flags: cannot turn off flags 'a', 'u' and 'L'", cursor)
+                if byte_mode and "u" in adding:
+                    fail("bad inline flags: cannot use 'u' flag with a bytes pattern", index + 3 + next(item for item, mark in enumerate(text[index + 2:cursor]) if mark == "u"))
+                if not byte_mode and "L" in adding:
+                    fail("bad inline flags: cannot use 'L' flag with a str pattern", index + 3 + next(item for item, mark in enumerate(text[index + 2:cursor]) if mark == "L"))
+                if len(type_flags) > 1:
+                    fail("bad inline flags: flags 'a', 'u' and 'L' are incompatible", cursor)
+                bits = {"i": int(IGNORECASE), "L": int(LOCALE), "m": int(MULTILINE), "s": int(DOTALL), "x": int(VERBOSE), "a": int(ASCII), "u": int(UNICODE)}
+                local_flags = active_flags
+                for mark in adding:
+                    if mark in "aLu":
+                        local_flags &= ~(int(ASCII) | int(LOCALE) | int(UNICODE))
+                    local_flags |= bits[mark]
+                for mark in removing:
+                    local_flags &= ~bits[mark]
+                if text[cursor] == ")":
+                    if removed:
+                        fail("missing :", cursor)
+                    if stack or not root_prefix:
+                        fail("global flags not at the start of the expression", opening)
+                    active_flags = local_flags
+                    index = cursor + 1
+                    continue
+                stack.append((opening, active_flags, can_repeat, repeated, None, "group"))
+                active_flags = local_flags
+                can_repeat = repeated = False
+                root_prefix = False
+                index = cursor + 1
+                continue
+            else:
+                group_count += 1
+                group_number = group_count
+                capture = True
+                index += 1
+            stack.append((opening, active_flags, can_repeat, repeated, group_number if capture else None, kind))
+            if capture:
+                open_groups.append(group_number)
+            can_repeat = repeated = False
+            root_prefix = False
+            continue
+        if char == ")":
+            if not stack:
+                fail("unbalanced parenthesis", index)
+            opening, parent_flags, _, _, group_number, kind = stack.pop()
+            if group_number is not None:
+                open_groups.remove(group_number)
+            if kind == "lookbehind":
+                body = text[opening + 4:index]
+                if "*" in body or "+" in body or "?" in body or any("," in value and value.split(",", 1)[0] != value.split(",", 1)[1] for value in (part.split("}", 1)[0] for part in body.split("{")[1:])):
+                    fail("look-behind requires fixed-width pattern", keep_pattern=False)
+            active_flags = parent_flags
+            can_repeat, repeated = kind != "lookbehind", False
+            index += 1
+            continue
+        if char == "|":
+            if stack and stack[-1][-1] == "conditional":
+                opening = stack[-1][0]
+                conditional_branches[opening] += 1
+                if conditional_branches[opening] > 1:
+                    fail("conditional backref with more than two branches", index)
+            can_repeat = repeated = False
+            root_prefix = False
+            index += 1
+            continue
+        if char in "^$":
+            can_repeat = repeated = False
+            root_prefix = False
+            index += 1
+            continue
+        if char in "*+?" or char == "{":
+            quantifier_start = index
+            end = index + 1
+            if char == "{":
+                cursor = index + 1
+                while cursor < length and text[cursor].isdigit():
+                    cursor += 1
+                first = text[index + 1:cursor]
+                second = first
+                if cursor < length and text[cursor] == ",":
+                    cursor += 1
+                    end_digits = cursor
+                    while cursor < length and text[cursor].isdigit():
+                        cursor += 1
+                    second = text[end_digits:cursor]
+                if cursor >= length or text[cursor] != "}" or not first and not second:
+                    can_repeat, repeated, root_prefix = True, False, False
+                    index += 1
+                    continue
+                minimum = int(first or 0)
+                maximum = int(second) if second else None
+                if maximum is not None and minimum > maximum:
+                    fail("min repeat greater than max repeat", quantifier_start + 1)
+                end = cursor + 1
+            if not can_repeat:
+                fail("nothing to repeat", quantifier_start)
+            if repeated:
+                fail("multiple repeat", quantifier_start)
+            if end < length and text[end] in "?+":
+                end += 1
+            can_repeat, repeated, root_prefix = True, True, False
+            index = end
+            continue
+        can_repeat, repeated, root_prefix = True, False, False
+        index += 1
+
+    if stack:
+        fail("missing ), unterminated subpattern", stack[0][0])
+    for number, position in conditionals:
+        if number > group_count:
+            fail(f"invalid group reference {number}", position)
+
+
+def _may_accept_invalid_pattern(pattern):
+    """Quickly find the few invalid forms the native parser can otherwise accept."""
+    text = pattern.decode("latin1") if isinstance(pattern, bytes) else pattern
+    byte_mode = isinstance(pattern, bytes)
+    length = len(text)
+    if text.startswith("{") or "(?:{" in text:
+        return True
+    slash = text.find("\\")
+    while slash >= 0 and slash + 1 < length:
+        code = text[slash + 1]
+        if code in "dDsSwW" and (slash and text[slash - 1] == "-" or slash + 2 < length and text[slash + 2] == "-"):
+            return True
+        if code.isdigit() and code != "0":
+            return True
+        if byte_mode and code == "N":
+            return True
+        if code in "ABZzN89":
+            opening = text.rfind("[", 0, slash)
+            closing = text.rfind("]", 0, slash)
+            if opening > closing:
+                return True
+        if code.isascii() and code.isalpha() and code not in "abfnrtvABZzbdDsSwWxuUN":
+            return True
+        slash = text.find("\\", slash + 2)
+    group = text.find("(?")
+    while group >= 0:
+        cursor = group + 2
+        if cursor >= length or text[cursor] not in "aiLmsux-":
+            group = text.find("(?", cursor)
+            continue
+        adding = set()
+        removing = set()
+        removed = False
+        while cursor < length and text[cursor] in "aiLmsux-":
+            mark = text[cursor]
+            if mark == "-":
+                removed = True
+            elif removed:
+                removing.add(mark)
+            else:
+                adding.add(mark)
+            cursor += 1
+        type_flags = (adding | removing) & {"a", "u", "L"}
+        if adding & removing or len(type_flags) > 1 or byte_mode and "u" in adding or not byte_mode and "L" in adding or removed and cursor < length and text[cursor] == ")" or cursor < length and text[cursor] == ")" and (group or cursor + 1 < length and text[cursor + 1] in "*+?{"):
+            return True
+        group = text.find("(?", group + 2)
+    return False
 
 
 def _template(value, match, validate_only=False):
@@ -778,8 +1209,14 @@ def compile(pattern, flags=0):
     if key in _CACHE:
         return _CACHE[key]
     implicit_unicode = int(UNICODE) if isinstance(pattern, str) and not flags & int(ASCII) else 0
+    if _may_accept_invalid_pattern(pattern):
+        _preflight_pattern(pattern, flags | implicit_unicode)
     _warn_ambiguous(pattern)
-    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)
+    try:
+        handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)
+    except PatternError:
+        _preflight_pattern(pattern, flags | implicit_unicode)
+        raise
     if isinstance(pattern, str) and ((flags & int(ASCII) and effective_flags & int(UNICODE)) or (flags & int(UNICODE) and effective_flags & int(ASCII))):
         _NATIVE.library.rebar_zig_free(handle)
         raise ValueError("ASCII and UNICODE flags are incompatible")

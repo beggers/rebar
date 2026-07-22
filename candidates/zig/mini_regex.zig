@@ -82,6 +82,7 @@ const Parser = struct {
     source: []const u8,
     at: usize = 0,
     program: *Program,
+    open_groups: [max_groups + 1]bool = [_]bool{false} ** (max_groups + 1),
 
     fn add(self: *Parser, node: Node) ParseError!u16 {
         if (self.program.node_count >= max_nodes) return error.TooManyNodes;
@@ -167,7 +168,7 @@ const Parser = struct {
                 if (value > 255) return error.InvalidPattern;
                 break :blk @intCast(value);
             },
-            else => code,
+            else => if (std.ascii.isAlphabetic(code)) error.InvalidPattern else code,
         };
     }
 
@@ -297,7 +298,9 @@ const Parser = struct {
                         group_name = try self.identifier('>');
                     } else if (self.at + 2 < self.source.len and self.source[self.at + 1] == 'P' and self.source[self.at + 2] == '=') {
                         self.at += 3;
+                        if (self.at < self.source.len and std.ascii.isDigit(self.source[self.at])) return error.InvalidPattern;
                         const reference_number = try self.reference();
+                        if (reference_number <= max_groups and self.open_groups[reference_number]) return error.InvalidPattern;
                         if (self.at >= self.source.len or self.source[self.at] != ')') return error.InvalidPattern;
                         self.at += 1;
                         self.program.references = true;
@@ -357,8 +360,10 @@ const Parser = struct {
                     self.program.groups += 1;
                     group_number = self.program.groups;
                     if (group_name) |name| try self.addName(name, group_number);
+                    self.open_groups[group_number] = true;
                 }
                 const child = try self.alternative();
+                if (capturing) self.open_groups[group_number] = false;
                 if (self.at >= self.source.len or self.source[self.at] != ')') return error.InvalidPattern;
                 self.at += 1;
                 break :blk if (capturing) try self.add(.{ .group = .{ .child = child, .number = group_number } }) else child;
@@ -378,6 +383,7 @@ const Parser = struct {
                         reference_number = std.math.add(usize, reference_number, self.source[self.at] - '0') catch return error.InvalidPattern;
                     }
                     if (reference_number > self.program.groups) return error.Unsupported;
+                    if (reference_number <= max_groups and self.open_groups[reference_number]) return error.InvalidPattern;
                     self.program.references = true;
                     break :blk self.add(.{ .backref = @intCast(reference_number) });
                 }
@@ -438,6 +444,12 @@ const Parser = struct {
         const child = try self.atom();
         if (self.at >= self.source.len) return child;
         const mark = self.source[self.at];
+        if (mark == '*' or mark == '+' or mark == '?' or mark == '{') {
+            switch (self.program.nodes[child]) {
+                .begin, .end, .absolute_begin, .absolute_end, .boundary => return error.InvalidPattern,
+                else => {},
+            }
+        }
         var minimum: usize = 0;
         var maximum: usize = 0;
         switch (mark) {
@@ -475,9 +487,11 @@ const Parser = struct {
             self.at += 1;
         }
         if (self.at < self.source.len and self.source[self.at] == '+') {
+            if (lazy) return error.InvalidPattern;
             possessive = true;
             self.at += 1;
         }
+        if (self.at < self.source.len and (self.source[self.at] == '*' or self.source[self.at] == '+' or self.source[self.at] == '?' or self.source[self.at] == '{')) return error.InvalidPattern;
         return self.add(.{ .repeat = .{ .child = child, .minimum = minimum, .maximum = maximum, .lazy = lazy, .possessive = possessive } });
     }
 

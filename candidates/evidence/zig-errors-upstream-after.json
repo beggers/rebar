@@ -1,0 +1,1010 @@
+{
+  "crashes": 0,
+  "failed": 20,
+  "methods": 146,
+  "module": "candidates.zig_candidate",
+  "passed": 124,
+  "records": [
+    {
+      "failures": [
+        {
+          "test": "test_re_benchmarks (rebar_cpython_re_oracle.ExternalTests.test_re_benchmarks) (pattern='.*Python', string='Python')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 3045, in test_re_benchmarks\n    self.assertTrue(p.search(s2))\n                    ~~~~~~~~^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1015, in search\n    return self._search(string, max(pos, 0), end)\n           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1005, in _search\n    result = _NATIVE.run(self._handle, string, self.groups, pos, endpos, 0, require_nonempty)\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 136, in run\n    return _zig_bridge.match(handle, string, pos, endpos, mode, nonempty)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Zig capture matcher rejected the bridge call\n"
+        },
+        {
+          "test": "test_re_benchmarks (rebar_cpython_re_oracle.ExternalTests.test_re_benchmarks) (pattern='.*Python.*', string='Python')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 3045, in test_re_benchmarks\n    self.assertTrue(p.search(s2))\n                    ~~~~~~~~^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1015, in search\n    return self._search(string, max(pos, 0), end)\n           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1005, in _search\n    result = _NATIVE.run(self._handle, string, self.groups, pos, endpos, 0, require_nonempty)\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 136, in run\n    return _zig_bridge.match(handle, string, pos, endpos, mode, nonempty)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Zig capture matcher rejected the bridge call\n"
+        },
+        {
+          "test": "test_re_benchmarks (rebar_cpython_re_oracle.ExternalTests.test_re_benchmarks) (pattern='.*(Python)', string='Python')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 3045, in test_re_benchmarks\n    self.assertTrue(p.search(s2))\n                    ~~~~~~~~^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1015, in search\n    return self._search(string, max(pos, 0), end)\n           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1005, in _search\n    result = _NATIVE.run(self._handle, string, self.groups, pos, endpos, 0, require_nonempty)\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 136, in run\n    return _zig_bridge.match(handle, string, pos, endpos, mode, nonempty)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Zig capture matcher rejected the bridge call\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ExternalTests.test_re_benchmarks"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_re_tests (rebar_cpython_re_oracle.ExternalTests.test_re_tests) (pattern='\\\\141', string='a')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 3068, in test_re_tests\n    obj = re.compile(pattern)\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        },
+        {
+          "test": "test_re_tests (rebar_cpython_re_oracle.ExternalTests.test_re_tests) (pattern='(a)(b)(c)(d)(e)(f)(g)(h)(i)(j)(k)(l)\\\\119', string='abcdefghijklk9')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 3068, in test_re_tests\n    obj = re.compile(pattern)\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        },
+        {
+          "test": "test_re_tests (rebar_cpython_re_oracle.ExternalTests.test_re_tests) (pattern='w(?# comment 1)xy(?# comment 2)z', string='wxyz')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 3068, in test_re_tests\n    obj = re.compile(pattern)\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ExternalTests.test_re_tests"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_flags_repr"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_inline_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_locale"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_long_pattern (rebar_cpython_re_oracle.PatternReprTests.test_long_pattern)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 2873, in test_long_pattern\n    r = repr(re.compile(pattern))\n             ~~~~~~~~~~^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "PatternReprTests.test_long_pattern"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_multiple_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_quotes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_single_flag"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_unicode_flag"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_unknown_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_without_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ASSERT_NOT_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_MARK_PUSH_macro_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_MIN_REPEAT_ONE_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_MIN_UNTIL_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_REPEAT_ONE_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_anyall"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ascii_and_unicode_flag"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_atomic_grouping"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_backref_group_name_in_exception"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_basic_re_sub"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_big_codesize (rebar_cpython_re_oracle.ReTests.test_big_codesize)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1028, in test_big_codesize\n    r = re.compile('|'.join(('%d'%x for x in range(10000))))\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_big_codesize"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_bigcharset (rebar_cpython_re_oracle.ReTests.test_bigcharset)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1024, in test_bigcharset\n    self.assertEqual(re.match(r, \"\\uff01\").group(), \"\\uff01\")\n                     ~~~~~~~~^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1242, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_bigcharset"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_branching"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_113254"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_114660"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_117612"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_1661"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_16688"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_20998"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_bug_2537 (rebar_cpython_re_oracle.ReTests.test_bug_2537)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 2152, in test_bug_2537\n    m = r.match(\"xyyzy\")\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1021, in match\n    return self._at(string, max(pos, 0), end, max(pos, 0)) if pos <= end else None\n           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 995, in _at\n    result = _NATIVE.run(self._handle, string, self.groups, start, endpos, 1, require_nonempty)\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 136, in run\n    return _zig_bridge.match(handle, string, pos, endpos, mode, nonempty)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Zig capture matcher rejected the bridge call\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_bug_2537"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_29444"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_34294"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_3629"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_40736"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_bug_418626 (rebar_cpython_re_oracle.ReTests.test_bug_418626)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1580, in test_bug_418626\n    self.assertEqual(re.search('(a|b)*?c', 10000*'ab'+'cd').end(0), 20001)\n                     ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1238, in search\n    return compile(pattern, flags).search(string)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1015, in search\n    return self._search(string, max(pos, 0), end)\n           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1005, in _search\n    result = _NATIVE.run(self._handle, string, self.groups, pos, endpos, 0, require_nonempty)\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 136, in run\n    return _zig_bridge.match(handle, string, pos, endpos, mode, nonempty)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Zig capture matcher rejected the bridge call\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_bug_418626"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_448951"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_449000"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_449964"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_527371"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_581080"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_612074"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_6509"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_6561"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_725106"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_725149"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_764548"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_817234"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_926075"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_931848"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_gh100061"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_gh101955"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_gh91616"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bytes_str_mixing"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_category"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_character_set_any"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_character_set_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_character_set_none"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_comments"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_compile"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_constants"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_copying"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_dollar_matches_twice"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_empty_array"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_enum"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_error"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_error_is_PatternError_alias"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_expand"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_fail"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_findall_atomic_grouping"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_findall_possessive_quantifiers"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_finditer"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_fullmatch_atomic_grouping"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_fullmatch_possessive_quantifiers"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_getattr"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_group"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_group_name_in_exception"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_groupdict"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ignore_case"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ignore_case_range"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ignore_case_set"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ignore_spaces"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_inline_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_issue17998"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_keep_buffer"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_keyword_parameters"
+    },
+    {
+      "reason": "test needs en_US.iso88591 locale",
+      "skipped": 1,
+      "status": "skipped",
+      "test": "ReTests.test_locale_caching"
+    },
+    {
+      "reason": "test needs en_US.iso88591 locale",
+      "skipped": 1,
+      "status": "skipped",
+      "test": "ReTests.test_locale_compiled"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_locale_flag"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_look_behind_overflow (rebar_cpython_re_oracle.ReTests.test_look_behind_overflow)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 2064, in test_look_behind_overflow\n    self.assertEqual(re.search(p1 % (2**7, 2**7, 2**7), string).span(),\n                     ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1238, in search\n    return compile(pattern, flags).search(string)\n           ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_look_behind_overflow"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_lookahead (rebar_cpython_re_oracle.ReTests.test_lookahead)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1062, in test_lookahead\n    self.assertTrue(re.match(r'(a)b(?=(?(2)x|c))(c)', 'abc'))\n                    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1242, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_lookahead"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_lookbehind (rebar_cpython_re_oracle.ReTests.test_lookbehind)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1072, in test_lookbehind\n    self.assertTrue(re.match(r'(a)a(?<=\\1)c', 'aac'))\n                    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1242, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_lookbehind"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_match_getitem"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_match_repr"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_misc_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_misuse_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_multiple_repeat"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_named_unicode_escapes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_not_literal"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_nothing_to_repeat"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_other_escapes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_pattern_compare"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_pattern_compare_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_pickling"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_possessive_quantifiers (rebar_cpython_re_oracle.ReTests.test_possessive_quantifiers)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 2506, in test_possessive_quantifiers\n    self.assertEqual(re.match('()*+a', 'a').groups(), ('',))\n                     ~~~~~~~~^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1242, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1021, in match\n    return self._at(string, max(pos, 0), end, max(pos, 0)) if pos <= end else None\n           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 995, in _at\n    result = _NATIVE.run(self._handle, string, self.groups, start, endpos, 1, require_nonempty)\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 136, in run\n    return _zig_bridge.match(handle, string, pos, endpos, mode, nonempty)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Zig capture matcher rejected the bridge call\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_possessive_quantifiers"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_possible_set_operations"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_qualified_re_split"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_qualified_re_sub"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape_non_ascii"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape_non_ascii_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_findall"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_fullmatch"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_groupref"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_re_groupref_exists (rebar_cpython_re_oracle.ReTests.test_re_groupref_exists)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 664, in test_re_groupref_exists\n    self.assertEqual(re.match(pat, 'xc8yz').span(), (0, 5))\n                     ~~~~~~~~^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1242, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_re_groupref_exists"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_groupref_exists_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_groupref_exists_validation_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_match"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_split"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_subn"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_repeat_minmax (rebar_cpython_re_oracle.ReTests.test_repeat_minmax)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 768, in test_repeat_minmax\n    self.assertIsNone(re.match(r\"^x{}$\", \"xxx\"))\n                      ~~~~~~~~^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1242, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_repeat_minmax"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_repeat_minmax_overflow (rebar_cpython_re_oracle.ReTests.test_repeat_minmax_overflow)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 2046, in test_repeat_minmax_overflow\n    self.assertEqual(re.match(r\".{65535}\", string).span(), (0, 65535))\n                     ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1242, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_repeat_minmax_overflow"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_scanner"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_scoped_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_search_coverage"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_search_dot_unicode"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_search_star_plus"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_special_escapes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_sre_byte_class_literals"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_sre_byte_literals (rebar_cpython_re_oracle.ReTests.test_sre_byte_literals)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1509, in test_sre_byte_literals\n    self.assertTrue(re.match((r\"\\%03o\" % i).encode(), bytes([i])))\n                    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1242, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_sre_byte_literals"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_sre_character_class_literals"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_sre_character_literals (rebar_cpython_re_oracle.ReTests.test_sre_character_literals)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1450, in test_sre_character_literals\n    self.assertTrue(re.match(r\"\\%03o\" % i, chr(i)))\n                    ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1242, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_sre_character_literals"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_stack_overflow (rebar_cpython_re_oracle.ReTests.test_stack_overflow)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1589, in test_stack_overflow\n    self.assertEqual(re.match('(x)*', 50000*'x').group(1), 'x')\n                     ~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1242, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1021, in match\n    return self._at(string, max(pos, 0), end, max(pos, 0)) if pos <= end else None\n           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 995, in _at\n    result = _NATIVE.run(self._handle, string, self.groups, start, endpos, 1, require_nonempty)\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 136, in run\n    return _zig_bridge.match(handle, string, pos, endpos, mode, nonempty)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Zig capture matcher rejected the bridge call\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_stack_overflow"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_sub_template_numeric_escape"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_symbolic_groups (rebar_cpython_re_oracle.ReTests.test_symbolic_groups)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 288, in test_symbolic_groups\n    re.compile('(?P<µ>x)(?P=µ)(?(µ)y)')\n    ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_symbolic_groups"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_symbolic_groups_errors"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_symbolic_refs (rebar_cpython_re_oracle.ReTests.test_symbolic_refs)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 336, in test_symbolic_refs\n    self.assertEqual(re.sub('(?P<µ>x)', r'\\g<µ>', 'xx'), 'xx')\n                     ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1288, in sub\n    return compile(pattern, flags).sub(repl, string, count)\n           ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1216, in compile\n    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)\n                                                  ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 124, in compile\n    raise PatternError(\"unsupported or invalid Zig pattern\", pattern, 0)\ncandidates.zig_candidate.PatternError: unsupported or invalid Zig pattern at position 0\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_symbolic_refs"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_symbolic_refs_errors"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_unlimited_zero_width_repeat (rebar_cpython_re_oracle.ReTests.test_unlimited_zero_width_repeat)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1615, in test_unlimited_zero_width_repeat\n    self.assertIsNone(re.match(r'(?:a?)*y', 'z'))\n                      ~~~~~~~~^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1242, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 1021, in match\n    return self._at(string, max(pos, 0), end, max(pos, 0)) if pos <= end else None\n           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 995, in _at\n    result = _NATIVE.run(self._handle, string, self.groups, start, endpos, 1, require_nonempty)\n  File \"/home/dev-user/src/rebar/candidates/zig_candidate.py\", line 136, in run\n    return _zig_bridge.match(handle, string, pos, endpos, mode, nonempty)\n           ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRuntimeError: Zig capture matcher rejected the bridge call\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_unlimited_zero_width_repeat"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_weakref"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_word_boundaries"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_zerowidth"
+    }
+  ],
+  "runner_sha256": "d5084fd43352f34267f3ed9b4b5d60a6070e2c50d4b787739270502c856e18bb",
+  "schema": "rebar-cpython-re-result-v1",
+  "skipped": 2,
+  "source_sha256": {
+    "LICENSE": "b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231",
+    "re_tests.py": "ec04a2b2a77338d20b37d931693c7e588a2896d3c73c7b4b47973e24c13b5aab",
+    "test_re.py": "879c8b562a5bddb413e73ad6d026a6199785bd08fa1c2c5db1ef831b4e1c47e2"
+  },
+  "timeouts": 0
+}

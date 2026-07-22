@@ -24,6 +24,7 @@ def main():
     parser.add_argument("--official-before", required=True)
     parser.add_argument("--official-after", required=True)
     parser.add_argument("--output", required=True)
+    parser.add_argument("--subtitle", default="Unicode text, ranges, categories, boundaries, case handling, and named characters now work across every common API. Longer green bars mean more checks pass.")
     args = parser.parse_args()
     v2_before, v2_after = load(args.v2_before), load(args.v2_after)
     v3_before, v3_after = load(args.v3_before), load(args.v3_after)
@@ -58,7 +59,7 @@ def main():
         '<rect width="100%" height="100%" fill="#fff"/>',
         '<style>text{font-family:system-ui,-apple-system,Segoe UI,sans-serif;fill:#172033}.title{font-size:23px;font-weight:700}.sub{font-size:14px;fill:#52627a}.head{font-size:11px;font-weight:700;fill:#41506a}.label{font-size:13px}.number{font-size:12px;text-anchor:end;font-variant-numeric:tabular-nums}.small{font-size:11px;fill:#52627a}.grid{stroke:#dbe1eb;stroke-width:1}</style>',
         '<text x="24" y="38" class="title">How much Python re behavior the Zig experiment now covers</text>',
-        '<text x="24" y="64" class="sub">Unicode text, ranges, categories, boundaries, case handling, and named characters now work across every common API. Longer green bars mean more checks pass.</text>',
+        f'<text x="24" y="64" class="sub">{escape(args.subtitle)}</text>',
         '<text x="24" y="87" class="sub">Grey shows the previous result; red shows remaining gaps. No previous passing case regressed, and crashes/timeouts remain zero.</text>',
         '<text x="24" y="125" class="head">CHECK</text><text x="426" y="125" class="head" text-anchor="end">BEFORE → AFTER</text><text x="454" y="125" class="head">SHARE PASSING</text>',
     ]
