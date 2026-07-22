@@ -1,10 +1,10 @@
 const std = @import("std");
 
 const max_positions = 512;
-const max_stack = 128;
+const max_stack = 32;
 const max_groups = 256;
-const max_undo = 256;
-const max_guards = 128;
+const max_undo = 64;
+const max_guards = 32;
 const max_name_length = 63;
 const unbounded = std.math.maxInt(usize);
 const text_pattern_flag: u32 = 0x80000000;

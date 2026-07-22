@@ -2,6 +2,7 @@
 
 import ctypes
 import enum
+import functools
 import os
 import types
 import unicodedata
@@ -901,19 +902,48 @@ def _subject_length(value):
 Match = _zig_bridge.Match
 
 
-class Pattern:
-    __slots__ = ("pattern", "flags", "groups", "groupindex", "_groupindex", "_handle", "_literal", "_templates", "__weakref__")
+_PATTERN_METHODS = ("search", "match", "fullmatch", "findall", "finditer", "split", "sub", "subn", "scanner")
+
+
+class _PatternType(type):
+    def __getattribute__(cls, name):
+        if name in _PATTERN_METHODS:
+            return _PATTERN_UNBOUND[name]
+        return super().__getattribute__(name)
+
+
+class Pattern(metaclass=_PatternType):
+    __slots__ = ("pattern", "flags", "groups", "groupindex", "_groupindex", "_handle", "_literal", "_templates", "search", "match", "fullmatch", "findall", "finditer", "split", "sub", "subn", "scanner", "__weakref__")
 
     def __init__(self, value, flags, handle, groups, groupindex):
-        self.pattern = value
-        self.flags = flags
-        self.groups = groups
-        self._groupindex = dict(groupindex)
-        self.groupindex = types.MappingProxyType(self._groupindex)
-        self._handle = handle
+        names = dict(groupindex)
         metacharacters = b".^$*+?{}[]\\|()" if isinstance(value, bytes) else ".^$*+?{}[]\\|()"
-        self._literal = value if value and not flags & int(IGNORECASE | VERBOSE) and not any(char in metacharacters for char in value) else None
-        self._templates = {}
+        literal = value if value and not flags & int(IGNORECASE | VERBOSE) and not any(char in metacharacters for char in value) else None
+        _zig_bridge.initialize_pattern(self, value, flags, groups, types.MappingProxyType(names), names, handle, literal, {})
+
+    def __getattr__(self, name):
+        if name in ("search", "match", "fullmatch"):
+            value = functools.partial(getattr(_zig_bridge, "bound_" + name), self, self._handle, self._groupindex, self.pattern, self._literal)
+        elif name in ("finditer", "scanner"):
+            value = functools.partial(getattr(_zig_bridge, "bound_" + name), self, self._handle, self._groupindex, self.pattern, self.groups)
+        elif name in ("findall", "split"):
+            value = functools.partial(getattr(_zig_bridge, "bound_" + name), self._handle, self.pattern, self.groups)
+        elif name in ("sub", "subn"):
+            value = functools.partial(getattr(_zig_bridge, "bound_" + name), self, self._handle, self._groupindex, self.pattern, self._literal, self._templates, self.groups)
+        else:
+            raise AttributeError(name)
+        value.__self__ = self
+        object.__setattr__(self, name, value)
+        return value
+
+    def __setattr__(self, name, value):
+        if name in ("pattern", "flags", "groups"):
+            raise AttributeError("readonly attribute")
+        if name == "groupindex":
+            raise AttributeError("attribute 'groupindex' of 're.Pattern' objects is not writable")
+        if name in _PATTERN_METHODS:
+            raise AttributeError(f"'re.Pattern' object attribute '{name}' is read-only")
+        object.__setattr__(self, name, value)
 
     def __del__(self):
         handle = getattr(self, "_handle", None)
@@ -986,27 +1016,7 @@ class Pattern:
             return _zig_bridge.span_object(self, string, self.groups, self._groupindex, begin, begin + len(self._literal), pos if original_pos is None else original_pos, endpos)
         return _zig_bridge.match_object(self, self._handle, self._groupindex, string, pos, endpos, 0, require_nonempty, pos if original_pos is None else original_pos)
 
-    def search(self, string, pos=0, endpos=None):
-        return _zig_bridge.pattern_match(self, self._handle, self._groupindex, self.pattern, self._literal, string, pos, endpos, 0)
-
-    def match(self, string, pos=0, endpos=None):
-        return _zig_bridge.pattern_match(self, self._handle, self._groupindex, self.pattern, self._literal, string, pos, endpos, 1)
-
-    def fullmatch(self, string, pos=0, endpos=None):
-        return _zig_bridge.pattern_match(self, self._handle, self._groupindex, self.pattern, self._literal, string, pos, endpos, 2)
-
-    def finditer(self, string, pos=0, endpos=None):
-        return _zig_bridge.pattern_iterator(self, self._handle, self._groupindex, self.pattern, string, pos, endpos, False, self.groups)
-
-    def findall(self, string, pos=0, endpos=None):
-        return _zig_bridge.findall(self._handle, self.pattern, string, self.groups, pos, endpos)
-
-    def split(self, string, maxsplit=0):
-        return _zig_bridge.split(self._handle, self.pattern, string, self.groups, maxsplit)
-
-    def subn(self, repl, string, count=0):
-        if callable(repl):
-            return _zig_bridge.subn_callable(self, self._handle, self._groupindex, self.pattern, string, repl, count)
+    def _cache_template(self, repl, string):
         raw = bytes(repl) if isinstance(repl, (bytearray, memoryview)) else repl
         if not isinstance(raw, (str, bytes)):
             hash(raw)
@@ -1014,8 +1024,6 @@ class Pattern:
         if isinstance(self.pattern, str) != isinstance(raw, str):
             expected = "str instance" if isinstance(self.pattern, str) else "a bytes-like object"
             raise TypeError(f"sequence item 0: expected {expected}, {type(raw).__name__} found")
-        if self._literal is not None and not (b"\\" in raw if isinstance(raw, bytes) else "\\" in raw):
-            return _zig_bridge.literal_subn(self._literal, raw, string, count)
         template = self._templates.get(raw)
         if template is None:
             self._validate_string(string)
@@ -1025,10 +1033,7 @@ class Pattern:
             if len(self._templates) >= 32:
                 self._templates.clear()
             self._templates[raw] = template
-        return _zig_bridge.subn(self._handle, self.pattern, string, self.groups, template, count)
-
-    def sub(self, repl, string, count=0):
-        return self.subn(repl, string, count)[0]
+        return template
 
     def _expand(self, template, match):
         raw = bytes(template) if isinstance(template, (bytearray, memoryview)) else template
@@ -1041,8 +1046,25 @@ class Pattern:
             self._templates[raw] = tokens
         return _expand_tokens(tokens, match, isinstance(raw, bytes))
 
-    def scanner(self, string, pos=0, endpos=None):
-        return _zig_bridge.pattern_iterator(self, self._handle, self._groupindex, self.pattern, string, pos, endpos, True, self.groups)
+
+def _unbound_pattern_method(name):
+    def call(self, *args, **kwargs):
+        if not isinstance(self, Pattern):
+            raise TypeError(f"descriptor '{name}' for 're.Pattern' objects doesn't apply to a '{type(self).__name__}' object")
+        return getattr(self, name)(*args, **kwargs)
+
+    call.__name__ = name
+    call.__qualname__ = f"Pattern.{name}"
+    if name in ("search", "match", "fullmatch", "findall", "finditer", "scanner"):
+        call.__text_signature__ = "(self, /, string, pos=0, endpos=9223372036854775807)"
+    elif name == "split":
+        call.__text_signature__ = "(self, /, string, maxsplit=0)"
+    else:
+        call.__text_signature__ = "(self, /, repl, string, count=0)"
+    return call
+
+
+_PATTERN_UNBOUND = {name: _unbound_pattern_method(name) for name in _PATTERN_METHODS}
 
 
 class Scanner:

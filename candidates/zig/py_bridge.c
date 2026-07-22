@@ -18,6 +18,7 @@ extern int rebar_zig_match_captures_wide(const void *, const uint8_t *, size_t, 
 extern intptr_t rebar_zig_collect_records_wide(const void *, const uint8_t *, size_t, uint8_t, size_t, size_t, intptr_t *, size_t *, uint8_t *);
 
 #define ZIG_LOCAL_CAPTURE_WORDS 1024
+#define ZIG_ITERATOR_RECORD_WORDS 64
 #define ZIG_INITIAL_CAPTURE_COUNT 64
 
 typedef struct {
@@ -32,6 +33,7 @@ typedef struct {
     PyObject *pattern;
     PyObject *string;
     PyObject *groupindex;
+    PyObject *regs;
     Py_ssize_t groups;
     Py_ssize_t pos;
     Py_ssize_t endpos;
@@ -55,7 +57,8 @@ typedef struct {
     uint8_t nonempty;
     uint8_t done;
     Py_buffer view;
-    intptr_t records[ZIG_LOCAL_CAPTURE_WORDS];
+    intptr_t records[ZIG_ITERATOR_RECORD_WORDS];
+    intptr_t *record_heap;
     size_t record_at;
     size_t record_count;
 } ZigIterator;
@@ -76,6 +79,7 @@ static ZigMatch *zig_match_new(PyObject *pattern, PyObject *string, PyObject *gr
     match->pattern = Py_NewRef(pattern);
     match->string = Py_NewRef(string);
     match->groupindex = Py_NewRef(groupindex);
+    match->regs = NULL;
     match->groups = (Py_ssize_t)groups;
     match->pos = pos;
     match->endpos = endpos;
@@ -129,19 +133,18 @@ static PyObject *zig_match_piece(ZigMatch *match, Py_ssize_t group, PyObject *mi
     return result;
 }
 
-static PyObject *zig_match_group(ZigMatch *match, PyObject *args) {
-    Py_ssize_t count = PyTuple_GET_SIZE(args);
+static PyObject *zig_match_group(ZigMatch *match, PyObject *const *args, Py_ssize_t count) {
     if (count == 0) return zig_match_piece(match, 0, Py_None);
     if (count == 1) {
         Py_ssize_t group;
-        if (!zig_match_number(match, PyTuple_GET_ITEM(args, 0), &group)) return NULL;
+        if (!zig_match_number(match, args[0], &group)) return NULL;
         return zig_match_piece(match, group, Py_None);
     }
     PyObject *result = PyTuple_New(count);
     if (result == NULL) return NULL;
     for (Py_ssize_t index = 0; index < count; index++) {
         Py_ssize_t group;
-        if (!zig_match_number(match, PyTuple_GET_ITEM(args, index), &group)) {
+        if (!zig_match_number(match, args[index], &group)) {
             Py_DECREF(result);
             return NULL;
         }
@@ -155,10 +158,25 @@ static PyObject *zig_match_group(ZigMatch *match, PyObject *args) {
     return result;
 }
 
-static PyObject *zig_match_groups(ZigMatch *match, PyObject *args, PyObject *kwargs) {
-    static char *names[] = {"default", NULL};
+static PyObject *zig_match_groups(ZigMatch *match, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
     PyObject *missing = Py_None;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|O:groups", names, &missing)) return NULL;
+    Py_ssize_t keywords = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    if (keywords > 1) {
+        PyErr_Format(PyExc_TypeError, "groups() takes at most 1 keyword argument (%zd given)", keywords);
+        return NULL;
+    }
+    if (nargs + keywords > 1) {
+        PyErr_Format(PyExc_TypeError, "groups() takes at most 1 argument (%zd given)", nargs + keywords);
+        return NULL;
+    }
+    if (keywords != 0) {
+        PyObject *name = PyTuple_GET_ITEM(kwnames, 0);
+        if (PyUnicode_CompareWithASCIIString(name, "default") != 0) {
+            PyErr_Format(PyExc_TypeError, "groups() got an unexpected keyword argument '%U'", name);
+            return NULL;
+        }
+        missing = args[nargs];
+    } else if (nargs != 0) missing = args[0];
     PyObject *result = PyTuple_New(match->groups);
     if (result == NULL) return NULL;
     for (Py_ssize_t group = 1; group <= match->groups; group++) {
@@ -172,10 +190,25 @@ static PyObject *zig_match_groups(ZigMatch *match, PyObject *args, PyObject *kwa
     return result;
 }
 
-static PyObject *zig_match_groupdict(ZigMatch *match, PyObject *args, PyObject *kwargs) {
-    static char *names[] = {"default", NULL};
+static PyObject *zig_match_groupdict(ZigMatch *match, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
     PyObject *missing = Py_None;
-    if (!PyArg_ParseTupleAndKeywords(args, kwargs, "|O:groupdict", names, &missing)) return NULL;
+    Py_ssize_t keywords = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    if (keywords > 1) {
+        PyErr_Format(PyExc_TypeError, "groupdict() takes at most 1 keyword argument (%zd given)", keywords);
+        return NULL;
+    }
+    if (nargs + keywords > 1) {
+        PyErr_Format(PyExc_TypeError, "groupdict() takes at most 1 argument (%zd given)", nargs + keywords);
+        return NULL;
+    }
+    if (keywords != 0) {
+        PyObject *name = PyTuple_GET_ITEM(kwnames, 0);
+        if (PyUnicode_CompareWithASCIIString(name, "default") != 0) {
+            PyErr_Format(PyExc_TypeError, "groupdict() got an unexpected keyword argument '%U'", name);
+            return NULL;
+        }
+        missing = args[nargs];
+    } else if (nargs != 0) missing = args[0];
     PyObject *result = PyDict_New();
     if (result == NULL) return NULL;
     if (PyDict_Check(match->groupindex)) {
@@ -216,11 +249,13 @@ static PyObject *zig_match_groupdict(ZigMatch *match, PyObject *args, PyObject *
     return result;
 }
 
-static PyObject *zig_match_bound(ZigMatch *match, PyObject *args, int which) {
-    PyObject *value = NULL;
+static PyObject *zig_match_bound(ZigMatch *match, PyObject *const *args, Py_ssize_t nargs, int which, const char *name) {
     Py_ssize_t group = 0;
-    if (!PyArg_ParseTuple(args, "|O", &value)) return NULL;
-    if (value != NULL && !zig_match_number(match, value, &group)) return NULL;
+    if (nargs > 1) {
+        PyErr_Format(PyExc_TypeError, "%s expected at most 1 argument, got %zd", name, nargs);
+        return NULL;
+    }
+    if (nargs != 0 && !zig_match_number(match, args[0], &group)) return NULL;
     size_t stride = (size_t)match->groups + 1;
     intptr_t begin = match->spans[group];
     intptr_t finish = match->spans[stride + (size_t)group];
@@ -229,9 +264,9 @@ static PyObject *zig_match_bound(ZigMatch *match, PyObject *args, int which) {
     return zig_span(begin < 0 ? -1 : begin, begin < 0 ? -1 : finish);
 }
 
-static PyObject *zig_match_start(ZigMatch *match, PyObject *args) { return zig_match_bound(match, args, 0); }
-static PyObject *zig_match_end(ZigMatch *match, PyObject *args) { return zig_match_bound(match, args, 1); }
-static PyObject *zig_match_span(ZigMatch *match, PyObject *args) { return zig_match_bound(match, args, 2); }
+static PyObject *zig_match_start(ZigMatch *match, PyObject *const *args, Py_ssize_t nargs) { return zig_match_bound(match, args, nargs, 0, "start"); }
+static PyObject *zig_match_end(ZigMatch *match, PyObject *const *args, Py_ssize_t nargs) { return zig_match_bound(match, args, nargs, 1, "end"); }
+static PyObject *zig_match_span(ZigMatch *match, PyObject *const *args, Py_ssize_t nargs) { return zig_match_bound(match, args, nargs, 2, "span"); }
 
 static PyObject *zig_match_expand(ZigMatch *match, PyObject *value) {
     PyObject *raw = value;
@@ -390,7 +425,14 @@ static PyObject *zig_match_spans(ZigMatch *match, int missing_none) {
     return result;
 }
 
-static PyObject *zig_match_get_regs(ZigMatch *match, void *closure) { (void)closure; return zig_match_spans(match, 0); }
+static PyObject *zig_match_get_regs(ZigMatch *match, void *closure) {
+    (void)closure;
+    if (match->regs == NULL) {
+        match->regs = zig_match_spans(match, 0);
+        if (match->regs == NULL) return NULL;
+    }
+    return Py_NewRef(match->regs);
+}
 static PyObject *zig_match_get_private_spans(ZigMatch *match, void *closure) { (void)closure; return zig_match_spans(match, 1); }
 static PyObject *zig_match_get_private_last(ZigMatch *match, void *closure) { return zig_match_get_lastindex(match, closure); }
 
@@ -398,16 +440,17 @@ static void zig_match_dealloc(ZigMatch *match) {
     Py_XDECREF(match->pattern);
     Py_XDECREF(match->string);
     Py_XDECREF(match->groupindex);
+    Py_XDECREF(match->regs);
     Py_TYPE(match)->tp_free((PyObject *)match);
 }
 
 static PyMethodDef zig_match_methods[] = {
-    {"group", (PyCFunction)zig_match_group, METH_VARARGS, "Return one or more captured groups."},
-    {"groups", (PyCFunction)(void (*)(void))zig_match_groups, METH_VARARGS | METH_KEYWORDS, "Return all captured groups."},
-    {"groupdict", (PyCFunction)(void (*)(void))zig_match_groupdict, METH_VARARGS | METH_KEYWORDS, "Return named captured groups."},
-    {"start", (PyCFunction)zig_match_start, METH_VARARGS, "Return the start of a group."},
-    {"end", (PyCFunction)zig_match_end, METH_VARARGS, "Return the end of a group."},
-    {"span", (PyCFunction)zig_match_span, METH_VARARGS, "Return a group span."},
+    {"group", (PyCFunction)(void (*)(void))zig_match_group, METH_FASTCALL, "Return one or more captured groups."},
+    {"groups", (PyCFunction)(void (*)(void))zig_match_groups, METH_FASTCALL | METH_KEYWORDS, "Return all captured groups."},
+    {"groupdict", (PyCFunction)(void (*)(void))zig_match_groupdict, METH_FASTCALL | METH_KEYWORDS, "Return named captured groups."},
+    {"start", (PyCFunction)(void (*)(void))zig_match_start, METH_FASTCALL, "Return the start of a group."},
+    {"end", (PyCFunction)(void (*)(void))zig_match_end, METH_FASTCALL, "Return the end of a group."},
+    {"span", (PyCFunction)(void (*)(void))zig_match_span, METH_FASTCALL, "Return a group span."},
     {"expand", (PyCFunction)zig_match_expand, METH_O, "Expand a replacement template."},
     {"__copy__", (PyCFunction)zig_match_copy, METH_NOARGS, "Return the immutable match."},
     {"__deepcopy__", (PyCFunction)zig_match_deepcopy, METH_O, "Return the immutable match."},
@@ -859,8 +902,105 @@ static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, P
     return (PyObject *)match;
 }
 
+static PyObject *bridge_bound_search(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    Py_ssize_t keyword_count = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    if (nargs < 5 || nargs - 5 + keyword_count > 3) {
+        PyErr_Format(PyExc_TypeError, "search() takes at most 3 arguments (%zd given)", nargs - 5 + keyword_count);
+        return NULL;
+    }
+    PyObject *subject = nargs >= 6 ? args[5] : NULL;
+    PyObject *pos = nargs >= 7 ? args[6] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
+    PyObject *endpos = nargs >= 8 ? args[7] : Py_None;
+    for (Py_ssize_t index = 0; index < keyword_count; index++) {
+        PyObject *name = PyTuple_GET_ITEM(kwnames, index);
+        if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
+            if (nargs >= 6) {
+                PyErr_SetString(PyExc_TypeError, "argument for search() given by name ('string') and position (1)");
+                return NULL;
+            }
+            subject = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "pos") == 0) {
+            if (nargs >= 7) {
+                PyErr_SetString(PyExc_TypeError, "argument for search() given by name ('pos') and position (2)");
+                return NULL;
+            }
+            pos = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "endpos") == 0) {
+            if (nargs >= 8) {
+                PyErr_SetString(PyExc_TypeError, "argument for search() given by name ('endpos') and position (3)");
+                return NULL;
+            }
+            endpos = args[nargs + index];
+        } else {
+            PyErr_Format(PyExc_TypeError, "search() got an unexpected keyword argument '%U'", name);
+            return NULL;
+        }
+    }
+    if (subject == NULL) {
+        PyErr_SetString(PyExc_TypeError, "search() missing required argument 'string' (pos 1)");
+        return NULL;
+    }
+    PyObject *call[9] = {args[0], args[1], args[2], args[3], args[4], subject, pos, endpos, Py_GetConstantBorrowed(Py_CONSTANT_ZERO)};
+    return bridge_pattern_match(module, call, 9);
+}
+
+static PyObject *bridge_bound_pattern_mode(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames, const char *method, unsigned long mode) {
+    Py_ssize_t keyword_count = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    if (nargs < 5 || nargs - 5 + keyword_count > 3) {
+        PyErr_Format(PyExc_TypeError, "%s() takes at most 3 arguments (%zd given)", method, nargs - 5 + keyword_count);
+        return NULL;
+    }
+    PyObject *subject = nargs >= 6 ? args[5] : NULL;
+    PyObject *pos = nargs >= 7 ? args[6] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
+    PyObject *endpos = nargs >= 8 ? args[7] : Py_None;
+    for (Py_ssize_t index = 0; index < keyword_count; index++) {
+        PyObject *name = PyTuple_GET_ITEM(kwnames, index);
+        if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
+            if (nargs >= 6) {
+                PyErr_Format(PyExc_TypeError, "argument for %s() given by name ('string') and position (1)", method);
+                return NULL;
+            }
+            subject = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "pos") == 0) {
+            if (nargs >= 7) {
+                PyErr_Format(PyExc_TypeError, "argument for %s() given by name ('pos') and position (2)", method);
+                return NULL;
+            }
+            pos = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "endpos") == 0) {
+            if (nargs >= 8) {
+                PyErr_Format(PyExc_TypeError, "argument for %s() given by name ('endpos') and position (3)", method);
+                return NULL;
+            }
+            endpos = args[nargs + index];
+        } else {
+            PyErr_Format(PyExc_TypeError, "%s() got an unexpected keyword argument '%U'", method, name);
+            return NULL;
+        }
+    }
+    if (subject == NULL) {
+        PyErr_Format(PyExc_TypeError, "%s() missing required argument 'string' (pos 1)", method);
+        return NULL;
+    }
+    PyObject *mode_value = PyLong_FromUnsignedLong(mode);
+    if (mode_value == NULL) return NULL;
+    PyObject *call[9] = {args[0], args[1], args[2], args[3], args[4], subject, pos, endpos, mode_value};
+    PyObject *result = bridge_pattern_match(module, call, 9);
+    Py_DECREF(mode_value);
+    return result;
+}
+
+static PyObject *bridge_bound_match(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    return bridge_bound_pattern_mode(module, args, nargs, kwnames, "match", 1);
+}
+
+static PyObject *bridge_bound_fullmatch(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    return bridge_bound_pattern_mode(module, args, nargs, kwnames, "fullmatch", 2);
+}
+
 static void zig_iterator_dealloc(ZigIterator *iterator) {
     if (iterator->view.obj != NULL) PyBuffer_Release(&iterator->view);
+    PyMem_Free(iterator->record_heap);
     Py_XDECREF(iterator->pattern);
     Py_XDECREF(iterator->string);
     Py_XDECREF(iterator->groupindex);
@@ -883,10 +1023,20 @@ static PyObject *zig_iterator_next(PyObject *value) {
     if (iterator->record_at == iterator->record_count) {
         if (iterator->done || iterator->cursor > iterator->endpos) return NULL;
         size_t words = (iterator->groups + 1) * 2 + 1;
-        size_t capacity = ZIG_LOCAL_CAPTURE_WORDS / words;
+        size_t capacity = ZIG_ITERATOR_RECORD_WORDS / words;
+        intptr_t *records = iterator->records;
+        if (capacity == 0) {
+            if (iterator->record_heap == NULL) {
+                if (words > SIZE_MAX / sizeof(intptr_t)) return PyErr_NoMemory();
+                iterator->record_heap = PyMem_Malloc(words * sizeof(intptr_t));
+                if (iterator->record_heap == NULL) return PyErr_NoMemory();
+            }
+            records = iterator->record_heap;
+            capacity = 1;
+        }
         if (capacity > ZIG_INITIAL_CAPTURE_COUNT) capacity = ZIG_INITIAL_CAPTURE_COUNT;
         if (iterator->view.obj != NULL && !iterator->view.readonly) capacity = 1;
-        intptr_t count = rebar_zig_collect_records_wide(iterator->handle, iterator->data, iterator->length, iterator->kind, iterator->endpos, capacity, iterator->records, &iterator->cursor, &iterator->nonempty);
+        intptr_t count = rebar_zig_collect_records_wide(iterator->handle, iterator->data, iterator->length, iterator->kind, iterator->endpos, capacity, records, &iterator->cursor, &iterator->nonempty);
         if (count < 0) {
             PyErr_SetString(PyExc_RuntimeError, "Zig matcher rejected the iterator bridge call");
             return NULL;
@@ -899,7 +1049,7 @@ static PyObject *zig_iterator_next(PyObject *value) {
         }
     }
     size_t words = (iterator->groups + 1) * 2 + 1;
-    const intptr_t *record = iterator->records + iterator->record_at * words;
+    const intptr_t *record = (iterator->record_heap == NULL ? iterator->records : iterator->record_heap) + iterator->record_at * words;
     iterator->record_at += 1;
     size_t stride = iterator->groups + 1;
     iterator->nonempty = record[0] == record[stride];
@@ -1010,6 +1160,7 @@ static PyObject *bridge_pattern_iterator(PyObject *module, PyObject *const *args
     iterator->done = 0;
     iterator->record_at = 0;
     iterator->record_count = 0;
+    iterator->record_heap = NULL;
     iterator->view = (Py_buffer){0};
     if (PyUnicode_Check(subject)) {
         if (PyBytes_Check(pattern_value)) {
@@ -1048,6 +1199,90 @@ static PyObject *bridge_pattern_iterator(PyObject *module, PyObject *const *args
     iterator->endpos = (size_t)end;
     iterator->done = start > end;
     return (PyObject *)iterator;
+}
+
+static PyObject *bridge_bound_finditer(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    Py_ssize_t keyword_count = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    if (nargs < 5 || nargs - 5 + keyword_count > 3) {
+        PyErr_Format(PyExc_TypeError, "finditer() takes at most 3 arguments (%zd given)", nargs - 5 + keyword_count);
+        return NULL;
+    }
+    PyObject *subject = nargs >= 6 ? args[5] : NULL;
+    PyObject *pos = nargs >= 7 ? args[6] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
+    PyObject *endpos = nargs >= 8 ? args[7] : Py_None;
+    for (Py_ssize_t index = 0; index < keyword_count; index++) {
+        PyObject *name = PyTuple_GET_ITEM(kwnames, index);
+        if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
+            if (nargs >= 6) {
+                PyErr_SetString(PyExc_TypeError, "argument for finditer() given by name ('string') and position (1)");
+                return NULL;
+            }
+            subject = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "pos") == 0) {
+            if (nargs >= 7) {
+                PyErr_SetString(PyExc_TypeError, "argument for finditer() given by name ('pos') and position (2)");
+                return NULL;
+            }
+            pos = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "endpos") == 0) {
+            if (nargs >= 8) {
+                PyErr_SetString(PyExc_TypeError, "argument for finditer() given by name ('endpos') and position (3)");
+                return NULL;
+            }
+            endpos = args[nargs + index];
+        } else {
+            PyErr_Format(PyExc_TypeError, "finditer() got an unexpected keyword argument '%U'", name);
+            return NULL;
+        }
+    }
+    if (subject == NULL) {
+        PyErr_SetString(PyExc_TypeError, "finditer() missing required argument 'string' (pos 1)");
+        return NULL;
+    }
+    PyObject *call[9] = {args[0], args[1], args[2], args[3], subject, pos, endpos, Py_False, args[4]};
+    return bridge_pattern_iterator(module, call, 9);
+}
+
+static PyObject *bridge_bound_scanner(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    Py_ssize_t keyword_count = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    if (nargs < 5 || nargs - 5 + keyword_count > 3) {
+        PyErr_Format(PyExc_TypeError, "scanner() takes at most 3 arguments (%zd given)", nargs - 5 + keyword_count);
+        return NULL;
+    }
+    PyObject *subject = nargs >= 6 ? args[5] : NULL;
+    PyObject *pos = nargs >= 7 ? args[6] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
+    PyObject *endpos = nargs >= 8 ? args[7] : Py_None;
+    for (Py_ssize_t index = 0; index < keyword_count; index++) {
+        PyObject *name = PyTuple_GET_ITEM(kwnames, index);
+        if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
+            if (nargs >= 6) {
+                PyErr_SetString(PyExc_TypeError, "argument for scanner() given by name ('string') and position (1)");
+                return NULL;
+            }
+            subject = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "pos") == 0) {
+            if (nargs >= 7) {
+                PyErr_SetString(PyExc_TypeError, "argument for scanner() given by name ('pos') and position (2)");
+                return NULL;
+            }
+            pos = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "endpos") == 0) {
+            if (nargs >= 8) {
+                PyErr_SetString(PyExc_TypeError, "argument for scanner() given by name ('endpos') and position (3)");
+                return NULL;
+            }
+            endpos = args[nargs + index];
+        } else {
+            PyErr_Format(PyExc_TypeError, "scanner() got an unexpected keyword argument '%U'", name);
+            return NULL;
+        }
+    }
+    if (subject == NULL) {
+        PyErr_SetString(PyExc_TypeError, "scanner() missing required argument 'string' (pos 1)");
+        return NULL;
+    }
+    PyObject *call[9] = {args[0], args[1], args[2], args[3], subject, pos, endpos, Py_True, args[4]};
+    return bridge_pattern_iterator(module, call, 9);
 }
 
 static PyObject *bridge_span(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
@@ -1347,6 +1582,48 @@ findall_error:
     return NULL;
 }
 
+static PyObject *bridge_bound_findall(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    Py_ssize_t keyword_count = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    if (nargs < 3 || nargs - 3 + keyword_count > 3) {
+        PyErr_Format(PyExc_TypeError, "findall() takes at most 3 arguments (%zd given)", nargs - 3 + keyword_count);
+        return NULL;
+    }
+    PyObject *subject = nargs >= 4 ? args[3] : NULL;
+    PyObject *pos = nargs >= 5 ? args[4] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
+    PyObject *endpos = nargs >= 6 ? args[5] : Py_None;
+    for (Py_ssize_t index = 0; index < keyword_count; index++) {
+        PyObject *name = PyTuple_GET_ITEM(kwnames, index);
+        if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
+            if (nargs >= 4) {
+                PyErr_SetString(PyExc_TypeError, "argument for findall() given by name ('string') and position (1)");
+                return NULL;
+            }
+            subject = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "pos") == 0) {
+            if (nargs >= 5) {
+                PyErr_SetString(PyExc_TypeError, "argument for findall() given by name ('pos') and position (2)");
+                return NULL;
+            }
+            pos = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "endpos") == 0) {
+            if (nargs >= 6) {
+                PyErr_SetString(PyExc_TypeError, "argument for findall() given by name ('endpos') and position (3)");
+                return NULL;
+            }
+            endpos = args[nargs + index];
+        } else {
+            PyErr_Format(PyExc_TypeError, "findall() got an unexpected keyword argument '%U'", name);
+            return NULL;
+        }
+    }
+    if (subject == NULL) {
+        PyErr_SetString(PyExc_TypeError, "findall() missing required argument 'string' (pos 1)");
+        return NULL;
+    }
+    PyObject *call[6] = {args[0], args[1], subject, args[2], pos, endpos};
+    return bridge_findall(module, call, 6);
+}
+
 static PyObject *bridge_split(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
     (void)module;
     if (nargs != 5) {
@@ -1455,6 +1732,41 @@ split_error:
     zig_capture_release(&buffer);
     Py_XDECREF(result);
     return NULL;
+}
+
+static PyObject *bridge_bound_split(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    Py_ssize_t keyword_count = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    if (nargs < 3 || nargs - 3 + keyword_count > 2) {
+        PyErr_Format(PyExc_TypeError, "split() takes at most 2 arguments (%zd given)", nargs - 3 + keyword_count);
+        return NULL;
+    }
+    PyObject *subject = nargs >= 4 ? args[3] : NULL;
+    PyObject *maxsplit = nargs >= 5 ? args[4] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
+    for (Py_ssize_t index = 0; index < keyword_count; index++) {
+        PyObject *name = PyTuple_GET_ITEM(kwnames, index);
+        if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
+            if (nargs >= 4) {
+                PyErr_SetString(PyExc_TypeError, "argument for split() given by name ('string') and position (1)");
+                return NULL;
+            }
+            subject = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "maxsplit") == 0) {
+            if (nargs >= 5) {
+                PyErr_SetString(PyExc_TypeError, "argument for split() given by name ('maxsplit') and position (2)");
+                return NULL;
+            }
+            maxsplit = args[nargs + index];
+        } else {
+            PyErr_Format(PyExc_TypeError, "split() got an unexpected keyword argument '%U'", name);
+            return NULL;
+        }
+    }
+    if (subject == NULL) {
+        PyErr_SetString(PyExc_TypeError, "split() missing required argument 'string' (pos 1)");
+        return NULL;
+    }
+    PyObject *call[5] = {args[0], args[1], subject, args[2], maxsplit};
+    return bridge_split(module, call, 5);
 }
 
 static PyObject *bridge_subn(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
@@ -1931,11 +2243,154 @@ static PyObject *bridge_subn_callable(PyObject *module, PyObject *const *args, P
     return Py_BuildValue("(Nn)", joined, (Py_ssize_t)count);
 }
 
+static PyObject *bridge_bound_substitute(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames, int want_count) {
+    const char *method = want_count ? "subn" : "sub";
+    Py_ssize_t keyword_count = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    if (nargs < 7 || nargs - 7 + keyword_count > 3) {
+        PyErr_Format(PyExc_TypeError, "%s() takes at most 3 arguments (%zd given)", method, nargs - 7 + keyword_count);
+        return NULL;
+    }
+    PyObject *replacement = nargs >= 8 ? args[7] : NULL;
+    PyObject *subject = nargs >= 9 ? args[8] : NULL;
+    PyObject *count = nargs >= 10 ? args[9] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
+    for (Py_ssize_t index = 0; index < keyword_count; index++) {
+        PyObject *name = PyTuple_GET_ITEM(kwnames, index);
+        if (PyUnicode_CompareWithASCIIString(name, "repl") == 0) {
+            if (nargs >= 8) {
+                PyErr_Format(PyExc_TypeError, "argument for %s() given by name ('repl') and position (1)", method);
+                return NULL;
+            }
+            replacement = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
+            if (nargs >= 9) {
+                PyErr_Format(PyExc_TypeError, "argument for %s() given by name ('string') and position (2)", method);
+                return NULL;
+            }
+            subject = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "count") == 0) {
+            if (nargs >= 10) {
+                PyErr_Format(PyExc_TypeError, "argument for %s() given by name ('count') and position (3)", method);
+                return NULL;
+            }
+            count = args[nargs + index];
+        } else {
+            PyErr_Format(PyExc_TypeError, "%s() got an unexpected keyword argument '%U'", method, name);
+            return NULL;
+        }
+    }
+    if (replacement == NULL || subject == NULL) {
+        const char *name = replacement == NULL ? "repl" : "string";
+        int position = replacement == NULL ? 1 : 2;
+        PyErr_Format(PyExc_TypeError, "%s() missing required argument '%s' (pos %d)", method, name, position);
+        return NULL;
+    }
+    PyObject *result;
+    if (PyCallable_Check(replacement)) {
+        PyObject *call[7] = {args[0], args[1], args[2], args[3], subject, replacement, count};
+        result = bridge_subn_callable(module, call, 7);
+    } else {
+        PyObject *raw = replacement;
+        PyObject *owned = NULL;
+        if (PyByteArray_Check(replacement) || PyMemoryView_Check(replacement)) {
+            owned = PyBytes_FromObject(replacement);
+            if (owned == NULL) return NULL;
+            raw = owned;
+        }
+        if (!PyUnicode_Check(raw) && !PyBytes_Check(raw)) {
+            if (PyObject_Hash(raw) == -1 && PyErr_Occurred()) {
+                Py_XDECREF(owned);
+                return NULL;
+            }
+            PyErr_Format(PyExc_TypeError, "decoding to str: need a bytes-like object, %.200s found", Py_TYPE(raw)->tp_name);
+            Py_XDECREF(owned);
+            return NULL;
+        }
+        int text_mode = PyUnicode_Check(args[3]);
+        if (text_mode != PyUnicode_Check(raw)) {
+            PyErr_Format(PyExc_TypeError, "sequence item 0: expected %s, %.200s found", text_mode ? "str instance" : "a bytes-like object", Py_TYPE(raw)->tp_name);
+            Py_XDECREF(owned);
+            return NULL;
+        }
+        int literal = 0;
+        if (args[4] != Py_None) {
+            literal = PyUnicode_Check(raw) ? PyUnicode_FindChar(raw, '\\', 0, PyUnicode_GET_LENGTH(raw), 1) < 0 : memchr(PyBytes_AS_STRING(raw), '\\', (size_t)PyBytes_GET_SIZE(raw)) == NULL;
+            if (PyErr_Occurred()) {
+                Py_XDECREF(owned);
+                return NULL;
+            }
+        }
+        if (literal) {
+            PyObject *call[4] = {args[4], raw, subject, count};
+            result = bridge_literal_subn(module, call, 4);
+        } else {
+            PyObject *tokens = PyDict_GetItemWithError(args[5], raw);
+            if (tokens == NULL && PyErr_Occurred()) {
+                Py_XDECREF(owned);
+                return NULL;
+            }
+            PyObject *created = NULL;
+            if (tokens == NULL) {
+                created = PyObject_CallMethod(args[0], "_cache_template", "OO", replacement, subject);
+                if (created == NULL) {
+                    Py_XDECREF(owned);
+                    return NULL;
+                }
+                tokens = created;
+            }
+            PyObject *call[6] = {args[1], args[3], subject, args[6], tokens, count};
+            result = bridge_subn(module, call, 6);
+            Py_XDECREF(created);
+        }
+        Py_XDECREF(owned);
+    }
+    if (result == NULL || want_count) return result;
+    if (!PyTuple_Check(result) || PyTuple_GET_SIZE(result) != 2) {
+        Py_XDECREF(result);
+        PyErr_SetString(PyExc_RuntimeError, "Zig replacement did not return a result/count pair");
+        return NULL;
+    }
+    PyObject *value = Py_NewRef(PyTuple_GET_ITEM(result, 0));
+    Py_DECREF(result);
+    return value;
+}
+
+static PyObject *bridge_bound_sub(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    return bridge_bound_substitute(module, args, nargs, kwnames, 0);
+}
+
+static PyObject *bridge_bound_subn(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    return bridge_bound_substitute(module, args, nargs, kwnames, 1);
+}
+
+static PyObject *bridge_initialize_pattern(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
+    (void)module;
+    if (nargs != 9) {
+        PyErr_Format(PyExc_TypeError, "initialize_pattern() takes exactly 9 arguments (%zd given)", nargs);
+        return NULL;
+    }
+    static const char *attribute_names[] = {"pattern", "flags", "groups", "groupindex", "_groupindex", "_handle", "_literal", "_templates"};
+    static PyObject *attribute_keys[8] = {NULL};
+    for (size_t index = 0; index < 8; index++) {
+        if (attribute_keys[index] == NULL) {
+            attribute_keys[index] = PyUnicode_InternFromString(attribute_names[index]);
+            if (attribute_keys[index] == NULL) return NULL;
+        }
+        if (PyObject_GenericSetAttr(args[0], attribute_keys[index], args[index + 1]) < 0) return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
 static PyMethodDef bridge_methods[] = {
     {"compile", (PyCFunction)(void (*)(void))bridge_compile, METH_FASTCALL, "Compile a Zig regex and return its metadata in one boundary crossing."},
     {"free", (PyCFunction)bridge_free, METH_O, "Release a compiled Zig regex."},
+    {"initialize_pattern", (PyCFunction)(void (*)(void))bridge_initialize_pattern, METH_FASTCALL, "Initialize a read-only Zig pattern in one native boundary crossing."},
     {"pattern_iterator", (PyCFunction)(void (*)(void))bridge_pattern_iterator, METH_FASTCALL, "Create a lazy batched Zig iterator or scanner in one boundary crossing."},
+    {"bound_finditer", (PyCFunction)(void (*)(void))bridge_bound_finditer, METH_FASTCALL | METH_KEYWORDS, "bound_finditer($module, pattern, handle, groupindex, pattern_value, groups, string, pos=0, endpos=9223372036854775807)\n--\n\nRun a bound Zig finditer with cached pattern metadata."},
+    {"bound_scanner", (PyCFunction)(void (*)(void))bridge_bound_scanner, METH_FASTCALL | METH_KEYWORDS, "bound_scanner($module, pattern, handle, groupindex, pattern_value, groups, string, pos=0, endpos=9223372036854775807)\n--\n\nRun a bound Zig scanner with cached pattern metadata."},
     {"pattern_match", (PyCFunction)(void (*)(void))bridge_pattern_match, METH_FASTCALL, "Validate a pattern call, run Zig, and construct the match in one boundary crossing."},
+    {"bound_search", (PyCFunction)(void (*)(void))bridge_bound_search, METH_FASTCALL | METH_KEYWORDS, "bound_search($module, pattern, handle, groupindex, pattern_value, literal, string, pos=0, endpos=9223372036854775807)\n--\n\nRun a bound Zig search with cached pattern metadata."},
+    {"bound_match", (PyCFunction)(void (*)(void))bridge_bound_match, METH_FASTCALL | METH_KEYWORDS, "bound_match($module, pattern, handle, groupindex, pattern_value, literal, string, pos=0, endpos=9223372036854775807)\n--\n\nRun a bound Zig match with cached pattern metadata."},
+    {"bound_fullmatch", (PyCFunction)(void (*)(void))bridge_bound_fullmatch, METH_FASTCALL | METH_KEYWORDS, "bound_fullmatch($module, pattern, handle, groupindex, pattern_value, literal, string, pos=0, endpos=9223372036854775807)\n--\n\nRun a bound Zig fullmatch with cached pattern metadata."},
     {"match_object", (PyCFunction)(void (*)(void))bridge_match_object, METH_FASTCALL, "Run one Zig match and construct its native match object."},
     {"span_object", (PyCFunction)(void (*)(void))bridge_span_object, METH_FASTCALL, "Construct a native Zig match from a known span."},
     {"collect_objects", (PyCFunction)(void (*)(void))bridge_collect_objects, METH_FASTCALL, "Collect Zig matches directly into native match objects."},
@@ -1943,10 +2398,14 @@ static PyMethodDef bridge_methods[] = {
     {"match", (PyCFunction)(void (*)(void))bridge_match, METH_FASTCALL, "Run one capture-aware Zig bytecode match."},
     {"collect", (PyCFunction)(void (*)(void))bridge_collect, METH_FASTCALL, "Collect non-overlapping Zig regex matches."},
     {"findall", (PyCFunction)(void (*)(void))bridge_findall, METH_FASTCALL, "Return all Zig regex matches as Python values."},
+    {"bound_findall", (PyCFunction)(void (*)(void))bridge_bound_findall, METH_FASTCALL | METH_KEYWORDS, "bound_findall($module, handle, pattern_value, groups, string, pos=0, endpos=9223372036854775807)\n--\n\nRun a bound Zig findall with cached pattern metadata."},
     {"split", (PyCFunction)(void (*)(void))bridge_split, METH_FASTCALL, "Split with one Zig regex boundary crossing."},
+    {"bound_split", (PyCFunction)(void (*)(void))bridge_bound_split, METH_FASTCALL | METH_KEYWORDS, "bound_split($module, handle, pattern_value, groups, string, maxsplit=0)\n--\n\nRun a bound Zig split with cached pattern metadata."},
     {"subn", (PyCFunction)(void (*)(void))bridge_subn, METH_FASTCALL, "Replace with one Zig regex boundary crossing."},
     {"literal_subn", (PyCFunction)(void (*)(void))bridge_literal_subn, METH_FASTCALL, "Replace a literal with one native boundary crossing."},
     {"subn_callable", (PyCFunction)(void (*)(void))bridge_subn_callable, METH_FASTCALL, "Run a callable Zig replacement with one native matching loop."},
+    {"bound_sub", (PyCFunction)(void (*)(void))bridge_bound_sub, METH_FASTCALL | METH_KEYWORDS, "bound_sub($module, pattern, handle, groupindex, pattern_value, literal, templates, groups, repl, string, count=0)\n--\n\nRun a bound Zig substitution with cached pattern metadata."},
+    {"bound_subn", (PyCFunction)(void (*)(void))bridge_bound_subn, METH_FASTCALL | METH_KEYWORDS, "bound_subn($module, pattern, handle, groupindex, pattern_value, literal, templates, groups, repl, string, count=0)\n--\n\nRun a bound Zig substitution/count with cached pattern metadata."},
     {NULL, NULL, 0, NULL},
 };
 

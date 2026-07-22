@@ -1,0 +1,7 @@
+{
+  "correctness_checks": 154,
+  "failed": 0,
+  "failures": [],
+  "module": "rebar",
+  "schema": "rebar-zig-public-surface-v1"
+}

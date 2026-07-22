@@ -24,6 +24,7 @@ EXTRA = {
     "look-negative-ahead": "negative lookahead and word-boundary checks repeat across the input",
     "literal-replace": "a very short replacement is dominated by argument handling and result construction",
     "match-miss": "very short anchored misses are dominated by call/setup cost",
+    "expanded-match-surface": "these generated inputs never match: a digit interrupts the leading text run before the dash, so the matcher retries the run at many starts; the result-building path is not reached",
 }
 
 

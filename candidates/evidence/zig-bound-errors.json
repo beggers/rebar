@@ -1,0 +1,14 @@
+{
+  "correctness_checks": 18298,
+  "counts": {
+    "frozen": 1272,
+    "official": 596,
+    "seeded": 16384,
+    "valid": 46
+  },
+  "failed": 0,
+  "failures": [],
+  "schema": "rebar-zig-pattern-errors-v1",
+  "seed": 2026073103,
+  "seeded_cases": 16384
+}

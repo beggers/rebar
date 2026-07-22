@@ -1,41 +1,45 @@
-# rebar: building a faster Python `re`
+# rebar: a faster Python `re`
 
-`rebar` is an experiment to build a compatible, faster replacement for Python's regular-expression module. Use it with `import rebar as re`. Four independent engines were written from scratch and checked against the latest stable CPython; none wraps or delegates matching to an external package or Python's regex engine.
+`rebar` is a from-scratch replacement for Python's regular-expression module. Four independent engines were built and tested against stable CPython 3.14.6; the fastest compatible engine is now the public one. Use it with `import rebar as re`. No engine wraps or delegates matching to Python `re` or an external regular-expression package.
 
-The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`. Scope notes are in [AMENDMENTS.md](AMENDMENTS.md), and the complete chronological record is in the [experiment log](docs/EXPERIMENT-LOG.md).
+The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`. Scope notes are in [AMENDMENTS.md](AMENDMENTS.md); the chronological record and rejected experiments are in the [experiment log](docs/EXPERIMENT-LOG.md).
 
 ## Headline results
 
-The expanded holdout contains **3,144 separate, unseen tasks** spanning everyday text and byte processing, every common API, compilation, Unicode, captures, replacements, scanners, windows, structured data, source/config parsing, addresses, cleanup, hits, misses, and short/long inputs. **1× means the same speed as Python `re`; higher is faster.**
+The final holdout contains **3,144 separate, unseen tasks** covering everyday text and bytes, common calls, compilation, Unicode, captures, replacements, scanners, windows, structured data, hits, misses, and short and long inputs. **1× means the same speed as Python `re`; higher is faster.**
 
-The latest Zig engine reaches **1.381× as fast overall** (1.358–1.403× measured range) and is clearly faster on **2,290/3,144** tasks (**73%**). The native C engine reaches **1.351×** and is clearly faster on **2,482/3,144** (**79%**). Both remain below the 1.5× target. Short calls, many alternatives, references, scanners, quoted/CSV data, and repeated or lazy matching explain the remaining losses; every affected task is retained.
+`rebar` reaches **1.539× as fast overall** (95% range **1.517–1.561×**) and is clearly faster on **2,635/3,144 tasks (83.8%)**. It passes all frozen and upstream correctness checks. The 93 large slowdowns are retained and explained; the main ones are repeated failed starts, many alternatives, and short verbose or lookahead-heavy searches.
 
-![Overall speed compared with Python re](candidates/evidence/zig-opt-overall.svg)
+![Overall speed compared with Python re](candidates/evidence/zig-bound-overall.svg)
 
 | Engine | Overall speed | Clearly faster | Large slowdowns |
 | --- | ---: | ---: | ---: |
-| Zig (latest) | **1.381×** | **2,290/3,144** | **259/3,144** |
-| Native C / `rebar` | **1.351×** | **2,482/3,144** | **226/3,144** |
+| Zig / `rebar` | **1.539×** | **2,635/3,144** | **93/3,144** |
+| Native C | 1.351× | 2,482/3,144 | 226/3,144 |
 | Rust | 0.149× | 167/3,144 | 2,948/3,144 |
 | Python | 0.024× | 86/3,144 | 3,021/3,144 |
 
-The [initial four-engine results](performance/v5/evidence/INITIAL.md) retain all **408,720** paired timing rows. The [latest Zig results](candidates/evidence/ZIG-OPTIMIZED.md) add **163,488** paired rows, all memory observations, measured ranges, rejected designs, and [every large Zig slowdown](candidates/evidence/zig-opt-regressions.md). Every timed batch is checked against frozen CPython output both before and after timing.
+The [final Zig report](candidates/evidence/ZIG-BOUNDARY.md) contains all **163,488** final paired timing rows, confidence ranges, memory results, repeated runs, rejected designs, and [every large slowdown](candidates/evidence/zig-bound-regressions.md). The [initial four-engine comparison](performance/v5/evidence/INITIAL.md) retains all **408,720** original paired rows. Every timed case is checked against frozen CPython output immediately before and after timing.
 
-![Expanded performance holdout coverage](performance/v5/evidence/coverage.svg)
+![Zig speed across all balanced holdout families](candidates/evidence/zig-bound-v5-family.svg)
 
-All four engines pass the frozen **44,084-case** correctness matrix, including **35,840** previously unused cases across deeper patterns, everyday inputs, Unicode/bytes/buffers, scanner sequences, properties, and invalid inputs, and all **144** runnable official CPython `re` tests. The three established engines pass **155,313** focused checks; Zig passes **109,848** additional focused checks. There are zero unexplained failures, crashes, or release-build timeouts. The [qualification report](oracle/v3/evidence/QUALIFIED.md) preserves the compatibility gaps the larger suite found and their fixes.
+All four engines pass the frozen **44,084-case** correctness matrix, including **35,840** unseen text, bytes, Unicode, buffer, scanner, property, and invalid-input cases, plus all **144** runnable official CPython `re` tests. Zig also passes **109,848** focused checks, **190** direct public-surface comparisons, full Unicode membership, and address/undefined-behavior checks with zero unexplained failures, crashes, or timeouts.
 
 ![Large correctness holdout coverage and results](oracle/v3/evidence/qualified-correctness.svg)
 
-The separate from-scratch Zig engine is correctness-qualified: it passes **all 44,084 frozen cases**, **all 6,288 expanded performance tasks**, and **144/144** runnable official CPython methods with zero crashes or timeouts. Its latest paired rerun improves **0.462→1.381×**. Compiled memory falls to **23 KB median**, and replacement, splitting, compilation, Unicode, and long searches often win; short calls, references, many alternatives, and some scanners remain costly. The [latest Zig report](candidates/evidence/ZIG-OPTIMIZED.md) preserves the complete result and every loss.
-
-![Zig reaches full CPython compatibility coverage](candidates/evidence/zig-opt-correctness.svg)
-
-![Overall Zig speed and all balanced holdout families](candidates/evidence/zig-opt-v5-family.svg)
+![Expanded performance holdout coverage](performance/v5/evidence/coverage.svg)
 
 ## Detailed graphs
 
-The family view makes the expanded benchmark readable: each row combines the matching variations of one kind of task. The all-case plots then show every individual holdout result and its measured range or memory use. Green indicates clearly faster, red indicates a slowdown greater than 20%, and grey indicates close or uncertain.
+The family graph above combines related tasks so the main differences are easy to see. The views below retain every task and show temporary memory, compiled-program memory, and all wins and losses. Green means clearly faster, red means more than 20% slower, and grey means close or uncertain.
+
+![Zig temporary memory across the expanded holdout](candidates/evidence/zig-bound-v5-memory.svg)
+
+![Compiled Zig program memory across the expanded holdout](candidates/evidence/zig-bound-program-memory.svg)
+
+![Zig wins and losses across the expanded holdout](candidates/evidence/zig-bound-v5-regressions.svg)
+
+The original comparison views remain available for every engine:
 
 ![Speed by kind of holdout task](performance/v5/evidence/initial-family-speed.svg)
 
@@ -47,43 +51,27 @@ The family view makes the expanded benchmark readable: each row combines the mat
 
 ![Overall results across all task sets](performance/v5/evidence/initial-rankings.svg)
 
-The Zig experiment's detailed memory and win/loss views retain every legacy and generated holdout task family:
+## Status and reproduction
 
-![Compiled Zig program memory across the expanded holdout](candidates/evidence/zig-opt-program-memory.svg)
-
-![Zig temporary memory across the expanded holdout](candidates/evidence/zig-opt-v5-memory.svg)
-
-![Zig wins and losses across the expanded holdout](candidates/evidence/zig-opt-v5-regressions.svg)
-
-## Current status
-
-The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md), the current stable release. The public import selects the correctness-qualified native C engine. The independently written [Zig engine](candidates/evidence/ZIG-OPTIMIZED.md) passes the same frozen and official checks, supports large programs/repeats/sets, Unicode, captures/references, and the complete public surface, and uses about **23 KB** median compiled-program memory instead of a fixed **424 KB**. Earlier language/FFI experiments, optimizations, rejections, and raw evidence are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
-
-| Check | Status |
+| Check | Result |
 | --- | --- |
-| Large correctness matrix | **PASS** — stdlib, native C, Python, Rust, and Zig each pass all 44,084 cases |
-| Focused checks | **PASS** — 155,313 replacement, buffer, long-input, lookaround, collection, separator, newline, and locale checks |
+| Correctness matrix | **PASS** — stdlib, Zig, native C, Rust, and Python each pass all 44,084 cases |
 | Official CPython tests | **PASS** — all four engines pass 144/144 runnable methods; zero failures, crashes, or timeouts |
-| Earlier large holdout | **PASS / HISTORICAL** — native C reaches 1.56× on the preserved 1,224 tasks; its 10 remeasured large slowdowns are explained |
-| Expanded performance holdout | **BELOW TARGET** — native C reaches 1.351× on 3,144 unseen tasks, clearly faster on 79%; all 226 large slowdowns are profiled/explained |
-| Zig engine | **CORRECTNESS PASS / BELOW TARGET** — all 44,084 frozen cases, 6,288 performance tasks, and 144/144 official methods pass; 1.381× latest holdout speed, clearly faster on 73%; every loss retained |
-| Public import | **AVAILABLE / WINNER** — `import rebar as re` uses the independent native C engine |
+| Focused Zig checks | **PASS** — 109,848 large-pattern, group, repeat, syntax, error, flag, Unicode, span, and capture checks; 190 direct API checks |
+| Expanded performance holdout | **PASS** — `rebar` is 1.539× as fast, clearly faster on 83.8%; all 93 large slowdowns explained |
+| Public import | **AVAILABLE / WINNER** — `import rebar as re` selects the independent Zig engine |
 
-The [expanded performance protocol](performance/v5/PROTOCOL.md) preserves every earlier task and records the larger unseen set, fixed seeds, weights, timing rules, correctness gate, and complete result. The [earlier v4 protocol/result](performance/v4/PROTOCOL.md) remains available for comparison.
-
-## Try it or reproduce the checks
+Compiled Zig programs use **18,600–47,580 bytes**, with a **23,308-byte median**, instead of the earlier fixed 423,960-byte layout. The frozen [performance protocol](performance/v5/PROTOCOL.md) records coverage, seeds, weights, timing rules, and the correctness gate. The [qualification report](oracle/v3/evidence/QUALIFIED.md) records the compatibility gaps found by the larger suite and their fixes.
 
 ```sh
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
-PYTHON="$PY" sh tools/build_vm.sh
-PYTHON="$PY" RUSTFLAGS='-D warnings' sh tools/build_rust.sh
 PYTHON="$PY" sh tools/build_zig_probe.sh
 
 PYTHONPATH=. "$PY" -c 'import rebar as re; print(re.findall(r"[A-Za-z]+", "a faster python re"))'
 PYTHONPATH=. "$PY" tools/oracle_v3.py verify --module rebar
 PYTHONPATH=. "$PY" tools/cpython_re_oracle.py verify --module rebar
-PYTHONPATH=. "$PY" tools/holdout_regression_controls.py --output /tmp/holdout-regression.json
-PYTHONPATH=. "$PY" tools/perf_v5.py verify
-PYTHONPATH=. "$PY" tools/perf_v5.py measure --output /tmp/rebar-performance.jsonl
-PYTHONPATH=. "$PY" tools/perf_v5.py analyze --input /tmp/rebar-performance.jsonl --output /tmp/rebar-summary.json
+PYTHONPATH=. "$PY" tools/zig_public_surface_probe.py --module rebar --output /tmp/rebar-surface.json
+PYTHONPATH=. "$PY" tools/perf_v5.py verify --module rebar --output /tmp/rebar-performance-check.json
+PYTHONPATH=. "$PY" tools/zig_perf_v5_pilot.py --raw /tmp/rebar-timing.jsonl --output /tmp/rebar-summary.json --chart /tmp/rebar-speed.svg --memory-chart /tmp/rebar-memory.svg --regression-chart /tmp/rebar-regressions.svg --trials 13 --bootstraps 2000
+PYTHONPATH=. "$PY" tools/zig_match_surface_perf.py --raw /tmp/rebar-match-hit.jsonl --output /tmp/rebar-match-hit.json --trials 13 --bootstraps 2000
 ```

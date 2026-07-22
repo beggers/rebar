@@ -12,9 +12,9 @@ from pathlib import Path
 
 NAMES = {
     "candidates.ast_candidate": "Python engine",
-    "candidates.vm_candidate": "Native C / rebar",
+    "candidates.vm_candidate": "Native C engine",
     "candidates.rust_candidate": "Rust engine",
-    "candidates.zig_candidate": "Zig engine (latest)",
+    "candidates.zig_candidate": "Zig / rebar (winner)",
 }
 COLORS = {
     "candidates.ast_candidate": "#b45309",

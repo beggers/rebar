@@ -1,0 +1,8 @@
+{
+  "correctness_cases": 986,
+  "correctness_checks": 8874,
+  "failed": 0,
+  "program_bytes": 17640,
+  "schema": "rebar-zig-probe-v3",
+  "seed": 20260724
+}
