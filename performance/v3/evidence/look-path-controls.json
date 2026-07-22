@@ -1,0 +1,8 @@
+{
+  "cases": 900,
+  "checks": 6300,
+  "failed": 0,
+  "failures": [],
+  "schema": "rebar-look-path-controls-v1",
+  "seed": 20260725
+}

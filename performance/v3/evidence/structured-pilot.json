@@ -1,0 +1,133 @@
+{
+  "cases": [
+    {
+      "baseline_ns": 1188.8406875,
+      "case": "cal.empty.finditer",
+      "native_ns": 547.1995,
+      "speedup": 2.1725909608835536
+    },
+    {
+      "baseline_ns": 1333.4348125,
+      "case": "hold.empty.finditer",
+      "native_ns": 606.6396875,
+      "speedup": 2.198067221739428
+    },
+    {
+      "baseline_ns": 446.6266875,
+      "case": "cal.real.comments",
+      "native_ns": 441.00075,
+      "speedup": 1.0127572061952277
+    },
+    {
+      "baseline_ns": 596.27725,
+      "case": "cal.real.markup",
+      "native_ns": 636.462125,
+      "speedup": 0.9368621110014991
+    },
+    {
+      "baseline_ns": 667.1996875,
+      "case": "cal.real.quotes",
+      "native_ns": 438.169,
+      "speedup": 1.5226994321825598
+    },
+    {
+      "baseline_ns": 1400.45775,
+      "case": "cal.real.csv",
+      "native_ns": 576.4548125,
+      "speedup": 2.429431968702664
+    },
+    {
+      "baseline_ns": 622.5418125,
+      "case": "cal.branch.miss",
+      "native_ns": 1216.4573125,
+      "speedup": 0.5117662626570795
+    },
+    {
+      "baseline_ns": 399.5770625,
+      "case": "cal.block.dotall",
+      "native_ns": 283.654875,
+      "speedup": 1.408673348201754
+    },
+    {
+      "baseline_ns": 534.66125,
+      "case": "cal.pattern.verbose",
+      "native_ns": 340.6751875,
+      "speedup": 1.5694164694633066
+    },
+    {
+      "baseline_ns": 730.8011875,
+      "case": "cal.look.negative-ahead",
+      "native_ns": 798.782375,
+      "speedup": 0.9148939816054403
+    },
+    {
+      "baseline_ns": 2156.91125,
+      "case": "cal.zero.boundary",
+      "native_ns": 1024.961875,
+      "speedup": 2.1043819312791516
+    },
+    {
+      "baseline_ns": 540.7009375,
+      "case": "hold.real.url",
+      "native_ns": 569.7835625,
+      "speedup": 0.9489584696469723
+    },
+    {
+      "baseline_ns": 474.02425,
+      "case": "hold.real.comments",
+      "native_ns": 469.7309375,
+      "speedup": 1.0091399398192715
+    },
+    {
+      "baseline_ns": 732.7396875,
+      "case": "hold.real.markup",
+      "native_ns": 778.730875,
+      "speedup": 0.9409408449356782
+    },
+    {
+      "baseline_ns": 654.14125,
+      "case": "hold.real.quotes",
+      "native_ns": 429.894625,
+      "speedup": 1.5216316091414261
+    },
+    {
+      "baseline_ns": 1494.7829375,
+      "case": "hold.real.csv",
+      "native_ns": 631.3506875,
+      "speedup": 2.3675953271215846
+    },
+    {
+      "baseline_ns": 637.5956875,
+      "case": "hold.branch.miss",
+      "native_ns": 776.485625,
+      "speedup": 0.8211300595551915
+    },
+    {
+      "baseline_ns": 436.3938125,
+      "case": "hold.block.dotall",
+      "native_ns": 302.0945625,
+      "speedup": 1.4445603022066973
+    },
+    {
+      "baseline_ns": 741.3258125,
+      "case": "hold.pattern.verbose",
+      "native_ns": 352.7853125,
+      "speedup": 2.1013511227171624
+    },
+    {
+      "baseline_ns": 727.5494375,
+      "case": "hold.look.negative-ahead",
+      "native_ns": 846.3934375,
+      "speedup": 0.8595877582049423
+    },
+    {
+      "baseline_ns": 1942.6765625,
+      "case": "hold.zero.boundary",
+      "native_ns": 945.3056875,
+      "speedup": 2.05507762006351
+    }
+  ],
+  "operations": 16000,
+  "schema": "rebar-structured-pilot-v1",
+  "trials": 9
+}
