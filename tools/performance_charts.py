@@ -15,7 +15,7 @@ COLORS = {
 }
 
 NAMES = {
-    "candidates.ast_candidate": "Python backtracker",
+    "candidates.ast_candidate": "Python engine",
     "candidates.vm_candidate": "Native C engine",
     "candidates.rust_candidate": "Rust engine",
     "rebar": "rebar",

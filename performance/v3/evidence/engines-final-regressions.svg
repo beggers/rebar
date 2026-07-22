@@ -1,0 +1,1016 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="3728" viewBox="0 0 1140 3728" role="img" aria-label="Where each replacement wins and loses">
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<text x="28" y="34" font-family="Arial, sans-serif" font-size="22" font-weight="700" fill="#0f172a">Where each replacement wins and loses</text>
+<text x="28" y="58" font-family="Arial, sans-serif" font-size="13" fill="#475569">All tests are shown. Green is clearly faster; red is more than 20% slower; grey is close or uncertain.</text>
+<text x="292" y="100" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#0284c7">Native C engine</text>
+<text x="567" y="100" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#7c3aed">Python engine</text>
+<text x="842" y="100" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#d97706">Rust engine</text>
+<text x="28" y="124" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Atomic Search</text>
+<rect x="284" y="108" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.12×</text>
+<rect x="559" y="108" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.031×</text>
+<rect x="834" y="108" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.19×</text>
+<text x="28" y="149" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Backref Fullmatch</text>
+<rect x="284" y="133" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.30×</text>
+<rect x="559" y="133" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.021×</text>
+<rect x="834" y="133" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.17×</text>
+<text x="28" y="174" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Block Dotall</text>
+<rect x="284" y="158" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.52×</text>
+<rect x="559" y="158" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.015×</text>
+<rect x="834" y="158" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.13×</text>
+<text x="28" y="199" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Branch Miss</text>
+<rect x="284" y="183" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.87×</text>
+<rect x="559" y="183" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0046×</text>
+<rect x="834" y="183" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.091×</text>
+<text x="28" y="224" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Branch Prefix</text>
+<rect x="284" y="208" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.23×</text>
+<rect x="559" y="208" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.022×</text>
+<rect x="834" y="208" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.12×</text>
+<text x="28" y="249" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Bytes Replace</text>
+<rect x="284" y="233" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.09×</text>
+<rect x="559" y="233" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.023×</text>
+<rect x="834" y="233" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.083×</text>
+<text x="28" y="274" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Bytes Scan</text>
+<rect x="284" y="258" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.54×</text>
+<rect x="559" y="258" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.018×</text>
+<rect x="834" y="258" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.10×</text>
+<text x="28" y="299" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find tokens in bytes</text>
+<rect x="284" y="283" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.19×</text>
+<rect x="559" y="283" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.020×</text>
+<rect x="834" y="283" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.22×</text>
+<text x="28" y="324" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Bytes View Long</text>
+<rect x="284" y="308" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.45×</text>
+<rect x="559" y="308" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.019×</text>
+<rect x="834" y="308" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.60×</text>
+<text x="28" y="349" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Byteslike Findall</text>
+<rect x="284" y="333" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.70×</text>
+<rect x="559" y="333" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.017×</text>
+<rect x="834" y="333" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.31×</text>
+<text x="28" y="374" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Capture Optional</text>
+<rect x="284" y="358" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.47×</text>
+<rect x="559" y="358" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.017×</text>
+<rect x="834" y="358" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.20×</text>
+<text x="28" y="399" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Compile, then search (cold)</text>
+<rect x="284" y="383" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.36×</text>
+<rect x="559" y="383" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.093×</text>
+<rect x="834" y="383" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="843" y="397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.04×</text>
+<text x="28" y="424" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Compile Complex</text>
+<rect x="284" y="408" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.37×</text>
+<rect x="559" y="408" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="568" y="422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.72×</text>
+<rect x="834" y="408" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="843" y="422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.49×</text>
+<text x="28" y="449" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Compile Only</text>
+<rect x="284" y="433" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.67×</text>
+<rect x="559" y="433" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="568" y="447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.01×</text>
+<rect x="834" y="433" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="843" y="447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.41×</text>
+<text x="28" y="474" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Conditional Match</text>
+<rect x="284" y="458" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.37×</text>
+<rect x="559" y="458" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.027×</text>
+<rect x="834" y="458" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.15×</text>
+<text x="28" y="499" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Dense Iter</text>
+<rect x="284" y="483" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.49×</text>
+<rect x="559" y="483" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.022×</text>
+<rect x="834" y="483" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.17×</text>
+<text x="28" y="524" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Empty Finditer</text>
+<rect x="284" y="508" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.25×</text>
+<rect x="559" y="508" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.018×</text>
+<rect x="834" y="508" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.19×</text>
+<text x="28" y="549" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Escape Text</text>
+<rect x="284" y="533" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">3.24×</text>
+<rect x="559" y="533" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="568" y="547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.01×</text>
+<rect x="834" y="533" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="843" y="547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.01×</text>
+<text x="28" y="574" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find all text tokens</text>
+<rect x="284" y="558" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.31×</text>
+<rect x="559" y="558" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.022×</text>
+<rect x="834" y="558" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.33×</text>
+<text x="28" y="599" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Iterate over captured pairs</text>
+<rect x="284" y="583" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.94×</text>
+<rect x="559" y="583" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.020×</text>
+<rect x="834" y="583" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.16×</text>
+<text x="28" y="624" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Fullmatch Miss</text>
+<rect x="284" y="608" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.64×</text>
+<rect x="559" y="608" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.021×</text>
+<rect x="834" y="608" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.28×</text>
+<text x="28" y="649" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Check the whole string</text>
+<rect x="284" y="633" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.57×</text>
+<rect x="559" y="633" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.018×</text>
+<rect x="834" y="633" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.11×</text>
+<text x="28" y="674" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Ignorecase Findall</text>
+<rect x="284" y="658" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.81×</text>
+<rect x="559" y="658" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.034×</text>
+<rect x="834" y="658" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.42×</text>
+<text x="28" y="699" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Lines Records</text>
+<rect x="284" y="683" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.20×</text>
+<rect x="559" y="683" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.013×</text>
+<rect x="834" y="683" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.14×</text>
+<text x="28" y="724" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Literal Replace</text>
+<rect x="284" y="708" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="722" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.45×</text>
+<rect x="559" y="708" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="722" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.049×</text>
+<rect x="834" y="708" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="722" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.26×</text>
+<text x="28" y="749" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Look Negative Ahead</text>
+<rect x="284" y="733" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="747" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.10×</text>
+<rect x="559" y="733" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="747" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.010×</text>
+<rect x="834" y="733" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="747" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.20×</text>
+<text x="28" y="774" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Look Negative Behind</text>
+<rect x="284" y="758" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="772" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.39×</text>
+<rect x="559" y="758" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="772" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.021×</text>
+<rect x="834" y="758" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="772" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.34×</text>
+<text x="28" y="799" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Many Split</text>
+<rect x="284" y="783" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="797" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.22×</text>
+<rect x="559" y="783" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="797" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.024×</text>
+<rect x="834" y="783" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="797" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.12×</text>
+<text x="28" y="824" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Match Miss</text>
+<rect x="284" y="808" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="822" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.12×</text>
+<rect x="559" y="808" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="822" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.036×</text>
+<rect x="834" y="808" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="822" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.20×</text>
+<text x="28" y="849" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Check a formatted prefix</text>
+<rect x="284" y="833" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="847" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.43×</text>
+<rect x="559" y="833" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="847" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.029×</text>
+<rect x="834" y="833" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="847" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.19×</text>
+<text x="28" y="874" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Match Surface</text>
+<rect x="284" y="858" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="872" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.38×</text>
+<rect x="559" y="858" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="872" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.023×</text>
+<rect x="834" y="858" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="872" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.14×</text>
+<text x="28" y="899" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Mode Ascii</text>
+<rect x="284" y="883" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="897" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.11×</text>
+<rect x="559" y="883" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="897" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.021×</text>
+<rect x="834" y="883" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="897" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.10×</text>
+<text x="28" y="924" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Mode Astral</text>
+<rect x="284" y="908" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="922" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.64×</text>
+<rect x="559" y="908" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="922" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.024×</text>
+<rect x="834" y="908" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="922" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.10×</text>
+<text x="28" y="949" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Mode Casefold</text>
+<rect x="284" y="933" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="947" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.41×</text>
+<rect x="559" y="933" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="947" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.024×</text>
+<rect x="834" y="933" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="947" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.11×</text>
+<text x="28" y="974" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Module Replace</text>
+<rect x="284" y="958" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="972" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.25×</text>
+<rect x="559" y="958" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="972" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.027×</text>
+<rect x="834" y="958" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="972" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.11×</text>
+<text x="28" y="999" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Search through the module API</text>
+<rect x="284" y="983" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="997" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.43×</text>
+<rect x="559" y="983" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="997" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.022×</text>
+<rect x="834" y="983" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="997" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.21×</text>
+<text x="28" y="1024" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Pattern Verbose</text>
+<rect x="284" y="1008" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1022" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.35×</text>
+<rect x="559" y="1008" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1022" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0087×</text>
+<rect x="834" y="1008" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1022" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.097×</text>
+<text x="28" y="1049" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Comments</text>
+<rect x="284" y="1033" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1047" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.50×</text>
+<rect x="559" y="1033" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1047" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.024×</text>
+<rect x="834" y="1033" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1047" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.21×</text>
+<text x="28" y="1074" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Config</text>
+<rect x="284" y="1058" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1072" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">3.05×</text>
+<rect x="559" y="1058" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1072" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.014×</text>
+<rect x="834" y="1058" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1072" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.14×</text>
+<text x="28" y="1099" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Csv</text>
+<rect x="284" y="1083" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1097" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.46×</text>
+<rect x="559" y="1083" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1097" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0095×</text>
+<rect x="834" y="1083" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1097" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.10×</text>
+<text x="28" y="1124" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Datetime</text>
+<rect x="284" y="1108" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.14×</text>
+<rect x="559" y="1108" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.012×</text>
+<rect x="834" y="1108" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.15×</text>
+<text x="28" y="1149" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Email</text>
+<rect x="284" y="1133" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.01×</text>
+<rect x="559" y="1133" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.014×</text>
+<rect x="834" y="1133" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.14×</text>
+<text x="28" y="1174" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Ip</text>
+<rect x="284" y="1158" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.15×</text>
+<rect x="559" y="1158" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0096×</text>
+<rect x="834" y="1158" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.13×</text>
+<text x="28" y="1199" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Lines</text>
+<rect x="284" y="1183" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.91×</text>
+<rect x="559" y="1183" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.029×</text>
+<rect x="834" y="1183" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.22×</text>
+<text x="28" y="1224" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Log</text>
+<rect x="284" y="1208" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.11×</text>
+<rect x="559" y="1208" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.022×</text>
+<rect x="834" y="1208" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.16×</text>
+<text x="28" y="1249" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Markup</text>
+<rect x="284" y="1233" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.33×</text>
+<rect x="559" y="1233" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.013×</text>
+<rect x="834" y="1233" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.18×</text>
+<text x="28" y="1274" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Path</text>
+<rect x="284" y="1258" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.34×</text>
+<rect x="559" y="1258" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0088×</text>
+<rect x="834" y="1258" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.11×</text>
+<text x="28" y="1299" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Quotes</text>
+<rect x="284" y="1283" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.59×</text>
+<rect x="559" y="1283" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.010×</text>
+<rect x="834" y="1283" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.14×</text>
+<text x="28" y="1324" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Url</text>
+<rect x="284" y="1308" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.50×</text>
+<rect x="559" y="1308" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.014×</text>
+<rect x="834" y="1308" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.063×</text>
+<text x="28" y="1349" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Uuid</text>
+<rect x="284" y="1333" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.50×</text>
+<rect x="559" y="1333" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.015×</text>
+<rect x="834" y="1333" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.21×</text>
+<text x="28" y="1374" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Version</text>
+<rect x="284" y="1358" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.19×</text>
+<rect x="559" y="1358" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.016×</text>
+<rect x="834" y="1358" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.22×</text>
+<text x="28" y="1399" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Real Whitespace</text>
+<rect x="284" y="1383" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.32×</text>
+<rect x="559" y="1383" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.037×</text>
+<rect x="834" y="1383" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.20×</text>
+<text x="28" y="1424" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Repeat Nested</text>
+<rect x="284" y="1408" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.49×</text>
+<rect x="559" y="1408" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.014×</text>
+<rect x="834" y="1408" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.100×</text>
+<text x="28" y="1449" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Replace Limited</text>
+<rect x="284" y="1433" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.48×</text>
+<rect x="559" y="1433" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.035×</text>
+<rect x="834" y="1433" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.17×</text>
+<text x="28" y="1474" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Scanner Search</text>
+<rect x="284" y="1458" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.19×</text>
+<rect x="559" y="1458" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.020×</text>
+<rect x="834" y="1458" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.12×</text>
+<text x="28" y="1499" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find a formatted line</text>
+<rect x="284" y="1483" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.30×</text>
+<rect x="559" y="1483" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.029×</text>
+<rect x="834" y="1483" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.20×</text>
+<text x="28" y="1524" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find a word (present)</text>
+<rect x="284" y="1508" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.11×</text>
+<rect x="559" y="1508" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.042×</text>
+<rect x="834" y="1508" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.15×</text>
+<text x="28" y="1549" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find a word (absent)</text>
+<rect x="284" y="1533" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.14×</text>
+<rect x="559" y="1533" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.14×</text>
+<rect x="834" y="1533" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.16×</text>
+<text x="28" y="1574" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find the ending in long text</text>
+<rect x="284" y="1558" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">12.8×</text>
+<rect x="559" y="1558" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.29×</text>
+<rect x="834" y="1558" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.27×</text>
+<text x="28" y="1599" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find and capture nearby text</text>
+<rect x="284" y="1583" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.41×</text>
+<rect x="559" y="1583" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.025×</text>
+<rect x="834" y="1583" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.16×</text>
+<text x="28" y="1624" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Split and keep separators</text>
+<rect x="284" y="1608" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.93×</text>
+<rect x="559" y="1608" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.017×</text>
+<rect x="834" y="1608" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.10×</text>
+<text x="28" y="1649" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Split Limited</text>
+<rect x="284" y="1633" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.69×</text>
+<rect x="559" y="1633" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.019×</text>
+<rect x="834" y="1633" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.12×</text>
+<text x="28" y="1674" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Reorder captured text</text>
+<rect x="284" y="1658" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.12×</text>
+<rect x="559" y="1658" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.022×</text>
+<rect x="834" y="1658" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.084×</text>
+<text x="28" y="1699" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Replace with a Python function</text>
+<rect x="284" y="1683" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.18×</text>
+<rect x="559" y="1683" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.063×</text>
+<rect x="834" y="1683" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.20×</text>
+<text x="28" y="1724" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Template Repeat</text>
+<rect x="284" y="1708" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1722" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.71×</text>
+<rect x="559" y="1708" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1722" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.027×</text>
+<rect x="834" y="1708" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1722" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.082×</text>
+<text x="28" y="1749" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Unicode Name Search</text>
+<rect x="284" y="1733" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1747" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.49×</text>
+<rect x="559" y="1733" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1747" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.047×</text>
+<rect x="834" y="1733" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1747" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.18×</text>
+<text x="28" y="1774" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Find Unicode words/numbers</text>
+<rect x="284" y="1758" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="1772" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.97×</text>
+<rect x="559" y="1758" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1772" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.022×</text>
+<rect x="834" y="1758" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1772" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.11×</text>
+<text x="28" y="1799" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Window Findall</text>
+<rect x="284" y="1783" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1797" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.22×</text>
+<rect x="559" y="1783" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1797" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.035×</text>
+<rect x="834" y="1783" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1797" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.38×</text>
+<text x="28" y="1824" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Window Match</text>
+<rect x="284" y="1808" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="1822" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.01×</text>
+<rect x="559" y="1808" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1822" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.040×</text>
+<rect x="834" y="1808" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1822" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.22×</text>
+<text x="28" y="1849" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Window Scanner</text>
+<rect x="284" y="1833" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1847" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.23×</text>
+<rect x="559" y="1833" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1847" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.028×</text>
+<rect x="834" y="1833" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1847" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.15×</text>
+<text x="28" y="1874" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Window Search</text>
+<rect x="284" y="1858" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="1872" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.96×</text>
+<rect x="559" y="1858" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1872" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.045×</text>
+<rect x="834" y="1858" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1872" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.23×</text>
+<text x="28" y="1899" font-family="Arial, sans-serif" font-size="11" fill="#334155">Practice: Zero Boundary</text>
+<rect x="284" y="1883" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1897" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.16×</text>
+<rect x="559" y="1883" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1897" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.013×</text>
+<rect x="834" y="1883" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1897" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.18×</text>
+<text x="28" y="1924" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Atomic Search</text>
+<rect x="284" y="1908" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1922" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.43×</text>
+<rect x="559" y="1908" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1922" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.031×</text>
+<rect x="834" y="1908" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1922" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.20×</text>
+<text x="28" y="1949" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Backref Fullmatch</text>
+<rect x="284" y="1933" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1947" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.39×</text>
+<rect x="559" y="1933" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1947" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.021×</text>
+<rect x="834" y="1933" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1947" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.18×</text>
+<text x="28" y="1974" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Block Dotall</text>
+<rect x="284" y="1958" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="1972" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.52×</text>
+<rect x="559" y="1958" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1972" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.014×</text>
+<rect x="834" y="1958" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1972" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.13×</text>
+<text x="28" y="1999" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Branch Miss</text>
+<rect x="284" y="1983" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="1997" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.03×</text>
+<rect x="559" y="1983" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="1997" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0050×</text>
+<rect x="834" y="1983" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="1997" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.100×</text>
+<text x="28" y="2024" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Branch Prefix</text>
+<rect x="284" y="2008" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2022" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.22×</text>
+<rect x="559" y="2008" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2022" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.022×</text>
+<rect x="834" y="2008" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2022" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.14×</text>
+<text x="28" y="2049" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Bytes Replace</text>
+<rect x="284" y="2033" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2047" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.09×</text>
+<rect x="559" y="2033" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2047" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.023×</text>
+<rect x="834" y="2033" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2047" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.083×</text>
+<text x="28" y="2074" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Bytes Scan</text>
+<rect x="284" y="2058" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2072" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.47×</text>
+<rect x="559" y="2058" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2072" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.017×</text>
+<rect x="834" y="2058" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2072" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.097×</text>
+<text x="28" y="2099" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find tokens in bytes</text>
+<rect x="284" y="2083" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2097" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.62×</text>
+<rect x="559" y="2083" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2097" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.021×</text>
+<rect x="834" y="2083" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2097" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.31×</text>
+<text x="28" y="2124" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Bytes View Long</text>
+<rect x="284" y="2108" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.44×</text>
+<rect x="559" y="2108" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.019×</text>
+<rect x="834" y="2108" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.60×</text>
+<text x="28" y="2149" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Byteslike Findall</text>
+<rect x="284" y="2133" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.47×</text>
+<rect x="559" y="2133" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.017×</text>
+<rect x="834" y="2133" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.29×</text>
+<text x="28" y="2174" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Capture Optional</text>
+<rect x="284" y="2158" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.35×</text>
+<rect x="559" y="2158" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.016×</text>
+<rect x="834" y="2158" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.18×</text>
+<text x="28" y="2199" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Compile, then search (cold)</text>
+<rect x="284" y="2183" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.33×</text>
+<rect x="559" y="2183" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.12×</text>
+<rect x="834" y="2183" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="843" y="2197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.14×</text>
+<text x="28" y="2224" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Compile Complex</text>
+<rect x="284" y="2208" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.44×</text>
+<rect x="559" y="2208" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="568" y="2222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.77×</text>
+<rect x="834" y="2208" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="843" y="2222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.32×</text>
+<text x="28" y="2249" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Compile Only</text>
+<rect x="284" y="2233" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.38×</text>
+<rect x="559" y="2233" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="568" y="2247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.80×</text>
+<rect x="834" y="2233" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="843" y="2247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.34×</text>
+<text x="28" y="2274" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Conditional Match</text>
+<rect x="284" y="2258" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.33×</text>
+<rect x="559" y="2258" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.025×</text>
+<rect x="834" y="2258" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.14×</text>
+<text x="28" y="2299" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Dense Iter</text>
+<rect x="284" y="2283" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.63×</text>
+<rect x="559" y="2283" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.023×</text>
+<rect x="834" y="2283" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.17×</text>
+<text x="28" y="2324" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Empty Finditer</text>
+<rect x="284" y="2308" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.28×</text>
+<rect x="559" y="2308" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.015×</text>
+<rect x="834" y="2308" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.19×</text>
+<text x="28" y="2349" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Escape Bytes</text>
+<rect x="284" y="2333" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">4.86×</text>
+<rect x="559" y="2333" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="568" y="2347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.02×</text>
+<rect x="834" y="2333" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="843" y="2347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.03×</text>
+<text x="28" y="2374" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find all text tokens</text>
+<rect x="284" y="2358" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.41×</text>
+<rect x="559" y="2358" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.020×</text>
+<rect x="834" y="2358" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.18×</text>
+<text x="28" y="2399" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Iterate over captured pairs</text>
+<rect x="284" y="2383" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.10×</text>
+<rect x="559" y="2383" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.021×</text>
+<rect x="834" y="2383" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.16×</text>
+<text x="28" y="2424" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Fullmatch Miss</text>
+<rect x="284" y="2408" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.64×</text>
+<rect x="559" y="2408" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.021×</text>
+<rect x="834" y="2408" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.28×</text>
+<text x="28" y="2449" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Check the whole string</text>
+<rect x="284" y="2433" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.47×</text>
+<rect x="559" y="2433" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.015×</text>
+<rect x="834" y="2433" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.12×</text>
+<text x="28" y="2474" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Ignorecase Findall</text>
+<rect x="284" y="2458" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.74×</text>
+<rect x="559" y="2458" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.034×</text>
+<rect x="834" y="2458" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.45×</text>
+<text x="28" y="2499" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Lines Records</text>
+<rect x="284" y="2483" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.72×</text>
+<rect x="559" y="2483" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.013×</text>
+<rect x="834" y="2483" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.15×</text>
+<text x="28" y="2524" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Literal Replace</text>
+<rect x="284" y="2508" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.32×</text>
+<rect x="559" y="2508" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.049×</text>
+<rect x="834" y="2508" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.27×</text>
+<text x="28" y="2549" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Look Negative Ahead</text>
+<rect x="284" y="2533" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.03×</text>
+<rect x="559" y="2533" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0092×</text>
+<rect x="834" y="2533" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.18×</text>
+<text x="28" y="2574" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Look Negative Behind</text>
+<rect x="284" y="2558" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.36×</text>
+<rect x="559" y="2558" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.021×</text>
+<rect x="834" y="2558" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.34×</text>
+<text x="28" y="2599" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Many Split</text>
+<rect x="284" y="2583" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.29×</text>
+<rect x="559" y="2583" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.024×</text>
+<rect x="834" y="2583" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.12×</text>
+<text x="28" y="2624" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Match Miss</text>
+<rect x="284" y="2608" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="2622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.09×</text>
+<rect x="559" y="2608" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.035×</text>
+<rect x="834" y="2608" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.20×</text>
+<text x="28" y="2649" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Check a formatted prefix</text>
+<rect x="284" y="2633" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.40×</text>
+<rect x="559" y="2633" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.030×</text>
+<rect x="834" y="2633" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.19×</text>
+<text x="28" y="2674" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Match Surface</text>
+<rect x="284" y="2658" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.11×</text>
+<rect x="559" y="2658" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.056×</text>
+<rect x="834" y="2658" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.14×</text>
+<text x="28" y="2699" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Mode Ascii</text>
+<rect x="284" y="2683" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.14×</text>
+<rect x="559" y="2683" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.021×</text>
+<rect x="834" y="2683" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.094×</text>
+<text x="28" y="2724" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Mode Astral</text>
+<rect x="284" y="2708" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2722" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.57×</text>
+<rect x="559" y="2708" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2722" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.025×</text>
+<rect x="834" y="2708" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2722" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.10×</text>
+<text x="28" y="2749" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Mode Casefold</text>
+<rect x="284" y="2733" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2747" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.51×</text>
+<rect x="559" y="2733" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2747" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.028×</text>
+<rect x="834" y="2733" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2747" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.12×</text>
+<text x="28" y="2774" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Module Replace</text>
+<rect x="284" y="2758" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2772" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.34×</text>
+<rect x="559" y="2758" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2772" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.029×</text>
+<rect x="834" y="2758" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2772" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.11×</text>
+<text x="28" y="2799" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Search through the module API</text>
+<rect x="284" y="2783" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2797" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.30×</text>
+<rect x="559" y="2783" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2797" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.075×</text>
+<rect x="834" y="2783" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2797" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.32×</text>
+<text x="28" y="2824" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Pattern Verbose</text>
+<rect x="284" y="2808" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2822" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">3.16×</text>
+<rect x="559" y="2808" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2822" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0077×</text>
+<rect x="834" y="2808" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2822" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.10×</text>
+<text x="28" y="2849" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Comments</text>
+<rect x="284" y="2833" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2847" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.26×</text>
+<rect x="559" y="2833" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2847" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.024×</text>
+<rect x="834" y="2833" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2847" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.22×</text>
+<text x="28" y="2874" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Config</text>
+<rect x="284" y="2858" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2872" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.77×</text>
+<rect x="559" y="2858" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2872" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.013×</text>
+<rect x="834" y="2858" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2872" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.100×</text>
+<text x="28" y="2899" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Csv</text>
+<rect x="284" y="2883" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2897" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.43×</text>
+<rect x="559" y="2883" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2897" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0086×</text>
+<rect x="834" y="2883" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2897" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.095×</text>
+<text x="28" y="2924" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Datetime</text>
+<rect x="284" y="2908" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2922" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.28×</text>
+<rect x="559" y="2908" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2922" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.013×</text>
+<rect x="834" y="2908" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2922" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.21×</text>
+<text x="28" y="2949" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Email</text>
+<rect x="284" y="2933" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2947" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.32×</text>
+<rect x="559" y="2933" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2947" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<rect x="834" y="2933" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2947" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.13×</text>
+<text x="28" y="2974" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Ip</text>
+<rect x="284" y="2958" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2972" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.21×</text>
+<rect x="559" y="2958" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2972" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.011×</text>
+<rect x="834" y="2958" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2972" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.085×</text>
+<text x="28" y="2999" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Lines</text>
+<rect x="284" y="2983" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="2997" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.80×</text>
+<rect x="559" y="2983" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="2997" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.027×</text>
+<rect x="834" y="2983" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="2997" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.21×</text>
+<text x="28" y="3024" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Log</text>
+<rect x="284" y="3008" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3022" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.19×</text>
+<rect x="559" y="3008" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3022" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.023×</text>
+<rect x="834" y="3008" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3022" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.16×</text>
+<text x="28" y="3049" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Markup</text>
+<rect x="284" y="3033" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3047" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.24×</text>
+<rect x="559" y="3033" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3047" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.012×</text>
+<rect x="834" y="3033" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3047" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.16×</text>
+<text x="28" y="3074" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Path</text>
+<rect x="284" y="3058" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3072" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">3.29×</text>
+<rect x="559" y="3058" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3072" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.0088×</text>
+<rect x="834" y="3058" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3072" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.095×</text>
+<text x="28" y="3099" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Quotes</text>
+<rect x="284" y="3083" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3097" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.51×</text>
+<rect x="559" y="3083" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3097" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.010×</text>
+<rect x="834" y="3083" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3097" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.13×</text>
+<text x="28" y="3124" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Url</text>
+<rect x="284" y="3108" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.44×</text>
+<rect x="559" y="3108" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.015×</text>
+<rect x="834" y="3108" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3122" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.050×</text>
+<text x="28" y="3149" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Uuid</text>
+<rect x="284" y="3133" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.63×</text>
+<rect x="559" y="3133" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.013×</text>
+<rect x="834" y="3133" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3147" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.20×</text>
+<text x="28" y="3174" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Version</text>
+<rect x="284" y="3158" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.52×</text>
+<rect x="559" y="3158" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.015×</text>
+<rect x="834" y="3158" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3172" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.13×</text>
+<text x="28" y="3199" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Real Whitespace</text>
+<rect x="284" y="3183" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.35×</text>
+<rect x="559" y="3183" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.035×</text>
+<rect x="834" y="3183" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3197" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.20×</text>
+<text x="28" y="3224" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Repeat Nested</text>
+<rect x="284" y="3208" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.32×</text>
+<rect x="559" y="3208" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.013×</text>
+<rect x="834" y="3208" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3222" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.090×</text>
+<text x="28" y="3249" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Replace Limited</text>
+<rect x="284" y="3233" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.39×</text>
+<rect x="559" y="3233" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.034×</text>
+<rect x="834" y="3233" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3247" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.16×</text>
+<text x="28" y="3274" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Scanner Search</text>
+<rect x="284" y="3258" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.25×</text>
+<rect x="559" y="3258" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.020×</text>
+<rect x="834" y="3258" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3272" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.11×</text>
+<text x="28" y="3299" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find a formatted line</text>
+<rect x="284" y="3283" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.30×</text>
+<rect x="559" y="3283" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.028×</text>
+<rect x="834" y="3283" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3297" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.20×</text>
+<text x="28" y="3324" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find a word (present)</text>
+<rect x="284" y="3308" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.14×</text>
+<rect x="559" y="3308" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.045×</text>
+<rect x="834" y="3308" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3322" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.15×</text>
+<text x="28" y="3349" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find a word (absent)</text>
+<rect x="284" y="3333" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.17×</text>
+<rect x="559" y="3333" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.14×</text>
+<rect x="834" y="3333" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3347" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.18×</text>
+<text x="28" y="3374" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find the ending in long text</text>
+<rect x="284" y="3358" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">19.8×</text>
+<rect x="559" y="3358" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.39×</text>
+<rect x="834" y="3358" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3372" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.28×</text>
+<text x="28" y="3399" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find and capture nearby text</text>
+<rect x="284" y="3383" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.17×</text>
+<rect x="559" y="3383" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.018×</text>
+<rect x="834" y="3383" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3397" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.15×</text>
+<text x="28" y="3424" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Split and keep separators</text>
+<rect x="284" y="3408" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.92×</text>
+<rect x="559" y="3408" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.018×</text>
+<rect x="834" y="3408" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3422" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.10×</text>
+<text x="28" y="3449" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Split Limited</text>
+<rect x="284" y="3433" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.66×</text>
+<rect x="559" y="3433" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.019×</text>
+<rect x="834" y="3433" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3447" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.12×</text>
+<text x="28" y="3474" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Reorder captured text</text>
+<rect x="284" y="3458" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.10×</text>
+<rect x="559" y="3458" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.022×</text>
+<rect x="834" y="3458" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3472" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.084×</text>
+<text x="28" y="3499" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Replace with a Python function</text>
+<rect x="284" y="3483" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.18×</text>
+<rect x="559" y="3483" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.063×</text>
+<rect x="834" y="3483" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3497" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.20×</text>
+<text x="28" y="3524" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Template Repeat</text>
+<rect x="284" y="3508" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.69×</text>
+<rect x="559" y="3508" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.028×</text>
+<rect x="834" y="3508" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3522" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.083×</text>
+<text x="28" y="3549" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Unicode Name Search</text>
+<rect x="284" y="3533" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.57×</text>
+<rect x="559" y="3533" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.050×</text>
+<rect x="834" y="3533" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3547" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.20×</text>
+<text x="28" y="3574" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Find Unicode words/numbers</text>
+<rect x="284" y="3558" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.61×</text>
+<rect x="559" y="3558" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.026×</text>
+<rect x="834" y="3558" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3572" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.12×</text>
+<text x="28" y="3599" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Window Findall</text>
+<rect x="284" y="3583" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.11×</text>
+<rect x="559" y="3583" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.030×</text>
+<rect x="834" y="3583" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3597" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.35×</text>
+<text x="28" y="3624" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Window Match</text>
+<rect x="284" y="3608" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="3622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.00×</text>
+<rect x="559" y="3608" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.037×</text>
+<rect x="834" y="3608" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3622" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.21×</text>
+<text x="28" y="3649" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Window Scanner</text>
+<rect x="284" y="3633" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">1.26×</text>
+<rect x="559" y="3633" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.029×</text>
+<rect x="834" y="3633" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3647" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.14×</text>
+<text x="28" y="3674" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Window Search</text>
+<rect x="284" y="3658" width="267" height="20" rx="4" fill="#64748b"/>
+<text x="293" y="3672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.96×</text>
+<rect x="559" y="3658" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.044×</text>
+<rect x="834" y="3658" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3672" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.24×</text>
+<text x="28" y="3699" font-family="Arial, sans-serif" font-size="11" fill="#334155">Holdout: Zero Boundary</text>
+<rect x="284" y="3683" width="267" height="20" rx="4" fill="#15803d"/>
+<text x="293" y="3697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">2.33×</text>
+<rect x="559" y="3683" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="568" y="3697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.014×</text>
+<rect x="834" y="3683" width="267" height="20" rx="4" fill="#b91c1c"/>
+<text x="843" y="3697" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#fff">0.19×</text>
+</svg>

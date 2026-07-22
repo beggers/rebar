@@ -6,17 +6,17 @@ The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2
 
 ## Headline results
 
-The broader holdout contains **72 separate tasks** kept apart from tuning, including logs, URLs, configuration/text cleanup, byte inputs, Unicode, replacements, scanners, and windowed calls. **1× means the same speed as Python `re`; higher is faster.** The native C engine is **1.56× as fast overall** (1.55–1.57× measured range), clearly faster on **70/72** tasks, with **zero** tasks more than 20% slower. It meets every experiment target. Python and Rust are much slower on short calls.
+The broader holdout contains **72 separate tasks** kept apart from tuning, including logs, URLs, configuration/text cleanup, byte inputs, Unicode, replacements, scanners, and windowed calls. **1× means the same speed as Python `re`; higher is faster.** The native C engine is **1.57× as fast overall** (1.56–1.58× measured range), clearly faster on **68/72** tasks, with **zero** tasks more than 20% slower. It meets every experiment target. Rust is now **13× faster than its earlier version** and Python **2.4× faster**, although both remain slower than stdlib on short calls.
 
-![Overall speed compared with Python re](performance/v3/evidence/final-overall.svg)
+![Overall speed compared with Python re](performance/v3/evidence/engines-final-overall.svg)
 
 | Engine | Overall speed | Clearly faster | Large slowdowns |
 | --- | ---: | ---: | ---: |
-| Native C | **1.56×** | **70/72** | **0/72** |
-| Rust | 0.014× | 2/72 | 69/72 |
-| Python | 0.012× | 3/72 | 69/72 |
+| Native C | **1.57×** | **68/72** | **0/72** |
+| Rust | 0.178× | 4/72 | 68/72 |
+| Python | 0.027× | 3/72 | 69/72 |
 
-The [final broader report](performance/v3/evidence/FINAL.md) retains all **7,488** correctness-gated timing rows, every task, memory observations, confidence ranges, and every slowdown. General native paths remove repeated state creation, character/class checks, boundary calls, and rescanning across common workloads while preserving compatibility. The pre-timing check passes **576/576** comparisons.
+The [refreshed broader report](performance/v3/evidence/ENGINES-FINAL.md) and [plain-language notes](performance/v3/evidence/ENGINES-FINAL-NOTES.md) retain all **7,488** correctness-gated timing rows, every task, memory observation, confidence range, and all **274** Python/Rust slowdowns with their causes. General native paths remove repeated state creation, character/class checks, boundary calls, and rescanning across common workloads while preserving compatibility. The pre-timing check passes **576/576** comparisons.
 
 ![Broader performance coverage and current status](performance/v3/evidence/coverage-final.svg)
 
@@ -32,13 +32,13 @@ They also pass **66,033** focused differential checks, including **39,000** repl
 
 These show the broader holdout task by task. Green means clearly faster, red means more than 20% slower, and grey means close or uncertain. Each speed cell includes the measured range.
 
-![Speed on every holdout task](performance/v3/evidence/final-speed.svg)
+![Speed on every holdout task](performance/v3/evidence/engines-final-speed.svg)
 
-![Memory used on every holdout task](performance/v3/evidence/final-memory.svg)
+![Memory used on every holdout task](performance/v3/evidence/engines-final-memory.svg)
 
-![Where each engine is faster or slower](performance/v3/evidence/final-regressions.svg)
+![Where each engine is faster or slower](performance/v3/evidence/engines-final-regressions.svg)
 
-![Overall results across all task sets](performance/v3/evidence/final-rankings.svg)
+![Overall results across all task sets](performance/v3/evidence/engines-final-rankings.svg)
 
 A follow-on [Python-engine optimization pilot](performance/v3/evidence/PYTHON-ENGINE.md) makes the pure-Python engine **2.37× faster than before** across the same 72 holdout tasks while keeping every correctness gate clean. The chart shows every task and makes the remaining gap to Python `re` explicit.
 
@@ -65,7 +65,7 @@ The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). Stdlib and all three en
 | Focused differential checks | **PASS** — 66,033 replacement, buffer, long-input, lookaround, structured, and collection checks |
 | Original performance | **PASS** — native C reaches 1.56× on the original 16-task holdout |
 | Expanded performance | **MEASURED / OPTIMIZATION NEEDED** — native C reaches 1.16× on 28 holdout tasks; all results are correctness-gated |
-| Broader performance | **PASS** — native C reaches 1.56× on 72 holdout tasks, clearly faster on 70/72 with zero large slowdowns |
+| Broader performance | **PASS** — native C reaches 1.57× on 72 holdout tasks, clearly faster on 68/72 with zero large slowdowns |
 | Public import | **AVAILABLE / WINNER** — `import rebar as re` uses the correctness-qualified native C engine |
 
 The [broader performance protocol](performance/v3/PROTOCOL.md) explains exactly what is timed, how comparisons are made, and how slowdowns are reported. Full results, raw data, rejected experiments, and older charts are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
