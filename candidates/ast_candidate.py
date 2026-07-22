@@ -864,7 +864,7 @@ def _template(value, match):
 
 def _slice(value, start, end):
     if isinstance(value, str):
-        return value[start:end]
+        return str(value)[start:end]
     return memoryview(value).cast("B")[start:end].tobytes()
 
 
@@ -875,6 +875,7 @@ def _subject_length(value):
 
 
 class Match:
+    __module__ = "re"
     __slots__ = ("_pattern", "_string", "_spans", "_lastindex", "pos", "endpos")
 
     def __init__(self, pattern, string, spans, lastindex, pos, endpos):

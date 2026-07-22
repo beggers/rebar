@@ -1350,7 +1350,7 @@ static PyMappingMethods MatchMapping={0,match_subscript,0};
 
 static PyTypeObject MatchType={
     PyVarObject_HEAD_INIT(NULL,0)
-    .tp_name="candidates._vm_native.Match", .tp_basicsize=offsetof(MatchObject,caps), .tp_itemsize=sizeof(Py_ssize_t),
+    .tp_name="re.Match", .tp_basicsize=offsetof(MatchObject,caps), .tp_itemsize=sizeof(Py_ssize_t),
     .tp_dealloc=(destructor)match_dealloc, .tp_repr=(reprfunc)match_repr, .tp_flags=Py_TPFLAGS_DEFAULT, .tp_doc="Native regular expression match.",
     .tp_methods=MatchMethods, .tp_getset=MatchGetSet, .tp_as_mapping=&MatchMapping
 };

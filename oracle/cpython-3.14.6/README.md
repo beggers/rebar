@@ -170,6 +170,21 @@ The next API/safety cohort adds arbitrary contiguous buffers (including empty an
 
 The complete follow-up records are [native](evidence/rebar-buffers.json), [Python](evidence/ast-buffers.json), and [Rust](evidence/rust-buffers.json). Earlier evidence remains unchanged.
 
+## Result types and representations follow-up
+
+![Official CPython re compatibility after result-surface fixes](evidence/results-correctness.svg)
+
+The next API cohort aligns the public match type/module and representation with CPython and normalizes results produced from custom string/bytes subclasses, even when those subclasses override slicing. Native fixes one previously failing method; Python and Rust fix three. No unrelated status changes:
+
+| Engine | Runnable methods passed | Failed | Crashes | Timeouts |
+| --- | ---: | ---: | ---: | ---: |
+| CPython `re` self-check | **144/144** | **0** | **0** | **0** |
+| Native C / `rebar` | 142/144 | 2 | 0 | 2 |
+| Python engine | 139/144 | 5 | 0 | 1 |
+| Rust engine | 139/144 | 5 | 3 | 0 |
+
+The complete follow-up records are [native](evidence/rebar-results.json), [Python](evidence/ast-results.json), and [Rust](evidence/rust-results.json). Earlier evidence remains unchanged.
+
 Reproduce the frozen gate or one stable method ID:
 
 ```sh
