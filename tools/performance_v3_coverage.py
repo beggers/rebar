@@ -15,10 +15,12 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--manifest", default="performance/v3/manifest.json")
     parser.add_argument("--correctness", default="performance/v3/evidence/initial-correctness.json")
+    parser.add_argument("--summary")
     parser.add_argument("--output", default="performance/v3/evidence/coverage.svg")
     args = parser.parse_args()
     manifest = json.loads(Path(args.manifest).read_text(encoding="utf-8"))
     correctness = json.loads(Path(args.correctness).read_text(encoding="utf-8"))
+    summary = json.loads(Path(args.summary).read_text(encoding="utf-8")) if args.summary else None
     groups = [
         ("Earlier tasks, preserved", 28, "#0ea5e9"),
         ("Everyday examples", 15, "#10b981"),
@@ -65,6 +67,7 @@ def main():
     checks = correctness["checks"]
     passed = checks - correctness["failed"]
     status_line = "Current status: NOT MEASURED"
+    footer = "Incorrect cases are never timed. Once correctness is clean, the same frozen holdout will provide clearer overall and task-by-task speed evidence."
     details = [
         f"The pre-timing check passes {passed}/{checks} comparisons.",
         "Windowed scanners need support in all engines; native C also misses",
@@ -76,12 +79,23 @@ def main():
             "Windowed scanners and multiline first-line matching are fixed.",
             "The official CPython compatibility suite still needs work before timing.",
         ]
+    if summary is not None:
+        if correctness["failed"] or summary.get("expected_sha256") != manifest["expected_sha256"]:
+            raise RuntimeError("measured summary is not paired with a clean, frozen correctness check")
+        native = next(row for row in summary["rankings"] if row["cohort"] == "holdout" and row["candidate"] == "candidates.vm_candidate")
+        status_line = "Current status: MEASURED"
+        details = [
+            f"All {passed}/{checks} pre-timing comparisons pass; {summary['rows']:,} paired rows are retained.",
+            f"Native C is {native['geomean_speedup']:.2f}× as fast overall and clearly faster on {native['statistically_faster_cases']}/{native['cases']} tasks.",
+            f"{native['regressions_gt_20pct']} holdout tasks are over 20% slower and remain visible in the detailed graphs.",
+        ]
+        footer = "Every timed case is correctness-gated. The overall, task-by-task, memory, and slowdown graphs keep the complete frozen denominator."
     body.extend([
         f'<text x="590" y="248" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">{esc(status_line)}</text>',
         f'<text x="590" y="273" font-family="Arial, sans-serif" font-size="13" fill="#475569">{esc(details[0])}</text>',
         f'<text x="590" y="297" font-family="Arial, sans-serif" font-size="13" fill="#475569">{esc(details[1])}</text>',
         f'<text x="590" y="319" font-family="Arial, sans-serif" font-size="13" fill="#475569">{esc(details[2])}</text>',
-        '<text x="28" y="376" font-family="Arial, sans-serif" font-size="12" fill="#64748b">Incorrect cases are never timed. Once correctness is clean, the same frozen holdout will provide clearer overall and task-by-task speed evidence.</text>',
+        f'<text x="28" y="376" font-family="Arial, sans-serif" font-size="12" fill="#64748b">{esc(footer)}</text>',
         '</svg>\n',
     ])
     Path(args.output).write_text("\n".join(body), encoding="utf-8")

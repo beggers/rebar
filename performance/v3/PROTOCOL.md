@@ -42,13 +42,19 @@ The frozen fixture is deterministic, preserves all earlier records, and passes s
 
 These are useful compatibility findings, not timing results. **Performance is NOT MEASURED for v3 until these cases and the official CPython correctness gate are clean.**
 
-The [window and multiline follow-up](evidence/WINDOW-QUALIFIED.md) fixes all eight newly exposed cases: the current pre-timing check passes **576/576**. The initial result above is preserved; official-suite failures still block timing.
+The [window and multiline follow-up](evidence/WINDOW-QUALIFIED.md) fixes all eight newly exposed cases: the pre-timing check passes **576/576**. At that point, official-suite failures still blocked timing.
 
-The [public API surface follow-up](evidence/SURFACE-QUALIFIED.md) fixes 11 additional official methods in every engine while retaining **576/576** pre-timing comparisons. Official semantic and safety gaps still block timing.
+The [public API surface follow-up](evidence/SURFACE-QUALIFIED.md) fixes 11 additional official methods in every engine while retaining **576/576** pre-timing comparisons. Official semantic and safety gaps remained.
 
-The [inline/scoped-flags follow-up](evidence/FLAGS-QUALIFIED.md) fixes six more official methods in every engine while retaining **576/576** pre-timing comparisons. Official semantic and safety gaps still block timing.
+The [inline/scoped-flags follow-up](evidence/FLAGS-QUALIFIED.md) fixes six more official methods in every engine while retaining **576/576** pre-timing comparisons. Official semantic and safety gaps remained.
 
-The [Unicode case-equivalence follow-up](evidence/UNICODE-QUALIFIED.md) fixes three more official methods in every engine while retaining **576/576** pre-timing comparisons. Official semantic and safety gaps still block timing.
+The [Unicode case-equivalence follow-up](evidence/UNICODE-QUALIFIED.md) fixes three more official methods in every engine while retaining **576/576** pre-timing comparisons. Official semantic and safety gaps remained.
+
+The [long-repeat, lookbehind, and overflow follow-up](evidence/LONG-REPEAT-QUALIFIED.md) completes qualification: all three engines pass **144/144** runnable official methods with zero failures, crashes, or timeouts, all seeded/differential gates, sanitizers, delegation audits, and **576/576** pre-timing comparisons.
+
+## Initial broader result
+
+The first fully qualified run retains all **7,488** paired rows in [initial-raw.jsonl](evidence/initial-raw.jsonl), SHA-256 `da85b31715d0c460fb0e09a2357db147a72d9a3ec7765e99047d328cfdee99a2`, and all results in [INITIAL.md](evidence/INITIAL.md). Native C reaches **0.8997×** overall on the 72-task holdout (0.8927–0.9068× measured range), clearly faster on **30/72**, with **25** large holdout slowdowns. Rust and Python each clearly win only two cold-compilation tasks and have 70 large holdout slowdowns. Every slowdown is retained and explained; none is removed from the denominator.
 
 Reproduce the freeze and checks with:
 

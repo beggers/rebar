@@ -51,6 +51,18 @@ def main():
             lines.append("- Scanning repeatedly returns through a small Python wrapper, so per-match boundary and object costs accumulate.")
         if any("match.surface" in row["case"] for row in native):
             lines.append("- Reading many groups and expanding a template makes several Python/C and Python-template calls for one match.")
+        if any("real." in row["case"] for row in native):
+            lines.append("- Everyday log, address, path, comment, markup, quote, and comma-separated-field tasks combine repeated classes, captures, or lookarounds; they take the general native backtracking path instead of its compact single-pass path.")
+        if any("branch." in row["case"] for row in native):
+            lines.append("- Searches across many alternative words, especially a complete miss, try branches at successive positions because the native engine has no shared-prefix or start-character filter for these alternatives.")
+        if any("repeat.nested" in row["case"] or "block.dotall" in row["case"] or "pattern.verbose" in row["case"] for row in native):
+            lines.append("- Structured repeated paths, multi-line blocks, and readable formatted fields require general repeat/capture backtracking, which carries more state than the simple literal and single-character fast paths.")
+        if any("look.negative-" in row["case"] for row in native):
+            lines.append("- Excluded-prefix and tagged-word searches evaluate a negative lookaround for each possible match, so the native executor repeats assertion work while scanning.")
+        if any("bytes.scan" in row["case"] or "window.scanner" in row["case"] for row in native):
+            lines.append("- Byte and windowed scanning also return through the per-match Python scanner wrapper, so repeated boundary/object costs dominate these short inputs.")
+        if any("zero.boundary" in row["case"] or "split.limited" in row["case"] for row in native):
+            lines.append("- Word/separator-position iteration and limited mixed-separator splits repeatedly use the general iterator or whitespace-backtracking path; each small match pays state and result-construction costs.")
         lines.extend(["", "No loss is removed from the denominator or hidden from the charts."])
     lines.append("")
     Path(args.output).write_text("\n".join(lines), encoding="utf-8")

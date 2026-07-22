@@ -6,21 +6,19 @@ The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2
 
 ## Headline results
 
-The expanded holdout contains 28 tasks kept separate from tuning. **1× means the same speed as Python `re`; higher is faster.** The native C engine is **1.16× as fast overall** and clearly faster on **19/28** tasks, but four newly covered tasks are more than 20% slower. Python and Rust are much slower on short calls. These results identify what to optimize next.
+The broader holdout contains **72 separate tasks** kept apart from tuning, including logs, URLs, configuration/text cleanup, byte inputs, Unicode, replacements, scanners, and windowed calls. **1× means the same speed as Python `re`; higher is faster.** The native C engine is **0.90× as fast overall** and clearly faster on **30/72** tasks, with **25** tasks more than 20% slower. Python and Rust are much slower on short calls. This wider result shows exactly where optimization is needed.
 
-![Overall speed compared with Python re](performance/v2/evidence/initial-overall.svg)
+![Overall speed compared with Python re](performance/v3/evidence/initial-overall.svg)
 
 | Engine | Overall speed | Clearly faster | Large slowdowns |
 | --- | ---: | ---: | ---: |
-| Native C | **1.16×** | **19/28** | **4/28** |
-| Rust | 0.018× | 1/28 | 27/28 |
-| Python | 0.014× | 1/28 | 27/28 |
+| Native C | **0.90×** | **30/72** | **25/72** |
+| Rust | 0.013× | 2/72 | 70/72 |
+| Python | 0.012× | 2/72 | 70/72 |
 
-The [full expanded report](performance/v2/evidence/INITIAL.md) retains all 2,464 timing rows, every task, memory observations, and every slowdown. The headline graph and compact task grids below show the same results in plain language.
+The [full broader report](performance/v3/evidence/INITIAL.md) retains all **7,488** correctness-gated timing rows, every task, memory observations, confidence ranges, and every slowdown. The pre-timing check passes **576/576** comparisons. The headline graph and task grids below show the same results in plain language.
 
-The next, broader holdout is now frozen at **72 separate tasks** (144 including practice), adding realistic logs, URLs, configuration/text-cleanup work, byte inputs, API boundaries, and windowed calls. Its pre-timing check passes **576/576** comparisons. Speed and memory are **NOT MEASURED** yet; the expanded run is now correctness-qualified and ready to time.
-
-![Broader performance coverage and current status](performance/v3/evidence/coverage-qualified.svg)
+![Broader performance coverage and current status](performance/v3/evidence/coverage-initial.svg)
 
 All three engines now pass every runnable official CPython `re` test, including long inputs, deep lookbehind, mutable buffers, Unicode behavior, and the 403-pattern historical corpus. There are no failures, crashes, or timeouts.
 
@@ -28,15 +26,15 @@ All three engines now pass every runnable official CPython `re` test, including 
 
 ## Detailed graphs
 
-These show the expanded holdout task by task. Green means clearly faster, red means more than 20% slower, and grey means close or uncertain. Each speed cell includes the measured range.
+These show the broader holdout task by task. Green means clearly faster, red means more than 20% slower, and grey means close or uncertain. Each speed cell includes the measured range.
 
-![Speed on every holdout task](performance/v2/evidence/initial-speed.svg)
+![Speed on every holdout task](performance/v3/evidence/initial-speed.svg)
 
-![Memory used on every holdout task](performance/v2/evidence/initial-memory.svg)
+![Memory used on every holdout task](performance/v3/evidence/initial-memory.svg)
 
-![Where each engine is faster or slower](performance/v2/evidence/initial-regressions.svg)
+![Where each engine is faster or slower](performance/v3/evidence/initial-regressions.svg)
 
-![Overall results across all task sets](performance/v2/evidence/initial-rankings.svg)
+![Overall results across all task sets](performance/v3/evidence/initial-rankings.svg)
 
 ## Correctness and current status
 
@@ -48,10 +46,10 @@ The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). Stdlib and all three en
 | Official CPython tests | **PASS** — all three engines pass 144/144 runnable methods; zero failures, crashes, or timeouts |
 | Original performance | **PASS** — native C reaches 1.56× on the original 16-task holdout |
 | Expanded performance | **MEASURED / OPTIMIZATION NEEDED** — native C reaches 1.16× on 28 holdout tasks; all results are correctness-gated |
-| Broader performance | **FROZEN / NOT MEASURED** — 72 holdout tasks; all 576 pre-timing comparisons pass |
+| Broader performance | **MEASURED / OPTIMIZATION NEEDED** — native C reaches 0.90× on 72 holdout tasks; all 7,488 rows are correctness-gated |
 | Public import | **AVAILABLE / CORRECTNESS-QUALIFIED** — `import rebar as re` uses the native C engine |
 
-The [expanded performance protocol](performance/v2/PROTOCOL.md) explains exactly what is timed, how comparisons are made, and how slowdowns are reported. Full results, raw data, rejected experiments, and older charts are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
+The [broader performance protocol](performance/v3/PROTOCOL.md) explains exactly what is timed, how comparisons are made, and how slowdowns are reported. Full results, raw data, rejected experiments, and older charts are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
 
 ## Try it or reproduce the checks
 
