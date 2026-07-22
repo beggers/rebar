@@ -1,0 +1,11 @@
+{
+  "cases_per_module": 2448,
+  "checks": 2448,
+  "expected_sha256": "cccb7372b724975bea2de63edfbcd559522384d2d1ea57b8d2a07a32cd36f906",
+  "failed": 0,
+  "failures": [],
+  "modules": [
+    "candidates.zig_candidate"
+  ],
+  "schema": "rebar-performance-correctness-v4"
+}

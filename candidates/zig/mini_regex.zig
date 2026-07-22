@@ -83,6 +83,8 @@ const Parser = struct {
     at: usize = 0,
     program: *Program,
     open_groups: [max_groups + 1]bool = [_]bool{false} ** (max_groups + 1),
+    lookbehind_bases: [256]u16 = undefined,
+    lookbehind_depth: usize = 0,
 
     fn add(self: *Parser, node: Node) ParseError!u16 {
         if (self.program.node_count >= max_nodes) return error.TooManyNodes;
@@ -271,7 +273,14 @@ const Parser = struct {
                     } else if (self.at + 2 < self.source.len and self.source[self.at + 1] == '<' and (self.source[self.at + 2] == '=' or self.source[self.at + 2] == '!')) {
                         const positive = self.source[self.at + 2] == '=';
                         self.at += 3;
-                        const child = try self.alternative();
+                        if (self.lookbehind_depth >= self.lookbehind_bases.len) return error.Unsupported;
+                        self.lookbehind_bases[self.lookbehind_depth] = self.program.groups;
+                        self.lookbehind_depth += 1;
+                        const child = self.alternative() catch |err| {
+                            self.lookbehind_depth -= 1;
+                            return err;
+                        };
+                        self.lookbehind_depth -= 1;
                         if (self.at >= self.source.len or self.source[self.at] != ')') return error.InvalidPattern;
                         self.at += 1;
                         const look_width = fixedWidth(self.program, child) orelse return error.Unsupported;
@@ -282,6 +291,7 @@ const Parser = struct {
                         self.at += 2;
                         const reference_number = try self.reference();
                         if (reference_number == 0 or reference_number > self.program.groups or self.at >= self.source.len or self.source[self.at] != ')') return error.Unsupported;
+                        if (self.lookbehind_depth != 0 and reference_number > self.lookbehind_bases[0]) return error.InvalidPattern;
                         self.at += 1;
                         const yes = try self.sequence();
                         var no = try self.add(.empty);
@@ -301,6 +311,7 @@ const Parser = struct {
                         if (self.at < self.source.len and std.ascii.isDigit(self.source[self.at])) return error.InvalidPattern;
                         const reference_number = try self.reference();
                         if (reference_number <= max_groups and self.open_groups[reference_number]) return error.InvalidPattern;
+                        if (self.lookbehind_depth != 0 and reference_number > self.lookbehind_bases[0]) return error.InvalidPattern;
                         if (self.at >= self.source.len or self.source[self.at] != ')') return error.InvalidPattern;
                         self.at += 1;
                         self.program.references = true;
@@ -384,6 +395,7 @@ const Parser = struct {
                     }
                     if (reference_number > self.program.groups) return error.Unsupported;
                     if (reference_number <= max_groups and self.open_groups[reference_number]) return error.InvalidPattern;
+                    if (self.lookbehind_depth != 0 and reference_number > self.lookbehind_bases[0]) return error.InvalidPattern;
                     self.program.references = true;
                     break :blk self.add(.{ .backref = @intCast(reference_number) });
                 }
@@ -543,7 +555,15 @@ fn fixedWidth(program: *const Program, index: u16) ?usize {
             const no = fixedWidth(program, conditional.no) orelse break :blk null;
             break :blk if (yes == no) yes else null;
         },
-        .backref => null,
+        .backref => |number| blk: {
+            for (program.nodes[0..program.node_count]) |node| {
+                switch (node) {
+                    .group => |group| if (group.number == number) break :blk fixedWidth(program, group.child),
+                    else => {},
+                }
+            }
+            break :blk null;
+        },
     };
 }
 

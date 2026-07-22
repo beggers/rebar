@@ -204,6 +204,8 @@ def _preflight_pattern(pattern, flags):
     groups = {}
     group_count = 0
     open_groups = []
+    variable_groups = set()
+    lookbehind_bases = []
     conditionals = []
     conditional_branches = {}
     stack = []
@@ -280,6 +282,8 @@ def _preflight_pattern(pattern, flags):
                 fail(f"invalid group reference {number}", start + 1)
             if number in open_groups:
                 fail("cannot refer to an open group", start)
+            if lookbehind_bases and number > lookbehind_bases[0]:
+                fail("cannot refer to group defined in the same lookbehind subpattern", start + 1 + len(str(number)))
             return start + 1 + len(str(number)), False, text[start:start + 1 + len(str(number))]
         allowed = "abfnrtv" if in_class else "abfnrtvABZzb"
         if code.isascii() and code.isalpha() and code not in allowed:
@@ -389,6 +393,8 @@ def _preflight_pattern(pattern, flags):
                     fail(f"unknown group name {name!r}", index + 4)
                 if groups[name] in open_groups:
                     fail(f"cannot refer to an open group", index + 4)
+                if lookbehind_bases and groups[name] > lookbehind_bases[0]:
+                    fail("cannot refer to group defined in the same lookbehind subpattern", close + 1)
                 index = close + 1
                 can_repeat, repeated, root_prefix = True, False, False
                 continue
@@ -403,17 +409,24 @@ def _preflight_pattern(pattern, flags):
                     number = int(reference)
                     if number == 0:
                         fail("bad group number", index + 3)
+                    if lookbehind_bases and number > group_count:
+                        fail("cannot refer to an open group", close + 1)
+                    if lookbehind_bases and number > lookbehind_bases[0]:
+                        fail("cannot refer to group defined in the same lookbehind subpattern", close + 1)
                     conditionals.append((number, index + 3))
                 else:
                     group_name(reference, index + 3)
                     if reference not in groups:
                         fail(f"unknown group name {reference!r}", index + 3)
+                    if lookbehind_bases and groups[reference] > lookbehind_bases[0]:
+                        fail("cannot refer to group defined in the same lookbehind subpattern", close + 1)
                 kind = "conditional"
                 conditional_branches[opening] = 0
                 index = close + 1
             elif text.startswith(("(?<=", "(?<!"), index):
                 index += 4
                 stack.append((opening, active_flags, can_repeat, repeated, None, "lookbehind"))
+                lookbehind_bases.append(group_count)
                 can_repeat = repeated = False
                 root_prefix = False
                 continue
@@ -512,9 +525,18 @@ def _preflight_pattern(pattern, flags):
             opening, parent_flags, _, _, group_number, kind = stack.pop()
             if group_number is not None:
                 open_groups.remove(group_number)
+                body = text[opening + 1:index]
+                variable = "*" in body or "+" in body or "|" in body or any(body[offset] == "?" and (offset == 0 or body[offset - 1] != "(") for offset in range(len(body)))
+                variable = variable or any("," in value and value.split(",", 1)[0] != value.split(",", 1)[1] for value in (part.split("}", 1)[0] for part in body.split("{")[1:]))
+                if variable:
+                    variable_groups.add(group_number)
             if kind == "lookbehind":
                 body = text[opening + 4:index]
-                if "*" in body or "+" in body or "?" in body or any("," in value and value.split(",", 1)[0] != value.split(",", 1)[1] for value in (part.split("}", 1)[0] for part in body.split("{")[1:])):
+                lookbehind_bases.pop()
+                variable = "*" in body or "+" in body or any(body[offset] == "?" and (offset == 0 or body[offset - 1] != "(") for offset in range(len(body)))
+                variable = variable or any("," in value and value.split(",", 1)[0] != value.split(",", 1)[1] for value in (part.split("}", 1)[0] for part in body.split("{")[1:]))
+                variable = variable or any(f"\\{number}" in body or any(f"(?P={name})" in body for name, value in groups.items() if value == number) for number in variable_groups)
+                if variable:
                     fail("look-behind requires fixed-width pattern", keep_pattern=False)
             active_flags = parent_flags
             can_repeat, repeated = kind != "lookbehind", False
@@ -589,8 +611,6 @@ def _may_accept_invalid_pattern(pattern):
     while slash >= 0 and slash + 1 < length:
         code = text[slash + 1]
         if code in "dDsSwW" and (slash and text[slash - 1] == "-" or slash + 2 < length and text[slash + 2] == "-"):
-            return True
-        if code.isdigit() and code != "0":
             return True
         if byte_mode and code == "N":
             return True

@@ -1,0 +1,462 @@
+{
+  "correctness_cases": 1738,
+  "correctness_checks": 5214,
+  "failed": 0,
+  "operations": 1200,
+  "overall": 0.10828489668207014,
+  "raw": [
+    {
+      "case": "literal-capture",
+      "engine": "re",
+      "ns_per_op": 3554.255833333333,
+      "operations": 1200,
+      "order": 0,
+      "trial": 0
+    },
+    {
+      "case": "literal-capture",
+      "engine": "zig",
+      "ns_per_op": 27849.5125,
+      "operations": 1200,
+      "order": 1,
+      "trial": 0
+    },
+    {
+      "case": "literal-capture",
+      "engine": "zig",
+      "ns_per_op": 27776.753333333334,
+      "operations": 1200,
+      "order": 0,
+      "trial": 1
+    },
+    {
+      "case": "literal-capture",
+      "engine": "re",
+      "ns_per_op": 4076.8841666666667,
+      "operations": 1200,
+      "order": 1,
+      "trial": 1
+    },
+    {
+      "case": "literal-capture",
+      "engine": "re",
+      "ns_per_op": 4150.128333333333,
+      "operations": 1200,
+      "order": 0,
+      "trial": 2
+    },
+    {
+      "case": "literal-capture",
+      "engine": "zig",
+      "ns_per_op": 27752.516666666666,
+      "operations": 1200,
+      "order": 1,
+      "trial": 2
+    },
+    {
+      "case": "optional-capture",
+      "engine": "re",
+      "ns_per_op": 8192.6275,
+      "operations": 1200,
+      "order": 0,
+      "trial": 0
+    },
+    {
+      "case": "optional-capture",
+      "engine": "zig",
+      "ns_per_op": 28409.255833333333,
+      "operations": 1200,
+      "order": 1,
+      "trial": 0
+    },
+    {
+      "case": "optional-capture",
+      "engine": "zig",
+      "ns_per_op": 28460.358333333334,
+      "operations": 1200,
+      "order": 0,
+      "trial": 1
+    },
+    {
+      "case": "optional-capture",
+      "engine": "re",
+      "ns_per_op": 5237.975,
+      "operations": 1200,
+      "order": 1,
+      "trial": 1
+    },
+    {
+      "case": "optional-capture",
+      "engine": "re",
+      "ns_per_op": 4945.6775,
+      "operations": 1200,
+      "order": 0,
+      "trial": 2
+    },
+    {
+      "case": "optional-capture",
+      "engine": "zig",
+      "ns_per_op": 28122.4825,
+      "operations": 1200,
+      "order": 1,
+      "trial": 2
+    },
+    {
+      "case": "alternatives-capture",
+      "engine": "re",
+      "ns_per_op": 2678.7533333333336,
+      "operations": 1200,
+      "order": 0,
+      "trial": 0
+    },
+    {
+      "case": "alternatives-capture",
+      "engine": "zig",
+      "ns_per_op": 325023.50583333336,
+      "operations": 1200,
+      "order": 1,
+      "trial": 0
+    },
+    {
+      "case": "alternatives-capture",
+      "engine": "zig",
+      "ns_per_op": 327044.55083333334,
+      "operations": 1200,
+      "order": 0,
+      "trial": 1
+    },
+    {
+      "case": "alternatives-capture",
+      "engine": "re",
+      "ns_per_op": 2758.9408333333336,
+      "operations": 1200,
+      "order": 1,
+      "trial": 1
+    },
+    {
+      "case": "alternatives-capture",
+      "engine": "re",
+      "ns_per_op": 2708.7566666666667,
+      "operations": 1200,
+      "order": 0,
+      "trial": 2
+    },
+    {
+      "case": "alternatives-capture",
+      "engine": "zig",
+      "ns_per_op": 325491.24416666664,
+      "operations": 1200,
+      "order": 1,
+      "trial": 2
+    },
+    {
+      "case": "structured-capture",
+      "engine": "re",
+      "ns_per_op": 9663.343333333334,
+      "operations": 1200,
+      "order": 0,
+      "trial": 0
+    },
+    {
+      "case": "structured-capture",
+      "engine": "zig",
+      "ns_per_op": 29879.638333333332,
+      "operations": 1200,
+      "order": 1,
+      "trial": 0
+    },
+    {
+      "case": "structured-capture",
+      "engine": "zig",
+      "ns_per_op": 29741.036666666667,
+      "operations": 1200,
+      "order": 0,
+      "trial": 1
+    },
+    {
+      "case": "structured-capture",
+      "engine": "re",
+      "ns_per_op": 12972.020833333334,
+      "operations": 1200,
+      "order": 1,
+      "trial": 1
+    },
+    {
+      "case": "structured-capture",
+      "engine": "re",
+      "ns_per_op": 10467.756666666666,
+      "operations": 1200,
+      "order": 0,
+      "trial": 2
+    },
+    {
+      "case": "structured-capture",
+      "engine": "zig",
+      "ns_per_op": 29966.36,
+      "operations": 1200,
+      "order": 1,
+      "trial": 2
+    },
+    {
+      "case": "url-capture",
+      "engine": "re",
+      "ns_per_op": 6177.808333333333,
+      "operations": 1200,
+      "order": 0,
+      "trial": 0
+    },
+    {
+      "case": "url-capture",
+      "engine": "zig",
+      "ns_per_op": 29793.274166666666,
+      "operations": 1200,
+      "order": 1,
+      "trial": 0
+    },
+    {
+      "case": "url-capture",
+      "engine": "zig",
+      "ns_per_op": 29891.5725,
+      "operations": 1200,
+      "order": 0,
+      "trial": 1
+    },
+    {
+      "case": "url-capture",
+      "engine": "re",
+      "ns_per_op": 6055.1325,
+      "operations": 1200,
+      "order": 1,
+      "trial": 1
+    },
+    {
+      "case": "url-capture",
+      "engine": "re",
+      "ns_per_op": 6034.934166666667,
+      "operations": 1200,
+      "order": 0,
+      "trial": 2
+    },
+    {
+      "case": "url-capture",
+      "engine": "zig",
+      "ns_per_op": 30003.7,
+      "operations": 1200,
+      "order": 1,
+      "trial": 2
+    },
+    {
+      "case": "line-capture",
+      "engine": "re",
+      "ns_per_op": 4701.25,
+      "operations": 1200,
+      "order": 0,
+      "trial": 0
+    },
+    {
+      "case": "line-capture",
+      "engine": "zig",
+      "ns_per_op": 29348.2125,
+      "operations": 1200,
+      "order": 1,
+      "trial": 0
+    },
+    {
+      "case": "line-capture",
+      "engine": "zig",
+      "ns_per_op": 29238.18833333333,
+      "operations": 1200,
+      "order": 0,
+      "trial": 1
+    },
+    {
+      "case": "line-capture",
+      "engine": "re",
+      "ns_per_op": 7746.8475,
+      "operations": 1200,
+      "order": 1,
+      "trial": 1
+    },
+    {
+      "case": "line-capture",
+      "engine": "re",
+      "ns_per_op": 4708.861666666667,
+      "operations": 1200,
+      "order": 0,
+      "trial": 2
+    },
+    {
+      "case": "line-capture",
+      "engine": "zig",
+      "ns_per_op": 29271.389166666668,
+      "operations": 1200,
+      "order": 1,
+      "trial": 2
+    },
+    {
+      "case": "backref-capture",
+      "engine": "re",
+      "ns_per_op": 4913.62,
+      "operations": 1200,
+      "order": 0,
+      "trial": 0
+    },
+    {
+      "case": "backref-capture",
+      "engine": "zig",
+      "ns_per_op": 165537.44166666668,
+      "operations": 1200,
+      "order": 1,
+      "trial": 0
+    },
+    {
+      "case": "backref-capture",
+      "engine": "zig",
+      "ns_per_op": 164794.29583333334,
+      "operations": 1200,
+      "order": 0,
+      "trial": 1
+    },
+    {
+      "case": "backref-capture",
+      "engine": "re",
+      "ns_per_op": 4977.391666666666,
+      "operations": 1200,
+      "order": 1,
+      "trial": 1
+    },
+    {
+      "case": "backref-capture",
+      "engine": "re",
+      "ns_per_op": 4804.1725,
+      "operations": 1200,
+      "order": 0,
+      "trial": 2
+    },
+    {
+      "case": "backref-capture",
+      "engine": "zig",
+      "ns_per_op": 164741.38333333333,
+      "operations": 1200,
+      "order": 1,
+      "trial": 2
+    },
+    {
+      "case": "conditional-capture",
+      "engine": "re",
+      "ns_per_op": 5143.8425,
+      "operations": 1200,
+      "order": 0,
+      "trial": 0
+    },
+    {
+      "case": "conditional-capture",
+      "engine": "zig",
+      "ns_per_op": 28393.281666666666,
+      "operations": 1200,
+      "order": 1,
+      "trial": 0
+    },
+    {
+      "case": "conditional-capture",
+      "engine": "zig",
+      "ns_per_op": 28667.203333333335,
+      "operations": 1200,
+      "order": 0,
+      "trial": 1
+    },
+    {
+      "case": "conditional-capture",
+      "engine": "re",
+      "ns_per_op": 5259.95,
+      "operations": 1200,
+      "order": 1,
+      "trial": 1
+    },
+    {
+      "case": "conditional-capture",
+      "engine": "re",
+      "ns_per_op": 5139.753333333333,
+      "operations": 1200,
+      "order": 0,
+      "trial": 2
+    },
+    {
+      "case": "conditional-capture",
+      "engine": "zig",
+      "ns_per_op": 28433.6675,
+      "operations": 1200,
+      "order": 1,
+      "trial": 2
+    }
+  ],
+  "results": [
+    {
+      "baseline_ns_median": 4076.8841666666667,
+      "case": "literal-capture",
+      "ci95_high": 0.1495406122327645,
+      "ci95_low": 0.12762362836093932,
+      "speedup": 0.14096535109696398,
+      "zig_ns_median": 27776.753333333334
+    },
+    {
+      "baseline_ns_median": 5237.975,
+      "case": "optional-capture",
+      "ci95_high": 0.28837881386485925,
+      "ci95_low": 0.17586205271885222,
+      "speedup": 0.21054883799042348,
+      "zig_ns_median": 28409.255833333333
+    },
+    {
+      "baseline_ns_median": 2708.7566666666667,
+      "case": "alternatives-capture",
+      "ci95_high": 0.00843597860384266,
+      "ci95_low": 0.008241721860901201,
+      "speedup": 0.008332871834658497,
+      "zig_ns_median": 325491.24416666664
+    },
+    {
+      "baseline_ns_median": 10467.756666666666,
+      "case": "structured-capture",
+      "ci95_high": 0.4361657254493819,
+      "ci95_low": 0.32340897923630607,
+      "speedup": 0.3666129020771909,
+      "zig_ns_median": 29879.638333333332
+    },
+    {
+      "baseline_ns_median": 6055.1325,
+      "case": "url-capture",
+      "ci95_high": 0.2073558044937939,
+      "ci95_low": 0.2011396649968726,
+      "speedup": 0.2036711908319447,
+      "zig_ns_median": 29891.5725
+    },
+    {
+      "baseline_ns_median": 4708.861666666667,
+      "case": "line-capture",
+      "ci95_high": 0.26495648128677374,
+      "ci95_low": 0.1601886315904248,
+      "speedup": 0.18971118895081834,
+      "zig_ns_median": 29271.389166666668
+    },
+    {
+      "baseline_ns_median": 4913.62,
+      "case": "backref-capture",
+      "ci95_high": 0.030203664765803603,
+      "ci95_low": 0.029161904573056573,
+      "speedup": 0.029679753149640616,
+      "zig_ns_median": 164794.29583333334
+    },
+    {
+      "baseline_ns_median": 5143.8425,
+      "case": "conditional-capture",
+      "ci95_high": 0.18348319293092302,
+      "ci95_low": 0.1807629400369591,
+      "speedup": 0.1817994586483799,
+      "zig_ns_median": 28433.6675
+    }
+  ],
+  "schema": "rebar-zig-capture-v1",
+  "seed": 20260728,
+  "trials": 3
+}
