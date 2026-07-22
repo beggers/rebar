@@ -129,7 +129,7 @@ class _Native:
             length = self.library.rebar_zig_name_length(handle, index)
             value = ctypes.create_string_buffer(length)
             self.library.rebar_zig_name_copy(handle, index, value, length)
-            names[value.raw.decode("ascii")] = self.library.rebar_zig_name_group(handle, index)
+            names[value.raw.decode("utf-8" if isinstance(pattern, str) else "ascii")] = self.library.rebar_zig_name_group(handle, index)
         return handle, groups, effective_flags, names
 
     def run(self, handle, string, groups, pos, endpos, mode, nonempty):
@@ -607,6 +607,16 @@ def _may_accept_invalid_pattern(pattern):
     length = len(text)
     if text.startswith("{") or "(?:{" in text:
         return True
+    if not byte_mode:
+        opening = text.find("(?P<")
+        while opening >= 0:
+            close = text.find(">", opening + 4)
+            if close < 0:
+                break
+            name = text[opening + 4:close]
+            if name and not name.isascii() and not name.isidentifier():
+                return True
+            opening = text.find("(?P<", close + 1)
     slash = text.find("\\")
     while slash >= 0 and slash + 1 < length:
         code = text[slash + 1]

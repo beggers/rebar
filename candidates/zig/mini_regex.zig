@@ -5,10 +5,10 @@ const max_classes = 128;
 const max_positions = 512;
 const max_code = 16384;
 const max_stack = 8192;
-const max_groups = 128;
+const max_groups = 256;
 const max_undo = 65536;
 const max_name_length = 63;
-const max_class_ranges = 64;
+const max_class_ranges = 8192;
 const unbounded = std.math.maxInt(usize);
 const text_pattern_flag: u32 = 0x80000000;
 
@@ -50,8 +50,8 @@ const Node = union(enum) {
 const ClassRange = struct { left: u32, right: u32 };
 const CharClass = struct {
     bits: [32]u8 = [_]u8{0} ** 32,
-    ranges: [max_class_ranges]ClassRange = undefined,
-    range_count: u8 = 0,
+    range_start: u16 = 0,
+    range_count: u16 = 0,
     categories: u8 = 0,
     negative: bool = false,
     locale_multi: bool = false,
@@ -63,6 +63,8 @@ const Program = struct {
     node_count: u16 = 0,
     classes: [max_classes]CharClass = undefined,
     class_count: u16 = 0,
+    ranges: [max_class_ranges]ClassRange = undefined,
+    range_count: u16 = 0,
     root: u16 = 0,
     flags: u32 = 0,
     code: [max_code]Instruction = undefined,
@@ -186,6 +188,7 @@ const Parser = struct {
         const index = self.program.class_count;
         self.program.class_count += 1;
         var class = CharClass{};
+        class.range_start = self.program.range_count;
         class.categories = categoryBit(code);
         self.program.classes[index] = class;
         return self.add(.{ .class = index });
@@ -196,6 +199,7 @@ const Parser = struct {
         const index = self.program.class_count;
         self.program.class_count += 1;
         var class = CharClass{};
+        class.range_start = self.program.range_count;
         if (self.at < self.source.len and self.source[self.at] == '^') {
             class.negative = true;
             self.at += 1;
@@ -237,13 +241,15 @@ const Parser = struct {
                     for (@as(usize, left)..@as(usize, stop) + 1) |raw| setBit(&class, @intCast(raw));
                 }
                 if (right >= 256) {
-                    if (class.range_count >= max_class_ranges) return error.Unsupported;
-                    class.ranges[class.range_count] = .{ .left = @max(left, 256), .right = right };
+                    if (self.program.range_count >= max_class_ranges) return error.Unsupported;
+                    self.program.ranges[self.program.range_count] = .{ .left = @max(left, 256), .right = right };
+                    self.program.range_count += 1;
                     class.range_count += 1;
                 }
             } else if (left < 256) setBit(&class, @intCast(left)) else {
-                if (class.range_count >= max_class_ranges) return error.Unsupported;
-                class.ranges[class.range_count] = .{ .left = left, .right = left };
+                if (self.program.range_count >= max_class_ranges) return error.Unsupported;
+                self.program.ranges[self.program.range_count] = .{ .left = left, .right = left };
+                self.program.range_count += 1;
                 class.range_count += 1;
             }
         }
@@ -438,8 +444,9 @@ const Parser = struct {
         while (self.at < self.source.len and self.source[self.at] != close) : (self.at += 1) {}
         if (self.at >= self.source.len or self.at == begin or self.at - begin > max_name_length) return error.InvalidPattern;
         const value = self.source[begin..self.at];
-        if (!(std.ascii.isAlphabetic(value[0]) or value[0] == '_')) return error.InvalidPattern;
-        for (value[1..]) |item| if (!(std.ascii.isAlphanumeric(item) or item == '_')) return error.InvalidPattern;
+        const text_mode = self.program.flags & text_pattern_flag != 0;
+        if (!(std.ascii.isAlphabetic(value[0]) or value[0] == '_' or text_mode and value[0] >= 0x80)) return error.InvalidPattern;
+        for (value[1..]) |item| if (!(std.ascii.isAlphanumeric(item) or item == '_' or text_mode and item >= 0x80)) return error.InvalidPattern;
         self.at += 1;
         return value;
     }
@@ -769,9 +776,9 @@ fn classBit(class: *const CharClass, value: u32) bool {
     return value < 256 and class.bits[@as(usize, @intCast(value)) >> 3] & (@as(u8, 1) << @intCast(value & 7)) != 0;
 }
 
-fn classRaw(class: *const CharClass, value: u32, flags: u32) bool {
+fn classRaw(program: *const Program, class: *const CharClass, value: u32, flags: u32) bool {
     if (classBit(class, value)) return true;
-    for (class.ranges[0..class.range_count]) |range| if (value >= range.left and value <= range.right) return true;
+    for (program.ranges[class.range_start..@as(usize, class.range_start) + class.range_count]) |range| if (value >= range.left and value <= range.right) return true;
     if (class.categories != 0) {
         const codes = [_]u8{ 'd', 'D', 's', 'S', 'w', 'W' };
         for (codes) |code| if (class.categories & categoryBit(code) != 0 and category(code, value, flags)) return true;
@@ -779,11 +786,11 @@ fn classRaw(class: *const CharClass, value: u32, flags: u32) bool {
     return false;
 }
 
-fn classMatch(class: *const CharClass, value: u32, flags: u32) bool {
+fn classMatch(program: *const Program, class: *const CharClass, value: u32, flags: u32) bool {
     if (class.negative and class.locale_multi and flags & 6 == 6 and flags & text_pattern_flag == 0) {
         const lower: u32 = if (value >= 'A' and value <= 'Z') value + 32 else value;
         const upper: u32 = if (value >= 'a' and value <= 'z') value - 32 else value;
-        return !classRaw(class, value, flags) or !classRaw(class, lower, flags) or !classRaw(class, upper, flags);
+        return !classRaw(program, class, value, flags) or !classRaw(program, class, lower, flags) or !classRaw(program, class, upper, flags);
     }
     var found = classBit(class, value);
     if (!found and flags & 2 != 0) {
@@ -802,7 +809,7 @@ fn classMatch(class: *const CharClass, value: u32, flags: u32) bool {
             }
         }
     }
-    for (class.ranges[0..class.range_count]) |range| {
+    for (program.ranges[class.range_start..@as(usize, class.range_start) + class.range_count]) |range| {
         if (if (flags & 2 != 0) rangeCase(range.left, range.right, value, flags) else value >= range.left and value <= range.right) {
             found = true;
             break;
@@ -845,7 +852,7 @@ fn eval(program: *const Program, node_index: u16, text: Subject, endpos: usize, 
         .empty => out.add(pos),
         .literal => |value| if (pos < endpos and equal(value, text.at(pos), flags)) out.add(pos + 1),
         .dot => if (pos < endpos and (flags & 16 != 0 or text.at(pos) != '\n')) out.add(pos + 1),
-        .class => |index| if (pos < endpos and classMatch(&program.classes[index], text.at(pos), flags)) out.add(pos + 1),
+        .class => |index| if (pos < endpos and classMatch(program, &program.classes[index], text.at(pos), flags)) out.add(pos + 1),
         .begin => if (pos == 0 or (flags & 8 != 0 and pos > 0 and text.at(pos - 1) == '\n')) out.add(pos),
         .end => if (pos == endpos or (pos + 1 == endpos and text.at(pos) == '\n') or (flags & 8 != 0 and pos < endpos and text.at(pos) == '\n')) out.add(pos),
         .absolute_begin => if (pos == 0) out.add(pos),
@@ -1068,7 +1075,7 @@ fn addStarts(program: *const Program, index: u16, starts: *[256]u8, flags: u32) 
         },
         .class => |value| blk: {
             for (0..256) |raw| {
-                if (classMatch(&program.classes[value], @intCast(raw), flags)) starts[raw] = 1;
+                if (classMatch(program, &program.classes[value], @intCast(raw), flags)) starts[raw] = 1;
             }
             break :blk false;
         },
@@ -1178,7 +1185,7 @@ fn prefixes(program: *const Program, index: u16, flags: u32) Prefix {
         },
         .class => |value| blk: {
             var result = Prefix{};
-            for (0..256) |raw| if (classMatch(&program.classes[value], @intCast(raw), flags)) {
+            for (0..256) |raw| if (classMatch(program, &program.classes[value], @intCast(raw), flags)) {
                 result.first[raw] = 1;
                 result.single[raw] = 1;
             };
@@ -1211,7 +1218,13 @@ fn prefixes(program: *const Program, index: u16, flags: u32) Prefix {
             break :blk result;
         },
         .group => |group| prefixes(program, group.child, flags),
-        .backref => Prefix{ .empty = true },
+        .backref => blk: {
+            var result = Prefix{ .empty = true };
+            @memset(&result.first, 1);
+            @memset(&result.single, 1);
+            @memset(&result.pairs, 0xff);
+            break :blk result;
+        },
         .conditional => |conditional| blk: {
             var result = prefixes(program, conditional.yes, flags);
             const no = prefixes(program, conditional.no, flags);
@@ -1261,7 +1274,7 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
                 pc += 1;
                 continue;
             },
-            .class => if (pos < endpos and classMatch(&program.classes[instruction.left], text.at(pos), instruction.extra)) {
+            .class => if (pos < endpos and classMatch(program, &program.classes[instruction.left], text.at(pos), instruction.extra)) {
                 pos += 1;
                 pc += 1;
                 continue;
@@ -1415,7 +1428,7 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                 pc += 1;
                 continue;
             },
-            .class => if (pos < endpos and classMatch(&program.classes[instruction.left], text.at(pos), instruction.extra)) {
+            .class => if (pos < endpos and classMatch(program, &program.classes[instruction.left], text.at(pos), instruction.extra)) {
                 pos += 1;
                 pc += 1;
                 continue;
@@ -1734,7 +1747,7 @@ pub export fn rebar_zig_match_wide(program_value: ?*const Program, text_value: [
         if (mode == 0 and !program.nullable and start < endpos) {
             const first = text.at(start);
             if (first < 256 and program.starts[first] == 0) continue;
-            if (program.scoped_prefix != std.math.maxInt(u16) and !classMatch(&program.classes[program.scoped_prefix], first, program.flags)) continue;
+            if (program.scoped_prefix != std.math.maxInt(u16) and !classMatch(program, &program.classes[program.scoped_prefix], first, program.flags)) continue;
             if (first < 256 and start + 1 < endpos) {
                 const second = text.at(start + 1);
                 if (second < 256 and program.single[first] == 0 and !hasPair(&program.pairs, first, second)) continue;
@@ -1778,7 +1791,7 @@ pub export fn rebar_zig_match_captures_wide(program_value: ?*const Program, text
         if (mode == 0 and !program.nullable and start < endpos) {
             const first = text.at(start);
             if (first < 256 and program.starts[first] == 0) continue;
-            if (program.scoped_prefix != std.math.maxInt(u16) and !classMatch(&program.classes[program.scoped_prefix], first, program.flags)) continue;
+            if (program.scoped_prefix != std.math.maxInt(u16) and !classMatch(program, &program.classes[program.scoped_prefix], first, program.flags)) continue;
             if (first < 256 and start + 1 < endpos) {
                 const second = text.at(start + 1);
                 if (second < 256 and program.single[first] == 0 and !hasPair(&program.pairs, first, second)) continue;

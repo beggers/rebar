@@ -27,11 +27,11 @@ All three engines pass the frozen **44,084-case** correctness matrix, including 
 
 ![Large correctness holdout coverage and results](oracle/v3/evidence/qualified-correctness.svg)
 
-The separate from-scratch Zig engine is under active development. It passes **all 44,084 frozen correctness cases**, **all 6,288 expanded performance tasks**, and **135/144** runnable official CPython methods, with zero crashes or timeouts. On the expanded holdout it is **0.481×** as fast as Python `re`; fresh compilation, cleanup, and splitting can win, while scanners, captures, references, and empty matches remain slow. The [Zig compatibility report](candidates/evidence/ZIG-SYNTAX.md) and [expanded performance notes](performance/v5/evidence/INITIAL-NOTES.md) keep every result and explain the remaining gaps.
+The separate from-scratch Zig engine is under active development. It passes **all 44,084 frozen correctness cases**, **all 6,288 expanded performance tasks**, and **139/144** runnable official CPython methods, with zero crashes or timeouts. Its latest paired rerun is **0.443×** as fast on the expanded holdout (0.433–0.454×); fresh compilation, cleanup, and splitting can win, while empty matches, scanners, short searches, references, and collection remain slow. The [latest Zig report](candidates/evidence/ZIG-GROUPS.md) preserves all **163,488** rows, the newly passing behavior, and every remaining gap.
 
-![Zig compatibility gained from common syntax](candidates/evidence/zig-syntax-correctness.svg)
+![Zig compatibility gained from large sets and groups](candidates/evidence/zig-groups-correctness.svg)
 
-![Overall Zig speed and the main holdout families](candidates/evidence/zig-syntax-v4-family.svg)
+![Overall Zig speed and all balanced holdout families](candidates/evidence/zig-groups-v5-family.svg)
 
 ## Detailed graphs
 
@@ -49,13 +49,13 @@ The family view makes the expanded benchmark readable: each row combines the mat
 
 The Zig experiment's detailed memory and win/loss views retain every legacy and generated holdout task family:
 
-![Zig temporary memory across the large holdout](candidates/evidence/zig-syntax-v4-memory.svg)
+![Zig temporary memory across the expanded holdout](candidates/evidence/zig-groups-v5-memory.svg)
 
-![Zig wins and losses across the large holdout](candidates/evidence/zig-syntax-v4-regressions.svg)
+![Zig wins and losses across the expanded holdout](candidates/evidence/zig-groups-v5-regressions.svg)
 
 ## Current status
 
-The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The public import selects the correctness-qualified native C winner. The independently written [Zig experiment](candidates/evidence/ZIG-SYNTAX.md) now supports Unicode, scoped flags, exact pattern errors, lookbehind references, long/nested repeats, comments, literal braces, octal escapes, and forward references while avoiding large temporary allocations for long misses or sparse results; nine official large-pattern/compiler cases remain before it can be ranked with the qualified engines. Earlier language/FFI experiments, optimizations, rejections, and raw evidence are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
+The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The public import selects the correctness-qualified native C winner. The independently written [Zig experiment](candidates/evidence/ZIG-GROUPS.md) now supports Unicode, scoped flags, exact errors, lookbehind/references, long/nested repeats, comments, literal braces, octal escapes, large character sets, and 256 captures while avoiding large temporary allocations for long misses or sparse results. Five official large-pattern/repeat limits remain before it can be ranked with the qualified engines. Earlier language/FFI experiments, optimizations, rejections, and raw evidence are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
 
 | Check | Status |
 | --- | --- |
@@ -64,7 +64,7 @@ The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The public import selec
 | Official CPython tests | **PASS** — all three engines pass 144/144 runnable methods; zero failures, crashes, or timeouts |
 | Earlier large holdout | **PASS / HISTORICAL** — native C reaches 1.56× on the preserved 1,224 tasks; its 10 remeasured large slowdowns are explained |
 | Expanded performance holdout | **BELOW TARGET** — native C reaches 1.351× on 3,144 unseen tasks, clearly faster on 79%; all 226 large slowdowns are profiled/explained |
-| Zig experiment | **IN PROGRESS** — all 44,084 frozen cases and 6,288 performance tasks pass; 135/144 official methods; 0.481× holdout speed; valid large-pattern/compiler gaps remain |
+| Zig experiment | **IN PROGRESS** — all 44,084 frozen cases and 6,288 performance tasks pass; 139/144 official methods; 0.443× latest holdout speed; five valid large-pattern/repeat gaps remain |
 | Public import | **AVAILABLE / WINNER** — `import rebar as re` uses the independent native C engine |
 
 The [expanded performance protocol](performance/v5/PROTOCOL.md) preserves every earlier task and records the larger unseen set, fixed seeds, weights, timing rules, correctness gate, and complete result. The [earlier v4 protocol/result](performance/v4/PROTOCOL.md) remains available for comparison.

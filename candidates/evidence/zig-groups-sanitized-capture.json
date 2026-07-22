@@ -1,0 +1,8 @@
+{
+  "correctness_cases": 1738,
+  "correctness_checks": 5214,
+  "failed": 0,
+  "failures": [],
+  "schema": "rebar-zig-capture-v1",
+  "seed": 20260728
+}

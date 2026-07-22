@@ -146,11 +146,11 @@ static PyObject *bridge_match(PyObject *module, PyObject *const *args, Py_ssize_
         length = (size_t)view.len;
     }
     size_t stride = rebar_zig_groups(handle) + 1;
-    intptr_t local_begins[129];
-    intptr_t local_ends[129];
+    intptr_t local_begins[257];
+    intptr_t local_ends[257];
     intptr_t *begins = local_begins;
     intptr_t *ends = local_ends;
-    if (stride > 129) {
+    if (stride > 257) {
         if (view.obj != NULL) PyBuffer_Release(&view);
         PyErr_SetString(PyExc_OverflowError, "too many Zig capture groups");
         return NULL;

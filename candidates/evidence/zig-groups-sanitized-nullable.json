@@ -1,0 +1,11 @@
+{
+  "correctness_checks": 4301,
+  "failed": 0,
+  "failures": [],
+  "long_cases": 5,
+  "long_length": 12000,
+  "manual_cases": 25,
+  "schema": "rebar-zig-nullable-repeat-v1",
+  "seed": 2026073105,
+  "seeded_cases": 4096
+}
