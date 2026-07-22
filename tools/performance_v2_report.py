@@ -54,7 +54,7 @@ def main():
         if any("real." in row["case"] for row in native):
             lines.append("- Everyday log, address, path, comment, markup, quote, and comma-separated-field tasks combine repeated classes, captures, or lookarounds; they take the general native backtracking path instead of its compact single-pass path.")
         if any("branch." in row["case"] for row in native):
-            lines.append("- Searches across many alternative words, especially a complete miss, try branches at successive positions because the native engine has no shared-prefix or start-character filter for these alternatives.")
+            lines.append("- Searches across many alternative words still test the remaining branches when a possible prefix survives; the native one/two-character start filter removes impossible positions but does not build a full shared-prefix trie.")
         if any("repeat.nested" in row["case"] or "block.dotall" in row["case"] or "pattern.verbose" in row["case"] for row in native):
             lines.append("- Structured repeated paths, multi-line blocks, and readable formatted fields require general repeat/capture backtracking, which carries more state than the simple literal and single-character fast paths.")
         if any("look.negative-" in row["case"] for row in native):

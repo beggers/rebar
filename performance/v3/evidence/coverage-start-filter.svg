@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="390" viewBox="0 0 1120 390" role="img" aria-label="Broader performance coverage and current status">
+<rect width="100%" height="100%" fill="#f8fafc"/>
+<text x="28" y="36" font-family="Arial, sans-serif" font-size="23" font-weight="700" fill="#0f172a">A broader check for building a faster Python re</text>
+<text x="28" y="61" font-family="Arial, sans-serif" font-size="14" fill="#475569">72 separate holdout tasks, matched by 72 practice tasks. Earlier coverage is preserved; new tasks add realistic inputs and API boundaries.</text>
+<rect x="28" y="82" width="250" height="70" rx="9" fill="#fff" stroke="#cbd5e1"/>
+<text x="44" y="114" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#0369a1">72</text>
+<text x="44" y="138" font-family="Arial, sans-serif" font-size="13" fill="#475569">holdout tasks</text>
+<rect x="298" y="82" width="250" height="70" rx="9" fill="#fff" stroke="#cbd5e1"/>
+<text x="314" y="114" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#047857">144</text>
+<text x="314" y="138" font-family="Arial, sans-serif" font-size="13" fill="#475569">tasks total</text>
+<rect x="568" y="82" width="250" height="70" rx="9" fill="#fff" stroke="#cbd5e1"/>
+<text x="584" y="114" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#4338ca">13</text>
+<text x="584" y="138" font-family="Arial, sans-serif" font-size="13" fill="#475569">paired trials</text>
+<rect x="838" y="82" width="250" height="70" rx="9" fill="#fff" stroke="#cbd5e1"/>
+<text x="854" y="114" font-family="Arial, sans-serif" font-size="25" font-weight="700" fill="#b91c1c">0</text>
+<text x="854" y="138" font-family="Arial, sans-serif" font-size="13" fill="#475569">checks to fix</text>
+<text x="28" y="183" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">What is in the holdout</text>
+<rect x="28" y="196" width="412" height="22" fill="#0ea5e9"/>
+<rect x="440" y="196" width="221" height="22" fill="#10b981"/>
+<rect x="661" y="196" width="162" height="22" fill="#6366f1"/>
+<rect x="823" y="196" width="147" height="22" fill="#f59e0b"/>
+<rect x="970" y="196" width="118" height="22" fill="#ec4899"/>
+<rect x="30" y="234" width="12" height="12" rx="2" fill="#0ea5e9"/>
+<text x="52" y="245" font-family="Arial, sans-serif" font-size="13" fill="#334155">Earlier tasks, preserved: 28</text>
+<rect x="30" y="256" width="12" height="12" rx="2" fill="#10b981"/>
+<text x="52" y="267" font-family="Arial, sans-serif" font-size="13" fill="#334155">Everyday examples: 15</text>
+<rect x="30" y="278" width="12" height="12" rx="2" fill="#6366f1"/>
+<text x="52" y="289" font-family="Arial, sans-serif" font-size="13" fill="#334155">Pattern and matching shapes: 11</text>
+<rect x="30" y="300" width="12" height="12" rx="2" fill="#f59e0b"/>
+<text x="52" y="311" font-family="Arial, sans-serif" font-size="13" fill="#334155">API and input shapes: 10</text>
+<rect x="30" y="322" width="12" height="12" rx="2" fill="#ec4899"/>
+<text x="52" y="333" font-family="Arial, sans-serif" font-size="13" fill="#334155">Boundary and short calls: 8</text>
+<text x="590" y="248" font-family="Arial, sans-serif" font-size="15" font-weight="700" fill="#0f172a">Current status: MEASURED</text>
+<text x="590" y="273" font-family="Arial, sans-serif" font-size="13" fill="#475569">All 576/576 pre-timing comparisons pass; 7,488 paired rows are retained.</text>
+<text x="590" y="297" font-family="Arial, sans-serif" font-size="13" fill="#475569">Native C is 1.10× as fast overall and clearly faster on 37/72 tasks.</text>
+<text x="590" y="319" font-family="Arial, sans-serif" font-size="13" fill="#475569">12 holdout tasks are over 20% slower and remain visible in the detailed graphs.</text>
+<text x="28" y="376" font-family="Arial, sans-serif" font-size="12" fill="#64748b">Every timed case is correctness-gated. The overall, task-by-task, memory, and slowdown graphs keep the complete frozen denominator.</text>
+</svg>

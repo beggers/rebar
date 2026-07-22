@@ -58,6 +58,8 @@ The first fully qualified run retains all **7,488** paired rows in [initial-raw.
 
 The [API-boundary follow-up](evidence/BOUNDARY-QUALIFIED.md) retains a second full run of **7,488** paired rows in [boundary-raw.jsonl](evidence/boundary-raw.jsonl), SHA-256 `5754989a48db93cc5e31688595352bfb1457b466baac78ca2c92db4bdb8d1c14`, with all results in [BOUNDARY.md](evidence/BOUNDARY.md). Native C improves to **0.9735×** overall (0.9676–0.9795×), clearly faster on **37/72**, with **19** large holdout slowdowns. The same frozen denominator, pairing, memory protocol, and correctness gates are used.
 
+The [native start/class-filter follow-up](evidence/START-FILTER-QUALIFIED.md) retains another **7,488** paired rows in [start-filter-raw.jsonl](evidence/start-filter-raw.jsonl), SHA-256 `84162c86b6565be74aef3812db670450d517deb239652f1d16963a0394544b6b`, with all results in [START-FILTER.md](evidence/START-FILTER.md). Native C improves to **1.0967×** overall (1.0897–1.1037×), clearly faster on **37/72**, with **12** large holdout slowdowns. The same frozen denominator, pairing, memory protocol, and correctness gates are used.
+
 Reproduce the freeze and checks with:
 
 ```sh

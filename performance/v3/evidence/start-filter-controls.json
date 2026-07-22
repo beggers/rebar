@@ -1,0 +1,9 @@
+{
+  "cases": 1800,
+  "checks": 1800,
+  "failed": 0,
+  "failures": [],
+  "module": "rebar",
+  "schema": "rebar-start-filter-controls-v1",
+  "seed": 20260723
+}
