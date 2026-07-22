@@ -25,7 +25,9 @@ The final paired run retains all **163,488** timing rows and **176,064** before/
 
 ![Large correctness holdout coverage and results](oracle/v3/evidence/qualified-correctness.svg)
 
-![Expanded performance holdout coverage](performance/v5/evidence/coverage.svg)
+The broader **6,216-task** performance holdout is now frozen and all four engines pass every new pre-timing check. Its performance is **NOT MEASURED** yet; the headline results above remain the completed 3,144-task run.
+
+![Broader performance holdout coverage](performance/v6/evidence/coverage.svg)
 
 | Check | Current result |
 | --- | --- |
@@ -49,7 +51,7 @@ The complete loss check is in [every large slowdown](candidates/evidence/zig-exe
 
 ## Reproduce
 
-The frozen [performance protocol](performance/v5/PROTOCOL.md) records coverage, weights, seeds, timing rules, and the correctness gate. The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; scope notes are in [AMENDMENTS.md](AMENDMENTS.md), and the chronological record is in the [experiment log](docs/EXPERIMENT-LOG.md).
+The completed [performance protocol](performance/v5/PROTOCOL.md) and newly frozen [broader protocol](performance/v6/PROTOCOL.md) record coverage, weights, seeds, timing rules, and correctness gates. The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; scope notes are in [AMENDMENTS.md](AMENDMENTS.md), and the chronological record is in the [experiment log](docs/EXPERIMENT-LOG.md).
 
 ```sh
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
@@ -61,5 +63,6 @@ PYTHONPATH=. "$PY" tools/cpython_re_oracle.py verify --module rebar --output /tm
 PYTHONPATH=. "$PY" tools/zig_dispatch_probe.py --module rebar --seeded-cases 16384 --output /tmp/rebar-dispatch.json
 PYTHONPATH=. "$PY" tools/zig_executor_probe.py --module rebar --seeded-cases 8192 --output /tmp/rebar-executor.json
 PYTHONPATH=. "$PY" tools/perf_v5.py verify --module rebar --output /tmp/rebar-performance-check.json
+PYTHONPATH=. "$PY" tools/perf_v6.py verify --output /tmp/rebar-broader-performance-check.json
 PYTHONPATH=. "$PY" tools/zig_perf_v5_pilot.py --raw /tmp/rebar-timing.jsonl --output /tmp/rebar-summary.json --chart /tmp/rebar-speed.svg --memory-chart /tmp/rebar-memory.svg --regression-chart /tmp/rebar-regressions.svg --trials 13 --bootstraps 2000
 ```

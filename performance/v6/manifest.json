@@ -1,0 +1,64 @@
+{
+  "api_counts": {
+    "compile": 292,
+    "escape": 194,
+    "findall": 3860,
+    "finditer": 3572,
+    "fullmatch": 332,
+    "match": 330,
+    "match-surface": 226,
+    "scanner": 646,
+    "search": 1242,
+    "split": 424,
+    "sub": 638,
+    "subn": 676
+  },
+  "bootstrap_seed": 1985072202,
+  "bootstraps": 2000,
+  "cases": 12432,
+  "cohorts": {
+    "calibration": 6216,
+    "holdout": 6216
+  },
+  "correctness_expected_sha256": "782c41ff0b1239eeb0bb5312b4a893b41d7882c7fdcf64b29587518839e51669",
+  "expanded_families": 48,
+  "expected_sha256": "c8e32e879cc7a134748f8f3f29fed49678895745fdecebe63ceec46b6a3b5335",
+  "goal_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+  "implementation": "CPython",
+  "input_counts": {
+    "bytearray": 245,
+    "bytes": 423,
+    "memoryview": 319,
+    "text": 11445
+  },
+  "lifecycle_counts": {
+    "cold": 454,
+    "compiled": 11396,
+    "module": 582
+  },
+  "modules": [
+    "re",
+    "candidates.ast_candidate",
+    "candidates.vm_candidate",
+    "candidates.rust_candidate",
+    "candidates.zig_candidate"
+  ],
+  "order_seed": 1985072201,
+  "parent_cases": 6288,
+  "parent_expected_sha256": "67a4d07ee260bc58456290d76e040b78ba769d1b63cd3b21f0879daa063c2f92",
+  "python": "3.14.6",
+  "runner_sha256": "fe71d373784d9162d5851ad69e487c9aec7add355cda1422c70b3bd71e0a5d85",
+  "schema": "rebar-performance-v6",
+  "seeds": {
+    "calibration": 1985072211,
+    "holdout": 1985072229
+  },
+  "suite_sha256": "091d7be04f7251781e2b8568f6cb19acbe603cb1d945926a69ba32adaf9b6b0f",
+  "trials": 13,
+  "variants_per_family": 64,
+  "warmups": 4,
+  "weights": {
+    "calibration": 6216,
+    "holdout": 6216
+  }
+}
