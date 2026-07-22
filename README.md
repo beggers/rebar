@@ -38,12 +38,12 @@ These show the expanded holdout task by task. Green means clearly faster, red me
 
 The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). All three original engines and stdlib pass the [expanded seeded matrix](oracle/v2/P0.md): **8,244/8,244 cases**, **45/45 obligations**. The newly vendored [official CPython `re` tests](oracle/cpython-3.14.6/README.md) are stricter: stdlib passes all 144 runnable methods, while the engines still have semantic gaps and native safety failures. Those gaps are preserved and will be fixed before new timings.
 
-![Official CPython re compatibility check](oracle/cpython-3.14.6/evidence/groups-correctness.svg)
+![Official CPython re compatibility check](oracle/cpython-3.14.6/evidence/scanner-correctness.svg)
 
 | Check | Status |
 | --- | --- |
 | Seeded correctness | **PASS** — stdlib, native C, Python, and Rust each pass all 8,244 expanded cases |
-| Official CPython tests | **NOT QUALIFIED** — native passes 136/144 runnable methods; Python and Rust pass 132/144; failures are preserved |
+| Official CPython tests | **NOT QUALIFIED** — native passes 137/144 runnable methods; Python and Rust pass 133/144; failures are preserved |
 | Original performance | **PASS** — native C reaches 1.56× on the original 16-task holdout |
 | Expanded performance | **MEASURED / OPTIMIZATION NEEDED** — native C reaches 1.16× on 28 holdout tasks; all results are correctness-gated |
 | Broader performance | **FROZEN / NOT MEASURED** — 72 holdout tasks; all 576 pre-timing comparisons pass, official-suite gaps remain |

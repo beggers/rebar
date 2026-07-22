@@ -1156,6 +1156,44 @@ class Pattern:
         return _Scanner(self, string, pos, endpos)
 
 
+class Scanner:
+    def __init__(self, lexicon, flags=0):
+        self.lexicon = list(lexicon)
+        if not self.lexicon:
+            raise RuntimeError("invalid scanner lexicon")
+        phrases = [item[0] for item in self.lexicon]
+        byte_mode = isinstance(phrases[0], bytes)
+        if any(isinstance(item, bytes) != byte_mode for item in phrases):
+            raise TypeError("scanner patterns must all have the same type")
+        separator = b"|" if byte_mode else "|"
+        opening = b"(?:" if byte_mode else "(?:"
+        closing = b")" if byte_mode else ")"
+        self.scanner = compile(separator.join(opening + item + closing for item in phrases), flags)
+        self._patterns = [compile(item, flags) for item in phrases]
+
+    def scan(self, string):
+        result = []
+        position = 0
+        while position < len(string):
+            matched = None
+            action = None
+            for pattern, (_, candidate_action) in zip(self._patterns, self.lexicon):
+                item = pattern.match(string, position)
+                if item is not None:
+                    matched = item
+                    action = candidate_action
+                    break
+            if matched is None or matched.end() == position:
+                break
+            if callable(action):
+                self.match = matched
+                action = action(self, matched.group())
+            if action is not None:
+                result.append(action)
+            position = matched.end()
+        return result, _slice(string, position, len(string))
+
+
 _CACHE = {}
 
 

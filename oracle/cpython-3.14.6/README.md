@@ -140,6 +140,21 @@ The next parser/API cohort fixes references to open groups, forward conditionals
 
 The complete follow-up records are [native](evidence/rebar-groups.json), [Python](evidence/ast-groups.json), and [Rust](evidence/rust-groups.json). Earlier evidence remains unchanged.
 
+## Public scanner follow-up
+
+![Official CPython re compatibility after scanner fixes](evidence/scanner-correctness.svg)
+
+The next API cohort adds the missing public `Scanner` tokenizer to each engine. Ordered token rules, callbacks and captures, constant/skipped actions, bytes, flags, remainder handling, anchors/lookahead, and zero-length stopping now match CPython controls. Exactly one previously failing method now passes in every engine, with no unrelated status changes:
+
+| Engine | Runnable methods passed | Failed | Crashes | Timeouts |
+| --- | ---: | ---: | ---: | ---: |
+| CPython `re` self-check | **144/144** | **0** | **0** | **0** |
+| Native C / `rebar` | 137/144 | 7 | 0 | 2 |
+| Python engine | 133/144 | 11 | 0 | 1 |
+| Rust engine | 133/144 | 11 | 3 | 0 |
+
+The complete follow-up records are [native](evidence/rebar-scanner.json), [Python](evidence/ast-scanner.json), and [Rust](evidence/rust-scanner.json). Earlier evidence remains unchanged.
+
 Reproduce the frozen gate or one stable method ID:
 
 ```sh

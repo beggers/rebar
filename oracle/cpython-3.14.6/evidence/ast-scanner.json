@@ -1,0 +1,951 @@
+{
+  "crashes": 0,
+  "failed": 11,
+  "methods": 146,
+  "module": "candidates.ast_candidate",
+  "passed": 133,
+  "records": [
+    {
+      "failures": [
+        {
+          "test": "test_re_benchmarks (rebar_cpython_re_oracle.ExternalTests.test_re_benchmarks) (pattern='.*Python', string='Python')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 3045, in test_re_benchmarks\n    self.assertTrue(p.search(s2))\n                    ~~~~~~~~^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1068, in search\n    return self._search(string, max(pos, 0), end)\n           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1061, in _search\n    result = self._at(string, start, endpos, pos if original_pos is None else original_pos, require_nonempty and start == pos)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1047, in _at\n    for result in engine.run(self._node, state):\n                  ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 699, in run\n    yield from walk(0, state)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 697, in walk\n    for updated in self.run(node[1][index], current):\n                   ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 747, in run\n    yield from values\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  [Previous line repeated 979 more times]\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 730, in repeat\n    for updated in self.run(child, current):\n                   ~~~~~~~~^^^^^^^^^^^^^^^^\nRecursionError: maximum recursion depth exceeded\n"
+        },
+        {
+          "test": "test_re_benchmarks (rebar_cpython_re_oracle.ExternalTests.test_re_benchmarks) (pattern='.*Python.*', string='Python')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 3045, in test_re_benchmarks\n    self.assertTrue(p.search(s2))\n                    ~~~~~~~~^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1068, in search\n    return self._search(string, max(pos, 0), end)\n           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1061, in _search\n    result = self._at(string, start, endpos, pos if original_pos is None else original_pos, require_nonempty and start == pos)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1047, in _at\n    for result in engine.run(self._node, state):\n                  ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 699, in run\n    yield from walk(0, state)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 697, in walk\n    for updated in self.run(node[1][index], current):\n                   ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 747, in run\n    yield from values\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  [Previous line repeated 979 more times]\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 730, in repeat\n    for updated in self.run(child, current):\n                   ~~~~~~~~^^^^^^^^^^^^^^^^\nRecursionError: maximum recursion depth exceeded\n"
+        },
+        {
+          "test": "test_re_benchmarks (rebar_cpython_re_oracle.ExternalTests.test_re_benchmarks) (pattern='.*(Python)', string='Python')",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 3045, in test_re_benchmarks\n    self.assertTrue(p.search(s2))\n                    ~~~~~~~~^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1068, in search\n    return self._search(string, max(pos, 0), end)\n           ~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1061, in _search\n    result = self._at(string, start, endpos, pos if original_pos is None else original_pos, require_nonempty and start == pos)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1047, in _at\n    for result in engine.run(self._node, state):\n                  ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 699, in run\n    yield from walk(0, state)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 697, in walk\n    for updated in self.run(node[1][index], current):\n                   ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 747, in run\n    yield from values\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  [Previous line repeated 979 more times]\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 730, in repeat\n    for updated in self.run(child, current):\n                   ~~~~~~~~^^^^^^^^^^^^^^^^\nRecursionError: maximum recursion depth exceeded\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ExternalTests.test_re_benchmarks"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ExternalTests.test_re_tests"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_flags_repr"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_inline_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_locale"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_long_pattern"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_multiple_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_quotes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_single_flag"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_unicode_flag"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_unknown_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "PatternReprTests.test_without_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ASSERT_NOT_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_MARK_PUSH_macro_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_MIN_REPEAT_ONE_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_MIN_UNTIL_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_REPEAT_ONE_mark_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_anyall"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ascii_and_unicode_flag"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_atomic_grouping"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_backref_group_name_in_exception"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_basic_re_sub"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_big_codesize"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bigcharset"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_branching"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_113254"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_114660"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_117612"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_1661"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_16688"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_20998"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_2537"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_29444"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_34294"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_3629"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_bug_40736 (rebar_cpython_re_oracle.ReTests.test_bug_40736)",
+          "trace": "TypeError: object of type 'int' has no len()\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 2469, in test_bug_40736\n    with self.assertRaisesRegex(TypeError, \"got 'int'\"):\n         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: \"got 'int'\" does not match \"object of type 'int' has no len()\"\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_bug_40736"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_bug_418626 (rebar_cpython_re_oracle.ReTests.test_bug_418626)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1574, in test_bug_418626\n    self.assertEqual(re.match('.*?c', 10000*'ab'+'cd').end(0), 20001)\n                     ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1242, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1072, in match\n    return self._at(string, max(pos, 0), end, max(pos, 0)) if pos <= end else None\n           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1047, in _at\n    for result in engine.run(self._node, state):\n                  ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 699, in run\n    yield from walk(0, state)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 697, in walk\n    for updated in self.run(node[1][index], current):\n                   ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 747, in run\n    yield from values\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  [Previous line repeated 979 more times]\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 730, in repeat\n    for updated in self.run(child, current):\n                   ~~~~~~~~^^^^^^^^^^^^^^^^\nRecursionError: maximum recursion depth exceeded\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_bug_418626"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_448951"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_449000"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_449964"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_527371"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_581080"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_612074"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_6509"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_6561"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_725106"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_725149"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_764548"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_817234"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_926075"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_931848"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_gh100061"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_gh101955"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bug_gh91616"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_bytes_str_mixing"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_category"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_character_set_any"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_character_set_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_character_set_none"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_comments"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_compile"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_constants"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_copying"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_dollar_matches_twice"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_empty_array (rebar_cpython_re_oracle.ReTests.test_empty_array)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/tools/cpython_re_oracle.py\", line 67, in wrapped\n    return function(*args, **kwargs)\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1759, in test_empty_array\n    self.assertIsNone(re.compile(b\"bla\").match(a))\n                      ~~~~~~~~~~~~~~~~~~~~~~~~^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1072, in match\n    return self._at(string, max(pos, 0), end, max(pos, 0)) if pos <= end else None\n           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1043, in _at\n    self._validate_string(string)\n    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1036, in _validate_string\n    raise TypeError(f\"expected string or bytes-like object, got '{type(string).__name__}'\")\nTypeError: expected string or bytes-like object, got 'array'\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_empty_array"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_enum"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_error"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_error_is_PatternError_alias"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_expand"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_fail"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_findall_atomic_grouping"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_findall_possessive_quantifiers"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_finditer"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_fullmatch_atomic_grouping"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_fullmatch_possessive_quantifiers"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_getattr"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_group"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_group_name_in_exception"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_groupdict"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ignore_case"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ignore_case_range"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ignore_case_set"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_ignore_spaces"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_inline_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_issue17998"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_keep_buffer (rebar_cpython_re_oracle.ReTests.test_keep_buffer)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 73, in test_keep_buffer\n    with self.assertRaises(BufferError):\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^\nAssertionError: BufferError not raised\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_keep_buffer"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_keyword_parameters"
+    },
+    {
+      "reason": "test needs en_US.iso88591 locale",
+      "skipped": 1,
+      "status": "skipped",
+      "test": "ReTests.test_locale_caching"
+    },
+    {
+      "reason": "test needs en_US.iso88591 locale",
+      "skipped": 1,
+      "status": "skipped",
+      "test": "ReTests.test_locale_compiled"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_locale_flag"
+    },
+    {
+      "seconds": 10,
+      "status": "timeout",
+      "test": "ReTests.test_look_behind_overflow"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_lookahead"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_lookbehind"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_match_getitem"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_match_repr (rebar_cpython_re_oracle.ReTests.test_match_repr)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 2107, in test_match_repr\n    self.assertRegex(repr(m), pattern)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^\nAssertionError: Regex didn't match: \"<(candidates.ast_candidate\\\\.)?Match object; span=\\\\(1, 12\\\\), match='abracadabra'>\" not found in \"<re.Match object; span=(1, 12), match='abracadabra'>\"\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_match_repr"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_misc_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_misuse_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_multiple_repeat"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_named_unicode_escapes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_not_literal"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_nothing_to_repeat"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_other_escapes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_pattern_compare"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_pattern_compare_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_pickling"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_possessive_quantifiers"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_possible_set_operations"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_qualified_re_split"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_qualified_re_sub"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape_bytes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape_non_ascii"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_escape_non_ascii_bytes"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_re_findall (rebar_cpython_re_oracle.ReTests.test_re_findall)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 480, in test_re_findall\n    self.assertTypedEqual(re.findall(\":+\", string),\n    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n                          [\":\", \"::\", \":::\"])\n                          ^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 46, in assertTypedEqual\n    recurse(actual, expect)\n    ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 43, in recurse\n    recurse(x, y)\n    ~~~~~~~^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 45, in recurse\n    self.assertIs(type(actual), type(expect), msg)\n    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: <class 'rebar_cpython_re_oracle.S'> is not <class 'str'>\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_re_findall"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_fullmatch"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_groupref"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_groupref_exists"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_groupref_exists_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_groupref_exists_validation_bug"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_match"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_re_split (rebar_cpython_re_oracle.ReTests.test_re_split)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 402, in test_re_split\n    self.assertTypedEqual(re.split(\":\", string),\n    ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^\n                          ['', 'a', 'b', '', 'c'])\n                          ^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 46, in assertTypedEqual\n    recurse(actual, expect)\n    ~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 43, in recurse\n    recurse(x, y)\n    ~~~~~~~^^^^^^\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 45, in recurse\n    self.assertIs(type(actual), type(expect), msg)\n    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: <class 'rebar_cpython_re_oracle.S'> is not <class 'str'>\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_re_split"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_re_subn"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_repeat_minmax"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_repeat_minmax_overflow (rebar_cpython_re_oracle.ReTests.test_repeat_minmax_overflow)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 2046, in test_repeat_minmax_overflow\n    self.assertEqual(re.match(r\".{65535}\", string).span(), (0, 65535))\n                     ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1242, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1072, in match\n    return self._at(string, max(pos, 0), end, max(pos, 0)) if pos <= end else None\n           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1047, in _at\n    for result in engine.run(self._node, state):\n                  ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 699, in run\n    yield from walk(0, state)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 697, in walk\n    for updated in self.run(node[1][index], current):\n                   ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 747, in run\n    yield from values\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  [Previous line repeated 979 more times]\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 730, in repeat\n    for updated in self.run(child, current):\n                   ~~~~~~~~^^^^^^^^^^^^^^^^\nRecursionError: maximum recursion depth exceeded\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_repeat_minmax_overflow"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_scanner"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_scoped_flags"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_search_coverage"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_search_dot_unicode"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_search_star_plus"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_special_escapes"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_sre_byte_class_literals"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_sre_byte_literals"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_sre_character_class_literals"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_sre_character_literals"
+    },
+    {
+      "failures": [
+        {
+          "test": "test_stack_overflow (rebar_cpython_re_oracle.ReTests.test_stack_overflow)",
+          "trace": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/oracle/cpython-3.14.6/test_re.py\", line 1589, in test_stack_overflow\n    self.assertEqual(re.match('(x)*', 50000*'x').group(1), 'x')\n                     ~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1242, in match\n    return compile(pattern, flags).match(string)\n           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1072, in match\n    return self._at(string, max(pos, 0), end, max(pos, 0)) if pos <= end else None\n           ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 1047, in _at\n    for result in engine.run(self._node, state):\n                  ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 699, in run\n    yield from walk(0, state)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 697, in walk\n    for updated in self.run(node[1][index], current):\n                   ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 747, in run\n    yield from values\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 737, in repeat\n    yield from repeat(updated, count + 1)\n  [Previous line repeated 975 more times]\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 730, in repeat\n    for updated in self.run(child, current):\n                   ~~~~~~~~^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 707, in run\n    for updated in self.run(child, state):\n                   ~~~~~~~~^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 699, in run\n    yield from walk(0, state)\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 697, in walk\n    for updated in self.run(node[1][index], current):\n                   ~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/candidates/ast_candidate.py\", line 658, in run\n    if pos < self.endpos and _equal(node[1], self.text[pos], node[2]):\n                             ~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nRecursionError: maximum recursion depth exceeded\n"
+        }
+      ],
+      "skipped": 0,
+      "status": "failed",
+      "test": "ReTests.test_stack_overflow"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_sub_template_numeric_escape"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_symbolic_groups"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_symbolic_groups_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_symbolic_refs"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_symbolic_refs_errors"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_unlimited_zero_width_repeat"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_weakref"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_word_boundaries"
+    },
+    {
+      "reason": null,
+      "skipped": 0,
+      "status": "passed",
+      "test": "ReTests.test_zerowidth"
+    }
+  ],
+  "runner_sha256": "d5084fd43352f34267f3ed9b4b5d60a6070e2c50d4b787739270502c856e18bb",
+  "schema": "rebar-cpython-re-result-v1",
+  "skipped": 2,
+  "source_sha256": {
+    "LICENSE": "b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231",
+    "re_tests.py": "ec04a2b2a77338d20b37d931693c7e588a2896d3c73c7b4b47973e24c13b5aab",
+    "test_re.py": "879c8b562a5bddb413e73ad6d026a6199785bd08fa1c2c5db1ef831b4e1c47e2"
+  },
+  "timeouts": 1
+}
