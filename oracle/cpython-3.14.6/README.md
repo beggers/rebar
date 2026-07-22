@@ -155,6 +155,21 @@ The next API cohort adds the missing public `Scanner` tokenizer to each engine. 
 
 The complete follow-up records are [native](evidence/rebar-scanner.json), [Python](evidence/ast-scanner.json), and [Rust](evidence/rust-scanner.json). Earlier evidence remains unchanged.
 
+## Buffer and input-safety follow-up
+
+![Official CPython re compatibility after buffer fixes](evidence/buffers-correctness.svg)
+
+The next API/safety cohort adds arbitrary contiguous buffers (including empty and multi-byte `array` values), uses byte lengths consistently, rejects non-contiguous views with the correct error, locks mutable buffers while an iterator is alive, and safely clamps saved match spans after a buffer shrinks. Native fixes four previously failing methods; Python and Rust fix three (they already handled the shrink case). No unrelated status changes:
+
+| Engine | Runnable methods passed | Failed | Crashes | Timeouts |
+| --- | ---: | ---: | ---: | ---: |
+| CPython `re` self-check | **144/144** | **0** | **0** | **0** |
+| Native C / `rebar` | 141/144 | 3 | 0 | 2 |
+| Python engine | 136/144 | 8 | 0 | 1 |
+| Rust engine | 136/144 | 8 | 3 | 0 |
+
+The complete follow-up records are [native](evidence/rebar-buffers.json), [Python](evidence/ast-buffers.json), and [Rust](evidence/rust-buffers.json). Earlier evidence remains unchanged.
+
 Reproduce the frozen gate or one stable method ID:
 
 ```sh

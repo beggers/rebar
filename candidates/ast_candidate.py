@@ -863,8 +863,15 @@ def _template(value, match):
 
 
 def _slice(value, start, end):
-    result = value[start:end]
-    return bytes(result) if isinstance(result, (bytearray, memoryview)) else result
+    if isinstance(value, str):
+        return value[start:end]
+    return memoryview(value).cast("B")[start:end].tobytes()
+
+
+def _subject_length(value):
+    if isinstance(value, str):
+        return len(value)
+    return memoryview(value).nbytes
 
 
 class Match:
@@ -968,7 +975,8 @@ class _Scanner:
         self.pattern = pattern
         self._string = string
         self._start = self._pos = max(pos, 0)
-        self._end = len(string) if endpos is None else min(max(endpos, 0), len(string))
+        length = _subject_length(string)
+        self._end = length if endpos is None else min(max(endpos, 0), length)
         self._empty = False
 
     def search(self):
@@ -1032,8 +1040,13 @@ class Pattern:
         return hash((type(self.pattern), self.pattern, self.flags))
 
     def _validate_string(self, string):
-        if not isinstance(string, (str, bytes, bytearray, memoryview)):
-            raise TypeError(f"expected string or bytes-like object, got '{type(string).__name__}'")
+        if not isinstance(string, str):
+            try:
+                contiguous = memoryview(string).c_contiguous
+            except TypeError:
+                contiguous = False
+            if not contiguous:
+                raise TypeError(f"expected string or bytes-like object, got '{type(string).__name__}'")
         if isinstance(self.pattern, str) and not isinstance(string, str):
             raise TypeError("cannot use a string pattern on a bytes-like object")
         if isinstance(self.pattern, bytes) and isinstance(string, str):
@@ -1064,16 +1077,21 @@ class Pattern:
         return None
 
     def search(self, string, pos=0, endpos=None):
-        end = len(string) if endpos is None else min(max(endpos, 0), len(string))
+        self._validate_string(string)
+        length = _subject_length(string)
+        end = length if endpos is None else min(max(endpos, 0), length)
         return self._search(string, max(pos, 0), end)
 
     def match(self, string, pos=0, endpos=None):
-        end = len(string) if endpos is None else min(max(endpos, 0), len(string))
+        self._validate_string(string)
+        length = _subject_length(string)
+        end = length if endpos is None else min(max(endpos, 0), length)
         return self._at(string, max(pos, 0), end, max(pos, 0)) if pos <= end else None
 
     def fullmatch(self, string, pos=0, endpos=None):
-        end = len(string) if endpos is None else min(max(endpos, 0), len(string))
         self._validate_string(string)
+        length = _subject_length(string)
+        end = length if endpos is None else min(max(endpos, 0), length)
         text = bytes(string).decode("latin1") if not isinstance(string, str) else string
         start = max(pos, 0)
         state = (start, tuple([None] * (self.groups + 1)), None)
@@ -1085,7 +1103,13 @@ class Pattern:
         return None
 
     def finditer(self, string, pos=0, endpos=None):
-        end = len(string) if endpos is None else min(max(endpos, 0), len(string))
+        self._validate_string(string)
+        length = _subject_length(string)
+        end = length if endpos is None else min(max(endpos, 0), length)
+        view = None if isinstance(string, str) else memoryview(string)
+        return self._finditer(string, pos, end, view)
+
+    def _finditer(self, string, pos, end, view):
         current = max(pos, 0)
         empty = False
         while current <= end:
@@ -1124,13 +1148,14 @@ class Pattern:
             result.extend(item.groups())
             previous = item.end()
             count += 1
-        result.append(_slice(string, previous, len(string)))
+        result.append(_slice(string, previous, _subject_length(string)))
         return result
 
     def subn(self, repl, string, count=0):
         self._validate_string(string)
+        length = _subject_length(string)
         if not callable(repl):
-            _template(repl, Match(self, string, [(0, 0)] + [None] * self.groups, None, 0, len(string)))
+            _template(repl, Match(self, string, [(0, 0)] + [None] * self.groups, None, 0, length))
         parts = []
         previous = 0
         replacements = 0
@@ -1145,7 +1170,7 @@ class Pattern:
             parts.append(value)
             previous = item.end()
             replacements += 1
-        parts.append(_slice(string, previous, len(string)))
+        parts.append(_slice(string, previous, length))
         return (b"" if not isinstance(string, str) else "").join(parts), replacements
 
     def sub(self, repl, string, count=0):
@@ -1174,7 +1199,8 @@ class Scanner:
     def scan(self, string):
         result = []
         position = 0
-        while position < len(string):
+        length = _subject_length(string)
+        while position < length:
             matched = None
             action = None
             for pattern, (_, candidate_action) in zip(self._patterns, self.lexicon):
@@ -1191,7 +1217,7 @@ class Scanner:
             if action is not None:
                 result.append(action)
             position = matched.end()
-        return result, _slice(string, position, len(string))
+        return result, _slice(string, position, length)
 
 
 _CACHE = {}

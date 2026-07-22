@@ -870,15 +870,33 @@ static int subject_init(Subject *subject, PyObject *string) {
     else if (PyByteArray_Check(string)) { subject->byte_mode=1; subject->length=PyByteArray_GET_SIZE(string); subject->bytes=PyByteArray_AS_STRING(string); }
     else if (PyMemoryView_Check(string)) {
         Py_buffer *view=PyMemoryView_GET_BUFFER(string);
-        if (!PyBuffer_IsContiguous(view,'C')) { PyErr_SetString(PyExc_TypeError,"expected a contiguous bytes-like object"); return 0; }
+        if (!PyBuffer_IsContiguous(view,'C')) { PyErr_Format(PyExc_TypeError,"expected string or bytes-like object, got '%.80s'",Py_TYPE(string)->tp_name); return 0; }
         subject->byte_mode=1; subject->length=view->len; subject->bytes=(const char *)view->buf;
     }
     else if (PyUnicode_Check(string)) subject->length=PyUnicode_GET_LENGTH(string);
-    else { PyErr_SetString(PyExc_TypeError,"subject must be str or bytes"); return 0; }
+    else {
+        Py_buffer view;
+        if (PyObject_GetBuffer(string,&view,PyBUF_SIMPLE)<0) {
+            PyErr_Clear();
+            PyErr_Format(PyExc_TypeError,"expected string or bytes-like object, got '%.80s'",Py_TYPE(string)->tp_name);
+            return 0;
+        }
+        if (!PyBuffer_IsContiguous(&view,'C')) {
+            PyBuffer_Release(&view);
+            PyErr_Format(PyExc_TypeError,"expected string or bytes-like object, got '%.80s'",Py_TYPE(string)->tp_name);
+            return 0;
+        }
+        subject->byte_mode=1; subject->length=view.len; subject->bytes=(const char *)view.buf;
+        PyBuffer_Release(&view);
+    }
     return 1;
 }
 
 static PyObject *subject_slice(const Subject *subject, Py_ssize_t begin, Py_ssize_t end) {
+    if (begin<0) begin=0;
+    if (begin>subject->length) begin=subject->length;
+    if (end<begin) end=begin;
+    if (end>subject->length) end=subject->length;
     if (subject->byte_mode) return PyBytes_FromStringAndSize(subject->bytes+begin,end-begin);
     return PyUnicode_Substring(subject->obj,begin,end);
 }
@@ -1128,6 +1146,8 @@ typedef struct {
     PyObject *string;
     Py_ssize_t cursor, endpos, original_pos;
     int nonempty, done;
+    Py_buffer view;
+    int has_view;
 } FindIterObject;
 
 static PyTypeObject PatternType;
@@ -1417,7 +1437,10 @@ static PyObject *pattern_collect(PatternObject *pattern, PyObject *const *args, 
 static PyObject *pattern_findall(PatternObject *pattern, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) { return pattern_collect(pattern,args,nargs,kwnames,0); }
 static PyObject *pattern_split(PatternObject *pattern, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) { return pattern_collect(pattern,args,nargs,kwnames,1); }
 
-static void finditer_dealloc(FindIterObject *iterator) { Py_XDECREF(iterator->pattern); Py_XDECREF(iterator->string); Py_TYPE(iterator)->tp_free((PyObject *)iterator); }
+static void finditer_dealloc(FindIterObject *iterator) {
+    if (iterator->has_view) PyBuffer_Release(&iterator->view);
+    Py_XDECREF(iterator->pattern); Py_XDECREF(iterator->string); Py_TYPE(iterator)->tp_free((PyObject *)iterator);
+}
 static PyObject *finditer_iter(PyObject *iterator) { return Py_NewRef(iterator); }
 
 static PyObject *finditer_next(FindIterObject *iterator) {
@@ -1449,6 +1472,11 @@ static PyObject *pattern_finditer(PatternObject *pattern, PyObject *const *args,
     if (!iterator) return NULL;
     iterator->pattern=pattern; Py_INCREF(pattern);
     iterator->string=subject.obj; Py_INCREF(subject.obj);
+    iterator->has_view=0;
+    if (subject.byte_mode && !PyBytes_Check(subject.obj)) {
+        if (PyObject_GetBuffer(subject.obj,&iterator->view,PyBUF_SIMPLE)<0) { Py_DECREF(iterator); return NULL; }
+        iterator->has_view=1;
+    }
     iterator->cursor=pos; iterator->endpos=endpos; iterator->original_pos=pos;
     iterator->nonempty=0; iterator->done=pos>endpos;
     return (PyObject *)iterator;
