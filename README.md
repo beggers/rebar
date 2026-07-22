@@ -42,7 +42,7 @@ The family view makes the larger benchmark readable: each row combines the match
 
 ## Current status
 
-The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The public import selects the correctness-qualified native C winner. A separate, independently written [Zig experiment](candidates/evidence/ZIG-REFERENCES.md) was also built and measured; it is preserved as an architecture result but is not ranked because Unicode and exact error behavior remain incomplete. Earlier language/FFI experiments, optimizations, rejections, and raw evidence are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
+The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The public import selects the correctness-qualified native C winner. A separate, independently written [Zig experiment](candidates/evidence/ZIG-ALLOCATION.md) now avoids large temporary allocations for long misses and sparse results; it is preserved as an architecture result but is not ranked because Unicode and exact error behavior remain incomplete. Earlier language/FFI experiments, optimizations, rejections, and raw evidence are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
 
 | Check | Status |
 | --- | --- |

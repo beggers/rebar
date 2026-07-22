@@ -1,0 +1,532 @@
+{
+  "cases": 20,
+  "correctness_checks": 180,
+  "failed": 0,
+  "geomean_speedup": 0.13820407750267383,
+  "operations": 4,
+  "results": [
+    {
+      "api": "findall",
+      "baseline_ns_median": 435.75,
+      "baseline_peak_bytes": 0,
+      "case": "short-findall-miss",
+      "length": 19,
+      "operations": 4,
+      "peak_ratio": 80.0,
+      "rows": [
+        {
+          "re": 738.75,
+          "zig": 31021.5
+        },
+        {
+          "re": 435.75,
+          "zig": 30225.5
+        },
+        {
+          "re": 418.25,
+          "zig": 30463.5
+        }
+      ],
+      "speedup": 0.01676685406637514,
+      "zig_ns_median": 30463.5,
+      "zig_peak_bytes": 80
+    },
+    {
+      "api": "findall",
+      "baseline_ns_median": 40521.0,
+      "baseline_peak_bytes": 0,
+      "case": "long-findall-miss",
+      "length": 57344,
+      "operations": 4,
+      "peak_ratio": 80.0,
+      "rows": [
+        {
+          "re": 40536.0,
+          "zig": 293662.25
+        },
+        {
+          "re": 40426.0,
+          "zig": 291451.75
+        },
+        {
+          "re": 40521.0,
+          "zig": 290152.25
+        }
+      ],
+      "speedup": 0.13879709031501258,
+      "zig_ns_median": 291451.75,
+      "zig_peak_bytes": 80
+    },
+    {
+      "api": "findall",
+      "baseline_ns_median": 19306.5,
+      "baseline_peak_bytes": 1175,
+      "case": "long-findall-sparse",
+      "length": 32778,
+      "operations": 4,
+      "peak_ratio": 0.11659574468085106,
+      "rows": [
+        {
+          "re": 20991.75,
+          "zig": 222069.75
+        },
+        {
+          "re": 19306.5,
+          "zig": 220662.5
+        },
+        {
+          "re": 17361.25,
+          "zig": 217916.0
+        }
+      ],
+      "speedup": 0.0870179223475175,
+      "zig_ns_median": 220662.5,
+      "zig_peak_bytes": 137
+    },
+    {
+      "api": "findall",
+      "baseline_ns_median": 2664579.75,
+      "baseline_peak_bytes": 81862,
+      "case": "long-findall-dense",
+      "length": 5888,
+      "operations": 4,
+      "peak_ratio": 2.183772690625687,
+      "rows": [
+        {
+          "re": 2664579.75,
+          "zig": 42128922.75
+        },
+        {
+          "re": 2668380.5,
+          "zig": 41989026.75
+        },
+        {
+          "re": 2653883.75,
+          "zig": 41861219.25
+        }
+      ],
+      "speedup": 0.06339817848028728,
+      "zig_ns_median": 41989026.75,
+      "zig_peak_bytes": 178768
+    },
+    {
+      "api": "findall",
+      "baseline_ns_median": 1198408.25,
+      "baseline_peak_bytes": 93734,
+      "case": "long-findall-captures",
+      "length": 4992,
+      "operations": 4,
+      "peak_ratio": 1.5992489384855015,
+      "rows": [
+        {
+          "re": 1198996.5,
+          "zig": 16163609.5
+        },
+        {
+          "re": 1198408.25,
+          "zig": 16212315.25
+        },
+        {
+          "re": 1191280.0,
+          "zig": 16281266.75
+        }
+      ],
+      "speedup": 0.07375446632143036,
+      "zig_ns_median": 16212315.25,
+      "zig_peak_bytes": 149904
+    },
+    {
+      "api": "finditer",
+      "baseline_ns_median": 21014.0,
+      "baseline_peak_bytes": 1693,
+      "case": "long-finditer-sparse",
+      "length": 32778,
+      "operations": 4,
+      "peak_ratio": 0.5245126993502658,
+      "rows": [
+        {
+          "re": 21014.0,
+          "zig": 227665.5
+        },
+        {
+          "re": 24056.25,
+          "zig": 225560.0
+        },
+        {
+          "re": 19346.5,
+          "zig": 223409.0
+        }
+      ],
+      "speedup": 0.0948184889516851,
+      "zig_ns_median": 225560.0,
+      "zig_peak_bytes": 888
+    },
+    {
+      "api": "finditer",
+      "baseline_ns_median": 888433.75,
+      "baseline_peak_bytes": 42997,
+      "case": "long-finditer-captures",
+      "length": 2496,
+      "operations": 4,
+      "peak_ratio": 4.5515733655836454,
+      "rows": [
+        {
+          "re": 865844.5,
+          "zig": 9600600.75
+        },
+        {
+          "re": 892895.25,
+          "zig": 9672994.75
+        },
+        {
+          "re": 888433.75,
+          "zig": 9545052.0
+        }
+      ],
+      "speedup": 0.09184931767422926,
+      "zig_ns_median": 9600600.75,
+      "zig_peak_bytes": 195704
+    },
+    {
+      "api": "split",
+      "baseline_ns_median": 241053.25,
+      "baseline_peak_bytes": 32,
+      "case": "long-split-miss",
+      "length": 57344,
+      "operations": 4,
+      "peak_ratio": 0.25,
+      "rows": [
+        {
+          "re": 241053.25,
+          "zig": 288825.25
+        },
+        {
+          "re": 240845.25,
+          "zig": 288457.25
+        },
+        {
+          "re": 319957.25,
+          "zig": 377686.75
+        }
+      ],
+      "speedup": 0.8388768740803766,
+      "zig_ns_median": 288825.25,
+      "zig_peak_bytes": 8
+    },
+    {
+      "api": "split",
+      "baseline_ns_median": 198937.25,
+      "baseline_peak_bytes": 32898,
+      "case": "long-split-sparse",
+      "length": 32769,
+      "operations": 4,
+      "peak_ratio": 0.999270472369141,
+      "rows": [
+        {
+          "re": 198937.25,
+          "zig": 291982.5
+        },
+        {
+          "re": 200785.0,
+          "zig": 253241.5
+        },
+        {
+          "re": 197933.25,
+          "zig": 253767.25
+        }
+      ],
+      "speedup": 0.7496863770905229,
+      "zig_ns_median": 253767.25,
+      "zig_peak_bytes": 32874
+    },
+    {
+      "api": "split",
+      "baseline_ns_median": 1331441.25,
+      "baseline_peak_bytes": 48854,
+      "case": "long-split-dense",
+      "length": 4352,
+      "operations": 4,
+      "peak_ratio": 1.8079993449871044,
+      "rows": [
+        {
+          "re": 1340437.25,
+          "zig": 20937793.0
+        },
+        {
+          "re": 1331441.25,
+          "zig": 20933995.0
+        },
+        {
+          "re": 1316123.25,
+          "zig": 21009516.0
+        }
+      ],
+      "speedup": 0.06341938076883726,
+      "zig_ns_median": 20937793.0,
+      "zig_peak_bytes": 88328
+    },
+    {
+      "api": "split",
+      "baseline_ns_median": 22448.75,
+      "baseline_peak_bytes": 6015,
+      "case": "long-split-limited",
+      "length": 4352,
+      "operations": 4,
+      "peak_ratio": 0.8061512884455528,
+      "rows": [
+        {
+          "re": 23412.75,
+          "zig": 222282.5
+        },
+        {
+          "re": 18748.25,
+          "zig": 228406.75
+        },
+        {
+          "re": 22448.75,
+          "zig": 230364.5
+        }
+      ],
+      "speedup": 0.09444780203800889,
+      "zig_ns_median": 228406.75,
+      "zig_peak_bytes": 4849
+    },
+    {
+      "api": "subn",
+      "baseline_ns_median": 40959.25,
+      "baseline_peak_bytes": 32,
+      "case": "long-sub-miss",
+      "length": 57344,
+      "operations": 4,
+      "peak_ratio": 0.0,
+      "rows": [
+        {
+          "re": 41640.25,
+          "zig": 64512.0
+        },
+        {
+          "re": 40899.0,
+          "zig": 64061.5
+        },
+        {
+          "re": 40959.25,
+          "zig": 63981.25
+        }
+      ],
+      "speedup": 0.641351174530832,
+      "zig_ns_median": 64061.5,
+      "zig_peak_bytes": 0
+    },
+    {
+      "api": "subn",
+      "baseline_ns_median": 80759.0,
+      "baseline_peak_bytes": 65744,
+      "case": "long-sub-sparse",
+      "length": 32778,
+      "operations": 4,
+      "peak_ratio": 1.0000912630810417,
+      "rows": [
+        {
+          "re": 82266.5,
+          "zig": 286596.75
+        },
+        {
+          "re": 80759.0,
+          "zig": 288722.5
+        },
+        {
+          "re": 78325.5,
+          "zig": 284448.5
+        }
+      ],
+      "speedup": 0.2806643143710396,
+      "zig_ns_median": 286596.75,
+      "zig_peak_bytes": 65750
+    },
+    {
+      "api": "subn",
+      "baseline_ns_median": 1460398.0,
+      "baseline_peak_bytes": 35337,
+      "case": "long-sub-dense",
+      "length": 4160,
+      "operations": 4,
+      "peak_ratio": 3.3809604663666977,
+      "rows": [
+        {
+          "re": 1458938.25,
+          "zig": 13651104.0
+        },
+        {
+          "re": 1468602.75,
+          "zig": 13528772.0
+        },
+        {
+          "re": 1460398.0,
+          "zig": 13562092.0
+        }
+      ],
+      "speedup": 0.10770103562299245,
+      "zig_ns_median": 13562092.0,
+      "zig_peak_bytes": 119473
+    },
+    {
+      "api": "subn",
+      "baseline_ns_median": 38771.0,
+      "baseline_peak_bytes": 8851,
+      "case": "long-sub-limited",
+      "length": 4160,
+      "operations": 4,
+      "peak_ratio": 1.0515196023048243,
+      "rows": [
+        {
+          "re": 38771.0,
+          "zig": 238063.75
+        },
+        {
+          "re": 33337.5,
+          "zig": 237265.0
+        },
+        {
+          "re": 38841.25,
+          "zig": 242452.75
+        }
+      ],
+      "speedup": 0.15419124748943147,
+      "zig_ns_median": 238063.75,
+      "zig_peak_bytes": 9307
+    },
+    {
+      "api": "findall",
+      "baseline_ns_median": 19093.75,
+      "baseline_peak_bytes": 1167,
+      "case": "bytes-findall-sparse",
+      "length": 32778,
+      "operations": 4,
+      "peak_ratio": 0.33590402742073694,
+      "rows": [
+        {
+          "re": 24749.75,
+          "zig": 220334.5
+        },
+        {
+          "re": 18921.0,
+          "zig": 217022.0
+        },
+        {
+          "re": 19093.75,
+          "zig": 224706.0
+        }
+      ],
+      "speedup": 0.09405929799832276,
+      "zig_ns_median": 220334.5,
+      "zig_peak_bytes": 392
+    },
+    {
+      "api": "findall",
+      "baseline_ns_median": 1141742.75,
+      "baseline_peak_bytes": 47718,
+      "case": "bytes-findall-captures",
+      "length": 4992,
+      "operations": 4,
+      "peak_ratio": 2.5942411668552747,
+      "rows": [
+        {
+          "re": 1153110.0,
+          "zig": 16180349.75
+        },
+        {
+          "re": 1141294.75,
+          "zig": 16131926.75
+        },
+        {
+          "re": 1141742.75,
+          "zig": 16150064.0
+        }
+      ],
+      "speedup": 0.07090270575255218,
+      "zig_ns_median": 16150064.0,
+      "zig_peak_bytes": 123792
+    },
+    {
+      "api": "split",
+      "baseline_ns_median": 196368.5,
+      "baseline_peak_bytes": 32882,
+      "case": "bytes-split-sparse",
+      "length": 32769,
+      "operations": 4,
+      "peak_ratio": 0.9992701173894531,
+      "rows": [
+        {
+          "re": 199480.5,
+          "zig": 253669.75
+        },
+        {
+          "re": 196368.5,
+          "zig": 253712.25
+        },
+        {
+          "re": 194928.5,
+          "zig": 257230.0
+        }
+      ],
+      "speedup": 0.7726306967517835,
+      "zig_ns_median": 253712.25,
+      "zig_peak_bytes": 32858
+    },
+    {
+      "api": "subn",
+      "baseline_ns_median": 81232.25,
+      "baseline_peak_bytes": 65712,
+      "case": "bytes-sub-sparse",
+      "length": 32778,
+      "operations": 4,
+      "peak_ratio": 1.0007761139517897,
+      "rows": [
+        {
+          "re": 77081.25,
+          "zig": 296281.5
+        },
+        {
+          "re": 81232.25,
+          "zig": 294371.0
+        },
+        {
+          "re": 83813.75,
+          "zig": 296596.75
+        }
+      ],
+      "speedup": 0.27273582368841,
+      "zig_ns_median": 296281.5,
+      "zig_peak_bytes": 65763
+    },
+    {
+      "api": "findall",
+      "baseline_ns_median": 1356721.75,
+      "baseline_peak_bytes": 9894,
+      "case": "empty-dense",
+      "length": 512,
+      "operations": 4,
+      "peak_ratio": 3.3232261976955733,
+      "rows": [
+        {
+          "re": 1341170.75,
+          "zig": 27379293.5
+        },
+        {
+          "re": 1368116.5,
+          "zig": 27286997.25
+        },
+        {
+          "re": 1356721.75,
+          "zig": 27434179.0
+        }
+      ],
+      "speedup": 0.04952327186735693,
+      "zig_ns_median": 27379293.5,
+      "zig_peak_bytes": 32880
+    }
+  ],
+  "schema": "rebar-zig-allocation-probe-v1",
+  "seed": 2026073017,
+  "trials": 3
+}

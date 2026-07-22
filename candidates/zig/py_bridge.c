@@ -6,6 +6,76 @@ extern int rebar_zig_match(const void *, const uint8_t *, size_t, size_t, size_t
 extern size_t rebar_zig_groups(const void *);
 extern int rebar_zig_match_captures(const void *, const uint8_t *, size_t, size_t, size_t, uint8_t, uint8_t, intptr_t *, intptr_t *, intptr_t *);
 extern intptr_t rebar_zig_collect_captures(const void *, const uint8_t *, size_t, size_t, size_t, size_t, intptr_t *, intptr_t *, intptr_t *);
+extern intptr_t rebar_zig_collect_records(const void *, const uint8_t *, size_t, size_t, size_t, intptr_t *, size_t *, uint8_t *);
+
+#define ZIG_LOCAL_CAPTURE_WORDS 1024
+#define ZIG_INITIAL_CAPTURE_COUNT 64
+
+typedef struct {
+    intptr_t local[ZIG_LOCAL_CAPTURE_WORDS];
+    intptr_t *storage;
+    size_t stride;
+    size_t words_per_match;
+} ZigCaptureBuffer;
+
+static void zig_capture_release(ZigCaptureBuffer *buffer) {
+    if (buffer->storage != NULL && buffer->storage != buffer->local) PyMem_Free(buffer->storage);
+    buffer->storage = NULL;
+}
+
+/*
+ * Start with a small stack-backed capture buffer and grow only when the
+ * matcher fills it. Records are append-only and matching resumes at the
+ * exact cursor/empty-retry state, so dense calls never rescan prior input.
+ */
+static intptr_t zig_collect_growing(const void *handle, const uint8_t *data, size_t length,
+                                    size_t pos, size_t end, size_t groups, size_t limit,
+                                    ZigCaptureBuffer *buffer) {
+    buffer->storage = NULL;
+    if (end < pos) return 0;
+    size_t range = end - pos;
+    if (range > (SIZE_MAX - 1) / 2 || groups == SIZE_MAX) return -2;
+    size_t maximum = range * 2 + 1;
+    if (limit != 0 && limit < maximum) maximum = limit;
+    size_t stride = groups + 1;
+    if (stride > (SIZE_MAX - 1) / 2) return -2;
+    size_t words_per_match = stride * 2 + 1;
+    size_t capacity = maximum < ZIG_INITIAL_CAPTURE_COUNT ? maximum : ZIG_INITIAL_CAPTURE_COUNT;
+    if (capacity == 0) return 0;
+    size_t used = 0;
+    size_t cursor = pos;
+    uint8_t retry_nonempty = 0;
+    buffer->stride = stride;
+    buffer->words_per_match = words_per_match;
+    while (1) {
+        if (capacity > SIZE_MAX / words_per_match || capacity * words_per_match > SIZE_MAX / sizeof(intptr_t)) return -2;
+        size_t words = capacity * words_per_match;
+        if (buffer->storage == NULL) {
+            buffer->storage = words <= ZIG_LOCAL_CAPTURE_WORDS ? buffer->local : PyMem_Malloc(words * sizeof(intptr_t));
+            if (buffer->storage == NULL) return -2;
+        } else if (buffer->storage == buffer->local && words > ZIG_LOCAL_CAPTURE_WORDS) {
+            intptr_t *storage = PyMem_Malloc(words * sizeof(intptr_t));
+            if (storage == NULL) return -2;
+            memcpy(storage, buffer->local, used * words_per_match * sizeof(intptr_t));
+            buffer->storage = storage;
+        } else if (buffer->storage != buffer->local) {
+            intptr_t *storage = PyMem_Realloc(buffer->storage, words * sizeof(intptr_t));
+            if (storage == NULL) {
+                zig_capture_release(buffer);
+                return -2;
+            }
+            buffer->storage = storage;
+        }
+        intptr_t count = rebar_zig_collect_records(handle, data, length, end, capacity - used, buffer->storage + used * words_per_match, &cursor, &retry_nonempty);
+        if (count < 0) {
+            zig_capture_release(buffer);
+            return -1;
+        }
+        used += (size_t)count;
+        if (used < capacity || capacity == maximum) return (intptr_t)used;
+        capacity = capacity > maximum / 4 ? maximum : capacity * 4;
+    }
+}
 
 static PyObject *bridge_span(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
     (void)module;
@@ -152,51 +222,37 @@ static PyObject *bridge_collect(PyObject *module, PyObject *const *args, Py_ssiz
         length = (size_t)view.len;
     }
     size_t end = endpos < length ? endpos : length;
-    size_t range = end >= pos ? end - pos : 0;
-    if (range > (SIZE_MAX - 1) / 2) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return PyErr_NoMemory();
-    }
-    size_t capacity = range * 2 + 1;
-    size_t stride = groups + 1;
-    if (capacity > SIZE_MAX / stride || capacity * stride > (SIZE_MAX / sizeof(intptr_t) - capacity) / 2) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return PyErr_NoMemory();
-    }
-    size_t total = capacity * stride;
-    intptr_t *storage = PyMem_Malloc((total * 2 + capacity) * sizeof(intptr_t));
-    if (storage == NULL) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return PyErr_NoMemory();
-    }
-    intptr_t *begins = storage;
-    intptr_t *ends = begins + total;
-    intptr_t *lasts = ends + total;
-    intptr_t count = rebar_zig_collect_captures(handle, data, length, pos, end, capacity, begins, ends, lasts);
+    ZigCaptureBuffer buffer;
+    intptr_t count = zig_collect_growing(handle, data, length, pos, end, groups, 0, &buffer);
     if (view.obj != NULL) PyBuffer_Release(&view);
     if (count < 0) {
-        PyMem_Free(storage);
+        if (count == -2) return PyErr_NoMemory();
         PyErr_SetString(PyExc_RuntimeError, "Zig capture engine rejected the collection bridge call");
         return NULL;
     }
+    size_t stride = buffer.stride;
+    size_t words = buffer.words_per_match;
     PyObject *records = PyList_New((Py_ssize_t)count);
     if (records == NULL) {
-        PyMem_Free(storage);
+        zig_capture_release(&buffer);
         return NULL;
     }
     for (intptr_t match = 0; match < count; match++) {
         PyObject *spans = PyTuple_New((Py_ssize_t)stride);
         if (spans == NULL) goto collect_error;
-        size_t base = (size_t)match * stride;
+        size_t base = (size_t)match * words;
         for (size_t group = 0; group < stride; group++) {
-            PyObject *item = begins[base + group] < 0 ? Py_NewRef(Py_None) : Py_BuildValue("(nn)", (Py_ssize_t)begins[base + group], (Py_ssize_t)ends[base + group]);
+            intptr_t begin = buffer.storage[base + group];
+            intptr_t finish = buffer.storage[base + stride + group];
+            PyObject *item = begin < 0 ? Py_NewRef(Py_None) : Py_BuildValue("(nn)", (Py_ssize_t)begin, (Py_ssize_t)finish);
             if (item == NULL) {
                 Py_DECREF(spans);
                 goto collect_error;
             }
             PyTuple_SET_ITEM(spans, (Py_ssize_t)group, item);
         }
-        PyObject *last = lasts[match] < 0 ? Py_NewRef(Py_None) : PyLong_FromSsize_t((Py_ssize_t)lasts[match]);
+        intptr_t last_value = buffer.storage[base + stride * 2];
+        PyObject *last = last_value < 0 ? Py_NewRef(Py_None) : PyLong_FromSsize_t((Py_ssize_t)last_value);
         if (last == NULL) {
             Py_DECREF(spans);
             goto collect_error;
@@ -207,12 +263,12 @@ static PyObject *bridge_collect(PyObject *module, PyObject *const *args, Py_ssiz
         if (record == NULL) goto collect_error;
         PyList_SET_ITEM(records, (Py_ssize_t)match, record);
     }
-    PyMem_Free(storage);
+    zig_capture_release(&buffer);
     return records;
 
 collect_error:
     Py_DECREF(records);
-    PyMem_Free(storage);
+    zig_capture_release(&buffer);
     return NULL;
 }
 
@@ -250,45 +306,28 @@ static PyObject *bridge_findall(PyObject *module, PyObject *const *args, Py_ssiz
         length = (size_t)view.len;
     }
     size_t end = endpos < length ? endpos : length;
-    size_t range = end >= pos ? end - pos : 0;
-    if (range > (SIZE_MAX - 1) / 2) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return PyErr_NoMemory();
-    }
-    size_t capacity = range * 2 + 1;
-    size_t stride = groups + 1;
-    if (capacity > SIZE_MAX / stride || capacity * stride > (SIZE_MAX / sizeof(intptr_t) - capacity) / 2) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return PyErr_NoMemory();
-    }
-    size_t total = capacity * stride;
-    intptr_t *storage = PyMem_Malloc((total * 2 + capacity) * sizeof(intptr_t));
-    if (storage == NULL) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return PyErr_NoMemory();
-    }
-    intptr_t *begins = storage;
-    intptr_t *ends = begins + total;
-    intptr_t *lasts = ends + total;
-    intptr_t count = rebar_zig_collect_captures(handle, data, length, pos, end, capacity, begins, ends, lasts);
+    ZigCaptureBuffer buffer;
+    intptr_t count = zig_collect_growing(handle, data, length, pos, end, groups, 0, &buffer);
     if (count < 0) {
         if (view.obj != NULL) PyBuffer_Release(&view);
-        PyMem_Free(storage);
+        if (count == -2) return PyErr_NoMemory();
         PyErr_SetString(PyExc_RuntimeError, "Zig capture engine rejected the findall bridge call");
         return NULL;
     }
+    size_t stride = buffer.stride;
+    size_t words = buffer.words_per_match;
     PyObject *result = PyList_New((Py_ssize_t)count);
     if (result == NULL) goto findall_error;
     for (intptr_t match = 0; match < count; match++) {
-        size_t base = (size_t)match * stride;
+        size_t base = (size_t)match * words;
         size_t first = groups == 0 ? 0 : 1;
         size_t values = groups <= 1 ? 1 : groups;
         PyObject *row = values == 1 ? NULL : PyTuple_New((Py_ssize_t)values);
         if (values != 1 && row == NULL) goto findall_error;
         for (size_t index = 0; index < values; index++) {
             size_t group = first + index;
-            intptr_t begin = begins[base + group];
-            intptr_t finish = ends[base + group];
+            intptr_t begin = buffer.storage[base + group];
+            intptr_t finish = buffer.storage[base + stride + group];
             PyObject *item;
             if (begin < 0) item = text_mode ? PyUnicode_New(0, 127) : PyBytes_FromStringAndSize("", 0);
             else if (text_mode) item = PyUnicode_Substring(subject, (Py_ssize_t)begin, (Py_ssize_t)finish);
@@ -303,12 +342,12 @@ static PyObject *bridge_findall(PyObject *module, PyObject *const *args, Py_ssiz
         PyList_SET_ITEM(result, (Py_ssize_t)match, row);
     }
     if (view.obj != NULL) PyBuffer_Release(&view);
-    PyMem_Free(storage);
+    zig_capture_release(&buffer);
     return result;
 
 findall_error:
     if (view.obj != NULL) PyBuffer_Release(&view);
-    PyMem_Free(storage);
+    zig_capture_release(&buffer);
     Py_XDECREF(result);
     return NULL;
 }
@@ -356,36 +395,19 @@ static PyObject *bridge_split(PyObject *module, PyObject *const *args, Py_ssize_
         PyList_SET_ITEM(result, 0, item);
         return result;
     }
-    if (length > (SIZE_MAX - 1) / 2) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return PyErr_NoMemory();
-    }
-    size_t capacity = length * 2 + 1;
-    if (maxsplit > 0 && (size_t)maxsplit < capacity) capacity = (size_t)maxsplit;
-    size_t stride = groups + 1;
-    if (capacity > SIZE_MAX / stride || capacity * stride > (SIZE_MAX / sizeof(intptr_t) - capacity) / 2) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return PyErr_NoMemory();
-    }
-    size_t total = capacity * stride;
-    intptr_t *storage = PyMem_Malloc((total * 2 + capacity) * sizeof(intptr_t));
-    if (storage == NULL) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return PyErr_NoMemory();
-    }
-    intptr_t *begins = storage;
-    intptr_t *ends = begins + total;
-    intptr_t *lasts = ends + total;
-    intptr_t count = rebar_zig_collect_captures(handle, data, length, 0, length, capacity, begins, ends, lasts);
+    ZigCaptureBuffer buffer;
+    intptr_t count = zig_collect_growing(handle, data, length, 0, length, groups, maxsplit > 0 ? (size_t)maxsplit : 0, &buffer);
     if (count < 0) {
         if (view.obj != NULL) PyBuffer_Release(&view);
-        PyMem_Free(storage);
+        if (count == -2) return PyErr_NoMemory();
         PyErr_SetString(PyExc_RuntimeError, "Zig capture engine rejected the split bridge call");
         return NULL;
     }
+    size_t stride = buffer.stride;
+    size_t words = buffer.words_per_match;
     if ((size_t)count > (SIZE_MAX - 1) / stride || (size_t)count * stride + 1 > (size_t)PY_SSIZE_T_MAX) {
         if (view.obj != NULL) PyBuffer_Release(&view);
-        PyMem_Free(storage);
+        zig_capture_release(&buffer);
         return PyErr_NoMemory();
     }
     PyObject *result = PyList_New((Py_ssize_t)((size_t)count * stride + 1));
@@ -393,15 +415,15 @@ static PyObject *bridge_split(PyObject *module, PyObject *const *args, Py_ssize_
     size_t previous = 0;
     Py_ssize_t output = 0;
     for (intptr_t match = 0; match < count; match++) {
-        size_t base = (size_t)match * stride;
-        size_t begin = (size_t)begins[base];
-        size_t finish = (size_t)ends[base];
+        size_t base = (size_t)match * words;
+        size_t begin = (size_t)buffer.storage[base];
+        size_t finish = (size_t)buffer.storage[base + stride];
         PyObject *prefix = text_mode ? PyUnicode_Substring(subject, (Py_ssize_t)previous, (Py_ssize_t)begin) : PyBytes_FromStringAndSize((const char *)data + previous, (Py_ssize_t)(begin - previous));
         if (prefix == NULL) goto split_error;
         PyList_SET_ITEM(result, output++, prefix);
         for (size_t group = 1; group < stride; group++) {
-            intptr_t first = begins[base + group];
-            intptr_t last = ends[base + group];
+            intptr_t first = buffer.storage[base + group];
+            intptr_t last = buffer.storage[base + stride + group];
             PyObject *item;
             if (first < 0) item = Py_NewRef(Py_None);
             else if (text_mode) item = PyUnicode_Substring(subject, (Py_ssize_t)first, (Py_ssize_t)last);
@@ -415,12 +437,12 @@ static PyObject *bridge_split(PyObject *module, PyObject *const *args, Py_ssize_
     if (tail == NULL) goto split_error;
     PyList_SET_ITEM(result, output, tail);
     if (view.obj != NULL) PyBuffer_Release(&view);
-    PyMem_Free(storage);
+    zig_capture_release(&buffer);
     return result;
 
 split_error:
     if (view.obj != NULL) PyBuffer_Release(&view);
-    PyMem_Free(storage);
+    zig_capture_release(&buffer);
     Py_XDECREF(result);
     return NULL;
 }
@@ -468,37 +490,20 @@ static PyObject *bridge_subn(PyObject *module, PyObject *const *args, Py_ssize_t
         if (unchanged == NULL) return NULL;
         return Py_BuildValue("(Nn)", unchanged, (Py_ssize_t)0);
     }
-    if (length > (SIZE_MAX - 1) / 2) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return PyErr_NoMemory();
-    }
-    size_t capacity = length * 2 + 1;
-    if (limit > 0 && (size_t)limit < capacity) capacity = (size_t)limit;
-    size_t stride = groups + 1;
-    if (capacity > SIZE_MAX / stride || capacity * stride > (SIZE_MAX / sizeof(intptr_t) - capacity) / 2) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return PyErr_NoMemory();
-    }
-    size_t total = capacity * stride;
-    intptr_t *storage = PyMem_Malloc((total * 2 + capacity) * sizeof(intptr_t));
-    if (storage == NULL) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return PyErr_NoMemory();
-    }
-    intptr_t *begins = storage;
-    intptr_t *ends = begins + total;
-    intptr_t *lasts = ends + total;
-    intptr_t count = rebar_zig_collect_captures(handle, data, length, 0, length, capacity, begins, ends, lasts);
+    ZigCaptureBuffer buffer;
+    intptr_t count = zig_collect_growing(handle, data, length, 0, length, groups, limit > 0 ? (size_t)limit : 0, &buffer);
     if (count < 0) {
         if (view.obj != NULL) PyBuffer_Release(&view);
-        PyMem_Free(storage);
+        if (count == -2) return PyErr_NoMemory();
         PyErr_SetString(PyExc_RuntimeError, "Zig capture engine rejected the replacement bridge call");
         return NULL;
     }
+    size_t stride = buffer.stride;
+    size_t words = buffer.words_per_match;
     size_t pieces = (size_t)token_count + 1;
     if ((size_t)count > (SIZE_MAX - 1) / pieces || (size_t)count * pieces + 1 > (size_t)PY_SSIZE_T_MAX) {
         if (view.obj != NULL) PyBuffer_Release(&view);
-        PyMem_Free(storage);
+        zig_capture_release(&buffer);
         return PyErr_NoMemory();
     }
     PyObject *parts = PyList_New((Py_ssize_t)((size_t)count * pieces + 1));
@@ -506,9 +511,9 @@ static PyObject *bridge_subn(PyObject *module, PyObject *const *args, Py_ssize_t
     size_t previous = 0;
     Py_ssize_t output = 0;
     for (intptr_t match = 0; match < count; match++) {
-        size_t base = (size_t)match * stride;
-        size_t begin = (size_t)begins[base];
-        size_t finish = (size_t)ends[base];
+        size_t base = (size_t)match * words;
+        size_t begin = (size_t)buffer.storage[base];
+        size_t finish = (size_t)buffer.storage[base + stride];
         PyObject *prefix = text_mode ? PyUnicode_Substring(subject, (Py_ssize_t)previous, (Py_ssize_t)begin) : PyBytes_FromStringAndSize((const char *)data + previous, (Py_ssize_t)(begin - previous));
         if (prefix == NULL) goto subn_error;
         PyList_SET_ITEM(parts, output++, prefix);
@@ -523,8 +528,8 @@ static PyObject *bridge_subn(PyObject *module, PyObject *const *args, Py_ssize_t
                     if (!PyErr_Occurred()) PyErr_SetString(PyExc_ValueError, "Zig regex replacement group is out of range");
                     goto subn_error;
                 }
-                intptr_t first = begins[base + group];
-                intptr_t last = ends[base + group];
+                intptr_t first = buffer.storage[base + group];
+                intptr_t last = buffer.storage[base + stride + group];
                 if (first < 0) item = text_mode ? PyUnicode_New(0, 127) : PyBytes_FromStringAndSize("", 0);
                 else if (text_mode) item = PyUnicode_Substring(subject, (Py_ssize_t)first, (Py_ssize_t)last);
                 else item = PyBytes_FromStringAndSize((const char *)data + first, (Py_ssize_t)(last - first));
@@ -544,12 +549,12 @@ static PyObject *bridge_subn(PyObject *module, PyObject *const *args, Py_ssize_t
     if (joined == NULL) goto subn_error;
     Py_DECREF(parts);
     if (view.obj != NULL) PyBuffer_Release(&view);
-    PyMem_Free(storage);
+    zig_capture_release(&buffer);
     return Py_BuildValue("(Nn)", joined, (Py_ssize_t)count);
 
 subn_error:
     if (view.obj != NULL) PyBuffer_Release(&view);
-    PyMem_Free(storage);
+    zig_capture_release(&buffer);
     Py_XDECREF(parts);
     return NULL;
 }

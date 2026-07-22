@@ -1,0 +1,1224 @@
+{
+  "cases_per_module": 2448,
+  "checks": 2448,
+  "expected_sha256": "cccb7372b724975bea2de63edfbcd559522384d2d1ea57b8d2a07a32cd36f906",
+  "failed": 202,
+  "failures": [
+    {
+      "case": "cal.unicode.words",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.unicode-name.search",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.unicode.words",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.unicode-name.search",
+      "message": "unsupported or invalid Zig pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.mode.ascii",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.mode.casefold",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.mode.astral",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.mode.ascii",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.mode.casefold",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.mode.astral",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.00",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.01",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.02",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.03",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.04",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.05",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.06",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.07",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.08",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.09",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.10",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.11",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.12",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.13",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.14",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.15",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.16",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.17",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.18",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.19",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.20",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.21",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.22",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.23",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.24",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.25",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.26",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.27",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.28",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.29",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.30",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-words.31",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.00",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.01",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.02",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.03",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.04",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.05",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.06",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.07",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.08",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.09",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.10",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.11",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.12",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.13",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.14",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.15",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.16",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.17",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.18",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.19",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.20",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.21",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.22",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.23",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.24",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.25",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.26",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.27",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.28",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.29",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.30",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.unicode-casefold.31",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.00",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.01",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.02",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.03",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.04",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.05",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.06",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.07",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.08",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.09",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.10",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.11",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.12",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.13",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.14",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.15",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.16",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.17",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.18",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.19",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.20",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.21",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.22",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.23",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.24",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.25",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.26",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.27",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.28",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.29",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.30",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "cal.large.ascii-mode.31",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-words.00",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.01",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.02",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.03",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.04",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.05",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.06",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.07",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.08",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.09",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.10",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.11",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.12",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.13",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.14",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.15",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.16",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.17",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.18",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.19",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.20",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.21",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.22",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.23",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.24",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.25",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.26",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.27",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.28",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.29",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.30",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-words.31",
+      "message": "Zig engine currently requires an ASCII pattern at position 0",
+      "module": "candidates.zig_candidate",
+      "type": "PatternError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.00",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.01",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.02",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.03",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.04",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.05",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.06",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.07",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.08",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.09",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.10",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.11",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.12",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.13",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.14",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.15",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.16",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.17",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.18",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.19",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.20",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.21",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.22",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.23",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.24",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.25",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.26",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.27",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.28",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.29",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.30",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.unicode-casefold.31",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.00",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.01",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.02",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.03",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.04",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.05",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.06",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.07",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.08",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.09",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.10",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.11",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.12",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.13",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.14",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.15",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.16",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.17",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.18",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.19",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.20",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.21",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.22",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.23",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.24",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.25",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.26",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.27",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.28",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.29",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.30",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    },
+    {
+      "case": "hold.large.ascii-mode.31",
+      "message": "Zig capture probe currently requires ASCII text",
+      "module": "candidates.zig_candidate",
+      "type": "ValueError"
+    }
+  ],
+  "modules": [
+    "candidates.zig_candidate"
+  ],
+  "schema": "rebar-performance-correctness-v4"
+}

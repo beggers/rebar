@@ -1288,3 +1288,36 @@ pub export fn rebar_zig_collect_captures(program_value: ?*const Program, text_va
     }
     return @intCast(count);
 }
+
+pub export fn rebar_zig_collect_records(program_value: ?*const Program, text_value: [*]const u8, length: usize, endpos_value: usize, capacity: usize, records: [*]isize, cursor: *usize, retry_nonempty: *u8) isize {
+    const program = program_value orelse return -1;
+    const endpos = @min(length, endpos_value);
+    if (capacity > std.math.maxInt(isize)) return -1;
+    const groups = program.groups + 1;
+    const width = groups * 2 + 1;
+    var current = cursor.*;
+    var nonempty = retry_nonempty.*;
+    var count: usize = 0;
+    while (current <= endpos and count < capacity) {
+        const base = count * width;
+        const begins = records + base;
+        const ends = begins + groups;
+        const last = ends + groups;
+        const matched = rebar_zig_match_captures(program, text_value, length, current, endpos, 0, nonempty, begins, ends, &last[0]);
+        if (matched < 0) return -1;
+        if (matched == 0) break;
+        const begin: usize = @intCast(begins[0]);
+        const finish: usize = @intCast(ends[0]);
+        count += 1;
+        if (finish == begin) {
+            current = begin;
+            nonempty = 1;
+        } else {
+            current = finish;
+            nonempty = 0;
+        }
+    }
+    cursor.* = current;
+    retry_nonempty.* = nonempty;
+    return @intCast(count);
+}
