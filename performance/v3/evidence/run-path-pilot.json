@@ -1,0 +1,192 @@
+{
+  "cases": [
+    {
+      "baseline_ns": 882.6942142857143,
+      "case": "hold.findall.tokens",
+      "native_ns": 744.8637142857143,
+      "speedup": 1.1850412328544857
+    },
+    {
+      "baseline_ns": 982.7442857142858,
+      "case": "hold.finditer.groups",
+      "native_ns": 504.16464285714284,
+      "speedup": 1.949252688853769
+    },
+    {
+      "baseline_ns": 916.5237857142857,
+      "case": "hold.bytes.tokens",
+      "native_ns": 378.26921428571427,
+      "speedup": 2.422940464359378
+    },
+    {
+      "baseline_ns": 24410.02775,
+      "case": "hold.cold.compile-search",
+      "native_ns": 19089.595,
+      "speedup": 1.2787085189601979
+    },
+    {
+      "baseline_ns": 1302.6069285714286,
+      "case": "hold.empty.finditer",
+      "native_ns": 563.5140714285715,
+      "speedup": 2.311578352017322
+    },
+    {
+      "baseline_ns": 29243.54175,
+      "case": "hold.compile.only",
+      "native_ns": 22230.3875,
+      "speedup": 1.3154760235286047
+    },
+    {
+      "baseline_ns": 864.5275714285714,
+      "case": "hold.scanner.search",
+      "native_ns": 673.4517857142857,
+      "speedup": 1.2837260064751692
+    },
+    {
+      "baseline_ns": 849.8412142857143,
+      "case": "hold.real.log",
+      "native_ns": 806.4794285714286,
+      "speedup": 1.0537667597933593
+    },
+    {
+      "baseline_ns": 472.86107142857145,
+      "case": "hold.real.url",
+      "native_ns": 355.8840714285714,
+      "speedup": 1.3286941152787115
+    },
+    {
+      "baseline_ns": 675.8411428571428,
+      "case": "hold.real.email",
+      "native_ns": 537.3024285714285,
+      "speedup": 1.2578412211053258
+    },
+    {
+      "baseline_ns": 1073.6433571428572,
+      "case": "hold.real.path",
+      "native_ns": 839.8196428571429,
+      "speedup": 1.278421344718998
+    },
+    {
+      "baseline_ns": 2152.079,
+      "case": "hold.real.config",
+      "native_ns": 1856.4006428571429,
+      "speedup": 1.159275077974432
+    },
+    {
+      "baseline_ns": 464.98914285714284,
+      "case": "hold.real.comments",
+      "native_ns": 403.7347142857143,
+      "speedup": 1.1517194989779356
+    },
+    {
+      "baseline_ns": 699.1383571428571,
+      "case": "hold.real.markup",
+      "native_ns": 575.9427857142857,
+      "speedup": 1.2139024474033195
+    },
+    {
+      "baseline_ns": 643.682,
+      "case": "hold.real.quotes",
+      "native_ns": 419.60578571428573,
+      "speedup": 1.534016026266831
+    },
+    {
+      "baseline_ns": 261.3587857142857,
+      "case": "hold.branch.prefix",
+      "native_ns": 281.58,
+      "speedup": 0.9281866102503222
+    },
+    {
+      "baseline_ns": 643.2920714285714,
+      "case": "hold.branch.miss",
+      "native_ns": 777.7368571428572,
+      "speedup": 0.8271333234634262
+    },
+    {
+      "baseline_ns": 602.3682857142857,
+      "case": "hold.repeat.nested",
+      "native_ns": 454.2057857142857,
+      "speedup": 1.3262012608822211
+    },
+    {
+      "baseline_ns": 1013.2151428571428,
+      "case": "hold.lines.records",
+      "native_ns": 838.2665714285714,
+      "speedup": 1.2087027890548285
+    },
+    {
+      "baseline_ns": 446.4677142857143,
+      "case": "hold.block.dotall",
+      "native_ns": 287.98821428571426,
+      "speedup": 1.5502985613250544
+    },
+    {
+      "baseline_ns": 748.8912142857143,
+      "case": "hold.pattern.verbose",
+      "native_ns": 252.622,
+      "speedup": 2.964473459499625
+    },
+    {
+      "baseline_ns": 771.3479285714286,
+      "case": "hold.look.negative-ahead",
+      "native_ns": 674.5392142857143,
+      "speedup": 1.1435182895752436
+    },
+    {
+      "baseline_ns": 88957.4685,
+      "case": "hold.compile.complex",
+      "native_ns": 66503.67,
+      "speedup": 1.3376324720124468
+    },
+    {
+      "baseline_ns": 1896.2929285714285,
+      "case": "hold.zero.boundary",
+      "native_ns": 846.6213571428572,
+      "speedup": 2.2398359226029445
+    },
+    {
+      "baseline_ns": 2461.6275714285716,
+      "case": "hold.dense.iter",
+      "native_ns": 1531.8480714285715,
+      "speedup": 1.6069658717087432
+    },
+    {
+      "baseline_ns": 5633.689785714286,
+      "case": "hold.bytes.view-long",
+      "native_ns": 4068.162428571429,
+      "speedup": 1.3848242012530965
+    },
+    {
+      "baseline_ns": 350.1275,
+      "case": "hold.window.search",
+      "native_ns": 341.53464285714284,
+      "speedup": 1.0251595477137334
+    },
+    {
+      "baseline_ns": 556.0871428571429,
+      "case": "hold.window.findall",
+      "native_ns": 490.76807142857143,
+      "speedup": 1.1330956010207325
+    },
+    {
+      "baseline_ns": 775.3854285714285,
+      "case": "hold.window.scanner",
+      "native_ns": 638.8797857142857,
+      "speedup": 1.2136640505921246
+    },
+    {
+      "baseline_ns": 303.2590714285714,
+      "case": "hold.window.match",
+      "native_ns": 307.675,
+      "speedup": 0.9856474248105027
+    },
+    {
+      "baseline_ns": 1394.1498571428572,
+      "case": "hold.template.repeat",
+      "native_ns": 863.6062142857143,
+      "speedup": 1.6143351380304203
+    }
+  ],
+  "schema": "rebar-run-path-pilot-v1",
+  "trials": 9
+}

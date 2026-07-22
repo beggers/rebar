@@ -1,0 +1,8 @@
+{
+  "cases": 960,
+  "checks": 6720,
+  "failed": 0,
+  "failures": [],
+  "schema": "rebar-collection-controls-v1",
+  "seed": 20260727
+}

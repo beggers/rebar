@@ -1,0 +1,145 @@
+{
+  "cases": [
+    {
+      "baseline_ns": 1015.7588333333333,
+      "case": "hold.finditer.groups",
+      "native_ns": 669.9269166666667,
+      "speedup": 1.5162233492384678
+    },
+    {
+      "baseline_ns": 24546.328083333334,
+      "case": "hold.cold.compile-search",
+      "native_ns": 19139.216833333332,
+      "speedup": 1.2825147599865656
+    },
+    {
+      "baseline_ns": 1309.1558333333332,
+      "case": "hold.empty.finditer",
+      "native_ns": 577.8164166666667,
+      "speedup": 2.2656951162544847
+    },
+    {
+      "baseline_ns": 29105.130333333334,
+      "case": "hold.compile.only",
+      "native_ns": 22094.054333333333,
+      "speedup": 1.3173286303284943
+    },
+    {
+      "baseline_ns": 883.41025,
+      "case": "hold.scanner.search",
+      "native_ns": 783.3126666666667,
+      "speedup": 1.1277875203516008
+    },
+    {
+      "baseline_ns": 875.5583333333333,
+      "case": "hold.real.log",
+      "native_ns": 1012.2009166666667,
+      "speedup": 0.8650044856871713
+    },
+    {
+      "baseline_ns": 480.32616666666667,
+      "case": "hold.real.url",
+      "native_ns": 570.8466666666667,
+      "speedup": 0.8414276454856529
+    },
+    {
+      "baseline_ns": 665.64125,
+      "case": "hold.real.email",
+      "native_ns": 763.35175,
+      "speedup": 0.8719980664221966
+    },
+    {
+      "baseline_ns": 1113.0095,
+      "case": "hold.real.path",
+      "native_ns": 1115.0290833333333,
+      "speedup": 0.9981887617430606
+    },
+    {
+      "baseline_ns": 2167.2311666666665,
+      "case": "hold.real.config",
+      "native_ns": 1967.1855833333334,
+      "speedup": 1.1016912613777712
+    },
+    {
+      "baseline_ns": 703.64275,
+      "case": "hold.real.markup",
+      "native_ns": 764.4275833333334,
+      "speedup": 0.9204832025183113
+    },
+    {
+      "baseline_ns": 256.4764166666667,
+      "case": "hold.branch.prefix",
+      "native_ns": 314.4905,
+      "speedup": 0.8155299338665769
+    },
+    {
+      "baseline_ns": 636.3129166666666,
+      "case": "hold.branch.miss",
+      "native_ns": 800.0971666666667,
+      "speedup": 0.7952945506826983
+    },
+    {
+      "baseline_ns": 1019.3975833333334,
+      "case": "hold.lines.records",
+      "native_ns": 987.3418333333333,
+      "speedup": 1.0324667191420196
+    },
+    {
+      "baseline_ns": 755.2136666666667,
+      "case": "hold.look.negative-ahead",
+      "native_ns": 800.04125,
+      "speedup": 0.9439684099621947
+    },
+    {
+      "baseline_ns": 89727.2065,
+      "case": "hold.compile.complex",
+      "native_ns": 66700.41191666666,
+      "speedup": 1.3452271720915647
+    },
+    {
+      "baseline_ns": 1970.2969166666667,
+      "case": "hold.zero.boundary",
+      "native_ns": 856.003,
+      "speedup": 2.301740667575542
+    },
+    {
+      "baseline_ns": 2608.378166666667,
+      "case": "hold.dense.iter",
+      "native_ns": 1680.6746666666666,
+      "speedup": 1.551982795004546
+    },
+    {
+      "baseline_ns": 5484.445583333333,
+      "case": "hold.bytes.view-long",
+      "native_ns": 4547.164333333333,
+      "speedup": 1.2061243406421862
+    },
+    {
+      "baseline_ns": 348.09866666666665,
+      "case": "hold.window.search",
+      "native_ns": 370.68766666666664,
+      "speedup": 0.9390619056654165
+    },
+    {
+      "baseline_ns": 556.213,
+      "case": "hold.window.findall",
+      "native_ns": 547.4180833333334,
+      "speedup": 1.0160661785469576
+    },
+    {
+      "baseline_ns": 782.8911666666667,
+      "case": "hold.window.scanner",
+      "native_ns": 706.098,
+      "speedup": 1.108757094152181
+    },
+    {
+      "baseline_ns": 313.74608333333333,
+      "case": "hold.window.match",
+      "native_ns": 312.48333333333335,
+      "speedup": 1.0040410155208277
+    }
+  ],
+  "operations": 12000,
+  "schema": "rebar-boundary-cache-pilot-v1",
+  "trials": 9
+}

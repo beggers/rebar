@@ -45,7 +45,6 @@ DEBUG = RegexFlag.DEBUG
 NOFLAG = RegexFlag(0)
 _BYTE = 1 << 31
 _MAXREPEAT = (1 << 32) - 1
-_ESCAPE_MAP = {ord(char): "\\" + char for char in "()[]{}?*+-|^$\\.&~# \t\n\r\v\f"}
 _MISSING = object()
 _WARNING_PREFIX = (os.path.dirname(__file__),)
 
@@ -1116,9 +1115,7 @@ def subn(pattern, repl, string, *args, count=_MISSING, flags=_MISSING):
 
 
 def escape(pattern):
-    if isinstance(pattern, str):
-        return pattern.translate(_ESCAPE_MAP)
-    return str(pattern, "latin1").translate(_ESCAPE_MAP).encode("latin1")
+    return _vm_native.escape(pattern)
 
 
 __all__ = ["match", "fullmatch", "search", "sub", "subn", "split", "findall", "finditer", "compile", "purge", "escape", "error", "Pattern", "Match", "A", "I", "L", "M", "S", "X", "U", "ASCII", "IGNORECASE", "LOCALE", "MULTILINE", "DOTALL", "VERBOSE", "UNICODE", "NOFLAG", "RegexFlag", "PatternError"]
