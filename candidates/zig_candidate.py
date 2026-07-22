@@ -2,7 +2,6 @@
 
 import ctypes
 import enum
-import operator
 import os
 import types
 import unicodedata
@@ -108,7 +107,7 @@ class _Native:
         if isinstance(pattern, bytes):
             raw = pattern
         else:
-            named = _named_escapes(pattern)
+            named = _named_escapes(pattern) if "\\N" in pattern else ()
             if named:
                 pieces = []
                 previous = 0
@@ -122,24 +121,10 @@ class _Native:
                 native_pattern = pattern
             raw = native_pattern.encode("utf-8", "surrogatepass")
             native_flags |= 0x80000000
-        handle = self.library.rebar_zig_compile(raw, len(raw), native_flags)
-        if not handle:
+        compiled = _zig_bridge.compile(raw, native_flags, isinstance(pattern, bytes))
+        if compiled is None:
             raise PatternError("unsupported or invalid Zig pattern", pattern, 0)
-        groups = self.library.rebar_zig_groups(handle)
-        effective_flags = self.library.rebar_zig_flags(handle)
-        names = {}
-        for index in range(self.library.rebar_zig_name_count(handle)):
-            length = self.library.rebar_zig_name_length(handle, index)
-            value = ctypes.create_string_buffer(length)
-            self.library.rebar_zig_name_copy(handle, index, value, length)
-            names[value.raw.decode("utf-8" if isinstance(pattern, str) else "ascii")] = self.library.rebar_zig_name_group(handle, index)
-        return handle, groups, effective_flags, names
-
-    def run(self, handle, string, groups, pos, endpos, mode, nonempty):
-        return _zig_bridge.match(handle, string, pos, endpos, mode, nonempty)
-
-    def collect(self, handle, string, groups, pos, endpos):
-        return _zig_bridge.collect(handle, string, groups, pos, endpos)
+        return compiled
 
 _NATIVE = _Native()
 
@@ -902,175 +887,38 @@ def _expand_tokens(tokens, match, byte_mode):
 def _slice(value, start, end):
     if isinstance(value, str):
         return str(value)[start:end]
+    if isinstance(value, bytes):
+        return bytes(value)[start:end]
     return memoryview(value).cast("B")[start:end].tobytes()
 
 
 def _subject_length(value):
-    if isinstance(value, str):
+    if isinstance(value, (str, bytes)):
         return len(value)
     return memoryview(value).nbytes
 
 
-class Match:
-    __module__ = "re"
-    __slots__ = ("_pattern", "_string", "_spans", "_lastindex", "pos", "endpos")
-
-    def __init__(self, pattern, string, spans, lastindex, pos, endpos):
-        self._pattern = pattern
-        self._string = string
-        self._spans = spans
-        self._lastindex = lastindex
-        self.pos = pos
-        self.endpos = endpos
-
-    @classmethod
-    def __class_getitem__(cls, item):
-        return types.GenericAlias(cls, item)
-
-    def __copy__(self):
-        return self
-
-    def __deepcopy__(self, memo):
-        return self
-
-    def __reduce__(self):
-        raise TypeError("cannot pickle 're.Match' object")
-
-    def __repr__(self):
-        return f"<re.Match object; span={self.span()}, match={repr(self.group(0))[:50]}>"
-
-    @property
-    def re(self):
-        return self._pattern
-
-    @property
-    def string(self):
-        return self._string
-
-    @property
-    def regs(self):
-        return tuple((-1, -1) if value is None else value for value in self._spans)
-
-    @property
-    def lastindex(self):
-        return self._lastindex
-
-    @property
-    def lastgroup(self):
-        return next((name for name, index in self._pattern.groupindex.items() if index == self._lastindex), None)
-
-    def _number(self, group):
-        if isinstance(group, str):
-            if group not in self._pattern.groupindex:
-                raise IndexError("no such group")
-            return self._pattern.groupindex[group]
-        try:
-            group = operator.index(group)
-        except TypeError:
-            raise IndexError("no such group") from None
-        if group < 0 or group > self._pattern.groups:
-            raise IndexError("no such group")
-        return group
-
-    def group(self, *groups):
-        if not groups:
-            groups = (0,)
-        values = []
-        for group in groups:
-            span = self._spans[self._number(group)]
-            values.append(None if span is None else _slice(self._string, span[0], span[1]))
-        return values[0] if len(values) == 1 else tuple(values)
-
-    def __getitem__(self, group):
-        return self.group(group)
-
-    def groups(self, default=None):
-        return tuple(default if item is None else _slice(self._string, item[0], item[1]) for item in self._spans[1:])
-
-    def groupdict(self, default=None):
-        return {name: default if self._spans[number] is None else _slice(self._string, self._spans[number][0], self._spans[number][1]) for name, number in self._pattern.groupindex.items()}
-
-    def start(self, group=0):
-        span = self._spans[self._number(group)]
-        return -1 if span is None else span[0]
-
-    def end(self, group=0):
-        span = self._spans[self._number(group)]
-        return -1 if span is None else span[1]
-
-    def span(self, group=0):
-        value = self._spans[self._number(group)]
-        return (-1, -1) if value is None else value
-
-    def expand(self, template):
-        raw = bytes(template) if isinstance(template, (bytearray, memoryview)) else template
-        tokens = self.re._templates.get(raw)
-        if tokens is None:
-            _template(template, self, True)
-            tokens = _template_tokens(raw, self.re)
-            if len(self.re._templates) >= 32:
-                self.re._templates.clear()
-            self.re._templates[raw] = tokens
-        return _expand_tokens(tokens, self, isinstance(raw, bytes))
-
-
-class _Scanner:
-    __slots__ = ("pattern", "_string", "_pos", "_start", "_end", "_empty", "_pending")
-
-    def __init__(self, pattern, string, pos=0, endpos=None):
-        self.pattern = pattern
-        self._string = string
-        self._start = self._pos = max(pos, 0)
-        length = _subject_length(string)
-        self._end = length if endpos is None else min(max(endpos, 0), length)
-        self._empty = False
-        self._pending = None
-
-    def search(self):
-        if isinstance(self._string, (str, bytes)) and (self._pending is not None or not self._empty):
-            if self._pending is None:
-                self._pending = iter(_NATIVE.collect(self.pattern._handle, self._string, self.pattern.groups, self._pos, self._end))
-            item = next(self._pending, None)
-            result = None if item is None else Match(self.pattern, self._string, item[0], item[1], self._start, self._end)
-        else:
-            result = self.pattern._search(self._string, self._pos, self._end, self._empty, self._start)
-        if result is None:
-            self._pos = self._end + 1
-            return None
-        self._empty = result.end() == result.start()
-        self._pos = result.end() if not self._empty else result.start()
-        return result
-
-    def match(self):
-        self._pending = None
-        if self._pos > self._end:
-            return None
-        result = self.pattern._at(self._string, self._pos, self._end, self._start, self._empty)
-        if result is None:
-            self._pos = self._end + 1
-            return None
-        self._empty = result.end() == result.start()
-        self._pos = result.end()
-        return result
+Match = _zig_bridge.Match
 
 
 class Pattern:
-    __slots__ = ("pattern", "flags", "groups", "groupindex", "_handle", "_literal", "_templates", "__weakref__")
+    __slots__ = ("pattern", "flags", "groups", "groupindex", "_groupindex", "_handle", "_literal", "_templates", "__weakref__")
 
     def __init__(self, value, flags, handle, groups, groupindex):
         self.pattern = value
         self.flags = flags
         self.groups = groups
-        self.groupindex = types.MappingProxyType(dict(groupindex))
+        self._groupindex = dict(groupindex)
+        self.groupindex = types.MappingProxyType(self._groupindex)
         self._handle = handle
         metacharacters = b".^$*+?{}[]\\|()" if isinstance(value, bytes) else ".^$*+?{}[]\\|()"
-        self._literal = value if value and not flags & int(IGNORECASE) and not any(char in metacharacters for char in value) else None
+        self._literal = value if value and not flags & int(IGNORECASE | VERBOSE) and not any(char in metacharacters for char in value) else None
         self._templates = {}
 
     def __del__(self):
         handle = getattr(self, "_handle", None)
         if handle:
-            _NATIVE.library.rebar_zig_free(handle)
+            _zig_bridge.free(handle)
             self._handle = None
 
     def __copy__(self):
@@ -1103,7 +951,7 @@ class Pattern:
         return hash((type(self.pattern), self.pattern, self.flags))
 
     def _validate_string(self, string):
-        if not isinstance(string, str):
+        if not isinstance(string, (str, bytes, bytearray)):
             try:
                 contiguous = memoryview(string).c_contiguous
             except TypeError:
@@ -1115,161 +963,86 @@ class Pattern:
         if isinstance(self.pattern, bytes) and isinstance(string, str):
             raise TypeError("cannot use a bytes pattern on a string-like object")
 
-    def _at(self, string, start, endpos, original_pos, require_nonempty=False):
-        self._validate_string(string)
-        result = _NATIVE.run(self._handle, string, self.groups, start, endpos, 1, require_nonempty)
-        if result is None:
+    def _at(self, string, start, endpos, original_pos, require_nonempty=False, validate=True):
+        if validate:
+            self._validate_string(string)
+        if self._literal is not None and isinstance(string, (str, bytes)):
+            source = str(string) if isinstance(string, str) else bytes(string)
+            if source.startswith(self._literal, start, endpos):
+                return _zig_bridge.span_object(self, string, self.groups, self._groupindex, start, start + len(self._literal), original_pos, endpos)
             return None
-        spans, last = result
-        return Match(self, string, spans, last, original_pos, endpos)
+        return _zig_bridge.match_object(self, self._handle, self._groupindex, string, start, endpos, 1, require_nonempty, original_pos)
 
-    def _search(self, string, pos, endpos, require_nonempty=False, original_pos=None):
-        self._validate_string(string)
+    def _search(self, string, pos, endpos, require_nonempty=False, original_pos=None, validate=True):
+        if validate:
+            self._validate_string(string)
         if pos > endpos:
             return None
-        result = _NATIVE.run(self._handle, string, self.groups, pos, endpos, 0, require_nonempty)
-        if result is None:
-            return None
-        spans, last = result
-        return Match(self, string, spans, last, pos if original_pos is None else original_pos, endpos)
+        if self._literal is not None and isinstance(string, (str, bytes)):
+            source = str(string) if isinstance(string, str) else bytes(string)
+            begin = source.find(self._literal, pos, endpos)
+            if begin < 0:
+                return None
+            return _zig_bridge.span_object(self, string, self.groups, self._groupindex, begin, begin + len(self._literal), pos if original_pos is None else original_pos, endpos)
+        return _zig_bridge.match_object(self, self._handle, self._groupindex, string, pos, endpos, 0, require_nonempty, pos if original_pos is None else original_pos)
 
     def search(self, string, pos=0, endpos=None):
-        self._validate_string(string)
-        length = _subject_length(string)
-        end = length if endpos is None else min(max(endpos, 0), length)
-        return self._search(string, max(pos, 0), end)
+        return _zig_bridge.pattern_match(self, self._handle, self._groupindex, self.pattern, self._literal, string, pos, endpos, 0)
 
     def match(self, string, pos=0, endpos=None):
-        self._validate_string(string)
-        length = _subject_length(string)
-        end = length if endpos is None else min(max(endpos, 0), length)
-        return self._at(string, max(pos, 0), end, max(pos, 0)) if pos <= end else None
+        return _zig_bridge.pattern_match(self, self._handle, self._groupindex, self.pattern, self._literal, string, pos, endpos, 1)
 
     def fullmatch(self, string, pos=0, endpos=None):
-        self._validate_string(string)
-        length = _subject_length(string)
-        end = length if endpos is None else min(max(endpos, 0), length)
-        start = max(pos, 0)
-        result = _NATIVE.run(self._handle, string, self.groups, start, end, 2, False)
-        if result is None:
-            return None
-        spans, last = result
-        return Match(self, string, spans, last, start, end)
+        return _zig_bridge.pattern_match(self, self._handle, self._groupindex, self.pattern, self._literal, string, pos, endpos, 2)
 
     def finditer(self, string, pos=0, endpos=None):
-        self._validate_string(string)
-        length = _subject_length(string)
-        end = length if endpos is None else min(max(endpos, 0), length)
-        if isinstance(string, (str, bytes)):
-            return self._collected(string, max(pos, 0), end)
-        return self._finditer(string, pos, end, memoryview(string))
-
-    def _finditer(self, string, pos, end, view):
-        current = max(pos, 0)
-        empty = False
-        while current <= end:
-            result = self._search(string, current, end, empty, max(pos, 0))
-            if result is None:
-                break
-            yield result
-            begin, finish = result._spans[0]
-            if begin == finish:
-                empty = True
-                current = begin
-            else:
-                current = finish
-                empty = False
-
-    def _collected(self, string, pos, end):
-        result = _NATIVE.collect(self._handle, string, self.groups, pos, end)
-        if result is None:
-            yield from self._finditer(string, pos, end, None)
-            return
-        for spans, last in result:
-            yield Match(self, string, spans, last, pos, end)
+        return _zig_bridge.pattern_iterator(self, self._handle, self._groupindex, self.pattern, string, pos, endpos, False, self.groups)
 
     def findall(self, string, pos=0, endpos=None):
-        self._validate_string(string)
-        length = _subject_length(string)
-        end = length if endpos is None else min(max(endpos, 0), length)
-        native = _zig_bridge.findall(self._handle, string, self.groups, max(pos, 0), end)
-        if native is not None:
-            return native
-        empty = b"" if not isinstance(string, str) else ""
-        output = []
-        for item in self._collected(string, max(pos, 0), end):
-            if self.groups == 0:
-                begin, finish = item._spans[0]
-                output.append(_slice(string, begin, finish))
-            elif self.groups == 1:
-                span = item._spans[1]
-                output.append(empty if span is None else _slice(string, span[0], span[1]))
-            else:
-                output.append(tuple(empty if span is None else _slice(string, span[0], span[1]) for span in item._spans[1:]))
-        return output
+        return _zig_bridge.findall(self._handle, self.pattern, string, self.groups, pos, endpos)
 
     def split(self, string, maxsplit=0):
-        self._validate_string(string)
-        return _zig_bridge.split(self._handle, string, self.groups, maxsplit)
+        return _zig_bridge.split(self._handle, self.pattern, string, self.groups, maxsplit)
 
     def subn(self, repl, string, count=0):
-        self._validate_string(string)
-        length = _subject_length(string)
-        is_callable = callable(repl)
-        raw = None
-        template = None
-        if not is_callable:
-            raw = bytes(repl) if isinstance(repl, (bytearray, memoryview)) else repl
-            if isinstance(raw, (str, bytes)) and isinstance(string, str) != isinstance(raw, str):
-                expected = "str instance" if isinstance(string, str) else "a bytes-like object"
-                raise TypeError(f"sequence item 0: expected {expected}, {type(raw).__name__} found")
-            escaped = b"\\" in raw if isinstance(raw, bytes) else "\\" in raw
-            template = self._templates.get(raw)
-            if template is None:
-                _template(repl, Match(self, string, [(0, 0)] + [None] * self.groups, None, 0, length), True)
-                template = _template_tokens(raw, self) if escaped else (raw,)
-                if len(self._templates) >= 32:
-                    self._templates.clear()
-                self._templates[raw] = template
-            if escaped:
-                return _zig_bridge.subn(self._handle, string, self.groups, template, count)
-            elif self._literal is not None and isinstance(string, str) == isinstance(raw, str):
-                if count < 0:
-                    return _slice(string, 0, length), 0
-                source = str(string) if isinstance(string, str) else bytes(string)
-                occurrences = source.count(self._literal)
-                replacements = occurrences if count == 0 else min(occurrences, count)
-                return source.replace(self._literal, raw, -1 if count == 0 else count), replacements
-            return _zig_bridge.subn(self._handle, string, self.groups, template, count)
-        parts = []
-        previous = 0
-        replacements = 0
-        matches = self.finditer(string) if is_callable else self._collected(string, 0, length)
-        for item in matches:
-            if count and replacements >= count:
-                break
-            begin, finish = item._spans[0]
-            prefix = _slice(string, previous, begin)
-            if prefix:
-                parts.append(prefix)
-            if is_callable:
-                value = repl(item)
-            else:
-                value = _expand_tokens(template, item, isinstance(raw, bytes)) if template is not None else repl
-            parts.append(value)
-            previous = finish
-            replacements += 1
-        tail = _slice(string, previous, length)
-        if tail:
-            parts.append(tail)
-        return (b"" if not isinstance(string, str) else "").join(parts), replacements
+        if callable(repl):
+            return _zig_bridge.subn_callable(self, self._handle, self._groupindex, self.pattern, string, repl, count)
+        raw = bytes(repl) if isinstance(repl, (bytearray, memoryview)) else repl
+        if not isinstance(raw, (str, bytes)):
+            hash(raw)
+            raise TypeError(f"decoding to str: need a bytes-like object, {type(raw).__name__} found")
+        if isinstance(self.pattern, str) != isinstance(raw, str):
+            expected = "str instance" if isinstance(self.pattern, str) else "a bytes-like object"
+            raise TypeError(f"sequence item 0: expected {expected}, {type(raw).__name__} found")
+        if self._literal is not None and not (b"\\" in raw if isinstance(raw, bytes) else "\\" in raw):
+            return _zig_bridge.literal_subn(self._literal, raw, string, count)
+        template = self._templates.get(raw)
+        if template is None:
+            self._validate_string(string)
+            length = _subject_length(string)
+            _template(repl, _zig_bridge.span_object(self, string, self.groups, self._groupindex, 0, 0, 0, length), True)
+            template = _template_tokens(raw, self) if (b"\\" in raw if isinstance(raw, bytes) else "\\" in raw) else (raw,)
+            if len(self._templates) >= 32:
+                self._templates.clear()
+            self._templates[raw] = template
+        return _zig_bridge.subn(self._handle, self.pattern, string, self.groups, template, count)
 
     def sub(self, repl, string, count=0):
         return self.subn(repl, string, count)[0]
 
+    def _expand(self, template, match):
+        raw = bytes(template) if isinstance(template, (bytearray, memoryview)) else template
+        tokens = self._templates.get(raw)
+        if tokens is None:
+            _template(template, match, True)
+            tokens = _template_tokens(raw, self)
+            if len(self._templates) >= 32:
+                self._templates.clear()
+            self._templates[raw] = tokens
+        return _expand_tokens(tokens, match, isinstance(raw, bytes))
+
     def scanner(self, string, pos=0, endpos=None):
-        self._validate_string(string)
-        return _Scanner(self, string, pos, endpos)
+        return _zig_bridge.pattern_iterator(self, self._handle, self._groupindex, self.pattern, string, pos, endpos, True, self.groups)
 
 
 class Scanner:
@@ -1322,6 +1095,10 @@ def compile(pattern, flags=0):
         return pattern
     if not isinstance(pattern, (str, bytes)):
         raise TypeError("first argument must be string or compiled pattern")
+    key = (type(pattern), pattern, flags)
+    cached = _CACHE.get(key)
+    if cached is not None:
+        return cached
     if isinstance(pattern, str) and flags & int(LOCALE):
         raise ValueError("cannot use LOCALE flag with a str pattern")
     if isinstance(pattern, bytes) and flags & int(UNICODE):
@@ -1330,23 +1107,22 @@ def compile(pattern, flags=0):
         raise ValueError("ASCII and UNICODE flags are incompatible")
     if isinstance(pattern, bytes) and flags & int(ASCII) and flags & int(LOCALE):
         raise ValueError("ASCII and LOCALE flags are incompatible")
-    key = (type(pattern), pattern, flags)
-    if key in _CACHE:
-        return _CACHE[key]
     implicit_unicode = int(UNICODE) if isinstance(pattern, str) and not flags & int(ASCII) else 0
     if _may_accept_invalid_pattern(pattern):
         _preflight_pattern(pattern, flags | implicit_unicode)
-    _warn_ambiguous(pattern)
+    markers = (b"[[", b"&&", b"||", b"~~", b"--") if isinstance(pattern, bytes) else ("[[", "&&", "||", "~~", "--")
+    if any(marker in pattern for marker in markers):
+        _warn_ambiguous(pattern)
     try:
         handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)
     except PatternError:
         _preflight_pattern(pattern, flags | implicit_unicode)
         raise
     if isinstance(pattern, str) and ((flags & int(ASCII) and effective_flags & int(UNICODE)) or (flags & int(UNICODE) and effective_flags & int(ASCII))):
-        _NATIVE.library.rebar_zig_free(handle)
+        _zig_bridge.free(handle)
         raise ValueError("ASCII and UNICODE flags are incompatible")
     if isinstance(pattern, bytes) and ((flags & int(ASCII) and effective_flags & int(LOCALE)) or (flags & int(LOCALE) and effective_flags & int(ASCII))):
-        _NATIVE.library.rebar_zig_free(handle)
+        _zig_bridge.free(handle)
         raise ValueError("ASCII and LOCALE flags are incompatible")
     result = Pattern(pattern, effective_flags, handle, groups, groupindex)
     _CACHE[key] = result

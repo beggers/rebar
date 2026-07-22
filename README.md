@@ -8,18 +8,18 @@ The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2
 
 The expanded holdout contains **3,144 separate, unseen tasks** spanning everyday text and byte processing, every common API, compilation, Unicode, captures, replacements, scanners, windows, structured data, source/config parsing, addresses, cleanup, hits, misses, and short/long inputs. **1× means the same speed as Python `re`; higher is faster.**
 
-The native C engine is the fastest candidate at **1.351× as fast overall** (1.349–1.352× measured range) and clearly faster on **2,482/3,144** tasks (**79%**). The larger holdout exposes **226** large slowdowns and falsifies the earlier 1.5× success claim. Empty matches, quoted/CSV data, many alternatives, paths, controlled repeats, long scans, and email collection account for all of them; they are retained, profiled, and explained.
+The latest Zig engine reaches **1.381× as fast overall** (1.358–1.403× measured range) and is clearly faster on **2,290/3,144** tasks (**73%**). The native C engine reaches **1.351×** and is clearly faster on **2,482/3,144** (**79%**). Both remain below the 1.5× target. Short calls, many alternatives, references, scanners, quoted/CSV data, and repeated or lazy matching explain the remaining losses; every affected task is retained.
 
-![Overall speed compared with Python re](performance/v5/evidence/initial-overall.svg)
+![Overall speed compared with Python re](candidates/evidence/zig-opt-overall.svg)
 
 | Engine | Overall speed | Clearly faster | Large slowdowns |
 | --- | ---: | ---: | ---: |
+| Zig (latest) | **1.381×** | **2,290/3,144** | **259/3,144** |
 | Native C / `rebar` | **1.351×** | **2,482/3,144** | **226/3,144** |
-| Zig | 0.481× | 370/3,144 | 2,486/3,144 |
 | Rust | 0.149× | 167/3,144 | 2,948/3,144 |
 | Python | 0.024× | 86/3,144 | 3,021/3,144 |
 
-The [complete results](performance/v5/evidence/INITIAL.md) retain all **408,720** paired timing rows, every task, memory observation, measured range, and all **17,416** practice/holdout slowdowns. The [plain-language notes](performance/v5/evidence/INITIAL-NOTES.md) explain the profiled native losses and the remaining Zig/Rust/Python costs. Every timed batch is checked against frozen CPython output both before and after timing.
+The [initial four-engine results](performance/v5/evidence/INITIAL.md) retain all **408,720** paired timing rows. The [latest Zig results](candidates/evidence/ZIG-OPTIMIZED.md) add **163,488** paired rows, all memory observations, measured ranges, rejected designs, and [every large Zig slowdown](candidates/evidence/zig-opt-regressions.md). Every timed batch is checked against frozen CPython output both before and after timing.
 
 ![Expanded performance holdout coverage](performance/v5/evidence/coverage.svg)
 
@@ -27,11 +27,11 @@ All four engines pass the frozen **44,084-case** correctness matrix, including *
 
 ![Large correctness holdout coverage and results](oracle/v3/evidence/qualified-correctness.svg)
 
-The separate from-scratch Zig engine is now correctness-qualified: it passes **all 44,084 frozen cases**, **all 6,288 expanded performance tasks**, and **144/144** runnable official CPython methods with zero crashes or timeouts. Its latest paired rerun reaches **0.462×** on the expanded holdout (0.453–0.472×). Fresh compilation, cleanup, and splitting can win; scanners, redaction, short searches, references, and collection remain slow. The [latest Zig report](candidates/evidence/ZIG-LARGE-PATTERNS.md) preserves all **163,488** rows and every loss.
+The separate from-scratch Zig engine is correctness-qualified: it passes **all 44,084 frozen cases**, **all 6,288 expanded performance tasks**, and **144/144** runnable official CPython methods with zero crashes or timeouts. Its latest paired rerun improves **0.462→1.381×**. Compiled memory falls to **23 KB median**, and replacement, splitting, compilation, Unicode, and long searches often win; short calls, references, many alternatives, and some scanners remain costly. The [latest Zig report](candidates/evidence/ZIG-OPTIMIZED.md) preserves the complete result and every loss.
 
-![Zig reaches full CPython compatibility coverage](candidates/evidence/zig-large-correctness.svg)
+![Zig reaches full CPython compatibility coverage](candidates/evidence/zig-opt-correctness.svg)
 
-![Overall Zig speed and all balanced holdout families](candidates/evidence/zig-large-v5-family.svg)
+![Overall Zig speed and all balanced holdout families](candidates/evidence/zig-opt-v5-family.svg)
 
 ## Detailed graphs
 
@@ -49,15 +49,15 @@ The family view makes the expanded benchmark readable: each row combines the mat
 
 The Zig experiment's detailed memory and win/loss views retain every legacy and generated holdout task family:
 
-![Compiled Zig program memory across the expanded holdout](candidates/evidence/zig-large-program-memory.svg)
+![Compiled Zig program memory across the expanded holdout](candidates/evidence/zig-opt-program-memory.svg)
 
-![Zig temporary memory across the expanded holdout](candidates/evidence/zig-large-v5-memory.svg)
+![Zig temporary memory across the expanded holdout](candidates/evidence/zig-opt-v5-memory.svg)
 
-![Zig wins and losses across the expanded holdout](candidates/evidence/zig-large-v5-regressions.svg)
+![Zig wins and losses across the expanded holdout](candidates/evidence/zig-opt-v5-regressions.svg)
 
 ## Current status
 
-The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The public import selects the correctness-qualified native C winner. The independently written [Zig engine](candidates/evidence/ZIG-LARGE-PATTERNS.md) now passes the same frozen and official checks, supports large programs/repeats/sets, Unicode, captures/references, and the complete public surface, and uses about **31 KB** median compiled-program memory instead of a fixed **424 KB**. Earlier language/FFI experiments, optimizations, rejections, and raw evidence are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
+The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md), the current stable release. The public import selects the correctness-qualified native C engine. The independently written [Zig engine](candidates/evidence/ZIG-OPTIMIZED.md) passes the same frozen and official checks, supports large programs/repeats/sets, Unicode, captures/references, and the complete public surface, and uses about **23 KB** median compiled-program memory instead of a fixed **424 KB**. Earlier language/FFI experiments, optimizations, rejections, and raw evidence are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
 
 | Check | Status |
 | --- | --- |
@@ -66,7 +66,7 @@ The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). The public import selec
 | Official CPython tests | **PASS** — all four engines pass 144/144 runnable methods; zero failures, crashes, or timeouts |
 | Earlier large holdout | **PASS / HISTORICAL** — native C reaches 1.56× on the preserved 1,224 tasks; its 10 remeasured large slowdowns are explained |
 | Expanded performance holdout | **BELOW TARGET** — native C reaches 1.351× on 3,144 unseen tasks, clearly faster on 79%; all 226 large slowdowns are profiled/explained |
-| Zig engine | **CORRECTNESS PASS / BELOW TARGET** — all 44,084 frozen cases, 6,288 performance tasks, and 144/144 official methods pass; 0.462× latest holdout speed; every loss retained |
+| Zig engine | **CORRECTNESS PASS / BELOW TARGET** — all 44,084 frozen cases, 6,288 performance tasks, and 144/144 official methods pass; 1.381× latest holdout speed, clearly faster on 73%; every loss retained |
 | Public import | **AVAILABLE / WINNER** — `import rebar as re` uses the independent native C engine |
 
 The [expanded performance protocol](performance/v5/PROTOCOL.md) preserves every earlier task and records the larger unseen set, fixed seeds, weights, timing rules, correctness gate, and complete result. The [earlier v4 protocol/result](performance/v4/PROTOCOL.md) remains available for comparison.

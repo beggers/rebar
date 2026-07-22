@@ -1,0 +1,34 @@
+{
+  "schema": "rebar-zig-optimization-findings-v1",
+  "findings": [
+    {
+      "gate": "correctness-v2",
+      "cases": 8244,
+      "failed_before_fix": 21,
+      "area": "generalized compact repeats",
+      "reproduction": "Patterns shaped like (?:(?=a)a|b) under repetition incorrectly flattened an alternative containing an assertion.",
+      "fix": "Only flatten true consuming atoms; alternatives containing assertions or sequences use the general executor.",
+      "failed_after_fix": 0
+    },
+    {
+      "gate": "correctness-v3-holdout",
+      "cases": 35840,
+      "failed_before_fix": 2,
+      "ids": ["v3.hold.scanner.00121", "v3.hold.scanner.00857"],
+      "area": "mutable-buffer iteration",
+      "reproduction": "Create a scanner or iterator on a writable bytearray or memoryview, obtain a result, edit the underlying bytes, and obtain the next result.",
+      "fix": "Batch immutable inputs; request one record at a time for writable buffers so every next call observes edits.",
+      "failed_after_fix": 0
+    },
+    {
+      "gate": "official-cpython-3.14.6",
+      "methods": 144,
+      "failed_before_fix": 4,
+      "ids": ["ReTests.test_bug_29444", "ReTests.test_bug_40736", "ReTests.test_comments", "ReTests.test_ignore_spaces"],
+      "area": "native match and literal boundary",
+      "reproduction": "Resize a bytearray after matching, pass an invalid integer subject, or use a whitespace/comment expression with VERBOSE enabled.",
+      "fix": "Clamp match slices to the current buffer length, validate buffer support before reporting a text/bytes mismatch, and never select the literal path for VERBOSE patterns.",
+      "failed_after_fix": 0
+    }
+  ]
+}
