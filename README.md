@@ -32,6 +32,10 @@ A newly frozen [large correctness holdout](oracle/v3/P0.md) adds **35,840 previo
 
 ![Large correctness holdout coverage and results](oracle/v3/evidence/qualified-correctness.svg)
 
+The new [large performance holdout](performance/v4/PROTOCOL.md) expands the comparison to **1,224 unseen tasks**, with a matching practice set and all earlier tasks preserved. It covers common calls, realistic text and byte workloads, buffers, Unicode, compilation, captures, replacements, scanners, windows, hits, misses, and short/long inputs. All **9,792/9,792** pre-timing comparisons pass. Timing on this larger set is **NOT MEASURED** until the next chunk.
+
+![Large performance holdout coverage](performance/v4/evidence/coverage.svg)
+
 ## Detailed graphs
 
 These show the broader holdout task by task. Green means clearly faster, red means more than 20% slower, and grey means close or uncertain. Each speed cell includes the measured range.
@@ -71,6 +75,7 @@ The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). Stdlib and all three en
 | Original performance | **PASS** — native C reaches 1.56× on the original 16-task holdout |
 | Expanded performance | **MEASURED / OPTIMIZATION NEEDED** — native C reaches 1.16× on 28 holdout tasks; all results are correctness-gated |
 | Broader performance | **PASS** — native C reaches 1.57× on 72 holdout tasks, clearly faster on 68/72 with zero large slowdowns |
+| Large performance holdout | **FROZEN / CORRECTNESS PASS** — 1,224 holdout tasks; all 9,792 pre-timing comparisons pass; speed **NOT MEASURED** |
 | Public import | **AVAILABLE / WINNER** — `import rebar as re` uses the correctness-qualified native C engine |
 
 The [broader performance protocol](performance/v3/PROTOCOL.md) explains exactly what is timed, how comparisons are made, and how slowdowns are reported. Full results, raw data, rejected experiments, and older charts are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
@@ -91,5 +96,6 @@ PYTHONPATH=. "$PY" tools/collection_controls.py --output /tmp/collection-control
 PYTHONPATH=. "$PY" tools/holdout_regression_controls.py --output /tmp/holdout-regression.json
 PYTHONPATH=. "$PY" tools/perf_v2.py verify
 PYTHONPATH=. "$PY" tools/perf_v3.py verify
+PYTHONPATH=. "$PY" tools/perf_v4.py verify
 PYTHONPATH=. "$PY" tools/engine_pilot.py --output /tmp/engine-pilot.json --module candidates.ast_candidate --module candidates.rust_candidate
 ```
