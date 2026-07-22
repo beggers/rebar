@@ -851,16 +851,13 @@ class _Engine:
         raise RuntimeError(f"unknown engine node {kind}")
 
 
-def _template(value, match):
+def _template(value, match, validate_only=False):
     if isinstance(value, (bytearray, memoryview)):
         value = bytes(value)
     if not isinstance(value, (str, bytes)):
-        raise TypeError("decoding to str: need a bytes-like object, function found")
-    byte_mode = not isinstance(match.string, str)
-    if byte_mode != isinstance(value, bytes):
-        expected = "bytes-like object" if byte_mode else "str instance"
-        actual = "str" if isinstance(value, str) else "bytes"
-        raise TypeError(f"sequence item 0: expected a {expected}, {actual} found")
+        hash(value)
+        raise TypeError(f"decoding to str: need a bytes-like object, {type(value).__name__} found")
+    byte_mode = isinstance(value, bytes)
     text = value.decode("latin1") if isinstance(value, bytes) else value
     output = []
     index = 0
@@ -903,7 +900,10 @@ def _template(value, match):
                 if name not in match.re.groupindex:
                     raise IndexError(f"unknown group name {name!r}")
                 number = match.re.groupindex[name]
-            part = match.group(number)
+            part = (b"" if byte_mode else "") if validate_only else match.group(number)
+            if part is not None and byte_mode != isinstance(part, bytes):
+                expected = "a bytes-like object" if byte_mode else "str instance"
+                raise TypeError(f"sequence item 1: expected {expected}, {type(part).__name__} found")
             output.append("" if part is None else part.decode("latin1") if isinstance(part, bytes) else part)
         elif char in "0123456789":
             digits = char
@@ -928,7 +928,10 @@ def _template(value, match):
             number = int(digits)
             if number > match.re.groups:
                 raise PatternError(f"invalid group reference {number}", value, slash + 1)
-            part = match.group(number)
+            part = (b"" if byte_mode else "") if validate_only else match.group(number)
+            if part is not None and byte_mode != isinstance(part, bytes):
+                expected = "a bytes-like object" if byte_mode else "str instance"
+                raise TypeError(f"sequence item 1: expected {expected}, {type(part).__name__} found")
             output.append("" if part is None else part.decode("latin1") if isinstance(part, bytes) else part)
         elif char in simple:
             output.append(simple[char])
@@ -1240,22 +1243,27 @@ class Pattern:
         self._validate_string(string)
         length = _subject_length(string)
         if not callable(repl):
-            _template(repl, Match(self, string, [(0, 0)] + [None] * self.groups, None, 0, length))
+            _template(repl, Match(self, string, [(0, 0)] + [None] * self.groups, None, 0, length), True)
         parts = []
         previous = 0
         replacements = 0
         for item in self.finditer(string):
             if count and replacements >= count:
                 break
-            parts.append(_slice(string, previous, item.start()))
-            value = repl(item) if callable(repl) else item.expand(repl)
-            if (not isinstance(string, str)) != isinstance(value, bytes):
-                expected = "bytes-like object" if not isinstance(string, str) else "str instance"
-                raise TypeError(f"sequence item {len(parts)}: expected a {expected}, {type(value).__name__} found")
+            prefix = _slice(string, previous, item.start())
+            if prefix:
+                parts.append(prefix)
+            if callable(repl):
+                value = repl(item)
+            else:
+                raw = bytes(repl) if isinstance(repl, (bytearray, memoryview)) else repl
+                value = item.expand(repl) if (b"\\" in raw if isinstance(raw, bytes) else "\\" in raw) else repl
             parts.append(value)
             previous = item.end()
             replacements += 1
-        parts.append(_slice(string, previous, length))
+        tail = _slice(string, previous, length)
+        if tail:
+            parts.append(tail)
         return (b"" if not isinstance(string, str) else "").join(parts), replacements
 
     def sub(self, repl, string, count=0):

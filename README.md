@@ -6,35 +6,39 @@ The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2
 
 ## Headline results
 
-The broader holdout contains **72 separate tasks** kept apart from tuning, including logs, URLs, configuration/text cleanup, byte inputs, Unicode, replacements, scanners, and windowed calls. **1× means the same speed as Python `re`; higher is faster.** The native C engine is **1.10× as fast overall** and clearly faster on **37/72** tasks, with **12** tasks more than 20% slower. Python and Rust are much slower on short calls. The remaining results show exactly where optimization is needed.
+The broader holdout contains **72 separate tasks** kept apart from tuning, including logs, URLs, configuration/text cleanup, byte inputs, Unicode, replacements, scanners, and windowed calls. **1× means the same speed as Python `re`; higher is faster.** The native C engine is **1.11× as fast overall** and clearly faster on **46/72** tasks, with **11** tasks more than 20% slower. Python and Rust are much slower on short calls. The remaining results show exactly where optimization is needed.
 
-![Overall speed compared with Python re](performance/v3/evidence/start-filter-overall.svg)
+![Overall speed compared with Python re](performance/v3/evidence/replacement-overall.svg)
 
 | Engine | Overall speed | Clearly faster | Large slowdowns |
 | --- | ---: | ---: | ---: |
-| Native C | **1.10×** | **37/72** | **12/72** |
-| Rust | 0.014× | 2/72 | 69/72 |
-| Python | 0.012× | 2/72 | 69/72 |
+| Native C | **1.11×** | **46/72** | **11/72** |
+| Rust | 0.014× | 3/72 | 69/72 |
+| Python | 0.012× | 3/72 | 69/72 |
 
-The [latest broader report](performance/v3/evidence/START-FILTER.md) retains all **7,488** correctness-gated timing rows, every task, memory observations, confidence ranges, and every slowdown. Recent work made escaping/scanners/expansion cheaper, then added general start and character-class filters that greatly improve alternatives and structured text. The pre-timing check passes **576/576** comparisons.
+The [latest broader report](performance/v3/evidence/REPLACEMENT.md) retains all **7,488** correctness-gated timing rows, every task, memory observations, confidence ranges, and every slowdown. Recent work improved escaping/scanners/expansion and alternatives, then closed previously uncovered replacement-type and error-behavior gaps without losing the fast paths. The pre-timing check passes **576/576** comparisons.
 
-![Broader performance coverage and current status](performance/v3/evidence/coverage-start-filter.svg)
+![Broader performance coverage and current status](performance/v3/evidence/coverage-replacement.svg)
 
 All three engines now pass every runnable official CPython `re` test, including long inputs, deep lookbehind, mutable buffers, Unicode behavior, and the 403-pattern historical corpus. There are no failures, crashes, or timeouts.
 
 ![Official CPython re compatibility check](oracle/cpython-3.14.6/evidence/long-repeat-correctness.svg)
 
+They also pass **39,000** focused replacement checks covering `sub`, `subn`, match expansion, text/bytes/buffers, callbacks, empty inputs, and exact error behavior.
+
+![Replacement compatibility before and after the fix](oracle/v2/evidence/replacement-correctness.svg)
+
 ## Detailed graphs
 
 These show the broader holdout task by task. Green means clearly faster, red means more than 20% slower, and grey means close or uncertain. Each speed cell includes the measured range.
 
-![Speed on every holdout task](performance/v3/evidence/start-filter-speed.svg)
+![Speed on every holdout task](performance/v3/evidence/replacement-speed.svg)
 
-![Memory used on every holdout task](performance/v3/evidence/start-filter-memory.svg)
+![Memory used on every holdout task](performance/v3/evidence/replacement-memory.svg)
 
-![Where each engine is faster or slower](performance/v3/evidence/start-filter-regressions.svg)
+![Where each engine is faster or slower](performance/v3/evidence/replacement-regressions.svg)
 
-![Overall results across all task sets](performance/v3/evidence/start-filter-rankings.svg)
+![Overall results across all task sets](performance/v3/evidence/replacement-rankings.svg)
 
 The separate [from-scratch Zig trial](candidates/evidence/ZIG-PROBE.md) shows why the Python/native boundary matters: the compiled Zig matcher is faster than Python `re` on all six small tasks once repeated calls cross that boundary only once, but individual Python calls remain much slower. Zig is an architecture experiment, **not** a complete replacement candidate.
 
@@ -48,9 +52,10 @@ The baseline is [CPython 3.14.6](oracle/v1/BASELINE.md). Stdlib and all three en
 | --- | --- |
 | Seeded correctness | **PASS** — stdlib, native C, Python, and Rust each pass all 8,244 expanded cases |
 | Official CPython tests | **PASS** — all three engines pass 144/144 runnable methods; zero failures, crashes, or timeouts |
+| Replacement behavior | **PASS** — all three engines pass 39,000 text/bytes/buffer, callback, expansion, and error checks |
 | Original performance | **PASS** — native C reaches 1.56× on the original 16-task holdout |
 | Expanded performance | **MEASURED / OPTIMIZATION NEEDED** — native C reaches 1.16× on 28 holdout tasks; all results are correctness-gated |
-| Broader performance | **MEASURED / OPTIMIZATION NEEDED** — native C reaches 1.10× on 72 holdout tasks; all 7,488 rows are correctness-gated |
+| Broader performance | **MEASURED / OPTIMIZATION NEEDED** — native C reaches 1.11× on 72 holdout tasks; all 7,488 rows are correctness-gated |
 | Public import | **AVAILABLE / CORRECTNESS-QUALIFIED** — `import rebar as re` uses the native C engine |
 
 The [broader performance protocol](performance/v3/PROTOCOL.md) explains exactly what is timed, how comparisons are made, and how slowdowns are reported. Full results, raw data, rejected experiments, and older charts are linked from the [experiment log](docs/EXPERIMENT-LOG.md).
@@ -65,6 +70,7 @@ RUSTFLAGS='-D warnings' sh tools/build_rust.sh
 PYTHONPATH=. "$PY" -c 'import rebar as re; print(re.findall(r"[A-Za-z]+", "a faster python re"))'
 PYTHONPATH=. "$PY" tools/oracle_v2.py verify --module rebar
 PYTHONPATH=. "$PY" tools/cpython_re_oracle.py verify --module rebar
+PYTHONPATH=. "$PY" tools/replacement_controls.py --output /tmp/replacement-controls.json
 PYTHONPATH=. "$PY" tools/perf_v2.py verify
 PYTHONPATH=. "$PY" tools/perf_v3.py verify
 ```

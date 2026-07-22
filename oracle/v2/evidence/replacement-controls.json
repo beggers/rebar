@@ -1,0 +1,17 @@
+{
+  "cases_per_module": 13000,
+  "checks": 39000,
+  "failed": 0,
+  "failures": [],
+  "modules": [
+    "rebar",
+    "candidates.ast_candidate",
+    "candidates.rust_candidate"
+  ],
+  "passed": {
+    "candidates.ast_candidate": 13000,
+    "candidates.rust_candidate": 13000,
+    "rebar": 13000
+  },
+  "schema": "rebar-replacement-controls-v1"
+}

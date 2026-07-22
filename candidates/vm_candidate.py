@@ -829,17 +829,15 @@ def _template_parts(value, pattern, byte_mode):
     if isinstance(value, (bytearray, memoryview)):
         value = bytes(value)
     if not isinstance(value, (str, bytes)):
-        raise TypeError("decoding to str: need a bytes-like object, function found")
-    if byte_mode != isinstance(value, bytes):
-        expected = "bytes-like object" if byte_mode else "str instance"
-        actual = "str" if isinstance(value, str) else "bytes"
-        raise TypeError(f"sequence item 0: expected a {expected}, {actual} found")
+        hash(value)
+        raise TypeError(f"decoding to str: need a bytes-like object, {type(value).__name__} found")
+    byte_mode = isinstance(value, bytes)
     text = value.decode("latin1") if isinstance(value, bytes) else value
     output = []
     literal = []
 
-    def flush():
-        if literal:
+    def flush(force=False):
+        if literal or force:
             part = "".join(literal)
             output.append(part.encode("latin1") if byte_mode else part)
             literal.clear()
@@ -883,7 +881,7 @@ def _template_parts(value, pattern, byte_mode):
                 if name not in pattern.groupindex:
                     raise IndexError(f"unknown group name {name!r}")
                 number = pattern.groupindex[name]
-            flush()
+            flush(True)
             output.append(number)
         elif char in "0123456789":
             digits = char
@@ -908,7 +906,7 @@ def _template_parts(value, pattern, byte_mode):
             number = int(digits)
             if number > pattern.groups:
                 raise PatternError(f"invalid group reference {number}", value, slash + 1)
-            flush()
+            flush(True)
             output.append(number)
         elif char in simple:
             literal.append(simple[char])
@@ -916,12 +914,12 @@ def _template_parts(value, pattern, byte_mode):
             raise PatternError(f"bad escape \\{char}", value, slash)
         else:
             literal.append("\\" + char)
-    flush()
+    flush(True)
     return tuple(output)
 
 
 def _template(value, match):
-    byte_mode = not isinstance(match.string, str)
+    byte_mode = isinstance(value, (bytes, bytearray, memoryview))
     empty = b"" if byte_mode else ""
     return empty.join(match.group(part) or empty if isinstance(part, int) else part for part in _template_parts(value, match.re, byte_mode))
 

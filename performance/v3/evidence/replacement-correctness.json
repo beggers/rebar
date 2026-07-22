@@ -1,0 +1,14 @@
+{
+  "cases_per_module": 144,
+  "checks": 576,
+  "expected_sha256": "f3ab490e351648118e522035c8624976203c777d9c1a7f7d44ad98233f2056bf",
+  "failed": 0,
+  "failures": [],
+  "modules": [
+    "re",
+    "candidates.ast_candidate",
+    "candidates.vm_candidate",
+    "candidates.rust_candidate"
+  ],
+  "schema": "rebar-performance-correctness-v3"
+}

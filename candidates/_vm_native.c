@@ -1380,12 +1380,14 @@ static PyObject *match_expand(MatchObject *match, PyObject *template) {
         if (!owned_key) return NULL;
         template_key=owned_key;
     }
+    if (PyObject_Hash(template_key)==-1 && PyErr_Occurred()) { Py_XDECREF(owned_key); return NULL; }
+    int byte_mode=PyBytes_Check(template_key);
     if (!template_compiler) { Py_XDECREF(owned_key); PyErr_SetString(PyExc_RuntimeError,"native template compiler is not configured"); return NULL; }
     PyObject *parts=PyDict_GetItemWithError(match->pattern->templates,template_key);
     if (!parts && PyErr_Occurred()) { Py_XDECREF(owned_key); return NULL; }
     if (!parts) {
-        PyObject *byte_mode=PyUnicode_Check(match->string) ? Py_False : Py_True;
-        parts=PyObject_CallFunctionObjArgs(template_compiler,template_key,(PyObject *)match->pattern,byte_mode,NULL);
+        PyObject *byte_value=byte_mode ? Py_True : Py_False;
+        parts=PyObject_CallFunctionObjArgs(template_compiler,template_key,(PyObject *)match->pattern,byte_value,NULL);
         if (!parts) { Py_XDECREF(owned_key); return NULL; }
         if (PyDict_SetItem(match->pattern->templates,template_key,parts)<0) { Py_DECREF(parts); Py_XDECREF(owned_key); return NULL; }
         Py_DECREF(parts);
@@ -1394,22 +1396,6 @@ static PyObject *match_expand(MatchObject *match, PyObject *template) {
     }
     Py_XDECREF(owned_key);
     Py_ssize_t count=PyTuple_GET_SIZE(parts);
-    if (PyUnicode_Check(match->string)) {
-        PyUnicodeWriter *writer=PyUnicodeWriter_Create(16);
-        if (!writer) return NULL;
-        for (Py_ssize_t i=0; i<count; i++) {
-            PyObject *part=PyTuple_GET_ITEM(parts,i);
-            int written;
-            if (PyLong_Check(part)) {
-                Py_ssize_t number=PyLong_AsSsize_t(part);
-                if (PyErr_Occurred()) { PyUnicodeWriter_Discard(writer); return NULL; }
-                Py_ssize_t begin=match->caps[2*number],end=match->caps[2*number+1];
-                written=begin<0 ? 0 : PyUnicodeWriter_WriteSubstring(writer,match->string,begin,end);
-            } else written=PyUnicodeWriter_WriteStr(writer,part);
-            if (written<0) { PyUnicodeWriter_Discard(writer); return NULL; }
-        }
-        return PyUnicodeWriter_Finish(writer);
-    }
     PyObject *pieces=PyList_New(count);
     if (!pieces) return NULL;
     for (Py_ssize_t i=0; i<count; i++) {
@@ -1418,14 +1404,14 @@ static PyObject *match_expand(MatchObject *match, PyObject *template) {
             Py_ssize_t number=PyLong_AsSsize_t(part);
             if (PyErr_Occurred()) { Py_DECREF(pieces); return NULL; }
             value=match_piece(match,number,Py_None);
-            if (value==Py_None) { Py_SETREF(value,PyBytes_FromStringAndSize("",0)); }
+            if (value==Py_None) { Py_SETREF(value,byte_mode ? PyBytes_FromStringAndSize("",0) : PyUnicode_New(0,127)); }
         } else value=Py_NewRef(part);
         if (!value) { Py_DECREF(pieces); return NULL; }
         PyList_SET_ITEM(pieces,i,value);
     }
-    PyObject *empty=PyBytes_FromStringAndSize("",0);
+    PyObject *empty=byte_mode ? PyBytes_FromStringAndSize("",0) : PyUnicode_New(0,127);
     if (!empty) { Py_DECREF(pieces); return NULL; }
-    PyObject *result=PyBytes_Join(empty,pieces);
+    PyObject *result=byte_mode ? PyBytes_Join(empty,pieces) : PyUnicode_Join(empty,pieces);
     Py_DECREF(empty); Py_DECREF(pieces);
     return result;
 }
@@ -1689,7 +1675,7 @@ static PyObject *substitute_text(PatternObject *pattern, const Subject *subject,
     Py_ssize_t local_caps[34],cap_count=2*(pattern->groups+1);
     Py_ssize_t *caps=cap_count<=34 ? local_caps : PyMem_Malloc((size_t)cap_count*sizeof(Py_ssize_t));
     if (!caps) { PyUnicodeWriter_Discard(writer); return PyErr_NoMemory(); }
-    Py_ssize_t cursor=0,previous=0,replacements=0;
+    Py_ssize_t cursor=0,previous=0,replacements=0,piece_count=0;
     int nonempty=0;
     while (cursor<=subject->length && (!limit || replacements<limit)) {
         Py_ssize_t last=-1,found=-1,finish=-1;
@@ -1697,6 +1683,7 @@ static PyObject *substitute_text(PatternObject *pattern, const Subject *subject,
         if (got<0) { if (caps!=local_caps) PyMem_Free(caps); PyUnicodeWriter_Discard(writer); PyErr_SetString(PyExc_RuntimeError,got==-1?"native VM allocation failed":"native VM recursion limit"); return NULL; }
         if (!got) break;
         if (PyUnicodeWriter_WriteSubstring(writer,subject->obj,previous,found)<0) { if (caps!=local_caps) PyMem_Free(caps); PyUnicodeWriter_Discard(writer); return NULL; }
+        if (found>previous) piece_count++;
         if (template_parts) {
             Py_ssize_t pieces=PyTuple_GET_SIZE(template_parts);
             for (Py_ssize_t i=0; i<pieces; i++) {
@@ -1717,14 +1704,14 @@ static PyObject *substitute_text(PatternObject *pattern, const Subject *subject,
             Py_DECREF(match);
             if (!value) { if (caps!=local_caps) PyMem_Free(caps); PyUnicodeWriter_Discard(writer); return NULL; }
             if (!PyUnicode_Check(value)) {
-                PyErr_Format(PyExc_TypeError,"sequence item %zd: expected a str instance, %.200s found",2*replacements+1,Py_TYPE(value)->tp_name);
+                PyErr_Format(PyExc_TypeError,"sequence item %zd: expected str instance, %.200s found",piece_count,Py_TYPE(value)->tp_name);
                 Py_DECREF(value); if (caps!=local_caps) PyMem_Free(caps); PyUnicodeWriter_Discard(writer); return NULL;
             }
             int written=PyUnicodeWriter_WriteStr(writer,value);
             Py_DECREF(value);
             if (written<0) { if (caps!=local_caps) PyMem_Free(caps); PyUnicodeWriter_Discard(writer); return NULL; }
         }
-        replacements++; previous=finish;
+        replacements++; piece_count++; previous=finish;
         if (found==finish) { cursor=found; nonempty=1; }
         else { cursor=finish; nonempty=0; }
     }
@@ -1756,6 +1743,7 @@ static PyObject *pattern_substitute(PatternObject *pattern, PyObject *const *arg
     if (!pattern_subject(pattern,string,&subject)) return NULL;
     int callable=PyCallable_Check(replacement);
     PyObject *template_parts=NULL;
+    int template_byte_mode=0,literal_replacement=0;
     if (!callable) {
         PyObject *owned_key=NULL,*template_key=replacement;
         if (PyByteArray_Check(replacement) || PyMemoryView_Check(replacement)) {
@@ -1763,11 +1751,16 @@ static PyObject *pattern_substitute(PatternObject *pattern, PyObject *const *arg
             if (!owned_key) return NULL;
             template_key=owned_key;
         }
+        if (PyObject_Hash(template_key)==-1 && PyErr_Occurred()) { Py_XDECREF(owned_key); return NULL; }
+        template_byte_mode=PyBytes_Check(template_key);
+        if (template_byte_mode) literal_replacement=memchr(PyBytes_AS_STRING(template_key),'\\',(size_t)PyBytes_GET_SIZE(template_key))==NULL;
+        else if (PyUnicode_Check(template_key)) literal_replacement=PyUnicode_FindChar(template_key,'\\',0,PyUnicode_GET_LENGTH(template_key),1)<0;
+        if (PyErr_Occurred()) { Py_XDECREF(owned_key); return NULL; }
         if (!template_compiler) { Py_XDECREF(owned_key); PyErr_SetString(PyExc_RuntimeError,"native template compiler is not configured"); return NULL; }
         template_parts=PyDict_GetItemWithError(pattern->templates,template_key);
         if (!template_parts && PyErr_Occurred()) { Py_XDECREF(owned_key); return NULL; }
         if (!template_parts) {
-            PyObject *byte_mode=subject.byte_mode ? Py_True : Py_False;
+            PyObject *byte_mode=template_byte_mode ? Py_True : Py_False;
             template_parts=PyObject_CallFunctionObjArgs(template_compiler,template_key,(PyObject *)pattern,byte_mode,NULL);
             if (!template_parts) { Py_XDECREF(owned_key); return NULL; }
             if (PyDict_SetItem(pattern->templates,template_key,template_parts)<0) { Py_DECREF(template_parts); Py_XDECREF(owned_key); return NULL; }
@@ -1776,6 +1769,36 @@ static PyObject *pattern_substitute(PatternObject *pattern, PyObject *const *arg
             if (!template_parts) { Py_XDECREF(owned_key); return NULL; }
         }
         Py_XDECREF(owned_key);
+    }
+    if (!callable && template_byte_mode!=subject.byte_mode) {
+        Py_ssize_t cap_count=2*(pattern->groups+1),local_caps[34];
+        Py_ssize_t *caps=cap_count<=34 ? local_caps : PyMem_Malloc((size_t)cap_count*sizeof(Py_ssize_t));
+        if (!caps) return PyErr_NoMemory();
+        Py_ssize_t last=-1,found=-1,finish=-1;
+        int got=limit<0 ? 0 : find_one(pattern->vm,&subject,0,subject.length,0,0,caps,&last,&found,&finish);
+        if (got<0) { if (caps!=local_caps) PyMem_Free(caps); PyErr_SetString(PyExc_RuntimeError,got==-1?"native VM allocation failed":"native VM recursion limit"); return NULL; }
+        if (!got) {
+            if (caps!=local_caps) PyMem_Free(caps);
+            PyObject *unchanged=subject_slice(&subject,0,subject.length);
+            if (!unchanged || !return_count) return unchanged;
+            PyObject *result=Py_BuildValue("On",unchanged,(Py_ssize_t)0);
+            Py_DECREF(unchanged);
+            return result;
+        }
+        PyObject *value=NULL;
+        if (literal_replacement) value=Py_NewRef(replacement);
+        else {
+            MatchObject *match=match_alloc(pattern,string,0,subject.length);
+            if (!match) { if (caps!=local_caps) PyMem_Free(caps); return NULL; }
+            memcpy(match->caps,caps,(size_t)cap_count*sizeof(Py_ssize_t)); match->lastindex=last;
+            value=match_expand(match,replacement);
+            Py_DECREF(match);
+        }
+        if (caps!=local_caps) PyMem_Free(caps);
+        if (!value) return NULL;
+        PyErr_Format(PyExc_TypeError,"sequence item %zd: expected %s, %.200s found",found>0 ? (Py_ssize_t)1 : (Py_ssize_t)0,subject.byte_mode?"a bytes-like object":"str instance",Py_TYPE(value)->tp_name);
+        Py_DECREF(value);
+        return NULL;
     }
     if (!subject.byte_mode) return substitute_text(pattern,&subject,callable ? replacement : NULL,template_parts,limit,return_count);
     PyObject *pieces=PyList_New(0);
@@ -1790,9 +1813,11 @@ static PyObject *pattern_substitute(PatternObject *pattern, PyObject *const *arg
         int got=find_one(pattern->vm,&subject,cursor,subject.length,0,nonempty,caps,&last,&found,&finish);
         if (got<0) { PyMem_Free(caps); Py_DECREF(pieces); PyErr_SetString(PyExc_RuntimeError,got==-1?"native VM allocation failed":"native VM recursion limit"); return NULL; }
         if (!got) break;
-        PyObject *prefix=subject_slice(&subject,previous,found);
-        if (!prefix || PyList_Append(pieces,prefix)<0) { Py_XDECREF(prefix); PyMem_Free(caps); Py_DECREF(pieces); return NULL; }
-        Py_DECREF(prefix);
+        if (found>previous) {
+            PyObject *prefix=subject_slice(&subject,previous,found);
+            if (!prefix || PyList_Append(pieces,prefix)<0) { Py_XDECREF(prefix); PyMem_Free(caps); Py_DECREF(pieces); return NULL; }
+            Py_DECREF(prefix);
+        }
         if (callable) {
             MatchObject *match=match_alloc(pattern,string,0,subject.length);
             if (!match) { PyMem_Free(caps); Py_DECREF(pieces); return NULL; }
@@ -1800,11 +1825,6 @@ static PyObject *pattern_substitute(PatternObject *pattern, PyObject *const *arg
             PyObject *value=PyObject_CallOneArg(replacement,(PyObject *)match);
             Py_DECREF(match);
             if (!value) { PyMem_Free(caps); Py_DECREF(pieces); return NULL; }
-            int valid=subject.byte_mode ? PyBytes_Check(value) : PyUnicode_Check(value);
-            if (!valid) {
-                PyErr_Format(PyExc_TypeError,"sequence item %zd: expected a %s, %.200s found",PyList_GET_SIZE(pieces),subject.byte_mode?"bytes-like object":"str instance",Py_TYPE(value)->tp_name);
-                Py_DECREF(value); PyMem_Free(caps); Py_DECREF(pieces); return NULL;
-            }
             if (PyList_Append(pieces,value)<0) { Py_DECREF(value); PyMem_Free(caps); Py_DECREF(pieces); return NULL; }
             Py_DECREF(value);
         } else {
@@ -1825,9 +1845,11 @@ static PyObject *pattern_substitute(PatternObject *pattern, PyObject *const *arg
         else { cursor=finish; nonempty=0; }
     }
     PyMem_Free(caps);
-    PyObject *tail=subject_slice(&subject,previous,subject.length);
-    if (!tail || PyList_Append(pieces,tail)<0) { Py_XDECREF(tail); Py_DECREF(pieces); return NULL; }
-    Py_DECREF(tail);
+    if (subject.length>previous) {
+        PyObject *tail=subject_slice(&subject,previous,subject.length);
+        if (!tail || PyList_Append(pieces,tail)<0) { Py_XDECREF(tail); Py_DECREF(pieces); return NULL; }
+        Py_DECREF(tail);
+    }
     PyObject *empty=subject_slice(&subject,0,0);
     if (!empty) { Py_DECREF(pieces); return NULL; }
     PyObject *joined=subject.byte_mode ? PyObject_CallMethod(empty,"join","O",pieces) : PyUnicode_Join(empty,pieces);
