@@ -44,6 +44,10 @@ A follow-on [Python-engine optimization pilot](performance/v3/evidence/PYTHON-EN
 
 ![Python engine before and after](performance/v3/evidence/python-engine-pilot.svg)
 
+The matching [Rust-engine optimization pilot](performance/v3/evidence/RUST-ENGINE.md) makes the independent Rust engine **12.90× faster than before** on the same tasks. A small native bridge and general matching/collection improvements remove most conversion and boundary overhead; the remaining gap is shown for every task.
+
+![Rust engine before and after](performance/v3/evidence/rust-engine-pilot.svg)
+
 The separate [from-scratch Zig trial](candidates/evidence/ZIG-PROBE.md) shows why the Python/native boundary matters: the compiled Zig matcher is faster than Python `re` on all six small tasks once repeated calls cross that boundary only once, but individual Python calls remain much slower. Zig is an architecture experiment, **not** a complete replacement candidate.
 
 ![Zig architecture speed compared with Python re](candidates/evidence/zig-probe-speed.svg)

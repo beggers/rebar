@@ -14,6 +14,7 @@ enum Member {
     Lit(u32),
     Range(u32, u32),
     Cat(char),
+    Table([u64; 2]),
 }
 
 #[derive(Clone)]
@@ -39,6 +40,7 @@ pub struct Engine {
     groups: usize,
     names: Vec<(String, usize)>,
     flags: u32,
+    starts: Option<[u8; 256]>,
 }
 #[derive(Clone)]
 struct State {
@@ -50,7 +52,37 @@ struct Context<'a> {
     chars: &'a [u32],
     folds: &'a [u32],
     masks: &'a [u8],
+    bytes: Option<&'a [u8]>,
     end: usize,
+}
+
+impl Context<'_> {
+    #[inline]
+    fn character(&self, pos: usize) -> u32 {
+        self.bytes
+            .map_or_else(|| self.chars[pos], |values| u32::from(values[pos]))
+    }
+
+    #[inline]
+    fn fold(&self, pos: usize) -> u32 {
+        self.bytes.map_or_else(
+            || self.folds[pos],
+            |values| u32::from(values[pos].to_ascii_lowercase()),
+        )
+    }
+
+    #[inline]
+    fn mask(&self, pos: usize) -> u8 {
+        self.bytes.map_or_else(
+            || self.masks[pos],
+            |values| {
+                let value = values[pos];
+                u8::from(value.is_ascii_digit())
+                    | (u8::from(matches!(value, 9 | 10 | 11 | 12 | 13 | 32)) << 1)
+                    | (u8::from(value.is_ascii_alphanumeric()) << 2)
+            },
+        )
+    }
 }
 
 thread_local! { static LAST: RefCell<(String,isize,bool)> = const { RefCell::new((String::new(),-1,false)) }; }
@@ -146,7 +178,11 @@ impl Parser {
         while self.now() == Some('|') {
             self.global_allowed = false;
             self.at += 1;
-            let branch_flags = if self.group_depth == 0 { self.flags } else { flags };
+            let branch_flags = if self.group_depth == 0 {
+                self.flags
+            } else {
+                flags
+            };
             branches.push(self.seq(branch_flags)?);
         }
         Ok(if branches.len() == 1 {
@@ -593,7 +629,11 @@ impl Parser {
                     true,
                 );
             }
-            return self.fail("cannot refer to an open group".into(), Some(position + 2), true);
+            return self.fail(
+                "cannot refer to an open group".into(),
+                Some(position + 2),
+                true,
+            );
         }
         if self.open_groups.contains(&number) {
             return self.fail("cannot refer to an open group".into(), Some(position), true);
@@ -755,7 +795,11 @@ impl Parser {
                     self.check_reference(number, position, None, false)?;
                     Ok(Expr::Backref(number, flags))
                 } else {
-                    self.fail(format!("unknown extension ?P{}", form), Some(start + 1), true)
+                    self.fail(
+                        format!("unknown extension ?P{}", form),
+                        Some(start + 1),
+                        true,
+                    )
                 }
             }
             '(' => {
@@ -876,13 +920,13 @@ impl Parser {
                                 return self.fail("missing :".into(), Some(self.at - 1), true);
                             }
                             if !removing && matches!(value, '+' | '*' | '?' | '{') {
-                                return self.fail("missing -, : or )".into(), Some(self.at - 1), true);
+                                return self.fail(
+                                    "missing -, : or )".into(),
+                                    Some(self.at - 1),
+                                    true,
+                                );
                             }
-                            return self.fail(
-                                "unknown flag".into(),
-                                Some(self.at - 1),
-                                true,
-                            );
+                            return self.fail("unknown flag".into(), Some(self.at - 1), true);
                         }
                     };
                     if removing {
@@ -974,7 +1018,11 @@ impl Parser {
                     true,
                 ),
             },
-            _ => self.fail(format!("unknown extension ?{}", kind), Some(start + 1), true),
+            _ => self.fail(
+                format!("unknown extension ?{}", kind),
+                Some(start + 1),
+                true,
+            ),
         }
     }
 }
@@ -1021,7 +1069,7 @@ fn folded(value: u32, flags: u32, ctx: &Context<'_>, pos: usize) -> u32 {
             value
         }
     } else {
-        ctx.folds[pos]
+        ctx.fold(pos)
     }
 }
 trait LowerAscii {
@@ -1066,20 +1114,38 @@ fn eq_lit(lit: u32, value: u32, flags: u32, ctx: &Context<'_>, pos: usize) -> bo
     }
 }
 
-fn range_case_match(left: u32, right: u32, value: u32, flags: u32, ctx: &Context<'_>, pos: usize) -> bool {
+fn range_case_match(
+    left: u32,
+    right: u32,
+    value: u32,
+    flags: u32,
+    ctx: &Context<'_>,
+    pos: usize,
+) -> bool {
     if left <= value && value <= right {
         return true;
     }
     let ascii = flags & (A | L | BYTE) != 0;
     if ascii {
         let lower = value.to_ascii_lowercase();
-        let upper = if (b'a' as u32..=b'z' as u32).contains(&value) { value - 32 } else { value };
+        let upper = if (b'a' as u32..=b'z' as u32).contains(&value) {
+            value - 32
+        } else {
+            value
+        };
         return (left <= lower && lower <= right) || (left <= upper && upper <= right);
     }
-    let lower = char::from_u32(value).and_then(|c| c.to_lowercase().next()).map_or(value, |c| c as u32);
-    let upper = char::from_u32(value).and_then(|c| c.to_uppercase().next()).map_or(value, |c| c as u32);
+    let lower = char::from_u32(value)
+        .and_then(|c| c.to_lowercase().next())
+        .map_or(value, |c| c as u32);
+    let upper = char::from_u32(value)
+        .and_then(|c| c.to_uppercase().next())
+        .map_or(value, |c| c as u32);
     let fold = folded(value, flags, ctx, pos);
-    if (left <= lower && lower <= right) || (left <= upper && upper <= right) || (left <= fold && fold <= right) {
+    if (left <= lower && lower <= right)
+        || (left <= upper && upper <= right)
+        || (left <= fold && fold <= right)
+    {
         return true;
     }
     let closures: &[&[u32]] = &[
@@ -1090,24 +1156,26 @@ fn range_case_match(left: u32, right: u32, value: u32, flags: u32, ctx: &Context
         &[0xfb05, 0xfb06],
         &[0xdf, 0x1e9e],
     ];
-    closures.iter().any(|closure| closure.contains(&value) && closure.iter().any(|item| left <= *item && *item <= right))
+    closures.iter().any(|closure| {
+        closure.contains(&value) && closure.iter().any(|item| left <= *item && *item <= right)
+    })
 }
 fn category(code: char, flags: u32, ctx: &Context<'_>, pos: usize) -> bool {
-    let value = ctx.chars[pos];
+    let value = ctx.character(pos);
     let ascii = flags & (A | L | BYTE) != 0;
     let result = match code.to_ascii_lowercase() {
         'd' => {
             if ascii {
                 value >= b'0' as u32 && value <= b'9' as u32
             } else {
-                ctx.masks[pos] & 1 != 0
+                ctx.mask(pos) & 1 != 0
             }
         }
         's' => {
             if ascii {
                 matches!(value, 9 | 10 | 11 | 12 | 13 | 32)
             } else {
-                ctx.masks[pos] & 2 != 0
+                ctx.mask(pos) & 2 != 0
             }
         }
         _ => {
@@ -1118,7 +1186,7 @@ fn category(code: char, flags: u32, ctx: &Context<'_>, pos: usize) -> bool {
                         || (value >= b'a' as u32 && value <= b'z' as u32)
                         || value == b'_' as u32)
             } else {
-                ctx.masks[pos] & 4 != 0 || value == b'_' as u32
+                ctx.mask(pos) & 4 != 0 || value == b'_' as u32
             }
         }
     };
@@ -1135,33 +1203,69 @@ fn class_match(
     ctx: &Context<'_>,
     pos: usize,
 ) -> bool {
-    let value = ctx.chars[pos];
+    let value = ctx.character(pos);
+    if value < 128
+        && let Some(Member::Table(table)) = values.first()
+    {
+        return table[(value / 64) as usize] & (1_u64 << (value % 64)) != 0;
+    }
     let found = values.iter().any(|item| match *item {
         Member::Lit(ch) => eq_lit(ch, value, flags, ctx, pos),
         Member::Cat(ch) => category(ch, flags, ctx, pos),
         Member::Range(left, right) => {
-            if flags & I != 0 { range_case_match(left, right, value, flags, ctx, pos) } else { left <= value && value <= right }
+            if flags & I != 0 {
+                range_case_match(left, right, value, flags, ctx, pos)
+            } else {
+                left <= value && value <= right
+            }
         }
+        Member::Table(_) => false,
     });
     if negative { !found } else { found }
 }
 
-fn repeat_layout(node: &Expr) -> Option<(Expr, usize, Vec<(usize, usize, usize)>)> {
+fn prepare_classes(node: &mut Expr, ctx: &Context<'_>) {
+    match node {
+        Expr::Class(values, negative, flags) => {
+            let mut table = [0_u64; 2];
+            for value in 0..128 {
+                if class_match(values, *negative, *flags, ctx, value) {
+                    table[value / 64] |= 1_u64 << (value % 64);
+                }
+            }
+            values.insert(0, Member::Table(table));
+        }
+        Expr::Seq(values) | Expr::Alt(values) => {
+            for value in values {
+                prepare_classes(value, ctx);
+            }
+        }
+        Expr::Group(_, child)
+        | Expr::Repeat(child, _, _, _)
+        | Expr::Look(_, _, child, _)
+        | Expr::Atomic(child) => prepare_classes(child, ctx),
+        Expr::Cond(_, yes, no) => {
+            prepare_classes(yes, ctx);
+            prepare_classes(no, ctx);
+        }
+        _ => {}
+    }
+}
+
+fn repeat_layout(node: &Expr) -> Option<(&Expr, usize, Vec<(usize, usize, usize)>)> {
     match node {
         Expr::Lit(_, _) | Expr::Dot(_) | Expr::Cat(_, _) | Expr::Class(_, _, _) => {
-            Some((node.clone(), 1, Vec::new()))
+            Some((node, 1, Vec::new()))
         }
         Expr::Seq(values) if values.len() == 1 => repeat_layout(&values[0]),
         Expr::Alt(values) => {
-            let mut leaves = Vec::with_capacity(values.len());
             for value in values {
-                let (leaf, width, captures) = repeat_layout(value)?;
+                let (_, width, captures) = repeat_layout(value)?;
                 if width != 1 || !captures.is_empty() {
                     return None;
                 }
-                leaves.push(leaf);
             }
-            Some((Expr::Alt(leaves), 1, Vec::new()))
+            Some((node, 1, Vec::new()))
         }
         Expr::Group(number, child) => {
             let (leaf, width, mut captures) = repeat_layout(child)?;
@@ -1189,13 +1293,80 @@ fn repeat_layout(node: &Expr) -> Option<(Expr, usize, Vec<(usize, usize, usize)>
     }
 }
 
+fn advance_atom(node: &Expr, state: &mut State, ctx: &Context<'_>) -> bool {
+    match node {
+        Expr::Lit(value, flags) => {
+            if state.pos < ctx.end
+                && eq_lit(*value, ctx.character(state.pos), *flags, ctx, state.pos)
+            {
+                state.pos += 1;
+                true
+            } else {
+                false
+            }
+        }
+        Expr::Dot(flags) => {
+            if state.pos < ctx.end && (*flags & S != 0 || ctx.character(state.pos) != 10) {
+                state.pos += 1;
+                true
+            } else {
+                false
+            }
+        }
+        Expr::Cat(code, flags) => {
+            if state.pos < ctx.end && category(*code, *flags, ctx, state.pos) {
+                state.pos += 1;
+                true
+            } else {
+                false
+            }
+        }
+        Expr::Class(values, negative, flags) => {
+            if state.pos < ctx.end && class_match(values, *negative, *flags, ctx, state.pos) {
+                state.pos += 1;
+                true
+            } else {
+                false
+            }
+        }
+        Expr::Anchor(code, flags) => match *code {
+            '^' => {
+                state.pos == 0
+                    || (*flags & M != 0 && state.pos > 0 && ctx.character(state.pos - 1) == 10)
+            }
+            '$' => {
+                state.pos == ctx.end
+                    || (state.pos + 1 == ctx.end
+                        && state.pos < ctx.end
+                        && ctx.character(state.pos) == 10)
+                    || (*flags & M != 0 && state.pos < ctx.end && ctx.character(state.pos) == 10)
+            }
+            'A' => state.pos == 0,
+            _ => state.pos == ctx.end,
+        },
+        Expr::Boundary(want, flags) => {
+            let left = state.pos > 0 && category('w', *flags, ctx, state.pos - 1);
+            let right = state.pos < ctx.end && category('w', *flags, ctx, state.pos);
+            (left != right) == *want
+        }
+        _ => false,
+    }
+}
+
 fn repeat_atom_match(node: &Expr, ctx: &Context<'_>, pos: usize) -> bool {
     match node {
-        Expr::Lit(value, flags) => eq_lit(*value, ctx.chars[pos], *flags, ctx, pos),
-        Expr::Dot(flags) => *flags & S != 0 || ctx.chars[pos] != 10,
+        Expr::Lit(value, flags) => eq_lit(*value, ctx.character(pos), *flags, ctx, pos),
+        Expr::Dot(flags) => *flags & S != 0 || ctx.character(pos) != 10,
         Expr::Cat(code, flags) => category(*code, *flags, ctx, pos),
         Expr::Class(values, negative, flags) => class_match(values, *negative, *flags, ctx, pos),
-        Expr::Alt(values) => values.iter().any(|value| repeat_atom_match(value, ctx, pos)),
+        Expr::Alt(values) => values
+            .iter()
+            .any(|value| repeat_atom_match(value, ctx, pos)),
+        Expr::Seq(values) if values.len() == 1 => repeat_atom_match(&values[0], ctx, pos),
+        Expr::Group(_, child) => repeat_atom_match(child, ctx, pos),
+        Expr::Repeat(child, minimum, Some(maximum), _) if minimum == maximum => {
+            repeat_atom_match(child, ctx, pos)
+        }
         _ => false,
     }
 }
@@ -1209,10 +1380,122 @@ fn leading_lookbehind(node: &Expr) -> Option<usize> {
     }
 }
 
+fn add_starts(node: &Expr, starts: &mut [u8; 256], ctx: &Context<'_>) -> (bool, bool) {
+    match node {
+        Expr::Lit(value, flags) => {
+            for index in 0..256 {
+                if eq_lit(*value, ctx.character(index), *flags, ctx, index) {
+                    starts[index] = 1;
+                }
+            }
+            (false, true)
+        }
+        Expr::Dot(flags) => {
+            for (index, item) in starts.iter_mut().enumerate() {
+                if *flags & S != 0 || index != 10 {
+                    *item = 1;
+                }
+            }
+            (false, true)
+        }
+        Expr::Cat(code, flags) => {
+            for (index, item) in starts.iter_mut().enumerate() {
+                if category(*code, *flags, ctx, index) {
+                    *item = 1;
+                }
+            }
+            (false, true)
+        }
+        Expr::Class(values, negative, flags) => {
+            for (index, item) in starts.iter_mut().enumerate() {
+                if class_match(values, *negative, *flags, ctx, index) {
+                    *item = 1;
+                }
+            }
+            (false, true)
+        }
+        Expr::Anchor(_, _) | Expr::Boundary(_, _) | Expr::Look(_, _, _, _) => (true, true),
+        Expr::Group(_, child) | Expr::Atomic(child) => add_starts(child, starts, ctx),
+        Expr::Seq(values) => {
+            for value in values {
+                let (nullable, known) = add_starts(value, starts, ctx);
+                if !known {
+                    return (false, false);
+                }
+                if !nullable {
+                    return (false, true);
+                }
+            }
+            (true, true)
+        }
+        Expr::Alt(values) => {
+            let mut nullable = false;
+            for value in values {
+                let (empty, known) = add_starts(value, starts, ctx);
+                if !known {
+                    return (false, false);
+                }
+                nullable |= empty;
+            }
+            (nullable, true)
+        }
+        Expr::Repeat(child, minimum, _, _) => {
+            let (nullable, known) = add_starts(child, starts, ctx);
+            (*minimum == 0 || nullable, known)
+        }
+        Expr::Cond(_, yes, no) => {
+            let (yes_empty, yes_known) = add_starts(yes, starts, ctx);
+            let (no_empty, no_known) = add_starts(no, starts, ctx);
+            (yes_empty || no_empty, yes_known && no_known)
+        }
+        Expr::Backref(_, _) => (false, false),
+    }
+}
+
+fn start_table(root: &Expr) -> Option<[u8; 256]> {
+    let chars: Vec<u32> = (0..256).collect();
+    let folds: Vec<u32> = chars
+        .iter()
+        .map(|value| {
+            if (65..=90).contains(value) {
+                value + 32
+            } else {
+                *value
+            }
+        })
+        .collect();
+    let masks: Vec<u8> = chars
+        .iter()
+        .map(|value| {
+            let byte = *value as u8;
+            u8::from(byte.is_ascii_digit())
+                | (u8::from(matches!(byte, 9 | 10 | 11 | 12 | 13 | 32)) << 1)
+                | (u8::from(byte.is_ascii_alphanumeric()) << 2)
+        })
+        .collect();
+    let context = Context {
+        chars: &chars,
+        folds: &folds,
+        masks: &masks,
+        bytes: None,
+        end: 256,
+    };
+    let mut starts = [0; 256];
+    let (nullable, known) = add_starts(root, &mut starts, &context);
+    starts[128..].fill(1);
+    if known && !nullable {
+        Some(starts)
+    } else {
+        None
+    }
+}
+
 fn eval(node: &Expr, state: &State, ctx: &Context<'_>) -> Vec<State> {
     match node {
         Expr::Lit(value, flags) => {
-            if state.pos < ctx.end && eq_lit(*value, ctx.chars[state.pos], *flags, ctx, state.pos) {
+            if state.pos < ctx.end
+                && eq_lit(*value, ctx.character(state.pos), *flags, ctx, state.pos)
+            {
                 let mut next = state.clone();
                 next.pos += 1;
                 vec![next]
@@ -1221,7 +1504,7 @@ fn eval(node: &Expr, state: &State, ctx: &Context<'_>) -> Vec<State> {
             }
         }
         Expr::Dot(flags) => {
-            if state.pos < ctx.end && (*flags & S != 0 || ctx.chars[state.pos] != 10) {
+            if state.pos < ctx.end && (*flags & S != 0 || ctx.character(state.pos) != 10) {
                 let mut next = state.clone();
                 next.pos += 1;
                 vec![next]
@@ -1251,12 +1534,16 @@ fn eval(node: &Expr, state: &State, ctx: &Context<'_>) -> Vec<State> {
             let okay = match *code {
                 '^' => {
                     state.pos == 0
-                        || (*flags & M != 0 && state.pos > 0 && ctx.chars[state.pos - 1] == 10)
+                        || (*flags & M != 0 && state.pos > 0 && ctx.character(state.pos - 1) == 10)
                 }
                 '$' => {
                     state.pos == ctx.end
-                        || (state.pos + 1 == ctx.end && ctx.chars.get(state.pos) == Some(&10))
-                        || (*flags & M != 0 && state.pos < ctx.end && ctx.chars[state.pos] == 10)
+                        || (state.pos + 1 == ctx.end
+                            && state.pos < ctx.end
+                            && ctx.character(state.pos) == 10)
+                        || (*flags & M != 0
+                            && state.pos < ctx.end
+                            && ctx.character(state.pos) == 10)
                 }
                 'A' => state.pos == 0,
                 _ => state.pos == ctx.end,
@@ -1275,10 +1562,22 @@ fn eval(node: &Expr, state: &State, ctx: &Context<'_>) -> Vec<State> {
         Expr::Seq(values) => {
             let mut current = vec![state.clone()];
             for item in values {
-                current = current
-                    .iter()
-                    .flat_map(|value| eval(item, value, ctx))
-                    .collect();
+                if matches!(
+                    item,
+                    Expr::Lit(_, _)
+                        | Expr::Dot(_)
+                        | Expr::Cat(_, _)
+                        | Expr::Class(_, _, _)
+                        | Expr::Anchor(_, _)
+                        | Expr::Boundary(_, _)
+                ) {
+                    current.retain_mut(|value| advance_atom(item, value, ctx));
+                } else {
+                    current = current
+                        .iter()
+                        .flat_map(|value| eval(item, value, ctx))
+                        .collect();
+                }
                 if current.is_empty() {
                     break;
                 }
@@ -1307,8 +1606,8 @@ fn eval(node: &Expr, state: &State, ctx: &Context<'_>) -> Vec<State> {
             };
             if (0..count).all(|off| {
                 eq(
-                    ctx.chars[begin + off],
-                    ctx.chars[state.pos + off],
+                    ctx.character(begin + off),
+                    ctx.character(state.pos + off),
                     *flags,
                     ctx,
                     begin + off,
@@ -1339,27 +1638,32 @@ fn eval(node: &Expr, state: &State, ctx: &Context<'_>) -> Vec<State> {
                 if matched < *min {
                     return vec![];
                 }
-                let counts: Box<dyn Iterator<Item = usize>> = if *mode == 1 {
-                    Box::new(*min..=matched)
-                } else if *mode == 2 {
-                    Box::new(std::iter::once(matched))
-                } else {
-                    Box::new((*min..=matched).rev())
-                };
-                return counts
-                    .map(|count| {
-                        let mut value = state.clone();
-                        value.pos += count * width;
-                        if count > 0 {
-                            let base = state.pos + (count - 1) * width;
-                            for (number, begin, end) in &captures {
-                                value.caps[*number] = Some((base + begin, base + end));
-                                value.last = Some(*number);
-                            }
+                let mut result =
+                    Vec::with_capacity(if *mode == 2 { 1 } else { matched - *min + 1 });
+                let mut add = |count| {
+                    let mut value = state.clone();
+                    value.pos += count * width;
+                    if count > 0 {
+                        let base = state.pos + (count - 1) * width;
+                        for (number, begin, end) in &captures {
+                            value.caps[*number] = Some((base + begin, base + end));
+                            value.last = Some(*number);
                         }
-                        value
-                    })
-                    .collect();
+                    }
+                    result.push(value);
+                };
+                if *mode == 1 {
+                    for count in *min..=matched {
+                        add(count);
+                    }
+                } else if *mode == 2 {
+                    add(matched);
+                } else {
+                    for count in (*min..=matched).rev() {
+                        add(count);
+                    }
+                }
+                return result;
             }
             fn walk(
                 child: &Expr,
@@ -1489,13 +1793,43 @@ pub unsafe extern "C" fn rebar_compile(
         pending_conditionals: vec![],
     };
     match parser.parse() {
-        Ok(root) => {
+        Ok(mut root) => {
+            let chars: Vec<u32> = (0..128).collect();
+            let folds: Vec<u32> = chars
+                .iter()
+                .map(|value| {
+                    if (65..=90).contains(value) {
+                        value + 32
+                    } else {
+                        *value
+                    }
+                })
+                .collect();
+            let masks: Vec<u8> = chars
+                .iter()
+                .map(|value| {
+                    let byte = *value as u8;
+                    u8::from(byte.is_ascii_digit())
+                        | (u8::from(matches!(byte, 9 | 10 | 11 | 12 | 13 | 32)) << 1)
+                        | (u8::from(byte.is_ascii_alphanumeric()) << 2)
+                })
+                .collect();
+            let context = Context {
+                chars: &chars,
+                folds: &folds,
+                masks: &masks,
+                bytes: None,
+                end: 128,
+            };
+            prepare_classes(&mut root, &context);
+            let starts = start_table(&root);
             set_error(String::new(), None, false);
             Box::into_raw(Box::new(Engine {
                 root,
                 groups: parser.groups,
                 names: parser.names,
                 flags: parser.flags & !BYTE,
+                starts,
             }))
         }
         Err((msg, pos, include)) => {
@@ -1596,6 +1930,63 @@ pub unsafe extern "C" fn rebar_error_copy(out: *mut u8, length: usize) -> usize 
     })
 }
 
+fn run_match(
+    engine: &Engine,
+    context: &Context<'_>,
+    pos: usize,
+    mode: u8,
+    nonempty: u8,
+    begins: &mut [isize],
+    ends: &mut [isize],
+    last: &mut isize,
+) -> i32 {
+    if pos > context.end {
+        return 0;
+    }
+    let last_start = if mode == 0 { context.end } else { pos };
+    let first_start = if mode == 0 {
+        leading_lookbehind(&engine.root).map_or(pos, |width| pos.max(width))
+    } else {
+        pos
+    };
+    for start in first_start..=last_start {
+        if mode == 0
+            && start < context.end
+            && let Some(starts) = &engine.starts
+            && context.character(start) < 256
+            && starts[context.character(start) as usize] == 0
+        {
+            continue;
+        }
+        let state = State {
+            pos: start,
+            caps: vec![None; engine.groups + 1],
+            last: None,
+        };
+        for value in eval(&engine.root, &state, context) {
+            if mode == 2 && value.pos != context.end {
+                continue;
+            }
+            if nonempty != 0 && start == pos && value.pos == start {
+                continue;
+            }
+            begins.fill(-1);
+            ends.fill(-1);
+            begins[0] = start as isize;
+            ends[0] = value.pos as isize;
+            for (number, span) in value.caps.iter().enumerate().skip(1) {
+                if let Some((a, b)) = span {
+                    begins[number] = *a as isize;
+                    ends[number] = *b as isize;
+                }
+            }
+            *last = value.last.map_or(-1, |v| v as isize);
+            return 1;
+        }
+    }
+    0
+}
+
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn rebar_match(
     handle: *const Engine,
@@ -1626,45 +2017,123 @@ pub unsafe extern "C" fn rebar_match(
         chars: unsafe { slice::from_raw_parts(chars, length) },
         folds: unsafe { slice::from_raw_parts(folds, length) },
         masks: unsafe { slice::from_raw_parts(masks, length) },
+        bytes: None,
         end: endpos.min(length),
     };
     let begins = unsafe { slice::from_raw_parts_mut(begins, engine.groups + 1) };
     let ends = unsafe { slice::from_raw_parts_mut(ends, engine.groups + 1) };
-    if pos > context.end {
-        return 0;
+    run_match(
+        engine,
+        &context,
+        pos,
+        mode,
+        nonempty,
+        begins,
+        ends,
+        unsafe { &mut *last },
+    )
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rebar_match_ascii(
+    handle: *const Engine,
+    data: *const u8,
+    length: usize,
+    pos: usize,
+    endpos: usize,
+    mode: u8,
+    nonempty: u8,
+    begins: *mut isize,
+    ends: *mut isize,
+    last: *mut isize,
+) -> i32 {
+    if handle.is_null() || data.is_null() || begins.is_null() || ends.is_null() || last.is_null() {
+        return -1;
     }
-    let last_start = if mode == 0 { context.end } else { pos };
-    let first_start = if mode == 0 {
-        leading_lookbehind(&engine.root).map_or(pos, |width| pos.max(width))
-    } else {
-        pos
+    let engine = unsafe { &*handle };
+    let context = Context {
+        chars: &[],
+        folds: &[],
+        masks: &[],
+        bytes: Some(unsafe { slice::from_raw_parts(data, length) }),
+        end: endpos.min(length),
     };
-    for start in first_start..=last_start {
-        let state = State {
-            pos: start,
-            caps: vec![None; engine.groups + 1],
-            last: None,
-        };
-        for value in eval(&engine.root, &state, &context) {
-            if mode == 2 && value.pos != context.end {
-                continue;
-            }
-            if nonempty != 0 && start == pos && value.pos == start {
-                continue;
-            }
-            begins.fill(-1);
-            ends.fill(-1);
-            begins[0] = start as isize;
-            ends[0] = value.pos as isize;
-            for (number, span) in value.caps.iter().enumerate().skip(1) {
-                if let Some((a, b)) = span {
-                    begins[number] = *a as isize;
-                    ends[number] = *b as isize;
-                }
-            }
-            unsafe { *last = value.last.map_or(-1, |v| v as isize) };
-            return 1;
+    let begins = unsafe { slice::from_raw_parts_mut(begins, engine.groups + 1) };
+    let ends = unsafe { slice::from_raw_parts_mut(ends, engine.groups + 1) };
+    run_match(
+        engine,
+        &context,
+        pos,
+        mode,
+        nonempty,
+        begins,
+        ends,
+        unsafe { &mut *last },
+    )
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rebar_collect_ascii(
+    handle: *const Engine,
+    data: *const u8,
+    length: usize,
+    pos: usize,
+    endpos: usize,
+    capacity: usize,
+    begins: *mut isize,
+    ends: *mut isize,
+    lasts: *mut isize,
+) -> isize {
+    if handle.is_null() || data.is_null() || begins.is_null() || ends.is_null() || lasts.is_null() {
+        return -1;
+    }
+    let engine = unsafe { &*handle };
+    let Some(total) = capacity.checked_mul(engine.groups + 1) else {
+        return -1;
+    };
+    let starts = unsafe { slice::from_raw_parts_mut(begins, total) };
+    let finishes = unsafe { slice::from_raw_parts_mut(ends, total) };
+    let last_values = unsafe { slice::from_raw_parts_mut(lasts, capacity) };
+    let stride = engine.groups + 1;
+    let end = endpos.min(length);
+    let context = Context {
+        chars: &[],
+        folds: &[],
+        masks: &[],
+        bytes: Some(unsafe { slice::from_raw_parts(data, length) }),
+        end,
+    };
+    let mut current = pos;
+    let mut nonempty = 0;
+    let mut count = 0;
+    while current <= end && count < capacity {
+        let offset = count * stride;
+        let result = run_match(
+            engine,
+            &context,
+            current,
+            0,
+            nonempty,
+            &mut starts[offset..offset + stride],
+            &mut finishes[offset..offset + stride],
+            &mut last_values[count],
+        );
+        if result < 0 {
+            return -1;
+        }
+        if result == 0 {
+            break;
+        }
+        let begin = starts[offset] as usize;
+        let finish = finishes[offset] as usize;
+        count += 1;
+        if begin == finish {
+            current = begin;
+            nonempty = 1;
+        } else {
+            current = finish;
+            nonempty = 0;
         }
     }
-    0
+    count as isize
 }

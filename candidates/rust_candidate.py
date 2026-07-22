@@ -8,6 +8,8 @@ import types
 import unicodedata
 import warnings
 
+from candidates import _rust_bridge
+
 
 class RegexFlag(enum.IntFlag):
     ASCII = 256
@@ -47,6 +49,7 @@ _BYTE = 1 << 31
 _ESCAPE_MAP = {ord(char): "\\" + char for char in "()[]{}?*+-|^$\\.&~# \t\n\r\v\f"}
 _MISSING = object()
 _WARNING_PREFIX = (os.path.dirname(__file__),)
+_SIMPLE_TEMPLATE_ESCAPES = {"a": "\a", "b": "\b", "f": "\f", "n": "\n", "r": "\r", "t": "\t", "v": "\v", "\\": "\\"}
 
 
 class PatternError(Exception):
@@ -82,7 +85,6 @@ class _Native:
         self.library = ctypes.CDLL(path)
         u32p = ctypes.POINTER(ctypes.c_uint32)
         u8p = ctypes.POINTER(ctypes.c_uint8)
-        ssizep = ctypes.POINTER(ctypes.c_ssize_t)
         lib = self.library
         sizep = ctypes.POINTER(ctypes.c_size_t)
         lib.rebar_compile.argtypes = [u32p, ctypes.c_size_t, ctypes.c_uint32, ctypes.c_uint8, sizep, u32p, ctypes.c_size_t]
@@ -105,8 +107,6 @@ class _Native:
         lib.rebar_error_include.restype = ctypes.c_uint8
         lib.rebar_error_copy.argtypes = [u8p, ctypes.c_size_t]
         lib.rebar_error_copy.restype = ctypes.c_size_t
-        lib.rebar_match.argtypes = [ctypes.c_void_p, u32p, u32p, u8p, ctypes.c_size_t, ctypes.c_size_t, ctypes.c_size_t, ctypes.c_uint8, ctypes.c_uint8, ssizep, ssizep, ssizep]
-        lib.rebar_match.restype = ctypes.c_int
 
     def error(self, pattern):
         size = self.library.rebar_error_len()
@@ -139,30 +139,10 @@ class _Native:
         return handle, groups, effective_flags, names
 
     def run(self, handle, string, groups, pos, endpos, mode, nonempty):
-        if not isinstance(string, str):
-            string = bytes(string)
-            chars = list(string)
-            folds = [value + 32 if 65 <= value <= 90 else value for value in chars]
-            masks = [int(48 <= value <= 57) | (int(value in (9, 10, 11, 12, 13, 32)) << 1) | (int((48 <= value <= 57) or (65 <= value <= 90) or (97 <= value <= 122)) << 2) for value in chars]
-        else:
-            chars = [ord(char) for char in string]
-            folded = {"İ": ord("i"), "ı": ord("i"), "ſ": ord("s"), "K": ord("k"), "ᲀ": ord("в"), "ﬅ": ord("ﬅ"), "ﬆ": ord("ﬅ"), "ß": ord("ß"), "ẞ": ord("ß")}
-            folds = [folded.get(char, ord(char.lower()[0])) for char in string]
-            masks = [int(char.isdecimal()) | (int(char.isspace()) << 1) | (int(char.isalnum()) << 2) for char in string]
-        count = max(len(chars), 1)
-        char_array = (ctypes.c_uint32 * count)(*chars)
-        fold_array = (ctypes.c_uint32 * count)(*folds)
-        mask_array = (ctypes.c_uint8 * count)(*masks)
-        starts = (ctypes.c_ssize_t * (groups + 1))()
-        ends = (ctypes.c_ssize_t * (groups + 1))()
-        last = ctypes.c_ssize_t(-1)
-        result = self.library.rebar_match(handle, char_array, fold_array, mask_array, len(chars), pos, endpos, mode, int(nonempty), starts, ends, ctypes.byref(last))
-        if result < 0:
-            raise RuntimeError("Rust continuation engine rejected the FFI call")
-        if not result:
-            return None
-        spans = tuple(None if starts[index] < 0 else (starts[index], ends[index]) for index in range(groups + 1))
-        return spans, None if last.value < 0 else last.value
+        return _rust_bridge.run(handle, string, groups, pos, endpos, mode, nonempty)
+
+    def collect(self, handle, string, groups, pos, endpos):
+        return _rust_bridge.collect(handle, string, groups, pos, endpos)
 
 
 _NATIVE = _Native()
@@ -231,7 +211,6 @@ def _template(value, match, validate_only=False):
     text = value.decode("latin1") if isinstance(value, bytes) else value
     output = []
     index = 0
-    simple = {"a": "\a", "b": "\b", "f": "\f", "n": "\n", "r": "\r", "t": "\t", "v": "\v", "\\": "\\"}
     while index < len(text):
         char = text[index]
         if char != "\\":
@@ -303,14 +282,70 @@ def _template(value, match, validate_only=False):
                 expected = "a bytes-like object" if byte_mode else "str instance"
                 raise TypeError(f"sequence item 1: expected {expected}, {type(part).__name__} found")
             output.append("" if part is None else part.decode("latin1") if isinstance(part, bytes) else part)
-        elif char in simple:
-            output.append(simple[char])
+        elif char in _SIMPLE_TEMPLATE_ESCAPES:
+            output.append(_SIMPLE_TEMPLATE_ESCAPES[char])
         elif char.isalpha():
             raise PatternError(f"bad escape \\{char}", value, slash)
         else:
             output.append("\\" + char)
     joined = "".join(output)
     return joined.encode("latin1") if byte_mode else joined
+
+
+def _template_tokens(value, pattern):
+    byte_mode = isinstance(value, bytes)
+    text = value.decode("latin1") if byte_mode else value
+    tokens = []
+    literal = []
+    index = 0
+
+    def group(number):
+        if literal:
+            joined = "".join(literal)
+            tokens.append(joined.encode("latin1") if byte_mode else joined)
+            literal.clear()
+        tokens.append(number)
+
+    while index < len(text):
+        char = text[index]
+        index += 1
+        if char != "\\":
+            literal.append(char)
+            continue
+        char = text[index]
+        index += 1
+        if char == "g":
+            index += 1
+            close = text.index(">", index)
+            name = text[index:close]
+            index = close + 1
+            group(int(name) if all(item in "0123456789" for item in name) else pattern.groupindex[name])
+        elif char in "0123456789":
+            digits = char
+            octal = char == "0" or (char in "1234567" and index + 1 < len(text) and text[index] in "01234567" and text[index + 1] in "01234567")
+            if octal:
+                while len(digits) < 3 and index < len(text) and text[index] in "01234567":
+                    digits += text[index]
+                    index += 1
+                literal.append(chr(int(digits, 8)))
+            else:
+                if index < len(text) and text[index] in "0123456789":
+                    digits += text[index]
+                    index += 1
+                group(int(digits))
+        elif char in _SIMPLE_TEMPLATE_ESCAPES:
+            literal.append(_SIMPLE_TEMPLATE_ESCAPES[char])
+        else:
+            literal.extend(("\\", char))
+    if literal:
+        joined = "".join(literal)
+        tokens.append(joined.encode("latin1") if byte_mode else joined)
+    return tuple(tokens)
+
+
+def _expand_tokens(tokens, match, byte_mode):
+    empty = b"" if byte_mode else ""
+    return empty.join(empty if value is None else value for value in (match.group(token) if isinstance(token, int) else token for token in tokens))
 
 
 def _slice(value, start, end):
@@ -453,7 +488,7 @@ class _Scanner:
 
 
 class Pattern:
-    __slots__ = ("pattern", "flags", "groups", "groupindex", "_handle", "__weakref__")
+    __slots__ = ("pattern", "flags", "groups", "groupindex", "_handle", "_literal", "__weakref__")
 
     def __init__(self, value, flags, handle, groups, groupindex):
         self.pattern = value
@@ -461,6 +496,8 @@ class Pattern:
         self.groups = groups
         self.groupindex = types.MappingProxyType(dict(groupindex))
         self._handle = handle
+        metacharacters = b".^$*+?{}[]\\|()" if isinstance(value, bytes) else ".^$*+?{}[]\\|()"
+        self._literal = value if value and not flags & int(IGNORECASE) and not any(char in metacharacters for char in value) else None
 
     def __del__(self):
         handle = getattr(self, "_handle", None)
@@ -566,61 +603,95 @@ class Pattern:
             if result is None:
                 break
             yield result
-            if result.start() == result.end():
+            begin, finish = result._spans[0]
+            if begin == finish:
                 empty = True
-                current = result.start()
+                current = begin
             else:
-                current = result.end()
+                current = finish
                 empty = False
 
+    def _collected(self, string, pos, end):
+        result = _NATIVE.collect(self._handle, string, self.groups, pos, end)
+        if result is None:
+            yield from self._finditer(string, pos, end, None)
+            return
+        for spans, last in result:
+            yield Match(self, string, spans, last, pos, end)
+
     def findall(self, string, pos=0, endpos=None):
+        self._validate_string(string)
+        length = _subject_length(string)
+        end = length if endpos is None else min(max(endpos, 0), length)
+        native = _rust_bridge.findall(self._handle, string, self.groups, max(pos, 0), end)
+        if native is not None:
+            return native
         empty = b"" if not isinstance(string, str) else ""
         output = []
-        for item in self.finditer(string, pos, endpos):
+        for item in self._collected(string, max(pos, 0), end):
             if self.groups == 0:
-                output.append(item.group(0))
+                begin, finish = item._spans[0]
+                output.append(_slice(string, begin, finish))
             elif self.groups == 1:
-                value = item.group(1)
-                output.append(empty if value is None else value)
+                span = item._spans[1]
+                output.append(empty if span is None else _slice(string, span[0], span[1]))
             else:
-                output.append(tuple(empty if value is None else value for value in item.groups()))
+                output.append(tuple(empty if span is None else _slice(string, span[0], span[1]) for span in item._spans[1:]))
         return output
 
     def split(self, string, maxsplit=0):
+        self._validate_string(string)
+        length = _subject_length(string)
         result = []
         previous = 0
         count = 0
-        for item in self.finditer(string):
+        for item in self._collected(string, 0, length):
             if maxsplit and count >= maxsplit:
                 break
-            result.append(_slice(string, previous, item.start()))
-            result.extend(item.groups())
-            previous = item.end()
+            begin, finish = item._spans[0]
+            result.append(_slice(string, previous, begin))
+            result.extend(None if span is None else _slice(string, span[0], span[1]) for span in item._spans[1:])
+            previous = finish
             count += 1
-        result.append(_slice(string, previous, _subject_length(string)))
+        result.append(_slice(string, previous, length))
         return result
 
     def subn(self, repl, string, count=0):
         self._validate_string(string)
         length = _subject_length(string)
-        if not callable(repl):
+        is_callable = callable(repl)
+        raw = None
+        template = None
+        if not is_callable:
             _template(repl, Match(self, string, [(0, 0)] + [None] * self.groups, None, 0, length), True)
+            raw = bytes(repl) if isinstance(repl, (bytearray, memoryview)) else repl
+            escaped = b"\\" in raw if isinstance(raw, bytes) else "\\" in raw
+            if escaped:
+                template = _template_tokens(raw, self)
+            elif self._literal is not None and isinstance(string, str) == isinstance(raw, str):
+                if count < 0:
+                    return _slice(string, 0, length), 0
+                source = str(string) if isinstance(string, str) else bytes(string)
+                occurrences = source.count(self._literal)
+                replacements = occurrences if count == 0 else min(occurrences, count)
+                return source.replace(self._literal, raw, -1 if count == 0 else count), replacements
         parts = []
         previous = 0
         replacements = 0
-        for item in self.finditer(string):
+        matches = self.finditer(string) if is_callable else self._collected(string, 0, length)
+        for item in matches:
             if count and replacements >= count:
                 break
-            prefix = _slice(string, previous, item.start())
+            begin, finish = item._spans[0]
+            prefix = _slice(string, previous, begin)
             if prefix:
                 parts.append(prefix)
-            if callable(repl):
+            if is_callable:
                 value = repl(item)
             else:
-                raw = bytes(repl) if isinstance(repl, (bytearray, memoryview)) else repl
-                value = item.expand(repl) if (b"\\" in raw if isinstance(raw, bytes) else "\\" in raw) else repl
+                value = _expand_tokens(template, item, isinstance(raw, bytes)) if template is not None else repl
             parts.append(value)
-            previous = item.end()
+            previous = finish
             replacements += 1
         tail = _slice(string, previous, length)
         if tail:
