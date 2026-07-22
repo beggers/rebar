@@ -1,0 +1,7224 @@
+{
+  "cases": 72,
+  "cohort": "holdout",
+  "correctness_checks": 864,
+  "expected_sha256": "f3ab490e351648118e522035c8624976203c777d9c1a7f7d44ad98233f2056bf",
+  "max_operations": 8,
+  "modules": [
+    "re",
+    "candidates.ast_candidate"
+  ],
+  "rankings": [
+    {
+      "cases": 72,
+      "faster_cases": 3,
+      "geomean_speedup": 0.030302635186044116,
+      "module": "candidates.ast_candidate",
+      "slowdowns_gt_20pct": 69
+    }
+  ],
+  "rows": [
+    {
+      "case": "hold.search.literal.hit",
+      "cohort": "holdout",
+      "elapsed_ns": 2343,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 292.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.search.literal.hit",
+      "cohort": "holdout",
+      "elapsed_ns": 40892,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 5111.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.search.literal.hit",
+      "cohort": "holdout",
+      "elapsed_ns": 39099,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 4887.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.search.literal.hit",
+      "cohort": "holdout",
+      "elapsed_ns": 1692,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 211.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.search.literal.hit",
+      "cohort": "holdout",
+      "elapsed_ns": 35243,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 4405.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.search.literal.hit",
+      "cohort": "holdout",
+      "elapsed_ns": 1722,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 215.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.search.literal.hit",
+      "cohort": "holdout",
+      "elapsed_ns": 27772,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 3471.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.search.literal.hit",
+      "cohort": "holdout",
+      "elapsed_ns": 1553,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 194.125,
+      "trial": 3
+    },
+    {
+      "case": "hold.search.literal.hit",
+      "cohort": "holdout",
+      "elapsed_ns": 1433,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 179.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.search.literal.hit",
+      "cohort": "holdout",
+      "elapsed_ns": 30596,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 3824.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.search.literal.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 1683,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 210.375,
+      "trial": 0
+    },
+    {
+      "case": "hold.search.literal.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 7671,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 958.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.search.literal.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 1342,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 167.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.search.literal.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 8062,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1007.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.search.literal.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 7441,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 930.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.search.literal.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 1232,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 154.0,
+      "trial": 2
+    },
+    {
+      "case": "hold.search.literal.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 7581,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 947.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.search.literal.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 1322,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 165.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.search.literal.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 1171,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 146.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.search.literal.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 7411,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 926.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.search.long-boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 73270,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 9158.75,
+      "trial": 0
+    },
+    {
+      "case": "hold.search.long-boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 36625,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 4578.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.search.long-boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 26279,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 3284.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.search.long-boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 71458,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 8932.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.search.long-boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 66120,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 8265.0,
+      "trial": 2
+    },
+    {
+      "case": "hold.search.long-boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 24858,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 3107.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.search.long-boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 25218,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 3152.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.search.long-boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 74933,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 9366.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.search.long-boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 74803,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 9350.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.search.long-boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 25158,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 3144.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.search.class-anchor",
+      "cohort": "holdout",
+      "elapsed_ns": 2604,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 325.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.search.class-anchor",
+      "cohort": "holdout",
+      "elapsed_ns": 83255,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 10406.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.search.class-anchor",
+      "cohort": "holdout",
+      "elapsed_ns": 2574,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 321.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.search.class-anchor",
+      "cohort": "holdout",
+      "elapsed_ns": 81943,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 10242.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.search.class-anchor",
+      "cohort": "holdout",
+      "elapsed_ns": 2424,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 303.0,
+      "trial": 2
+    },
+    {
+      "case": "hold.search.class-anchor",
+      "cohort": "holdout",
+      "elapsed_ns": 71167,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 8895.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.search.class-anchor",
+      "cohort": "holdout",
+      "elapsed_ns": 72830,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 9103.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.search.class-anchor",
+      "cohort": "holdout",
+      "elapsed_ns": 2524,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 315.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.search.class-anchor",
+      "cohort": "holdout",
+      "elapsed_ns": 2323,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 290.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.search.class-anchor",
+      "cohort": "holdout",
+      "elapsed_ns": 81603,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 10200.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.match.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 64047,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 8005.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.match.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 2183,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 272.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.match.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 2033,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 254.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.match.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 73151,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 9143.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.match.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 2213,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 276.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.match.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 67863,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 8482.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.match.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 64647,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 8080.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.match.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 2173,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 271.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.match.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 64727,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 8090.875,
+      "trial": 4
+    },
+    {
+      "case": "hold.match.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 1993,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 249.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.fullmatch.structured",
+      "cohort": "holdout",
+      "elapsed_ns": 3025,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 378.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.fullmatch.structured",
+      "cohort": "holdout",
+      "elapsed_ns": 195114,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 24389.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.fullmatch.structured",
+      "cohort": "holdout",
+      "elapsed_ns": 164358,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 20544.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.fullmatch.structured",
+      "cohort": "holdout",
+      "elapsed_ns": 2964,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 370.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.fullmatch.structured",
+      "cohort": "holdout",
+      "elapsed_ns": 2694,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 336.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.fullmatch.structured",
+      "cohort": "holdout",
+      "elapsed_ns": 164988,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 20623.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.fullmatch.structured",
+      "cohort": "holdout",
+      "elapsed_ns": 2815,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 351.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.fullmatch.structured",
+      "cohort": "holdout",
+      "elapsed_ns": 166902,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 20862.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.fullmatch.structured",
+      "cohort": "holdout",
+      "elapsed_ns": 2805,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 350.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.fullmatch.structured",
+      "cohort": "holdout",
+      "elapsed_ns": 167813,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 20976.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.search.look-capture",
+      "cohort": "holdout",
+      "elapsed_ns": 3385,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 423.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.search.look-capture",
+      "cohort": "holdout",
+      "elapsed_ns": 139310,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 17413.75,
+      "trial": 0
+    },
+    {
+      "case": "hold.search.look-capture",
+      "cohort": "holdout",
+      "elapsed_ns": 130677,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 16334.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.search.look-capture",
+      "cohort": "holdout",
+      "elapsed_ns": 2895,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 361.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.search.look-capture",
+      "cohort": "holdout",
+      "elapsed_ns": 2574,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 321.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.search.look-capture",
+      "cohort": "holdout",
+      "elapsed_ns": 132039,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 16504.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.search.look-capture",
+      "cohort": "holdout",
+      "elapsed_ns": 2704,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 338.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.search.look-capture",
+      "cohort": "holdout",
+      "elapsed_ns": 155685,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 19460.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.search.look-capture",
+      "cohort": "holdout",
+      "elapsed_ns": 2755,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 344.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.search.look-capture",
+      "cohort": "holdout",
+      "elapsed_ns": 132119,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 16514.875,
+      "trial": 4
+    },
+    {
+      "case": "hold.findall.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 7852,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 981.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.findall.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 383127,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 47890.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.findall.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 7361,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 920.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.findall.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 390448,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 48806.0,
+      "trial": 1
+    },
+    {
+      "case": "hold.findall.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 8332,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1041.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.findall.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 411039,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 51379.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.findall.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 372521,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 46565.125,
+      "trial": 3
+    },
+    {
+      "case": "hold.findall.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 8102,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1012.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.findall.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 7702,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 962.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.findall.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 374744,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 46843.0,
+      "trial": 4
+    },
+    {
+      "case": "hold.finditer.groups",
+      "cohort": "holdout",
+      "elapsed_ns": 403297,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 50412.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.finditer.groups",
+      "cohort": "holdout",
+      "elapsed_ns": 9845,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1230.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.finditer.groups",
+      "cohort": "holdout",
+      "elapsed_ns": 8593,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1074.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.finditer.groups",
+      "cohort": "holdout",
+      "elapsed_ns": 390759,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 48844.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.finditer.groups",
+      "cohort": "holdout",
+      "elapsed_ns": 9014,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1126.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.finditer.groups",
+      "cohort": "holdout",
+      "elapsed_ns": 386152,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 48269.0,
+      "trial": 2
+    },
+    {
+      "case": "hold.finditer.groups",
+      "cohort": "holdout",
+      "elapsed_ns": 9474,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1184.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.finditer.groups",
+      "cohort": "holdout",
+      "elapsed_ns": 387734,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 48466.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.finditer.groups",
+      "cohort": "holdout",
+      "elapsed_ns": 399642,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 49955.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.finditer.groups",
+      "cohort": "holdout",
+      "elapsed_ns": 9434,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1179.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.split.capture",
+      "cohort": "holdout",
+      "elapsed_ns": 13650,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1706.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.split.capture",
+      "cohort": "holdout",
+      "elapsed_ns": 379051,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 47381.375,
+      "trial": 0
+    },
+    {
+      "case": "hold.split.capture",
+      "cohort": "holdout",
+      "elapsed_ns": 6951,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 868.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.split.capture",
+      "cohort": "holdout",
+      "elapsed_ns": 376297,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 47037.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.split.capture",
+      "cohort": "holdout",
+      "elapsed_ns": 380494,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 47561.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.split.capture",
+      "cohort": "holdout",
+      "elapsed_ns": 7021,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 877.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.split.capture",
+      "cohort": "holdout",
+      "elapsed_ns": 407724,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 50965.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.split.capture",
+      "cohort": "holdout",
+      "elapsed_ns": 6790,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 848.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.split.capture",
+      "cohort": "holdout",
+      "elapsed_ns": 6760,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 845.0,
+      "trial": 4
+    },
+    {
+      "case": "hold.split.capture",
+      "cohort": "holdout",
+      "elapsed_ns": 370327,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 46290.875,
+      "trial": 4
+    },
+    {
+      "case": "hold.sub.template",
+      "cohort": "holdout",
+      "elapsed_ns": 11136,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1392.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.sub.template",
+      "cohort": "holdout",
+      "elapsed_ns": 444480,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 55560.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.sub.template",
+      "cohort": "holdout",
+      "elapsed_ns": 463769,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 57971.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.sub.template",
+      "cohort": "holdout",
+      "elapsed_ns": 10185,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1273.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.sub.template",
+      "cohort": "holdout",
+      "elapsed_ns": 9564,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1195.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.sub.template",
+      "cohort": "holdout",
+      "elapsed_ns": 440884,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 55110.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.sub.template",
+      "cohort": "holdout",
+      "elapsed_ns": 432902,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 54112.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.sub.template",
+      "cohort": "holdout",
+      "elapsed_ns": 10235,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1279.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.sub.template",
+      "cohort": "holdout",
+      "elapsed_ns": 429898,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 53737.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.sub.template",
+      "cohort": "holdout",
+      "elapsed_ns": 9775,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1221.875,
+      "trial": 4
+    },
+    {
+      "case": "hold.subn.callable",
+      "cohort": "holdout",
+      "elapsed_ns": 139780,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 17472.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.subn.callable",
+      "cohort": "holdout",
+      "elapsed_ns": 9384,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1173.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.subn.callable",
+      "cohort": "holdout",
+      "elapsed_ns": 8774,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1096.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.subn.callable",
+      "cohort": "holdout",
+      "elapsed_ns": 137037,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 17129.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.subn.callable",
+      "cohort": "holdout",
+      "elapsed_ns": 134102,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 16762.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.subn.callable",
+      "cohort": "holdout",
+      "elapsed_ns": 9324,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1165.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.subn.callable",
+      "cohort": "holdout",
+      "elapsed_ns": 9034,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1129.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.subn.callable",
+      "cohort": "holdout",
+      "elapsed_ns": 133722,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 16715.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.subn.callable",
+      "cohort": "holdout",
+      "elapsed_ns": 134833,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 16854.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.subn.callable",
+      "cohort": "holdout",
+      "elapsed_ns": 9694,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1211.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.bytes.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 360103,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 45012.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.bytes.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 8884,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1110.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.bytes.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 353893,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 44236.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.bytes.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 7872,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 984.0,
+      "trial": 1
+    },
+    {
+      "case": "hold.bytes.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 7681,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 960.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.bytes.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 345891,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 43236.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.bytes.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 347333,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 43416.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.bytes.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 7752,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 969.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.bytes.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 347113,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 43389.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.bytes.tokens",
+      "cohort": "holdout",
+      "elapsed_ns": 7562,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 945.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.unicode.words",
+      "cohort": "holdout",
+      "elapsed_ns": 272029,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 34003.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.unicode.words",
+      "cohort": "holdout",
+      "elapsed_ns": 7511,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 938.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.unicode.words",
+      "cohort": "holdout",
+      "elapsed_ns": 7251,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 906.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.unicode.words",
+      "cohort": "holdout",
+      "elapsed_ns": 265610,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 33201.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.unicode.words",
+      "cohort": "holdout",
+      "elapsed_ns": 7361,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 920.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.unicode.words",
+      "cohort": "holdout",
+      "elapsed_ns": 262005,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 32750.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.unicode.words",
+      "cohort": "holdout",
+      "elapsed_ns": 270147,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 33768.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.unicode.words",
+      "cohort": "holdout",
+      "elapsed_ns": 7181,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 897.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.unicode.words",
+      "cohort": "holdout",
+      "elapsed_ns": 279731,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 34966.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.unicode.words",
+      "cohort": "holdout",
+      "elapsed_ns": 7070,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 883.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.cold.compile-search",
+      "cohort": "holdout",
+      "elapsed_ns": 1862396,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 232799.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.cold.compile-search",
+      "cohort": "holdout",
+      "elapsed_ns": 272921,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 34115.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.cold.compile-search",
+      "cohort": "holdout",
+      "elapsed_ns": 1880042,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 235005.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.cold.compile-search",
+      "cohort": "holdout",
+      "elapsed_ns": 253191,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 31648.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.cold.compile-search",
+      "cohort": "holdout",
+      "elapsed_ns": 225069,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 28133.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.cold.compile-search",
+      "cohort": "holdout",
+      "elapsed_ns": 1846932,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 230866.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.cold.compile-search",
+      "cohort": "holdout",
+      "elapsed_ns": 1874515,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 234314.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.cold.compile-search",
+      "cohort": "holdout",
+      "elapsed_ns": 258790,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 32348.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.cold.compile-search",
+      "cohort": "holdout",
+      "elapsed_ns": 1857148,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 232143.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.cold.compile-search",
+      "cohort": "holdout",
+      "elapsed_ns": 243657,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 30457.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.module.warm",
+      "cohort": "holdout",
+      "elapsed_ns": 5939,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 742.375,
+      "trial": 0
+    },
+    {
+      "case": "hold.module.warm",
+      "cohort": "holdout",
+      "elapsed_ns": 69094,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 8636.75,
+      "trial": 0
+    },
+    {
+      "case": "hold.module.warm",
+      "cohort": "holdout",
+      "elapsed_ns": 5749,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 718.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.module.warm",
+      "cohort": "holdout",
+      "elapsed_ns": 66460,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 8307.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.module.warm",
+      "cohort": "holdout",
+      "elapsed_ns": 5639,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 704.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.module.warm",
+      "cohort": "holdout",
+      "elapsed_ns": 65028,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 8128.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.module.warm",
+      "cohort": "holdout",
+      "elapsed_ns": 5598,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 699.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.module.warm",
+      "cohort": "holdout",
+      "elapsed_ns": 70046,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 8755.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.module.warm",
+      "cohort": "holdout",
+      "elapsed_ns": 65339,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 8167.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.module.warm",
+      "cohort": "holdout",
+      "elapsed_ns": 5418,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 677.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.empty.finditer",
+      "cohort": "holdout",
+      "elapsed_ns": 700516,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 87564.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.empty.finditer",
+      "cohort": "holdout",
+      "elapsed_ns": 13120,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1640.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.empty.finditer",
+      "cohort": "holdout",
+      "elapsed_ns": 675187,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 84398.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.empty.finditer",
+      "cohort": "holdout",
+      "elapsed_ns": 12649,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1581.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.empty.finditer",
+      "cohort": "holdout",
+      "elapsed_ns": 12168,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1521.0,
+      "trial": 2
+    },
+    {
+      "case": "hold.empty.finditer",
+      "cohort": "holdout",
+      "elapsed_ns": 708277,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 88534.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.empty.finditer",
+      "cohort": "holdout",
+      "elapsed_ns": 12569,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1571.125,
+      "trial": 3
+    },
+    {
+      "case": "hold.empty.finditer",
+      "cohort": "holdout",
+      "elapsed_ns": 665513,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 83189.125,
+      "trial": 3
+    },
+    {
+      "case": "hold.empty.finditer",
+      "cohort": "holdout",
+      "elapsed_ns": 12379,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1547.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.empty.finditer",
+      "cohort": "holdout",
+      "elapsed_ns": 664912,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 83114.0,
+      "trial": 4
+    },
+    {
+      "case": "hold.backref.fullmatch",
+      "cohort": "holdout",
+      "elapsed_ns": 2985,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 373.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.backref.fullmatch",
+      "cohort": "holdout",
+      "elapsed_ns": 88373,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 11046.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.backref.fullmatch",
+      "cohort": "holdout",
+      "elapsed_ns": 2233,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 279.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.backref.fullmatch",
+      "cohort": "holdout",
+      "elapsed_ns": 80181,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 10022.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.backref.fullmatch",
+      "cohort": "holdout",
+      "elapsed_ns": 79970,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 9996.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.backref.fullmatch",
+      "cohort": "holdout",
+      "elapsed_ns": 2143,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 267.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.backref.fullmatch",
+      "cohort": "holdout",
+      "elapsed_ns": 80031,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 10003.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.backref.fullmatch",
+      "cohort": "holdout",
+      "elapsed_ns": 2083,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 260.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.backref.fullmatch",
+      "cohort": "holdout",
+      "elapsed_ns": 97537,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 12192.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.backref.fullmatch",
+      "cohort": "holdout",
+      "elapsed_ns": 2063,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 257.875,
+      "trial": 4
+    },
+    {
+      "case": "hold.conditional.match",
+      "cohort": "holdout",
+      "elapsed_ns": 82575,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 10321.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.conditional.match",
+      "cohort": "holdout",
+      "elapsed_ns": 2443,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 305.375,
+      "trial": 0
+    },
+    {
+      "case": "hold.conditional.match",
+      "cohort": "holdout",
+      "elapsed_ns": 2224,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 278.0,
+      "trial": 1
+    },
+    {
+      "case": "hold.conditional.match",
+      "cohort": "holdout",
+      "elapsed_ns": 76606,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 9575.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.conditional.match",
+      "cohort": "holdout",
+      "elapsed_ns": 74433,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 9304.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.conditional.match",
+      "cohort": "holdout",
+      "elapsed_ns": 2333,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 291.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.conditional.match",
+      "cohort": "holdout",
+      "elapsed_ns": 2124,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 265.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.conditional.match",
+      "cohort": "holdout",
+      "elapsed_ns": 75344,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 9418.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.conditional.match",
+      "cohort": "holdout",
+      "elapsed_ns": 2264,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 283.0,
+      "trial": 4
+    },
+    {
+      "case": "hold.conditional.match",
+      "cohort": "holdout",
+      "elapsed_ns": 79980,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 9997.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.atomic.search",
+      "cohort": "holdout",
+      "elapsed_ns": 74162,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 9270.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.atomic.search",
+      "cohort": "holdout",
+      "elapsed_ns": 2874,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 359.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.atomic.search",
+      "cohort": "holdout",
+      "elapsed_ns": 2564,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 320.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.atomic.search",
+      "cohort": "holdout",
+      "elapsed_ns": 70547,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 8818.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.atomic.search",
+      "cohort": "holdout",
+      "elapsed_ns": 69705,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 8713.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.atomic.search",
+      "cohort": "holdout",
+      "elapsed_ns": 2764,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 345.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.atomic.search",
+      "cohort": "holdout",
+      "elapsed_ns": 2514,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 314.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.atomic.search",
+      "cohort": "holdout",
+      "elapsed_ns": 70596,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 8824.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.atomic.search",
+      "cohort": "holdout",
+      "elapsed_ns": 70506,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 8813.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.atomic.search",
+      "cohort": "holdout",
+      "elapsed_ns": 2734,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 341.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.byteslike.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 440674,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 55084.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.byteslike.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 8333,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1041.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.byteslike.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 7030,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 878.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.byteslike.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 390348,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 48793.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.byteslike.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 392311,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 49038.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.byteslike.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 7251,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 906.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.byteslike.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 7190,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 898.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.byteslike.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 392372,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 49046.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.byteslike.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 425531,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 53191.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.byteslike.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 8042,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1005.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.unicode-name.search",
+      "cohort": "holdout",
+      "elapsed_ns": 3084,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 385.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.unicode-name.search",
+      "cohort": "holdout",
+      "elapsed_ns": 45729,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 5716.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.unicode-name.search",
+      "cohort": "holdout",
+      "elapsed_ns": 2604,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 325.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.unicode-name.search",
+      "cohort": "holdout",
+      "elapsed_ns": 45158,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 5644.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.unicode-name.search",
+      "cohort": "holdout",
+      "elapsed_ns": 44307,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 5538.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.unicode-name.search",
+      "cohort": "holdout",
+      "elapsed_ns": 2654,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 331.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.unicode-name.search",
+      "cohort": "holdout",
+      "elapsed_ns": 2564,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 320.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.unicode-name.search",
+      "cohort": "holdout",
+      "elapsed_ns": 44006,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 5500.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.unicode-name.search",
+      "cohort": "holdout",
+      "elapsed_ns": 2644,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 330.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.unicode-name.search",
+      "cohort": "holdout",
+      "elapsed_ns": 44246,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 5530.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.ignorecase.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 170698,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 21337.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.ignorecase.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 6540,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 817.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.ignorecase.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 5778,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 722.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.ignorecase.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 174713,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 21839.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.ignorecase.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 168794,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 21099.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.ignorecase.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 6409,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 801.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.ignorecase.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 6070,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 758.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.ignorecase.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 169325,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 21165.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.ignorecase.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 194704,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 24338.0,
+      "trial": 4
+    },
+    {
+      "case": "hold.ignorecase.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 6290,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 786.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.many.split",
+      "cohort": "holdout",
+      "elapsed_ns": 8753,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1094.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.many.split",
+      "cohort": "holdout",
+      "elapsed_ns": 369216,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 46152.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.many.split",
+      "cohort": "holdout",
+      "elapsed_ns": 8553,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1069.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.many.split",
+      "cohort": "holdout",
+      "elapsed_ns": 357208,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 44651.0,
+      "trial": 1
+    },
+    {
+      "case": "hold.many.split",
+      "cohort": "holdout",
+      "elapsed_ns": 8783,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1097.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.many.split",
+      "cohort": "holdout",
+      "elapsed_ns": 338641,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 42330.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.many.split",
+      "cohort": "holdout",
+      "elapsed_ns": 8323,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1040.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.many.split",
+      "cohort": "holdout",
+      "elapsed_ns": 335686,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 41960.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.many.split",
+      "cohort": "holdout",
+      "elapsed_ns": 337418,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 42177.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.many.split",
+      "cohort": "holdout",
+      "elapsed_ns": 8573,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1071.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.escape.bytes",
+      "cohort": "holdout",
+      "elapsed_ns": 6109,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 763.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.escape.bytes",
+      "cohort": "holdout",
+      "elapsed_ns": 5338,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 667.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.escape.bytes",
+      "cohort": "holdout",
+      "elapsed_ns": 5228,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 653.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.escape.bytes",
+      "cohort": "holdout",
+      "elapsed_ns": 5539,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 692.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.escape.bytes",
+      "cohort": "holdout",
+      "elapsed_ns": 5698,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 712.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.escape.bytes",
+      "cohort": "holdout",
+      "elapsed_ns": 5308,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 663.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.escape.bytes",
+      "cohort": "holdout",
+      "elapsed_ns": 5648,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 706.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.escape.bytes",
+      "cohort": "holdout",
+      "elapsed_ns": 5599,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 699.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.escape.bytes",
+      "cohort": "holdout",
+      "elapsed_ns": 5478,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 684.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.escape.bytes",
+      "cohort": "holdout",
+      "elapsed_ns": 5058,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 632.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.compile.only",
+      "cohort": "holdout",
+      "elapsed_ns": 187493,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 23436.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.compile.only",
+      "cohort": "holdout",
+      "elapsed_ns": 303348,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 37918.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.compile.only",
+      "cohort": "holdout",
+      "elapsed_ns": 272330,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 34041.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.compile.only",
+      "cohort": "holdout",
+      "elapsed_ns": 161723,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 20215.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.compile.only",
+      "cohort": "holdout",
+      "elapsed_ns": 266182,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 33272.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.compile.only",
+      "cohort": "holdout",
+      "elapsed_ns": 155855,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 19481.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.compile.only",
+      "cohort": "holdout",
+      "elapsed_ns": 145018,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 18127.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.compile.only",
+      "cohort": "holdout",
+      "elapsed_ns": 266932,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 33366.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.compile.only",
+      "cohort": "holdout",
+      "elapsed_ns": 153801,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 19225.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.compile.only",
+      "cohort": "holdout",
+      "elapsed_ns": 265740,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 33217.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.scanner.search",
+      "cohort": "holdout",
+      "elapsed_ns": 349066,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 43633.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.scanner.search",
+      "cohort": "holdout",
+      "elapsed_ns": 8383,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1047.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.scanner.search",
+      "cohort": "holdout",
+      "elapsed_ns": 355155,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 44394.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.scanner.search",
+      "cohort": "holdout",
+      "elapsed_ns": 14873,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1859.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.scanner.search",
+      "cohort": "holdout",
+      "elapsed_ns": 8033,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1004.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.scanner.search",
+      "cohort": "holdout",
+      "elapsed_ns": 340292,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 42536.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.scanner.search",
+      "cohort": "holdout",
+      "elapsed_ns": 22855,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 2856.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.scanner.search",
+      "cohort": "holdout",
+      "elapsed_ns": 344058,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 43007.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.scanner.search",
+      "cohort": "holdout",
+      "elapsed_ns": 339572,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 42446.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.scanner.search",
+      "cohort": "holdout",
+      "elapsed_ns": 8833,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1104.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.match.surface",
+      "cohort": "holdout",
+      "elapsed_ns": 10686,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1335.75,
+      "trial": 0
+    },
+    {
+      "case": "hold.match.surface",
+      "cohort": "holdout",
+      "elapsed_ns": 162786,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 20348.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.match.surface",
+      "cohort": "holdout",
+      "elapsed_ns": 9885,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1235.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.match.surface",
+      "cohort": "holdout",
+      "elapsed_ns": 152930,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 19116.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.match.surface",
+      "cohort": "holdout",
+      "elapsed_ns": 146691,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 18336.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.match.surface",
+      "cohort": "holdout",
+      "elapsed_ns": 9565,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1195.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.match.surface",
+      "cohort": "holdout",
+      "elapsed_ns": 148604,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 18575.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.match.surface",
+      "cohort": "holdout",
+      "elapsed_ns": 9635,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1204.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.match.surface",
+      "cohort": "holdout",
+      "elapsed_ns": 9264,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1158.0,
+      "trial": 4
+    },
+    {
+      "case": "hold.match.surface",
+      "cohort": "holdout",
+      "elapsed_ns": 143276,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 17909.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.log",
+      "cohort": "holdout",
+      "elapsed_ns": 9073,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1134.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.log",
+      "cohort": "holdout",
+      "elapsed_ns": 324960,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 40620.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.log",
+      "cohort": "holdout",
+      "elapsed_ns": 9515,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1189.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.log",
+      "cohort": "holdout",
+      "elapsed_ns": 322295,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 40286.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.log",
+      "cohort": "holdout",
+      "elapsed_ns": 320213,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 40026.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.log",
+      "cohort": "holdout",
+      "elapsed_ns": 8923,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1115.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.log",
+      "cohort": "holdout",
+      "elapsed_ns": 8012,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1001.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.log",
+      "cohort": "holdout",
+      "elapsed_ns": 335215,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 41901.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.log",
+      "cohort": "holdout",
+      "elapsed_ns": 317979,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 39747.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.log",
+      "cohort": "holdout",
+      "elapsed_ns": 9364,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1170.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.url",
+      "cohort": "holdout",
+      "elapsed_ns": 250206,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 31275.75,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.url",
+      "cohort": "holdout",
+      "elapsed_ns": 4917,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 614.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.url",
+      "cohort": "holdout",
+      "elapsed_ns": 249346,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 31168.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.url",
+      "cohort": "holdout",
+      "elapsed_ns": 4717,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 589.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.url",
+      "cohort": "holdout",
+      "elapsed_ns": 243277,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 30409.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.url",
+      "cohort": "holdout",
+      "elapsed_ns": 4376,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 547.0,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.url",
+      "cohort": "holdout",
+      "elapsed_ns": 260182,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 32522.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.url",
+      "cohort": "holdout",
+      "elapsed_ns": 4396,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 549.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.url",
+      "cohort": "holdout",
+      "elapsed_ns": 3916,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 489.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.url",
+      "cohort": "holdout",
+      "elapsed_ns": 239852,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 29981.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.email",
+      "cohort": "holdout",
+      "elapsed_ns": 6570,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 821.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.email",
+      "cohort": "holdout",
+      "elapsed_ns": 478681,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 59835.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.email",
+      "cohort": "holdout",
+      "elapsed_ns": 5619,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 702.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.email",
+      "cohort": "holdout",
+      "elapsed_ns": 483058,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 60382.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.email",
+      "cohort": "holdout",
+      "elapsed_ns": 485431,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 60678.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.email",
+      "cohort": "holdout",
+      "elapsed_ns": 5659,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 707.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.email",
+      "cohort": "holdout",
+      "elapsed_ns": 494535,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 61816.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.email",
+      "cohort": "holdout",
+      "elapsed_ns": 5528,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 691.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.email",
+      "cohort": "holdout",
+      "elapsed_ns": 478722,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 59840.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.email",
+      "cohort": "holdout",
+      "elapsed_ns": 5448,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 681.0,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.datetime",
+      "cohort": "holdout",
+      "elapsed_ns": 5188,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 648.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.datetime",
+      "cohort": "holdout",
+      "elapsed_ns": 333743,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 41717.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.datetime",
+      "cohort": "holdout",
+      "elapsed_ns": 4838,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 604.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.datetime",
+      "cohort": "holdout",
+      "elapsed_ns": 326522,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 40815.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.datetime",
+      "cohort": "holdout",
+      "elapsed_ns": 4707,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 588.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.datetime",
+      "cohort": "holdout",
+      "elapsed_ns": 328825,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 41103.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.datetime",
+      "cohort": "holdout",
+      "elapsed_ns": 4887,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 610.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.datetime",
+      "cohort": "holdout",
+      "elapsed_ns": 322236,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 40279.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.datetime",
+      "cohort": "holdout",
+      "elapsed_ns": 4817,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 602.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.datetime",
+      "cohort": "holdout",
+      "elapsed_ns": 321214,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 40151.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.version",
+      "cohort": "holdout",
+      "elapsed_ns": 246932,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 30866.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.version",
+      "cohort": "holdout",
+      "elapsed_ns": 4687,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 585.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.version",
+      "cohort": "holdout",
+      "elapsed_ns": 250167,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 31270.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.version",
+      "cohort": "holdout",
+      "elapsed_ns": 3976,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 497.0,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.version",
+      "cohort": "holdout",
+      "elapsed_ns": 3686,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 460.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.version",
+      "cohort": "holdout",
+      "elapsed_ns": 234033,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 29254.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.version",
+      "cohort": "holdout",
+      "elapsed_ns": 230948,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 28868.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.version",
+      "cohort": "holdout",
+      "elapsed_ns": 3826,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 478.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.version",
+      "cohort": "holdout",
+      "elapsed_ns": 3445,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 430.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.version",
+      "cohort": "holdout",
+      "elapsed_ns": 232941,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 29117.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.uuid",
+      "cohort": "holdout",
+      "elapsed_ns": 4196,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 524.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.uuid",
+      "cohort": "holdout",
+      "elapsed_ns": 258970,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 32371.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.uuid",
+      "cohort": "holdout",
+      "elapsed_ns": 3756,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 469.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.uuid",
+      "cohort": "holdout",
+      "elapsed_ns": 258890,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 32361.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.uuid",
+      "cohort": "holdout",
+      "elapsed_ns": 253462,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 31682.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.uuid",
+      "cohort": "holdout",
+      "elapsed_ns": 3735,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 466.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.uuid",
+      "cohort": "holdout",
+      "elapsed_ns": 3635,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 454.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.uuid",
+      "cohort": "holdout",
+      "elapsed_ns": 276096,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 34512.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.uuid",
+      "cohort": "holdout",
+      "elapsed_ns": 3795,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 474.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.uuid",
+      "cohort": "holdout",
+      "elapsed_ns": 253401,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 31675.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.ip",
+      "cohort": "holdout",
+      "elapsed_ns": 302135,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 37766.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.ip",
+      "cohort": "holdout",
+      "elapsed_ns": 3946,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 493.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.ip",
+      "cohort": "holdout",
+      "elapsed_ns": 3295,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 411.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.ip",
+      "cohort": "holdout",
+      "elapsed_ns": 296026,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 37003.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.ip",
+      "cohort": "holdout",
+      "elapsed_ns": 3435,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 429.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.ip",
+      "cohort": "holdout",
+      "elapsed_ns": 291810,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 36476.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.ip",
+      "cohort": "holdout",
+      "elapsed_ns": 295436,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 36929.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.ip",
+      "cohort": "holdout",
+      "elapsed_ns": 3375,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 421.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.ip",
+      "cohort": "holdout",
+      "elapsed_ns": 3375,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 421.875,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.ip",
+      "cohort": "holdout",
+      "elapsed_ns": 297878,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 37234.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.path",
+      "cohort": "holdout",
+      "elapsed_ns": 11617,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1452.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.path",
+      "cohort": "holdout",
+      "elapsed_ns": 1054399,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 131799.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.path",
+      "cohort": "holdout",
+      "elapsed_ns": 10486,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1310.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.path",
+      "cohort": "holdout",
+      "elapsed_ns": 1033737,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 129217.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.path",
+      "cohort": "holdout",
+      "elapsed_ns": 999636,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 124954.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.path",
+      "cohort": "holdout",
+      "elapsed_ns": 9845,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1230.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.path",
+      "cohort": "holdout",
+      "elapsed_ns": 975199,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 121899.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.path",
+      "cohort": "holdout",
+      "elapsed_ns": 9554,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1194.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.path",
+      "cohort": "holdout",
+      "elapsed_ns": 9755,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1219.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.path",
+      "cohort": "holdout",
+      "elapsed_ns": 974658,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 121832.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.config",
+      "cohort": "holdout",
+      "elapsed_ns": 1318917,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 164864.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.config",
+      "cohort": "holdout",
+      "elapsed_ns": 20951,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 2618.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.config",
+      "cohort": "holdout",
+      "elapsed_ns": 18819,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 2352.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.config",
+      "cohort": "holdout",
+      "elapsed_ns": 1309263,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 163657.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.config",
+      "cohort": "holdout",
+      "elapsed_ns": 20150,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 2518.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.config",
+      "cohort": "holdout",
+      "elapsed_ns": 1286038,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 160754.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.config",
+      "cohort": "holdout",
+      "elapsed_ns": 20000,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 2500.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.config",
+      "cohort": "holdout",
+      "elapsed_ns": 1289643,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 161205.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.config",
+      "cohort": "holdout",
+      "elapsed_ns": 31748,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 3968.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.config",
+      "cohort": "holdout",
+      "elapsed_ns": 1296063,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 162007.875,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.comments",
+      "cohort": "holdout",
+      "elapsed_ns": 4867,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 608.375,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.comments",
+      "cohort": "holdout",
+      "elapsed_ns": 157057,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 19632.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.comments",
+      "cohort": "holdout",
+      "elapsed_ns": 4256,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 532.0,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.comments",
+      "cohort": "holdout",
+      "elapsed_ns": 155024,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 19378.0,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.comments",
+      "cohort": "holdout",
+      "elapsed_ns": 155274,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 19409.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.comments",
+      "cohort": "holdout",
+      "elapsed_ns": 3956,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 494.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.comments",
+      "cohort": "holdout",
+      "elapsed_ns": 153582,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 19197.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.comments",
+      "cohort": "holdout",
+      "elapsed_ns": 4056,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 507.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.comments",
+      "cohort": "holdout",
+      "elapsed_ns": 153170,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 19146.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.comments",
+      "cohort": "holdout",
+      "elapsed_ns": 3916,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 489.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.whitespace",
+      "cohort": "holdout",
+      "elapsed_ns": 10576,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1322.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.whitespace",
+      "cohort": "holdout",
+      "elapsed_ns": 259692,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 32461.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.whitespace",
+      "cohort": "holdout",
+      "elapsed_ns": 253011,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 31626.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.whitespace",
+      "cohort": "holdout",
+      "elapsed_ns": 9955,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1244.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.whitespace",
+      "cohort": "holdout",
+      "elapsed_ns": 254464,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 31808.0,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.whitespace",
+      "cohort": "holdout",
+      "elapsed_ns": 9344,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1168.0,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.whitespace",
+      "cohort": "holdout",
+      "elapsed_ns": 9324,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1165.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.whitespace",
+      "cohort": "holdout",
+      "elapsed_ns": 252570,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 31571.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.whitespace",
+      "cohort": "holdout",
+      "elapsed_ns": 9084,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1135.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.whitespace",
+      "cohort": "holdout",
+      "elapsed_ns": 275735,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 34466.875,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.lines",
+      "cohort": "holdout",
+      "elapsed_ns": 405712,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 50714.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.lines",
+      "cohort": "holdout",
+      "elapsed_ns": 11357,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1419.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.lines",
+      "cohort": "holdout",
+      "elapsed_ns": 11157,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1394.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.lines",
+      "cohort": "holdout",
+      "elapsed_ns": 402948,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 50368.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.lines",
+      "cohort": "holdout",
+      "elapsed_ns": 399092,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 49886.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.lines",
+      "cohort": "holdout",
+      "elapsed_ns": 11447,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1430.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.lines",
+      "cohort": "holdout",
+      "elapsed_ns": 11127,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1390.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.lines",
+      "cohort": "holdout",
+      "elapsed_ns": 404580,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 50572.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.lines",
+      "cohort": "holdout",
+      "elapsed_ns": 425181,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 53147.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.lines",
+      "cohort": "holdout",
+      "elapsed_ns": 11307,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1413.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.markup",
+      "cohort": "holdout",
+      "elapsed_ns": 6560,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 820.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.markup",
+      "cohort": "holdout",
+      "elapsed_ns": 464539,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 58067.375,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.markup",
+      "cohort": "holdout",
+      "elapsed_ns": 466192,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 58274.0,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.markup",
+      "cohort": "holdout",
+      "elapsed_ns": 6290,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 786.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.markup",
+      "cohort": "holdout",
+      "elapsed_ns": 466182,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 58272.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.markup",
+      "cohort": "holdout",
+      "elapsed_ns": 6380,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 797.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.markup",
+      "cohort": "holdout",
+      "elapsed_ns": 6009,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 751.125,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.markup",
+      "cohort": "holdout",
+      "elapsed_ns": 466082,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 58260.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.markup",
+      "cohort": "holdout",
+      "elapsed_ns": 6129,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 766.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.markup",
+      "cohort": "holdout",
+      "elapsed_ns": 460193,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 57524.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.quotes",
+      "cohort": "holdout",
+      "elapsed_ns": 495447,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 61930.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.quotes",
+      "cohort": "holdout",
+      "elapsed_ns": 6059,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 757.375,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.quotes",
+      "cohort": "holdout",
+      "elapsed_ns": 5558,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 694.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.quotes",
+      "cohort": "holdout",
+      "elapsed_ns": 488477,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 61059.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.quotes",
+      "cohort": "holdout",
+      "elapsed_ns": 494125,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 61765.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.quotes",
+      "cohort": "holdout",
+      "elapsed_ns": 5458,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 682.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.quotes",
+      "cohort": "holdout",
+      "elapsed_ns": 492072,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 61509.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.quotes",
+      "cohort": "holdout",
+      "elapsed_ns": 5639,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 704.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.quotes",
+      "cohort": "holdout",
+      "elapsed_ns": 5489,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 686.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.quotes",
+      "cohort": "holdout",
+      "elapsed_ns": 501797,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 62724.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.csv",
+      "cohort": "holdout",
+      "elapsed_ns": 1439068,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 179883.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.csv",
+      "cohort": "holdout",
+      "elapsed_ns": 13691,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1711.375,
+      "trial": 0
+    },
+    {
+      "case": "hold.real.csv",
+      "cohort": "holdout",
+      "elapsed_ns": 13099,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1637.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.csv",
+      "cohort": "holdout",
+      "elapsed_ns": 1434672,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 179334.0,
+      "trial": 1
+    },
+    {
+      "case": "hold.real.csv",
+      "cohort": "holdout",
+      "elapsed_ns": 1435543,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 179442.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.csv",
+      "cohort": "holdout",
+      "elapsed_ns": 14091,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1761.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.real.csv",
+      "cohort": "holdout",
+      "elapsed_ns": 13090,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1636.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.csv",
+      "cohort": "holdout",
+      "elapsed_ns": 1432208,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 179026.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.real.csv",
+      "cohort": "holdout",
+      "elapsed_ns": 13410,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1676.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.real.csv",
+      "cohort": "holdout",
+      "elapsed_ns": 1455082,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 181885.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.branch.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 2954,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 369.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.branch.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 96215,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 12026.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.branch.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 94903,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 11862.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.branch.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 2334,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 291.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.branch.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 94011,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 11751.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.branch.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 2213,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 276.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.branch.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 2123,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 265.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.branch.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 96205,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 12025.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.branch.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 92419,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 11552.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.branch.prefix",
+      "cohort": "holdout",
+      "elapsed_ns": 2353,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 294.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.branch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 1144995,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 143124.375,
+      "trial": 0
+    },
+    {
+      "case": "hold.branch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 6119,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 764.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.branch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 5348,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 668.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.branch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 909210,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 113651.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.branch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 912475,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 114059.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.branch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 5358,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 669.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.branch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 919876,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 114984.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.branch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 5398,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 674.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.branch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 901889,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 112736.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.branch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 5318,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 664.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.repeat.nested",
+      "cohort": "holdout",
+      "elapsed_ns": 349637,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 43704.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.repeat.nested",
+      "cohort": "holdout",
+      "elapsed_ns": 5328,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 666.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.repeat.nested",
+      "cohort": "holdout",
+      "elapsed_ns": 361956,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 45244.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.repeat.nested",
+      "cohort": "holdout",
+      "elapsed_ns": 4958,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 619.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.repeat.nested",
+      "cohort": "holdout",
+      "elapsed_ns": 347023,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 43377.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.repeat.nested",
+      "cohort": "holdout",
+      "elapsed_ns": 4938,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 617.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.repeat.nested",
+      "cohort": "holdout",
+      "elapsed_ns": 4507,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 563.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.repeat.nested",
+      "cohort": "holdout",
+      "elapsed_ns": 361224,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 45153.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.repeat.nested",
+      "cohort": "holdout",
+      "elapsed_ns": 5529,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 691.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.repeat.nested",
+      "cohort": "holdout",
+      "elapsed_ns": 352321,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 44040.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.lines.records",
+      "cohort": "holdout",
+      "elapsed_ns": 632242,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 79030.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.lines.records",
+      "cohort": "holdout",
+      "elapsed_ns": 10356,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1294.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.lines.records",
+      "cohort": "holdout",
+      "elapsed_ns": 10565,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1320.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.lines.records",
+      "cohort": "holdout",
+      "elapsed_ns": 648166,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 81020.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.lines.records",
+      "cohort": "holdout",
+      "elapsed_ns": 629749,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 78718.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.lines.records",
+      "cohort": "holdout",
+      "elapsed_ns": 9374,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1171.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.lines.records",
+      "cohort": "holdout",
+      "elapsed_ns": 629879,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 78734.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.lines.records",
+      "cohort": "holdout",
+      "elapsed_ns": 10035,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1254.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.lines.records",
+      "cohort": "holdout",
+      "elapsed_ns": 9304,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1163.0,
+      "trial": 4
+    },
+    {
+      "case": "hold.lines.records",
+      "cohort": "holdout",
+      "elapsed_ns": 618893,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 77361.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.block.dotall",
+      "cohort": "holdout",
+      "elapsed_ns": 232040,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 29005.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.block.dotall",
+      "cohort": "holdout",
+      "elapsed_ns": 4487,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 560.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.block.dotall",
+      "cohort": "holdout",
+      "elapsed_ns": 3946,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 493.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.block.dotall",
+      "cohort": "holdout",
+      "elapsed_ns": 225861,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 28232.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.block.dotall",
+      "cohort": "holdout",
+      "elapsed_ns": 227473,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 28434.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.block.dotall",
+      "cohort": "holdout",
+      "elapsed_ns": 4146,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 518.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.block.dotall",
+      "cohort": "holdout",
+      "elapsed_ns": 4067,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 508.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.block.dotall",
+      "cohort": "holdout",
+      "elapsed_ns": 243447,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 30430.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.block.dotall",
+      "cohort": "holdout",
+      "elapsed_ns": 228804,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 28600.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.block.dotall",
+      "cohort": "holdout",
+      "elapsed_ns": 4196,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 524.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.pattern.verbose",
+      "cohort": "holdout",
+      "elapsed_ns": 7171,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 896.375,
+      "trial": 0
+    },
+    {
+      "case": "hold.pattern.verbose",
+      "cohort": "holdout",
+      "elapsed_ns": 771402,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 96425.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.pattern.verbose",
+      "cohort": "holdout",
+      "elapsed_ns": 6399,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 799.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.pattern.verbose",
+      "cohort": "holdout",
+      "elapsed_ns": 763130,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 95391.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.pattern.verbose",
+      "cohort": "holdout",
+      "elapsed_ns": 781998,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 97749.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.pattern.verbose",
+      "cohort": "holdout",
+      "elapsed_ns": 6139,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 767.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.pattern.verbose",
+      "cohort": "holdout",
+      "elapsed_ns": 5919,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 739.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.pattern.verbose",
+      "cohort": "holdout",
+      "elapsed_ns": 801678,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 100209.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.pattern.verbose",
+      "cohort": "holdout",
+      "elapsed_ns": 761027,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 95128.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.pattern.verbose",
+      "cohort": "holdout",
+      "elapsed_ns": 6510,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 813.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.mode.ascii",
+      "cohort": "holdout",
+      "elapsed_ns": 7601,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 950.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.mode.ascii",
+      "cohort": "holdout",
+      "elapsed_ns": 358551,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 44818.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.mode.ascii",
+      "cohort": "holdout",
+      "elapsed_ns": 349907,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 43738.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.mode.ascii",
+      "cohort": "holdout",
+      "elapsed_ns": 7551,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 943.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.mode.ascii",
+      "cohort": "holdout",
+      "elapsed_ns": 7211,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 901.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.mode.ascii",
+      "cohort": "holdout",
+      "elapsed_ns": 349937,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 43742.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.mode.ascii",
+      "cohort": "holdout",
+      "elapsed_ns": 7211,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 901.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.mode.ascii",
+      "cohort": "holdout",
+      "elapsed_ns": 351039,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 43879.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.mode.ascii",
+      "cohort": "holdout",
+      "elapsed_ns": 350818,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 43852.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.mode.ascii",
+      "cohort": "holdout",
+      "elapsed_ns": 7331,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 916.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.mode.casefold",
+      "cohort": "holdout",
+      "elapsed_ns": 278650,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 34831.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.mode.casefold",
+      "cohort": "holdout",
+      "elapsed_ns": 7692,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 961.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.mode.casefold",
+      "cohort": "holdout",
+      "elapsed_ns": 276386,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 34548.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.mode.casefold",
+      "cohort": "holdout",
+      "elapsed_ns": 7351,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 918.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.mode.casefold",
+      "cohort": "holdout",
+      "elapsed_ns": 264909,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 33113.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.mode.casefold",
+      "cohort": "holdout",
+      "elapsed_ns": 7681,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 960.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.mode.casefold",
+      "cohort": "holdout",
+      "elapsed_ns": 267673,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 33459.125,
+      "trial": 3
+    },
+    {
+      "case": "hold.mode.casefold",
+      "cohort": "holdout",
+      "elapsed_ns": 7381,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 922.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.mode.casefold",
+      "cohort": "holdout",
+      "elapsed_ns": 268304,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 33538.0,
+      "trial": 4
+    },
+    {
+      "case": "hold.mode.casefold",
+      "cohort": "holdout",
+      "elapsed_ns": 7692,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 961.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.mode.astral",
+      "cohort": "holdout",
+      "elapsed_ns": 322056,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 40257.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.mode.astral",
+      "cohort": "holdout",
+      "elapsed_ns": 9254,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1156.75,
+      "trial": 0
+    },
+    {
+      "case": "hold.mode.astral",
+      "cohort": "holdout",
+      "elapsed_ns": 312702,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 39087.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.mode.astral",
+      "cohort": "holdout",
+      "elapsed_ns": 7902,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 987.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.mode.astral",
+      "cohort": "holdout",
+      "elapsed_ns": 7331,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 916.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.mode.astral",
+      "cohort": "holdout",
+      "elapsed_ns": 324539,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 40567.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.mode.astral",
+      "cohort": "holdout",
+      "elapsed_ns": 309827,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 38728.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.mode.astral",
+      "cohort": "holdout",
+      "elapsed_ns": 7631,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 953.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.mode.astral",
+      "cohort": "holdout",
+      "elapsed_ns": 310298,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 38787.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.mode.astral",
+      "cohort": "holdout",
+      "elapsed_ns": 7411,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 926.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.look.negative-ahead",
+      "cohort": "holdout",
+      "elapsed_ns": 6249,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 781.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.look.negative-ahead",
+      "cohort": "holdout",
+      "elapsed_ns": 583209,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 72901.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.look.negative-ahead",
+      "cohort": "holdout",
+      "elapsed_ns": 583059,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 72882.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.look.negative-ahead",
+      "cohort": "holdout",
+      "elapsed_ns": 5929,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 741.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.look.negative-ahead",
+      "cohort": "holdout",
+      "elapsed_ns": 5578,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 697.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.look.negative-ahead",
+      "cohort": "holdout",
+      "elapsed_ns": 577620,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 72202.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.look.negative-ahead",
+      "cohort": "holdout",
+      "elapsed_ns": 588807,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 73600.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.look.negative-ahead",
+      "cohort": "holdout",
+      "elapsed_ns": 5889,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 736.125,
+      "trial": 3
+    },
+    {
+      "case": "hold.look.negative-ahead",
+      "cohort": "holdout",
+      "elapsed_ns": 5778,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 722.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.look.negative-ahead",
+      "cohort": "holdout",
+      "elapsed_ns": 574255,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 71781.875,
+      "trial": 4
+    },
+    {
+      "case": "hold.look.negative-behind",
+      "cohort": "holdout",
+      "elapsed_ns": 215585,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 26948.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.look.negative-behind",
+      "cohort": "holdout",
+      "elapsed_ns": 5207,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 650.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.look.negative-behind",
+      "cohort": "holdout",
+      "elapsed_ns": 4647,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 580.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.look.negative-behind",
+      "cohort": "holdout",
+      "elapsed_ns": 224087,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 28010.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.look.negative-behind",
+      "cohort": "holdout",
+      "elapsed_ns": 4697,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 587.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.look.negative-behind",
+      "cohort": "holdout",
+      "elapsed_ns": 206852,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 25856.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.look.negative-behind",
+      "cohort": "holdout",
+      "elapsed_ns": 214443,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 26805.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.look.negative-behind",
+      "cohort": "holdout",
+      "elapsed_ns": 4967,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 620.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.look.negative-behind",
+      "cohort": "holdout",
+      "elapsed_ns": 4687,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 585.875,
+      "trial": 4
+    },
+    {
+      "case": "hold.look.negative-behind",
+      "cohort": "holdout",
+      "elapsed_ns": 208655,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 26081.875,
+      "trial": 4
+    },
+    {
+      "case": "hold.bytes.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 451060,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 56382.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.bytes.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 11147,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1393.375,
+      "trial": 0
+    },
+    {
+      "case": "hold.bytes.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 432041,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 54005.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.bytes.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 10005,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1250.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.bytes.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 464510,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 58063.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.bytes.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 10025,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1253.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.bytes.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 437098,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 54637.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.bytes.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 11668,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1458.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.bytes.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 9985,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1248.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.bytes.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 441926,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 55240.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.bytes.scan",
+      "cohort": "holdout",
+      "elapsed_ns": 440083,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 55010.375,
+      "trial": 0
+    },
+    {
+      "case": "hold.bytes.scan",
+      "cohort": "holdout",
+      "elapsed_ns": 9754,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1219.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.bytes.scan",
+      "cohort": "holdout",
+      "elapsed_ns": 7612,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 951.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.bytes.scan",
+      "cohort": "holdout",
+      "elapsed_ns": 442877,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 55359.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.bytes.scan",
+      "cohort": "holdout",
+      "elapsed_ns": 439773,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 54971.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.bytes.scan",
+      "cohort": "holdout",
+      "elapsed_ns": 9023,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1127.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.bytes.scan",
+      "cohort": "holdout",
+      "elapsed_ns": 441525,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 55190.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.bytes.scan",
+      "cohort": "holdout",
+      "elapsed_ns": 8843,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1105.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.bytes.scan",
+      "cohort": "holdout",
+      "elapsed_ns": 7131,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 891.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.bytes.scan",
+      "cohort": "holdout",
+      "elapsed_ns": 463939,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 57992.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.compile.complex",
+      "cohort": "holdout",
+      "elapsed_ns": 856551,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 107068.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.compile.complex",
+      "cohort": "holdout",
+      "elapsed_ns": 471119,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 58889.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.compile.complex",
+      "cohort": "holdout",
+      "elapsed_ns": 796159,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 99519.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.compile.complex",
+      "cohort": "holdout",
+      "elapsed_ns": 463339,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 57917.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.compile.complex",
+      "cohort": "holdout",
+      "elapsed_ns": 807356,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 100919.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.compile.complex",
+      "cohort": "holdout",
+      "elapsed_ns": 467404,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 58425.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.compile.complex",
+      "cohort": "holdout",
+      "elapsed_ns": 785253,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 98156.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.compile.complex",
+      "cohort": "holdout",
+      "elapsed_ns": 463459,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 57932.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.compile.complex",
+      "cohort": "holdout",
+      "elapsed_ns": 450589,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 56323.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.compile.complex",
+      "cohort": "holdout",
+      "elapsed_ns": 796821,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 99602.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.module.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 14191,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1773.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.module.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 459222,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 57402.75,
+      "trial": 0
+    },
+    {
+      "case": "hold.module.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 13641,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1705.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.module.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 429137,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 53642.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.module.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 421455,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 52681.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.module.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 12930,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1616.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.module.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 419382,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 52422.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.module.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 12699,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1587.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.module.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 429457,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 53682.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.module.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 12819,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1602.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.zero.boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 1126878,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 140859.75,
+      "trial": 0
+    },
+    {
+      "case": "hold.zero.boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 19089,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 2386.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.zero.boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 16465,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 2058.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.zero.boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 1105185,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 138148.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.zero.boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 1115551,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 139443.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.zero.boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 17587,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 2198.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.zero.boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 1092326,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 136540.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.zero.boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 18258,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 2282.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.zero.boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 15954,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1994.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.zero.boundary",
+      "cohort": "holdout",
+      "elapsed_ns": 1111305,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 138913.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.dense.iter",
+      "cohort": "holdout",
+      "elapsed_ns": 884103,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 110512.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.dense.iter",
+      "cohort": "holdout",
+      "elapsed_ns": 22544,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 2818.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.dense.iter",
+      "cohort": "holdout",
+      "elapsed_ns": 21802,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 2725.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.dense.iter",
+      "cohort": "holdout",
+      "elapsed_ns": 895139,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 111892.375,
+      "trial": 1
+    },
+    {
+      "case": "hold.dense.iter",
+      "cohort": "holdout",
+      "elapsed_ns": 22334,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 2791.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.dense.iter",
+      "cohort": "holdout",
+      "elapsed_ns": 873867,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 109233.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.dense.iter",
+      "cohort": "holdout",
+      "elapsed_ns": 882410,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 110301.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.dense.iter",
+      "cohort": "holdout",
+      "elapsed_ns": 23105,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 2888.125,
+      "trial": 3
+    },
+    {
+      "case": "hold.dense.iter",
+      "cohort": "holdout",
+      "elapsed_ns": 878353,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 109794.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.dense.iter",
+      "cohort": "holdout",
+      "elapsed_ns": 21292,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 2661.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.capture.optional",
+      "cohort": "holdout",
+      "elapsed_ns": 460514,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 57564.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.capture.optional",
+      "cohort": "holdout",
+      "elapsed_ns": 8512,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1064.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.capture.optional",
+      "cohort": "holdout",
+      "elapsed_ns": 436548,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 54568.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.capture.optional",
+      "cohort": "holdout",
+      "elapsed_ns": 7732,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 966.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.capture.optional",
+      "cohort": "holdout",
+      "elapsed_ns": 438501,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 54812.625,
+      "trial": 2
+    },
+    {
+      "case": "hold.capture.optional",
+      "cohort": "holdout",
+      "elapsed_ns": 8103,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1012.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.capture.optional",
+      "cohort": "holdout",
+      "elapsed_ns": 7952,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 994.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.capture.optional",
+      "cohort": "holdout",
+      "elapsed_ns": 450008,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 56251.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.capture.optional",
+      "cohort": "holdout",
+      "elapsed_ns": 7771,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 971.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.capture.optional",
+      "cohort": "holdout",
+      "elapsed_ns": 432882,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 54110.25,
+      "trial": 4
+    },
+    {
+      "case": "hold.split.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 6771,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 846.375,
+      "trial": 0
+    },
+    {
+      "case": "hold.split.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 345661,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 43207.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.split.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 6440,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 805.0,
+      "trial": 1
+    },
+    {
+      "case": "hold.split.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 308254,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 38531.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.split.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 6119,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 764.875,
+      "trial": 2
+    },
+    {
+      "case": "hold.split.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 308715,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 38589.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.split.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 5859,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 732.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.split.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 306021,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 38252.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.split.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 5758,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 719.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.split.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 302896,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 37862.0,
+      "trial": 4
+    },
+    {
+      "case": "hold.replace.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 7712,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 964.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.replace.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 174593,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 21824.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.replace.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 172630,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 21578.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.replace.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 6630,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 828.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.replace.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 172640,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 21580.0,
+      "trial": 2
+    },
+    {
+      "case": "hold.replace.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 6570,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 821.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.replace.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 6580,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 822.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.replace.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 174333,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 21791.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.replace.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 6429,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 803.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.replace.limited",
+      "cohort": "holdout",
+      "elapsed_ns": 170477,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 21309.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.bytes.view-long",
+      "cohort": "holdout",
+      "elapsed_ns": 45679,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 5709.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.bytes.view-long",
+      "cohort": "holdout",
+      "elapsed_ns": 2521469,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 315183.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.bytes.view-long",
+      "cohort": "holdout",
+      "elapsed_ns": 2447218,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 305902.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.bytes.view-long",
+      "cohort": "holdout",
+      "elapsed_ns": 46130,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 5766.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.bytes.view-long",
+      "cohort": "holdout",
+      "elapsed_ns": 45338,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 5667.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.bytes.view-long",
+      "cohort": "holdout",
+      "elapsed_ns": 2437212,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 304651.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.bytes.view-long",
+      "cohort": "holdout",
+      "elapsed_ns": 2426566,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 303320.75,
+      "trial": 3
+    },
+    {
+      "case": "hold.bytes.view-long",
+      "cohort": "holdout",
+      "elapsed_ns": 45589,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 5698.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.bytes.view-long",
+      "cohort": "holdout",
+      "elapsed_ns": 2388990,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 298623.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.bytes.view-long",
+      "cohort": "holdout",
+      "elapsed_ns": 45428,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 5678.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.window.search",
+      "cohort": "holdout",
+      "elapsed_ns": 3936,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 492.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.window.search",
+      "cohort": "holdout",
+      "elapsed_ns": 64417,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 8052.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.window.search",
+      "cohort": "holdout",
+      "elapsed_ns": 3335,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 416.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.window.search",
+      "cohort": "holdout",
+      "elapsed_ns": 67452,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 8431.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.window.search",
+      "cohort": "holdout",
+      "elapsed_ns": 3185,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 398.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.window.search",
+      "cohort": "holdout",
+      "elapsed_ns": 62404,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 7800.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.window.search",
+      "cohort": "holdout",
+      "elapsed_ns": 62564,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 7820.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.window.search",
+      "cohort": "holdout",
+      "elapsed_ns": 3155,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 394.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.window.search",
+      "cohort": "holdout",
+      "elapsed_ns": 2985,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 373.125,
+      "trial": 4
+    },
+    {
+      "case": "hold.window.search",
+      "cohort": "holdout",
+      "elapsed_ns": 62103,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 7762.875,
+      "trial": 4
+    },
+    {
+      "case": "hold.window.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 136826,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 17103.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.window.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 4677,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 584.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.window.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 138378,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 17297.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.window.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 4607,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 575.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.window.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 4206,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 525.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.window.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 135304,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 16913.0,
+      "trial": 2
+    },
+    {
+      "case": "hold.window.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 139250,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 17406.25,
+      "trial": 3
+    },
+    {
+      "case": "hold.window.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 4667,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 583.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.window.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 4237,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 529.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.window.findall",
+      "cohort": "holdout",
+      "elapsed_ns": 140061,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 17507.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.window.scanner",
+      "cohort": "holdout",
+      "elapsed_ns": 7792,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 974.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.window.scanner",
+      "cohort": "holdout",
+      "elapsed_ns": 224909,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 28113.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.window.scanner",
+      "cohort": "holdout",
+      "elapsed_ns": 222926,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 27865.75,
+      "trial": 1
+    },
+    {
+      "case": "hold.window.scanner",
+      "cohort": "holdout",
+      "elapsed_ns": 7551,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 943.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.window.scanner",
+      "cohort": "holdout",
+      "elapsed_ns": 226552,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 28319.0,
+      "trial": 2
+    },
+    {
+      "case": "hold.window.scanner",
+      "cohort": "holdout",
+      "elapsed_ns": 7942,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 992.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.window.scanner",
+      "cohort": "holdout",
+      "elapsed_ns": 220703,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 27587.875,
+      "trial": 3
+    },
+    {
+      "case": "hold.window.scanner",
+      "cohort": "holdout",
+      "elapsed_ns": 7331,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 916.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.window.scanner",
+      "cohort": "holdout",
+      "elapsed_ns": 6840,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 855.0,
+      "trial": 4
+    },
+    {
+      "case": "hold.window.scanner",
+      "cohort": "holdout",
+      "elapsed_ns": 223236,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 27904.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.window.match",
+      "cohort": "holdout",
+      "elapsed_ns": 63256,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 7907.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.window.match",
+      "cohort": "holdout",
+      "elapsed_ns": 2904,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 363.0,
+      "trial": 0
+    },
+    {
+      "case": "hold.window.match",
+      "cohort": "holdout",
+      "elapsed_ns": 63025,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 7878.125,
+      "trial": 1
+    },
+    {
+      "case": "hold.window.match",
+      "cohort": "holdout",
+      "elapsed_ns": 2754,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 344.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.window.match",
+      "cohort": "holdout",
+      "elapsed_ns": 2454,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 306.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.window.match",
+      "cohort": "holdout",
+      "elapsed_ns": 61382,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 7672.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.window.match",
+      "cohort": "holdout",
+      "elapsed_ns": 2844,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 355.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.window.match",
+      "cohort": "holdout",
+      "elapsed_ns": 60261,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 7532.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.window.match",
+      "cohort": "holdout",
+      "elapsed_ns": 60532,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 7566.5,
+      "trial": 4
+    },
+    {
+      "case": "hold.window.match",
+      "cohort": "holdout",
+      "elapsed_ns": 2824,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 353.0,
+      "trial": 4
+    },
+    {
+      "case": "hold.literal.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 4297,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 537.125,
+      "trial": 0
+    },
+    {
+      "case": "hold.literal.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 69054,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 8631.75,
+      "trial": 0
+    },
+    {
+      "case": "hold.literal.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 3645,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 455.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.literal.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 66821,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 8352.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.literal.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 66931,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 8366.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.literal.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 3716,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 464.5,
+      "trial": 2
+    },
+    {
+      "case": "hold.literal.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 3616,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 452.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.literal.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 68193,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 8524.125,
+      "trial": 3
+    },
+    {
+      "case": "hold.literal.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 66871,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 8358.875,
+      "trial": 4
+    },
+    {
+      "case": "hold.literal.replace",
+      "cohort": "holdout",
+      "elapsed_ns": 3565,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 445.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.template.repeat",
+      "cohort": "holdout",
+      "elapsed_ns": 399933,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 49991.625,
+      "trial": 0
+    },
+    {
+      "case": "hold.template.repeat",
+      "cohort": "holdout",
+      "elapsed_ns": 12098,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1512.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.template.repeat",
+      "cohort": "holdout",
+      "elapsed_ns": 408876,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 51109.5,
+      "trial": 1
+    },
+    {
+      "case": "hold.template.repeat",
+      "cohort": "holdout",
+      "elapsed_ns": 12760,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1595.0,
+      "trial": 1
+    },
+    {
+      "case": "hold.template.repeat",
+      "cohort": "holdout",
+      "elapsed_ns": 392331,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 49041.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.template.repeat",
+      "cohort": "holdout",
+      "elapsed_ns": 11627,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 1453.375,
+      "trial": 2
+    },
+    {
+      "case": "hold.template.repeat",
+      "cohort": "holdout",
+      "elapsed_ns": 11397,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1424.625,
+      "trial": 3
+    },
+    {
+      "case": "hold.template.repeat",
+      "cohort": "holdout",
+      "elapsed_ns": 418240,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 52280.0,
+      "trial": 3
+    },
+    {
+      "case": "hold.template.repeat",
+      "cohort": "holdout",
+      "elapsed_ns": 11587,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 1448.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.template.repeat",
+      "cohort": "holdout",
+      "elapsed_ns": 394023,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 49252.875,
+      "trial": 4
+    },
+    {
+      "case": "hold.match.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 39319,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 4914.875,
+      "trial": 0
+    },
+    {
+      "case": "hold.match.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 1612,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 201.5,
+      "trial": 0
+    },
+    {
+      "case": "hold.match.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 36434,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 4554.25,
+      "trial": 1
+    },
+    {
+      "case": "hold.match.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 1663,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 207.875,
+      "trial": 1
+    },
+    {
+      "case": "hold.match.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 35754,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 4469.25,
+      "trial": 2
+    },
+    {
+      "case": "hold.match.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 1712,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 214.0,
+      "trial": 2
+    },
+    {
+      "case": "hold.match.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 1683,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 210.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.match.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 39620,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 4952.5,
+      "trial": 3
+    },
+    {
+      "case": "hold.match.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 36926,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 4615.75,
+      "trial": 4
+    },
+    {
+      "case": "hold.match.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 1723,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 215.375,
+      "trial": 4
+    },
+    {
+      "case": "hold.fullmatch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 2354,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 294.25,
+      "trial": 0
+    },
+    {
+      "case": "hold.fullmatch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 85659,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 10707.375,
+      "trial": 0
+    },
+    {
+      "case": "hold.fullmatch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 84437,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 10554.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.fullmatch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 2173,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 271.625,
+      "trial": 1
+    },
+    {
+      "case": "hold.fullmatch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 87201,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 10900.125,
+      "trial": 2
+    },
+    {
+      "case": "hold.fullmatch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 2214,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 276.75,
+      "trial": 2
+    },
+    {
+      "case": "hold.fullmatch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 84867,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 10608.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.fullmatch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 2163,
+      "module": "re",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 270.375,
+      "trial": 3
+    },
+    {
+      "case": "hold.fullmatch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 2093,
+      "module": "re",
+      "operations": 8,
+      "order": 0,
+      "per_operation_ns": 261.625,
+      "trial": 4
+    },
+    {
+      "case": "hold.fullmatch.miss",
+      "cohort": "holdout",
+      "elapsed_ns": 86310,
+      "module": "candidates.ast_candidate",
+      "operations": 8,
+      "order": 1,
+      "per_operation_ns": 10788.75,
+      "trial": 4
+    }
+  ],
+  "schema": "rebar-engine-pilot-v1",
+  "trials": 5
+}

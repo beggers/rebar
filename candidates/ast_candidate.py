@@ -43,6 +43,9 @@ U = UNICODE = RegexFlag.UNICODE
 DEBUG = RegexFlag.DEBUG
 NOFLAG = RegexFlag(0)
 _BYTE = 1 << 31
+_IGNORE = int(IGNORECASE)
+_DOT = int(DOTALL)
+_ASCII_MODES = int(ASCII) | int(LOCALE) | _BYTE
 _MAXREPEAT = (1 << 32) - 1
 _ESCAPE_MAP = {ord(char): "\\" + char for char in "()[]{}?*+-|^$\\.&~# \t\n\r\v\f"}
 _MISSING = object()
@@ -619,13 +622,13 @@ def _range_case_match(left, right, char, ascii_only):
 
 
 def _equal(left, right, flags):
-    if flags & int(IGNORECASE):
-        return _fold(left, bool(flags & int(ASCII | LOCALE | _BYTE))) == _fold(right, bool(flags & int(ASCII | LOCALE | _BYTE)))
+    if flags & _IGNORE:
+        return _fold(left, bool(flags & _ASCII_MODES)) == _fold(right, bool(flags & _ASCII_MODES))
     return left == right
 
 
 def _category(char, code, flags):
-    ascii_only = bool(flags & int(ASCII | LOCALE | _BYTE))
+    ascii_only = bool(flags & _ASCII_MODES)
     if code.lower() == "d":
         value = "0" <= char <= "9" if ascii_only else char.isdecimal()
     elif code.lower() == "s":
@@ -641,7 +644,7 @@ def _class_match(node, char):
     for item in items:
         if item[0] == "range":
             left, right = item[1], item[2]
-            found = _range_case_match(left, right, char, bool(flags & int(ASCII | LOCALE | _BYTE))) if flags & int(IGNORECASE) else left <= char <= right
+            found = _range_case_match(left, right, char, bool(flags & _ASCII_MODES)) if flags & _IGNORE else left <= char <= right
         elif item[0] == "lit" and _equal(item[1], char, flags):
             found = True
         elif item[0] == "category" and _category(char, item[1], flags):
@@ -685,9 +688,9 @@ def _repeat_layout(node):
 def _repeat_atom_match(node, char):
     kind = node[0]
     if kind == "lit":
-        return _equal(node[1], char, node[2])
+        return node[1] == char if not node[2] & _IGNORE else _equal(node[1], char, node[2])
     if kind == "dot":
-        return bool(node[1] & int(DOTALL)) or char != "\n"
+        return bool(node[1] & _DOT) or char != "\n"
     if kind == "category":
         return _category(char, node[1], node[2])
     if kind == "class":
@@ -697,21 +700,79 @@ def _repeat_atom_match(node, char):
     return False
 
 
+def _literal_start(node):
+    kind = node[0]
+    if kind == "lit":
+        return ("", False) if node[2] & _IGNORE else (node[1], True)
+    if kind in {"anchor", "boundary", "setflags"}:
+        return "", True
+    if kind in {"group", "atomic"}:
+        return _literal_start(node[-1])
+    if kind == "seq":
+        parts = []
+        for child in node[1]:
+            value, complete = _literal_start(child)
+            parts.append(value)
+            if not complete:
+                return "".join(parts), False
+        return "".join(parts), True
+    return "", False
+
+
+def _start_atoms(node):
+    kind = node[0]
+    if kind in {"lit", "dot", "category", "class"}:
+        return (node,), False, True
+    if kind in {"anchor", "boundary", "setflags", "look"}:
+        return (), True, True
+    if kind in {"group", "atomic"}:
+        return _start_atoms(node[-1])
+    if kind == "seq":
+        atoms = []
+        for child in node[1]:
+            values, nullable, known = _start_atoms(child)
+            if not known:
+                return (), False, False
+            atoms.extend(values)
+            if not nullable:
+                return tuple(atoms), False, True
+        return tuple(atoms), True, True
+    if kind in {"alt", "conditional"}:
+        branches = node[1] if kind == "alt" else node[2:4]
+        atoms = []
+        nullable = False
+        for branch in branches:
+            values, empty, known = _start_atoms(branch)
+            if not known:
+                return (), False, False
+            atoms.extend(values)
+            nullable |= empty
+        return tuple(atoms), nullable, True
+    if kind == "repeat":
+        atoms, nullable, known = _start_atoms(node[1])
+        return atoms, node[2] == 0 or nullable, known
+    return (), False, False
+
+
 class _Engine:
-    def __init__(self, node, text, endpos):
+    __slots__ = ("node", "text", "endpos", "layouts", "tables")
+
+    def __init__(self, node, text, endpos, tables=None):
         self.node = node
         self.text = text
         self.endpos = endpos
+        self.layouts = {}
+        self.tables = {} if tables is None else tables
 
     def run(self, node, state):
         kind = node[0]
         pos, captures, last = state
         if kind == "lit":
-            if pos < self.endpos and _equal(node[1], self.text[pos], node[2]):
+            if pos < self.endpos and (node[1] == self.text[pos] if not node[2] & _IGNORE else _equal(node[1], self.text[pos], node[2])):
                 yield pos + 1, captures, last
             return
         if kind == "dot":
-            if pos < self.endpos and (node[1] & int(DOTALL) or self.text[pos] != "\n"):
+            if pos < self.endpos and (node[1] & _DOT or self.text[pos] != "\n"):
                 yield pos + 1, captures, last
             return
         if kind == "category":
@@ -743,10 +804,18 @@ class _Engine:
             return
         if kind == "seq":
             def walk(index, current):
-                if index == len(node[1]):
+                children = node[1]
+                while index < len(children) and children[index][0] == "lit":
+                    child = children[index]
+                    current_pos, current_captures, current_last = current
+                    if current_pos >= self.endpos or (child[1] != self.text[current_pos] if not child[2] & _IGNORE else not _equal(child[1], self.text[current_pos], child[2])):
+                        return
+                    current = current_pos + 1, current_captures, current_last
+                    index += 1
+                if index == len(children):
                     yield current
                 else:
-                    for updated in self.run(node[1][index], current):
+                    for updated in self.run(children[index], current):
                         yield from walk(index + 1, updated)
             yield from walk(0, state)
             return
@@ -773,17 +842,35 @@ class _Engine:
             return
         if kind == "repeat":
             child, minimum, maximum, mode = node[1:5]
-            layout = _repeat_layout(child)
+            child_key = id(child)
+            layout = self.layouts.get(child_key, _MISSING)
+            if layout is _MISSING:
+                layout = _repeat_layout(child)
+                self.layouts[child_key] = layout
             if layout is not None and layout[1] > 0:
                 atom, width, saved = layout
                 available = (self.endpos - pos) // width
                 limit = available if maximum is None else min(maximum, available)
                 matched = 0
-                while matched < limit:
-                    begin = pos + matched * width
-                    if not all(_repeat_atom_match(atom, self.text[index]) for index in range(begin, begin + width)):
-                        break
-                    matched += 1
+                if width == 1:
+                    table = None
+                    if limit >= 8 and atom[0] in {"class", "category", "choice"}:
+                        table = self.tables.get(child_key)
+                        if table is None:
+                            table = tuple(_repeat_atom_match(atom, chr(value)) for value in range(256))
+                            self.tables[child_key] = table
+                    while matched < limit:
+                        char = self.text[pos + matched]
+                        value = ord(char)
+                        if not (table[value] if table is not None and value < 256 else _repeat_atom_match(atom, char)):
+                            break
+                        matched += 1
+                else:
+                    while matched < limit:
+                        begin = pos + matched * width
+                        if not all(_repeat_atom_match(atom, self.text[index]) for index in range(begin, begin + width)):
+                            break
+                        matched += 1
                 if matched < minimum:
                     return
                 counts = range(minimum, matched + 1) if mode == "lazy" else range(matched, minimum - 1, -1)
@@ -1083,7 +1170,7 @@ class _Scanner:
 
 
 class Pattern:
-    __slots__ = ("pattern", "flags", "groups", "groupindex", "_node", "__weakref__")
+    __slots__ = ("pattern", "flags", "groups", "groupindex", "_node", "_literal", "_starts", "_start_table", "_tables", "__weakref__")
 
     def __init__(self, value, flags, node, groups, groupindex):
         self.pattern = value
@@ -1091,6 +1178,11 @@ class Pattern:
         self.groups = groups
         self.groupindex = types.MappingProxyType(dict(groupindex))
         self._node = node
+        self._literal = _literal_start(node)[0]
+        atoms, nullable, known = _start_atoms(node)
+        self._starts = atoms if known and not nullable else ()
+        self._start_table = None
+        self._tables = {}
 
     def __copy__(self):
         return self
@@ -1137,7 +1229,7 @@ class Pattern:
     def _at(self, string, start, endpos, original_pos, require_nonempty=False):
         self._validate_string(string)
         text = bytes(string).decode("latin1") if not isinstance(string, str) else string
-        engine = _Engine(self._node, text, endpos)
+        engine = _Engine(self._node, text, endpos, self._tables)
         state = (start, tuple([None] * (self.groups + 1)), None)
         for result in engine.run(self._node, state):
             end, captures, last = result
@@ -1148,20 +1240,43 @@ class Pattern:
             return Match(self, string, tuple(values), last, original_pos, endpos)
         return None
 
-    def _search(self, string, pos, endpos, require_nonempty=False, original_pos=None):
-        self._validate_string(string)
+    def _search(self, string, pos, endpos, require_nonempty=False, original_pos=None, engine=None):
         if pos > endpos:
             return None
+        if engine is None:
+            self._validate_string(string)
+            text = bytes(string).decode("latin1") if not isinstance(string, str) else string
+            engine = _Engine(self._node, text, endpos, self._tables)
+        text = engine.text
         first_start = pos
         first = self._node
         if first[0] == "seq" and first[1]:
             first = first[1][0]
         if first[0] == "look" and first[1] == "behind" and first[2]:
             first_start = max(pos, first[4])
-        for start in range(first_start, endpos + 1):
-            result = self._at(string, start, endpos, pos if original_pos is None else original_pos, require_nonempty and start == pos)
-            if result is not None:
-                return result
+        start = first_start
+        empty_captures = (None,) * (self.groups + 1)
+        literal = self._literal
+        start_table = self._start_table
+        if not literal and self._starts and start_table is None:
+            start_table = tuple(any(_repeat_atom_match(atom, chr(value)) for atom in self._starts) for value in range(256))
+            self._start_table = start_table
+        while start <= endpos:
+            if literal:
+                start = text.find(literal, start, endpos)
+                if start < 0:
+                    return None
+            elif start_table is not None and start < endpos and ord(text[start]) < 256 and not start_table[ord(text[start])]:
+                start += 1
+                continue
+            state = (start, empty_captures, None)
+            for end, captures, last in engine.run(self._node, state):
+                if require_nonempty and start == pos and end == start:
+                    continue
+                values = list(captures)
+                values[0] = (start, end)
+                return Match(self, string, tuple(values), last, pos if original_pos is None else original_pos, endpos)
+            start += 1
         return None
 
     def search(self, string, pos=0, endpos=None):
@@ -1183,7 +1298,7 @@ class Pattern:
         text = bytes(string).decode("latin1") if not isinstance(string, str) else string
         start = max(pos, 0)
         state = (start, tuple([None] * (self.groups + 1)), None)
-        for result in _Engine(self._node, text, end).run(self._node, state):
+        for result in _Engine(self._node, text, end, self._tables).run(self._node, state):
             if result[0] == end:
                 captures = list(result[1])
                 captures[0] = (start, end)
@@ -1200,16 +1315,21 @@ class Pattern:
     def _finditer(self, string, pos, end, view):
         current = max(pos, 0)
         empty = False
+        engine = None
+        if isinstance(string, (str, bytes)):
+            text = string if isinstance(string, str) else string.decode("latin1")
+            engine = _Engine(self._node, text, end, self._tables)
         while current <= end:
-            result = self._search(string, current, end, empty, max(pos, 0))
+            result = self._search(string, current, end, empty, max(pos, 0), engine)
             if result is None:
                 break
             yield result
-            if result.start() == result.end():
+            begin, finish = result._spans[0]
+            if begin == finish:
                 empty = True
-                current = result.start()
+                current = begin
             else:
-                current = result.end()
+                current = finish
                 empty = False
 
     def findall(self, string, pos=0, endpos=None):
@@ -1217,12 +1337,13 @@ class Pattern:
         output = []
         for item in self.finditer(string, pos, endpos):
             if self.groups == 0:
-                output.append(item.group(0))
+                begin, finish = item._spans[0]
+                output.append(_slice(string, begin, finish))
             elif self.groups == 1:
-                value = item.group(1)
-                output.append(empty if value is None else value)
+                span = item._spans[1]
+                output.append(empty if span is None else _slice(string, span[0], span[1]))
             else:
-                output.append(tuple(empty if value is None else value for value in item.groups()))
+                output.append(tuple(empty if span is None else _slice(string, span[0], span[1]) for span in item._spans[1:]))
         return output
 
     def split(self, string, maxsplit=0):
@@ -1232,9 +1353,10 @@ class Pattern:
         for item in self.finditer(string):
             if maxsplit and count >= maxsplit:
                 break
-            result.append(_slice(string, previous, item.start()))
-            result.extend(item.groups())
-            previous = item.end()
+            begin, finish = item._spans[0]
+            result.append(_slice(string, previous, begin))
+            result.extend(None if span is None else _slice(string, span[0], span[1]) for span in item._spans[1:])
+            previous = finish
             count += 1
         result.append(_slice(string, previous, _subject_length(string)))
         return result
@@ -1250,7 +1372,8 @@ class Pattern:
         for item in self.finditer(string):
             if count and replacements >= count:
                 break
-            prefix = _slice(string, previous, item.start())
+            begin, finish = item._spans[0]
+            prefix = _slice(string, previous, begin)
             if prefix:
                 parts.append(prefix)
             if callable(repl):
@@ -1259,7 +1382,7 @@ class Pattern:
                 raw = bytes(repl) if isinstance(repl, (bytearray, memoryview)) else repl
                 value = item.expand(repl) if (b"\\" in raw if isinstance(raw, bytes) else "\\" in raw) else repl
             parts.append(value)
-            previous = item.end()
+            previous = finish
             replacements += 1
         tail = _slice(string, previous, length)
         if tail:

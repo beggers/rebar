@@ -40,6 +40,10 @@ These show the broader holdout task by task. Green means clearly faster, red mea
 
 ![Overall results across all task sets](performance/v3/evidence/final-rankings.svg)
 
+A follow-on [Python-engine optimization pilot](performance/v3/evidence/PYTHON-ENGINE.md) makes the pure-Python engine **2.37× faster than before** across the same 72 holdout tasks while keeping every correctness gate clean. The chart shows every task and makes the remaining gap to Python `re` explicit.
+
+![Python engine before and after](performance/v3/evidence/python-engine-pilot.svg)
+
 The separate [from-scratch Zig trial](candidates/evidence/ZIG-PROBE.md) shows why the Python/native boundary matters: the compiled Zig matcher is faster than Python `re` on all six small tasks once repeated calls cross that boundary only once, but individual Python calls remain much slower. Zig is an architecture experiment, **not** a complete replacement candidate.
 
 ![Zig architecture speed compared with Python re](candidates/evidence/zig-probe-speed.svg)
