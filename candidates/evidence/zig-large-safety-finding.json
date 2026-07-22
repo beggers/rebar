@@ -1,0 +1,10 @@
+{
+  "schema": "rebar-zig-large-safety-finding-v1",
+  "finding": "AddressSanitizer stack overflow while compiling a long left-associated sequence/alternative tree in a Debug build",
+  "location": "candidates/zig/mini_regex.zig: Compiler.node",
+  "initial_result": "FAIL: recursive compilation exhausted the process stack",
+  "fix": "Build balanced sequence and alternative trees in the Zig parser while preserving source order",
+  "final_result": "PASS: all five official large-pattern/repeat methods and the instrumented differential controls complete with zero sanitizer findings",
+  "preserved_timeout_control": "zig-large-sanitized-timeout-control.json",
+  "note": "The initial Debug differential rerun also records five expected Debug-speed timeouts under the 1.5-second release case limit; the clean safety rerun uses the documented 120-second Debug limit."
+}

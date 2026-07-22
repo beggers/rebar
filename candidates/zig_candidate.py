@@ -49,6 +49,7 @@ _BYTE = 1 << 31
 _ESCAPE_MAP = {ord(char): "\\" + char for char in "()[]{}?*+-|^$\\.&~# \t\n\r\v\f"}
 _MISSING = object()
 _WARNING_PREFIX = (os.path.dirname(__file__),)
+_MAXREPEAT = (1 << 32) - 1
 _SIMPLE_TEMPLATE_ESCAPES = {"a": "\a", "b": "\b", "f": "\f", "n": "\n", "r": "\r", "t": "\t", "v": "\v", "\\": "\\"}
 
 
@@ -91,6 +92,8 @@ class _Native:
         lib.rebar_zig_groups.restype = ctypes.c_size_t
         lib.rebar_zig_flags.argtypes = [ctypes.c_void_p]
         lib.rebar_zig_flags.restype = ctypes.c_uint32
+        lib.rebar_zig_program_memory.argtypes = [ctypes.c_void_p]
+        lib.rebar_zig_program_memory.restype = ctypes.c_size_t
         lib.rebar_zig_name_count.argtypes = [ctypes.c_void_p]
         lib.rebar_zig_name_count.restype = ctypes.c_size_t
         lib.rebar_zig_name_length.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
@@ -194,6 +197,93 @@ def _warn_ambiguous(pattern):
             for marker, label in (("&&", "intersection"), ("||", "union"), ("~~", "symmetric difference"), ("--", "difference")):
                 if text[index:index + 2] == marker:
                     warnings.warn(f"Possible set {label} at position {index}", FutureWarning, skip_file_prefixes=_WARNING_PREFIX)
+
+
+def _fixed_width(text):
+    """Return the width of a simple fixed-width expression, or None when it varies."""
+    at = 0
+    length = len(text)
+
+    def expression():
+        nonlocal at
+        widths = []
+        total = 0
+        while at < length and text[at] != ")":
+            if text[at] == "|":
+                widths.append(total)
+                total = 0
+                at += 1
+                continue
+            if text[at] == "(":
+                if text.startswith("(?:", at) or text.startswith("(?>", at):
+                    at += 3
+                elif text.startswith("(?P<", at):
+                    close = text.find(">", at + 4)
+                    if close < 0:
+                        return None
+                    at = close + 1
+                elif text.startswith("(?", at):
+                    return None
+                else:
+                    at += 1
+                width = expression()
+                if width is None or at >= length or text[at] != ")":
+                    return None
+                at += 1
+            elif text[at] == "[":
+                at += 1
+                if at < length and text[at] == "^":
+                    at += 1
+                first = True
+                while at < length:
+                    if text[at] == "]" and not first:
+                        break
+                    first = False
+                    at += 2 if text[at] == "\\" and at + 1 < length else 1
+                if at >= length:
+                    return None
+                at += 1
+                width = 1
+            elif text[at] == "\\":
+                at += 2
+                width = 1
+            elif text[at] in "^$":
+                at += 1
+                width = 0
+            else:
+                at += 1
+                width = 1
+            if at < length and text[at] in "*+?":
+                return None
+            if at < length and text[at] == "{":
+                opening = at
+                at += 1
+                begin = at
+                while at < length and text[at].isdigit():
+                    at += 1
+                left = text[begin:at]
+                right = left
+                if at < length and text[at] == ",":
+                    at += 1
+                    begin = at
+                    while at < length and text[at].isdigit():
+                        at += 1
+                    right = text[begin:at]
+                if at >= length or text[at] != "}" or not left and not right:
+                    at = opening
+                else:
+                    at += 1
+                    if not left or not right or left != right:
+                        return None
+                    width *= int(left)
+                    if at < length and text[at] in "?+":
+                        at += 1
+            total += width
+        widths.append(total)
+        return widths[0] if all(value == widths[0] for value in widths) else None
+
+    width = expression()
+    return width if at == length else None
 
 
 def _preflight_pattern(pattern, flags):
@@ -538,6 +628,9 @@ def _preflight_pattern(pattern, flags):
                 variable = variable or any(f"\\{number}" in body or any(f"(?P={name})" in body for name, value in groups.items() if value == number) for number in variable_groups)
                 if variable:
                     fail("look-behind requires fixed-width pattern", keep_pattern=False)
+                width = _fixed_width(body)
+                if width is not None and width > _MAXREPEAT:
+                    fail("looks too much behind", keep_pattern=False)
             active_flags = parent_flags
             can_repeat, repeated = kind != "lookbehind", False
             index += 1
@@ -578,6 +671,8 @@ def _preflight_pattern(pattern, flags):
                     continue
                 minimum = int(first or 0)
                 maximum = int(second) if second else None
+                if minimum >= _MAXREPEAT or maximum is not None and maximum >= _MAXREPEAT:
+                    raise OverflowError("the repetition number is too large")
                 if maximum is not None and minimum > maximum:
                     fail("min repeat greater than max repeat", quantifier_start + 1)
                 end = cursor + 1

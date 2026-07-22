@@ -1,14 +1,10 @@
 const std = @import("std");
 
-const max_nodes = 4096;
-const max_classes = 128;
 const max_positions = 512;
-const max_code = 16384;
 const max_stack = 8192;
 const max_groups = 256;
 const max_undo = 65536;
 const max_name_length = 63;
-const max_class_ranges = 8192;
 const unbounded = std.math.maxInt(usize);
 const text_pattern_flag: u32 = 0x80000000;
 
@@ -20,18 +16,18 @@ extern fn _PyUnicode_IsWhitespace(u32) c_int;
 extern fn _PyUnicode_ToLowercase(u32) u32;
 extern fn _PyUnicode_ToUppercase(u32) u32;
 
-const Pair = struct { left: u16, right: u16 };
-const Repeat = struct { child: u16, minimum: usize, maximum: usize, lazy: bool, possessive: bool };
-const Group = struct { child: u16, number: u16 };
-const Conditional = struct { number: u16, yes: u16, no: u16 };
-const Look = struct { child: u16, behind: bool, positive: bool, width: u16 };
-const Scoped = struct { child: u16, flags: u32 };
+const Pair = struct { left: u32, right: u32 };
+const Repeat = struct { child: u32, minimum: usize, maximum: usize, lazy: bool, possessive: bool };
+const Group = struct { child: u32, number: u16 };
+const Conditional = struct { number: u16, yes: u32, no: u32 };
+const Look = struct { child: u32, behind: bool, positive: bool, width: u32 };
+const Scoped = struct { child: u32, flags: u32 };
 const Name = struct { bytes: [max_name_length]u8 = undefined, length: u8 = 0, group: u16 = 0 };
 const Node = union(enum) {
     empty,
     literal: u32,
     dot,
-    class: u16,
+    class: u32,
     begin,
     end,
     absolute_begin,
@@ -43,37 +39,38 @@ const Node = union(enum) {
     group: Group,
     backref: u16,
     conditional: Conditional,
-    atomic: u16,
+    atomic: u32,
     look: Look,
     scoped: Scoped,
 };
 const ClassRange = struct { left: u32, right: u32 };
 const CharClass = struct {
     bits: [32]u8 = [_]u8{0} ** 32,
-    range_start: u16 = 0,
-    range_count: u16 = 0,
+    range_start: u32 = 0,
+    range_count: u32 = 0,
     categories: u8 = 0,
     negative: bool = false,
     locale_multi: bool = false,
 };
-const Op = enum(u8) { literal, dot, class, begin, end, absolute_begin, absolute_end, boundary, split, jump, save_begin, save_end, backref, conditional, atomic_begin, atomic_end, look, accept };
-const Instruction = struct { op: Op, left: u16 = 0, right: u16 = 0, extra: u16 = 0, value: u32 = 0 };
+const Op = enum(u8) { literal, dot, class, begin, end, absolute_begin, absolute_end, boundary, split, jump, save_begin, save_end, backref, conditional, atomic_begin, atomic_end, look, run, accept };
+const Instruction = struct { op: Op, left: u32 = 0, right: u32 = 0, extra: u32 = 0, value: u32 = 0 };
+const CaptureLayout = struct { number: u16, begin: usize, end: usize };
+const Run = struct { atom: u32, flags: u32, width: usize, minimum: usize, maximum: usize, lazy: bool, possessive: bool, layout_start: u32, layout_count: u16 };
 const Program = struct {
-    nodes: [max_nodes]Node = undefined,
-    node_count: u16 = 0,
-    classes: [max_classes]CharClass = undefined,
-    class_count: u16 = 0,
-    ranges: [max_class_ranges]ClassRange = undefined,
-    range_count: u16 = 0,
-    root: u16 = 0,
+    arena: std.heap.ArenaAllocator,
+    nodes: std.ArrayList(Node) = .empty,
+    classes: std.ArrayList(CharClass) = .empty,
+    ranges: std.ArrayList(ClassRange) = .empty,
+    code: std.ArrayList(Instruction) = .empty,
+    runs: std.ArrayList(Run) = .empty,
+    layouts: std.ArrayList(CaptureLayout) = .empty,
+    root: u32 = 0,
     flags: u32 = 0,
-    code: [max_code]Instruction = undefined,
-    code_count: u16 = 0,
     starts: [256]u8 = [_]u8{0} ** 256,
     single: [256]u8 = [_]u8{0} ** 256,
     pairs: [8192]u8 = [_]u8{0} ** 8192,
     nullable: bool = false,
-    scoped_prefix: u16 = std.math.maxInt(u16),
+    scoped_prefix: u32 = std.math.maxInt(u32),
     groups: u16 = 0,
     references: bool = false,
     nullable_loops: bool = false,
@@ -81,7 +78,7 @@ const Program = struct {
     name_count: u16 = 0,
 };
 
-const ParseError = error{ TooManyNodes, TooManyClasses, InvalidPattern, Unsupported };
+const ParseError = std.mem.Allocator.Error || error{ TooManyNodes, TooManyClasses, InvalidPattern, Unsupported };
 const Parser = struct {
     source: []const u8,
     at: usize = 0,
@@ -90,11 +87,10 @@ const Parser = struct {
     lookbehind_bases: [256]u16 = undefined,
     lookbehind_depth: usize = 0,
 
-    fn add(self: *Parser, node: Node) ParseError!u16 {
-        if (self.program.node_count >= max_nodes) return error.TooManyNodes;
-        const index = self.program.node_count;
-        self.program.nodes[index] = node;
-        self.program.node_count += 1;
+    fn add(self: *Parser, node: Node) ParseError!u32 {
+        if (self.program.nodes.items.len >= std.math.maxInt(u32)) return error.TooManyNodes;
+        const index: u32 = @intCast(self.program.nodes.items.len);
+        try self.program.nodes.append(self.program.arena.allocator(), node);
         return index;
     }
 
@@ -183,23 +179,21 @@ const Parser = struct {
         };
     }
 
-    fn category(self: *Parser, code: u8) ParseError!u16 {
-        if (self.program.class_count >= max_classes) return error.TooManyClasses;
-        const index = self.program.class_count;
-        self.program.class_count += 1;
+    fn category(self: *Parser, code: u8) ParseError!u32 {
+        if (self.program.classes.items.len >= std.math.maxInt(u32)) return error.TooManyClasses;
+        const index: u32 = @intCast(self.program.classes.items.len);
         var class = CharClass{};
-        class.range_start = self.program.range_count;
+        class.range_start = @intCast(self.program.ranges.items.len);
         class.categories = categoryBit(code);
-        self.program.classes[index] = class;
+        try self.program.classes.append(self.program.arena.allocator(), class);
         return self.add(.{ .class = index });
     }
 
-    fn parseClass(self: *Parser) ParseError!u16 {
-        if (self.program.class_count >= max_classes) return error.TooManyClasses;
-        const index = self.program.class_count;
-        self.program.class_count += 1;
+    fn parseClass(self: *Parser) ParseError!u32 {
+        if (self.program.classes.items.len >= std.math.maxInt(u32)) return error.TooManyClasses;
+        const index: u32 = @intCast(self.program.classes.items.len);
         var class = CharClass{};
-        class.range_start = self.program.range_count;
+        class.range_start = @intCast(self.program.ranges.items.len);
         if (self.at < self.source.len and self.source[self.at] == '^') {
             class.negative = true;
             self.at += 1;
@@ -211,7 +205,7 @@ const Parser = struct {
                 var literals: usize = 0;
                 for (class.bits) |byte| literals += @popCount(byte);
                 class.locale_multi = class.range_count != 0 or class.categories != 0 or literals != 1;
-                self.program.classes[index] = class;
+                try self.program.classes.append(self.program.arena.allocator(), class);
                 return self.add(.{ .class = index });
             }
             first = false;
@@ -241,22 +235,20 @@ const Parser = struct {
                     for (@as(usize, left)..@as(usize, stop) + 1) |raw| setBit(&class, @intCast(raw));
                 }
                 if (right >= 256) {
-                    if (self.program.range_count >= max_class_ranges) return error.Unsupported;
-                    self.program.ranges[self.program.range_count] = .{ .left = @max(left, 256), .right = right };
-                    self.program.range_count += 1;
+                    if (self.program.ranges.items.len >= std.math.maxInt(u32)) return error.Unsupported;
+                    try self.program.ranges.append(self.program.arena.allocator(), .{ .left = @max(left, 256), .right = right });
                     class.range_count += 1;
                 }
             } else if (left < 256) setBit(&class, @intCast(left)) else {
-                if (self.program.range_count >= max_class_ranges) return error.Unsupported;
-                self.program.ranges[self.program.range_count] = .{ .left = left, .right = left };
-                self.program.range_count += 1;
+                if (self.program.ranges.items.len >= std.math.maxInt(u32)) return error.Unsupported;
+                try self.program.ranges.append(self.program.arena.allocator(), .{ .left = left, .right = left });
                 class.range_count += 1;
             }
         }
         return error.InvalidPattern;
     }
 
-    fn atom(self: *Parser) ParseError!u16 {
+    fn atom(self: *Parser) ParseError!u32 {
         if (self.at >= self.source.len) return error.InvalidPattern;
         const value = try self.codepoint();
         return switch (value) {
@@ -300,7 +292,7 @@ const Parser = struct {
                         if (self.at >= self.source.len or self.source[self.at] != ')') return error.InvalidPattern;
                         self.at += 1;
                         const look_width = fixedWidth(self.program, child) orelse return error.Unsupported;
-                        if (look_width > std.math.maxInt(u16)) return error.Unsupported;
+                        if (look_width > std.math.maxInt(u32)) return error.Unsupported;
                         self.program.references = true;
                         break :blk self.add(.{ .look = .{ .child = child, .behind = true, .positive = positive, .width = @intCast(look_width) } });
                     } else if (self.source[self.at + 1] == '(') {
@@ -475,13 +467,13 @@ const Parser = struct {
         return error.Unsupported;
     }
 
-    fn repeated(self: *Parser) ParseError!u16 {
+    fn repeated(self: *Parser) ParseError!u32 {
         const child = try self.atom();
         if (self.at >= self.source.len) return child;
         const mark = self.source[self.at];
         if (mark == '{' and !self.braceRepeat()) return child;
         if (mark == '*' or mark == '+' or mark == '?' or mark == '{') {
-            switch (self.program.nodes[child]) {
+            switch (self.program.nodes.items[child]) {
                 .begin, .end, .absolute_begin, .absolute_end, .boundary => return error.InvalidPattern,
                 else => {},
             }
@@ -546,29 +538,37 @@ const Parser = struct {
         return (has_left or has_comma) and cursor < self.source.len and self.source[cursor] == '}';
     }
 
-    fn sequence(self: *Parser) ParseError!u16 {
-        var value: ?u16 = null;
-        self.skip();
-        while (self.at < self.source.len and self.source[self.at] != '|' and self.source[self.at] != ')') {
-            const next = try self.repeated();
-            value = if (value) |left| try self.add(.{ .sequence = .{ .left = left, .right = next } }) else next;
-            self.skip();
-        }
-        return value orelse self.add(.empty);
+    fn balanced(self: *Parser, values: []const u32, alternative_node: bool) ParseError!u32 {
+        if (values.len == 1) return values[0];
+        const middle = values.len / 2;
+        const left = try self.balanced(values[0..middle], alternative_node);
+        const right = try self.balanced(values[middle..], alternative_node);
+        return if (alternative_node) self.add(.{ .alternative = .{ .left = left, .right = right } }) else self.add(.{ .sequence = .{ .left = left, .right = right } });
     }
 
-    fn alternative(self: *Parser) ParseError!u16 {
-        var value = try self.sequence();
+    fn sequence(self: *Parser) ParseError!u32 {
+        var values: std.ArrayList(u32) = .empty;
+        self.skip();
+        while (self.at < self.source.len and self.source[self.at] != '|' and self.source[self.at] != ')') {
+            try values.append(self.program.arena.allocator(), try self.repeated());
+            self.skip();
+        }
+        return if (values.items.len == 0) self.add(.empty) else self.balanced(values.items, false);
+    }
+
+    fn alternative(self: *Parser) ParseError!u32 {
+        var values: std.ArrayList(u32) = .empty;
+        try values.append(self.program.arena.allocator(), try self.sequence());
         while (self.at < self.source.len and self.source[self.at] == '|') {
             self.at += 1;
-            value = try self.add(.{ .alternative = .{ .left = value, .right = try self.sequence() } });
+            try values.append(self.program.arena.allocator(), try self.sequence());
         }
-        return value;
+        return self.balanced(values.items, true);
     }
 };
 
-fn fixedWidth(program: *const Program, index: u16) ?usize {
-    return switch (program.nodes[index]) {
+fn fixedWidth(program: *const Program, index: u32) ?usize {
+    return switch (program.nodes.items[index]) {
         .empty, .begin, .end, .absolute_begin, .absolute_end, .boundary, .look => 0,
         .literal, .dot, .class => 1,
         .sequence => |pair| blk: {
@@ -595,7 +595,7 @@ fn fixedWidth(program: *const Program, index: u16) ?usize {
             break :blk if (yes == no) yes else null;
         },
         .backref => |number| blk: {
-            for (program.nodes[0..program.node_count]) |node| {
+            for (program.nodes.items) |node| {
                 switch (node) {
                     .group => |group| if (group.number == number) break :blk fixedWidth(program, group.child),
                     else => {},
@@ -778,7 +778,7 @@ fn classBit(class: *const CharClass, value: u32) bool {
 
 fn classRaw(program: *const Program, class: *const CharClass, value: u32, flags: u32) bool {
     if (classBit(class, value)) return true;
-    for (program.ranges[class.range_start..@as(usize, class.range_start) + class.range_count]) |range| if (value >= range.left and value <= range.right) return true;
+    for (program.ranges.items[class.range_start..@as(usize, class.range_start) + class.range_count]) |range| if (value >= range.left and value <= range.right) return true;
     if (class.categories != 0) {
         const codes = [_]u8{ 'd', 'D', 's', 'S', 'w', 'W' };
         for (codes) |code| if (class.categories & categoryBit(code) != 0 and category(code, value, flags)) return true;
@@ -809,7 +809,7 @@ fn classMatch(program: *const Program, class: *const CharClass, value: u32, flag
             }
         }
     }
-    for (program.ranges[class.range_start..@as(usize, class.range_start) + class.range_count]) |range| {
+    for (program.ranges.items[class.range_start..@as(usize, class.range_start) + class.range_count]) |range| {
         if (if (flags & 2 != 0) rangeCase(range.left, range.right, value, flags) else value >= range.left and value <= range.right) {
             found = true;
             break;
@@ -823,6 +823,19 @@ fn classMatch(program: *const Program, class: *const CharClass, value: u32, flag
         };
     }
     return if (class.negative) !found else found;
+}
+
+fn atomMatch(program: *const Program, index: u32, value: u32, flags: u32) bool {
+    return switch (program.nodes.items[index]) {
+        .literal => |want| equal(want, value, flags),
+        .dot => flags & 16 != 0 or value != '\n',
+        .class => |class| classMatch(program, &program.classes.items[class], value, flags),
+        .alternative => |pair| atomMatch(program, pair.left, value, flags) or atomMatch(program, pair.right, value, flags),
+        .group => |group| atomMatch(program, group.child, value, flags),
+        .atomic => |child| atomMatch(program, child, value, flags),
+        .scoped => |scoped| atomMatch(program, scoped.child, value, scoped.flags),
+        else => false,
+    };
 }
 
 fn word(value: u32, flags: u32) bool {
@@ -846,13 +859,13 @@ fn repeatWalk(program: *const Program, repeat: Repeat, text: Subject, endpos: us
     if (!repeat.lazy and count >= repeat.minimum) out.add(pos);
 }
 
-fn eval(program: *const Program, node_index: u16, text: Subject, endpos: usize, pos: usize, out: *Positions, depth: usize, flags: u32) void {
+fn eval(program: *const Program, node_index: u32, text: Subject, endpos: usize, pos: usize, out: *Positions, depth: usize, flags: u32) void {
     if (depth > 512) return;
-    switch (program.nodes[node_index]) {
+    switch (program.nodes.items[node_index]) {
         .empty => out.add(pos),
         .literal => |value| if (pos < endpos and equal(value, text.at(pos), flags)) out.add(pos + 1),
         .dot => if (pos < endpos and (flags & 16 != 0 or text.at(pos) != '\n')) out.add(pos + 1),
-        .class => |index| if (pos < endpos and classMatch(program, &program.classes[index], text.at(pos), flags)) out.add(pos + 1),
+        .class => |index| if (pos < endpos and classMatch(program, &program.classes.items[index], text.at(pos), flags)) out.add(pos + 1),
         .begin => if (pos == 0 or (flags & 8 != 0 and pos > 0 and text.at(pos - 1) == '\n')) out.add(pos),
         .end => if (pos == endpos or (pos + 1 == endpos and text.at(pos) == '\n') or (flags & 8 != 0 and pos < endpos and text.at(pos) == '\n')) out.add(pos),
         .absolute_begin => if (pos == 0) out.add(pos),
@@ -907,10 +920,89 @@ fn eval(program: *const Program, node_index: u16, text: Subject, endpos: usize, 
     }
 }
 
-const CompileError = error{ TooMuchCode, UnsupportedRepeat };
+const CompileError = std.mem.Allocator.Error || error{ TooMuchCode, UnsupportedRepeat };
 
-fn canBeEmpty(program: *const Program, index: u16) bool {
-    return switch (program.nodes[index]) {
+const Flat = struct {
+    atom: ?u32 = null,
+    flags: u32 = 0,
+    layouts: [max_groups]CaptureLayout = undefined,
+    layout_count: usize = 0,
+};
+
+fn sameAtom(program: *const Program, left: u32, right: u32) bool {
+    const first = program.nodes.items[left];
+    const second = program.nodes.items[right];
+    return switch (first) {
+        .literal => |value| switch (second) { .literal => |other| value == other, else => false },
+        .dot => switch (second) { .dot => true, else => false },
+        .class => |value| switch (second) { .class => |other| value == other, else => false },
+        .alternative => |pair| switch (second) { .alternative => |other| sameAtom(program, pair.left, other.left) and sameAtom(program, pair.right, other.right), else => false },
+        else => false,
+    };
+}
+
+fn capturesIn(program: *const Program, index: u32) bool {
+    return switch (program.nodes.items[index]) {
+        .group => true,
+        .sequence, .alternative => |pair| capturesIn(program, pair.left) or capturesIn(program, pair.right),
+        .repeat => |repeat| capturesIn(program, repeat.child),
+        .atomic => |child| capturesIn(program, child),
+        .scoped => |scoped| capturesIn(program, scoped.child),
+        else => false,
+    };
+}
+
+fn addFlatAtom(program: *const Program, index: u32, flags: u32, flat: *Flat) ?usize {
+    if (flat.atom) |atom| {
+        if (flat.flags != flags or !sameAtom(program, atom, index)) return null;
+    } else {
+        flat.atom = index;
+        flat.flags = flags;
+    }
+    return 1;
+}
+
+fn flatten(program: *const Program, index: u32, flags: u32, base: usize, flat: *Flat) ?usize {
+    return switch (program.nodes.items[index]) {
+        .literal, .dot, .class => addFlatAtom(program, index, flags, flat),
+        .alternative => if (!capturesIn(program, index) and fixedWidth(program, index) == 1) addFlatAtom(program, index, flags, flat) else null,
+        .sequence => |pair| blk: {
+            const left = flatten(program, pair.left, flags, base, flat) orelse break :blk null;
+            const next = std.math.add(usize, base, left) catch break :blk null;
+            const right = flatten(program, pair.right, flags, next, flat) orelse break :blk null;
+            break :blk std.math.add(usize, left, right) catch null;
+        },
+        .repeat => |repeat| blk: {
+            if (repeat.minimum != repeat.maximum) break :blk null;
+            const first_layout = flat.layout_count;
+            const child = flatten(program, repeat.child, flags, base, flat) orelse break :blk null;
+            if (repeat.minimum == 0) {
+                flat.layout_count = first_layout;
+                break :blk 0;
+            }
+            const shift = std.math.mul(usize, child, repeat.minimum - 1) catch break :blk null;
+            for (flat.layouts[first_layout..flat.layout_count]) |*layout| {
+                layout.begin = std.math.add(usize, layout.begin, shift) catch break :blk null;
+                layout.end = std.math.add(usize, layout.end, shift) catch break :blk null;
+            }
+            break :blk std.math.mul(usize, child, repeat.minimum) catch null;
+        },
+        .group => |group| blk: {
+            const width = flatten(program, group.child, flags, base, flat) orelse break :blk null;
+            if (flat.layout_count >= flat.layouts.len) break :blk null;
+            const end = std.math.add(usize, base, width) catch break :blk null;
+            flat.layouts[flat.layout_count] = .{ .number = group.number, .begin = base, .end = end };
+            flat.layout_count += 1;
+            break :blk width;
+        },
+        .atomic => |child| flatten(program, child, flags, base, flat),
+        .scoped => |scoped| flatten(program, scoped.child, scoped.flags, base, flat),
+        else => null,
+    };
+}
+
+fn canBeEmpty(program: *const Program, index: u32) bool {
+    return switch (program.nodes.items[index]) {
         .empty, .begin, .end, .absolute_begin, .absolute_end, .boundary, .look, .backref => true,
         .literal, .dot, .class => false,
         .sequence => |pair| canBeEmpty(program, pair.left) and canBeEmpty(program, pair.right),
@@ -926,16 +1018,26 @@ const Compiler = struct {
     program: *Program,
     flags: u32,
 
-    fn emit(self: *Compiler, instruction: Instruction) CompileError!u16 {
-        if (self.program.code_count >= max_code) return error.TooMuchCode;
-        const index = self.program.code_count;
-        self.program.code[index] = instruction;
-        self.program.code_count += 1;
+    fn emit(self: *Compiler, instruction: Instruction) CompileError!u32 {
+        if (self.program.code.items.len >= std.math.maxInt(u32)) return error.TooMuchCode;
+        const index: u32 = @intCast(self.program.code.items.len);
+        try self.program.code.append(self.program.arena.allocator(), instruction);
         return index;
     }
 
-    fn node(self: *Compiler, index: u16) CompileError!void {
-        switch (self.program.nodes[index]) {
+    fn emitRun(self: *Compiler, repeat: Repeat) CompileError!void {
+        var flat = Flat{};
+        const width = flatten(self.program, repeat.child, self.flags, 0, &flat) orelse return error.UnsupportedRepeat;
+        if (width == 0 or flat.atom == null or self.program.runs.items.len >= std.math.maxInt(u32) or self.program.layouts.items.len >= std.math.maxInt(u32)) return error.UnsupportedRepeat;
+        const layout_start: u32 = @intCast(self.program.layouts.items.len);
+        try self.program.layouts.appendSlice(self.program.arena.allocator(), flat.layouts[0..flat.layout_count]);
+        const run_index: u32 = @intCast(self.program.runs.items.len);
+        try self.program.runs.append(self.program.arena.allocator(), .{ .atom = flat.atom.?, .flags = flat.flags, .width = width, .minimum = repeat.minimum, .maximum = repeat.maximum, .lazy = repeat.lazy, .possessive = repeat.possessive, .layout_start = layout_start, .layout_count = @intCast(flat.layout_count) });
+        _ = try self.emit(.{ .op = .run, .value = run_index });
+    }
+
+    fn node(self: *Compiler, index: u32) CompileError!void {
+        switch (self.program.nodes.items[index]) {
             .empty => {},
             .literal => |value| {
                 _ = try self.emit(.{ .op = .literal, .value = value, .extra = @intCast(self.flags & 0xffff) });
@@ -967,41 +1069,48 @@ const Compiler = struct {
             },
             .alternative => |pair| {
                 const split = try self.emit(.{ .op = .split });
-                const first = self.program.code_count;
+                const first: u32 = @intCast(self.program.code.items.len);
                 try self.node(pair.left);
                 const jump = try self.emit(.{ .op = .jump });
-                const second = self.program.code_count;
+                const second: u32 = @intCast(self.program.code.items.len);
                 try self.node(pair.right);
-                const finish = self.program.code_count;
-                self.program.code[split].left = first;
-                self.program.code[split].right = second;
-                self.program.code[jump].left = finish;
+                const finish: u32 = @intCast(self.program.code.items.len);
+                self.program.code.items[split].left = first;
+                self.program.code.items[split].right = second;
+                self.program.code.items[jump].left = finish;
             },
             .repeat => |repeat| {
+                if (repeat.minimum > 128 or (repeat.maximum != unbounded and repeat.maximum > 128)) {
+                    var compact = true;
+                    self.emitRun(repeat) catch |err| {
+                        if (err != error.UnsupportedRepeat or repeat.maximum == unbounded or repeat.maximum > 256) return err;
+                        compact = false;
+                    };
+                    if (compact) return;
+                }
                 if (repeat.possessive) _ = try self.emit(.{ .op = .atomic_begin });
-                if (repeat.minimum > 128 or (repeat.maximum != unbounded and repeat.maximum > 128)) return error.UnsupportedRepeat;
                 for (0..repeat.minimum) |_| try self.node(repeat.child);
                 if (repeat.maximum == unbounded) {
                     const guarded = canBeEmpty(self.program, repeat.child);
                     const split = try self.emit(.{ .op = .split });
-                    const body = self.program.code_count;
+                    const body: u32 = @intCast(self.program.code.items.len);
                     try self.node(repeat.child);
                     _ = try self.emit(.{ .op = .jump, .left = split });
-                    const finish = self.program.code_count;
-                    self.program.code[split].left = if (repeat.lazy) finish else body;
-                    self.program.code[split].right = if (repeat.lazy) body else finish;
+                    const finish: u32 = @intCast(self.program.code.items.len);
+                    self.program.code.items[split].left = if (repeat.lazy) finish else body;
+                    self.program.code.items[split].right = if (repeat.lazy) body else finish;
                     if (guarded) {
-                        self.program.code[split].value = finish;
+                        self.program.code.items[split].value = finish;
                         self.program.nullable_loops = true;
                     }
                 } else {
                     for (0..repeat.maximum - repeat.minimum) |_| {
                         const split = try self.emit(.{ .op = .split });
-                        const body = self.program.code_count;
+                        const body: u32 = @intCast(self.program.code.items.len);
                         try self.node(repeat.child);
-                        const finish = self.program.code_count;
-                        self.program.code[split].left = if (repeat.lazy) finish else body;
-                        self.program.code[split].right = if (repeat.lazy) body else finish;
+                        const finish: u32 = @intCast(self.program.code.items.len);
+                        self.program.code.items[split].left = if (repeat.lazy) finish else body;
+                        self.program.code.items[split].right = if (repeat.lazy) body else finish;
                     }
                 }
                 if (repeat.possessive) _ = try self.emit(.{ .op = .atomic_end });
@@ -1016,15 +1125,15 @@ const Compiler = struct {
             },
             .conditional => |conditional| {
                 const branch = try self.emit(.{ .op = .conditional, .value = @intCast(conditional.number) });
-                const yes = self.program.code_count;
+                const yes: u32 = @intCast(self.program.code.items.len);
                 try self.node(conditional.yes);
                 const jump = try self.emit(.{ .op = .jump });
-                const no = self.program.code_count;
+                const no: u32 = @intCast(self.program.code.items.len);
                 try self.node(conditional.no);
-                const finish = self.program.code_count;
-                self.program.code[branch].left = yes;
-                self.program.code[branch].right = no;
-                self.program.code[jump].left = finish;
+                const finish: u32 = @intCast(self.program.code.items.len);
+                self.program.code.items[branch].left = yes;
+                self.program.code.items[branch].right = no;
+                self.program.code.items[jump].left = finish;
             },
             .atomic => |child| {
                 _ = try self.emit(.{ .op = .atomic_begin });
@@ -1033,12 +1142,12 @@ const Compiler = struct {
             },
             .look => |look| {
                 const instruction = try self.emit(.{ .op = .look, .extra = look.width, .value = @as(u8, if (look.positive) 1 else 0) | @as(u8, if (look.behind) 2 else 0) });
-                const entry = self.program.code_count;
+                const entry: u32 = @intCast(self.program.code.items.len);
                 try self.node(look.child);
                 _ = try self.emit(.{ .op = .accept });
-                const finish = self.program.code_count;
-                self.program.code[instruction].left = entry;
-                self.program.code[instruction].right = finish;
+                const finish: u32 = @intCast(self.program.code.items.len);
+                self.program.code.items[instruction].left = entry;
+                self.program.code.items[instruction].right = finish;
             },
             .scoped => |scoped| {
                 const previous = self.flags;
@@ -1053,8 +1162,8 @@ const Compiler = struct {
     }
 };
 
-fn addStarts(program: *const Program, index: u16, starts: *[256]u8, flags: u32) bool {
-    return switch (program.nodes[index]) {
+fn addStarts(program: *const Program, index: u32, starts: *[256]u8, flags: u32) bool {
+    return switch (program.nodes.items[index]) {
         .empty, .begin, .end, .absolute_begin, .absolute_end, .boundary => true,
         .literal => |value| blk: {
             if (value < 256) {
@@ -1075,7 +1184,7 @@ fn addStarts(program: *const Program, index: u16, starts: *[256]u8, flags: u32) 
         },
         .class => |value| blk: {
             for (0..256) |raw| {
-                if (classMatch(program, &program.classes[value], @intCast(raw), flags)) starts[raw] = 1;
+                if (classMatch(program, &program.classes.items[value], @intCast(raw), flags)) starts[raw] = 1;
             }
             break :blk false;
         },
@@ -1106,9 +1215,9 @@ fn addStarts(program: *const Program, index: u16, starts: *[256]u8, flags: u32) 
     };
 }
 
-fn scopedCategoryPrefix(program: *const Program, index: u16, switched: bool) ?u16 {
-    return switch (program.nodes[index]) {
-        .class => |class| if (switched and program.classes[class].categories != 0) class else null,
+fn scopedCategoryPrefix(program: *const Program, index: u32, switched: bool) ?u32 {
+    return switch (program.nodes.items[index]) {
+        .class => |class| if (switched and program.classes.items[class].categories != 0) class else null,
         .sequence => |pair| scopedCategoryPrefix(program, pair.left, switched),
         .group => |group| scopedCategoryPrefix(program, group.child, switched),
         .scoped => |scoped| scopedCategoryPrefix(program, scoped.child, switched or scoped.flags & (4 | 32 | 256) != program.flags & (4 | 32 | 256)),
@@ -1157,8 +1266,8 @@ fn joinPrefix(left: *const Prefix, right: *const Prefix) Prefix {
     return result;
 }
 
-fn prefixes(program: *const Program, index: u16, flags: u32) Prefix {
-    return switch (program.nodes[index]) {
+fn prefixes(program: *const Program, index: u32, flags: u32) Prefix {
+    return switch (program.nodes.items[index]) {
         .empty, .begin, .end, .absolute_begin, .absolute_end, .boundary => Prefix{ .empty = true },
         .literal => |value| blk: {
             var result = Prefix{};
@@ -1185,7 +1294,7 @@ fn prefixes(program: *const Program, index: u16, flags: u32) Prefix {
         },
         .class => |value| blk: {
             var result = Prefix{};
-            for (0..256) |raw| if (classMatch(program, &program.classes[value], @intCast(raw), flags)) {
+            for (0..256) |raw| if (classMatch(program, &program.classes.items[value], @intCast(raw), flags)) {
                 result.first[raw] = 1;
                 result.single[raw] = 1;
             };
@@ -1237,8 +1346,8 @@ fn prefixes(program: *const Program, index: u16, flags: u32) Prefix {
     };
 }
 
-const GuardUndo = struct { pc: u16, previous: isize };
-const State = struct { pc: u16, pos: usize, atomic: usize };
+const GuardUndo = struct { pc: u32, previous: isize };
+const State = struct { pc: u32, pos: usize, atomic: usize, run_limit: usize = unbounded, run_max: usize = 0 };
 
 fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usize, full: bool) isize {
     var stack_local: [max_stack]State = undefined;
@@ -1252,17 +1361,23 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
     var stack_count: usize = 0;
     var atomic_stack: [256]usize = undefined;
     var atomic_depth: usize = 0;
-    var guards: [max_code]isize = undefined;
+    var guards: []isize = &.{};
+    defer if (guards.len != 0) std.heap.c_allocator.free(guards);
     var guard_local: [max_stack]GuardUndo = undefined;
     var guard_undo: []GuardUndo = &guard_local;
     var guard_heap: ?[]GuardUndo = null;
     defer if (guard_heap) |items| std.heap.c_allocator.free(items);
     var guard_count: usize = 0;
-    if (program.nullable_loops) @memset(&guards, -1);
-    var pc: u16 = 0;
+    if (program.nullable_loops) {
+        guards = std.heap.c_allocator.alloc(isize, program.code.items.len) catch return -2;
+        @memset(guards, -1);
+    }
+    var pc: u32 = 0;
     var pos = start;
+    var resumed_limit: usize = unbounded;
+    var resumed_max: usize = 0;
     while (true) {
-        const instruction = program.code[pc];
+        const instruction = program.code.items[pc];
         switch (instruction.op) {
             .literal => if (pos < endpos and equal(instruction.value, text.at(pos), instruction.extra)) {
                 pos += 1;
@@ -1274,7 +1389,7 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
                 pc += 1;
                 continue;
             },
-            .class => if (pos < endpos and classMatch(program, &program.classes[instruction.left], text.at(pos), instruction.extra)) {
+            .class => if (pos < endpos and classMatch(program, &program.classes.items[instruction.left], text.at(pos), instruction.extra)) {
                 pos += 1;
                 pc += 1;
                 continue;
@@ -1339,7 +1454,7 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
                 continue;
             },
             .jump => {
-                const target = program.code[instruction.left];
+                const target = program.code.items[instruction.left];
                 if (target.op == .split and target.value != 0 and guards[instruction.left] == @as(isize, @intCast(pos))) {
                     pc = @intCast(target.value);
                     continue;
@@ -1348,6 +1463,48 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
                 continue;
             },
             .save_begin, .save_end => {
+                pc += 1;
+                continue;
+            },
+            .run => blk: {
+                const run = program.runs.items[instruction.value];
+                const room = endpos - pos;
+                const allowed = if (run.maximum == unbounded) room / run.width else @min(run.maximum, room / run.width);
+                var available = resumed_max;
+                if (resumed_limit == unbounded) {
+                    available = 0;
+                    const maximum = allowed * run.width;
+                    while (available < maximum and atomMatch(program, run.atom, text.at(pos + available), run.flags)) : (available += 1) {}
+                    available /= run.width;
+                }
+                if (available < run.minimum) break :blk;
+                const chosen = if (resumed_limit != unbounded) resumed_limit else if (run.lazy) run.minimum else available;
+                resumed_limit = unbounded;
+                resumed_max = 0;
+                if (!run.possessive) {
+                    const alternate: ?usize = if (run.lazy) (if (chosen < available) chosen + 1 else null) else if (chosen > run.minimum) chosen - 1 else null;
+                    if (alternate) |limit| {
+                        if (stack_count >= stack.len) {
+                            const capacity = std.math.mul(usize, stack.len, 2) catch return -2;
+                            const grown = std.heap.c_allocator.alloc(State, capacity) catch return -2;
+                            @memcpy(grown[0..stack_count], stack[0..stack_count]);
+                            if (stack_heap) |items| std.heap.c_allocator.free(items);
+                            stack_heap = grown;
+                            stack = grown;
+                            if (program.nullable_loops) {
+                                const grown_marks = std.heap.c_allocator.alloc(usize, capacity) catch return -2;
+                                @memcpy(grown_marks[0..stack_count], guard_marks[0..stack_count]);
+                                if (marks_heap) |items| std.heap.c_allocator.free(items);
+                                marks_heap = grown_marks;
+                                guard_marks = grown_marks;
+                            }
+                        }
+                        if (program.nullable_loops) guard_marks[stack_count] = guard_count;
+                        stack[stack_count] = .{ .pc = pc, .pos = pos, .atomic = atomic_depth, .run_limit = limit, .run_max = available };
+                        stack_count += 1;
+                    }
+                }
+                pos += chosen * run.width;
                 pc += 1;
                 continue;
             },
@@ -1379,13 +1536,15 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
         pc = state.pc;
         pos = state.pos;
         atomic_depth = state.atomic;
+        resumed_limit = state.run_limit;
+        resumed_max = state.run_max;
     }
 }
 
-const CaptureState = struct { pc: u16, pos: usize, undo: usize, atomic: usize };
+const CaptureState = struct { pc: u32, pos: usize, undo: usize, atomic: usize, run_limit: usize = unbounded, run_max: usize = 0 };
 const Undo = struct { slot: u16, previous: isize, last: isize };
 
-fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: usize, entry: u16, full: bool, captures: *[max_groups * 2]isize, last: *isize, reset: bool, nonempty: bool) isize {
+fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: usize, entry: u32, full: bool, captures: *[max_groups * 2]isize, last: *isize, reset: bool, nonempty: bool) isize {
     var stack_local: [max_stack]CaptureState = undefined;
     var stack: []CaptureState = &stack_local;
     var stack_heap: ?[]CaptureState = null;
@@ -1402,21 +1561,27 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
     var undo_count: usize = 0;
     var atomic_stack: [256]usize = undefined;
     var atomic_depth: usize = 0;
-    var guards: [max_code]isize = undefined;
+    var guards: []isize = &.{};
+    defer if (guards.len != 0) std.heap.c_allocator.free(guards);
     var guard_local: [max_stack]GuardUndo = undefined;
     var guard_undo: []GuardUndo = &guard_local;
     var guard_heap: ?[]GuardUndo = null;
     defer if (guard_heap) |items| std.heap.c_allocator.free(items);
     var guard_count: usize = 0;
-    if (program.nullable_loops) @memset(&guards, -1);
+    if (program.nullable_loops) {
+        guards = std.heap.c_allocator.alloc(isize, program.code.items.len) catch return -2;
+        @memset(guards, -1);
+    }
     if (reset) {
         @memset(captures, -1);
         last.* = -1;
     }
-    var pc: u16 = entry;
+    var pc: u32 = entry;
     var pos = start;
+    var resumed_limit: usize = unbounded;
+    var resumed_max: usize = 0;
     while (true) {
-        const instruction = program.code[pc];
+        const instruction = program.code.items[pc];
         switch (instruction.op) {
             .literal => if (pos < endpos and equal(instruction.value, text.at(pos), instruction.extra)) {
                 pos += 1;
@@ -1428,7 +1593,7 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                 pc += 1;
                 continue;
             },
-            .class => if (pos < endpos and classMatch(program, &program.classes[instruction.left], text.at(pos), instruction.extra)) {
+            .class => if (pos < endpos and classMatch(program, &program.classes.items[instruction.left], text.at(pos), instruction.extra)) {
                 pos += 1;
                 pc += 1;
                 continue;
@@ -1493,7 +1658,7 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                 continue;
             },
             .jump => {
-                const target = program.code[instruction.left];
+                const target = program.code.items[instruction.left];
                 if (target.op == .split and target.value != 0 and guards[instruction.left] == @as(isize, @intCast(pos))) {
                     pc = @intCast(target.value);
                     continue;
@@ -1511,7 +1676,7 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                     undo_heap = grown;
                     undo = grown;
                 }
-                const slot: u16 = (instruction.left - 1) * 2 + (if (instruction.op == .save_end) @as(u16, 1) else @as(u16, 0));
+                const slot: u16 = @intCast((instruction.left - 1) * 2 + (if (instruction.op == .save_end) @as(u32, 1) else @as(u32, 0)));
                 undo[undo_count] = .{ .slot = slot, .previous = captures[slot], .last = last.* };
                 undo_count += 1;
                 captures[slot] = @intCast(pos);
@@ -1594,6 +1759,70 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                     continue;
                 }
             },
+            .run => blk: {
+                const run = program.runs.items[instruction.value];
+                const room = endpos - pos;
+                const allowed = if (run.maximum == unbounded) room / run.width else @min(run.maximum, room / run.width);
+                var available = resumed_max;
+                if (resumed_limit == unbounded) {
+                    available = 0;
+                    const maximum = allowed * run.width;
+                    while (available < maximum and atomMatch(program, run.atom, text.at(pos + available), run.flags)) : (available += 1) {}
+                    available /= run.width;
+                }
+                if (available < run.minimum) break :blk;
+                const chosen = if (resumed_limit != unbounded) resumed_limit else if (run.lazy) run.minimum else available;
+                resumed_limit = unbounded;
+                resumed_max = 0;
+                if (!run.possessive) {
+                    const alternate: ?usize = if (run.lazy) (if (chosen < available) chosen + 1 else null) else if (chosen > run.minimum) chosen - 1 else null;
+                    if (alternate) |limit| {
+                        if (stack_count >= stack.len) {
+                            const capacity = std.math.mul(usize, stack.len, 2) catch return -2;
+                            const grown = std.heap.c_allocator.alloc(CaptureState, capacity) catch return -2;
+                            @memcpy(grown[0..stack_count], stack[0..stack_count]);
+                            if (stack_heap) |items| std.heap.c_allocator.free(items);
+                            stack_heap = grown;
+                            stack = grown;
+                            if (program.nullable_loops) {
+                                const grown_marks = std.heap.c_allocator.alloc(usize, capacity) catch return -2;
+                                @memcpy(grown_marks[0..stack_count], guard_marks[0..stack_count]);
+                                if (marks_heap) |items| std.heap.c_allocator.free(items);
+                                marks_heap = grown_marks;
+                                guard_marks = grown_marks;
+                            }
+                        }
+                        if (program.nullable_loops) guard_marks[stack_count] = guard_count;
+                        stack[stack_count] = .{ .pc = pc, .pos = pos, .undo = undo_count, .atomic = atomic_depth, .run_limit = limit, .run_max = available };
+                        stack_count += 1;
+                    }
+                }
+                if (chosen != 0 and run.layout_count != 0) {
+                    const base = pos + (chosen - 1) * run.width;
+                    const layouts = program.layouts.items[run.layout_start..@as(usize, run.layout_start) + run.layout_count];
+                    for (layouts) |layout| {
+                        const slot: u16 = (layout.number - 1) * 2;
+                        for ([_]u16{ slot, slot + 1 }) |item| {
+                            if (undo_count >= undo.len) {
+                                const capacity = std.math.mul(usize, undo.len, 2) catch return -2;
+                                const grown = std.heap.c_allocator.alloc(Undo, capacity) catch return -2;
+                                @memcpy(grown[0..undo_count], undo[0..undo_count]);
+                                if (undo_heap) |items| std.heap.c_allocator.free(items);
+                                undo_heap = grown;
+                                undo = grown;
+                            }
+                            undo[undo_count] = .{ .slot = item, .previous = captures[item], .last = last.* };
+                            undo_count += 1;
+                        }
+                        captures[slot] = @intCast(base + layout.begin);
+                        captures[slot + 1] = @intCast(base + layout.end);
+                        last.* = layout.number;
+                    }
+                }
+                pos += chosen * run.width;
+                pc += 1;
+                continue;
+            },
             .accept => if ((!full or pos == endpos) and !(nonempty and pos == start)) return @intCast(pos),
         }
         if (stack_count == 0) return -1;
@@ -1613,6 +1842,8 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
         pc = state.pc;
         pos = state.pos;
         atomic_depth = state.atomic;
+        resumed_limit = state.run_limit;
+        resumed_max = state.run_max;
     }
 }
 
@@ -1620,22 +1851,27 @@ fn runCaptured(program: *const Program, text: Subject, endpos: usize, start: usi
     return runCapturedAt(program, text, endpos, start, 0, full, captures, last, true, nonempty);
 }
 
+fn destroyProgram(program: *Program) void {
+    program.arena.deinit();
+    std.heap.c_allocator.destroy(program);
+}
+
 pub export fn rebar_zig_compile(pattern: [*]const u8, length: usize, flags: u32) ?*Program {
     const program = std.heap.c_allocator.create(Program) catch return null;
-    program.* = Program{ .flags = flags };
+    program.* = Program{ .flags = flags, .arena = std.heap.ArenaAllocator.init(std.heap.c_allocator) };
     var parser = Parser{ .source = pattern[0..length], .program = program };
     program.root = parser.alternative() catch {
-        std.heap.c_allocator.destroy(program);
+        destroyProgram(program);
         return null;
     };
     if (parser.at != parser.source.len) {
-        std.heap.c_allocator.destroy(program);
+        destroyProgram(program);
         return null;
     }
-    for (program.nodes[0..program.node_count]) |node| {
+    for (program.nodes.items) |node| {
         switch (node) {
             .conditional => |conditional| if (conditional.number > program.groups) {
-                std.heap.c_allocator.destroy(program);
+                destroyProgram(program);
                 return null;
             },
             else => {},
@@ -1643,18 +1879,18 @@ pub export fn rebar_zig_compile(pattern: [*]const u8, length: usize, flags: u32)
     }
     var compiler = Compiler{ .program = program, .flags = program.flags };
     compiler.node(program.root) catch {
-        std.heap.c_allocator.destroy(program);
+        destroyProgram(program);
         return null;
     };
     _ = compiler.emit(.{ .op = .accept }) catch {
-        std.heap.c_allocator.destroy(program);
+        destroyProgram(program);
         return null;
     };
     program.nullable = addStarts(program, program.root, &program.starts, program.flags);
     if (!program.nullable) {
         if (scopedCategoryPrefix(program, program.root, false)) |class| program.scoped_prefix = class;
     }
-    if (program.node_count <= 20) {
+    if (program.nodes.items.len <= 20) {
         const start_prefix = prefixes(program, program.root, program.flags);
         program.single = start_prefix.single;
         program.pairs = start_prefix.pairs;
@@ -1665,10 +1901,15 @@ pub export fn rebar_zig_compile(pattern: [*]const u8, length: usize, flags: u32)
 }
 
 pub export fn rebar_zig_free(program: ?*Program) void {
-    if (program) |value| std.heap.c_allocator.destroy(value);
+    if (program) |value| destroyProgram(value);
 }
 pub export fn rebar_zig_program_size() usize {
     return @sizeOf(Program);
+}
+
+pub export fn rebar_zig_program_memory(program: ?*const Program) usize {
+    const value = program orelse return 0;
+    return @sizeOf(Program) + value.arena.queryCapacity();
 }
 pub export fn rebar_zig_groups(program: ?*const Program) usize {
     return if (program) |value| value.groups else 0;
@@ -1747,7 +1988,7 @@ pub export fn rebar_zig_match_wide(program_value: ?*const Program, text_value: [
         if (mode == 0 and !program.nullable and start < endpos) {
             const first = text.at(start);
             if (first < 256 and program.starts[first] == 0) continue;
-            if (program.scoped_prefix != std.math.maxInt(u16) and !classMatch(program, &program.classes[program.scoped_prefix], first, program.flags)) continue;
+            if (program.scoped_prefix != std.math.maxInt(u32) and !classMatch(program, &program.classes.items[program.scoped_prefix], first, program.flags)) continue;
             if (first < 256 and start + 1 < endpos) {
                 const second = text.at(start + 1);
                 if (second < 256 and program.single[first] == 0 and !hasPair(&program.pairs, first, second)) continue;
@@ -1791,7 +2032,7 @@ pub export fn rebar_zig_match_captures_wide(program_value: ?*const Program, text
         if (mode == 0 and !program.nullable and start < endpos) {
             const first = text.at(start);
             if (first < 256 and program.starts[first] == 0) continue;
-            if (program.scoped_prefix != std.math.maxInt(u16) and !classMatch(program, &program.classes[program.scoped_prefix], first, program.flags)) continue;
+            if (program.scoped_prefix != std.math.maxInt(u32) and !classMatch(program, &program.classes.items[program.scoped_prefix], first, program.flags)) continue;
             if (first < 256 and start + 1 < endpos) {
                 const second = text.at(start + 1);
                 if (second < 256 and program.single[first] == 0 and !hasPair(&program.pairs, first, second)) continue;
