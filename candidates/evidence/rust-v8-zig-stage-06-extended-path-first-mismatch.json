@@ -1,0 +1,71 @@
+{
+  "schema": "rebar-zig-stage-06-extended-path-first-mismatch-v1",
+  "status": "MISMATCH",
+  "candidate_module": "candidates.zig_candidate",
+  "python_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "process_exit_code": 1,
+  "exit_code_meaning": "The isolated diagnostic intentionally exits 1 immediately after the first original frozen-suite mismatch.",
+  "diagnostic_stdout": "{\"candidate_module\": \"candidates.zig_candidate\", \"failure\": {\"actual\": {\"error\": \"PatternError\", \"message\": \"unsupported or invalid Zig pattern at position 0\", \"pattern_error\": {\"colno\": 1, \"lineno\": 1, \"msg\": \"unsupported or invalid Zig pattern\", \"pattern\": \"(?:ab){4294967294}\", \"pos\": 0}}, \"expected\": {\"value\": {\"__diagnostic_type__\": \"stdlib-re.Pattern\", \"flags\": 32, \"groupindex\": {}, \"groups\": 0, \"pattern\": \"(?:ab){4294967294}\"}}, \"flags\": 0, \"label\": \"manual-9\", \"operation\": \"compile\", \"pattern\": \"'(?:ab){4294967294}'\", \"subject\": \"'abab'\"}, \"phase\": \"manual\", \"phase_case_index\": 9, \"sealed_seeded_cases\": 512, \"seed\": 2026072307, \"suite\": \"tools/rust_v6_paths_probe.py\"}\n",
+  "first_mismatch": {
+    "candidate_module": "candidates.zig_candidate",
+    "failure": {
+      "actual": {
+        "error": "PatternError",
+        "message": "unsupported or invalid Zig pattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unsupported or invalid Zig pattern",
+          "pattern": "(?:ab){4294967294}",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "__diagnostic_type__": "stdlib-re.Pattern",
+          "flags": 32,
+          "groupindex": {},
+          "groups": 0,
+          "pattern": "(?:ab){4294967294}"
+        }
+      },
+      "flags": 0,
+      "label": "manual-9",
+      "operation": "compile",
+      "pattern": "'(?:ab){4294967294}'",
+      "subject": "'abab'"
+    },
+    "phase": "manual",
+    "phase_case_index": 9,
+    "sealed_seeded_cases": 512,
+    "seed": 2026072307,
+    "suite": "tools/rust_v6_paths_probe.py"
+  },
+  "frozen_production_artifacts": [
+    {
+      "path": "candidates/zig_candidate.py",
+      "sha256": "d3a7e35711f402db85f42e96470caf8a9393f1171e5bc7f26a55e0a138638ac5"
+    },
+    {
+      "path": "candidates/zig/py_bridge.c",
+      "sha256": "45ba87678defde5a23fa385622b727758c92dc78275ed2e855d5a0a883251676"
+    },
+    {
+      "path": "candidates/zig/mini_regex.zig",
+      "sha256": "2b54f9c244dae29a71cee088077fe5abc420f5b2dca070cbe9774eab75ebb2f4"
+    },
+    {
+      "path": "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "7d7ae8bef50e4bce06786dd20248b41b0ac74651ff4fae2d229d8b032b8dee1d"
+    },
+    {
+      "path": "candidates/_zig_probe.so",
+      "sha256": "c99f0660393cfdfdfa06478216ccc37e2daff3925933ae0c383b32d92fefe6f8"
+    }
+  ],
+  "sealed_campaign_failure": {
+    "path": "candidates/evidence/rust-v8-zig-stage-06-sealed-campaign-failure.json",
+    "sha256": "c2ad7685466eb713c8c6297fcd263460ff06f8b9213f832b9df37c38556ddc"
+  },
+  "performance": "NOT MEASURED"
+}
