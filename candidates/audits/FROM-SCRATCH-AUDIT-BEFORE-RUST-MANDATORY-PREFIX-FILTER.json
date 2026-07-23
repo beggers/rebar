@@ -122,7 +122,7 @@
               "mapping_count": 4,
               "matches_static_elf": true,
               "role": "engine",
-              "sha256": "682799b0752d84371c21939f58e5136cfa9f0f4b6e85361f05c2a9279f26dc40"
+              "sha256": "890f9e34e966244067a3dc173c2276043ae15d4830a05228fb37ec2571aa17cd"
             }
           ],
           "passed": true,
@@ -160,7 +160,7 @@
           "file": "candidates/rust/src/lib.rs",
           "issues": [],
           "passed": true,
-          "sha256": "1849f62cc33286094bc18ac66eacb42eb1f8c3e5a2d9f911b09e2515cd7e18e6"
+          "sha256": "a2fa04912bb1f6957f833560446f4d3d1c5d13df8b5efac992fa63e28803668b"
         },
         {
           "allowed_native_python_imports": [],
@@ -600,7 +600,7 @@
               "Py_GetRecursionLimit"
             ],
             "runpaths": [],
-            "sha256": "682799b0752d84371c21939f58e5136cfa9f0f4b6e85361f05c2a9279f26dc40",
+            "sha256": "890f9e34e966244067a3dc173c2276043ae15d4830a05228fb37ec2571aa17cd",
             "undefined_symbol_count": 51
           }
         },
@@ -1137,7 +1137,7 @@
           "Py_GetRecursionLimit"
         ],
         "runpaths": [],
-        "sha256": "682799b0752d84371c21939f58e5136cfa9f0f4b6e85361f05c2a9279f26dc40",
+        "sha256": "890f9e34e966244067a3dc173c2276043ae15d4830a05228fb37ec2571aa17cd",
         "undefined_symbol_count": 51
       }
     },

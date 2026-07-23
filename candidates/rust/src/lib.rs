@@ -124,6 +124,11 @@ struct Program {
     guards: usize,
 }
 
+struct MandatoryRunDelimiter {
+    run: usize,
+    delimiter: search::StartSet,
+}
+
 #[derive(Clone, Copy, Default)]
 struct Choice {
     pc: usize,
@@ -178,6 +183,7 @@ pub struct Engine {
     flags: u32,
     starts: Option<[u8; 256]>,
     start_set: Option<search::StartSet>,
+    mandatory_run_delimiter: Option<Box<MandatoryRunDelimiter>>,
     leading_lookbehind: Option<usize>,
     start_anchor: SearchAnchor,
     byte_mode: bool,
@@ -2191,6 +2197,50 @@ impl Compiler {
     }
 }
 
+/// Recognize only a mandatory, linear run followed by an exact byte literal.
+///
+/// Capture instructions do not consume a character. Any other instruction can
+/// affect whether the run or delimiter is required, so it disables the filter.
+fn mandatory_run_delimiter(program: &Program) -> Option<Box<MandatoryRunDelimiter>> {
+    let mut pc = 0_usize;
+    while matches!(
+        program.code.get(pc).map(|instruction| instruction.op),
+        Some(Op::SaveBegin | Op::SaveEnd)
+    ) {
+        pc = pc.checked_add(1)?;
+    }
+
+    let instruction = program.code.get(pc)?;
+    if instruction.op != Op::Run {
+        return None;
+    }
+    let run_index = instruction.left;
+    let run = program.runs.get(run_index)?;
+    if run.width != 1 || run.minimum == 0 {
+        return None;
+    }
+
+    pc = pc.checked_add(1)?;
+    while matches!(
+        program.code.get(pc).map(|instruction| instruction.op),
+        Some(Op::SaveBegin | Op::SaveEnd)
+    ) {
+        pc = pc.checked_add(1)?;
+    }
+
+    let instruction = program.code.get(pc)?;
+    if instruction.op != Op::Literal || instruction.flags & I != 0 {
+        return None;
+    }
+    let byte = u8::try_from(instruction.value).ok()?;
+    let mut table = [0_u8; 256];
+    table[usize::from(byte)] = 1;
+    Some(Box::new(MandatoryRunDelimiter {
+        run: run_index,
+        delimiter: search::StartSet::new(&table),
+    }))
+}
+
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn rebar_compile(
     pattern: *const u32,
@@ -2269,6 +2319,7 @@ pub unsafe extern "C" fn rebar_compile(
                 );
                 return std::ptr::null_mut();
             };
+            let mandatory_run_delimiter = mandatory_run_delimiter(&program);
             set_error(String::new(), None, false);
             Box::into_raw(Box::new(Engine {
                 program,
@@ -2277,6 +2328,7 @@ pub unsafe extern "C" fn rebar_compile(
                 flags: parser.flags & !BYTE,
                 starts,
                 start_set,
+                mandatory_run_delimiter,
                 leading_lookbehind: lookbehind,
                 start_anchor,
                 byte_mode: byte_mode != 0,
@@ -2985,6 +3037,53 @@ fn run_program(
     }
 }
 
+/// Reject a search only when every mandatory delimiter is provably impossible.
+///
+/// A viable delimiter must have every minimum-width repeated atom immediately
+/// before it. Finding one leaves the original ordered, capture-aware VM intact.
+#[inline]
+fn mandatory_run_delimiter_allows(
+    program: &Program,
+    required: &MandatoryRunDelimiter,
+    context: &Context<'_>,
+    values: &[u8],
+    first_start: usize,
+) -> bool {
+    let Some(run) = program.runs.get(required.run) else {
+        return true;
+    };
+    let Some(mut cursor) = first_start.checked_add(run.minimum) else {
+        return false;
+    };
+
+    while let Some(delimiter) = required.delimiter.next(values, cursor, context.end) {
+        let mut preceding = delimiter;
+        let mut remaining = run.minimum;
+        let mut viable = true;
+        while remaining != 0 {
+            let Some(previous) = preceding.checked_sub(1) else {
+                viable = false;
+                break;
+            };
+            if previous < first_start || !repeat_atom_match(&run.atom, context, previous) {
+                viable = false;
+                break;
+            }
+            preceding = previous;
+            remaining -= 1;
+        }
+        if viable {
+            return true;
+        }
+        let Some(next) = delimiter.checked_add(1) else {
+            return false;
+        };
+        cursor = next;
+    }
+
+    false
+}
+
 fn run_match(
     engine: &Engine,
     context: &Context<'_>,
@@ -3014,6 +3113,20 @@ fn run_match(
     } else {
         pos
     };
+    if mode == 0
+        && engine.start_anchor == SearchAnchor::Unrestricted
+        && engine.leading_lookbehind.is_none()
+        && let Some(required) = engine.mandatory_run_delimiter.as_deref()
+        && let Some(values) = context.bytes.or_else(|| {
+            context
+                .wide
+                .filter(|subject| subject.kind == 1)
+                .map(|subject| subject.data)
+        })
+        && !mandatory_run_delimiter_allows(program, required, context, values, first_start)
+    {
+        return 0;
+    }
     let mut start = first_start;
     while start <= last_start {
         if mode == 0 && engine.start_anchor == SearchAnchor::Line {
