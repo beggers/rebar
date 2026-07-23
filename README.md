@@ -10,11 +10,11 @@ The first graph shows whether each independently written engine gives Python's a
 
 ![All four independently written engines compared with Python on the same 223,198 matching tests, with the original failures and current results preserved](candidates/evidence/rust-v8-correctness-progress.svg)
 
-The second graph compares all three fully checked engines against Python on the **same 624 public practice cases**. **1× is Python; higher is faster.** C measures **1.315×**, Rust **1.121×**, and Zig **1.007×**; the lines show each measured 95% uncertainty range. These are practice results, not the sealed final test.
+The second graph compares all three fully checked engines against Python on the **same 624 public practice cases**. **1× is Python; higher is faster.** C measures **1.316×**, Rust **1.136×**, and Zig **1.003×**; the lines show each measured 95% uncertainty range. These are practice results, not the sealed final test.
 
-![Overall practice speed and uncertainty for C, Rust, and Zig against standard Python on the same 624 cases](performance/v7/evidence/three-qualified-engines-public-practice-v1-overall.svg)
+![Overall practice speed and uncertainty for C, optimized Rust, and Zig against standard Python on the same 624 cases](performance/v7/evidence/three-qualified-engines-public-practice-v2-overall.svg)
 
-![Every practice win, uncertain case, loss, and substantial slowdown for C, Rust, and Zig](performance/v7/evidence/three-qualified-engines-public-practice-v1-outcomes.svg)
+![Every practice win, uncertain case, loss, and substantial slowdown for C, optimized Rust, and Zig](performance/v7/evidence/three-qualified-engines-public-practice-v2-outcomes.svg)
 
 **Rust, Zig, and C each independently pass all 22 complete compatibility and safety stages.** Each has its own matching engine; none wraps Python's `re`, an external package, or another candidate. The independent Python prototype remains incomplete.
 
@@ -26,7 +26,7 @@ Every result below uses the same frozen Python answers. “Differences” means 
 
 | Built-from-scratch engine | Matching checks | Parser checks | Object and lifetime checks | Tracing and unusual-argument checks |
 | --- | ---: | ---: | ---: | ---: |
-| Rust | [223,198/223,198](candidates/evidence/rust-v7-edge-oracle-rust-mandatory-prefix-inline-singleton.json.gz) | [20,480/20,480](candidates/evidence/rust-v8-rust-inline-singleton-sealed-campaign.json) | [0/393 differences](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-MANDATORY-PREFIX-INLINE-SINGLETON.json.gz) | [0/479 differences](candidates/evidence/rust-v8-observability-rust-qualified-mandatory-prefix-inline-singleton.json.gz) |
+| Rust | [223,198/223,198](candidates/evidence/rust-v7-edge-oracle-rust-fused-vectorcall.json.gz) | [20,480/20,480](candidates/evidence/rust-v8-rust-fused-vectorcall-sealed-campaign.json) | [0/393 differences](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-FUSED-VECTORCALL.json.gz) | [0/479 differences](candidates/evidence/rust-v8-observability-rust-qualified-fused-vectorcall.json.gz) |
 | Zig | [223,198/223,198](candidates/evidence/rust-v8-edge-oracle-zig-deep-stage-11.json.gz) | [20,480/20,480](candidates/evidence/rust-v7-grammar-zig-v8-deep-stage-11.json.gz) | [0/393 differences](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-STAGE-11.json.gz) | [0/479 differences](candidates/evidence/rust-v8-observability-zig-qualified-stage-11.json.gz) |
 | C | [223,198/223,198](candidates/evidence/rust-v8-edge-oracle-vm-deep-stage-19.json.gz) | [20,480/20,480](candidates/evidence/rust-v7-grammar-vm-v8-deep-stage-19.json.gz) | [0/393 public differences](candidates/audits/RUST-V8-DEEP-CONTRACT-C-STAGE-19.json.gz) | [0/479 differences](candidates/evidence/rust-v8-observability-vm-qualified-stage-19.json.gz) |
 | Independent Python | [223,198/223,198](candidates/evidence/rust-v8-edge-oracle-ast-deep-stage-01.json.gz) | [20,480/20,480](candidates/evidence/rust-v7-grammar-ast-deep-stage-01.json.gz) | [93/393 differences](candidates/audits/RUST-V8-DEEP-CONTRACT-AST-STAGE-01.json.gz) | NOT MEASURED |
@@ -35,11 +35,11 @@ The larger frozen replacement-and-callback checks use the same Python baseline:
 
 | Engine | Replacement and callback checks | Deep replacement and callback checks |
 | --- | ---: | ---: |
-| Rust | [0/8,862 differences](candidates/evidence/rust-v8-rust-mandatory-prefix-inline-singleton-replacement-adversarial.json.gz) | [0/11,266 differences](candidates/evidence/rust-v8-rust-mandatory-prefix-inline-singleton-replacement-adversarial-deep.json.gz) |
+| Rust | [0/8,862 differences](candidates/evidence/rust-v8-rust-fused-vectorcall-sealed-campaign.json) | [0/11,266 differences](candidates/evidence/rust-v8-rust-fused-vectorcall-sealed-campaign.json) |
 | Zig | [0/8,862 differences](candidates/evidence/rust-v8-replacement-zig-stage-11-from-scratch-failures.json.gz) | [0/11,266 differences](candidates/evidence/rust-v8-replacement-zig-stage-11-from-scratch-deep-failures.json.gz) |
 | C | [0/8,862 differences](candidates/evidence/rust-v8-replacement-vm-stage-19.json.gz) | [0/11,266 differences](candidates/evidence/rust-v8-replacement-vm-deep-stage-19.json.gz) |
 
-Each qualified engine independently passes the complete 22-stage campaign: [Rust](candidates/evidence/rust-v8-rust-inline-singleton-sealed-campaign.json), [Zig](candidates/evidence/rust-v8-zig-stage-11-sealed-campaign.json), and [C](candidates/evidence/rust-v8-vm-stage-19-sealed-campaign.json). The checks include Python's own tests, all **4,494,555** full-Unicode comparisons, **72,248** extended behavior checks, and both isolated crash and deep-recursion suites. The [complete Zig report](candidates/evidence/ZIG-STAGE-11-QUALIFIED.md), [C report](candidates/evidence/C-STAGE-19-QUALIFIED.md), and [experiment log](docs/EXPERIMENT-LOG.md) preserve the original failures and fixes.
+Each qualified engine independently passes the complete 22-stage campaign: [Rust](candidates/evidence/rust-v8-rust-fused-vectorcall-sealed-campaign.json), [Zig](candidates/evidence/rust-v8-zig-stage-11-sealed-campaign.json), and [C](candidates/evidence/rust-v8-vm-stage-19-sealed-campaign.json). The checks include Python's own tests, all **4,494,555** full-Unicode comparisons, **72,248** extended behavior checks, replacements, callbacks, and isolated crash and deep-recursion tests.
 
 The current [from-scratch audit](candidates/audits/FROM-SCRATCH-AUDIT.json) independently verifies all four implementations, all **five** actual loaded native libraries, and all **76** checks against external packages, Python's existing engine, hidden engine sharing, and substituted native code.
 
@@ -49,11 +49,11 @@ The current [from-scratch audit](candidates/audits/FROM-SCRATCH-AUDIT.json) inde
 
 | Fully compatible engine | Overall practice speed | 95% uncertainty range | Clearly faster cases | More than 20% slower |
 | --- | ---: | ---: | ---: | ---: |
-| C | 1.315× | 1.269–1.368× | 426/624 | 49/624 |
-| Rust | 1.121× | 1.076–1.165× | 247/624 | 139/624 |
-| Zig | 1.007× | 0.960–1.054× | 229/624 | 238/624 |
+| C | 1.316× | 1.269–1.371× | 428/624 | 49/624 |
+| Rust | 1.136× | 1.090–1.183× | 252/624 | 112/624 |
+| Zig | 1.003× | 0.957–1.050× | 230/624 | 240/624 |
 
-The [complete practice report](performance/v7/evidence/THREE-QUALIFIED-ENGINES-PUBLIC-PRACTICE.md) retains all **17,472** timing rows, **52,416** correctness checks, and all **426** substantial slowdowns. The [independent verifier](performance/v7/evidence/three-qualified-engines-public-practice-v1-integrity.json) recomputes all **1,875** confidence intervals and verifies all five loaded native libraries. Zig's overall uncertainty overlaps Python, so its practice result does not establish an overall speed improvement. No practice result establishes the final **1.5×** target or selects a winner.
+The [complete practice report](performance/v7/evidence/RUST-FUSED-VECTORCALL.md) retains all **17,472** timing rows, **52,416** correctness checks, and all **401** substantial slowdowns. The [independent verifier](performance/v7/evidence/three-qualified-engines-public-practice-v2-integrity.json) recomputes all **1,875** confidence intervals and checks all five loaded native libraries. Zig's uncertainty range includes Python, so its practice result does not establish an overall speed improvement. No practice result establishes the final **1.5×** target or selects a winner.
 
 The sealed [24,576-case final benchmark](performance/v9/HOLDOUT-PROTOCOL.md) fixes **31** paired rounds, **9,999** confidence draws, hidden real patterns and inputs, genuinely precompiled patterns, and **16** real calls per timed sample. Its [75-check, manifest-bound verification](performance/v9/evidence/HOLDOUT-PROTOCOL-SELF-TEST.json) passes without importing a candidate, opening the secret, creating final cases, or measuring performance. The [one-time commitment and its honest same-user custody limitations](performance/v9/evidence/HOLDOUT-PROSPECTIVE-FREEZE.md) are recorded before optimization. The [earlier 12,288-case protocol](performance/v8/HOLDOUT-PROTOCOL.md) remains preserved and unopened.
 
@@ -61,35 +61,17 @@ The [final graph generator](tools/performance_v9_charts.py) and [independent res
 
 ## Detailed practice results
 
-Each graph below is generated directly from the same [independently verified, four-way practice run](performance/v7/evidence/three-qualified-engines-public-practice-v1-integrity.json). No final-test case is used.
+Each graph below is generated directly from the same [independently verified, four-way practice run](performance/v7/evidence/three-qualified-engines-public-practice-v2-integrity.json). No final-test case is used.
 
-![All three candidate engines across all 12 regular-expression operations, with the actual number of cases labeled](performance/v7/evidence/three-qualified-engines-public-practice-v1-api.svg)
+![All three candidate engines across all 12 regular-expression operations, with the actual number of cases labeled](performance/v7/evidence/three-qualified-engines-public-practice-v2-api.svg)
 
-![Every one of the 426 substantial practice slowdowns, grouped by candidate and operation](performance/v7/evidence/three-qualified-engines-public-practice-v1-regressions.svg)
+![Every one of the 401 substantial practice slowdowns, grouped by candidate and operation](performance/v7/evidence/three-qualified-engines-public-practice-v2-regressions.svg)
 
-![Python-visible temporary allocations for all three engines, including zero-allocation cases](performance/v7/evidence/three-qualified-engines-public-practice-v1-memory.svg)
+![Python-visible temporary allocations for all three engines, including zero-allocation cases](performance/v7/evidence/three-qualified-engines-public-practice-v2-memory.svg)
 
 Memory results describe Python-visible temporary allocations in a shared benchmark process. They do **not** establish isolated native-engine or whole-process memory.
 
-![Overall practice rankings of C, Rust, and Zig against the unchanged Python baseline](performance/v7/evidence/three-qualified-engines-public-practice-v1-rankings.svg)
-
-## Earlier Rust designs
-
-The earlier [fully checked Rust report](performance/v7/evidence/RUST-INLINE-SINGLETON.md) preserves all eight previous independently measured Rust designs. Its separate graph retains all original results; its confidence ranges are not paired comparisons between designs.
-
-![Overall practice speed of all eight previous Rust designs against Python](performance/v7/evidence/rust-v7-calibration-overall.svg)
-
-![Rust practice speed for all 12 regular-expression operations](performance/v7/evidence/rust-v7-calibration-api.svg)
-
-![Every faster, slower, unresolved, and substantially slower Rust practice case](performance/v7/evidence/rust-v7-calibration-win-loss.svg)
-
-![Every Rust practice slowdown greater than 20%, grouped by operation](performance/v7/evidence/rust-v7-calibration-regressions.svg)
-
-![Temporary Python allocations for all 12 Rust practice operations](performance/v7/evidence/rust-v7-calibration-memory.svg)
-
-This memory graph measures allocations visible to Python. It does not establish native Rust memory use or engine-specific process memory.
-
-All older, incomplete-engine comparisons and their generated graphs remain in the [experiment log](docs/EXPERIMENT-LOG.md); they are not results for the three currently qualified engines or the sealed final benchmark.
+![Overall practice rankings of C, optimized Rust, and Zig against the unchanged Python baseline](performance/v7/evidence/three-qualified-engines-public-practice-v2-rankings.svg)
 
 ## Reproduce and inspect the experiment
 
@@ -119,6 +101,10 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.rust_v7_multi_candidate_practice_audit self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.rust_v7_multi_candidate_practice_charts --self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  -m tools.rust_v7_multi_candidate_practice_v2_audit self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  -m tools.rust_v7_multi_candidate_practice_v2_charts --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/performance_v9_charts.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \

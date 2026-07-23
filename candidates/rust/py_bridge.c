@@ -1864,21 +1864,23 @@ static PyObject *bridge_bound_fullmatch(PyObject *module, PyObject *const *args,
     return rust_bound_pattern(args, nargs, kwnames, "fullmatch", 2);
 }
 
-static PyObject *bridge_bound_findall(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
-    (void)module;
-    PyObject *value;
-    PyObject *pos;
-    PyObject *endpos;
-    if (!rust_bound_window(args, nargs, kwnames, 3, "findall", &value, &pos, &endpos)) return NULL;
-    void *handle = PyLong_AsVoidPtr(args[0]);
-    size_t groups = PyLong_AsSize_t(args[2]);
+static PyObject *rust_pattern_findall_direct(
+    PyObject *handle_value,
+    PyObject *pattern_value,
+    PyObject *groups_value,
+    PyObject *value,
+    PyObject *pos,
+    PyObject *endpos
+) {
+    void *handle = PyLong_AsVoidPtr(handle_value);
+    size_t groups = PyLong_AsSize_t(groups_value);
     if (PyErr_Occurred()) return NULL;
     if (groups != rebar_groups(handle)) {
         PyErr_SetString(PyExc_ValueError, "Rust regex group count does not match the compiled program");
         return NULL;
     }
     RustSubject subject;
-    if (!rust_subject_open(&subject, args[1], value, 1)) return NULL;
+    if (!rust_subject_open(&subject, pattern_value, value, 1)) return NULL;
     size_t start;
     size_t end;
     if (!rust_subject_window(&subject, pos, endpos, &start, &end)) {
@@ -1892,13 +1894,21 @@ static PyObject *bridge_bound_findall(PyObject *module, PyObject *const *args, P
     return result;
 }
 
-static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+static PyObject *bridge_bound_findall(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
     (void)module;
     PyObject *value;
     PyObject *pos;
     PyObject *endpos;
-    if (!rust_bound_window(args, nargs, kwnames, 1, "findall", &value, &pos, &endpos)) return NULL;
-    PyObject *literal = args[0];
+    if (!rust_bound_window(args, nargs, kwnames, 3, "findall", &value, &pos, &endpos)) return NULL;
+    return rust_pattern_findall_direct(args[0], args[1], args[2], value, pos, endpos);
+}
+
+static PyObject *rust_pattern_literal_findall_direct(
+    PyObject *literal,
+    PyObject *value,
+    PyObject *pos,
+    PyObject *endpos
+) {
     RustSubject subject;
     if (!rust_subject_open(&subject, literal, value, 0)) return NULL;
     size_t start;
@@ -1982,6 +1992,15 @@ static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const 
     }
     rust_subject_release(&subject);
     return result;
+}
+
+static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    (void)module;
+    PyObject *value;
+    PyObject *pos;
+    PyObject *endpos;
+    if (!rust_bound_window(args, nargs, kwnames, 1, "findall", &value, &pos, &endpos)) return NULL;
+    return rust_pattern_literal_findall_direct(args[0], value, pos, endpos);
 }
 
 static int rust_iterator_traverse(RustIterator *iterator, visitproc visit, void *arg) {
@@ -2945,10 +2964,134 @@ static int rust_pattern_append_attribute(
     return 1;
 }
 
+static int rust_pattern_append_attributes(
+    PyObject *pattern,
+    const RustPatternAttribute *attributes,
+    size_t count,
+    PyObject **owned,
+    size_t *owned_count,
+    PyObject **prefix,
+    size_t *prefix_count,
+    int *fast
+) {
+    *fast = 0;
+#ifndef Py_GIL_DISABLED
+    PyTypeObject *type = Py_TYPE(pattern);
+    unsigned int version = type->tp_version_tag;
+
+    if (
+        type == rust_primary_pattern_type
+        && version != 0
+        && (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        && type->tp_itemsize == 0
+        && type->tp_getattro == PyObject_GenericGetAttr
+    ) {
+        int ready = 1;
+        if (
+            rust_pattern_slot_cache.type != type
+            || rust_pattern_slot_cache.version != version
+        ) {
+            int refreshed = rust_pattern_refresh_slot_cache(type, version);
+            if (refreshed < 0) return 0;
+            ready = refreshed;
+        }
+
+        if (ready) {
+            for (size_t index = 0; index < count; index++) {
+                RustPatternAttribute attribute = attributes[index];
+                if (!rust_pattern_slot_cache.eligible[attribute]) {
+                    ready = 0;
+                    break;
+                }
+                PyObject *value = *(PyObject **)(
+                    (char *)pattern
+                    + rust_pattern_slot_cache.offsets[attribute]
+                );
+                if (value == NULL) {
+                    ready = 0;
+                    break;
+                }
+            }
+        }
+
+        if (ready) {
+            for (size_t index = 0; index < count; index++) {
+                RustPatternAttribute attribute = attributes[index];
+                PyObject *value = *(PyObject **)(
+                    (char *)pattern
+                    + rust_pattern_slot_cache.offsets[attribute]
+                );
+                value = Py_NewRef(value);
+                owned[*owned_count] = value;
+                (*owned_count)++;
+                prefix[*prefix_count] = value;
+                (*prefix_count)++;
+            }
+            *fast = 1;
+            return 1;
+        }
+    }
+#endif
+
+    for (size_t index = 0; index < count; index++) {
+        if (!rust_pattern_append_attribute(
+                pattern,
+                attributes[index],
+                owned,
+                owned_count,
+                prefix,
+                prefix_count
+            )) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+static const RustPatternAttribute rust_pattern_matching_attributes[] = {
+    RUST_PATTERN_ATTRIBUTE_HANDLE,
+    RUST_PATTERN_ATTRIBUTE_GROUPINDEX,
+    RUST_PATTERN_ATTRIBUTE_PATTERN,
+    RUST_PATTERN_ATTRIBUTE_LITERAL,
+};
+
+static const RustPatternAttribute rust_pattern_findall_literal_attributes[] = {
+    RUST_PATTERN_ATTRIBUTE_LITERAL,
+};
+
+static const RustPatternAttribute rust_pattern_findall_attributes[] = {
+    RUST_PATTERN_ATTRIBUTE_HANDLE,
+    RUST_PATTERN_ATTRIBUTE_PATTERN,
+    RUST_PATTERN_ATTRIBUTE_GROUPS,
+};
+
+static const RustPatternAttribute rust_pattern_iterator_attributes[] = {
+    RUST_PATTERN_ATTRIBUTE_HANDLE,
+    RUST_PATTERN_ATTRIBUTE_GROUPINDEX,
+    RUST_PATTERN_ATTRIBUTE_PATTERN,
+    RUST_PATTERN_ATTRIBUTE_GROUPS,
+};
+
 #define RUST_PATTERN_APPEND_ATTRIBUTE(name) \
     do { \
         if (!rust_pattern_append_attribute( \
                 pattern, name, owned, &owned_count, prefix, &prefix_count \
+            )) { \
+            goto cleanup; \
+        } \
+    } while (0)
+
+#define RUST_PATTERN_APPEND_ATTRIBUTES(names) \
+    do { \
+        if (!rust_pattern_append_attributes( \
+                pattern, \
+                names, \
+                sizeof(names) / sizeof((names)[0]), \
+                owned, \
+                &owned_count, \
+                prefix, \
+                &prefix_count, \
+                &fast_attributes \
             )) { \
             goto cleanup; \
         } \
@@ -2967,16 +3110,14 @@ static PyObject *rust_pattern_dispatch(
     size_t prefix_count = 0;
     RustPatternBridgeCall function = NULL;
     PyObject *result = NULL;
+    int fast_attributes = 0;
 
     switch (operation) {
         case RUST_PATTERN_SEARCH:
         case RUST_PATTERN_MATCH:
         case RUST_PATTERN_FULLMATCH:
             prefix[prefix_count++] = pattern;
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_HANDLE);
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_GROUPINDEX);
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_PATTERN);
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_LITERAL);
+            RUST_PATTERN_APPEND_ATTRIBUTES(rust_pattern_matching_attributes);
             if (kwnames == NULL && nargs >= 1 && nargs <= 3) {
                 void *handle = PyLong_AsVoidPtr(prefix[1]);
                 if (PyErr_Occurred()) goto cleanup;
@@ -3008,24 +3149,102 @@ static PyObject *rust_pattern_dispatch(
                     : bridge_bound_fullmatch;
             break;
         case RUST_PATTERN_FINDALL:
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_LITERAL);
+            RUST_PATTERN_APPEND_ATTRIBUTES(
+                rust_pattern_findall_literal_attributes
+            );
             if (prefix[0] != Py_None) {
+                if (
+                    fast_attributes
+                    && kwnames == NULL
+                    && nargs >= 1
+                    && nargs <= 3
+                ) {
+                    PyObject *pos = nargs >= 2 ? args[1] : NULL;
+                    PyObject *endpos = nargs >= 3 ? args[2] : NULL;
+                    result = rust_pattern_literal_findall_direct(
+                        prefix[0],
+                        args[0],
+                        pos,
+                        endpos
+                    );
+                    goto cleanup;
+                }
                 function = bridge_bound_literal_findall;
             } else {
+                int literal_fast = fast_attributes;
                 prefix_count = 0;
-                RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_HANDLE);
-                RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_PATTERN);
-                RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_GROUPS);
+                RUST_PATTERN_APPEND_ATTRIBUTES(
+                    rust_pattern_findall_attributes
+                );
+                if (
+                    literal_fast
+                    && fast_attributes
+                    && kwnames == NULL
+                    && nargs >= 1
+                    && nargs <= 3
+                ) {
+                    PyObject *pos = nargs >= 2 ? args[1] : NULL;
+                    PyObject *endpos = nargs >= 3 ? args[2] : NULL;
+                    result = rust_pattern_findall_direct(
+                        prefix[0],
+                        prefix[1],
+                        prefix[2],
+                        args[0],
+                        pos,
+                        endpos
+                    );
+                    goto cleanup;
+                }
                 function = bridge_bound_findall;
             }
             break;
         case RUST_PATTERN_FINDITER:
         case RUST_PATTERN_SCANNER:
             prefix[prefix_count++] = pattern;
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_HANDLE);
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_GROUPINDEX);
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_PATTERN);
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_GROUPS);
+            RUST_PATTERN_APPEND_ATTRIBUTES(
+                rust_pattern_iterator_attributes
+            );
+            if (
+                fast_attributes
+                && kwnames == NULL
+                && nargs >= 1
+                && nargs <= 3
+            ) {
+                void *handle = PyLong_AsVoidPtr(prefix[1]);
+                size_t groups = PyLong_AsSize_t(prefix[4]);
+                if (PyErr_Occurred()) goto cleanup;
+
+                PyObject *pos = nargs >= 2 ? args[1] : NULL;
+                PyObject *endpos = nargs >= 3 ? args[2] : NULL;
+                PyObject *scanner = rust_iterator_create(
+                    &RustScannerType,
+                    pattern,
+                    handle,
+                    prefix[2],
+                    prefix[3],
+                    groups,
+                    args[0],
+                    pos,
+                    endpos
+                );
+                if (scanner == NULL) goto cleanup;
+                if (operation == RUST_PATTERN_SCANNER) {
+                    result = scanner;
+                    goto cleanup;
+                }
+
+                PyObject *search = PyCMethod_New(
+                    &rust_iterator_scanner_search_method,
+                    scanner,
+                    NULL,
+                    &RustScannerType
+                );
+                Py_DECREF(scanner);
+                if (search == NULL) goto cleanup;
+                result = PyCallIter_New(search, Py_None);
+                Py_DECREF(search);
+                goto cleanup;
+            }
             function = operation == RUST_PATTERN_FINDITER
                 ? bridge_bound_finditer
                 : bridge_bound_scanner;
@@ -3127,6 +3346,7 @@ cleanup:
 }
 
 #undef RUST_PATTERN_APPEND_ATTRIBUTE
+#undef RUST_PATTERN_APPEND_ATTRIBUTES
 
 #define RUST_PATTERN_CMETHOD(name, operation) \
     static PyObject *rust_pattern_##name( \

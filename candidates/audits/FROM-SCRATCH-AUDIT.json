@@ -115,7 +115,7 @@
               "mapping_count": 5,
               "matches_static_elf": true,
               "role": "bridge",
-              "sha256": "bacce4e941dfa83a03eb87131c0ee8fe91feaa31ad02d97119a5c6bdce956e71"
+              "sha256": "8a413cce5dde126fbcdeba269a4ee766f20ba80396db460a160864df4d8c6434"
             },
             {
               "file": "candidates/_rust_engine.so",
@@ -152,7 +152,7 @@
           "file": "candidates/rust/py_bridge.c",
           "issues": [],
           "passed": true,
-          "sha256": "cfe81e9dc80bfbfadc34907918fe00fdbb2e3c4c6d8f3fd4efdff0e8783aa291"
+          "sha256": "88a8a6b086061da69022a978eba3a0f0317a378f0a758c44ec84fb9c1c0b3c65"
         },
         {
           "allowed_native_python_imports": [],
@@ -563,7 +563,7 @@
             "runpaths": [
               "$ORIGIN"
             ],
-            "sha256": "bacce4e941dfa83a03eb87131c0ee8fe91feaa31ad02d97119a5c6bdce956e71",
+            "sha256": "8a413cce5dde126fbcdeba269a4ee766f20ba80396db460a160864df4d8c6434",
             "undefined_symbol_count": 138
           },
           "engine": {
@@ -1116,7 +1116,7 @@
         "runpaths": [
           "$ORIGIN"
         ],
-        "sha256": "bacce4e941dfa83a03eb87131c0ee8fe91feaa31ad02d97119a5c6bdce956e71",
+        "sha256": "8a413cce5dde126fbcdeba269a4ee766f20ba80396db460a160864df4d8c6434",
         "undefined_symbol_count": 138
       },
       "engine": {

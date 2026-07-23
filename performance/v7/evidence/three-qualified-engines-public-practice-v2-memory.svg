@@ -1,0 +1,204 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="1454" viewBox="0 0 1320 1454" role="img" aria-label="Python-visible temporary allocations">
+<title>Python-visible temporary allocations</title>
+<desc>PRACTICE ONLY. Every replacement and standard Python ran the same 624 public practice tasks in the same 7 paired trials. The unseen final test remains sealed. Median Python-traced temporary allocation versus Python · all 624 tasks per engine · lower is better</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:25px;font-weight:750}.sub{font-size:13px;fill:#52627a}.head{font-size:15px;font-weight:700}.label{font-size:12px}.small{font-size:11px;fill:#52627a}.value{font-size:12px;font-weight:700}.tick{font-size:10.5px;fill:#64748b}.banner{font-size:12px;font-weight:700;fill:#92400e}.grid{stroke:#e2e8f0;stroke-width:1}.base{stroke:#475569;stroke-width:1.7}.panel{fill:#f8fafc;stroke:#e2e8f0;stroke-width:1}</style>
+<text x="26" y="39" class="title">Python-visible temporary allocations</text>
+<text x="26" y="63" class="sub">Median Python-traced temporary allocation versus Python · all 624 tasks per engine · lower is better</text>
+<rect x="20" y="78" width="1280" height="34" rx="7" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="33" y="100" class="banner">PRACTICE ONLY — the unseen final test remains sealed; final speed NOT MEASURED</text>
+<rect x="18" y="133" width="1284" height="399" rx="9" class="panel"/>
+<text x="29" y="154" class="head">C · 0.336× median Python-traced allocations · 624 cases</text>
+<line x1="340.00" y1="186" x2="340.00" y2="541" class="grid"/>
+<text x="340.00" y="178" text-anchor="middle" class="tick">0×</text>
+<line x1="395.27" y1="186" x2="395.27" y2="541" class="grid"/>
+<text x="395.27" y="178" text-anchor="middle" class="tick">0.25×</text>
+<line x1="450.54" y1="186" x2="450.54" y2="541" class="grid"/>
+<text x="450.54" y="178" text-anchor="middle" class="tick">0.5×</text>
+<line x1="505.81" y1="186" x2="505.81" y2="541" class="grid"/>
+<text x="505.81" y="178" text-anchor="middle" class="tick">0.75×</text>
+<line x1="561.08" y1="186" x2="561.08" y2="541" class="base"/>
+<text x="561.08" y="178" text-anchor="middle" class="tick">1× Python</text>
+<line x1="671.62" y1="186" x2="671.62" y2="541" class="grid"/>
+<text x="671.62" y="178" text-anchor="middle" class="tick">1.5×</text>
+<line x1="782.16" y1="186" x2="782.16" y2="541" class="grid"/>
+<text x="782.16" y="178" text-anchor="middle" class="tick">2×</text>
+<text x="29" y="214" class="label">Prepare a pattern (compile)</text>
+<circle cx="795.36" cy="210" r="4.8" fill="#2563eb" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="214" class="value">2.060×</text>
+<text x="946" y="214" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="243" class="label">Escape special characters (escape)</text>
+<circle cx="440.43" cy="239" r="4.8" fill="#2563eb" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="243" class="value">0.454×</text>
+<text x="946" y="243" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="272" class="label">Find all matches (findall)</text>
+<circle cx="409.24" cy="268" r="4.8" fill="#2563eb" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="272" class="value">0.313×</text>
+<text x="946" y="272" class="small">n=80 · 0 zero Python-traced observations</text>
+<text x="29" y="301" class="label">Stream all matches (finditer)</text>
+<circle cx="478.88" cy="297" r="4.8" fill="#2563eb" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="301" class="value">0.628×</text>
+<text x="946" y="301" class="small">n=67 · 0 zero Python-traced observations</text>
+<text x="29" y="330" class="label">Match the whole input (fullmatch)</text>
+<circle cx="364.01" cy="326" r="4.8" fill="#2563eb" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="330" class="value">0.109×</text>
+<text x="946" y="330" class="small">n=47 · 13 zero Python-traced observations</text>
+<text x="29" y="359" class="label">Match at the beginning (match)</text>
+<circle cx="361.87" cy="355" r="4.8" fill="#2563eb" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="359" class="value">0.099×</text>
+<text x="946" y="359" class="small">n=48 · 18 zero Python-traced observations</text>
+<text x="29" y="388" class="label">Read match information (match-surface)</text>
+<circle cx="409.20" cy="384" r="4.8" fill="#2563eb" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="388" class="value">0.313×</text>
+<text x="946" y="388" class="small">n=48 · 23 zero Python-traced observations</text>
+<text x="29" y="417" class="label">Scan repeated matches (scanner)</text>
+<circle cx="477.62" cy="413" r="4.8" fill="#2563eb" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="417" class="value">0.623×</text>
+<text x="946" y="417" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="446" class="label">Search for a match (search)</text>
+<circle cx="361.55" cy="442" r="4.8" fill="#2563eb" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="446" class="value">0.097×</text>
+<text x="946" y="446" class="small">n=48 · 9 zero Python-traced observations</text>
+<text x="29" y="475" class="label">Split around matches (split)</text>
+<circle cx="409.56" cy="471" r="4.8" fill="#2563eb" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="475" class="value">0.315×</text>
+<text x="946" y="475" class="small">n=47 · 0 zero Python-traced observations</text>
+<text x="29" y="504" class="label">Replace matches (sub)</text>
+<circle cx="379.24" cy="500" r="4.8" fill="#2563eb" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="504" class="value">0.178×</text>
+<text x="946" y="504" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="533" class="label">Replace and count (subn)</text>
+<circle cx="393.71" cy="529" r="4.8" fill="#2563eb" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="533" class="value">0.243×</text>
+<text x="946" y="533" class="small">n=47 · 0 zero Python-traced observations</text>
+<rect x="18" y="542" width="1284" height="399" rx="9" class="panel"/>
+<text x="29" y="563" class="head">Rust · 0.281× median Python-traced allocations · 624 cases</text>
+<line x1="340.00" y1="595" x2="340.00" y2="950" class="grid"/>
+<text x="340.00" y="587" text-anchor="middle" class="tick">0×</text>
+<line x1="395.27" y1="595" x2="395.27" y2="950" class="grid"/>
+<text x="395.27" y="587" text-anchor="middle" class="tick">0.25×</text>
+<line x1="450.54" y1="595" x2="450.54" y2="950" class="grid"/>
+<text x="450.54" y="587" text-anchor="middle" class="tick">0.5×</text>
+<line x1="505.81" y1="595" x2="505.81" y2="950" class="grid"/>
+<text x="505.81" y="587" text-anchor="middle" class="tick">0.75×</text>
+<line x1="561.08" y1="595" x2="561.08" y2="950" class="base"/>
+<text x="561.08" y="587" text-anchor="middle" class="tick">1× Python</text>
+<line x1="671.62" y1="595" x2="671.62" y2="950" class="grid"/>
+<text x="671.62" y="587" text-anchor="middle" class="tick">1.5×</text>
+<line x1="782.16" y1="595" x2="782.16" y2="950" class="grid"/>
+<text x="782.16" y="587" text-anchor="middle" class="tick">2×</text>
+<text x="29" y="623" class="label">Prepare a pattern (compile)</text>
+<circle cx="398.87" cy="619" r="4.8" fill="#c2410c" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="623" class="value">0.266×</text>
+<text x="946" y="623" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="652" class="label">Escape special characters (escape)</text>
+<circle cx="550.91" cy="648" r="4.8" fill="#c2410c" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="652" class="value">0.954×</text>
+<text x="946" y="652" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="681" class="label">Find all matches (findall)</text>
+<circle cx="401.58" cy="677" r="4.8" fill="#c2410c" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="681" class="value">0.279×</text>
+<text x="946" y="681" class="small">n=80 · 0 zero Python-traced observations</text>
+<text x="29" y="710" class="label">Stream all matches (finditer)</text>
+<circle cx="496.84" cy="706" r="4.8" fill="#c2410c" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="710" class="value">0.709×</text>
+<text x="946" y="710" class="small">n=67 · 0 zero Python-traced observations</text>
+<text x="29" y="739" class="label">Match the whole input (fullmatch)</text>
+<circle cx="353.32" cy="735" r="4.8" fill="#c2410c" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="739" class="value">0.060×</text>
+<text x="946" y="739" class="small">n=47 · 17 zero Python-traced observations</text>
+<text x="29" y="768" class="label">Match at the beginning (match)</text>
+<circle cx="364.60" cy="764" r="4.8" fill="#c2410c" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="768" class="value">0.111×</text>
+<text x="946" y="768" class="small">n=48 · 18 zero Python-traced observations</text>
+<text x="29" y="797" class="label">Read match information (match-surface)</text>
+<circle cx="408.33" cy="793" r="4.8" fill="#c2410c" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="797" class="value">0.309×</text>
+<text x="946" y="797" class="small">n=48 · 23 zero Python-traced observations</text>
+<text x="29" y="826" class="label">Scan repeated matches (scanner)</text>
+<circle cx="497.00" cy="822" r="4.8" fill="#c2410c" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="826" class="value">0.710×</text>
+<text x="946" y="826" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="855" class="label">Search for a match (search)</text>
+<circle cx="363.31" cy="851" r="4.8" fill="#c2410c" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="855" class="value">0.105×</text>
+<text x="946" y="855" class="small">n=48 · 9 zero Python-traced observations</text>
+<text x="29" y="884" class="label">Split around matches (split)</text>
+<circle cx="409.56" cy="880" r="4.8" fill="#c2410c" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="884" class="value">0.315×</text>
+<text x="946" y="884" class="small">n=47 · 0 zero Python-traced observations</text>
+<text x="29" y="913" class="label">Replace matches (sub)</text>
+<circle cx="378.79" cy="909" r="4.8" fill="#c2410c" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="913" class="value">0.175×</text>
+<text x="946" y="913" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="942" class="label">Replace and count (subn)</text>
+<circle cx="374.87" cy="938" r="4.8" fill="#c2410c" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="942" class="value">0.158×</text>
+<text x="946" y="942" class="small">n=47 · 0 zero Python-traced observations</text>
+<rect x="18" y="951" width="1284" height="399" rx="9" class="panel"/>
+<text x="29" y="972" class="head">Zig · 0.333× median Python-traced allocations · 624 cases</text>
+<line x1="340.00" y1="1004" x2="340.00" y2="1359" class="grid"/>
+<text x="340.00" y="996" text-anchor="middle" class="tick">0×</text>
+<line x1="395.27" y1="1004" x2="395.27" y2="1359" class="grid"/>
+<text x="395.27" y="996" text-anchor="middle" class="tick">0.25×</text>
+<line x1="450.54" y1="1004" x2="450.54" y2="1359" class="grid"/>
+<text x="450.54" y="996" text-anchor="middle" class="tick">0.5×</text>
+<line x1="505.81" y1="1004" x2="505.81" y2="1359" class="grid"/>
+<text x="505.81" y="996" text-anchor="middle" class="tick">0.75×</text>
+<line x1="561.08" y1="1004" x2="561.08" y2="1359" class="base"/>
+<text x="561.08" y="996" text-anchor="middle" class="tick">1× Python</text>
+<line x1="671.62" y1="1004" x2="671.62" y2="1359" class="grid"/>
+<text x="671.62" y="996" text-anchor="middle" class="tick">1.5×</text>
+<line x1="782.16" y1="1004" x2="782.16" y2="1359" class="grid"/>
+<text x="782.16" y="996" text-anchor="middle" class="tick">2×</text>
+<text x="29" y="1032" class="label">Prepare a pattern (compile)</text>
+<circle cx="408.95" cy="1028" r="4.8" fill="#7c3aed" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="1032" class="value">0.312×</text>
+<text x="946" y="1032" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="1061" class="label">Escape special characters (escape)</text>
+<circle cx="550.91" cy="1057" r="4.8" fill="#7c3aed" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="1061" class="value">0.954×</text>
+<text x="946" y="1061" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="1090" class="label">Find all matches (findall)</text>
+<circle cx="405.14" cy="1086" r="4.8" fill="#7c3aed" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="1090" class="value">0.295×</text>
+<text x="946" y="1090" class="small">n=80 · 0 zero Python-traced observations</text>
+<text x="29" y="1119" class="label">Stream all matches (finditer)</text>
+<circle cx="525.51" cy="1115" r="4.8" fill="#7c3aed" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="1119" class="value">0.839×</text>
+<text x="946" y="1119" class="small">n=67 · 0 zero Python-traced observations</text>
+<text x="29" y="1148" class="label">Match the whole input (fullmatch)</text>
+<circle cx="369.68" cy="1144" r="4.8" fill="#7c3aed" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="1148" class="value">0.134×</text>
+<text x="946" y="1148" class="small">n=47 · 0 zero Python-traced observations</text>
+<text x="29" y="1177" class="label">Match at the beginning (match)</text>
+<circle cx="372.97" cy="1173" r="4.8" fill="#7c3aed" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="1177" class="value">0.149×</text>
+<text x="946" y="1177" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="1206" class="label">Read match information (match-surface)</text>
+<circle cx="429.78" cy="1202" r="4.8" fill="#7c3aed" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="1206" class="value">0.406×</text>
+<text x="946" y="1206" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="1235" class="label">Scan repeated matches (scanner)</text>
+<circle cx="521.03" cy="1231" r="4.8" fill="#7c3aed" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="1235" class="value">0.819×</text>
+<text x="946" y="1235" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="1264" class="label">Search for a match (search)</text>
+<circle cx="382.76" cy="1260" r="4.8" fill="#7c3aed" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="1264" class="value">0.193×</text>
+<text x="946" y="1264" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="1293" class="label">Split around matches (split)</text>
+<circle cx="414.39" cy="1289" r="4.8" fill="#7c3aed" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="1293" class="value">0.336×</text>
+<text x="946" y="1293" class="small">n=47 · 0 zero Python-traced observations</text>
+<text x="29" y="1322" class="label">Replace matches (sub)</text>
+<circle cx="389.91" cy="1318" r="4.8" fill="#7c3aed" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="1322" class="value">0.226×</text>
+<text x="946" y="1322" class="small">n=48 · 0 zero Python-traced observations</text>
+<text x="29" y="1351" class="label">Replace and count (subn)</text>
+<circle cx="385.11" cy="1347" r="4.8" fill="#7c3aed" stroke="#ffffff" stroke-width="1"/>
+<text x="865" y="1351" class="value">0.204×</text>
+<text x="946" y="1351" class="small">n=47 · 0 zero Python-traced observations</text>
+<text x="26" y="1418" class="small">Measures Python-traced temporary allocations only in a shared process; it does not measure native, total, peak-process, or exclusive-engine memory.</text>
+<text x="26" y="1437" class="small">The linear axis preserves every true zero; zero traced allocation does not mean zero native or total memory.</text>
+</svg>
