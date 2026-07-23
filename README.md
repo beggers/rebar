@@ -1,6 +1,6 @@
 # rebar: a faster Python `re`
 
-`rebar` is an experiment in building Python regular-expression replacements from scratch. It compares independent Zig, C, Rust, and Python engines against [stable CPython 3.14.6](https://www.python.org/downloads/release/python-3146/). No candidate may delegate matching to Python `re`, `_sre`, a third-party regular-expression package, or another candidate. The current public import is `import rebar as re`.
+`rebar` is an experiment in building Python regular-expression replacements from scratch. It compares independent Zig, C, Rust, and Python engines against [stable CPython 3.14.6](https://www.python.org/downloads/release/python-3146/). An [independent source and machine-code audit](candidates/audits/FROM-SCRATCH-AUDIT.json) checks that no candidate delegates matching to Python `re`, `_sre`, a third-party regular-expression package, or another candidate. The current public import is `import rebar as re`.
 
 **Current status:** no implementation can yet be recommended as a completely compatible replacement. Rust passes the original **223,198** compatibility checks, but a newly frozen, more demanding **393-check** test exposes **104** remaining differences in iterator lifetimes, buffers, object copying, and public method information. The final speed of a fully compatible engine is **NOT MEASURED**.
 
@@ -49,7 +49,7 @@ The test covers text, bytes and buffers; Unicode; short and long inputs; capture
 
 ![Coverage of the expanded Python regular-expression benchmark](performance/v7/evidence/coverage.svg)
 
-All five original engines agreed with Python on the **20,624 frozen benchmark answers**. The independent **223,198-check** compatibility test separately covers parser behavior, object identity, whitespace, buffers, errors, flags, windows, and the full Python API. The [frozen benchmark protocol](performance/v7/PROTOCOL.md) fixes the inputs, weights, seeds, trial counts, correctness gates, confidence calculations, and memory measurements. The [independence audit](performance/v7/evidence/delegation-audit.jsonl) verifies that the candidates do not wrap an external regex engine and that the Rust implementation has **zero external Rust dependencies**.
+All five original engines agreed with Python on the **20,624 frozen benchmark answers**. The independent **223,198-check** compatibility test separately covers parser behavior, object identity, whitespace, buffers, errors, flags, windows, and the full Python API. The [frozen benchmark protocol](performance/v7/PROTOCOL.md) fixes the inputs, weights, seeds, trial counts, correctness gates, confidence calculations, and memory measurements. The original [delegation audit](performance/v7/evidence/delegation-audit.jsonl) and the stronger [source and native-code audit](candidates/audits/FROM-SCRATCH-AUDIT.json) verify all **four** distinct engine implementations, all **five** actually loaded C, Rust, and Zig native libraries, **73** disguised-engine and tampering controls, and Rust's **zero external dependencies**.
 
 ## Detailed graphs
 
@@ -84,6 +84,10 @@ The [complete experiment log](docs/EXPERIMENT-LOG.md) keeps previous designs, me
 ```sh
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  -m tools.audit_from_scratch --self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  -m tools.audit_from_scratch
 PYTHONPATH=. "$PY" tools/perf_v7.py self-test
 PYTHONPATH=. "$PY" tools/perf_v7.py verify --output /tmp/rebar-v7-correctness.json
 PYTHONPATH=. "$PY" tools/perf_v7_delegation_audit.py
