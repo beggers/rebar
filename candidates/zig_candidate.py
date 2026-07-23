@@ -841,10 +841,9 @@ def _template_tokens(value, pattern):
     index = 0
 
     def group(number):
-        if literal:
-            joined = "".join(literal)
-            tokens.append(joined.encode("latin1") if byte_mode else joined)
-            literal.clear()
+        joined = "".join(literal)
+        tokens.append(joined.encode("latin1") if byte_mode else joined)
+        literal.clear()
         tokens.append(number)
 
     while index < len(text):
@@ -878,9 +877,8 @@ def _template_tokens(value, pattern):
             literal.append(_SIMPLE_TEMPLATE_ESCAPES[char])
         else:
             literal.extend(("\\", char))
-    if literal:
-        joined = "".join(literal)
-        tokens.append(joined.encode("latin1") if byte_mode else joined)
+    joined = "".join(literal)
+    tokens.append(joined.encode("latin1") if byte_mode else joined)
     return tuple(tokens)
 
 
@@ -1006,19 +1004,39 @@ class Pattern:
         return _zig_bridge.match_object(self, self._handle, self._groupindex, string, pos, endpos, 0, require_nonempty, pos if original_pos is None else original_pos)
 
     def _cache_template(self, repl, string):
-        raw = bytes(repl) if isinstance(repl, (bytearray, memoryview)) else repl
-        if not isinstance(raw, (str, bytes)):
-            hash(raw)
-            raise TypeError(f"decoding to str: need a bytes-like object, {type(raw).__name__} found")
-        if isinstance(self.pattern, str) != isinstance(raw, str):
-            expected = "str instance" if isinstance(self.pattern, str) else "a bytes-like object"
-            raise TypeError(f"sequence item 0: expected {expected}, {type(raw).__name__} found")
+        source = repl
+        if type(repl) is str or type(repl) is bytes:
+            raw = repl
+        elif isinstance(repl, str):
+            try:
+                hash(repl)
+            except TypeError:
+                source = str(repl)
+            raw = str(repl)
+        elif isinstance(repl, bytes):
+            try:
+                hash(repl)
+            except TypeError:
+                source = bytes(repl)
+            raw = bytes(repl)
+        else:
+            try:
+                hash(repl)
+            except TypeError:
+                pass
+            raw = str(repl, "latin1").encode("latin1")
+            source = raw
         template = self._templates.get(raw)
         if template is None:
-            self._validate_string(string)
-            length = _subject_length(string)
-            _template(repl, _zig_bridge.span_object(self, string, self.groups, self._groupindex, 0, 0, 0, length), True)
-            template = _template_tokens(raw, self) if (b"\\" in raw if isinstance(raw, bytes) else "\\" in raw) else (raw,)
+            dummy = _zig_bridge.span_object(
+                self, string, self.groups, self._groupindex, 0, 0, 0, 0
+            )
+            _template(source, dummy, True)
+            template = (
+                _template_tokens(source, self)
+                if (b"\\" in raw if isinstance(raw, bytes) else "\\" in raw)
+                else (raw,)
+            )
             if len(self._templates) >= 32:
                 self._templates.clear()
             self._templates[raw] = template

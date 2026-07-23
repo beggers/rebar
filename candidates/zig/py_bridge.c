@@ -136,6 +136,22 @@ static PyObject *zig_bytes_piece(PyObject *subject, const uint8_t *data,
                                      (Py_ssize_t)(last - first));
 }
 
+static PyObject *zig_subn_unchanged(PyObject *subject, const uint8_t *data,
+                                    size_t length, int text_mode) {
+    PyObject *unchanged = text_mode
+        ? PyUnicode_Substring(subject, 0, (Py_ssize_t)length)
+        : zig_bytes_piece(subject, data, length, 0, length);
+    if (unchanged == NULL) return NULL;
+    return Py_BuildValue("(Nn)", unchanged, (Py_ssize_t)0);
+}
+
+static int zig_append_owned(PyObject *pieces, PyObject *piece) {
+    if (piece == NULL) return 0;
+    int appended = PyList_Append(pieces, piece);
+    Py_DECREF(piece);
+    return appended == 0;
+}
+
 static PyObject *zig_match_piece(ZigMatch *match, Py_ssize_t group, PyObject *missing) {
     size_t stride = (size_t)match->groups + 1;
     intptr_t begin = match->spans[group];
@@ -2048,6 +2064,214 @@ static PyObject *bridge_bound_split(PyObject *module, PyObject *const *args, Py_
     return bridge_split(module, call, 5);
 }
 
+static PyObject *zig_expand_capture_tokens(PyObject *tokens, PyObject *subject,
+                                           const uint8_t *data, size_t length,
+                                           size_t stride,
+                                           const intptr_t *record) {
+    Py_ssize_t token_count = PyTuple_GET_SIZE(tokens);
+    if (token_count == 0) {
+        PyErr_SetString(PyExc_ValueError,
+                        "Zig regex replacement tokens must include a literal");
+        return NULL;
+    }
+    PyObject *first = PyTuple_GET_ITEM(tokens, 0);
+    int byte_mode = PyBytes_Check(first);
+    if (!byte_mode && !PyUnicode_Check(first)) {
+        PyErr_SetString(PyExc_TypeError,
+                        "Zig regex replacement must begin with a literal");
+        return NULL;
+    }
+    PyObject *pieces = PyList_New(token_count);
+    if (pieces == NULL) return NULL;
+    for (Py_ssize_t index = 0; index < token_count; index++) {
+        PyObject *token = PyTuple_GET_ITEM(tokens, index);
+        PyObject *piece;
+        if (PyLong_Check(token)) {
+            size_t group = PyLong_AsSize_t(token);
+            if (PyErr_Occurred() || group >= stride) {
+                if (!PyErr_Occurred()) {
+                    PyErr_SetString(PyExc_IndexError,
+                                    "invalid Zig regex replacement group");
+                }
+                Py_DECREF(pieces);
+                return NULL;
+            }
+            intptr_t begin = record[group];
+            intptr_t finish = record[stride + group];
+            if (begin < 0) {
+                piece = byte_mode
+                    ? PyBytes_FromStringAndSize("", 0)
+                    : PyUnicode_New(0, 127);
+            } else if (PyUnicode_Check(subject)) {
+                piece = PyUnicode_Substring(subject, (Py_ssize_t)begin,
+                                            (Py_ssize_t)finish);
+            } else {
+                piece = zig_bytes_piece(subject, data, length,
+                                        (size_t)begin, (size_t)finish);
+            }
+        } else {
+            piece = Py_NewRef(token);
+        }
+        if (piece == NULL) {
+            Py_DECREF(pieces);
+            return NULL;
+        }
+        PyList_SET_ITEM(pieces, index, piece);
+    }
+    PyObject *empty = byte_mode
+        ? PyBytes_FromStringAndSize("", 0)
+        : PyUnicode_New(0, 127);
+    PyObject *result = empty == NULL
+        ? NULL
+        : byte_mode ? PyBytes_Join(empty, pieces)
+                    : PyUnicode_Join(empty, pieces);
+    Py_XDECREF(empty);
+    Py_DECREF(pieces);
+    return result;
+}
+
+static PyObject *bridge_generic_subn(PyObject *module,
+                                     PyObject *const *args, Py_ssize_t nargs,
+                                     int template_mode) {
+    (void)module;
+    if (nargs != 6) {
+        PyErr_Format(PyExc_TypeError,
+                     "generic_subn() takes exactly 6 arguments (%zd given)",
+                     nargs);
+        return NULL;
+    }
+    void *handle = PyLong_AsVoidPtr(args[0]);
+    PyObject *pattern_value = args[1];
+    PyObject *subject = args[2];
+    size_t groups = PyLong_AsSize_t(args[3]);
+    PyObject *replacement = args[4];
+    Py_ssize_t limit;
+    if (PyErr_Occurred() || groups == SIZE_MAX ||
+        !zig_index_arg(args[5], &limit)) {
+        if (!PyErr_Occurred()) {
+            PyErr_SetString(PyExc_OverflowError,
+                            "invalid Zig regex replacement argument");
+        }
+        return NULL;
+    }
+    if (groups != rebar_zig_groups(handle)) {
+        PyErr_SetString(PyExc_ValueError,
+                        "Zig regex group count does not match the compiled program");
+        return NULL;
+    }
+    if (template_mode && !PyTuple_Check(replacement)) {
+        PyErr_SetString(PyExc_TypeError,
+                        "Zig regex replacement tokens must be a tuple");
+        return NULL;
+    }
+    Py_buffer view = {0};
+    const uint8_t *data;
+    size_t length;
+    uint8_t kind = 1;
+    int text_mode = PyUnicode_Check(subject);
+    if (text_mode) {
+        if (PyBytes_Check(pattern_value)) {
+            PyErr_SetString(PyExc_TypeError,
+                            "cannot use a bytes pattern on a string-like object");
+            return NULL;
+        }
+        data = PyUnicode_DATA(subject);
+        length = (size_t)PyUnicode_GET_LENGTH(subject);
+        kind = (uint8_t)PyUnicode_KIND(subject);
+    } else {
+        if (PyObject_GetBuffer(subject, &view, PyBUF_SIMPLE) != 0) {
+            PyErr_Clear();
+            PyErr_Format(PyExc_TypeError,
+                         "expected string or bytes-like object, got '%.200s'",
+                         Py_TYPE(subject)->tp_name);
+            return NULL;
+        }
+        if (PyUnicode_Check(pattern_value)) {
+            PyBuffer_Release(&view);
+            PyErr_SetString(PyExc_TypeError,
+                            "cannot use a string pattern on a bytes-like object");
+            return NULL;
+        }
+        data = view.buf;
+        length = (size_t)view.len;
+    }
+    if (limit < 0) {
+        PyObject *result = zig_subn_unchanged(subject, data, length, text_mode);
+        if (view.obj != NULL) PyBuffer_Release(&view);
+        return result;
+    }
+    ZigCaptureBuffer buffer;
+    intptr_t match_count = zig_collect_growing(
+        handle, data, length, kind, 0, length, groups,
+        limit > 0 ? (size_t)limit : 0, &buffer
+    );
+    if (match_count < 0) {
+        if (view.obj != NULL) PyBuffer_Release(&view);
+        if (match_count == -2) return PyErr_NoMemory();
+        PyErr_SetString(PyExc_RuntimeError,
+                        "Zig capture engine rejected the replacement bridge call");
+        return NULL;
+    }
+    if (match_count == 0) {
+        PyObject *result = zig_subn_unchanged(subject, data, length, text_mode);
+        if (view.obj != NULL) PyBuffer_Release(&view);
+        zig_capture_release(&buffer);
+        return result;
+    }
+    PyObject *pieces = PyList_New(0);
+    if (pieces == NULL) goto generic_subn_error;
+    size_t stride = buffer.stride;
+    size_t words = buffer.words_per_match;
+    size_t previous = 0;
+    for (intptr_t index = 0; index < match_count; index++) {
+        const intptr_t *record = buffer.storage + (size_t)index * words;
+        size_t begin = (size_t)record[0];
+        size_t finish = (size_t)record[stride];
+        if (begin > previous) {
+            PyObject *prefix = text_mode
+                ? PyUnicode_Substring(subject, (Py_ssize_t)previous,
+                                      (Py_ssize_t)begin)
+                : zig_bytes_piece(subject, data, length, previous, begin);
+            if (!zig_append_owned(pieces, prefix)) goto generic_subn_error;
+        }
+        if (template_mode) {
+            PyObject *expanded = zig_expand_capture_tokens(
+                replacement, subject, data, length, stride, record
+            );
+            if (!zig_append_owned(pieces, expanded)) goto generic_subn_error;
+        } else if (PyList_Append(pieces, replacement) < 0) {
+            goto generic_subn_error;
+        }
+        previous = finish;
+    }
+    if (previous < length) {
+        PyObject *tail = text_mode
+            ? PyUnicode_Substring(subject, (Py_ssize_t)previous,
+                                  (Py_ssize_t)length)
+            : zig_bytes_piece(subject, data, length, previous, length);
+        if (!zig_append_owned(pieces, tail)) goto generic_subn_error;
+    }
+    PyObject *empty = text_mode
+        ? PyUnicode_New(0, 127)
+        : PyBytes_FromStringAndSize("", 0);
+    PyObject *joined = empty == NULL
+        ? NULL
+        : text_mode ? PyUnicode_Join(empty, pieces)
+                    : PyBytes_Join(empty, pieces);
+    Py_XDECREF(empty);
+    Py_DECREF(pieces);
+    if (view.obj != NULL) PyBuffer_Release(&view);
+    zig_capture_release(&buffer);
+    if (joined == NULL) return NULL;
+    return Py_BuildValue("(Nn)", joined, (Py_ssize_t)match_count);
+
+generic_subn_error:
+    Py_XDECREF(pieces);
+    if (view.obj != NULL) PyBuffer_Release(&view);
+    zig_capture_release(&buffer);
+    return NULL;
+}
+
 static PyObject *bridge_subn(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
     (void)module;
     if (nargs != 6) {
@@ -2101,10 +2325,9 @@ static PyObject *bridge_subn(PyObject *module, PyObject *const *args, Py_ssize_t
         length = (size_t)view.len;
     }
     if (limit < 0) {
-        PyObject *unchanged = text_mode ? PyUnicode_Substring(subject, 0, (Py_ssize_t)length) : PyBytes_FromStringAndSize((const char *)data, (Py_ssize_t)length);
+        PyObject *result = zig_subn_unchanged(subject, data, length, text_mode);
         if (view.obj != NULL) PyBuffer_Release(&view);
-        if (unchanged == NULL) return NULL;
-        return Py_BuildValue("(Nn)", unchanged, (Py_ssize_t)0);
+        return result;
     }
     ZigCaptureBuffer buffer;
     intptr_t count = zig_collect_growing(handle, data, length, kind, 0, length, groups, limit > 0 ? (size_t)limit : 0, &buffer);
@@ -2113,6 +2336,12 @@ static PyObject *bridge_subn(PyObject *module, PyObject *const *args, Py_ssize_t
         if (count == -2) return PyErr_NoMemory();
         PyErr_SetString(PyExc_RuntimeError, "Zig capture engine rejected the replacement bridge call");
         return NULL;
+    }
+    if (count == 0) {
+        PyObject *result = zig_subn_unchanged(subject, data, length, text_mode);
+        if (view.obj != NULL) PyBuffer_Release(&view);
+        zig_capture_release(&buffer);
+        return result;
     }
     size_t stride = buffer.stride;
     size_t words = buffer.words_per_match;
@@ -2267,7 +2496,9 @@ static PyObject *bridge_literal_subn(PyObject *module, PyObject *const *args, Py
         }
         Py_ssize_t length = PyUnicode_GET_LENGTH(subject);
         Py_ssize_t literal_length = PyUnicode_GET_LENGTH(literal);
-        if (literal_length == 0 || limit < 0) return Py_BuildValue("(On)", subject, (Py_ssize_t)0);
+        if (literal_length == 0 || limit < 0) {
+            return zig_subn_unchanged(subject, NULL, (size_t)length, 1);
+        }
         PyUnicodeWriter *writer = PyUnicodeWriter_Create(length);
         if (writer == NULL) return NULL;
         Py_ssize_t cursor = 0;
@@ -2285,6 +2516,10 @@ static PyObject *bridge_literal_subn(PyObject *module, PyObject *const *args, Py
             }
             cursor = found + literal_length;
             count++;
+        }
+        if (count == 0) {
+            PyUnicodeWriter_Discard(writer);
+            return zig_subn_unchanged(subject, NULL, (size_t)length, 1);
         }
         if (PyUnicodeWriter_WriteSubstring(writer, subject, cursor, length) < 0) {
             PyUnicodeWriter_Discard(writer);
@@ -2311,10 +2546,9 @@ static PyObject *bridge_literal_subn(PyObject *module, PyObject *const *args, Py
     const uint8_t *value = (const uint8_t *)PyBytes_AS_STRING(replacement);
     size_t value_length = (size_t)PyBytes_GET_SIZE(replacement);
     if (needle_length == 0 || limit < 0) {
-        PyObject *result = PyBytes_FromStringAndSize((const char *)data, (Py_ssize_t)length);
+        PyObject *result = zig_subn_unchanged(subject, data, length, 0);
         PyBuffer_Release(&view);
-        if (result == NULL) return NULL;
-        return Py_BuildValue("(Nn)", result, (Py_ssize_t)0);
+        return result;
     }
     size_t cursor = 0;
     size_t count = 0;
@@ -2323,6 +2557,11 @@ static PyObject *bridge_literal_subn(PyObject *module, PyObject *const *args, Py
         if (found == NULL) break;
         cursor = (size_t)(found - data) + needle_length;
         count++;
+    }
+    if (count == 0) {
+        PyObject *result = zig_subn_unchanged(subject, data, length, 0);
+        PyBuffer_Release(&view);
+        return result;
     }
     if (count > 0 && value_length > needle_length && count > ((size_t)PY_SSIZE_T_MAX - length) / (value_length - needle_length)) {
         PyBuffer_Release(&view);
@@ -2393,99 +2632,92 @@ static PyObject *bridge_subn_callable(PyObject *module, PyObject *const *args, P
         length = (size_t)view.len;
     }
     if (limit < 0) {
-        PyObject *unchanged = text_mode ? PyUnicode_Substring(subject, 0, (Py_ssize_t)length) : PyBytes_FromStringAndSize((const char *)data, (Py_ssize_t)length);
+        PyObject *result = zig_subn_unchanged(subject, data, length, text_mode);
         if (view.obj != NULL) PyBuffer_Release(&view);
-        if (unchanged == NULL) return NULL;
-        return Py_BuildValue("(Nn)", unchanged, (Py_ssize_t)0);
+        return result;
     }
     size_t groups = rebar_zig_groups(handle);
-    size_t stride = groups + 1;
-    ZigCaptureBuffer buffer;
-    intptr_t count = zig_collect_growing(handle, data, length, kind, 0, length, groups, limit > 0 ? (size_t)limit : 0, &buffer);
-    if (count < 0) {
+    if (groups > (SIZE_MAX - 3) / 2) {
         if (view.obj != NULL) PyBuffer_Release(&view);
-        if (count == -2) return PyErr_NoMemory();
-        PyErr_SetString(PyExc_RuntimeError, "Zig matcher rejected the callable-replacement bridge call");
-        return NULL;
+        return PyErr_NoMemory();
     }
-    size_t words = buffer.words_per_match;
+    size_t stride = groups + 1;
+    size_t words = stride * 2 + 1;
+    intptr_t local_record[ZIG_ITERATOR_RECORD_WORDS];
+    intptr_t *heap_record = NULL;
+    intptr_t *record = local_record;
+    if (words > ZIG_ITERATOR_RECORD_WORDS) {
+        if (words > SIZE_MAX / sizeof(intptr_t)) {
+            if (view.obj != NULL) PyBuffer_Release(&view);
+            return PyErr_NoMemory();
+        }
+        heap_record = PyMem_Malloc(words * sizeof(intptr_t));
+        if (heap_record == NULL) {
+            if (view.obj != NULL) PyBuffer_Release(&view);
+            return PyErr_NoMemory();
+        }
+        record = heap_record;
+    }
     PyObject *pieces = PyList_New(0);
     if (pieces == NULL) {
         if (view.obj != NULL) PyBuffer_Release(&view);
-        zig_capture_release(&buffer);
+        PyMem_Free(heap_record);
         return NULL;
     }
+    size_t cursor = 0;
+    uint8_t retry_nonempty = 0;
+    Py_ssize_t count = 0;
     size_t previous = 0;
-    for (intptr_t index = 0; index < count; index++) {
-        size_t base = (size_t)index * words;
-        size_t begin = (size_t)buffer.storage[base];
-        size_t finish = (size_t)buffer.storage[base + stride];
+    while (limit == 0 || count < limit) {
+        intptr_t found = rebar_zig_collect_records_wide(
+            handle, data, length, kind, length, 1, record,
+            &cursor, &retry_nonempty
+        );
+        if (found < 0) {
+            PyErr_SetString(
+                PyExc_RuntimeError,
+                "Zig matcher rejected the callable-replacement bridge call"
+            );
+            goto callable_subn_error;
+        }
+        if (found == 0) break;
+        size_t begin = (size_t)record[0];
+        size_t finish = (size_t)record[stride];
         if (begin > previous) {
             PyObject *prefix = text_mode
                 ? PyUnicode_Substring(subject, (Py_ssize_t)previous,
                                       (Py_ssize_t)begin)
                 : zig_bytes_piece(subject, data, length, previous, begin);
-            if (prefix == NULL) {
-                Py_DECREF(pieces);
-                if (view.obj != NULL) PyBuffer_Release(&view);
-                zig_capture_release(&buffer);
-                return NULL;
-            }
-            int appended = PyList_Append(pieces, prefix);
-            Py_DECREF(prefix);
-            if (appended < 0) {
-                Py_DECREF(pieces);
-                if (view.obj != NULL) PyBuffer_Release(&view);
-                zig_capture_release(&buffer);
-                return NULL;
-            }
+            if (!zig_append_owned(pieces, prefix)) goto callable_subn_error;
         }
         ZigMatch *match = zig_match_new(pattern, subject, groupindex, groups, 0, (Py_ssize_t)length);
-        if (match == NULL) {
-            Py_DECREF(pieces);
-            if (view.obj != NULL) PyBuffer_Release(&view);
-            zig_capture_release(&buffer);
-            return NULL;
-        }
-        memcpy(match->spans, buffer.storage + base, stride * 2 * sizeof(intptr_t));
-        match->lastindex = buffer.storage[base + stride * 2];
+        if (match == NULL) goto callable_subn_error;
+        memcpy(match->spans, record, stride * 2 * sizeof(intptr_t));
+        match->lastindex = record[stride * 2];
         PyObject *replacement = PyObject_CallOneArg(callback, (PyObject *)match);
         Py_DECREF(match);
-        if (replacement == NULL) {
-            Py_DECREF(pieces);
-            if (view.obj != NULL) PyBuffer_Release(&view);
-            zig_capture_release(&buffer);
-            return NULL;
-        }
+        if (replacement == NULL) goto callable_subn_error;
         if (replacement != Py_None && PyList_Append(pieces, replacement) < 0) {
             Py_DECREF(replacement);
-            Py_DECREF(pieces);
-            if (view.obj != NULL) PyBuffer_Release(&view);
-            zig_capture_release(&buffer);
-            return NULL;
+            goto callable_subn_error;
         }
         Py_DECREF(replacement);
         previous = finish;
+        count++;
+    }
+    if (count == 0) {
+        PyObject *result = zig_subn_unchanged(subject, data, length, text_mode);
+        Py_DECREF(pieces);
+        if (view.obj != NULL) PyBuffer_Release(&view);
+        PyMem_Free(heap_record);
+        return result;
     }
     if (previous < length) {
         PyObject *tail = text_mode
             ? PyUnicode_Substring(subject, (Py_ssize_t)previous,
                                   (Py_ssize_t)length)
             : zig_bytes_piece(subject, data, length, previous, length);
-        if (tail == NULL) {
-            Py_DECREF(pieces);
-            if (view.obj != NULL) PyBuffer_Release(&view);
-            zig_capture_release(&buffer);
-            return NULL;
-        }
-        int appended = PyList_Append(pieces, tail);
-        Py_DECREF(tail);
-        if (appended < 0) {
-            Py_DECREF(pieces);
-            if (view.obj != NULL) PyBuffer_Release(&view);
-            zig_capture_release(&buffer);
-            return NULL;
-        }
+        if (!zig_append_owned(pieces, tail)) goto callable_subn_error;
     }
     PyObject *empty = text_mode
         ? PyUnicode_FromStringAndSize("", 0)
@@ -2496,9 +2728,15 @@ static PyObject *bridge_subn_callable(PyObject *module, PyObject *const *args, P
     Py_XDECREF(empty);
     Py_DECREF(pieces);
     if (view.obj != NULL) PyBuffer_Release(&view);
-    zig_capture_release(&buffer);
+    PyMem_Free(heap_record);
     if (joined == NULL) return NULL;
-    return Py_BuildValue("(Nn)", joined, (Py_ssize_t)count);
+    return Py_BuildValue("(Nn)", joined, count);
+
+callable_subn_error:
+    Py_DECREF(pieces);
+    if (view.obj != NULL) PyBuffer_Release(&view);
+    PyMem_Free(heap_record);
+    return NULL;
 }
 
 static PyObject *bridge_bound_substitute(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames, int want_count) {
@@ -2542,65 +2780,133 @@ static PyObject *bridge_bound_substitute(PyObject *module, PyObject *const *args
         PyErr_Format(PyExc_TypeError, "%s() missing required argument '%s' (pos %d)", method, name, position);
         return NULL;
     }
-    PyObject *result;
+    Py_ssize_t converted_count;
+    if (!zig_index_arg(count, &converted_count)) return NULL;
+    PyObject *normalized_count = PyLong_FromSsize_t(converted_count);
+    if (normalized_count == NULL) return NULL;
+    PyObject *result = NULL;
+    PyObject *scan_owned = NULL;
+    PyObject *created = NULL;
     if (PyCallable_Check(replacement)) {
-        PyObject *call[7] = {args[0], args[1], args[2], args[3], subject, replacement, count};
+        PyObject *call[7] = {
+            args[0], args[1], args[2], args[3], subject, replacement,
+            normalized_count
+        };
         result = bridge_subn_callable(module, call, 7);
+        goto bound_substitute_done;
+    }
+
+    PyObject *plain = replacement;
+    int escaped = 0;
+    if (PyUnicode_Check(replacement)) {
+        Py_ssize_t found = PyUnicode_FindChar(
+            replacement, '\\', 0, PyUnicode_GET_LENGTH(replacement), 1
+        );
+        if (found == -2) goto bound_substitute_done;
+        escaped = found >= 0;
+    } else if (PyBytes_Check(replacement)) {
+        escaped = memchr(
+            PyBytes_AS_STRING(replacement), '\\',
+            (size_t)PyBytes_GET_SIZE(replacement)
+        ) != NULL;
     } else {
-        PyObject *raw = replacement;
-        PyObject *owned = NULL;
-        if (PyByteArray_Check(replacement) || PyMemoryView_Check(replacement)) {
-            owned = PyBytes_FromObject(replacement);
-            if (owned == NULL) return NULL;
-            raw = owned;
+        Py_buffer replacement_view = {0};
+        if (PyObject_GetBuffer(replacement, &replacement_view,
+                               PyBUF_SIMPLE) == 0) {
+            escaped = memchr(replacement_view.buf, '\\',
+                             (size_t)replacement_view.len) != NULL;
+            PyBuffer_Release(&replacement_view);
+        } else if (PyMemoryView_Check(replacement)) {
+            PyErr_Clear();
+            scan_owned = PyBytes_FromObject(replacement);
+            if (scan_owned == NULL) goto bound_substitute_done;
+            escaped = memchr(
+                PyBytes_AS_STRING(scan_owned), '\\',
+                (size_t)PyBytes_GET_SIZE(scan_owned)
+            ) != NULL;
+            if (!escaped) plain = scan_owned;
+        } else {
+            PyErr_Clear();
+            PyErr_Format(
+                PyExc_TypeError,
+                "decoding to str: need a bytes-like object, %.200s found",
+                Py_TYPE(replacement)->tp_name
+            );
+            goto bound_substitute_done;
         }
-        if (!PyUnicode_Check(raw) && !PyBytes_Check(raw)) {
-            if (PyObject_Hash(raw) == -1 && PyErr_Occurred()) {
-                Py_XDECREF(owned);
-                return NULL;
+    }
+
+    int pattern_text = PyUnicode_Check(args[3]);
+    if (escaped) {
+        PyObject *tokens = NULL;
+        if (PyUnicode_CheckExact(replacement) ||
+            PyBytes_CheckExact(replacement)) {
+            tokens = PyDict_GetItemWithError(args[5], replacement);
+            if (tokens == NULL && PyErr_Occurred()) {
+                goto bound_substitute_done;
             }
-            PyErr_Format(PyExc_TypeError, "decoding to str: need a bytes-like object, %.200s found", Py_TYPE(raw)->tp_name);
-            Py_XDECREF(owned);
-            return NULL;
         }
-        int text_mode = PyUnicode_Check(args[3]);
-        if (text_mode != PyUnicode_Check(raw)) {
-            PyErr_Format(PyExc_TypeError, "sequence item 0: expected %s, %.200s found", text_mode ? "str instance" : "a bytes-like object", Py_TYPE(raw)->tp_name);
-            Py_XDECREF(owned);
-            return NULL;
+        if (tokens == NULL) {
+            created = PyObject_CallMethod(
+                args[0], "_cache_template", "OO", replacement, subject
+            );
+            if (created == NULL) goto bound_substitute_done;
+            tokens = created;
         }
-        int literal = 0;
+        if (!PyTuple_Check(tokens) || PyTuple_GET_SIZE(tokens) == 0) {
+            PyErr_SetString(PyExc_TypeError,
+                            "Zig regex replacement tokens must be a nonempty tuple");
+            goto bound_substitute_done;
+        }
+        int template_text = PyUnicode_Check(PyTuple_GET_ITEM(tokens, 0));
+        PyObject *call[6] = {
+            args[1], args[3], subject, args[6], tokens, normalized_count
+        };
+        result = pattern_text == template_text
+            ? bridge_subn(module, call, 6)
+            : bridge_generic_subn(module, call, 6, 1);
+    } else if (pattern_text == PyUnicode_Check(plain) &&
+               (pattern_text ? PyUnicode_Check(plain) : PyBytes_Check(plain))) {
         if (args[4] != Py_None) {
-            literal = PyUnicode_Check(raw) ? PyUnicode_FindChar(raw, '\\', 0, PyUnicode_GET_LENGTH(raw), 1) < 0 : memchr(PyBytes_AS_STRING(raw), '\\', (size_t)PyBytes_GET_SIZE(raw)) == NULL;
-            if (PyErr_Occurred()) {
-                Py_XDECREF(owned);
-                return NULL;
-            }
-        }
-        if (literal) {
-            PyObject *call[4] = {args[4], raw, subject, count};
+            PyObject *call[4] = {
+                args[4], plain, subject, normalized_count
+            };
             result = bridge_literal_subn(module, call, 4);
         } else {
-            PyObject *tokens = PyDict_GetItemWithError(args[5], raw);
-            if (tokens == NULL && PyErr_Occurred()) {
-                Py_XDECREF(owned);
-                return NULL;
+            PyObject *tokens = NULL;
+            if (PyUnicode_CheckExact(plain) || PyBytes_CheckExact(plain)) {
+                tokens = PyDict_GetItemWithError(args[5], plain);
+                if (tokens == NULL && PyErr_Occurred()) {
+                    goto bound_substitute_done;
+                }
             }
-            PyObject *created = NULL;
             if (tokens == NULL) {
-                created = PyObject_CallMethod(args[0], "_cache_template", "OO", replacement, subject);
-                if (created == NULL) {
-                    Py_XDECREF(owned);
-                    return NULL;
+                created = PyTuple_Pack(1, plain);
+                if (created == NULL) goto bound_substitute_done;
+                if ((PyUnicode_CheckExact(plain) || PyBytes_CheckExact(plain))) {
+                    if (PyDict_Size(args[5]) >= 32) PyDict_Clear(args[5]);
+                    if (PyDict_SetItem(args[5], plain, created) < 0) {
+                        goto bound_substitute_done;
+                    }
                 }
                 tokens = created;
             }
-            PyObject *call[6] = {args[1], args[3], subject, args[6], tokens, count};
+            PyObject *call[6] = {
+                args[1], args[3], subject, args[6], tokens, normalized_count
+            };
             result = bridge_subn(module, call, 6);
-            Py_XDECREF(created);
         }
-        Py_XDECREF(owned);
+    } else {
+        PyObject *call[6] = {
+            args[1], args[3], subject, args[6], plain, normalized_count
+        };
+        result = bridge_generic_subn(module, call, 6, 0);
     }
+
+bound_substitute_done:
+    Py_XDECREF(created);
+    Py_XDECREF(scan_owned);
+    Py_DECREF(normalized_count);
     if (result == NULL || want_count) return result;
     if (!PyTuple_Check(result) || PyTuple_GET_SIZE(result) != 2) {
         Py_XDECREF(result);
