@@ -1,0 +1,335 @@
+{
+  "schema": "rebar-v9-cache-reentrancy-self-test-stage-three-failure-v1",
+  "status": "FAIL",
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 -B tools/rust_v9_cache_reentrancy_oracle.py self-test --module candidates.rust_candidate",
+  "execution_attempts": 1,
+  "rerun_performed": false,
+  "python": "3.14.6",
+  "source_path": "tools/rust_v9_cache_reentrancy_oracle.py",
+  "source_sha256": "70513a5f2c6726cc0c3643cf83987d227651360b26d9585d5fe21431ae2b9f07",
+  "first_failure_path": "candidates/evidence/rust-v9-cache-reentrancy-self-test-failure.json",
+  "first_failure_sha256": "3643b7a53b0e1f8dab0a60f10164ed923a87e4e5e3927899866e5e673b692588",
+  "stage_two_failure_path": "candidates/evidence/rust-v9-cache-reentrancy-self-test-stage-two-failure.json",
+  "stage_two_failure_sha256": "6319cd82a8934101c1cc946b8087119ddc0a61a30e6ab6ff30209bfd017e40f0",
+  "prior_failures_preserved": true,
+  "exit_code": 1,
+  "case_count": 3,
+  "case_ids": [
+    "cache-equal-key-reentrant-compile",
+    "cache-fifo-purge-during-eviction",
+    "cache-lru-purge-during-eviction"
+  ],
+  "stdlib_vs_stdlib": "PASS",
+  "reference_a_sha256": "79e820fa61898605efff6aa9b89c0b5f9dab04173c5f89a4c5cf864ae0fe2ce7",
+  "reference_b_sha256": "79e820fa61898605efff6aa9b89c0b5f9dab04173c5f89a4c5cf864ae0fe2ce7",
+  "forbidden_regex_guard_count": "NOT RUN",
+  "cross_engine_guard_count": "NOT RUN",
+  "private_cache_layout_named_waiver": "PRIVATE-CACHE-LAYOUT",
+  "candidate_production_imported": false,
+  "failure_type": "reference-validation",
+  "failure_message": "pinned CPython did not exercise fifo eviction reentry",
+  "self_test_schema": "rebar-v9-cache-reentrancy-self-test-v1",
+  "complete_self_test_report": {
+    "candidate_imported": false,
+    "case_ids": [
+      "cache-equal-key-reentrant-compile",
+      "cache-fifo-purge-during-eviction",
+      "cache-lru-purge-during-eviction"
+    ],
+    "checks": 3,
+    "cross_engine_guard_count": "NOT RUN",
+    "failure_message": "pinned CPython did not exercise fifo eviction reentry",
+    "failure_type": "reference-validation",
+    "fixture_sha256": "36afb18cb56cd8d331c6ea4c8cbc36bb0d6256b92bd050b05771512b3c4ccca6",
+    "forbidden_regex_guard_count": "NOT RUN",
+    "holdout": "NOT ACCESSED",
+    "implementation": "cpython",
+    "performance": "NOT MEASURED",
+    "private_cache_waiver": "PRIVATE-CACHE-LAYOUT",
+    "python": "3.14.6",
+    "reference": {
+      "checks": 3,
+      "fixture_sha256": "36afb18cb56cd8d331c6ea4c8cbc36bb0d6256b92bd050b05771512b3c4ccca6",
+      "holdout": "NOT ACCESSED",
+      "implementation": "cpython",
+      "observation_sha256": "79e820fa61898605efff6aa9b89c0b5f9dab04173c5f89a4c5cf864ae0fe2ce7",
+      "observations": [
+        {
+          "id": "cache-equal-key-reentrant-compile",
+          "obligations": [
+            "API-COMPILE",
+            "API-PATTERN",
+            "PUBLIC-CACHE-KEY-EQUALITY-REENTRY"
+          ],
+          "observation": {
+            "cleanup": {
+              "status": "value",
+              "value": null
+            },
+            "result": {
+              "status": "value",
+              "value": {
+                "pattern_is_first_source": true,
+                "returns_first_compiled_pattern": true
+              }
+            },
+            "trace": [
+              [
+                "hash",
+                "second"
+              ],
+              [
+                "equal",
+                "first",
+                "second"
+              ],
+              [
+                "nested-compile",
+                "enter"
+              ],
+              [
+                "nested-compile",
+                "return",
+                true
+              ]
+            ]
+          },
+          "sha256": "4cc0a805dd53921d477db190cbbd36f11d61a56dd8dbb0dc094395a31a119a31"
+        },
+        {
+          "id": "cache-fifo-purge-during-eviction",
+          "obligations": [
+            "API-COMPILE",
+            "PUBLIC-CACHE-EVICTION-REENTRY"
+          ],
+          "observation": {
+            "armed_after_fills": 0,
+            "eviction_hash_observed": false,
+            "prefill_count": 255,
+            "recovery": {
+              "explicit_purge": {
+                "status": "value",
+                "value": null
+              },
+              "same_after_explicit_purge": {
+                "status": "value",
+                "value": false
+              },
+              "same_before_explicit_purge": {
+                "status": "value",
+                "value": true
+              },
+              "victim_still_cached": {
+                "status": "value",
+                "value": true
+              }
+            },
+            "result": {
+              "status": "value",
+              "value": {
+                "flags": 32,
+                "pattern": "v9_cache_eviction_trigger_fifo"
+              }
+            },
+            "trace": [],
+            "trigger_fill_index": 256
+          },
+          "sha256": "9b5acc7ab7f816fba591317cdc3f418131604a7d1958b3a20bafe8ff16d00091"
+        },
+        {
+          "id": "cache-lru-purge-during-eviction",
+          "obligations": [
+            "API-COMPILE",
+            "PUBLIC-CACHE-EVICTION-REENTRY"
+          ],
+          "observation": {
+            "armed_after_fills": 256,
+            "eviction_hash_observed": false,
+            "prefill_count": 511,
+            "recovery": {
+              "explicit_purge": {
+                "status": "value",
+                "value": null
+              },
+              "same_after_explicit_purge": {
+                "status": "value",
+                "value": false
+              },
+              "same_before_explicit_purge": {
+                "status": "value",
+                "value": true
+              },
+              "victim_still_cached": {
+                "status": "value",
+                "value": false
+              }
+            },
+            "result": {
+              "status": "value",
+              "value": {
+                "flags": 32,
+                "pattern": "v9_cache_eviction_trigger_lru"
+              }
+            },
+            "trace": [],
+            "trigger_fill_index": 512
+          },
+          "sha256": "d8bb66ecfd0537e54499acb31091bf836957595f2b1ad86c4d0cd70b3863cbb1"
+        }
+      ],
+      "performance": "NOT MEASURED",
+      "python": "3.14.6",
+      "role": "stdlib-a",
+      "schema": "rebar-v9-cache-reentrancy-oracle-v1",
+      "seed": 2026072361
+    },
+    "reference_a_sha256": "79e820fa61898605efff6aa9b89c0b5f9dab04173c5f89a4c5cf864ae0fe2ce7",
+    "reference_b_sha256": "79e820fa61898605efff6aa9b89c0b5f9dab04173c5f89a4c5cf864ae0fe2ce7",
+    "reference_independent_repeat": {
+      "checks": 3,
+      "fixture_sha256": "36afb18cb56cd8d331c6ea4c8cbc36bb0d6256b92bd050b05771512b3c4ccca6",
+      "holdout": "NOT ACCESSED",
+      "implementation": "cpython",
+      "observation_sha256": "79e820fa61898605efff6aa9b89c0b5f9dab04173c5f89a4c5cf864ae0fe2ce7",
+      "observations": [
+        {
+          "id": "cache-equal-key-reentrant-compile",
+          "obligations": [
+            "API-COMPILE",
+            "API-PATTERN",
+            "PUBLIC-CACHE-KEY-EQUALITY-REENTRY"
+          ],
+          "observation": {
+            "cleanup": {
+              "status": "value",
+              "value": null
+            },
+            "result": {
+              "status": "value",
+              "value": {
+                "pattern_is_first_source": true,
+                "returns_first_compiled_pattern": true
+              }
+            },
+            "trace": [
+              [
+                "hash",
+                "second"
+              ],
+              [
+                "equal",
+                "first",
+                "second"
+              ],
+              [
+                "nested-compile",
+                "enter"
+              ],
+              [
+                "nested-compile",
+                "return",
+                true
+              ]
+            ]
+          },
+          "sha256": "4cc0a805dd53921d477db190cbbd36f11d61a56dd8dbb0dc094395a31a119a31"
+        },
+        {
+          "id": "cache-fifo-purge-during-eviction",
+          "obligations": [
+            "API-COMPILE",
+            "PUBLIC-CACHE-EVICTION-REENTRY"
+          ],
+          "observation": {
+            "armed_after_fills": 0,
+            "eviction_hash_observed": false,
+            "prefill_count": 255,
+            "recovery": {
+              "explicit_purge": {
+                "status": "value",
+                "value": null
+              },
+              "same_after_explicit_purge": {
+                "status": "value",
+                "value": false
+              },
+              "same_before_explicit_purge": {
+                "status": "value",
+                "value": true
+              },
+              "victim_still_cached": {
+                "status": "value",
+                "value": true
+              }
+            },
+            "result": {
+              "status": "value",
+              "value": {
+                "flags": 32,
+                "pattern": "v9_cache_eviction_trigger_fifo"
+              }
+            },
+            "trace": [],
+            "trigger_fill_index": 256
+          },
+          "sha256": "9b5acc7ab7f816fba591317cdc3f418131604a7d1958b3a20bafe8ff16d00091"
+        },
+        {
+          "id": "cache-lru-purge-during-eviction",
+          "obligations": [
+            "API-COMPILE",
+            "PUBLIC-CACHE-EVICTION-REENTRY"
+          ],
+          "observation": {
+            "armed_after_fills": 256,
+            "eviction_hash_observed": false,
+            "prefill_count": 511,
+            "recovery": {
+              "explicit_purge": {
+                "status": "value",
+                "value": null
+              },
+              "same_after_explicit_purge": {
+                "status": "value",
+                "value": false
+              },
+              "same_before_explicit_purge": {
+                "status": "value",
+                "value": true
+              },
+              "victim_still_cached": {
+                "status": "value",
+                "value": false
+              }
+            },
+            "result": {
+              "status": "value",
+              "value": {
+                "flags": 32,
+                "pattern": "v9_cache_eviction_trigger_lru"
+              }
+            },
+            "trace": [],
+            "trigger_fill_index": 512
+          },
+          "sha256": "d8bb66ecfd0537e54499acb31091bf836957595f2b1ad86c4d0cd70b3863cbb1"
+        }
+      ],
+      "performance": "NOT MEASURED",
+      "python": "3.14.6",
+      "role": "stdlib-b",
+      "schema": "rebar-v9-cache-reentrancy-oracle-v1",
+      "seed": 2026072361
+    },
+    "schema": "rebar-v9-cache-reentrancy-self-test-v1",
+    "seed": 2026072361,
+    "source_path": "tools/rust_v9_cache_reentrancy_oracle.py",
+    "source_sha256": "70513a5f2c6726cc0c3643cf83987d227651360b26d9585d5fe21431ae2b9f07",
+    "status": "FAIL",
+    "stdlib_vs_stdlib": "PASS"
+  },
+  "complete_stdout": "{\"candidate_imported\":false,\"case_ids\":[\"cache-equal-key-reentrant-compile\",\"cache-fifo-purge-during-eviction\",\"cache-lru-purge-during-eviction\"],\"checks\":3,\"cross_engine_guard_count\":\"NOT RUN\",\"failure_message\":\"pinned CPython did not exercise fifo eviction reentry\",\"failure_type\":\"reference-validation\",\"fixture_sha256\":\"36afb18cb56cd8d331c6ea4c8cbc36bb0d6256b92bd050b05771512b3c4ccca6\",\"forbidden_regex_guard_count\":\"NOT RUN\",\"holdout\":\"NOT ACCESSED\",\"implementation\":\"cpython\",\"performance\":\"NOT MEASURED\",\"private_cache_waiver\":\"PRIVATE-CACHE-LAYOUT\",\"python\":\"3.14.6\",\"reference\":{\"checks\":3,\"fixture_sha256\":\"36afb18cb56cd8d331c6ea4c8cbc36bb0d6256b92bd050b05771512b3c4ccca6\",\"holdout\":\"NOT ACCESSED\",\"implementation\":\"cpython\",\"observation_sha256\":\"79e820fa61898605efff6aa9b89c0b5f9dab04173c5f89a4c5cf864ae0fe2ce7\",\"observations\":[{\"id\":\"cache-equal-key-reentrant-compile\",\"obligations\":[\"API-COMPILE\",\"API-PATTERN\",\"PUBLIC-CACHE-KEY-EQUALITY-REENTRY\"],\"observation\":{\"cleanup\":{\"status\":\"value\",\"value\":null},\"result\":{\"status\":\"value\",\"value\":{\"pattern_is_first_source\":true,\"returns_first_compiled_pattern\":true}},\"trace\":[[\"hash\",\"second\"],[\"equal\",\"first\",\"second\"],[\"nested-compile\",\"enter\"],[\"nested-compile\",\"return\",true]]},\"sha256\":\"4cc0a805dd53921d477db190cbbd36f11d61a56dd8dbb0dc094395a31a119a31\"},{\"id\":\"cache-fifo-purge-during-eviction\",\"obligations\":[\"API-COMPILE\",\"PUBLIC-CACHE-EVICTION-REENTRY\"],\"observation\":{\"armed_after_fills\":0,\"eviction_hash_observed\":false,\"prefill_count\":255,\"recovery\":{\"explicit_purge\":{\"status\":\"value\",\"value\":null},\"same_after_explicit_purge\":{\"status\":\"value\",\"value\":false},\"same_before_explicit_purge\":{\"status\":\"value\",\"value\":true},\"victim_still_cached\":{\"status\":\"value\",\"value\":true}},\"result\":{\"status\":\"value\",\"value\":{\"flags\":32,\"pattern\":\"v9_cache_eviction_trigger_fifo\"}},\"trace\":[],\"trigger_fill_index\":256},\"sha256\":\"9b5acc7ab7f816fba591317cdc3f418131604a7d1958b3a20bafe8ff16d00091\"},{\"id\":\"cache-lru-purge-during-eviction\",\"obligations\":[\"API-COMPILE\",\"PUBLIC-CACHE-EVICTION-REENTRY\"],\"observation\":{\"armed_after_fills\":256,\"eviction_hash_observed\":false,\"prefill_count\":511,\"recovery\":{\"explicit_purge\":{\"status\":\"value\",\"value\":null},\"same_after_explicit_purge\":{\"status\":\"value\",\"value\":false},\"same_before_explicit_purge\":{\"status\":\"value\",\"value\":true},\"victim_still_cached\":{\"status\":\"value\",\"value\":false}},\"result\":{\"status\":\"value\",\"value\":{\"flags\":32,\"pattern\":\"v9_cache_eviction_trigger_lru\"}},\"trace\":[],\"trigger_fill_index\":512},\"sha256\":\"d8bb66ecfd0537e54499acb31091bf836957595f2b1ad86c4d0cd70b3863cbb1\"}],\"performance\":\"NOT MEASURED\",\"python\":\"3.14.6\",\"role\":\"stdlib-a\",\"schema\":\"rebar-v9-cache-reentrancy-oracle-v1\",\"seed\":2026072361},\"reference_a_sha256\":\"79e820fa61898605efff6aa9b89c0b5f9dab04173c5f89a4c5cf864ae0fe2ce7\",\"reference_b_sha256\":\"79e820fa61898605efff6aa9b89c0b5f9dab04173c5f89a4c5cf864ae0fe2ce7\",\"reference_independent_repeat\":{\"checks\":3,\"fixture_sha256\":\"36afb18cb56cd8d331c6ea4c8cbc36bb0d6256b92bd050b05771512b3c4ccca6\",\"holdout\":\"NOT ACCESSED\",\"implementation\":\"cpython\",\"observation_sha256\":\"79e820fa61898605efff6aa9b89c0b5f9dab04173c5f89a4c5cf864ae0fe2ce7\",\"observations\":[{\"id\":\"cache-equal-key-reentrant-compile\",\"obligations\":[\"API-COMPILE\",\"API-PATTERN\",\"PUBLIC-CACHE-KEY-EQUALITY-REENTRY\"],\"observation\":{\"cleanup\":{\"status\":\"value\",\"value\":null},\"result\":{\"status\":\"value\",\"value\":{\"pattern_is_first_source\":true,\"returns_first_compiled_pattern\":true}},\"trace\":[[\"hash\",\"second\"],[\"equal\",\"first\",\"second\"],[\"nested-compile\",\"enter\"],[\"nested-compile\",\"return\",true]]},\"sha256\":\"4cc0a805dd53921d477db190cbbd36f11d61a56dd8dbb0dc094395a31a119a31\"},{\"id\":\"cache-fifo-purge-during-eviction\",\"obligations\":[\"API-COMPILE\",\"PUBLIC-CACHE-EVICTION-REENTRY\"],\"observation\":{\"armed_after_fills\":0,\"eviction_hash_observed\":false,\"prefill_count\":255,\"recovery\":{\"explicit_purge\":{\"status\":\"value\",\"value\":null},\"same_after_explicit_purge\":{\"status\":\"value\",\"value\":false},\"same_before_explicit_purge\":{\"status\":\"value\",\"value\":true},\"victim_still_cached\":{\"status\":\"value\",\"value\":true}},\"result\":{\"status\":\"value\",\"value\":{\"flags\":32,\"pattern\":\"v9_cache_eviction_trigger_fifo\"}},\"trace\":[],\"trigger_fill_index\":256},\"sha256\":\"9b5acc7ab7f816fba591317cdc3f418131604a7d1958b3a20bafe8ff16d00091\"},{\"id\":\"cache-lru-purge-during-eviction\",\"obligations\":[\"API-COMPILE\",\"PUBLIC-CACHE-EVICTION-REENTRY\"],\"observation\":{\"armed_after_fills\":256,\"eviction_hash_observed\":false,\"prefill_count\":511,\"recovery\":{\"explicit_purge\":{\"status\":\"value\",\"value\":null},\"same_after_explicit_purge\":{\"status\":\"value\",\"value\":false},\"same_before_explicit_purge\":{\"status\":\"value\",\"value\":true},\"victim_still_cached\":{\"status\":\"value\",\"value\":false}},\"result\":{\"status\":\"value\",\"value\":{\"flags\":32,\"pattern\":\"v9_cache_eviction_trigger_lru\"}},\"trace\":[],\"trigger_fill_index\":512},\"sha256\":\"d8bb66ecfd0537e54499acb31091bf836957595f2b1ad86c4d0cd70b3863cbb1\"}],\"performance\":\"NOT MEASURED\",\"python\":\"3.14.6\",\"role\":\"stdlib-b\",\"schema\":\"rebar-v9-cache-reentrancy-oracle-v1\",\"seed\":2026072361},\"schema\":\"rebar-v9-cache-reentrancy-self-test-v1\",\"seed\":2026072361,\"source_path\":\"tools/rust_v9_cache_reentrancy_oracle.py\",\"source_sha256\":\"70513a5f2c6726cc0c3643cf83987d227651360b26d9585d5fe21431ae2b9f07\",\"status\":\"FAIL\",\"stdlib_vs_stdlib\":\"PASS\"}\n",
+  "performance": "NOT MEASURED",
+  "holdout": "NOT ACCESSED",
+  "result": "STOPPED; two independently identical pinned CPython workers prove that neither eviction rehashes the victim; no false guard claim, candidate verification, fix, or further retry"
+}

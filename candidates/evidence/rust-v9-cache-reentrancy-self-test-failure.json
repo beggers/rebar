@@ -1,0 +1,33 @@
+{
+  "schema": "rebar-v9-cache-reentrancy-self-test-failure-v1",
+  "status": "FAIL",
+  "python": "3.14.6",
+  "implementation": "cpython",
+  "source_path": "tools/rust_v9_cache_reentrancy_oracle.py",
+  "source_sha256": "8500f73d43cc3c778a84189df1a7b7ac549823cb6961e623c48b713eb10e9429",
+  "fixture_sha256": "e51ef7f1cda4963232c1b9bc8ce207a83afaf5a569d23657b588bbd3783eecb0",
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 -B tools/rust_v9_cache_reentrancy_oracle.py self-test --module candidates.rust_candidate",
+  "execution_attempts": 1,
+  "rerun_performed": false,
+  "exit_code": 1,
+  "requested_guard_family": "candidates.rust_candidate",
+  "candidate_production_imported": false,
+  "case_ids": [
+    "cache-equal-key-reentrant-compile",
+    "cache-fifo-purge-during-eviction",
+    "cache-lru-purge-during-eviction"
+  ],
+  "case_count": 3,
+  "failure_type": "AssertionError",
+  "failure_message": "pinned CPython changed the fifo eviction event order",
+  "failure_stage": "first pinned standard-library reference semantic validation",
+  "isolated_pinned_standard_library_workers_completed": 2,
+  "stdlib_vs_stdlib": "NOT COMPARED: reference semantic validation failed before the equality comparison",
+  "independent_poison_controls": "NOT RUN: self-test stopped at the standard-library reference failure",
+  "private_cache_layout_named_waiver": "PRIVATE-CACHE-LAYOUT",
+  "stdout": "",
+  "stderr": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/tools/rust_v9_cache_reentrancy_oracle.py\", line 1214, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/home/dev-user/src/rebar/tools/rust_v9_cache_reentrancy_oracle.py\", line 1202, in main\n    print(canonical(run_self_test(spec)).decode(\"ascii\"))\n                    ~~~~~~~~~~~~~^^^^^^\n  File \"/home/dev-user/src/rebar/tools/rust_v9_cache_reentrancy_oracle.py\", line 812, in run_self_test\n    validate_reference_semantics(first)\n    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^\n  File \"/home/dev-user/src/rebar/tools/rust_v9_cache_reentrancy_oracle.py\", line 584, in validate_reference_semantics\n    require(observation.get(\"trace\") == [\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n        [\"victim-hash\", label],\n        ^^^^^^^^^^^^^^^^^^^^^^^\n        [\"purge\", \"enter\", label],\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^\n        [\"purge\", \"return\", label],\n        ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ], f\"pinned CPython changed the {label} eviction event order\")\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/tools/rust_v9_cache_reentrancy_oracle.py\", line 74, in require\n    raise AssertionError(message)\nAssertionError: pinned CPython changed the fifo eviction event order\n",
+  "performance": "NOT MEASURED",
+  "holdout": "NOT ACCESSED",
+  "result": "STOPPED; no silent fix, no retry, no candidate verification"
+}
