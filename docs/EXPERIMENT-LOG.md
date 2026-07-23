@@ -2,6 +2,14 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## Latest C investigation: bounded diagnosis of a large-repeat hang
+
+The preserved C campaign failed its frozen extended Python check, but the original runner discarded the actual failing case. The previous [unbounded diagnostic](../tools/rust_v8_extended_paths_diagnostic_unbounded_v1.py) is archived byte-for-byte. The [updated diagnostic](../tools/rust_v8_extended_paths_diagnostic.py) keeps the exact same frozen Python tests, answers, errors, and compiled-pattern representation while imposing a **three-second isolated case limit**, a **60-second global limit**, flushed progress, and a maximum of **16** original manual patterns.
+
+Its [bounded self-test](../candidates/evidence/rust-v8-extended-path-diagnostic-bounded-self-test.json) executes both independent Python references against all **16** patterns: **784/784** checks for each reference, zero disagreements, and passing timeout, failure-reporting, and answer-preservation controls. The [one genuine C diagnosis](../candidates/evidence/rust-v8-vm-stage-11-bounded-manual-path-diagnostic.json) passes the first **441** checks over **nine** patterns. The tenth frozen pattern, `(?:ab){4294967294}` against `abab`, exceeds its actual **three-second** limit. The report retains the exact worker output and honestly records its match result as **NOT OBSERVED**.
+
+Inspection of the independently owned C front-end shows that single-character huge repeats use a compact instruction, whereas this two-character repeat is incorrectly expanded in Python before the C engine runs. This is a real compatibility and resource-safety failure, not a timing benchmark. C is **NOT QUALIFIED**; the [diagnostic report](../candidates/evidence/C-STAGE-11-BOUNDED-REPEAT-DIAGNOSTIC.md) does not claim that all **72,248** extended cases were tested or that hidden performance was measured.
+
 ## Latest Zig improvement: fix Unicode and preserve real safety failures
 
 The preceding independently written Zig engine recorded [308 real differences on the frozen extended Python tests](../candidates/evidence/rust-v8-zig-stage-07-extended-path-failures.json.gz). Its Unicode matcher already compared case-insensitive characters correctly, but both of its start-character filters accidentally skipped high-Unicode literals that can match ordinary bytes. The native Zig compiler now computes both filters using its own existing character-equivalence operation. It calls no other matching engine and does not change Python's frozen tests.
