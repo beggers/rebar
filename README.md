@@ -10,9 +10,11 @@ The first graph shows whether each independently written engine gives Python's a
 
 ![All four independently written engines compared with Python on the same 223,198 matching tests, with the original failures and current results preserved](candidates/evidence/rust-v8-correctness-progress.svg)
 
-The second graph compares every measured Rust design directly with Python on the same **624** practice cases. **1× means the same speed as Python; higher is faster.** The latest fully checked Rust design is **1.121×** as fast as Python, with a **1.077–1.165×** uncertainty range. All **eight** designs, every case, and all **143** substantial slowdowns remain visible. The larger hidden-test **1.5×** target remains unproven.
+The second graph compares all three fully checked engines against Python on the **same 624 public practice cases**. **1× is Python; higher is faster.** C measures **1.315×**, Rust **1.121×**, and Zig **1.007×**; the lines show each measured 95% uncertainty range. These are practice results, not the sealed final test.
 
-![Overall practice speed of each recorded Rust design compared with Python, including every case and confidence interval](performance/v7/evidence/rust-v7-calibration-overall.svg)
+![Overall practice speed and uncertainty for C, Rust, and Zig against standard Python on the same 624 cases](performance/v7/evidence/three-qualified-engines-public-practice-v1-overall.svg)
+
+![Every practice win, uncertain case, loss, and substantial slowdown for C, Rust, and Zig](performance/v7/evidence/three-qualified-engines-public-practice-v1-outcomes.svg)
 
 **Rust, Zig, and C each independently pass all 22 complete compatibility and safety stages.** Each has its own matching engine; none wraps Python's `re`, an external package, or another candidate. The independent Python prototype remains incomplete.
 
@@ -43,7 +45,15 @@ The current [from-scratch audit](candidates/audits/FROM-SCRATCH-AUDIT.json) inde
 
 ## Overall speed compared with Python
 
-**Final, unseen speed: NOT MEASURED.** On the separate practice data, the fully checked Rust engine is **1.121×** as fast as Python, with a **1.077–1.165×** uncertainty range. It is clearly faster on **265/624** cases and more than **20%** slower on **143/624**. The practice improvement is statistically supported, but the final **1.5×** target and required final-test win rate remain unproven. Zig and C have not been timed as fully compatible replacements.
+**Final, unseen speed: NOT MEASURED.** The following results are from one shared, correctness-checked public practice run. All candidates and Python received the same **624** cases and **seven** paired trials.
+
+| Fully compatible engine | Overall practice speed | 95% uncertainty range | Clearly faster cases | More than 20% slower |
+| --- | ---: | ---: | ---: | ---: |
+| C | 1.315× | 1.269–1.368× | 426/624 | 49/624 |
+| Rust | 1.121× | 1.076–1.165× | 247/624 | 139/624 |
+| Zig | 1.007× | 0.960–1.054× | 229/624 | 238/624 |
+
+The [complete practice report](performance/v7/evidence/THREE-QUALIFIED-ENGINES-PUBLIC-PRACTICE.md) retains all **17,472** timing rows, **52,416** correctness checks, and all **426** substantial slowdowns. The [independent verifier](performance/v7/evidence/three-qualified-engines-public-practice-v1-integrity.json) recomputes all **1,875** confidence intervals and verifies all five loaded native libraries. Zig's overall uncertainty overlaps Python, so its practice result does not establish an overall speed improvement. No practice result establishes the final **1.5×** target or selects a winner.
 
 The sealed [24,576-case final benchmark](performance/v9/HOLDOUT-PROTOCOL.md) fixes **31** paired rounds, **9,999** confidence draws, hidden real patterns and inputs, genuinely precompiled patterns, and **16** real calls per timed sample. Its [75-check, manifest-bound verification](performance/v9/evidence/HOLDOUT-PROTOCOL-SELF-TEST.json) passes without importing a candidate, opening the secret, creating final cases, or measuring performance. The [one-time commitment and its honest same-user custody limitations](performance/v9/evidence/HOLDOUT-PROSPECTIVE-FREEZE.md) are recorded before optimization. The [earlier 12,288-case protocol](performance/v8/HOLDOUT-PROTOCOL.md) remains preserved and unopened.
 
@@ -51,7 +61,23 @@ The [final graph generator](tools/performance_v9_charts.py) and [independent res
 
 ## Detailed practice results
 
-The [latest fully checked Rust report](performance/v7/evidence/RUST-INLINE-SINGLETON.md) retains all **624** public practice cases, **8,736** timing observations, **26,208** correctness checks, all **143** substantial slowdowns, and the separately verified raw data. The following generated graphs include all **eight** Rust designs. The [experiment log](docs/EXPERIMENT-LOG.md) records the individual designs and earlier results; no final-test case was used to choose any improvement.
+Each graph below is generated directly from the same [independently verified, four-way practice run](performance/v7/evidence/three-qualified-engines-public-practice-v1-integrity.json). No final-test case is used.
+
+![All three candidate engines across all 12 regular-expression operations, with the actual number of cases labeled](performance/v7/evidence/three-qualified-engines-public-practice-v1-api.svg)
+
+![Every one of the 426 substantial practice slowdowns, grouped by candidate and operation](performance/v7/evidence/three-qualified-engines-public-practice-v1-regressions.svg)
+
+![Python-visible temporary allocations for all three engines, including zero-allocation cases](performance/v7/evidence/three-qualified-engines-public-practice-v1-memory.svg)
+
+Memory results describe Python-visible temporary allocations in a shared benchmark process. They do **not** establish isolated native-engine or whole-process memory.
+
+![Overall practice rankings of C, Rust, and Zig against the unchanged Python baseline](performance/v7/evidence/three-qualified-engines-public-practice-v1-rankings.svg)
+
+## Earlier Rust designs
+
+The earlier [fully checked Rust report](performance/v7/evidence/RUST-INLINE-SINGLETON.md) preserves all eight previous independently measured Rust designs. Its separate graph retains all original results; its confidence ranges are not paired comparisons between designs.
+
+![Overall practice speed of all eight previous Rust designs against Python](performance/v7/evidence/rust-v7-calibration-overall.svg)
 
 ![Rust practice speed for all 12 regular-expression operations](performance/v7/evidence/rust-v7-calibration-api.svg)
 
@@ -63,23 +89,7 @@ The [latest fully checked Rust report](performance/v7/evidence/RUST-INLINE-SINGL
 
 This memory graph measures allocations visible to Python. It does not establish native Rust memory use or engine-specific process memory.
 
-## Detailed historical results
-
-The following graphs retain every original workload and loss. They describe the **older, not fully compatible engines**, not the expanded sealed final test.
-
-![Historical overall speed of older, not fully compatible engines relative to Python](performance/v7/evidence/initial-overall.svg)
-
-![Historical overall rankings on the complete original practice, unseen, and combined cases](performance/v7/evidence/initial-rankings.svg)
-
-![Historical Zig speedups and slowdowns across the original workloads](performance/v7/evidence/initial-zig-speed.svg)
-
-![Historical Rust speedups and slowdowns across the original workloads](performance/v7/evidence/initial-rust-speed.svg)
-
-![Historical results for every original engine and all expanded workload families](performance/v7/evidence/initial-family-speed.svg)
-
-![Historical Python-traced temporary allocations for each original engine](performance/v7/evidence/initial-memory.svg)
-
-![Every historical faster case and slowdown, without omitting an engine or workload](performance/v7/evidence/initial-win-loss.svg)
+All older, incomplete-engine comparisons and their generated graphs remain in the [experiment log](docs/EXPERIMENT-LOG.md); they are not results for the three currently qualified engines or the sealed final benchmark.
 
 ## Reproduce and inspect the experiment
 
@@ -105,6 +115,10 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.rust_v9_holdout_protocol verify \
   --manifest performance/v9/holdout-manifest.json --evidence
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  -m tools.rust_v7_multi_candidate_practice_audit self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  -m tools.rust_v7_multi_candidate_practice_charts --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/performance_v9_charts.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
