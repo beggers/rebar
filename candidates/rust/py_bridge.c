@@ -324,7 +324,7 @@ static PyObject *rust_match_start(RustMatch *match, PyObject *const *args, Py_ss
 static PyObject *rust_match_end(RustMatch *match, PyObject *const *args, Py_ssize_t nargs) { return rust_match_bound(match, args, nargs, 1, "end"); }
 static PyObject *rust_match_span_method(RustMatch *match, PyObject *const *args, Py_ssize_t nargs) { return rust_match_bound(match, args, nargs, 2, "span"); }
 
-static PyObject *rust_match_expand(RustMatch *match, PyObject *template) {
+static PyObject *rust_match_expand_fallback(RustMatch *match, PyObject *template) {
     if (rust_template_helper == NULL) {
         PyErr_SetString(PyExc_RuntimeError, "Rust match template helper is not configured");
         return NULL;
@@ -332,6 +332,8 @@ static PyObject *rust_match_expand(RustMatch *match, PyObject *template) {
     PyObject *args[2] = {template, (PyObject *)match};
     return PyObject_Vectorcall(rust_template_helper, args, 2, NULL);
 }
+
+static PyObject *rust_match_expand(RustMatch *match, PyObject *template);
 
 static PyObject *rust_match_copy(RustMatch *match, PyObject *ignored) {
     (void)ignored;
@@ -2384,6 +2386,7 @@ static int rust_replacement_cache(PyObject *pattern, PyObject *templates, PyObje
             normalized = PyBytes_FromObject(replacement);
             if (normalized == NULL) {
                 PyErr_Clear();
+                if (PyObject_Hash(replacement) == -1) return -1;
                 PyErr_Format(PyExc_TypeError, "decoding to str: need a bytes-like object, %.200s found", Py_TYPE(replacement)->tp_name);
                 return -1;
             }
@@ -2453,6 +2456,95 @@ static int rust_replacement_cache(PyObject *pattern, PyObject *templates, PyObje
     *tokens = Py_NewRef(PyTuple_GET_ITEM(loaded, 1));
     Py_DECREF(loaded);
     return 0;
+}
+
+static PyObject *rust_match_expand(RustMatch *match, PyObject *template) {
+    if (rust_template_helper == NULL) {
+        return rust_match_expand_fallback(match, template);
+    }
+
+    int text = PyUnicode_CheckExact(match->string);
+    int ordinary_bytes = PyBytes_CheckExact(match->string);
+    int ordinary_bytearray = PyByteArray_CheckExact(match->string);
+    if (
+        (text && !PyUnicode_CheckExact(template))
+        || (!text && !(ordinary_bytes || ordinary_bytearray))
+        || (!text && !PyBytes_CheckExact(template))
+    ) {
+        return rust_match_expand_fallback(match, template);
+    }
+
+    Py_ssize_t source_length = text
+        ? PyUnicode_GET_LENGTH(match->string)
+        : ordinary_bytes
+            ? PyBytes_GET_SIZE(match->string)
+            : PyByteArray_GET_SIZE(match->string);
+    PyObject *templates = PyObject_GetAttr(
+        match->pattern,
+        rust_pattern_attribute_names[RUST_PATTERN_ATTRIBUTE_TEMPLATES]
+    );
+    if (templates == NULL) return NULL;
+    if (templates != Py_None && !PyDict_CheckExact(templates)) {
+        Py_DECREF(templates);
+        return rust_match_expand_fallback(match, template);
+    }
+
+    PyObject *raw = NULL;
+    PyObject *tokens = NULL;
+    if (
+        rust_replacement_cache(
+            match->pattern, templates, template, match->string,
+            source_length, &raw, &tokens
+        ) < 0
+    ) {
+        Py_DECREF(templates);
+        Py_XDECREF(raw);
+        Py_XDECREF(tokens);
+        return NULL;
+    }
+    Py_DECREF(templates);
+
+    RustSubject subject;
+    if (!rust_subject_open(&subject, NULL, match->string, 0)) {
+        Py_DECREF(raw);
+        Py_DECREF(tokens);
+        return NULL;
+    }
+
+    size_t groups = (size_t)match->groups;
+    size_t stride = groups + 1;
+    const intptr_t *begins = match->spans;
+    const intptr_t *ends = match->spans + stride;
+    for (size_t group = 0; group < stride; group++) {
+        intptr_t begin = begins[group];
+        if (begin < 0) continue;
+        intptr_t end = ends[group];
+        if (end < begin || (size_t)end > subject.length) {
+            rust_subject_release(&subject);
+            Py_DECREF(raw);
+            Py_DECREF(tokens);
+            return rust_match_expand_fallback(match, template);
+        }
+    }
+
+    Py_ssize_t estimate = text
+        ? PyUnicode_GET_LENGTH(template)
+        : PyBytes_GET_SIZE(template);
+    RustOutputWriter writer = {0};
+    PyObject *result = NULL;
+    if (
+        rust_output_init(&writer, text, estimate) == 0
+        && rust_output_template(
+            &writer, &subject, tokens, raw, begins, ends, groups
+        ) == 0
+    ) {
+        result = rust_output_finish(&writer);
+    }
+    if (result == NULL) rust_output_discard(&writer);
+    rust_subject_release(&subject);
+    Py_DECREF(raw);
+    Py_DECREF(tokens);
+    return result;
 }
 
 static PyObject *rust_substitute_core(PyObject *pattern, void *handle, PyObject *groupindex, PyObject *pattern_value, PyObject *templates, size_t groups, PyObject *replacement, PyObject *value, Py_ssize_t limit, int want_count) {
