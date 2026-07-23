@@ -170,6 +170,8 @@ static int range_case_match(Py_UCS4 left, Py_UCS4 right, Py_UCS4 value, int asci
         Py_UCS4 upper=value<128 && value>='a' && value<='z' ? value-32 : value;
         return (lower>=left && lower<=right) || (upper>=left && upper<=right);
     }
+    Py_UCS4 canonical=folded(value,0);
+    if (canonical>=left && canonical<=right) return 1;
     Py_UCS4 lower=Py_UNICODE_TOLOWER(value),upper=Py_UNICODE_TOUPPER(value);
     if (lower>=left && lower<=right) return 1;
     if (upper>=left && upper<=right && unicode_casefold_equal(value,upper)) return 1;

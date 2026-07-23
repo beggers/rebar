@@ -1,0 +1,122 @@
+{
+  "schema": "rebar-v8-independently-recorded-campaign-process-failure-v1",
+  "record_kind": "independently recorded failed campaign process",
+  "runner_generated_report": false,
+  "complete_twenty_two_stage_proof": false,
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 -B tools/rust_v8_multi_candidate_campaign.py --module candidates.vm_candidate --edge-oracle candidates/evidence/rust-v8-edge-oracle-vm-deep-stage-08.json.gz --deep-proof candidates/audits/RUST-V8-DEEP-CONTRACT-C-STAGE-08.json.gz --output candidates/evidence/rust-v8-vm-stage-08-sealed-campaign.json",
+  "requested_runner_output": "candidates/evidence/rust-v8-vm-stage-08-sealed-campaign.json",
+  "requested_runner_output_written": false,
+  "exit_code": 1,
+  "failed_mandatory_stage": "official-cpython-tests",
+  "captured_runner_exception": "AssertionError: isolated suite failed: official-cpython-tests; exit=1",
+  "captured_runner_traceback_frames": [
+    {
+      "file": "/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py",
+      "line": 1439,
+      "function": "<module>",
+      "source": "raise SystemExit(main())"
+    },
+    {
+      "file": "/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py",
+      "line": 1427,
+      "function": "main",
+      "source": "result = run_campaign("
+    },
+    {
+      "file": "/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py",
+      "line": 1054,
+      "function": "run_campaign",
+      "source": "report[\"steps\"].append(child_step(step, module, memory_mib))"
+    },
+    {
+      "file": "/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py",
+      "line": 679,
+      "function": "child_step",
+      "source": "raise AssertionError("
+    }
+  ],
+  "captured_worker_stderr": "ReTests.test_ignore_case_range: AssertionError: None is not true\n",
+  "worker_stdout": {
+    "schema": "rebar-cpython-re-result-v1",
+    "module": "candidates.vm_candidate",
+    "methods": 146,
+    "passed": 143,
+    "failed": 1,
+    "skipped": 2,
+    "crashes": 0,
+    "timeouts": 0,
+    "runner_sha256": "d5084fd43352f34267f3ed9b4b5d60a6070e2c50d4b787739270502c856e18bb",
+    "source_sha256": {
+      "LICENSE": "b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231",
+      "re_tests.py": "ec04a2b2a77338d20b37d931693c7e588a2896d3c73c7b4b47973e24c13b5aab",
+      "test_re.py": "879c8b562a5bddb413e73ad6d026a6199785bd08fa1c2c5db1ef831b4e1c47e2"
+    }
+  },
+  "captured_worker_stdout": "{\"crashes\": 0, \"failed\": 1, \"methods\": 146, \"module\": \"candidates.vm_candidate\", \"passed\": 143, \"runner_sha256\": \"d5084fd43352f34267f3ed9b4b5d60a6070e2c50d4b787739270502c856e18bb\", \"schema\": \"rebar-cpython-re-result-v1\", \"skipped\": 2, \"source_sha256\": {\"LICENSE\": \"b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231\", \"re_tests.py\": \"ec04a2b2a77338d20b37d931693c7e588a2896d3c73c7b4b47973e24c13b5aab\", \"test_re.py\": \"879c8b562a5bddb413e73ad6d026a6199785bd08fa1c2c5db1ef831b4e1c47e2\"}, \"timeouts\": 0}",
+  "failed_official_test": "ReTests.test_ignore_case_range",
+  "failed_official_assertion": "AssertionError: None is not true",
+  "failed_official_test_source_line": "NOT CAPTURED",
+  "failed_official_test_expected_observation": "NOT CAPTURED",
+  "failed_official_test_actual_observation": "NOT CAPTURED",
+  "candidate_source": {
+    "path": "candidates/_vm_native.c",
+    "sha256": "8b356ffe5846801692939df36dd95e401ed0e94f82886fa24998089efcac4add"
+  },
+  "candidate_native_binary": {
+    "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+    "sha256": "a3c0573cce872a89829c53b06582ba28d4d074956efbe95bb56a19839a8032ef"
+  },
+  "passing_stage08_prerequisites": [
+    {
+      "name": "frozen-correctness-v2",
+      "checks": 8244,
+      "failures": 0,
+      "path": "candidates/evidence/rust-v8-vm-stage-08-frozen-correctness-v2.json",
+      "sha256": "bf4dab41a58e46a6a6559a598fbaac10af19ac3b0e84a14539cccb3be91e21f6"
+    },
+    {
+      "name": "replacement-and-callback-adversarial",
+      "checks": 8862,
+      "failures": 0,
+      "path": "candidates/evidence/rust-v8-replacement-vm-stage-08.json.gz",
+      "sha256": "cab066c1f41ca2080d41b2d95339dd34049db2325ccdbe71238ac7a81ed0a6b0"
+    },
+    {
+      "name": "deep-replacement-and-callback-adversarial",
+      "checks": 11266,
+      "failures": 0,
+      "path": "candidates/evidence/rust-v8-replacement-vm-deep-stage-08.json.gz",
+      "sha256": "3a53da016f59ee4afa51702c662d6221885c3bb6ee2416abb3f13b27558f36dd"
+    },
+    {
+      "name": "independent-edge-oracle",
+      "checks": 223198,
+      "failures": 0,
+      "path": "candidates/evidence/rust-v8-edge-oracle-vm-deep-stage-08.json.gz",
+      "sha256": "377206c1580efed00230cad91eaac4b1afca08d89f4428d237a7ccb24cee48a0"
+    },
+    {
+      "name": "deep-public-contract",
+      "checks": 393,
+      "failures": 0,
+      "path": "candidates/audits/RUST-V8-DEEP-CONTRACT-C-STAGE-08.json.gz",
+      "sha256": "05aa082fd28725e4f20b6710ba4fc67db4f29d48f912b608b65597fa452c5e43"
+    },
+    {
+      "name": "frozen-cross-family-observability",
+      "checks": 479,
+      "failures": 0,
+      "path": "candidates/evidence/rust-v8-observability-vm-qualified-stage-08.json.gz",
+      "sha256": "2fb64b5190635853f94a212131af05c23a57515b9b2dc2f0300e8a3bb6233b75"
+    },
+    {
+      "name": "independent-parser-grammar",
+      "checks": 20480,
+      "failures": 0,
+      "path": "candidates/evidence/rust-v7-grammar-vm-v8-deep-stage-08.json.gz",
+      "sha256": "6040971a04f534d6a126cab8e7897da16f028f4a1186befba649df89256f40b1"
+    }
+  ],
+  "holdout": "NOT ACCESSED",
+  "performance": "NOT MEASURED"
+}
