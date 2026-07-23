@@ -72,7 +72,7 @@
 <text x="878" y="564" class="value">1.191×</text>
 <text x="958" y="564" class="small">32/47 clearly faster · 2/47 &gt;20% slower</text>
 <rect x="18" y="575" width="1284" height="438" rx="9" class="panel"/>
-<text x="29" y="595" class="head">Rust: corrected v4 match combined</text>
+<text x="29" y="595" class="head">Rust: native heap certified baseline</text>
 <line x1="327.00" y1="628" x2="327.00" y2="1019" class="grid"/>
 <text x="327.00" y="620" text-anchor="middle" class="tick">0.2×</text>
 <line x1="409.08" y1="628" x2="409.08" y2="1019" class="grid"/>
@@ -88,52 +88,52 @@
 <line x1="793.12" y1="628" x2="793.12" y2="1019" class="grid"/>
 <text x="793.12" y="620" text-anchor="middle" class="tick">2×</text>
 <text x="29" y="658" class="label">Prepare a pattern (compile)</text>
-<circle cx="829.52" cy="654" r="5" fill="#047857" stroke="#ffffff" stroke-width="1.2"/>
-<text x="878" y="658" class="value">2.394×</text>
+<circle cx="831.73" cy="654" r="5" fill="#047857" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="658" class="value">2.420×</text>
 <text x="958" y="658" class="small">48/48 clearly faster · 0/48 &gt;20% slower</text>
 <text x="29" y="690" class="label">Escape special characters (escape)</text>
-<circle cx="651.53" cy="686" r="5" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
-<text x="878" y="690" class="value">0.994×</text>
-<text x="958" y="690" class="small">0/48 clearly faster · 0/48 &gt;20% slower</text>
+<circle cx="651.14" cy="686" r="5" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="690" class="value">0.992×</text>
+<text x="958" y="690" class="small">1/48 clearly faster · 0/48 &gt;20% slower</text>
 <text x="29" y="722" class="label">Find every match (findall)</text>
-<circle cx="628.66" cy="718" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
-<text x="878" y="722" class="value">0.888×</text>
-<text x="958" y="722" class="small">28/80 clearly faster · 31/80 &gt;20% slower</text>
+<circle cx="577.40" cy="718" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="722" class="value">0.689×</text>
+<text x="958" y="722" class="small">11/80 clearly faster · 53/80 &gt;20% slower</text>
 <text x="29" y="754" class="label">Stream each match (finditer)</text>
-<circle cx="654.93" cy="750" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
-<text x="878" y="754" class="value">1.011×</text>
-<text x="958" y="754" class="small">37/67 clearly faster · 17/67 &gt;20% slower</text>
+<circle cx="607.90" cy="750" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="754" class="value">0.801×</text>
+<text x="958" y="754" class="small">8/67 clearly faster · 40/67 &gt;20% slower</text>
 <text x="29" y="786" class="label">Match the entire input (fullmatch)</text>
-<circle cx="640.97" cy="782" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
-<text x="878" y="786" class="value">0.943×</text>
-<text x="958" y="786" class="small">18/47 clearly faster · 18/47 &gt;20% slower</text>
+<circle cx="536.61" cy="782" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="786" class="value">0.563×</text>
+<text x="958" y="786" class="small">8/47 clearly faster · 38/47 &gt;20% slower</text>
 <text x="29" y="818" class="label">Match at the beginning (match)</text>
-<circle cx="636.75" cy="814" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
-<text x="878" y="818" class="value">0.924×</text>
-<text x="958" y="818" class="small">0/48 clearly faster · 4/48 &gt;20% slower</text>
+<circle cx="479.96" cy="814" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="818" class="value">0.426×</text>
+<text x="958" y="818" class="small">0/48 clearly faster · 48/48 &gt;20% slower</text>
 <text x="29" y="850" class="label">Read the match details (match-surface)</text>
-<circle cx="426.89" cy="846" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
-<text x="878" y="850" class="value">0.328×</text>
+<circle cx="417.44" cy="846" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="850" class="value">0.313×</text>
 <text x="958" y="850" class="small">0/48 clearly faster · 48/48 &gt;20% slower</text>
 <text x="29" y="882" class="label">Scan repeated matches (scanner)</text>
-<circle cx="609.79" cy="878" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
-<text x="878" y="882" class="value">0.809×</text>
-<text x="958" y="882" class="small">6/48 clearly faster · 24/48 &gt;20% slower</text>
+<circle cx="594.40" cy="878" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="882" class="value">0.749×</text>
+<text x="958" y="882" class="small">4/48 clearly faster · 30/48 &gt;20% slower</text>
 <text x="29" y="914" class="label">Search for a match (search)</text>
-<circle cx="654.00" cy="910" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
-<text x="878" y="914" class="value">1.006×</text>
-<text x="958" y="914" class="small">16/48 clearly faster · 17/48 &gt;20% slower</text>
+<circle cx="554.26" cy="910" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="914" class="value">0.615×</text>
+<text x="958" y="914" class="small">11/48 clearly faster · 33/48 &gt;20% slower</text>
 <text x="29" y="946" class="label">Split around matches (split)</text>
-<circle cx="688.59" cy="942" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
-<text x="878" y="946" class="value">1.193×</text>
-<text x="958" y="946" class="small">35/47 clearly faster · 11/47 &gt;20% slower</text>
+<circle cx="638.60" cy="942" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="946" class="value">0.932×</text>
+<text x="958" y="946" class="small">20/47 clearly faster · 19/47 &gt;20% slower</text>
 <text x="29" y="978" class="label">Replace matches (sub)</text>
-<circle cx="697.76" cy="974" r="5" fill="#047857" stroke="#ffffff" stroke-width="1.2"/>
-<text x="878" y="978" class="value">1.249×</text>
-<text x="958" y="978" class="small">35/48 clearly faster · 0/48 &gt;20% slower</text>
+<circle cx="648.77" cy="974" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="978" class="value">0.980×</text>
+<text x="958" y="978" class="small">15/48 clearly faster · 13/48 &gt;20% slower</text>
 <text x="29" y="1010" class="label">Replace and count matches (subn)</text>
-<circle cx="687.07" cy="1006" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
-<text x="878" y="1010" class="value">1.184×</text>
-<text x="958" y="1010" class="small">29/47 clearly faster · 2/47 &gt;20% slower</text>
+<circle cx="618.13" cy="1006" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="1010" class="value">0.843×</text>
+<text x="958" y="1010" class="small">6/47 clearly faster · 25/47 &gt;20% slower</text>
 <text x="26" y="1066" class="small">Every group includes every one of its practice cases. Group-average dots must not be mistaken for confidence intervals.</text>
 </svg>

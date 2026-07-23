@@ -31,11 +31,11 @@
 <text x="868" y="249" class="value">0.994× as fast · 95% range 0.956×–1.034×</text>
 <text x="868" y="268" class="small">No clear overall speed difference; range crosses 1×</text>
 <text x="868" y="285" class="small">245/624 clearly faster · 175/624 more than 20% slower</text>
-<text x="28" y="340" class="head">Rust: corrected v4 match combined</text>
-<line x1="668.73" y1="335" x2="687.19" y2="335" stroke="#b45309" stroke-width="7" stroke-linecap="round"/>
-<circle cx="678.02" cy="335" r="6" fill="#b45309" stroke="#ffffff" stroke-width="1.5"/>
-<text x="868" y="325" class="value">0.984× as fast · 95% range 0.945×–1.023×</text>
-<text x="868" y="344" class="small">No clear overall speed difference; range crosses 1×</text>
-<text x="868" y="361" class="small">252/624 clearly faster · 172/624 more than 20% slower</text>
+<text x="28" y="340" class="head">Rust: native heap certified baseline</text>
+<line x1="606.74" y1="335" x2="627.71" y2="335" stroke="#dc2626" stroke-width="7" stroke-linecap="round"/>
+<circle cx="616.72" cy="335" r="6" fill="#dc2626" stroke="#ffffff" stroke-width="1.5"/>
+<text x="868" y="325" class="value">0.754× as fast · 95% range 0.722×–0.791×</text>
+<text x="868" y="344" class="small">Clearly slower overall</text>
+<text x="868" y="361" class="small">132/624 clearly faster · 347/624 more than 20% slower</text>
 <text x="27" y="387" class="small">Every architecture shown passed all 223,198 frozen correctness checks. Practice results are not final unseen-test results.</text>
 </svg>

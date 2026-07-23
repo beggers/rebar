@@ -33,7 +33,7 @@ The [current all-engine audit](candidates/audits/FROM-SCRATCH-AUDIT.json) indepe
 
 ## Overall speed compared with Python
 
-**The speed of the current fully compatible replacements is NOT MEASURED.**
+**Final, unseen speed: NOT MEASURED.** On the separate practice data, the fully compatibility-qualified Rust implementation currently measures **0.754×** Python's speed. This negative result is not a final-test score or a claim about Zig or C.
 
 The [new, frozen final test](performance/v8/HOLDOUT-PROTOCOL.md) contains **12,288 genuinely different, still-unseen cases** and **31** paired repetitions per case. It remains sealed until at least three independent replacements pass every frozen compatibility and source-code check. No unseen result, final ranking, or confidence interval is invented.
 
@@ -52,9 +52,9 @@ These measurements cannot establish the speed of any corrected engine or select 
 
 ## Detailed practice results
 
-Rust improvements use a separate, frozen **624-case practice test**; the final 12,288 cases are never opened to choose an optimization. The [previous corrected Rust baseline](performance/v7/evidence/RUST-CALIBRATION-BASELINE.md) measured **0.994×** Python’s speed, with a **0.956–1.034×** confidence interval. That interval crosses **1×**, so it does not establish a speedup. All **175/624** cases taking more than 20% longer remain visible.
+Rust improvements use a separate, frozen **624-case practice test**; the final 12,288 cases are never opened to choose an optimization. The [fully compatibility-qualified Rust baseline](performance/v7/evidence/RUST-NATIVE-HEAP-BASELINE.md) measures **0.754×** Python's speed, with a **0.722–0.791×** confidence interval and **347/624** substantial slowdowns. This is a real slowdown, not a claimed speedup. The [previous, less completely qualified baseline](performance/v7/evidence/RUST-CALIBRATION-BASELINE.md) measured **0.994×**, with **175/624** slowdowns. Both complete results appear in the regenerated graphs.
 
-![Previous corrected Rust practice speed and full confidence interval relative to Python](performance/v7/evidence/rust-v7-calibration-overall.svg)
+![Both corrected Rust practice results and their full confidence intervals relative to Python](performance/v7/evidence/rust-v7-calibration-overall.svg)
 
 ![Rust practice speed for all 12 regular-expression operations](performance/v7/evidence/rust-v7-calibration-api.svg)
 
