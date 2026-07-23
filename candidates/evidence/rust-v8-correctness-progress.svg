@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1160" height="608" viewBox="0 0 1160 608" role="img" aria-labelledby="chart-title chart-description">
+<title id="chart-title">How closely do the from-scratch replacements match Python?</title>
+<desc id="chart-description">Original and latest observed mismatches for four independently built regular-expression engines. Every row uses the same 223,198 frozen Python compatibility checks. A missing latest result is shown as not yet retested.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:24px;font-weight:750}.sub{font-size:13px;fill:#52627a}.family{font-size:15px;font-weight:700}.phase{font-size:12px;fill:#52627a}.value{font-size:13px;font-weight:650}.tick{font-size:11px;fill:#52627a}.note{font-size:12px;fill:#52627a}.badge{font-size:13px;font-weight:700;fill:#166534}.grid{stroke:#e5eaf1;stroke-width:1}.missing{fill:#52627a;font-size:12px;font-weight:650}.complete{fill:#166534}.track{fill:#f1f5f9}</style>
+<text x="24" y="39" class="title">Are the replacements becoming compatible with Python?</text>
+<text x="24" y="63" class="sub">Original versus latest results on exactly the same 223,198 frozen tests. Shorter bars mean fewer differences.</text>
+<rect x="24" y="79" width="351" height="31" rx="15" fill="#ecfdf5"/>
+<text x="40" y="99" class="badge">Python reference: 223,198 / 223,198 correct</text>
+<text x="24" y="132" class="note">Each bar shows the actual number of behavior differences; zero is marked explicitly.</text>
+<line x1="274" y1="163" x2="274" y2="485" class="grid"/>
+<text x="274" y="155" text-anchor="middle" class="tick">0</text>
+<line x1="392.5" y1="163" x2="392.5" y2="485" class="grid"/>
+<text x="392.5" y="155" text-anchor="middle" class="tick">13,164</text>
+<line x1="511.0" y1="163" x2="511.0" y2="485" class="grid"/>
+<text x="511.0" y="155" text-anchor="middle" class="tick">26,328</text>
+<line x1="629.5" y1="163" x2="629.5" y2="485" class="grid"/>
+<text x="629.5" y="155" text-anchor="middle" class="tick">39,491</text>
+<line x1="748" y1="163" x2="748" y2="485" class="grid"/>
+<text x="748" y="155" text-anchor="middle" class="tick">52,655</text>
+<text x="24" y="197" class="family">Rust</text>
+<text x="172" y="193" class="phase">Original</text>
+<rect x="274" y="179" width="474" height="19" rx="5" class="track"/>
+<rect x="274" y="179" width="220.21" height="19" rx="5" fill="#2563eb"/>
+<text x="766" y="193" class="value">24,462 differences · 89.0402% correct</text>
+<text x="172" y="222" class="phase">Latest</text>
+<rect x="274" y="208" width="474" height="19" rx="5" class="track"/>
+<circle cx="283" cy="217.5" r="6" fill="#16a34a"/>
+<text x="766" y="222" class="value complete">0 differences · 223,198 / 223,198 correct</text>
+<line x1="24" y1="245" x2="1136" y2="245" stroke="#eef2f7"/>
+<text x="24" y="275" class="family">Zig</text>
+<text x="172" y="271" class="phase">Original</text>
+<rect x="274" y="257" width="474" height="19" rx="5" class="track"/>
+<rect x="274" y="257" width="47.54" height="19" rx="5" fill="#7c3aed"/>
+<text x="766" y="271" class="value">5,281 differences · 97.6339% correct</text>
+<text x="172" y="300" class="phase">Latest</text>
+<rect x="274" y="286" width="474" height="19" rx="5" class="track"/>
+<circle cx="283" cy="295.5" r="6" fill="#16a34a"/>
+<text x="766" y="300" class="value complete">0 differences · 223,198 / 223,198 correct</text>
+<line x1="24" y1="323" x2="1136" y2="323" stroke="#eef2f7"/>
+<text x="24" y="353" class="family">C</text>
+<text x="172" y="349" class="phase">Original</text>
+<rect x="274" y="335" width="474" height="19" rx="5" class="track"/>
+<rect x="274" y="335" width="474.0" height="19" rx="5" fill="#d97706"/>
+<text x="766" y="349" class="value">52,655 differences · 76.4088% correct</text>
+<text x="172" y="378" class="phase">Latest</text>
+<rect x="274" y="364" width="474" height="19" rx="5" class="track"/>
+<circle cx="283" cy="373.5" r="6" fill="#16a34a"/>
+<text x="766" y="378" class="value complete">0 differences · 223,198 / 223,198 correct</text>
+<line x1="24" y1="401" x2="1136" y2="401" stroke="#eef2f7"/>
+<text x="24" y="431" class="family">Independent Python</text>
+<text x="172" y="427" class="phase">Original</text>
+<rect x="274" y="413" width="474" height="19" rx="5" class="track"/>
+<rect x="274" y="413" width="469.46" height="19" rx="5" fill="#db2777"/>
+<text x="766" y="427" class="value">52,151 differences · 76.6346% correct</text>
+<text x="172" y="456" class="phase">Latest</text>
+<rect x="274" y="442" width="474" height="19" rx="5" class="track"/>
+<circle cx="283" cy="451.5" r="6" fill="#16a34a"/>
+<text x="766" y="456" class="value complete">0 differences · 223,198 / 223,198 correct</text>
+<text x="24" y="528" class="note">“0 differences” applies only to these frozen tests. Additional real-world behavior tests are reported separately.</text>
+<text x="24" y="550" class="note">Compatibility only. Speed: NOT MEASURED by this chart. Hidden final cases: NOT ACCESSED.</text>
+<metadata>{&quot;checks_per_engine&quot;:223198,&quot;expected_python_answers_sha256&quot;:&quot;b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526&quot;,&quot;families&quot;:[{&quot;color&quot;:&quot;#2563eb&quot;,&quot;current&quot;:{&quot;failed&quot;:0,&quot;passed&quot;:223198,&quot;path&quot;:&quot;candidates/evidence/rust-v8-edge-oracle-rust-scanner-cmethod.json.gz&quot;,&quot;sha256&quot;:&quot;4006d192d61e7827bc46e298c598f570bef1baba3c05e03bcae66453fc1e0eba&quot;},&quot;key&quot;:&quot;rust&quot;,&quot;label&quot;:&quot;Rust&quot;,&quot;original&quot;:{&quot;failed&quot;:24462,&quot;passed&quot;:198736,&quot;path&quot;:&quot;candidates/evidence/rust-v7-edge-oracle-rust-baseline.json.gz&quot;,&quot;sha256&quot;:&quot;93fdaf429c2db09f831a16e9190f6ada6d5cab025fa1fb277c446b6d06132bae&quot;}},{&quot;color&quot;:&quot;#7c3aed&quot;,&quot;current&quot;:{&quot;failed&quot;:0,&quot;passed&quot;:223198,&quot;path&quot;:&quot;candidates/evidence/rust-v8-edge-oracle-zig-corrected-v1.json.gz&quot;,&quot;sha256&quot;:&quot;f46c538dfb3d36164eab827ba2370e2c6f5e6c3e96308f96e462f4e0f6b40a7a&quot;},&quot;key&quot;:&quot;zig&quot;,&quot;label&quot;:&quot;Zig&quot;,&quot;original&quot;:{&quot;failed&quot;:5281,&quot;passed&quot;:217917,&quot;path&quot;:&quot;candidates/evidence/rust-v7-edge-oracle-zig-baseline.json.gz&quot;,&quot;sha256&quot;:&quot;80a0e9292f3231000748d2b2d5a3de95ee72d76d9c489c23d0f51f1ec64144a2&quot;}},{&quot;color&quot;:&quot;#d97706&quot;,&quot;current&quot;:{&quot;failed&quot;:0,&quot;passed&quot;:223198,&quot;path&quot;:&quot;candidates/evidence/rust-v8-edge-oracle-vm-corrected-v1.json.gz&quot;,&quot;sha256&quot;:&quot;69583a8b731a3c1d3c1e4250182325e3ca49c2fefa6fbea0b37f9db826996caa&quot;},&quot;key&quot;:&quot;c&quot;,&quot;label&quot;:&quot;C&quot;,&quot;original&quot;:{&quot;failed&quot;:52655,&quot;passed&quot;:170543,&quot;path&quot;:&quot;candidates/evidence/rust-v7-edge-oracle-c-baseline.json.gz&quot;,&quot;sha256&quot;:&quot;54f204265237f7c86776df32adacfb6a123e50b3a3bcd29846bb23c6a8f4b343&quot;}},{&quot;color&quot;:&quot;#db2777&quot;,&quot;current&quot;:{&quot;failed&quot;:0,&quot;passed&quot;:223198,&quot;path&quot;:&quot;candidates/evidence/rust-v8-edge-oracle-ast-corrected-v2.json.gz&quot;,&quot;sha256&quot;:&quot;8d033981f56bb1dbbaeccdcdae6ab9ca422f9f097825aeecf60a2cb168ae4171&quot;},&quot;key&quot;:&quot;python&quot;,&quot;label&quot;:&quot;Independent Python&quot;,&quot;original&quot;:{&quot;failed&quot;:52151,&quot;passed&quot;:171047,&quot;path&quot;:&quot;candidates/evidence/rust-v7-edge-oracle-python-baseline.json.gz&quot;,&quot;sha256&quot;:&quot;3c6f1cd044771bddcad7d0026764835d54cbaf85bfe6999a9037c8133f9d5db6&quot;}}],&quot;frozen_oracle_sha256&quot;:&quot;fe6a263a48f243ea02faaa78fc3bbd051233a2b2221967a5f76dd1bb79d242ca&quot;,&quot;holdout&quot;:&quot;NOT ACCESSED&quot;,&quot;performance&quot;:&quot;NOT MEASURED&quot;,&quot;reference&quot;:{&quot;failed&quot;:0,&quot;passed&quot;:223198,&quot;path&quot;:&quot;candidates/evidence/rust-v7-edge-oracle-stdlib-baseline.json.gz&quot;,&quot;sha256&quot;:&quot;392cda0f0e17a2ec020d445a594958e46f2521ff951b4341c99f6fb5af5e722f&quot;},&quot;schema&quot;:&quot;rebar-rust-v8-correctness-progress-v1&quot;}</metadata>
+</svg>

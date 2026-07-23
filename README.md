@@ -13,6 +13,10 @@
 
 The [original 104 Rust failures](candidates/audits/RUST-V8-DEEP-CONTRACT.json.gz) remain preserved. The final speed of a fully compatible engine is **NOT MEASURED**.
 
+![Original and current differences from Python for all four independently built engines, on the same 223,198 compatibility tests](candidates/evidence/rust-v8-correctness-progress.svg)
+
+This graph shows matching correctness, not speed. The separate **393-test** behavior results remain visible in the table above.
+
 The [expanded final speed test](performance/v8/HOLDOUT-PROTOCOL.md) contains **12,288 genuinely different, still-unseen cases**, with **31** repeated comparisons per case. It stays sealed until at least three independently written engines pass every compatibility and no-wrapper check. Its results are **NOT MEASURED**.
 
 ## Overall speed compared with Python
@@ -142,6 +146,7 @@ PYTHONPATH=. "$PY" tools/rust_v8_observability_variants.py verify \
 PYTHONPATH=. "$PY" tools/rust_v8_deep_contract_oracle.py --self-test
 PYTHONPATH=. "$PY" tools/rust_v8_deep_contract_variant.py --self-test
 PYTHONPATH=. "$PY" tools/rust_v8_multi_candidate_contract.py --self-test
+PYTHONPATH=. "$PY" tools/rust_v8_correctness_progress.py self-test
 # Inspect both preserved complete compatibility results without overwriting them:
 gzip -dc candidates/audits/RUST-V8-DEEP-CONTRACT.json.gz \
   | jq '{checks, status, public_mismatch_count, public_mismatch_family_counts}'
