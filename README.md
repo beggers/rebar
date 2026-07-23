@@ -19,7 +19,7 @@ On **6,216 separate, unseen tasks**, Zig / `rebar` is **1.733× as fast overall*
 
 The test covers everyday text and bytes, common calls, compilation, Unicode, captures, replacements, scanners, input slices, structured data, hits, misses, and short and long inputs. The initial five-engine comparison and final Zig rerun retain **1,131,312** timing rows, memory observations, confidence ranges, individual results, and every slowdown. The [slowdown audit](performance/v6/evidence/REGRESSION-THRESHOLD-AUDIT.md) explains all seven Zig losses and corrects an earlier reporting rule that missed tasks taking 20–25% longer; none of the original measurements have been changed or discarded.
 
-The Rust result in the table is the [recorded original baseline](candidates/evidence/RUST-V6-BASELINE.md). The [rewritten, from-scratch Rust engine](candidates/evidence/RUST-V6-VM-ARCHITECTURE.md) now passes the exhaustive Unicode, Python API, replacement, crash, and official CPython tests. Its updated speed is **NOT MEASURED** until the larger frozen benchmark is run.
+The Rust result in the table is the [recorded original baseline](candidates/evidence/RUST-V6-BASELINE.md). The [rewritten, from-scratch Rust engine](candidates/evidence/RUST-V6-VM-ARCHITECTURE.md) now passes its [complete compatibility and safety checks](candidates/evidence/RUST-V6-CAMPAIGN-GATE.md), including Unicode, Python APIs, replacements, crashes, and the official CPython tests. Its updated speed is **NOT MEASURED** until the larger frozen benchmark is run.
 
 ## Larger test, frozen before timing
 
