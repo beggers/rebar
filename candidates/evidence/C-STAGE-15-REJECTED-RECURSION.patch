@@ -1,0 +1,426 @@
+diff --git a/candidates/_vm_native.c b/candidates/_vm_native.c
+index dd3a55f9..279d78ef 100644
+--- a/candidates/_vm_native.c
++++ b/candidates/_vm_native.c
+@@ -7,7 +7,7 @@
+ 
+ enum { OP_CHAR=1, OP_DOT, OP_CAT, OP_CLASS, OP_ANCHOR, OP_BOUNDARY, OP_BACKREF,
+        OP_SAVE_START, OP_SAVE_END, OP_SPLIT, OP_JUMP, OP_LOOK, OP_ATOMIC_START,
+-       OP_ATOMIC_END, OP_COND, OP_MATCH, OP_REPEAT1 };
++       OP_ATOMIC_END, OP_COND, OP_MATCH, OP_REPEAT1, OP_REPEAT_BODY };
+ enum { F_I=2, F_L=4, F_M=8, F_S=16, F_A=256 };
+ #define F_BYTE ((Py_ssize_t)1 << 31)
+ 
+@@ -17,7 +17,7 @@ typedef struct { int kind; Py_UCS4 a, b; } ClassItem;
+ typedef struct { Py_ssize_t count; ClassItem *items; unsigned char ascii[256], scoped_ascii[256], ignore_ascii[256], ignore_unicode[256]; int ready; } CharClass;
+ typedef struct { Py_ssize_t code_count, class_count, groups, root_flags; Code *codes; CharClass *classes; PyObject *literal; unsigned char starts[256]; uint64_t *start_pairs; uint32_t start_triples[128]; int starts_ready, cache_classes, triple_count; } VM;
+ typedef struct { PyObject *obj; int byte_mode, unicode_kind; Py_ssize_t length; const char *bytes; const void *unicode_data; } Subject;
+-typedef struct { Py_ssize_t pc, pos, last, repeat_step, repeat_limit; Py_ssize_t *caps, *seen, *barrier; int atomic_depth; } State;
++typedef struct { Py_ssize_t pc, pos, last, repeat_step, repeat_limit, repeat_body_count; Py_ssize_t *caps, *seen, *barrier; int atomic_depth; } State;
+ typedef struct { State **items; Py_ssize_t length, capacity; } Stack;
+ 
+ enum { PROFILE_FIND, PROFILE_START, PROFILE_START_REJECT, PROFILE_PAIR_REJECT, PROFILE_EXECUTE,
+@@ -51,6 +51,7 @@ static State *state_new(Py_ssize_t groups, const Code *code, Py_ssize_t pos,
+     s->last = last;
+     s->repeat_step = 0;
+     s->repeat_limit = 0;
++    s->repeat_body_count = -1;
+     s->atomic_depth = 0;
+     return s;
+ }
+@@ -65,6 +66,7 @@ static State *state_clone(const State *old, Py_ssize_t groups, const Code *code)
+     s->last = old->last;
+     s->repeat_step = old->repeat_step;
+     s->repeat_limit = old->repeat_limit;
++    s->repeat_body_count = old->repeat_body_count;
+     s->atomic_depth = old->atomic_depth;
+     s->caps = (Py_ssize_t *)(s + 1);
+     s->seen = s->caps + cap_count;
+@@ -76,7 +78,9 @@ static State *state_clone(const State *old, Py_ssize_t groups, const Code *code)
+ 
+ static int stack_push(Stack *stack, State *s) {
+     if (stack->length == stack->capacity) {
++        if (stack->capacity > PY_SSIZE_T_MAX / 2) return 0;
+         Py_ssize_t next = stack->capacity ? stack->capacity * 2 : 32;
++        if ((size_t)next > SIZE_MAX / sizeof(State *)) return 0;
+         State **items = PyMem_Realloc(stack->items, (size_t)next * sizeof(State *));
+         if (!items) return 0;
+         stack->items = items;
+@@ -554,6 +558,33 @@ static int execute(const VM *vm, Py_ssize_t code_index, const Subject *subject,
+                    Py_ssize_t *last, Py_ssize_t *out_pos, int require_end,
+                    int require_nonempty, int depth);
+ 
++static int consume_repeat_body(const VM *vm, Py_ssize_t code_index,
++                               const Subject *subject, Py_ssize_t endpos,
++                               Py_ssize_t width, State *state, int depth) {
++    if (vm->groups<0 || vm->groups>PY_SSIZE_T_MAX/2-1) return -1;
++    Py_ssize_t cap_count=2*(vm->groups+1);
++    if ((size_t)cap_count>SIZE_MAX/sizeof(Py_ssize_t)) return -1;
++    Py_ssize_t local_caps[34];
++    Py_ssize_t *body_caps=cap_count<=34 ? local_caps : PyMem_Malloc((size_t)cap_count*sizeof(Py_ssize_t));
++    if (!body_caps) return -1;
++    memcpy(body_caps,state->caps,(size_t)cap_count*sizeof(Py_ssize_t));
++    Py_ssize_t body_last=state->last;
++    Py_ssize_t finish=-1;
++    int got=execute(vm,code_index,subject,state->pos,endpos,body_caps,&body_last,&finish,0,1,depth+1);
++    if (got>0) {
++        if (finish<=state->pos || finish>endpos || finish-state->pos!=width) {
++            got=-2;
++        } else {
++            memcpy(state->caps,body_caps,(size_t)cap_count*sizeof(Py_ssize_t));
++            state->last=body_last;
++            state->pos=finish;
++            PROFILE_ADD(PROFILE_REPEAT,1);
++        }
++    }
++    if (body_caps!=local_caps) PyMem_Free(body_caps);
++    return got;
++}
++
+ static int execute_compact_path(const VM *vm, const Code *code, const Subject *subject,
+                                 Py_ssize_t pc, Py_ssize_t pos, Py_ssize_t start,
+                                 Py_ssize_t endpos, Py_ssize_t *caps, Py_ssize_t *last,
+@@ -814,6 +845,149 @@ static int execute(const VM *vm, Py_ssize_t code_index, const Subject *subject,
+                 }
+                 break;
+             }
++            case OP_REPEAT_BODY: {
++                if (in.a<0 || in.a>=vm->code_count || in.b<0 || in.c < -1 || (in.c>=0 && in.c<in.b) || current->pos<0) goto fail;
++                const Code *body=&vm->codes[in.a];
++                if (body->count<1) goto fail;
++                Ins terminal=body->ins[body->count-1];
++                if (terminal.op!=OP_MATCH || terminal.a<=0 || terminal.b<0 || terminal.b>2) goto fail;
++                Py_ssize_t room=current->pos<endpos ? endpos-current->pos : 0;
++                Py_ssize_t capacity=room/terminal.a;
++                if (terminal.b==1) {
++                    Py_ssize_t count=current->repeat_body_count;
++                    int resumed=count>=0;
++                    if (!resumed) count=0;
++                    current->repeat_body_count=-1;
++                    if (count<0 || (in.c>=0 && count>in.c)) goto fail;
++                    if (resumed) {
++                        if (capacity<1 || (in.c>=0 && count>=in.c)) goto fail;
++                        int got=consume_repeat_body(vm,in.a,subject,endpos,terminal.a,current,depth);
++                        if (got<0) {
++                            state_free(current); stack_trim(&stack,0); PyMem_Free(stack.items); return got;
++                        }
++                        if (!got) goto fail;
++                        count++;
++                        room=current->pos<endpos ? endpos-current->pos : 0;
++                        capacity=room/terminal.a;
++                    }
++                    Py_ssize_t required=in.b>count ? in.b-count : 0;
++                    Py_ssize_t available=in.c<0 ? capacity : in.c-count;
++                    if (available>capacity) available=capacity;
++                    if (required>available) goto fail;
++                    while (count<in.b) {
++                        int got=consume_repeat_body(vm,in.a,subject,endpos,terminal.a,current,depth);
++                        if (got<0) {
++                            state_free(current); stack_trim(&stack,0); PyMem_Free(stack.items); return got;
++                        }
++                        if (!got) goto fail;
++                        count++;
++                    }
++                    room=current->pos<endpos ? endpos-current->pos : 0;
++                    if (room/terminal.a>0 && (in.c<0 || count<in.c)) {
++                        State *alternate=state_clone(current,vm->groups,code);
++                        if (!alternate) {
++                            state_free(current); stack_trim(&stack,0); PyMem_Free(stack.items); return -1;
++                        }
++                        alternate->pc=current->pc;
++                        alternate->repeat_step=0;
++                        alternate->repeat_body_count=count;
++                        if (!stack_push(&stack,alternate)) {
++                            state_free(alternate); state_free(current); stack_trim(&stack,0); PyMem_Free(stack.items); return -1;
++                        }
++                    }
++                    current->repeat_body_count=-1;
++                    current->pc++;
++                    break;
++                }
++                if (current->repeat_body_count>=0) goto fail;
++                Py_ssize_t limit=in.c<0 || in.c>capacity ? capacity : in.c;
++                if (in.b>limit) goto fail;
++                if (vm->groups<0 || vm->groups>PY_SSIZE_T_MAX/2-1) {
++                    state_free(current); stack_trim(&stack,0); PyMem_Free(stack.items); return -1;
++                }
++                Py_ssize_t cap_count=2*(vm->groups+1);
++                if ((size_t)cap_count>SIZE_MAX/sizeof(Py_ssize_t)) {
++                    state_free(current); stack_trim(&stack,0); PyMem_Free(stack.items); return -1;
++                }
++                Py_ssize_t *body_caps=PyMem_Malloc((size_t)cap_count*sizeof(Py_ssize_t));
++                if (!body_caps) {
++                    state_free(current); stack_trim(&stack,0); PyMem_Free(stack.items); return -1;
++                }
++                Stack choices={0};
++                Py_ssize_t count=0;
++                Py_ssize_t next_pc=current->pc+1;
++                int failed_allocation=0;
++                for (;;) {
++                    if (count>=in.b && terminal.b!=2) {
++                        State *option=state_clone(current,vm->groups,code);
++                        if (!option) { failed_allocation=1; break; }
++                        option->pc=next_pc;
++                        option->repeat_step=0;
++                        if (!stack_push(&choices,option)) {
++                            state_free(option); failed_allocation=1; break;
++                        }
++                    }
++                    if (count>=limit) break;
++                    memcpy(body_caps,current->caps,(size_t)cap_count*sizeof(Py_ssize_t));
++                    Py_ssize_t body_last=current->last;
++                    Py_ssize_t finish=-1;
++                    int got=execute(vm,in.a,subject,current->pos,endpos,body_caps,&body_last,&finish,0,1,depth+1);
++                    if (got<0) {
++                        PyMem_Free(body_caps);
++                        stack_trim(&choices,0); PyMem_Free(choices.items);
++                        state_free(current); stack_trim(&stack,0); PyMem_Free(stack.items);
++                        return got;
++                    }
++                    if (!got) break;
++                    if (finish<=current->pos || finish-current->pos!=terminal.a || finish>endpos) {
++                        failed_allocation=2; break;
++                    }
++                    memcpy(current->caps,body_caps,(size_t)cap_count*sizeof(Py_ssize_t));
++                    current->last=body_last;
++                    current->pos=finish;
++                    count++;
++                    PROFILE_ADD(PROFILE_REPEAT,1);
++                }
++                PyMem_Free(body_caps);
++                if (failed_allocation) {
++                    stack_trim(&choices,0); PyMem_Free(choices.items);
++                    if (failed_allocation==2) goto fail;
++                    state_free(current); stack_trim(&stack,0); PyMem_Free(stack.items); return -1;
++                }
++                if (count<in.b) {
++                    stack_trim(&choices,0); PyMem_Free(choices.items); goto fail;
++                }
++                if (terminal.b==2) {
++                    current->pc=next_pc;
++                    PyMem_Free(choices.items);
++                    break;
++                }
++                if (choices.length<=0) { PyMem_Free(choices.items); goto fail; }
++                Py_ssize_t chosen_index=terminal.b==1 ? 0 : choices.length-1;
++                State *chosen=choices.items[chosen_index];
++                choices.items[chosen_index]=NULL;
++                if (terminal.b==1) {
++                    for (Py_ssize_t index=choices.length; index-->1;) {
++                        State *option=choices.items[index];
++                        if (!stack_push(&stack,option)) { failed_allocation=1; break; }
++                        choices.items[index]=NULL;
++                    }
++                } else {
++                    for (Py_ssize_t index=0; index<chosen_index; index++) {
++                        State *option=choices.items[index];
++                        if (!stack_push(&stack,option)) { failed_allocation=1; break; }
++                        choices.items[index]=NULL;
++                    }
++                }
++                if (failed_allocation) {
++                    state_free(chosen); stack_trim(&choices,0); PyMem_Free(choices.items);
++                    state_free(current); stack_trim(&stack,0); PyMem_Free(stack.items); return -1;
++                }
++                stack_trim(&choices,0); PyMem_Free(choices.items);
++                state_free(current);
++                current=chosen;
++                break;
++            }
+             case OP_ATOMIC_START:
+                 if (current->atomic_depth >= code->atomic_capacity) goto fail;
+                 current->barrier[current->atomic_depth++] = stack.length;
+@@ -906,7 +1080,7 @@ static PyObject *native_build(PyObject *self, PyObject *args) {
+         Py_ssize_t atomic_depth=0;
+         for (Py_ssize_t i=0; i<vm->codes[p].count; i++) {
+             int op=vm->codes[p].ins[i].op;
+-            if (op==OP_SPLIT || op==OP_JUMP || op==OP_LOOK || op==OP_ATOMIC_START || op==OP_ATOMIC_END || op==OP_COND || op==OP_REPEAT1) vm->codes[p].linear=0;
++            if (op==OP_SPLIT || op==OP_JUMP || op==OP_LOOK || op==OP_ATOMIC_START || op==OP_ATOMIC_END || op==OP_COND || op==OP_REPEAT1 || op==OP_REPEAT_BODY) vm->codes[p].linear=0;
+             if (op==OP_ATOMIC_START) {
+                 atomic_depth++;
+                 if (atomic_depth>vm->codes[p].atomic_capacity) vm->codes[p].atomic_capacity=atomic_depth;
+@@ -932,6 +1106,19 @@ static PyObject *native_build(PyObject *self, PyObject *args) {
+         int compact=1;
+         for (Py_ssize_t i=0; i<code->count; i++) {
+             Ins in=code->ins[i];
++            if (in.op==OP_REPEAT_BODY) {
++                if (in.a<0 || in.a>=vm->code_count || in.b<0 || in.c < -1 || (in.c>=0 && in.c<in.b)) {
++                    PyErr_SetString(PyExc_ValueError,"invalid compact repeat body");
++                    goto error;
++                }
++                Code *body=&vm->codes[in.a];
++                if (body->count<1 || body->ins[body->count-1].op!=OP_MATCH || body->ins[body->count-1].a<=0 || body->ins[body->count-1].b<0 || body->ins[body->count-1].b>2) {
++                    PyErr_SetString(PyExc_ValueError,"invalid compact repeat body metadata");
++                    goto error;
++                }
++                deterministic=0;
++                compact=0;
++            }
+             if (in.op==OP_SPLIT || in.op==OP_JUMP || in.op==OP_ATOMIC_START || in.op==OP_ATOMIC_END || in.op==OP_COND) deterministic=0;
+             if (in.op==OP_LOOK && (in.a<0 || in.a>=vm->code_count || !vm->codes[in.a].linear)) deterministic=0;
+             if (in.op==OP_SPLIT && in.c>=0) {
+diff --git a/candidates/vm_candidate.py b/candidates/vm_candidate.py
+index cdfeb2db..fed87eb4 100644
+--- a/candidates/vm_candidate.py
++++ b/candidates/vm_candidate.py
+@@ -6,6 +6,7 @@ import unicodedata
+ import warnings
+ 
+ from copyreg import _reconstructor as _copy_reconstructor
++from struct import calcsize as _native_calcsize
+ 
+ from candidates import _vm_native
+ 
+@@ -46,6 +47,8 @@ DEBUG = RegexFlag.DEBUG
+ NOFLAG = RegexFlag(0)
+ _BYTE = 1 << 31
+ _MAXREPEAT = (1 << 32) - 1
++_MAX_INLINE_REPEAT = 128
++_MAX_NATIVE_REPEAT_WIDTH = (1 << (_native_calcsize("n") * 8 - 1)) - 1
+ _MISSING = object()
+ _WARNING_PREFIX = (os.path.dirname(__file__),)
+ 
+@@ -321,7 +324,6 @@ class _BytecodeParser:
+                 left = ("lit", self.advance(), flags)
+             warn_set_operator(self.at)
+             if self.current() == "-" and self.at + 1 < len(self.source) and self.source[self.at + 1] != "]":
+-                dash = self.at
+                 self.at += 1
+                 right_start = self.at
+                 if self.current() == "\\":
+@@ -330,12 +332,21 @@ class _BytecodeParser:
+                     right = self.escaped(flags, True, slash)
+                 else:
+                     right = ("lit", self.advance(), flags)
+-                if left[0] != "lit" or right[0] != "lit":
+-                    self.error(f"bad character range {self.source[left_start:self.at]}", left_start)
+-                if ord(left[1]) > ord(right[1]):
+-                    if self.source.startswith("\\x", left_start) and self.source.startswith("\\x", right_start):
+-                        self.error("bad character range \\x-\\x", dash)
+-                    self.error(f"bad character range {left[1]}-{right[1]}", dash - 1)
++                if (
++                    left[0] != "lit"
++                    or right[0] != "lit"
++                    or ord(left[1]) > ord(right[1])
++                ):
++                    left_head = self.source[
++                        left_start:left_start + (2 if self.source.startswith("\\", left_start) else 1)
++                    ]
++                    right_head = self.source[
++                        right_start:right_start + (2 if self.source.startswith("\\", right_start) else 1)
++                    ]
++                    message = f"bad character range {left_head}-{right_head}"
++                    if self.byte_mode:
++                        message = message.encode("ascii", "backslashreplace").decode("ascii")
++                    self.error(message, self.at - len(left_head) - 1 - len(right_head))
+                 members.append(("range", left[1], right[1]))
+             else:
+                 members.append(left)
+@@ -703,8 +714,36 @@ def _fixed_layout(node):
+     return None
+ 
+ 
++def _fixed_repeat_body_width(node):
++    """Return the checked width of a deterministic, consuming repeat body."""
++    kind = node[0]
++    if kind in {"lit", "dot", "category", "class"}:
++        return 1
++    if kind == "seq":
++        width = 0
++        for child in node[1]:
++            child_width = _fixed_repeat_body_width(child)
++            if child_width is None:
++                return None
++            width = min(_MAX_NATIVE_REPEAT_WIDTH, width + child_width)
++        return width
++    if kind == "group":
++        return _fixed_repeat_body_width(node[2])
++    if kind == "atomic":
++        return _fixed_repeat_body_width(node[1])
++    if kind == "repeat" and node[3] == node[2]:
++        width = _fixed_repeat_body_width(node[1])
++        if width is None:
++            return None
++        count = node[2]
++        if width and count > _MAX_NATIVE_REPEAT_WIDTH // width:
++            return _MAX_NATIVE_REPEAT_WIDTH
++        return width * count
++    return None
++
++
+ class _BytecodeCompiler:
+-    CHAR, DOT, CAT, CLASS, ANCHOR, BOUNDARY, BACKREF, SAVE_START, SAVE_END, SPLIT, JUMP, LOOK, ATOMIC_START, ATOMIC_END, COND, MATCH, REPEAT1 = range(1, 18)
++    CHAR, DOT, CAT, CLASS, ANCHOR, BOUNDARY, BACKREF, SAVE_START, SAVE_END, SPLIT, JUMP, LOOK, ATOMIC_START, ATOMIC_END, COND, MATCH, REPEAT1, REPEAT_BODY = range(1, 19)
+ 
+     def __init__(self):
+         self.programs = [[]]
+@@ -724,13 +763,13 @@ class _BytecodeCompiler:
+         if c is not None:
+             row[3] = c
+ 
+-    def child_program(self, node):
++    def child_program(self, node, *, repeat_width=0, repeat_mode=0):
+         saved = self.current
+         index = len(self.programs)
+         self.current = []
+         self.programs.append(self.current)
+         self.emit(node)
+-        self.instruction(self.MATCH)
++        self.instruction(self.MATCH, repeat_width, repeat_mode)
+         self.current = saved
+         return index
+ 
+@@ -831,15 +870,41 @@ class _BytecodeCompiler:
+                 self.instruction(self.REPEAT1, minimum, -1 if maximum is None else maximum, {"greedy": 0, "lazy": 1, "possessive": 2}[mode])
+                 self.emit(atom)
+                 return
++            body_width = _fixed_repeat_body_width(child)
++            safe_to_inline = minimum <= _MAX_INLINE_REPEAT and (
++                maximum is None
++                or maximum - minimum <= _MAX_INLINE_REPEAT
++            )
++            if body_width and not safe_to_inline:
++                body = self.child_program(
++                    child,
++                    repeat_width=body_width,
++                    repeat_mode={"greedy": 0, "lazy": 1, "possessive": 2}[mode],
++                )
++                self.instruction(
++                    self.REPEAT_BODY,
++                    body,
++                    minimum,
++                    -1 if maximum is None else maximum,
++                )
++                return
+             atomic = mode == "possessive"
+             if atomic:
+                 self.instruction(self.ATOMIC_START)
+             for _ in range(minimum):
++                if atomic:
++                    self.instruction(self.ATOMIC_START)
+                 self.emit(child)
++                if atomic:
++                    self.instruction(self.ATOMIC_END)
+             if maximum is None:
+                 split = self.instruction(self.SPLIT)
+                 child_start = len(self.current)
++                if atomic:
++                    self.instruction(self.ATOMIC_START)
+                 self.emit(child)
++                if atomic:
++                    self.instruction(self.ATOMIC_END)
+                 self.instruction(self.JUMP, split)
+                 end = len(self.current)
+                 if mode == "lazy":
+@@ -850,7 +915,11 @@ class _BytecodeCompiler:
+                 for _ in range(maximum - minimum):
+                     split = self.instruction(self.SPLIT)
+                     child_start = len(self.current)
++                    if atomic:
++                        self.instruction(self.ATOMIC_START)
+                     self.emit(child)
++                    if atomic:
++                        self.instruction(self.ATOMIC_END)
+                     end = len(self.current)
+                     if mode == "lazy":
+                         self.patch(split, a=end, b=child_start, c=-1)

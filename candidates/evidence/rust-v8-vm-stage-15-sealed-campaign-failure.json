@@ -1,0 +1,197 @@
+{
+  "schema": "rebar-stage15-sealed-campaign-actual-failure-v1",
+  "status": "FAIL",
+  "evidence_kind": "actual unchanged sealed campaign traceback and captured frozen child progress",
+  "campaign_invocations": 1,
+  "candidate": "candidates.vm_candidate",
+  "pinned_cpython": "3.14.6",
+  "campaign": {
+    "script": "tools/rust_v8_multi_candidate_campaign.py",
+    "sha256": "46e53abac0d2347d5fc505aa792a5ee5f55489a6e73b1f57edf37a93a0a6d45d",
+    "invocation": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 -B tools/rust_v8_multi_candidate_campaign.py --module candidates.vm_candidate --edge-oracle candidates/evidence/rust-v8-edge-oracle-vm-deep-stage-15.json.gz --deep-proof candidates/audits/RUST-V8-DEEP-CONTRACT-C-STAGE-15.json.gz --output candidates/evidence/rust-v8-vm-stage-15-sealed-campaign.json",
+    "exit_code": 1,
+    "required_step_count": 22,
+    "success_report": "candidates/evidence/rust-v8-vm-stage-15-sealed-campaign.json",
+    "success_report_written": false,
+    "completed_step_count": "NOT RECOVERABLE: the unchanged sealed runner captures child outputs and writes its report only after all steps pass",
+    "retry_performed": false
+  },
+  "goal": {
+    "path": "GOAL.md",
+    "sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62"
+  },
+  "frozen_production_artifacts": [
+    {
+      "path": "candidates/vm_candidate.py",
+      "sha256": "5eda18175df026b31e7488733f56fd8abc6cd7b7f5a235f23f4d6b37ca3328b2"
+    },
+    {
+      "path": "candidates/_vm_native.c",
+      "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+    },
+    {
+      "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+    }
+  ],
+  "frozen_proofs": {
+    "edge": {
+      "path": "candidates/evidence/rust-v8-edge-oracle-vm-deep-stage-15.json.gz",
+      "sha256": "1acb2e9141e83136f455f84adb5022222aba622ac14e3d4f5b78722704422647"
+    },
+    "deep_contract": {
+      "path": "candidates/audits/RUST-V8-DEEP-CONTRACT-C-STAGE-15.json.gz",
+      "sha256": "a43ea8ea5e1a5fcfda47ae5cb060df871314680a45ed5e109364c796875fc0b2"
+    },
+    "unchanged_auditor": {
+      "path": "tools/audit_from_scratch.py",
+      "sha256": "4c47a77cf096df354e59d03096447c56bff890389869c6a75667a36c8471d024"
+    }
+  },
+  "failed_step": {
+    "name": "isolated-depth-and-overflow-safety",
+    "script": "tools/rust_depth_probe.py",
+    "script_sha256": "487bfc111b68c2a0e9d7f8e163544044090ad495803e2bf1cc33d31ddfedceed",
+    "exit_code": 1,
+    "actual_original_worker_summary": {
+      "categories": {
+        "allocation-width": 20,
+        "bounded-backtracking": 15,
+        "dynamic-recursion-limit": 112,
+        "malformed-nesting": 4,
+        "nested-matching": 16,
+        "numeric-condition-overflow": 20,
+        "parser-nesting": 105,
+        "repetition-overflow": 24,
+        "seeded-nesting": 32
+      },
+      "core_dumps": "disabled in every child process",
+      "correctness_checks": 348,
+      "cpu_limit_seconds": 6,
+      "crashes": 0,
+      "failed": 50,
+      "failed_categories": {
+        "dynamic-recursion-limit": 28,
+        "malformed-nesting": 3,
+        "parser-nesting": 14,
+        "seeded-nesting": 5
+      },
+      "isolation": "one independent subprocess per engine and case",
+      "memory_limit_mib": 768,
+      "module": "candidates.vm_candidate",
+      "oracle": "CPython stdlib re",
+      "oracle_failures": 0,
+      "pattern_transport": "compact generator descriptor over subprocess standard input",
+      "python_version": "3.14.6",
+      "schema": "rebar-rust-depth-safety-v1",
+      "seed": 2026072323,
+      "timeout_seconds": 5,
+      "timeouts": 0
+    },
+    "actual_original_worker_progress": [
+      {
+        "completed": 24,
+        "total": 348,
+        "failed": 0,
+        "crashes": 0,
+        "timeouts": 0
+      },
+      {
+        "completed": 48,
+        "total": 348,
+        "failed": 10,
+        "crashes": 0,
+        "timeouts": 0
+      },
+      {
+        "completed": 72,
+        "total": 348,
+        "failed": 14,
+        "crashes": 0,
+        "timeouts": 0
+      },
+      {
+        "completed": 96,
+        "total": 348,
+        "failed": 14,
+        "crashes": 0,
+        "timeouts": 0
+      },
+      {
+        "completed": 120,
+        "total": 348,
+        "failed": 18,
+        "crashes": 0,
+        "timeouts": 0
+      },
+      {
+        "completed": 144,
+        "total": 348,
+        "failed": 24,
+        "crashes": 0,
+        "timeouts": 0
+      },
+      {
+        "completed": 168,
+        "total": 348,
+        "failed": 30,
+        "crashes": 0,
+        "timeouts": 0
+      },
+      {
+        "completed": 192,
+        "total": 348,
+        "failed": 36,
+        "crashes": 0,
+        "timeouts": 0
+      },
+      {
+        "completed": 216,
+        "total": 348,
+        "failed": 42,
+        "crashes": 0,
+        "timeouts": 0
+      },
+      {
+        "completed": 240,
+        "total": 348,
+        "failed": 45,
+        "crashes": 0,
+        "timeouts": 0
+      },
+      {
+        "completed": 264,
+        "total": 348,
+        "failed": 45,
+        "crashes": 0,
+        "timeouts": 0
+      },
+      {
+        "completed": 288,
+        "total": 348,
+        "failed": 45,
+        "crashes": 0,
+        "timeouts": 0
+      },
+      {
+        "completed": 312,
+        "total": 348,
+        "failed": 45,
+        "crashes": 0,
+        "timeouts": 0
+      },
+      {
+        "completed": 336,
+        "total": 348,
+        "failed": 48,
+        "crashes": 0,
+        "timeouts": 0
+      }
+    ],
+    "actual_original_worker_stdout": "checked 24/348; failures=0 crashes=0 timeouts=0\nchecked 48/348; failures=10 crashes=0 timeouts=0\nchecked 72/348; failures=14 crashes=0 timeouts=0\nchecked 96/348; failures=14 crashes=0 timeouts=0\nchecked 120/348; failures=18 crashes=0 timeouts=0\nchecked 144/348; failures=24 crashes=0 timeouts=0\nchecked 168/348; failures=30 crashes=0 timeouts=0\nchecked 192/348; failures=36 crashes=0 timeouts=0\nchecked 216/348; failures=42 crashes=0 timeouts=0\nchecked 240/348; failures=45 crashes=0 timeouts=0\nchecked 264/348; failures=45 crashes=0 timeouts=0\nchecked 288/348; failures=45 crashes=0 timeouts=0\nchecked 312/348; failures=45 crashes=0 timeouts=0\nchecked 336/348; failures=48 crashes=0 timeouts=0\n{\"categories\": {\"allocation-width\": 20, \"bounded-backtracking\": 15, \"dynamic-recursion-limit\": 112, \"malformed-nesting\": 4, \"nested-matching\": 16, \"numeric-condition-overflow\": 20, \"parser-nesting\": 105, \"repetition-overflow\": 24, \"seeded-nesting\": 32}, \"core_dumps\": \"disabled in every child process\", \"correctness_checks\": 348, \"cpu_limit_seconds\": 6, \"crashes\": 0, \"failed\": 50, \"failed_categories\": {\"dynamic-recursion-limit\": 28, \"malformed-nesting\": 3, \"parser-nesting\": 14, \"seeded-nesting\": 5}, \"isolation\": \"one independent subprocess per engine and case\", \"memory_limit_mib\": 768, \"module\": \"candidates.vm_candidate\", \"oracle\": \"CPython stdlib re\", \"oracle_failures\": 0, \"pattern_transport\": \"compact generator descriptor over subprocess standard input\", \"python_version\": \"3.14.6\", \"schema\": \"rebar-rust-depth-safety-v1\", \"seed\": 2026072323, \"timeout_seconds\": 5.0, \"timeouts\": 0}\n\n",
+    "individual_failure_records": "NOT AVAILABLE: the untouched sealed fail-fast campaign exposes the complete original worker progress and summary, but destroys its private TemporaryDirectory before individual mismatch records can be preserved; no runner was repeated"
+  },
+  "authoritative_process_combined_output": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1439, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1427, in main\n    result = run_campaign(\n        args.module,\n    ...<3 lines>...\n        args.memory_mib,\n    )\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1054, in run_campaign\n    report[\"steps\"].append(child_step(step, module, memory_mib))\n                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 679, in child_step\n    raise AssertionError(\n    ...<2 lines>...\n    )\nAssertionError: isolated suite failed: isolated-depth-and-overflow-safety; exit=1; stderr=; stdout=checked 24/348; failures=0 crashes=0 timeouts=0\nchecked 48/348; failures=10 crashes=0 timeouts=0\nchecked 72/348; failures=14 crashes=0 timeouts=0\nchecked 96/348; failures=14 crashes=0 timeouts=0\nchecked 120/348; failures=18 crashes=0 timeouts=0\nchecked 144/348; failures=24 crashes=0 timeouts=0\nchecked 168/348; failures=30 crashes=0 timeouts=0\nchecked 192/348; failures=36 crashes=0 timeouts=0\nchecked 216/348; failures=42 crashes=0 timeouts=0\nchecked 240/348; failures=45 crashes=0 timeouts=0\nchecked 264/348; failures=45 crashes=0 timeouts=0\nchecked 288/348; failures=45 crashes=0 timeouts=0\nchecked 312/348; failures=45 crashes=0 timeouts=0\nchecked 336/348; failures=48 crashes=0 timeouts=0\n{\"categories\": {\"allocation-width\": 20, \"bounded-backtracking\": 15, \"dynamic-recursion-limit\": 112, \"malformed-nesting\": 4, \"nested-matching\": 16, \"numeric-condition-overflow\": 20, \"parser-nesting\": 105, \"repetition-overflow\": 24, \"seeded-nesting\": 32}, \"core_dumps\": \"disabled in every child process\", \"correctness_checks\": 348, \"cpu_limit_seconds\": 6, \"crashes\": 0, \"failed\": 50, \"failed_categories\": {\"dynamic-recursion-limit\": 28, \"malformed-nesting\": 3, \"parser-nesting\": 14, \"seeded-nesting\": 5}, \"isolation\": \"one independent subprocess per engine and case\", \"memory_limit_mib\": 768, \"module\": \"candidates.vm_candidate\", \"oracle\": \"CPython stdlib re\", \"oracle_failures\": 0, \"pattern_transport\": \"compact generator descriptor over subprocess standard input\", \"python_version\": \"3.14.6\", \"schema\": \"rebar-rust-depth-safety-v1\", \"seed\": 2026072323, \"timeout_seconds\": 5.0, \"timeouts\": 0}\n\n",
+  "performance": "NOT MEASURED",
+  "holdout": "NOT ACCESSED"
+}
