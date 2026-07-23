@@ -53,6 +53,8 @@ All five original engines agreed with Python on the **20,624 frozen benchmark an
 
 ## Detailed graphs
 
+The larger, still-unseen test has a [self-testing graph generator](tools/performance_v8_charts.py) for overall speed, confidence, every operation, memory, every slowdown, and final rankings. No graph or measurement is invented before that test is run.
+
 The first two graphs are explicitly **practice-only** and include all **624** corrected-Rust cases; they are not final unseen results.
 
 ![Corrected Rust practice results for all 12 regular-expression operations](performance/v7/evidence/rust-v7-calibration-api.svg)
@@ -88,6 +90,7 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.audit_from_scratch --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.audit_from_scratch
+PYTHONPATH=. "$PY" tools/performance_v8_charts.py --self-test
 PYTHONPATH=. "$PY" tools/perf_v7.py self-test
 PYTHONPATH=. "$PY" tools/perf_v7.py verify --output /tmp/rebar-v7-correctness.json
 PYTHONPATH=. "$PY" tools/perf_v7_delegation_audit.py
