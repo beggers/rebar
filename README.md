@@ -47,7 +47,7 @@ The [latest published four-engine from-scratch audit](candidates/audits/FROM-SCR
 
 The prospective [24,576-case final benchmark](performance/v9/HOLDOUT-PROTOCOL.md) specifies **31** paired rounds, **9,999** confidence draws, secret-dependent real patterns and inputs, genuinely precompiled patterns, and **16** real calls per timed sample. Its [75-check synthetic-only validation](performance/v9/evidence/HOLDOUT-PUBLIC-SYNTHETIC-SELF-TEST.json) passes without importing a candidate, opening a secret, creating final cases, or recording speed. The [earlier 12,288-case protocol](performance/v8/HOLDOUT-PROTOCOL.md) remains preserved and unopened. No final speed, ranking, or confidence interval is invented.
 
-The [final graph generator](tools/performance_v9_charts.py) separately passes [95 synthetic anti-tampering checks](performance/v9/evidence/PERFORMANCE-CHARTS-PUBLIC-SYNTHETIC-SELF-TEST.json). It will graph overall Python-relative speed, every candidate, all slowdowns, and separately measured memory only after genuine complete final results exist.
+The [final graph generator](tools/performance_v9_charts.py) separately passes [95 synthetic anti-tampering checks](performance/v9/evidence/PERFORMANCE-CHARTS-PUBLIC-SYNTHETIC-SELF-TEST.json). An [independent results verifier](tools/performance_v9_results_audit.py) also passes [93 synthetic integrity checks](performance/v9/evidence/PERFORMANCE-RESULTS-AUDIT-PUBLIC-SYNTHETIC-SELF-TEST.json); it can replay every eventual timing, confidence calculation, slowdown, and memory observation. Neither tool has accessed a hidden case or measured a candidate. Final graphs are generated only after genuine complete results exist.
 
 ![Historical overall speed of the original Rust, Zig, C, and Python engines relative to Python; these older engines did not pass the full compatibility checks](performance/v7/evidence/initial-overall.svg)
 
@@ -115,6 +115,11 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.rust_v9_holdout_protocol self-test --public-synthetic-only
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/performance_v9_charts.py --self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  tools/performance_v9_results_audit.py self-test --public-synthetic-only \
+  --source-sha256 fc85ca331504c12ee012db8ebb02464ed49f22327c7e84ec36f612a2b8d6aa3d \
+  --protocol-sha256 a699ce1e661ead447af0643584d69f080e72712059ad611fbd6b998f2ca19219 \
+  --output performance/v9/evidence/PERFORMANCE-RESULTS-AUDIT-PUBLIC-SYNTHETIC-SELF-TEST-REPRODUCED.json
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.rust_v8_holdout_protocol verify --evidence
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \

@@ -1,0 +1,418 @@
+{
+  "command_kind": "public-synthetic-only",
+  "execution_count": 1,
+  "public_protocol": {
+    "path": "tools/rust_v9_holdout_protocol.py",
+    "sha256": "a699ce1e661ead447af0643584d69f080e72712059ad611fbd6b998f2ca19219"
+  },
+  "public_source": {
+    "path": "tools/performance_v9_results_audit.py",
+    "sha256": "fc85ca331504c12ee012db8ebb02464ed49f22327c7e84ec36f612a2b8d6aa3d"
+  },
+  "result": {
+    "bootstrap_draws": 9999,
+    "candidate_imported": false,
+    "failed": 0,
+    "files_read": 0,
+    "files_written": 0,
+    "hidden_cases_generated": 0,
+    "opening_read": false,
+    "operations_per_sample": 16,
+    "paired_rounds": 31,
+    "poison_control_count": 93,
+    "poison_controls": [
+      {
+        "name": "strict-regression-exact-five-sixths-is-not-a-loss",
+        "passed": true
+      },
+      {
+        "name": "strict-regression-one-ulp-below-five-sixths-is-a-loss",
+        "passed": true
+      },
+      {
+        "name": "strict-regression-one-ulp-above-five-sixths-is-not-a-loss",
+        "passed": true
+      },
+      {
+        "name": "wrong-public-manifest-schema",
+        "passed": true
+      },
+      {
+        "name": "wrong-final-summary-schema",
+        "passed": true
+      },
+      {
+        "name": "wrong-public-protocol-source",
+        "passed": true
+      },
+      {
+        "name": "wrong-immutable-objective",
+        "passed": true
+      },
+      {
+        "name": "changed-public-manifest-binding",
+        "passed": true
+      },
+      {
+        "name": "changed-final-manifest-digest",
+        "passed": true
+      },
+      {
+        "name": "changed-final-protocol-binding",
+        "passed": true
+      },
+      {
+        "name": "changed-blinded-opening-commitment",
+        "passed": true
+      },
+      {
+        "name": "changed-pinned-python",
+        "passed": true
+      },
+      {
+        "name": "changed-isolated-locale",
+        "passed": true
+      },
+      {
+        "name": "concealed-final-failure",
+        "passed": true
+      },
+      {
+        "name": "previous-original-holdout-opened",
+        "passed": true
+      },
+      {
+        "name": "previous-v8-holdout-opened",
+        "passed": true
+      },
+      {
+        "name": "invented-combined-final-result",
+        "passed": true
+      },
+      {
+        "name": "substituted-python-baseline",
+        "passed": true
+      },
+      {
+        "name": "missing-independent-candidate",
+        "passed": true
+      },
+      {
+        "name": "duplicate-independent-candidate",
+        "passed": true
+      },
+      {
+        "name": "changed-complete-case-denominator",
+        "passed": true
+      },
+      {
+        "name": "changed-31-round-denominator",
+        "passed": true
+      },
+      {
+        "name": "changed-16-operation-denominator",
+        "passed": true
+      },
+      {
+        "name": "changed-9999-bootstrap-denominator",
+        "passed": true
+      },
+      {
+        "name": "dropped-pre-timing-post-correctness",
+        "passed": true
+      },
+      {
+        "name": "dropped-paired-raw-row-denominator",
+        "passed": true
+      },
+      {
+        "name": "changed-paired-raw-operation-denominator",
+        "passed": true
+      },
+      {
+        "name": "changed-canonical-raw-digest",
+        "passed": true
+      },
+      {
+        "name": "missing-cold-engine-startup",
+        "passed": true
+      },
+      {
+        "name": "zero-duration-cold-engine-startup",
+        "passed": true
+      },
+      {
+        "name": "duplicate-cold-engine-startup",
+        "passed": true
+      },
+      {
+        "name": "cold-engine-startup-hidden-inside-main-speedup",
+        "passed": true
+      },
+      {
+        "name": "dropped-candidate-result-block",
+        "passed": true
+      },
+      {
+        "name": "duplicate-candidate-result-block",
+        "passed": true
+      },
+      {
+        "name": "changed-candidate-case-denominator",
+        "passed": true
+      },
+      {
+        "name": "partial-candidate-bootstrap",
+        "passed": true
+      },
+      {
+        "name": "weakened-significant-win-target",
+        "passed": true
+      },
+      {
+        "name": "dropped-candidate-case",
+        "passed": true
+      },
+      {
+        "name": "duplicated-candidate-case",
+        "passed": true
+      },
+      {
+        "name": "changed-candidate-case-order",
+        "passed": true
+      },
+      {
+        "name": "changed-public-case-descriptor",
+        "passed": true
+      },
+      {
+        "name": "wrong-case-paired-rounds",
+        "passed": true
+      },
+      {
+        "name": "wrong-case-operation-count",
+        "passed": true
+      },
+      {
+        "name": "nonfinite-case-speed",
+        "passed": true
+      },
+      {
+        "name": "nonpositive-case-speed",
+        "passed": true
+      },
+      {
+        "name": "poisoned-case-confidence",
+        "passed": true
+      },
+      {
+        "name": "false-case-confidence-win",
+        "passed": true
+      },
+      {
+        "name": "false-strict-runtime-regression",
+        "passed": true
+      },
+      {
+        "name": "poisoned-overall-geometric-mean",
+        "passed": true
+      },
+      {
+        "name": "plausible-but-forged-bootstrap-lower-bound",
+        "passed": true
+      },
+      {
+        "name": "plausible-but-forged-bootstrap-upper-bound",
+        "passed": true
+      },
+      {
+        "name": "hidden-confidence-qualified-win",
+        "passed": true
+      },
+      {
+        "name": "hidden-large-runtime-regression",
+        "passed": true
+      },
+      {
+        "name": "dropped-case-level-runtime-regression",
+        "passed": true
+      },
+      {
+        "name": "duplicated-case-level-runtime-regression",
+        "passed": true
+      },
+      {
+        "name": "false-overall-confidence-success",
+        "passed": true
+      },
+      {
+        "name": "false-case-frequency-success",
+        "passed": true
+      },
+      {
+        "name": "false-final-winning-candidate",
+        "passed": true
+      },
+      {
+        "name": "changed-candidate-freeze",
+        "passed": true
+      },
+      {
+        "name": "changed-audit-evidence",
+        "passed": true
+      },
+      {
+        "name": "changed-independent-native-artifact",
+        "passed": true
+      },
+      {
+        "name": "incomplete-independent-memory-denominator",
+        "passed": true
+      },
+      {
+        "name": "changed-memory-cases-per-engine",
+        "passed": true
+      },
+      {
+        "name": "poisoned-independent-memory-digest",
+        "passed": true
+      },
+      {
+        "name": "python-memory-falsely-called-native",
+        "passed": true
+      },
+      {
+        "name": "process-rss-falsely-called-native",
+        "passed": true
+      },
+      {
+        "name": "raw-row-wrong-schema",
+        "passed": true
+      },
+      {
+        "name": "raw-row-foreign-case",
+        "passed": true
+      },
+      {
+        "name": "raw-row-foreign-operation",
+        "passed": true
+      },
+      {
+        "name": "raw-row-foreign-workload",
+        "passed": true
+      },
+      {
+        "name": "raw-row-foreign-engine",
+        "passed": true
+      },
+      {
+        "name": "raw-row-wrong-round",
+        "passed": true
+      },
+      {
+        "name": "raw-row-wrong-counterbalanced-position",
+        "passed": true
+      },
+      {
+        "name": "raw-row-wrong-operation-count",
+        "passed": true
+      },
+      {
+        "name": "raw-row-nonpositive-timing",
+        "passed": true
+      },
+      {
+        "name": "raw-row-poisoned-nanoseconds-per-operation",
+        "passed": true
+      },
+      {
+        "name": "raw-row-wrong-locale",
+        "passed": true
+      },
+      {
+        "name": "raw-row-missing-pre-correctness",
+        "passed": true
+      },
+      {
+        "name": "raw-row-missing-timed-correctness",
+        "passed": true
+      },
+      {
+        "name": "raw-row-missing-post-correctness",
+        "passed": true
+      },
+      {
+        "name": "memory-row-wrong-schema",
+        "passed": true
+      },
+      {
+        "name": "memory-row-foreign-engine",
+        "passed": true
+      },
+      {
+        "name": "memory-row-foreign-case",
+        "passed": true
+      },
+      {
+        "name": "memory-row-wrong-workload",
+        "passed": true
+      },
+      {
+        "name": "memory-row-wrong-locale",
+        "passed": true
+      },
+      {
+        "name": "memory-row-negative-python-allocation",
+        "passed": true
+      },
+      {
+        "name": "memory-row-negative-process-rss",
+        "passed": true
+      },
+      {
+        "name": "memory-row-falsely-claims-native-allocator",
+        "passed": true
+      },
+      {
+        "name": "memory-row-runs-in-timing-worker",
+        "passed": true
+      },
+      {
+        "name": "memory-row-fails-python-correctness",
+        "passed": true
+      },
+      {
+        "name": "truncated-canonical-timing-gzip",
+        "passed": true
+      },
+      {
+        "name": "truncated-canonical-memory-gzip",
+        "passed": true
+      },
+      {
+        "name": "synthetic-replay-rejected-as-real-24576-results",
+        "passed": true
+      }
+    ],
+    "previous_holdout_accessed": false,
+    "processes_started": 0,
+    "real_cases_per_candidate": 24576,
+    "real_cases_per_cell": 256,
+    "real_correctness_snapshots": 9142272,
+    "real_memory_rows": 6144,
+    "real_minimum_significant_wins": 14746,
+    "real_timing_rows": 3047424,
+    "real_workload_cells": 96,
+    "schema": "rebar-v9-results-audit-public-synthetic-self-test-v1",
+    "status": "PASS",
+    "synthetic_candidate_blocks": 3,
+    "synthetic_cases_per_candidate": 384,
+    "synthetic_cases_per_cell": 4,
+    "synthetic_engines": 4,
+    "synthetic_memory_rows": 384,
+    "synthetic_only": true,
+    "synthetic_timing_rows": 47616,
+    "timing_performed": false
+  },
+  "schema": "rebar-v9-recorded-public-synthetic-results-audit-v1"
+}
