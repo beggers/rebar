@@ -1,0 +1,118 @@
+{
+  "api_counts": {
+    "compile": 420,
+    "escape": 322,
+    "findall": 6036,
+    "finditer": 5876,
+    "fullmatch": 716,
+    "match": 458,
+    "match-surface": 482,
+    "scanner": 1030,
+    "search": 2394,
+    "split": 936,
+    "sub": 894,
+    "subn": 1060
+  },
+  "bootstrap_seed": 1986072302,
+  "bootstraps": 2000,
+  "callable_replacement_cases": 290,
+  "cases": 20624,
+  "cohorts": {
+    "calibration": 10312,
+    "holdout": 10312
+  },
+  "correctness_expected_sha256": "782c41ff0b1239eeb0bb5312b4a893b41d7882c7fdcf64b29587518839e51669",
+  "domain_counts": {
+    "backtracking": 8,
+    "buffers": 8,
+    "density": 8,
+    "lifecycle": 8,
+    "lookaround": 8,
+    "protocols": 8,
+    "source": 8,
+    "unicode": 8
+  },
+  "expanded_families": 64,
+  "expected_sha256": "2e6c098bd3a4757620461363106a9795f8defa98fe8bc9c13c0ebbf7ed58b598",
+  "goal_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+  "implementation": "CPython",
+  "input_counts": {
+    "bytearray": 629,
+    "bytes": 679,
+    "memoryview": 703,
+    "text": 18613
+  },
+  "lifecycle_counts": {
+    "cold": 710,
+    "compiled": 18564,
+    "module": 1350
+  },
+  "maximum_subject_length": 262165,
+  "modules": [
+    "re",
+    "candidates.ast_candidate",
+    "candidates.vm_candidate",
+    "candidates.rust_candidate",
+    "candidates.zig_candidate"
+  ],
+  "new_unique_semantic_scenarios": {
+    "calibration": 4096,
+    "holdout": 4096
+  },
+  "order_seed": 1986072301,
+  "parent_cases": 12432,
+  "parent_expected_sha256": "c8e32e879cc7a134748f8f3f29fed49678895745fdecebe63ceec46b6a3b5335",
+  "parent_runner_sha256": "b5cfbc15e913411c08b4f6a5a44da92bdff8eb9833d6c361b90ac139fa9a06d5",
+  "parent_suite_sha256": "091d7be04f7251781e2b8568f6cb19acbe603cb1d945926a69ba32adaf9b6b0f",
+  "practice_holdout_semantic_collisions": 0,
+  "python": "3.14.6",
+  "regression_rule": {
+    "basis": "candidate elapsed time divided by Python re elapsed time",
+    "slowdown_factor_exclusive": 1.2,
+    "speedup_threshold_exclusive": 0.8333333333333334
+  },
+  "replacement_limit_counts": {
+    "0": 1218,
+    "1": 64,
+    "2": 494,
+    "3": 30,
+    "4": 114,
+    "5": 34
+  },
+  "result_density_counts": {
+    "few": 7577,
+    "many": 6643,
+    "one": 5561,
+    "zero": 843
+  },
+  "runner_sha256": "49101e306014faa17f24b69771a01c668b2afbb546ec30eb8b352c2ce6a3a8f6",
+  "schema": "rebar-performance-v7",
+  "seeds": {
+    "calibration": 1986072311,
+    "holdout": 1986072329
+  },
+  "split_limit_counts": {
+    "0": 430,
+    "1": 104,
+    "2": 104,
+    "4": 138,
+    "5": 48,
+    "6": 16,
+    "8": 96
+  },
+  "suite_sha256": "0252981ce207c36c3e0d3ccd48e0429332507efe904012b0ecd03db75fa3d4af",
+  "surrogate_subject_cases": 128,
+  "trials": 13,
+  "unicode_width_counts": {
+    "1": 16102,
+    "2": 1576,
+    "4": 418
+  },
+  "unique_variants_per_family": 64,
+  "variants_per_family": 64,
+  "warmups": 4,
+  "weights": {
+    "calibration": 10312,
+    "holdout": 10312
+  }
+}

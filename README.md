@@ -21,6 +21,14 @@ The test covers everyday text and bytes, common calls, compilation, Unicode, cap
 
 The [Rust starting-point audit](candidates/evidence/RUST-V6-BASELINE.md) records the separate from-scratch Rust engine's complete frozen baseline, newly exposed Unicode compatibility gaps, and the ongoing work to improve its matching, memory use, and Python boundary.
 
+## Larger test, frozen before timing
+
+The next benchmark preserves every earlier example and adds **64 new kinds of work**, for **20,624** total cases: **10,312 practice cases and 10,312 genuinely unseen cases**. No practice input is reused as an unseen input. Python and all four independently built replacements give the correct answer on every case: **103,120/103,120 checks passed**.
+
+![What the larger Python re benchmark tests](performance/v7/evidence/coverage.svg)
+
+The [larger test protocol](performance/v7/PROTOCOL.md) fixes the inputs, weights, random seeds, confidence rules, memory measurements, and the correct definition of a slowdown before timing. The [independent-engine audit](performance/v7/evidence/delegation-audit.jsonl) confirms that none of the replacements wraps Python `re` or an external regular-expression package; the Rust engine has **zero external Rust dependencies**. Results on this larger test are **NOT MEASURED**. The speed and graphs above remain the actual results from the earlier **6,216-case** test.
+
 ## Compatibility
 
 `rebar` passes the frozen **44,084-case** correctness suite, including **35,840** unseen text, bytes, Unicode, buffer, scanner, property, and invalid-input cases, all **144** runnable official CPython `re` tests, **109,848** established focused checks, **163,960** alternative/run/delimiter/API checks, **156,484** direct-scan checks, and **230,337** new literal, alternative, Unicode, line, buffer, and call-surface checks. Debug, address, and undefined-behavior checks and the zero-delegation audit are clean.
@@ -64,6 +72,8 @@ PYTHONPATH=. "$PY" tools/oracle_v3.py verify --module rebar --cohort holdout --o
 PYTHONPATH=. "$PY" tools/cpython_re_oracle.py verify --module rebar --output /tmp/rebar-official.json
 PYTHONPATH=. "$PY" tools/zig_v6_paths_probe.py --module rebar --seeded-cases 8192 --output /tmp/rebar-paths.json
 PYTHONPATH=. "$PY" tools/perf_v6.py verify --module rebar --output /tmp/rebar-performance-check.json
+PYTHONPATH=. "$PY" tools/perf_v7.py verify --output /tmp/rebar-larger-correctness.json
+PYTHONPATH=. "$PY" tools/perf_v7_delegation_audit.py
 PYTHONPATH=. "$PY" tools/zig_perf_v6.py self-test
 gzip -dc candidates/evidence/zig-v6-final-raw.jsonl.gz > /tmp/rebar-raw.jsonl
 PYTHONPATH=. "$PY" tools/zig_perf_v6.py analyze --input /tmp/rebar-raw.jsonl --output /tmp/rebar-summary.json

@@ -1,0 +1,702 @@
+{
+  "affected_families": {
+    "binary-highbit-fields": 64,
+    "binary-template-subn": 64,
+    "bounded-greedy-code": 64,
+    "bracketed-ipv6-host": 64,
+    "cold-compile-lookaround": 64,
+    "cross-script-digits": 64,
+    "cyrillic-case-fold": 64,
+    "escape-literal-mixture": 64,
+    "highbit-negative-bytes": 64,
+    "jwt-token-segments": 64,
+    "long-tail-search-hit": 64,
+    "long-tail-search-miss": 64,
+    "mutable-buffer-captures": 64,
+    "named-byte-match-surface": 64,
+    "nul-separated-binary": 64,
+    "overlap-ordered-branches": 64,
+    "possessive-digit-run": 64,
+    "readonly-buffer-scanner": 64,
+    "windowed-binary-collect": 64
+  },
+  "colliding_cohort_pairs": 1216,
+  "colliding_families": 19,
+  "compared_cohort_pairs": 4096,
+  "effective_colliding_families": {
+    "binary-highbit-fields": 64,
+    "binary-template-subn": 64,
+    "bounded-greedy-code": 64,
+    "bracketed-ipv6-host": 64,
+    "cold-compile-lookaround": 64,
+    "cross-script-digits": 64,
+    "cyrillic-case-fold": 64,
+    "escape-literal-mixture": 64,
+    "highbit-negative-bytes": 64,
+    "jwt-token-segments": 64,
+    "long-tail-search-hit": 64,
+    "long-tail-search-miss": 64,
+    "mutable-buffer-captures": 64,
+    "named-byte-match-surface": 64,
+    "nul-separated-binary": 64,
+    "overlap-ordered-branches": 64,
+    "possessive-digit-run": 64,
+    "readonly-buffer-scanner": 64,
+    "windowed-binary-collect": 64
+  },
+  "effective_semantic_collisions": 1216,
+  "finding": "Separate random seeds do not create independent unseen inputs when a family never substitutes randomized values into its actual operation.",
+  "measurement": "Untimed reconstructed semantic-independence audit; not a performance result.",
+  "prototype_fixture_sha256": "NOT MEASURED",
+  "prototype_source_sha256": "NOT MEASURED",
+  "provenance": "Reconstructed from the observed rejected templates. The original prototype source and fixture hashes were not captured.",
+  "reconstruction_runner_sha256": "c1921bcf283b04d8c3829d1b6e3539badc521ee3576976d246cadb5a5c098ca3",
+  "resolution": "Render independently seeded text, bytes, and compile/escape patterns. Require 64 unique executable scenarios per family and disjoint practice and unseen semantic sets before freezing.",
+  "schema": "rebar-performance-v7-rejected-seed-collision-v1",
+  "status": "REJECTED",
+  "timing": "NOT MEASURED",
+  "total_within_family_duplicate_effective_operations": 2552,
+  "variants_per_affected_family": 64,
+  "within_family_effective_uniqueness": {
+    "calibration:apache-vhost-log": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:astral-emoji-run": {
+      "duplicate_effective_operations": 25,
+      "unique_effective_operations": 39,
+      "variants": 64
+    },
+    "calibration:atomic-prefix-guard": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:binary-highbit-fields": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "calibration:binary-template-subn": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "calibration:bounded-greedy-code": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "calibration:bounded-template-subn": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:bracketed-ipv6-host": {
+      "duplicate_effective_operations": 63,
+      "unique_effective_operations": 1,
+      "variants": 64
+    },
+    "calibration:c-preprocessor-line": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:callable-capture-replace": {
+      "duplicate_effective_operations": 8,
+      "unique_effective_operations": 56,
+      "variants": 64
+    },
+    "calibration:cjk-word-boundary": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:cold-compile-lookaround": {
+      "duplicate_effective_operations": 63,
+      "unique_effective_operations": 1,
+      "variants": 64
+    },
+    "calibration:cold-module-search": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:combining-mark-run": {
+      "duplicate_effective_operations": 10,
+      "unique_effective_operations": 54,
+      "variants": 64
+    },
+    "calibration:conditional-angle-pair": {
+      "duplicate_effective_operations": 58,
+      "unique_effective_operations": 6,
+      "variants": 64
+    },
+    "calibration:conjunct-lookahead": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:cross-script-digits": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:cyrillic-case-fold": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "calibration:dense-literal-collection": {
+      "duplicate_effective_operations": 9,
+      "unique_effective_operations": 55,
+      "variants": 64
+    },
+    "calibration:dual-lookaround-password": {
+      "duplicate_effective_operations": 5,
+      "unique_effective_operations": 59,
+      "variants": 64
+    },
+    "calibration:escape-literal-mixture": {
+      "duplicate_effective_operations": 63,
+      "unique_effective_operations": 1,
+      "variants": 64
+    },
+    "calibration:fixed-width-lookbehind": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:git-unified-hunk": {
+      "duplicate_effective_operations": 27,
+      "unique_effective_operations": 37,
+      "variants": 64
+    },
+    "calibration:greek-simple-fold": {
+      "duplicate_effective_operations": 29,
+      "unique_effective_operations": 35,
+      "variants": 64
+    },
+    "calibration:highbit-negative-bytes": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "calibration:http-cookie-pairs": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:js-template-hole": {
+      "duplicate_effective_operations": 8,
+      "unique_effective_operations": 56,
+      "variants": 64
+    },
+    "calibration:json-escaped-string": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:jwt-token-segments": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "calibration:lazy-markup-tag": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:long-tail-search-hit": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "calibration:long-tail-search-miss": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "calibration:lookahead-empty-steps": {
+      "duplicate_effective_operations": 10,
+      "unique_effective_operations": 54,
+      "variants": 64
+    },
+    "calibration:multiline-mixed-windows": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:mutable-buffer-captures": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "calibration:named-byte-match-surface": {
+      "duplicate_effective_operations": 63,
+      "unique_effective_operations": 1,
+      "variants": 64
+    },
+    "calibration:named-match-surface": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:ndjson-event-fields": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:negative-class-columns": {
+      "duplicate_effective_operations": 7,
+      "unique_effective_operations": 57,
+      "variants": 64
+    },
+    "calibration:negative-delimiter-boundary": {
+      "duplicate_effective_operations": 6,
+      "unique_effective_operations": 58,
+      "variants": 64
+    },
+    "calibration:nested-local-flag": {
+      "duplicate_effective_operations": 4,
+      "unique_effective_operations": 60,
+      "variants": 64
+    },
+    "calibration:nul-separated-binary": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "calibration:nullable-branch-cursor": {
+      "duplicate_effective_operations": 27,
+      "unique_effective_operations": 37,
+      "variants": 64
+    },
+    "calibration:overlap-ordered-branches": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "calibration:percent-query-pairs": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:possessive-digit-run": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:python-decorator": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:python-relative-import": {
+      "duplicate_effective_operations": 6,
+      "unique_effective_operations": 58,
+      "variants": 64
+    },
+    "calibration:quoted-named-backref": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:readonly-buffer-scanner": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "calibration:rfc5424-syslog": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:rust-attribute": {
+      "duplicate_effective_operations": 4,
+      "unique_effective_operations": 60,
+      "variants": 64
+    },
+    "calibration:rust-use-tree": {
+      "duplicate_effective_operations": 7,
+      "unique_effective_operations": 57,
+      "variants": 64
+    },
+    "calibration:scanner-dense-stream": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:split-optional-captures": {
+      "duplicate_effective_operations": 4,
+      "unique_effective_operations": 60,
+      "variants": 64
+    },
+    "calibration:toml-dotted-key": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:turkish-simple-fold": {
+      "duplicate_effective_operations": 28,
+      "unique_effective_operations": 36,
+      "variants": 64
+    },
+    "calibration:unicode-space-split": {
+      "duplicate_effective_operations": 5,
+      "unique_effective_operations": 59,
+      "variants": 64
+    },
+    "calibration:warm-module-findall": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:warm-module-finditer": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:warm-module-search": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "calibration:warm-module-sub": {
+      "duplicate_effective_operations": 7,
+      "unique_effective_operations": 57,
+      "variants": 64
+    },
+    "calibration:warm-module-subn": {
+      "duplicate_effective_operations": 9,
+      "unique_effective_operations": 55,
+      "variants": 64
+    },
+    "calibration:windowed-binary-collect": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "holdout:apache-vhost-log": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:astral-emoji-run": {
+      "duplicate_effective_operations": 27,
+      "unique_effective_operations": 37,
+      "variants": 64
+    },
+    "holdout:atomic-prefix-guard": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:binary-highbit-fields": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "holdout:binary-template-subn": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "holdout:bounded-greedy-code": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "holdout:bounded-template-subn": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:bracketed-ipv6-host": {
+      "duplicate_effective_operations": 63,
+      "unique_effective_operations": 1,
+      "variants": 64
+    },
+    "holdout:c-preprocessor-line": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:callable-capture-replace": {
+      "duplicate_effective_operations": 7,
+      "unique_effective_operations": 57,
+      "variants": 64
+    },
+    "holdout:cjk-word-boundary": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:cold-compile-lookaround": {
+      "duplicate_effective_operations": 63,
+      "unique_effective_operations": 1,
+      "variants": 64
+    },
+    "holdout:cold-module-search": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:combining-mark-run": {
+      "duplicate_effective_operations": 6,
+      "unique_effective_operations": 58,
+      "variants": 64
+    },
+    "holdout:conditional-angle-pair": {
+      "duplicate_effective_operations": 58,
+      "unique_effective_operations": 6,
+      "variants": 64
+    },
+    "holdout:conjunct-lookahead": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:cross-script-digits": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:cyrillic-case-fold": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "holdout:dense-literal-collection": {
+      "duplicate_effective_operations": 2,
+      "unique_effective_operations": 62,
+      "variants": 64
+    },
+    "holdout:dual-lookaround-password": {
+      "duplicate_effective_operations": 7,
+      "unique_effective_operations": 57,
+      "variants": 64
+    },
+    "holdout:escape-literal-mixture": {
+      "duplicate_effective_operations": 63,
+      "unique_effective_operations": 1,
+      "variants": 64
+    },
+    "holdout:fixed-width-lookbehind": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:git-unified-hunk": {
+      "duplicate_effective_operations": 29,
+      "unique_effective_operations": 35,
+      "variants": 64
+    },
+    "holdout:greek-simple-fold": {
+      "duplicate_effective_operations": 26,
+      "unique_effective_operations": 38,
+      "variants": 64
+    },
+    "holdout:highbit-negative-bytes": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "holdout:http-cookie-pairs": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:js-template-hole": {
+      "duplicate_effective_operations": 2,
+      "unique_effective_operations": 62,
+      "variants": 64
+    },
+    "holdout:json-escaped-string": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:jwt-token-segments": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "holdout:lazy-markup-tag": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:long-tail-search-hit": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "holdout:long-tail-search-miss": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "holdout:lookahead-empty-steps": {
+      "duplicate_effective_operations": 6,
+      "unique_effective_operations": 58,
+      "variants": 64
+    },
+    "holdout:multiline-mixed-windows": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:mutable-buffer-captures": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "holdout:named-byte-match-surface": {
+      "duplicate_effective_operations": 63,
+      "unique_effective_operations": 1,
+      "variants": 64
+    },
+    "holdout:named-match-surface": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:ndjson-event-fields": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:negative-class-columns": {
+      "duplicate_effective_operations": 5,
+      "unique_effective_operations": 59,
+      "variants": 64
+    },
+    "holdout:negative-delimiter-boundary": {
+      "duplicate_effective_operations": 5,
+      "unique_effective_operations": 59,
+      "variants": 64
+    },
+    "holdout:nested-local-flag": {
+      "duplicate_effective_operations": 4,
+      "unique_effective_operations": 60,
+      "variants": 64
+    },
+    "holdout:nul-separated-binary": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "holdout:nullable-branch-cursor": {
+      "duplicate_effective_operations": 31,
+      "unique_effective_operations": 33,
+      "variants": 64
+    },
+    "holdout:overlap-ordered-branches": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "holdout:percent-query-pairs": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:possessive-digit-run": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:python-decorator": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:python-relative-import": {
+      "duplicate_effective_operations": 8,
+      "unique_effective_operations": 56,
+      "variants": 64
+    },
+    "holdout:quoted-named-backref": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:readonly-buffer-scanner": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    },
+    "holdout:rfc5424-syslog": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:rust-attribute": {
+      "duplicate_effective_operations": 6,
+      "unique_effective_operations": 58,
+      "variants": 64
+    },
+    "holdout:rust-use-tree": {
+      "duplicate_effective_operations": 9,
+      "unique_effective_operations": 55,
+      "variants": 64
+    },
+    "holdout:scanner-dense-stream": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:split-optional-captures": {
+      "duplicate_effective_operations": 9,
+      "unique_effective_operations": 55,
+      "variants": 64
+    },
+    "holdout:toml-dotted-key": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:turkish-simple-fold": {
+      "duplicate_effective_operations": 25,
+      "unique_effective_operations": 39,
+      "variants": 64
+    },
+    "holdout:unicode-space-split": {
+      "duplicate_effective_operations": 7,
+      "unique_effective_operations": 57,
+      "variants": 64
+    },
+    "holdout:warm-module-findall": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:warm-module-finditer": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:warm-module-search": {
+      "duplicate_effective_operations": 0,
+      "unique_effective_operations": 64,
+      "variants": 64
+    },
+    "holdout:warm-module-sub": {
+      "duplicate_effective_operations": 5,
+      "unique_effective_operations": 59,
+      "variants": 64
+    },
+    "holdout:warm-module-subn": {
+      "duplicate_effective_operations": 5,
+      "unique_effective_operations": 59,
+      "variants": 64
+    },
+    "holdout:windowed-binary-collect": {
+      "duplicate_effective_operations": 56,
+      "unique_effective_operations": 8,
+      "variants": 64
+    }
+  }
+}

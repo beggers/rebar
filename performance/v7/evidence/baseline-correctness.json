@@ -1,0 +1,11 @@
+{
+  "cases_per_module": 20624,
+  "checks": 20624,
+  "expected_sha256": "2e6c098bd3a4757620461363106a9795f8defa98fe8bc9c13c0ebbf7ed58b598",
+  "failed": 0,
+  "failures": [],
+  "modules": [
+    "re"
+  ],
+  "schema": "rebar-performance-correctness-v7"
+}
