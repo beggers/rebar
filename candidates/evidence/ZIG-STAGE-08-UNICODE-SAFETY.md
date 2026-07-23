@@ -26,7 +26,7 @@ The [complete one-shot 22-stage campaign](rust-v8-zig-stage-08-sealed-campaign-f
 | Allocation boundary | 1 |
 | Total | 22/254 |
 
-The genuine campaign records **three native crashes**, **zero timeouts**, and **zero** standard-Python self-test failures. Its unchanged safety runner emitted aggregate category totals, not individual failing cases; individual failed-case records are **NOT MEASURED**. The campaign stopped before its full-Unicode stage, so the full-Unicode result is also **NOT MEASURED**. The failed campaign was not rerun or presented as a pass.
+The genuine campaign records **three native crashes**, **zero timeouts**, and **zero** standard-Python self-test failures. The campaign itself emitted aggregate category totals. A separately preserved [complete 254-case frozen safety diagnostic](rust-v8-zig-stage-08-isolated-safety-baseline.json) now records all **22** individual patterns, exact Python and Zig results, and all **three** signal-11 crashes. It identifies excessive lookahead nesting, incorrect Unicode error positions, two incorrectly accepted possessive repeats, a fixed capture-group allocation limit, and three malformed-pattern differences. The campaign stopped before its full-Unicode stage, so the full-Unicode result remains **NOT MEASURED**. The failed campaign was not rerun or presented as a pass.
 
 The [current four-engine independence audit](../audits/FROM-SCRATCH-AUDIT.json) verifies the exact Zig source, both loaded Zig libraries, all other engine families, and all **76** anti-delegation controls. The [preceding audit](../audits/FROM-SCRATCH-AUDIT-BEFORE-ZIG-STAGE-08.json) and every original failure remain preserved.
 
