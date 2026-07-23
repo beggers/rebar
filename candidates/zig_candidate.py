@@ -926,6 +926,8 @@ class Pattern(metaclass=_PatternType):
             value = functools.partial(getattr(_zig_bridge, "bound_" + name), self, self._handle, self._groupindex, self.pattern, self._literal)
         elif name in ("finditer", "scanner"):
             value = functools.partial(getattr(_zig_bridge, "bound_" + name), self, self._handle, self._groupindex, self.pattern, self.groups)
+        elif name == "findall" and self._literal is not None:
+            value = functools.partial(_zig_bridge.bound_literal_findall, self._literal)
         elif name in ("findall", "split"):
             value = functools.partial(getattr(_zig_bridge, "bound_" + name), self._handle, self.pattern, self.groups)
         elif name in ("sub", "subn"):

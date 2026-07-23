@@ -2,7 +2,9 @@
 
 This version expands the performance comparison to **6,216 unseen holdout tasks** and **6,216 matching practice tasks**. All **6,288** v5 records are preserved byte-for-byte; the **6,144** new tasks add **48** balanced workload families with **64** deterministic variations in each set. Every task has weight 1, so the holdout denominator is always **6,216**.
 
-The completed five-engine run finds Zig / `rebar` **1.5825×** as fast overall (95% range **1.5812–1.5837×**), clearly faster on **5,333/6,216** holdout tasks, with **243** explained large slowdowns. Native C reaches **1.2830×**, Rust **0.1344×**, and Python **0.0207×**. The readable result, every family, and every Zig slowdown are in [INITIAL.md](evidence/INITIAL.md).
+The initial five-engine run finds Zig / `rebar` **1.5825×** as fast overall (95% range **1.5812–1.5837×**), clearly faster on **5,333/6,216** holdout tasks, with **243** explained large slowdowns. Native C reaches **1.2830×**, Rust **0.1344×**, and Python **0.0207×**. The readable initial result, every family, and every Zig slowdown are in [INITIAL.md](evidence/INITIAL.md).
+
+After correctness-gated Zig optimization, the identical paired holdout reaches **1.7334×** (95% range **1.7321–1.7346×**), clearly faster on **5,691/6,216**, with **two** explained large slowdowns. The [current report](../../candidates/evidence/ZIG-V6-OPTIMIZED.md) combines the preserved five-engine comparison with the complete Zig rerun and shows every family, memory, interval, and loss.
 
 The baseline is the pinned, unmodified CPython **3.14.6** `re` module. The independently written Python, native C, Rust, and Zig engines are included; production code does not wrap or delegate matching to an external package or Python's regex engine. The fixture is generated twice with stdlib and agrees exactly, preserves the complete v5 prefix, and is pinned to the **44,084-case** correctness oracle. Fixture SHA-256: `c8e32e879cc7a134748f8f3f29fed49678895745fdecebe63ceec46b6a3b5335`.
 
@@ -47,6 +49,11 @@ PYTHONPATH=. "$PY" tools/perf_v6.py measure --output /tmp/v6-raw.jsonl
 PYTHONPATH=. "$PY" tools/perf_v6_analyze_fast.py --self-test
 PYTHONPATH=. "$PY" tools/perf_v6_analyze_fast.py --input /tmp/v6-raw.jsonl --output /tmp/v6-summary.json
 PYTHONPATH=. "$PY" tools/performance_v6_charts.py --summary /tmp/v6-summary.json --prefix /tmp/v6
+
+# Same frozen tasks and timing rules, paired only with the changed Zig engine.
+PYTHONPATH=. "$PY" tools/zig_perf_v6.py self-test
+PYTHONPATH=. "$PY" tools/zig_perf_v6.py measure --output /tmp/v6-zig-raw.jsonl
+PYTHONPATH=. "$PY" tools/zig_perf_v6.py analyze --input /tmp/v6-zig-raw.jsonl --output /tmp/v6-zig-summary.json
 ```
 
 The preserved raw file expands to SHA-256 `a6fefab9e97c21e1ea17d258860fd05dbbc9adc3bb2154b66935abe3d3d84907` and exactly **808,080** rows; the expanded summary SHA-256 is `808e79c4c2ababa56075bfa0c6b059acbab53fb48d2e44d997da59ef75f767fd`. Their deterministic gzip files have SHA-256 `ec5d7f3e77b070cb335d0dc71963a70ee7e1acf9c7daebfb0d6706d7b6b83450` and `22dc707132dea304cc518ea867cfcf4f489f4df9d1d3d336b0dbac9435c20be4` respectively.

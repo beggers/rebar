@@ -24,6 +24,7 @@ CAUSES = {
     "deeper-money-units": "case-insensitive units, currency/number alternatives, and both boundary checks add repeated branch and backtracking work",
     "expanded-backreference": "restoring captures and comparing previously matched text adds work on some inputs",
     "expanded-branch-alternatives": "many alternatives add repeated branch checks on a small number of inputs",
+    "expanded-ip-version": "these six/seven-character version strings return four captures; at this size, building the result and crossing the Python/native boundary costs more than the match itself",
 }
 
 

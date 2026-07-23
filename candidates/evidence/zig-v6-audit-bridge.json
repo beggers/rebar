@@ -1,0 +1,1 @@
+{"blocked_attempts": 0, "forbidden_markers": 0, "imports": ["candidates", "ctypes", "enum", "functools", "os", "types", "unicodedata", "warnings"], "module": "candidates.zig_candidate", "native_source": "candidates/zig/py_bridge.c", "smoke": "pass", "source": "candidates/zig_candidate.py"}

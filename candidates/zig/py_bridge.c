@@ -786,6 +786,10 @@ static PyObject *bridge_collect_objects(PyObject *module, PyObject *const *args,
 }
 
 static int zig_index_arg(PyObject *value, Py_ssize_t *result) {
+    if (PyLong_CheckExact(value)) {
+        *result = PyLong_AsSsize_t(value);
+        return !PyErr_Occurred();
+    }
     PyObject *index = PyNumber_Index(value);
     if (index == NULL) return 0;
     *result = PyLong_AsSsize_t(index);
@@ -888,9 +892,13 @@ static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, P
         PyErr_SetString(PyExc_RuntimeError, "Zig matcher rejected the pattern bridge call");
         return NULL;
     }
-    if (result == 0) Py_RETURN_NONE;
+    if (result == 0) {
+        Py_RETURN_NONE;
+    }
     ZigMatch *match = zig_match_new(pattern, subject, groupindex, groups, start, end);
-    if (match == NULL) return NULL;
+    if (match == NULL) {
+        return NULL;
+    }
     if (groups == 0 || literal != Py_None) {
         match->spans[0] = begin;
         match->spans[stride] = finish;
@@ -1622,6 +1630,124 @@ static PyObject *bridge_bound_findall(PyObject *module, PyObject *const *args, P
     }
     PyObject *call[6] = {args[0], args[1], subject, args[2], pos, endpos};
     return bridge_findall(module, call, 6);
+}
+
+static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    (void)module;
+    Py_ssize_t keyword_count = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    if (nargs < 1 || nargs - 1 + keyword_count > 3) {
+        PyErr_Format(PyExc_TypeError, "findall() takes at most 3 arguments (%zd given)", nargs - 1 + keyword_count);
+        return NULL;
+    }
+    PyObject *literal = args[0];
+    PyObject *subject = nargs >= 2 ? args[1] : NULL;
+    PyObject *pos_value = nargs >= 3 ? args[2] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
+    PyObject *end_value = nargs >= 4 ? args[3] : Py_None;
+    for (Py_ssize_t index = 0; index < keyword_count; index++) {
+        PyObject *name = PyTuple_GET_ITEM(kwnames, index);
+        if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
+            if (nargs >= 2) {
+                PyErr_SetString(PyExc_TypeError, "argument for findall() given by name ('string') and position (1)");
+                return NULL;
+            }
+            subject = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "pos") == 0) {
+            if (nargs >= 3) {
+                PyErr_SetString(PyExc_TypeError, "argument for findall() given by name ('pos') and position (2)");
+                return NULL;
+            }
+            pos_value = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "endpos") == 0) {
+            if (nargs >= 4) {
+                PyErr_SetString(PyExc_TypeError, "argument for findall() given by name ('endpos') and position (3)");
+                return NULL;
+            }
+            end_value = args[nargs + index];
+        } else {
+            PyErr_Format(PyExc_TypeError, "findall() got an unexpected keyword argument '%U'", name);
+            return NULL;
+        }
+    }
+    if (subject == NULL) {
+        PyErr_SetString(PyExc_TypeError, "findall() missing required argument 'string' (pos 1)");
+        return NULL;
+    }
+    Py_ssize_t requested_pos;
+    Py_ssize_t requested_end;
+    if (!zig_index_arg(pos_value, &requested_pos)) return NULL;
+    int text_mode = PyUnicode_Check(literal);
+    Py_buffer view = {0};
+    const char *data = NULL;
+    Py_ssize_t length;
+    Py_ssize_t literal_length;
+    if (text_mode) {
+        if (!PyUnicode_Check(subject)) {
+            PyErr_SetString(PyExc_TypeError, "cannot use a string pattern on a bytes-like object");
+            return NULL;
+        }
+        length = PyUnicode_GET_LENGTH(subject);
+        literal_length = PyUnicode_GET_LENGTH(literal);
+    } else {
+        if (PyUnicode_Check(subject)) {
+            PyErr_SetString(PyExc_TypeError, "cannot use a bytes pattern on a string-like object");
+            return NULL;
+        }
+        if (PyObject_GetBuffer(subject, &view, PyBUF_SIMPLE) != 0) {
+            PyErr_Clear();
+            PyErr_Format(PyExc_TypeError, "expected string or bytes-like object, got '%.200s'", Py_TYPE(subject)->tp_name);
+            return NULL;
+        }
+        data = view.buf;
+        length = view.len;
+        literal_length = PyBytes_GET_SIZE(literal);
+    }
+    if (end_value == Py_None) requested_end = length;
+    else if (!zig_index_arg(end_value, &requested_end)) {
+        if (view.obj != NULL) PyBuffer_Release(&view);
+        return NULL;
+    }
+    Py_ssize_t pos = requested_pos < 0 ? 0 : requested_pos;
+    Py_ssize_t end = requested_end < 0 ? 0 : requested_end;
+    if (end > length) end = length;
+    PyObject *result = PyList_New(0);
+    if (result == NULL) goto literal_findall_error;
+    if (pos > end || literal_length == 0) goto literal_findall_done;
+    Py_ssize_t cursor = pos;
+    while (cursor <= end - literal_length) {
+        Py_ssize_t found;
+        if (text_mode) found = PyUnicode_Find(subject, literal, cursor, end, 1);
+        else {
+            const char *item = memmem(data + cursor, (size_t)(end - cursor), PyBytes_AS_STRING(literal), (size_t)literal_length);
+            found = item == NULL ? -1 : (Py_ssize_t)(item - data);
+        }
+        if (found < 0) {
+            if (PyErr_Occurred()) goto literal_findall_error;
+            break;
+        }
+        PyObject *item = text_mode ? PyUnicode_Substring(subject, found, found + literal_length) : PyBytes_FromStringAndSize(data + found, literal_length);
+        if (item == NULL) goto literal_findall_error;
+        PyListObject *list = (PyListObject *)result;
+        Py_ssize_t used = PyList_GET_SIZE(result);
+        if (used < list->allocated) {
+            PyList_SET_ITEM(result, used, item);
+            Py_SET_SIZE(result, used + 1);
+        } else {
+            if (PyList_Append(result, item) < 0) {
+                Py_DECREF(item);
+                goto literal_findall_error;
+            }
+            Py_DECREF(item);
+        }
+        cursor = found + literal_length;
+    }
+literal_findall_done:
+    if (view.obj != NULL) PyBuffer_Release(&view);
+    return result;
+
+literal_findall_error:
+    if (view.obj != NULL) PyBuffer_Release(&view);
+    Py_XDECREF(result);
+    return NULL;
 }
 
 static PyObject *bridge_split(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
@@ -2399,6 +2525,7 @@ static PyMethodDef bridge_methods[] = {
     {"collect", (PyCFunction)(void (*)(void))bridge_collect, METH_FASTCALL, "Collect non-overlapping Zig regex matches."},
     {"findall", (PyCFunction)(void (*)(void))bridge_findall, METH_FASTCALL, "Return all Zig regex matches as Python values."},
     {"bound_findall", (PyCFunction)(void (*)(void))bridge_bound_findall, METH_FASTCALL | METH_KEYWORDS, "bound_findall($module, handle, pattern_value, groups, string, pos=0, endpos=9223372036854775807)\n--\n\nRun a bound Zig findall with cached pattern metadata."},
+    {"bound_literal_findall", (PyCFunction)(void (*)(void))bridge_bound_literal_findall, METH_FASTCALL | METH_KEYWORDS, "bound_literal_findall($module, literal, string, pos=0, endpos=9223372036854775807)\n--\n\nFind every non-overlapping literal with one native boundary crossing."},
     {"split", (PyCFunction)(void (*)(void))bridge_split, METH_FASTCALL, "Split with one Zig regex boundary crossing."},
     {"bound_split", (PyCFunction)(void (*)(void))bridge_bound_split, METH_FASTCALL | METH_KEYWORDS, "bound_split($module, handle, pattern_value, groups, string, maxsplit=0)\n--\n\nRun a bound Zig split with cached pattern metadata."},
     {"subn", (PyCFunction)(void (*)(void))bridge_subn, METH_FASTCALL, "Replace with one Zig regex boundary crossing."},

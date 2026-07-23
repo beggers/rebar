@@ -680,7 +680,9 @@ fn folded(value: u32, ascii_only: bool) u32 {
 }
 
 fn equal(left: u32, right: u32, flags: u32) bool {
-    if (flags & 2 == 0) return left == right;
+    if (left == right) return true;
+    if (flags & 2 == 0) return false;
+    if (left < 128 and right < 128) return std.ascii.toLower(@as(u8, @intCast(left))) == std.ascii.toLower(@as(u8, @intCast(right)));
     const ascii_only = asciiMode(flags);
     return folded(left, ascii_only) == folded(right, ascii_only);
 }
@@ -700,9 +702,9 @@ fn categoryBit(code: u8) u8 {
 fn category(code: u8, value: u32, flags: u32) bool {
     const ascii_only = asciiMode(flags);
     const found = switch (std.ascii.toLower(code)) {
-        'd' => if (ascii_only) value >= '0' and value <= '9' else _PyUnicode_IsDecimalDigit(value) != 0,
-        's' => if (ascii_only) value == ' ' or value == '\t' or value == '\n' or value == '\r' or value == 11 or value == 12 else _PyUnicode_IsWhitespace(value) != 0,
-        'w' => if (ascii_only) value < 128 and (std.ascii.isAlphanumeric(@intCast(value)) or value == '_') else value == '_' or _PyUnicode_IsAlpha(value) != 0 or _PyUnicode_IsDecimalDigit(value) != 0 or _PyUnicode_IsDigit(value) != 0 or _PyUnicode_IsNumeric(value) != 0,
+        'd' => if (ascii_only or value < 128) value >= '0' and value <= '9' else _PyUnicode_IsDecimalDigit(value) != 0,
+        's' => if (ascii_only or value < 128) value == ' ' or value == '\t' or value == '\n' or value == '\r' or value == 11 or value == 12 or (!ascii_only and value >= 0x1c and value <= 0x1f) else _PyUnicode_IsWhitespace(value) != 0,
+        'w' => if (ascii_only or value < 128) value < 128 and (std.ascii.isAlphanumeric(@intCast(value)) or value == '_') else value == '_' or _PyUnicode_IsAlpha(value) != 0 or _PyUnicode_IsDecimalDigit(value) != 0 or _PyUnicode_IsDigit(value) != 0 or _PyUnicode_IsNumeric(value) != 0,
         else => false,
     };
     return if (std.ascii.isUpper(code)) !found else found;
@@ -792,7 +794,7 @@ fn classRaw(program: *const Program, class: *const CharClass, value: u32, flags:
 }
 
 fn classMatch(program: *const Program, class: *const CharClass, value: u32, flags: u32) bool {
-    if (value < 256 and class.match_flags == flags) return class.match_bits[@as(usize, @intCast(value)) >> 3] & (@as(u8, 1) << @intCast(value & 7)) != 0;
+    if (value < 256 and class.match_flags == flags & 0xffff) return class.match_bits[@as(usize, @intCast(value)) >> 3] & (@as(u8, 1) << @intCast(value & 7)) != 0;
     if (class.negative and class.locale_multi and flags & 6 == 6 and flags & text_pattern_flag == 0) {
         const lower: u32 = if (value >= 'A' and value <= 'Z') value + 32 else value;
         const upper: u32 = if (value >= 'a' and value <= 'z') value - 32 else value;
@@ -849,7 +851,7 @@ fn prepareClasses(program: *Program, index: u32, flags: u32) void {
                 }
             }
             class.match_bits = bits;
-            class.match_flags = flags;
+            class.match_flags = flags & 0xffff;
         },
         .sequence, .alternative => |pair| {
             prepareClasses(program, pair.left, flags);
@@ -884,12 +886,12 @@ fn runLength(program: *const Program, run: Run, text: Subject, pos: usize, maxim
         },
         .class => |class_index| {
             const class = &program.classes.items[class_index];
-            if (text.kind == 1 and class.match_flags == run.flags) {
+            if (text.kind == 1 and class.match_flags == run.flags & 0xffff) {
                 while (length < maximum) : (length += 1) {
                     const value = text.data[pos + length];
                     if (class.match_bits[value >> 3] & (@as(u8, 1) << @intCast(value & 7)) == 0) break;
                 }
-            } else if (text.kind == 2 and class.match_flags == run.flags) {
+            } else if (text.kind == 2 and class.match_flags == run.flags & 0xffff) {
                 const values: [*]align(1) const u16 = @ptrCast(text.data);
                 while (length < maximum) : (length += 1) {
                     const value: u32 = values[pos + length];
@@ -897,7 +899,7 @@ fn runLength(program: *const Program, run: Run, text: Subject, pos: usize, maxim
                         if (class.match_bits[@as(usize, value) >> 3] & (@as(u8, 1) << @intCast(value & 7)) == 0) break;
                     } else if (!classMatch(program, class, value, run.flags)) break;
                 }
-            } else if (text.kind == 4 and class.match_flags == run.flags) {
+            } else if (text.kind == 4 and class.match_flags == run.flags & 0xffff) {
                 const values: [*]align(1) const u32 = @ptrCast(text.data);
                 while (length < maximum) : (length += 1) {
                     const value = values[pos + length];
@@ -1135,22 +1137,60 @@ fn canBeEmpty(program: *const Program, index: u32) bool {
     };
 }
 
+fn plainLiteralLength(program: *const Program, index: u32) ?usize {
+    return switch (program.nodes.items[index]) {
+        .empty => 0,
+        .literal => 1,
+        .sequence => |pair| blk: {
+            const left = plainLiteralLength(program, pair.left) orelse break :blk null;
+            const right = plainLiteralLength(program, pair.right) orelse break :blk null;
+            break :blk std.math.add(usize, left, right) catch null;
+        },
+        else => null,
+    };
+}
+
+fn plainLiteralAt(program: *const Program, index: u32, offset: usize) u32 {
+    return switch (program.nodes.items[index]) {
+        .literal => |value| value,
+        .sequence => |pair| blk: {
+            const left = plainLiteralLength(program, pair.left).?;
+            break :blk if (offset < left) plainLiteralAt(program, pair.left, offset) else plainLiteralAt(program, pair.right, offset - left);
+        },
+        else => unreachable,
+    };
+}
+
+fn gatherLiteralBranches(program: *const Program, index: u32, branches: *[256]u32, count: *usize) bool {
+    return switch (program.nodes.items[index]) {
+        .alternative => |pair| gatherLiteralBranches(program, pair.left, branches, count) and gatherLiteralBranches(program, pair.right, branches, count),
+        else => blk: {
+            if (plainLiteralLength(program, index) == null or count.* == branches.len) break :blk false;
+            branches[count.*] = index;
+            count.* += 1;
+            break :blk true;
+        },
+    };
+}
+
+fn literalValueMask(value: u32, flags: u32) ?u32 {
+    if (flags & 2 == 0) return @as(u32, 1) << @intCast(value & 31);
+    if (value >= 128) return null;
+    const byte: u8 = @intCast(value);
+    const lower = std.ascii.toLower(byte);
+    var mask = (@as(u32, 1) << @intCast(lower & 31)) | (@as(u32, 1) << @intCast(std.ascii.toUpper(byte) & 31));
+    if (!asciiMode(flags)) switch (lower) {
+        'i' => mask |= (@as(u32, 1) << @intCast(0x130 & 31)) | (@as(u32, 1) << @intCast(0x131 & 31)),
+        's' => mask |= @as(u32, 1) << @intCast(0x17f & 31),
+        'k' => mask |= @as(u32, 1) << @intCast(0x212a & 31),
+        else => {},
+    };
+    return mask;
+}
+
 fn literalPrefixMask(program: *const Program, index: u32, flags: u32) ?u32 {
     return switch (program.nodes.items[index]) {
-        .literal => |value| blk: {
-            if (flags & 2 == 0) break :blk @as(u32, 1) << @intCast(value & 31);
-            if (value >= 128) break :blk null;
-            const byte: u8 = @intCast(value);
-            const lower = std.ascii.toLower(byte);
-            var mask = (@as(u32, 1) << @intCast(lower & 31)) | (@as(u32, 1) << @intCast(std.ascii.toUpper(byte) & 31));
-            if (!asciiMode(flags)) switch (lower) {
-                'i' => mask |= (@as(u32, 1) << @intCast(0x130 & 31)) | (@as(u32, 1) << @intCast(0x131 & 31)),
-                's' => mask |= @as(u32, 1) << @intCast(0x17f & 31),
-                'k' => mask |= @as(u32, 1) << @intCast(0x212a & 31),
-                else => {},
-            };
-            break :blk mask;
-        },
+        .literal => |value| literalValueMask(value, flags),
         .class => |class_index| blk: {
             const class = &program.classes.items[class_index];
             if (class.negative or class.categories != 0 or (flags & 2 != 0 and !asciiMode(flags) and class.range_count != 0)) break :blk null;
@@ -1283,6 +1323,60 @@ const Compiler = struct {
                     const peek = peek_value.?;
                     _ = try self.emit(.{ .op = .boundary_peek, .left = peek.child, .extra = @intCast(self.flags & 0xffff), .value = @as(u8, if (boundary_value.?) 1 else 0) | @as(u8, if (peek.positive) 2 else 0) | @as(u8, if (peek.behind) 4 else 0) });
                     return;
+                }
+                var branches: [256]u32 = undefined;
+                var branch_count: usize = 0;
+                if (gatherLiteralBranches(self.program, index, &branches, &branch_count) and branch_count > 1) {
+                    var common = plainLiteralLength(self.program, branches[0]).?;
+                    for (branches[1..branch_count]) |branch| {
+                        const length = plainLiteralLength(self.program, branch).?;
+                        common = @min(common, length);
+                        var at: usize = 0;
+                        while (at < common and plainLiteralAt(self.program, branches[0], at) == plainLiteralAt(self.program, branch, at)) : (at += 1) {}
+                        common = at;
+                    }
+                    if (common >= 2) {
+                        for (0..common) |at| _ = try self.emit(.{ .op = .literal, .value = plainLiteralAt(self.program, branches[0], at), .extra = @intCast(self.flags & 0xffff) });
+                        var starts: [256]u32 = undefined;
+                        var splits: [255]u32 = undefined;
+                        var jumps: [255]u32 = undefined;
+                        for (branches[0..branch_count], 0..) |branch, branch_index| {
+                            if (branch_index + 1 < branch_count) splits[branch_index] = try self.emit(.{ .op = .split });
+                            starts[branch_index] = @intCast(self.program.code.items.len);
+                            const length = plainLiteralLength(self.program, branch).?;
+                            for (common..length) |at| _ = try self.emit(.{ .op = .literal, .value = plainLiteralAt(self.program, branch, at), .extra = @intCast(self.flags & 0xffff) });
+                            if (branch_index + 1 < branch_count) jumps[branch_index] = try self.emit(.{ .op = .jump });
+                        }
+                        const finish: u32 = @intCast(self.program.code.items.len);
+                        for (0..branch_count - 1) |branch_index| {
+                            const split_index = splits[branch_index];
+                            self.program.code.items[split_index].left = starts[branch_index];
+                            self.program.code.items[split_index].right = starts[branch_index + 1] - @as(u32, if (branch_index + 2 < branch_count) 1 else 0);
+                            const left_length = plainLiteralLength(self.program, branches[branch_index]).?;
+                            if (left_length > common) if (literalValueMask(plainLiteralAt(self.program, branches[branch_index], common), self.flags)) |left_mask| {
+                                var right_mask: u32 = 0;
+                                var complete = true;
+                                for (branches[branch_index + 1 .. branch_count]) |other| {
+                                    const right_length = plainLiteralLength(self.program, other).?;
+                                    if (right_length == common) {
+                                        complete = false;
+                                        break;
+                                    }
+                                    right_mask |= literalValueMask(plainLiteralAt(self.program, other, common), self.flags) orelse {
+                                        complete = false;
+                                        break;
+                                    };
+                                }
+                                if (complete) {
+                                    self.program.code.items[split_index].op = .start_split;
+                                    self.program.code.items[split_index].extra = left_mask;
+                                    self.program.code.items[split_index].value = right_mask;
+                                }
+                            };
+                            self.program.code.items[jumps[branch_index]].left = finish;
+                        }
+                        return;
+                    }
                 }
                 const split = try self.emit(.{ .op = .split });
                 const first: u32 = @intCast(self.program.code.items.len);
@@ -2705,6 +2799,18 @@ pub export fn rebar_zig_match_nonempty_wide(program_value: ?*const Program, text
     const last = if (mode == 0) endpos else pos;
     var start = pos;
     while (start <= last) : (start += 1) {
+        if (mode == 0 and program.code.items.len != 0 and program.code.items[0].op == .begin) {
+            const beginning = program.code.items[0];
+            if (start != 0 and (beginning.extra & 8 == 0 or text.at(start - 1) != '\n')) {
+                if (beginning.extra & 8 == 0) break;
+                var newline = start;
+                if (text.kind == 1) {
+                    newline = std.mem.indexOfScalarPos(u8, text.data[0..endpos], start, '\n') orelse break;
+                } else while (newline < endpos and text.at(newline) != '\n') : (newline += 1) {}
+                if (newline >= endpos) break;
+                start = newline + 1;
+            }
+        }
         if (mode == 0 and program.single_start < 256 and text.kind == 1 and start < endpos) {
             start = std.mem.indexOfScalarPos(u8, text.data[0..endpos], start, @intCast(program.single_start)) orelse break;
         }
@@ -2941,6 +3047,18 @@ pub export fn rebar_zig_match_captures_wide(program_value: ?*const Program, text
     var start = pos;
     var captures: [max_groups * 2]isize = undefined;
     while (start <= final_start) : (start += 1) {
+        if (mode == 0 and program.code.items.len != 0 and program.code.items[0].op == .begin) {
+            const beginning = program.code.items[0];
+            if (start != 0 and (beginning.extra & 8 == 0 or text.at(start - 1) != '\n')) {
+                if (beginning.extra & 8 == 0) break;
+                var newline = start;
+                if (text.kind == 1) {
+                    newline = std.mem.indexOfScalarPos(u8, text.data[0..endpos], start, '\n') orelse break;
+                } else while (newline < endpos and text.at(newline) != '\n') : (newline += 1) {}
+                if (newline >= endpos) break;
+                start = newline + 1;
+            }
+        }
         if (mode == 0 and program.single_start < 256 and text.kind == 1 and start < endpos) {
             start = std.mem.indexOfScalarPos(u8, text.data[0..endpos], start, @intCast(program.single_start)) orelse break;
         }

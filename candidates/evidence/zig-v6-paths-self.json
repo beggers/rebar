@@ -1,0 +1,120 @@
+{
+  "correctness_checks": 115649,
+  "error_surface": [
+    {
+      "actual": [
+        "TypeError",
+        "findall() missing required argument 'string' (pos 1)"
+      ],
+      "expected": [
+        "TypeError",
+        "findall() missing required argument 'string' (pos 1)"
+      ],
+      "label": "missing",
+      "passed": true
+    },
+    {
+      "actual": [
+        "TypeError",
+        "findall() takes at most 3 arguments (4 given)"
+      ],
+      "expected": [
+        "TypeError",
+        "findall() takes at most 3 arguments (4 given)"
+      ],
+      "label": "too-many",
+      "passed": true
+    },
+    {
+      "actual": [
+        "TypeError",
+        "findall() got an unexpected keyword argument 'other'"
+      ],
+      "expected": [
+        "TypeError",
+        "findall() got an unexpected keyword argument 'other'"
+      ],
+      "label": "unknown-keyword",
+      "passed": true
+    },
+    {
+      "actual": [
+        "TypeError",
+        "argument for findall() given by name ('string') and position (1)"
+      ],
+      "expected": [
+        "TypeError",
+        "argument for findall() given by name ('string') and position (1)"
+      ],
+      "label": "duplicate-string",
+      "passed": true
+    },
+    {
+      "actual": [
+        "TypeError",
+        "argument for findall() given by name ('pos') and position (2)"
+      ],
+      "expected": [
+        "TypeError",
+        "argument for findall() given by name ('pos') and position (2)"
+      ],
+      "label": "duplicate-pos",
+      "passed": true
+    },
+    {
+      "actual": [
+        "TypeError",
+        "'str' object cannot be interpreted as an integer"
+      ],
+      "expected": [
+        "TypeError",
+        "'str' object cannot be interpreted as an integer"
+      ],
+      "label": "bad-pos",
+      "passed": true
+    },
+    {
+      "actual": [
+        "TypeError",
+        "cannot use a string pattern on a bytes-like object"
+      ],
+      "expected": [
+        "TypeError",
+        "cannot use a string pattern on a bytes-like object"
+      ],
+      "label": "wrong-subject",
+      "passed": true
+    },
+    {
+      "actual": [
+        "TypeError",
+        "cannot use a bytes pattern on a string-like object"
+      ],
+      "expected": [
+        "TypeError",
+        "cannot use a bytes pattern on a string-like object"
+      ],
+      "label": "bytes-wrong-subject",
+      "passed": true
+    },
+    {
+      "actual": [
+        "TypeError",
+        "expected string or bytes-like object, got 'memoryview'"
+      ],
+      "expected": [
+        "TypeError",
+        "expected string or bytes-like object, got 'memoryview'"
+      ],
+      "label": "bytes-noncontiguous",
+      "passed": true
+    }
+  ],
+  "failed": 0,
+  "failures": [],
+  "manual_cases": 34,
+  "module": "re",
+  "schema": "rebar-zig-v6-paths-probe-v1",
+  "seed": 2026072301,
+  "seeded_cases": 4096
+}
