@@ -4,6 +4,8 @@
 
 **Current status:** no implementation can yet be recommended as a completely compatible replacement. Rust passes the original **223,198** compatibility checks, but a newly frozen, more demanding **393-check** test exposes **104** remaining differences in iterator lifetimes, buffers, object copying, and public method information. The final speed of a fully compatible engine is **NOT MEASURED**.
 
+The next [independently sealed speed test](performance/v8/HOLDOUT-PROTOCOL.md) contains **12,288 genuinely distinct, unseen cases** and **31** repeated comparisons against Python per case. It can be opened only after at least three independently written engines pass the complete compatibility and no-wrapper checks. Its results remain **NOT MEASURED**.
+
 ## Overall results
 
 The larger frozen test contains **20,624 cases**, including **10,312 independently held-back cases**. Every original engine was run against the same inputs for **13 paired trials**, producing **1,340,560 recorded measurements**. In every graph, **1× means the speed of Python `re`; higher is faster**.
@@ -90,6 +92,10 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.audit_from_scratch --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.audit_from_scratch
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  -m tools.rust_v8_holdout_protocol self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  -m tools.rust_v8_holdout_protocol verify --evidence
 PYTHONPATH=. "$PY" tools/performance_v8_charts.py --self-test
 PYTHONPATH=. "$PY" tools/perf_v7.py self-test
 PYTHONPATH=. "$PY" tools/perf_v7.py verify --output /tmp/rebar-v7-correctness.json

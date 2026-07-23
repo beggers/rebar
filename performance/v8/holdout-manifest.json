@@ -1,0 +1,206 @@
+{
+  "binding_sha256": "89ae3fa3259f1f4b22e0f69b0ed8cce735f1b71fe84e3a2708310c08b6a4da33",
+  "correctness": {
+    "crashes_allowed": 0,
+    "deep_contract_fixture_sha256": "c72a5e47f15c94ce13ce34d4918c05ef81eea5b010ac119b255264e60939ef16",
+    "deep_contract_reference_sha256": "b184f3388320909b3c28fbd3ce9c15cefc992d3e852e9495ad8fb503d1cbaad8",
+    "deep_contract_seed": 2026072347,
+    "deep_contract_source_sha256": "ba4b640d12444a5346d918a039d8a7a9fef0c78a54f6b66c6f0eb0c9dddbe978",
+    "deep_private_gc_policy": "record-all-diagnostics-not-a-public-waiver",
+    "deep_private_gc_rows": 64,
+    "deep_public_checks": 393,
+    "deep_public_mismatches_allowed": 0,
+    "edge_answer_sha256": "b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526",
+    "edge_categories": 49,
+    "edge_checks": 223198,
+    "edge_runner_sha256": "fe6a263a48f243ea02faaa78fc3bbd051233a2b2221967a5f76dd1bb79d242ca",
+    "grammar_checks": 20480,
+    "legacy_p0_cases": 44084,
+    "legacy_p0_fixture_sha256": "782c41ff0b1239eeb0bb5312b4a893b41d7882c7fdcf64b29587518839e51669",
+    "legacy_p0_obligations": 51,
+    "mismatches_allowed": 0,
+    "native_binder_checks": 34,
+    "named_private_waivers": [
+      "PRIVATE-CACHE-LAYOUT",
+      "PRIVATE-DEBUG-TEXT"
+    ],
+    "object_checks": 14783,
+    "observable_checks": 479,
+    "snapshots_per_timed_row": 3,
+    "timeouts_allowed": 0,
+    "unicode_checks": 4494555
+  },
+  "history": {
+    "combined_result": "NOT MEASURED",
+    "corrected_rust_original_holdout": "NOT MEASURED",
+    "original_engines": "historically-published",
+    "original_v7_cases": 10312,
+    "v8_expansion": "NOT MEASURED"
+  },
+  "independence": {
+    "candidate_delegation": "forbidden",
+    "candidate_worker_python_regex": "forbidden",
+    "external_regex_packages": "forbidden",
+    "memory_instrumentation": "separate-worker-tracemalloc-loads-re",
+    "prior_holdout_access": "forbidden",
+    "required_owned_native_elf_artifacts": 5
+  },
+  "layout": {
+    "apis": [
+      "compile",
+      "escape",
+      "search",
+      "match",
+      "fullmatch",
+      "findall",
+      "finditer",
+      "split",
+      "sub",
+      "subn",
+      "match-surface",
+      "scanner"
+    ],
+    "applicability": {
+      "compile": {
+        "input": ["str", "bytes"],
+        "lifecycle": ["cold-cache", "warm-cache"],
+        "surface": ["module"],
+        "variants_per_factor": 32
+      },
+      "escape": {
+        "input": ["str", "bytes"],
+        "special_density": ["ordinary", "regex-special"],
+        "surface": ["module"],
+        "variants_per_factor": 32
+      },
+      "findall": {
+        "input": ["str", "bytes"],
+        "outcome": ["hit", "miss"],
+        "surface": ["module", "compiled"],
+        "variants_per_factor": 16
+      },
+      "finditer": {
+        "input": ["str", "bytes"],
+        "outcome": ["hit", "miss"],
+        "surface": ["module", "compiled"],
+        "variants_per_factor": 16
+      },
+      "fullmatch": {
+        "input": ["str", "bytes"],
+        "outcome": ["hit", "miss"],
+        "surface": ["module", "compiled"],
+        "variants_per_factor": 16
+      },
+      "match": {
+        "input": ["str", "bytes"],
+        "outcome": ["hit", "miss"],
+        "surface": ["module", "compiled"],
+        "variants_per_factor": 16
+      },
+      "match-surface": {
+        "capture": ["numbered", "named", "optional", "multiple"],
+        "input": ["str", "bytes"],
+        "outcome": ["hit"],
+        "surface": ["module", "compiled"],
+        "variants_per_factor": 8
+      },
+      "scanner": {
+        "input": ["str", "bytes"],
+        "progression": ["ordinary", "zero-width"],
+        "scanner_method": ["search", "match"],
+        "surface": ["compiled-pattern-scanner"],
+        "variants_per_factor": 16
+      },
+      "search": {
+        "input": ["str", "bytes"],
+        "outcome": ["hit", "miss"],
+        "surface": ["module", "compiled"],
+        "variants_per_factor": 16
+      },
+      "split": {
+        "input": ["str", "bytes"],
+        "outcome": ["hit", "miss"],
+        "surface": ["module", "compiled"],
+        "variants_per_factor": 16
+      },
+      "sub": {
+        "input": ["str", "bytes"],
+        "outcome": ["hit", "miss"],
+        "surface": ["module", "compiled"],
+        "variants_per_factor": 16
+      },
+      "subn": {
+        "input": ["str", "bytes"],
+        "outcome": ["hit", "miss"],
+        "surface": ["module", "compiled"],
+        "variants_per_factor": 16
+      }
+    },
+    "case_identity": "descriptor-coordinate-and-domain-separated-hmac-semantic-regex-comment",
+    "cases": 12288,
+    "cases_per_api": 1024,
+    "cases_per_cell": 128,
+    "mutable_buffer_transport": "explicit-tagged-hex-materialized-as-bytearray-or-memoryview",
+    "workloads": [
+      "literal-and-long-prefix",
+      "character-class-and-unicode",
+      "anchors-boundaries-and-windows",
+      "greedy-lazy-atomic-and-possessive",
+      "alternation-groups-and-backreferences",
+      "lookaround-and-zero-width",
+      "replacement-split-and-result-density",
+      "logs-paths-urls-identifiers-and-noise"
+    ]
+  },
+  "memory": {
+    "boundary_cost": "included-in-end-to-end-timed-call",
+    "cases": 768,
+    "per_cell": 8,
+    "process_current": "procfs-rss-bytes",
+    "process_peak": "peak-rss-bytes",
+    "python_peak": "tracemalloc-bytes-separate-worker"
+  },
+  "reference": {
+    "character_locale": "C",
+    "implementation": "CPython",
+    "unicode_version": "16.0.0",
+    "version": "3.14.6"
+  },
+  "schema": "rebar-v8-prospective-performance-holdout-v1",
+  "seal": {
+    "algorithm": "sha256",
+    "isolation": "procedural-same-unix-user-not-security-boundary",
+    "opening_bytes": 32,
+    "opening_mode": "0600",
+    "opening_path": "/tmp/rebar-v8-final-holdout-opening-20260723-12288-v1.bin",
+    "opening_sha256": "f5d5b06b8a59ba38bfedc818b73dd93f828dd51618cdd1e1f61cb8c6b631cbdf"
+  },
+  "source": {
+    "path": "tools/rust_v8_holdout_protocol.py",
+    "sha256": "1c0b52b1db43ef8bd5a5d2cf007b2a579ff18a5c1ce79703035a2b8d42580f1d"
+  },
+  "state": "sealed-not-materialized",
+  "statistics": {
+    "bootstrap_seed": 20260723999,
+    "case_method": "paired-log-student-t-df30",
+    "case_student_t_critical": 2.0422724563012373,
+    "case_win_lower_bound": 1.0,
+    "confidence": 0.95,
+    "minimum_significant_wins": 7373,
+    "overall_bootstrap_draws": 9999,
+    "overall_lower_bound": 1.5,
+    "overall_method": "stratified-paired-case-cluster-percentile-bootstrap",
+    "runtime_regression": "candidate_time > 1.2 * baseline_time"
+  },
+  "trials": {
+    "case_timeout_seconds": 1,
+    "four_engine_correctness_snapshots": 4571136,
+    "four_engine_timed_rows": 1523712,
+    "maximum_operations": 16,
+    "minimum_candidates": 3,
+    "order_method": "seeded-counterbalanced-rotating-latin-square",
+    "order_seed": 20260723831,
+    "paired_rounds": 31,
+    "warmups": 4
+  }
+}
