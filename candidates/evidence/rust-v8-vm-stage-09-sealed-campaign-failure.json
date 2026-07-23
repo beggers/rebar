@@ -1,0 +1,140 @@
+{
+  "schema": "rebar-vm-stage-09-sealed-campaign-failure-v1",
+  "status": "FAIL",
+  "candidate_family": "C",
+  "candidate_module": "candidates.vm_candidate",
+  "python": "3.14.6",
+  "sealed_campaign_attempts": 1,
+  "sealed_campaign_reruns": 0,
+  "runner": "tools/rust_v8_multi_candidate_campaign.py",
+  "runner_exit_code": 1,
+  "failed_step": "upstream-public-surface",
+  "failed_step_exit_code": 1,
+  "failed_step_stdout": "{\"correctness_checks\": 190, \"failed\": 6, \"module\": \"candidates.vm_candidate\", \"schema\": \"rebar-zig-public-surface-v1\"}",
+  "failed_step_stderr": "",
+  "failed_step_result": {
+    "correctness_checks": 190,
+    "failed": 6,
+    "module": "candidates.vm_candidate",
+    "schema": "rebar-zig-public-surface-v1"
+  },
+  "failing_test_ids": "NOT REPORTED BY THE FROZEN RUNNER",
+  "runner_traceback": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1439, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1427, in main\n    result = run_campaign(\n        args.module,\n    ...<3 lines>...\n        args.memory_mib,\n    )\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1054, in run_campaign\n    report[\"steps\"].append(child_step(step, module, memory_mib))\n                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 679, in child_step\n    raise AssertionError(\n    ...<2 lines>...\n    )\nAssertionError: isolated suite failed: upstream-public-surface; exit=1; stderr=; stdout={\"correctness_checks\": 190, \"failed\": 6, \"module\": \"candidates.vm_candidate\", \"schema\": \"rebar-zig-public-surface-v1\"}\n",
+  "successful_final_campaign": {
+    "path": "candidates/evidence/rust-v8-vm-stage-09-sealed-campaign.json",
+    "exists": false
+  },
+  "production_artifacts": [
+    {
+      "path": "candidates/_vm_native.c",
+      "role": "native-source",
+      "sha256": "b86007db41626b9d3167530695b6462c368c170df180ed49defbff926b3e85cb"
+    },
+    {
+      "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+      "role": "native-bridge",
+      "sha256": "d3ddc13638b4fdce77a372c33b6c044f55c96504c38445f9526575f8084c2ac4"
+    },
+    {
+      "path": "candidates/vm_candidate.py",
+      "role": "public-python",
+      "sha256": "d3174b462924c9c17aea713797e74b42f29a0f7584191b8dffc67610000bde94"
+    }
+  ],
+  "independent_stage_09_proofs": [
+    {
+      "name": "official-ignore-case-range",
+      "path": "candidates/evidence/rust-v8-vm-stage-09-official-ignore-case-range.json",
+      "sha256": "6d131f94f46ea3f5e5af95376c47ea88d4344d9aafbc08cccabab5b437a44c17",
+      "checks": 1,
+      "passed": 1,
+      "failed": 0,
+      "crashes": 0,
+      "timeouts": 0
+    },
+    {
+      "name": "official-cpython-test-re",
+      "path": "candidates/evidence/rust-v8-vm-stage-09-official-cpython-tests.json",
+      "sha256": "88995be84b22182c372d6369098d602f32a5a87189a26f7342bea53454504207",
+      "checks": 146,
+      "passed": 144,
+      "skipped": 2,
+      "failed": 0,
+      "crashes": 0,
+      "timeouts": 0
+    },
+    {
+      "name": "frozen-correctness-v2",
+      "path": "candidates/evidence/rust-v8-vm-stage-09-frozen-correctness-v2.json",
+      "sha256": "bf4dab41a58e46a6a6559a598fbaac10af19ac3b0e84a14539cccb3be91e21f6",
+      "checks": 8244,
+      "passed": 8244,
+      "failed": 0,
+      "mapped_obligations": 45,
+      "obligations": 45
+    },
+    {
+      "name": "standard-replacement",
+      "path": "candidates/evidence/rust-v8-replacement-vm-stage-09.json.gz",
+      "sha256": "cab066c1f41ca2080d41b2d95339dd34049db2325ccdbe71238ac7a81ed0a6b0",
+      "checks": 8862,
+      "failed": 0,
+      "self_oracle_failures": 0
+    },
+    {
+      "name": "deep-replacement",
+      "path": "candidates/evidence/rust-v8-replacement-vm-deep-stage-09.json.gz",
+      "sha256": "3a53da016f59ee4afa51702c662d6221885c3bb6ee2416abb3f13b27558f36dd",
+      "checks": 11266,
+      "failed": 0,
+      "self_oracle_failures": 0
+    },
+    {
+      "name": "independent-edge",
+      "path": "candidates/evidence/rust-v8-edge-oracle-vm-deep-stage-09.json.gz",
+      "sha256": "a9d6fceff4dbae4beadd1e5986dc7bb2e42d90196a7c586fc0f163f885d4791b",
+      "checks": 223198,
+      "failed": 0
+    },
+    {
+      "name": "deep-public-contract",
+      "path": "candidates/audits/RUST-V8-DEEP-CONTRACT-C-STAGE-09.json.gz",
+      "sha256": "95bdcc528e34cb082ef1a7954af07ec10ed8466ed3f96e4ef698062d7b09672a",
+      "checks": 393,
+      "failed": 0,
+      "stdlib_vs_stdlib_mismatches": 0
+    },
+    {
+      "name": "public-observability",
+      "path": "candidates/evidence/rust-v8-observability-vm-qualified-stage-09.json.gz",
+      "sha256": "7fc27295009bbbc77ba9a4ebe7036da2bbfc7edd95b2062b6fd4038181c047e8",
+      "checks": 479,
+      "failed": 0,
+      "self_oracle_failures": 0
+    },
+    {
+      "name": "independent-parser-grammar",
+      "path": "candidates/evidence/rust-v7-grammar-vm-v8-deep-stage-09.json.gz",
+      "sha256": "6040971a04f534d6a126cab8e7897da16f028f4a1186befba649df89256f40b1",
+      "checks": 20480,
+      "failed": 0,
+      "crashes": 0,
+      "timeouts": 0,
+      "external_regex_packages": 0,
+      "holdout_cases_read": 0,
+      "performance_fixtures_read": 0
+    }
+  ],
+  "preserved_prior_sealed_failures": [
+    {
+      "path": "candidates/evidence/rust-v8-vm-stage-07-sealed-campaign-failure.json",
+      "sha256": "b50467b398cfaf3feff688114c2981ca889146ebdbc07847dc7fdbddeb6420ec"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-vm-stage-08-sealed-campaign-failure.json",
+      "sha256": "d2f9eb9440d9a0e6342e4b069639d91d5a6cd1390dfaa76355ebf7e3b7af2981"
+    }
+  ],
+  "holdout": "NOT ACCESSED",
+  "performance": "NOT MEASURED"
+}

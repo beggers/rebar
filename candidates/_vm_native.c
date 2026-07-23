@@ -163,6 +163,51 @@ static Py_UCS4 folded(Py_UCS4 c, int ascii_only) {
     return Py_UNICODE_TOLOWER(c);
 }
 
+static int unicode_case_closure_in_range(Py_UCS4 left, Py_UCS4 right,
+                                          Py_UCS4 canonical) {
+    static const Py_UCS4 i_closure[]={'I','i',0x130,0x131};
+    static const Py_UCS4 s_closure[]={'S','s',0x17f};
+    static const Py_UCS4 k_closure[]={'K','k',0x212a};
+    static const Py_UCS4 cyrillic_closure[]={0x412,0x432,0x1c80};
+    static const Py_UCS4 ligature_closure[]={0xfb05,0xfb06};
+    static const Py_UCS4 sharp_s_closure[]={0xdf,0x1e9e};
+    const Py_UCS4 *closure=NULL;
+    Py_ssize_t length=0;
+
+    switch (canonical) {
+        case 'i':
+            closure=i_closure;
+            length=4;
+            break;
+        case 's':
+            closure=s_closure;
+            length=3;
+            break;
+        case 'k':
+            closure=k_closure;
+            length=3;
+            break;
+        case 0x432:
+            closure=cyrillic_closure;
+            length=3;
+            break;
+        case 0xfb05:
+            closure=ligature_closure;
+            length=2;
+            break;
+        case 0xdf:
+            closure=sharp_s_closure;
+            length=2;
+            break;
+        default:
+            return 0;
+    }
+    for (Py_ssize_t i=0; i<length; i++) {
+        if (closure[i]>=left && closure[i]<=right) return 1;
+    }
+    return 0;
+}
+
 static int range_case_match(Py_UCS4 left, Py_UCS4 right, Py_UCS4 value, int ascii_only) {
     if (value>=left && value<=right) return 1;
     if (ascii_only) {
@@ -171,7 +216,8 @@ static int range_case_match(Py_UCS4 left, Py_UCS4 right, Py_UCS4 value, int asci
         return (lower>=left && lower<=right) || (upper>=left && upper<=right);
     }
     Py_UCS4 canonical=folded(value,0);
-    if (canonical>=left && canonical<=right) return 1;
+    if ((canonical>=left && canonical<=right) ||
+        unicode_case_closure_in_range(left,right,canonical)) return 1;
     Py_UCS4 lower=Py_UNICODE_TOLOWER(value),upper=Py_UNICODE_TOUPPER(value);
     if (lower>=left && lower<=right) return 1;
     if (upper>=left && upper<=right && unicode_casefold_equal(value,upper)) return 1;
