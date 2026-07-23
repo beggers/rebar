@@ -1,0 +1,333 @@
+{
+  "case_equivalence_checks": 1455,
+  "case_equivalence_groups": 26,
+  "correctness_checks": 4494555,
+  "cpython_extra_case_checks": 280,
+  "cpython_extra_case_keys": 50,
+  "cpython_extra_case_links": 56,
+  "failed": 6,
+  "failures": [
+    {
+      "actual": {
+        "value": null
+      },
+      "endpos": 0,
+      "expected": {
+        "value": {
+          "endpos": 0,
+          "groupdict": {},
+          "groups": {
+            "tuple": []
+          },
+          "lastgroup": null,
+          "lastindex": null,
+          "pos": 2,
+          "regs": {
+            "tuple": [
+              {
+                "tuple": [
+                  2,
+                  2
+                ]
+              }
+            ]
+          },
+          "span": {
+            "tuple": [
+              2,
+              2
+            ]
+          }
+        }
+      },
+      "flags": 0,
+      "kind": "unicode-api",
+      "label": "seeded-110",
+      "operation": "match",
+      "pattern": "\\b|\\B",
+      "pos": 2,
+      "subject": "_\u03a9"
+    },
+    {
+      "actual": {
+        "value": [
+          null
+        ]
+      },
+      "endpos": 0,
+      "expected": {
+        "value": [
+          {
+            "endpos": 0,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 2,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    2,
+                    2
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                2,
+                2
+              ]
+            }
+          },
+          null
+        ]
+      },
+      "flags": 0,
+      "kind": "unicode-api",
+      "label": "seeded-110",
+      "operation": "scanner-match",
+      "pattern": "\\b|\\B",
+      "pos": 2,
+      "subject": "_\u03a9"
+    },
+    {
+      "actual": {
+        "value": null
+      },
+      "endpos": 1,
+      "expected": {
+        "value": {
+          "endpos": 1,
+          "groupdict": {},
+          "groups": {
+            "tuple": []
+          },
+          "lastgroup": null,
+          "lastindex": null,
+          "pos": 3,
+          "regs": {
+            "tuple": [
+              {
+                "tuple": [
+                  3,
+                  3
+                ]
+              }
+            ]
+          },
+          "span": {
+            "tuple": [
+              3,
+              3
+            ]
+          }
+        }
+      },
+      "flags": 0,
+      "kind": "unicode-api",
+      "label": "seeded-578",
+      "operation": "match",
+      "pattern": "\\b|\\B",
+      "pos": 3,
+      "subject": "\u0412\u212a\t"
+    },
+    {
+      "actual": {
+        "value": [
+          null
+        ]
+      },
+      "endpos": 1,
+      "expected": {
+        "value": [
+          {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 3,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    3,
+                    3
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                3,
+                3
+              ]
+            }
+          },
+          null
+        ]
+      },
+      "flags": 0,
+      "kind": "unicode-api",
+      "label": "seeded-578",
+      "operation": "scanner-match",
+      "pattern": "\\b|\\B",
+      "pos": 3,
+      "subject": "\u0412\u212a\t"
+    },
+    {
+      "actual": {
+        "value": null
+      },
+      "endpos": 1,
+      "expected": {
+        "value": {
+          "endpos": 1,
+          "groupdict": {},
+          "groups": {
+            "tuple": [
+              ""
+            ]
+          },
+          "lastgroup": null,
+          "lastindex": 1,
+          "pos": 3,
+          "regs": {
+            "tuple": [
+              {
+                "tuple": [
+                  3,
+                  3
+                ]
+              },
+              {
+                "tuple": [
+                  3,
+                  3
+                ]
+              }
+            ]
+          },
+          "span": {
+            "tuple": [
+              3,
+              3
+            ]
+          }
+        }
+      },
+      "flags": 0,
+      "kind": "unicode-api",
+      "label": "seeded-1016",
+      "operation": "match",
+      "pattern": "(\\b|\\B)",
+      "pos": 3,
+      "subject": "\u0432\uff19\u212a"
+    },
+    {
+      "actual": {
+        "value": [
+          null
+        ]
+      },
+      "endpos": 1,
+      "expected": {
+        "value": [
+          {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": [
+                ""
+              ]
+            },
+            "lastgroup": null,
+            "lastindex": 1,
+            "pos": 3,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    3,
+                    3
+                  ]
+                },
+                {
+                  "tuple": [
+                    3,
+                    3
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                3,
+                3
+              ]
+            }
+          },
+          null
+        ]
+      },
+      "flags": 0,
+      "kind": "unicode-api",
+      "label": "seeded-1016",
+      "operation": "scanner-match",
+      "pattern": "(\\b|\\B)",
+      "pos": 3,
+      "subject": "\u0432\uff19\u212a"
+    }
+  ],
+  "manual_cases": 54,
+  "manual_checks": 1836,
+  "membership_partitions": [
+    {
+      "actual_sha256": "c6bb3b50278d370bd288a040d07976730f92fe4475c947a7ac8e4158cdda6ec5",
+      "codepoints_checked": 1114112,
+      "expected_sha256": "c6bb3b50278d370bd288a040d07976730f92fe4475c947a7ac8e4158cdda6ec5",
+      "failed": 0,
+      "flags": 0,
+      "name": "unicode-categories"
+    },
+    {
+      "actual_sha256": "9888738c9f6e04a0b5e86300a648cf042531945a2761e7a666c2a407b5d6a339",
+      "codepoints_checked": 1114112,
+      "expected_sha256": "9888738c9f6e04a0b5e86300a648cf042531945a2761e7a666c2a407b5d6a339",
+      "failed": 0,
+      "flags": 256,
+      "name": "ascii-categories"
+    },
+    {
+      "actual_sha256": "b9394ae400bc6c32867be06a02363c740cc670bbcfd89668949a422ad93d8f1a",
+      "codepoints_checked": 1114112,
+      "expected_sha256": "b9394ae400bc6c32867be06a02363c740cc670bbcfd89668949a422ad93d8f1a",
+      "failed": 0,
+      "flags": 2,
+      "name": "unicode-ignorecase-ranges"
+    },
+    {
+      "actual_sha256": "5084555e7d9ccfbbc9db1ea1e85b1d28820120a085739322159fe3bf79a7a554",
+      "codepoints_checked": 1114112,
+      "expected_sha256": "5084555e7d9ccfbbc9db1ea1e85b1d28820120a085739322159fe3bf79a7a554",
+      "failed": 0,
+      "flags": 258,
+      "name": "ascii-ignorecase-ranges"
+    }
+  ],
+  "membership_stride": 1,
+  "module": "candidates.vm_candidate",
+  "oracle": "CPython stdlib re",
+  "python_unicode_version": "16.0.0",
+  "schema": "rebar-rust-unicode-probe-v1",
+  "seed": 2026072302,
+  "seeded_cases": 1024,
+  "seeded_checks": 34816,
+  "unicode_codepoints": 1114112
+}

@@ -2,6 +2,12 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## C window guard fixes two cases but rejects six real boundary matches
+
+The [next proposed native C change](../candidates/evidence/C-STAGE-18-REJECTED-INVERTED-BOUNDARY.patch) rejects `pos > endpos` in its common matching path. A single original [4,494,555-case full-Unicode run](../candidates/evidence/rust-v8-vm-stage-18-unicode-fullplane.json) confirms that all four **1,114,112-code-point** partitions still match pinned Python's exact hashes, and all **50** case-fix keys, **56** links, **280** extra-case checks, and **1,455** equivalence checks remain correct. Both previous `seeded-332` failures disappear.
+
+The same complete worker reveals **six new real failures**: for three frozen seeded patterns, Python legitimately accepts an empty `\b|\B` or `(\b|\B)` word-boundary match even when `pos > endpos`. The proposed general guard incorrectly returns no match for both `match` and `scanner.match`. The [full rejection report](../candidates/evidence/C-STAGE-18-REJECTED-INVERTED-BOUNDARY.md) retains every original expected and actual result, the exact worker denominator, and the complete source patch. C remains **NOT QUALIFIED**; exact-source standalone safety, a refreshed independence audit, a full campaign, and final performance are **NOT MEASURED**.
+
 ## C fixes all Unicode case groups but fails two inverted-window cases
 
 The [next proposed native C implementation](../candidates/evidence/C-STAGE-17-REJECTED-WINDOW.patch) implements every pinned Python Unicode case-equivalence component directly in its own matcher. It retains all **24** extra equivalence groups, all **50** case-fix keys and **56** links, the existing ASCII and locale behavior, and the same character-class logic for real matching and search filters. The original standalone [full-plane correctness worker](../candidates/evidence/rust-v8-vm-stage-17-unicode-fullplane.json) completes the actual **4,494,555** checks in one run. All four **1,114,112-code-point** category and case-insensitive-range partitions match the pinned Python observation hashes exactly; all **280** extra-case controls and **1,455** broader equivalence checks pass.
