@@ -2,7 +2,6 @@
 
 import ctypes
 import enum
-import functools
 import os
 import types
 import unicodedata
@@ -910,15 +909,10 @@ Match = _zig_bridge.Match
 _PATTERN_METHODS = ("search", "match", "fullmatch", "findall", "finditer", "split", "sub", "subn", "scanner")
 
 
-class _PatternType(type):
-    def __getattribute__(cls, name):
-        if name in _PATTERN_METHODS:
-            return _PATTERN_UNBOUND[name]
-        return super().__getattribute__(name)
-
-
-class Pattern(metaclass=_PatternType):
-    __slots__ = ("pattern", "flags", "groups", "_groupindex", "_handle", "_literal", "_templates", "search", "match", "fullmatch", "findall", "finditer", "split", "sub", "subn", "scanner", "__weakref__")
+class Pattern:
+    __module__ = "re"
+    __slots__ = ("pattern", "flags", "groups", "_groupindex", "_handle",
+                 "_literal", "_templates", "__weakref__")
 
     @property
     def groupindex(self):
@@ -930,23 +924,6 @@ class Pattern(metaclass=_PatternType):
         metacharacters = b".^$*+?{}[]\\|()" if isinstance(value, bytes) else ".^$*+?{}[]\\|()"
         literal = value if value and not flags & int(IGNORECASE | VERBOSE) and not any(char in metacharacters for char in value) else None
         _zig_bridge.initialize_pattern(self, value, flags, groups, types.MappingProxyType(names), names, handle, literal, {})
-
-    def __getattr__(self, name):
-        if name in ("search", "match", "fullmatch"):
-            value = functools.partial(getattr(_zig_bridge, "bound_" + name), self, self._handle, self._groupindex, self.pattern, self._literal)
-        elif name in ("finditer", "scanner"):
-            value = functools.partial(getattr(_zig_bridge, "bound_" + name), self, self._handle, self._groupindex, self.pattern, self.groups)
-        elif name == "findall" and self._literal is not None:
-            value = functools.partial(_zig_bridge.bound_literal_findall, self._literal)
-        elif name in ("findall", "split"):
-            value = functools.partial(getattr(_zig_bridge, "bound_" + name), self._handle, self.pattern, self.groups)
-        elif name in ("sub", "subn"):
-            value = functools.partial(getattr(_zig_bridge, "bound_" + name), self, self._handle, self._groupindex, self.pattern, self._literal, self._templates, self.groups)
-        else:
-            raise AttributeError(name)
-        value.__self__ = self
-        object.__setattr__(self, name, value)
-        return value
 
     def __setattr__(self, name, value):
         if name in ("pattern", "flags", "groups"):
@@ -1059,24 +1036,7 @@ class Pattern(metaclass=_PatternType):
         return _expand_tokens(tokens, match, isinstance(raw, bytes))
 
 
-def _unbound_pattern_method(name):
-    def call(self, *args, **kwargs):
-        if not isinstance(self, Pattern):
-            raise TypeError(f"descriptor '{name}' for 're.Pattern' objects doesn't apply to a '{type(self).__name__}' object")
-        return getattr(self, name)(*args, **kwargs)
-
-    call.__name__ = name
-    call.__qualname__ = f"Pattern.{name}"
-    if name in ("search", "match", "fullmatch", "findall", "finditer", "scanner"):
-        call.__text_signature__ = "(self, /, string, pos=0, endpos=9223372036854775807)"
-    elif name == "split":
-        call.__text_signature__ = "(self, /, string, maxsplit=0)"
-    else:
-        call.__text_signature__ = "(self, /, repl, string, count=0)"
-    return call
-
-
-_PATTERN_UNBOUND = {name: _unbound_pattern_method(name) for name in _PATTERN_METHODS}
+_zig_bridge.install_pattern_methods(Pattern)
 
 
 class Scanner:
@@ -1163,11 +1123,14 @@ def compile(pattern, flags=0):
     markers = (b"[[", b"&&", b"||", b"~~", b"--") if isinstance(pattern, bytes) else ("[[", "&&", "||", "~~", "--")
     if any(marker in pattern for marker in markers):
         _warn_ambiguous(pattern)
+    native_error = None
     try:
         handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)
-    except PatternError:
+    except PatternError as error:
+        native_error = error
+    if native_error is not None:
         _preflight_pattern(pattern, flags | implicit_unicode)
-        raise
+        raise native_error
     if isinstance(pattern, str) and ((flags & int(ASCII) and effective_flags & int(UNICODE)) or (flags & int(UNICODE) and effective_flags & int(ASCII))):
         _zig_bridge.free(handle)
         raise ValueError("ASCII and UNICODE flags are incompatible")
