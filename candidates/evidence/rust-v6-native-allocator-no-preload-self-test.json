@@ -1,0 +1,26 @@
+{
+  "artifacts": {
+    "bridge": {
+      "inode": 419055,
+      "mtime_ns": 1784783360451741508,
+      "path": "/home/dev-user/src/rebar/candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "d9ce337f76af2cb509af85aad32d5e234bc9785dafa0c2b489a1420ef8318afa",
+      "size": 70272
+    },
+    "engine": {
+      "inode": 428099,
+      "mtime_ns": 1784783359455718339,
+      "path": "/home/dev-user/src/rebar/candidates/_rust_engine.so",
+      "sha256": "48ca1105f63f654e650cd5ffb87399da4c434c206128ad6ea2e9b530a63f2ce1",
+      "size": 456688
+    }
+  },
+  "expected_sha256": "c8e32e879cc7a134748f8f3f29fed49678895745fdecebe63ceec46b6a3b5335",
+  "failed": 0,
+  "frozen_cases": 12432,
+  "frozen_trials": 13,
+  "native_preload_active": false,
+  "sample_cases": 137,
+  "sample_families": 28,
+  "schema": "rebar-rust-native-allocator-self-test-v6"
+}

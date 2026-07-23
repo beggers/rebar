@@ -1,0 +1,13 @@
+{
+  "cases": 137,
+  "confidence_self_test": true,
+  "expected_sha256": "c8e32e879cc7a134748f8f3f29fed49678895745fdecebe63ceec46b6a3b5335",
+  "failed": 0,
+  "families": 28,
+  "profile": {
+    "path": "/tmp/rebar-rust-readonly-allocator-v6.json",
+    "sha256": "2a7d3800d340afa1ce5e401fed1a89c31db12b3cb2db2d7163f8db9a8f9d1493"
+  },
+  "rejection_checks": 6,
+  "schema": "rebar-rust-native-allocation-comparator-self-test-v6"
+}

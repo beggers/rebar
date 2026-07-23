@@ -41,12 +41,41 @@ ENGINE_FIELDS = (
     "native_reallocations",
     "native_allocated_bytes",
     "native_reallocated_bytes",
-    "reserved",
+    "vm_run_calls",
     "repeat_layout_checks",
     "start_table_preparations",
     "character_class_preparations",
     "lookaround_evaluations",
     "backreference_evaluations",
+    "vm_instructions",
+    "vm_split_instructions",
+    "vm_repeat_instructions",
+    "vm_lookaround_instructions",
+    "vm_backtracks",
+    "vm_choice_pushes",
+    "vm_inline_stack_overflows",
+    "vm_capture_undo_records",
+    "vm_guard_undo_records",
+    "vm_look_capture_snapshots",
+    "vm_accept_instructions",
+    "vm_character_class_instructions",
+    "vm_literal_instructions",
+    "vm_category_instructions",
+    "vm_backreference_instructions",
+    "vm_search_starts",
+    "vm_filtered_search_starts",
+    "legacy_match_calls",
+    "vm_jump_instructions",
+    "vm_boundary_instructions",
+    "vm_anchor_instructions",
+    "vm_atomic_entries",
+    "vm_atomic_exits",
+    "vm_conditional_instructions",
+    "vm_repeated_character_checks",
+    "vm_guard_allocations",
+    "vm_compile_calls",
+    "vm_code_emissions",
+    "vm_compiled_simple_repeats",
 )
 
 BRIDGE_FIELDS = (
@@ -62,6 +91,24 @@ BRIDGE_FIELDS = (
     "allocated_collection_capacity",
     "bridge_allocated_bytes",
     "bridge_storage_allocations",
+    "bridge_compile_calls",
+    "borrowed_subject_opens",
+    "streamed_collection_calls",
+    "streamed_native_match_calls",
+    "direct_pattern_match_calls",
+    "direct_bound_search_calls",
+    "direct_bound_match_calls",
+    "direct_bound_fullmatch_calls",
+    "direct_bound_findall_calls",
+    "direct_bound_literal_findall_calls",
+    "native_match_objects",
+    "subject_buffer_opens",
+    "bridge_index_conversions",
+    "result_list_growth_calls",
+    "direct_template_calls",
+    "nonascii_streamed_collections",
+    "direct_literal_hits",
+    "native_capture_overflow_allocations",
 )
 
 
@@ -91,7 +138,6 @@ def capture(engine, bridge):
     row = {
         name: int(engine.rebar_rust_profile_get(index))
         for index, name in enumerate(ENGINE_FIELDS)
-        if name != "reserved"
     }
     row.update(
         {
@@ -147,7 +193,7 @@ def summarize(rows):
     fields = tuple(
         field
         for field in (*ENGINE_FIELDS, *BRIDGE_FIELDS)
-        if field not in {"reserved", "reserved_bridge"}
+        if field != "reserved_bridge"
     )
     families = []
     for (cohort, category, api, ignore_case), members in sorted(groups.items()):
@@ -213,6 +259,7 @@ def main():
     families = summarize(rows)
     result = {
         "schema": "rebar-rust-profile-v6",
+        "counter_version": 2,
         "expected_sha256": manifest["expected_sha256"],
         "engine_sha256": sha256(Path(rust.__file__).with_name("_rust_engine.so")),
         "bridge_sha256": sha256(_rust_bridge.__file__),
@@ -222,7 +269,7 @@ def main():
         "categories": sorted({row["category"] for row in rows}),
         "cases": len(rows),
         "correctness_checks": len(rows) * 2,
-        "engine_fields": [name for name in ENGINE_FIELDS if name != "reserved"],
+        "engine_fields": list(ENGINE_FIELDS),
         "bridge_fields": [name for name in BRIDGE_FIELDS if name != "reserved_bridge"],
         "families": families,
         "rows": rows,
@@ -246,6 +293,10 @@ def main():
             f"clones={family['capture_state_clones_median']:<9g} "
             f"alloc={family['native_allocations_median']:<9g} "
             f"bytes={family['native_allocated_bytes_median']:<11g} "
+            f"vm={family['vm_instructions_median']:<9g} "
+            f"backtracks={family['vm_backtracks_median']:<9g} "
+            f"overflow={family['vm_inline_stack_overflows_median']:<7g} "
+            f"legacy={family['legacy_match_calls_median']:<5g} "
             f"unicode={family['unicode_codepoints_prepared_median']:<9g} "
             f"batch={family['allocated_collection_capacity_median']:<9g}",
             flush=True,

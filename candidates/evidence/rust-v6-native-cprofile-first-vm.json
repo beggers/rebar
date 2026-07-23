@@ -1,0 +1,127 @@
+{
+  "artifact_drift": false,
+  "artifacts_after": {
+    "bridge": {
+      "inode": 419055,
+      "mtime_ns": 1784783360451741508,
+      "path": "/home/dev-user/src/rebar/candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "d9ce337f76af2cb509af85aad32d5e234bc9785dafa0c2b489a1420ef8318afa",
+      "size": 70272
+    },
+    "engine": {
+      "inode": 428099,
+      "mtime_ns": 1784783359455718339,
+      "path": "/home/dev-user/src/rebar/candidates/_rust_engine.so",
+      "sha256": "48ca1105f63f654e650cd5ffb87399da4c434c206128ad6ea2e9b530a63f2ce1",
+      "size": 456688
+    }
+  },
+  "artifacts_before": {
+    "bridge": {
+      "inode": 419055,
+      "mtime_ns": 1784783360451741508,
+      "path": "/home/dev-user/src/rebar/candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "d9ce337f76af2cb509af85aad32d5e234bc9785dafa0c2b489a1420ef8318afa",
+      "size": 70272
+    },
+    "engine": {
+      "inode": 428099,
+      "mtime_ns": 1784783359455718339,
+      "path": "/home/dev-user/src/rebar/candidates/_rust_engine.so",
+      "sha256": "48ca1105f63f654e650cd5ffb87399da4c434c206128ad6ea2e9b530a63f2ce1",
+      "size": 456688
+    }
+  },
+  "expected_sha256": "c8e32e879cc7a134748f8f3f29fed49678895745fdecebe63ceec46b6a3b5335",
+  "rows": [
+    {
+      "api": "findall",
+      "case": "hold.deeper.quote-captures.07",
+      "category": "deeper-quote-captures",
+      "loops": 2,
+      "primitive_calls": 3,
+      "profile": "         3 function calls in 0.004 seconds\n\n   Ordered by: cumulative time\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        2    0.004    0.002    0.004    0.002 perf_v5.py:154(<lambda>)\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n\n\n",
+      "subject_length": 3144,
+      "total_calls": 3,
+      "total_seconds": 0.00404775
+    },
+    {
+      "api": "findall",
+      "case": "hold.deeper.config-lines.07",
+      "category": "deeper-config-lines",
+      "loops": 2,
+      "primitive_calls": 3,
+      "profile": "         3 function calls in 0.000 seconds\n\n   Ordered by: cumulative time\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        2    0.000    0.000    0.000    0.000 perf_v5.py:154(<lambda>)\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n\n\n",
+      "subject_length": 3985,
+      "total_calls": 3,
+      "total_seconds": 0.00019279100000000002
+    },
+    {
+      "api": "findall",
+      "case": "hold.expanded.html-tags.07",
+      "category": "expanded-html-tags",
+      "loops": 8,
+      "primitive_calls": 9,
+      "profile": "         9 function calls in 0.000 seconds\n\n   Ordered by: cumulative time\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        8    0.000    0.000    0.000    0.000 perf_v5.py:154(<lambda>)\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n\n\n",
+      "subject_length": 77,
+      "total_calls": 9,
+      "total_seconds": 2.5358000000000004e-05
+    },
+    {
+      "api": "findall",
+      "case": "hold.deeper.unicode-casefold.07",
+      "category": "deeper-unicode-casefold",
+      "loops": 2,
+      "primitive_calls": 3,
+      "profile": "         3 function calls in 0.001 seconds\n\n   Ordered by: cumulative time\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        2    0.001    0.000    0.001    0.000 perf_v5.py:154(<lambda>)\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n\n\n",
+      "subject_length": 5631,
+      "total_calls": 3,
+      "total_seconds": 0.000550811
+    },
+    {
+      "api": "finditer",
+      "case": "hold.deeper.combining-wide.07",
+      "category": "deeper-combining-wide",
+      "loops": 2,
+      "primitive_calls": 6445,
+      "profile": "         6445 function calls in 0.077 seconds\n\n   Ordered by: cumulative time\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        2    0.000    0.000    0.077    0.039 perf_v5.py:153(<lambda>)\n     1282    0.001    0.000    0.077    0.000 rust_candidate.py:692(_finditer)\n     1282    0.001    0.000    0.075    0.000 rust_candidate.py:643(_search)\n     1282    0.000    0.000    0.074    0.000 rust_candidate.py:158(run)\n     1282    0.074    0.000    0.074    0.000 {built-in method candidates._rust_bridge.run}\n     1288    0.000    0.000    0.000    0.000 {built-in method builtins.max}\n        2    0.000    0.000    0.000    0.000 rust_candidate.py:686(finditer)\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n        2    0.000    0.000    0.000    0.000 rust_candidate.py:388(_normalize_window)\n        2    0.000    0.000    0.000    0.000 rust_candidate.py:615(_validate_string)\n        2    0.000    0.000    0.000    0.000 rust_candidate.py:382(_subject_length)\n       12    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}\n        2    0.000    0.000    0.000    0.000 {built-in method builtins.len}\n        4    0.000    0.000    0.000    0.000 {built-in method builtins.min}\n\n\n",
+      "subject_length": 3199,
+      "total_calls": 6445,
+      "total_seconds": 0.07705779400000001
+    },
+    {
+      "api": "search",
+      "case": "hold.deeper.search-long-hit.07",
+      "category": "deeper-search-long-hit",
+      "loops": 8,
+      "primitive_calls": 9,
+      "profile": "         9 function calls in 0.000 seconds\n\n   Ordered by: cumulative time\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n        8    0.000    0.000    0.000    0.000 perf_v5.py:154(<lambda>)\n\n\n",
+      "subject_length": 84,
+      "total_calls": 9,
+      "total_seconds": 1.6576000000000002e-05
+    },
+    {
+      "api": "search",
+      "case": "hold.deeper.search-long-miss.07",
+      "category": "deeper-search-long-miss",
+      "loops": 8,
+      "primitive_calls": 9,
+      "profile": "         9 function calls in 0.000 seconds\n\n   Ordered by: cumulative time\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n        8    0.000    0.000    0.000    0.000 perf_v5.py:154(<lambda>)\n\n\n",
+      "subject_length": 77,
+      "total_calls": 9,
+      "total_seconds": 1.4031000000000002e-05
+    },
+    {
+      "api": "compile",
+      "case": "hold.deeper.cold-compile.07",
+      "category": "deeper-cold-compile",
+      "loops": 6,
+      "primitive_calls": 302,
+      "profile": "         302 function calls in 0.000 seconds\n\n   Ordered by: cumulative time\n   List reduced from 26 to 14 due to restriction <14>\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        6    0.000    0.000    0.000    0.000 perf_v5.py:108(cold_compile)\n        6    0.000    0.000    0.000    0.000 rust_candidate.py:961(compile)\n        6    0.000    0.000    0.000    0.000 rust_candidate.py:558(__init__)\n        6    0.000    0.000    0.000    0.000 rust_candidate.py:132(compile)\n        6    0.000    0.000    0.000    0.000 {built-in method candidates._rust_bridge.compile}\n        6    0.000    0.000    0.000    0.000 rust_candidate.py:205(_warn_ambiguous)\n        6    0.000    0.000    0.000    0.000 enum.py:1584(__or__)\n        5    0.000    0.000    0.000    0.000 rust_candidate.py:580(__del__)\n       35    0.000    0.000    0.000    0.000 rust_candidate.py:571(__setattr__)\n      102    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n        6    0.000    0.000    0.000    0.000 enum.py:677(__call__)\n       18    0.000    0.000    0.000    0.000 enum.py:1577(_get_value)\n        6    0.000    0.000    0.000    0.000 rust_candidate.py:1009(purge)\n\n\n",
+      "subject_length": 0,
+      "total_calls": 302,
+      "total_seconds": 0.00038251600000000006
+    }
+  ],
+  "schema": "rebar-rust-readonly-python-cprofile-v6"
+}
