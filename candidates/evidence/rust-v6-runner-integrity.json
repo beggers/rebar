@@ -1,0 +1,188 @@
+{
+  "bootstrap_samples": 2000,
+  "bootstrap_self_test": {
+    "case_intervals": 20,
+    "draws": 4096,
+    "helper": "/tmp/rebar-perf-v6-bootstrap-3caa9929666ce40c.so",
+    "overall_intervals": 4,
+    "passed": true,
+    "source_sha256": "3caa9929666ce40cd47e84e59dd075ef7cfb829c7137de02fea4cc2712d05c1f"
+  },
+  "cases": 12432,
+  "elapsed_seconds": 58.304,
+  "expected_sha256": "c8e32e879cc7a134748f8f3f29fed49678895745fdecebe63ceec46b6a3b5335",
+  "frozen_warmups": 4,
+  "measurement": "Integrity validation using archived historical timings only; not a new engine benchmark.",
+  "merge": {
+    "all_non_rust_results_unchanged": true,
+    "engines": 4,
+    "initial_raw_sha256": "a6fefab9e97c21e1ea17d258860fd05dbbc9adc3bb2154b66935abe3d3d84907",
+    "merged_rankings": 12,
+    "merged_results": 49728,
+    "merged_rows": 1454544,
+    "preserved_non_rust_results": 37296,
+    "rust_raw_sha256": "97099e08f9dda95dc02f00cb1feb0ee4d5df0ae98466539630c079671cb2744c",
+    "zig_holdout_speedup": 1.7333786943443061,
+    "zig_raw_sha256": "e58c30e6350c6e98bd40e5176ee0c37290b7a978116aab1e1f52ca3cecfb7011"
+  },
+  "paired_raw_sha256": "97099e08f9dda95dc02f00cb1feb0ee4d5df0ae98466539630c079671cb2744c",
+  "paired_rows": 323232,
+  "paired_rust_order_validated": true,
+  "paired_schema": "rebar-rust-performance-row-v6",
+  "paired_trials": 13,
+  "parity": {
+    "cases": 12432,
+    "changed_case_confidence_intervals": 12432,
+    "changed_case_faster_classifications": 1,
+    "confidence_explanation": "The frozen paired-Rust analyzer seeds the identical validated bootstrap once but draws one candidate per task. The original five-engine analyzer drew four candidates per task. Speed, memory, denominators, and >20% losses are identical; seeded bootstrap intervals and faster classifications can therefore differ without altering the frozen resampling rule.",
+    "memory_mismatches": 0,
+    "rankings": [
+      {
+        "cases": 6216,
+        "cohort": "calibration",
+        "original_ci95_high": 0.13334488781445097,
+        "original_ci95_low": 0.1331923032602436,
+        "original_geomean_speedup": 0.13327047712652465,
+        "original_statistically_faster_cases": 226,
+        "paired_ci95_high": 0.13334476950203797,
+        "paired_ci95_low": 0.13319269128227829,
+        "paired_geomean_speedup": 0.1332704771265245,
+        "paired_statistically_faster_cases": 226,
+        "regressions_gt_20pct": 5892,
+        "weight": 6216
+      },
+      {
+        "cases": 6216,
+        "cohort": "holdout",
+        "original_ci95_high": 0.13449907992666935,
+        "original_ci95_low": 0.13434517066223214,
+        "original_geomean_speedup": 0.13442162253182238,
+        "original_statistically_faster_cases": 229,
+        "paired_ci95_high": 0.13450126459837783,
+        "paired_ci95_low": 0.1343443393711832,
+        "paired_geomean_speedup": 0.1344216225318228,
+        "paired_statistically_faster_cases": 228,
+        "regressions_gt_20pct": 5892,
+        "weight": 6216
+      },
+      {
+        "cases": 12432,
+        "cohort": "all",
+        "original_ci95_high": 0.13390126212011325,
+        "original_ci95_low": 0.13378995204646085,
+        "original_geomean_speedup": 0.1338448122675562,
+        "original_statistically_faster_cases": 455,
+        "paired_ci95_high": 0.1338972095651089,
+        "paired_ci95_low": 0.13379002912688234,
+        "paired_geomean_speedup": 0.1338448122675571,
+        "paired_statistically_faster_cases": 454,
+        "regressions_gt_20pct": 11784,
+        "weight": 12432
+      }
+    ],
+    "regression_mismatches": 0,
+    "speedup_mismatches": 0
+  },
+  "passed": true,
+  "python": "CPython 3.14.6",
+  "rejected_corruption_count": 15,
+  "rejected_corruptions": [
+    {
+      "corruption": "incomplete-valid-pair",
+      "message": "raw row count drift: 2 != 323232",
+      "rejected": true,
+      "type": "RuntimeError"
+    },
+    {
+      "corruption": "duplicate-case-trial-engine",
+      "message": "duplicate raw row: ('cal.search.literal.hit', 0, 'candidates.rust_candidate')",
+      "rejected": true,
+      "type": "RuntimeError"
+    },
+    {
+      "corruption": "wrong-row-schema",
+      "message": "raw correctness, timing, memory, order, or metadata drift at row 1: ('cal.search.literal.hit', 0, 'candidates.rust_candidate')",
+      "rejected": true,
+      "type": "RuntimeError"
+    },
+    {
+      "corruption": "wrong-frozen-task",
+      "message": "raw correctness, timing, memory, order, or metadata drift at row 1: ('cal.search.literal.hit', 0, 'candidates.rust_candidate')",
+      "rejected": true,
+      "type": "RuntimeError"
+    },
+    {
+      "corruption": "wrong-cohort",
+      "message": "raw correctness, timing, memory, order, or metadata drift at row 1: ('cal.search.literal.hit', 0, 'candidates.rust_candidate')",
+      "rejected": true,
+      "type": "RuntimeError"
+    },
+    {
+      "corruption": "wrong-category",
+      "message": "raw correctness, timing, memory, order, or metadata drift at row 1: ('cal.search.literal.hit', 0, 'candidates.rust_candidate')",
+      "rejected": true,
+      "type": "RuntimeError"
+    },
+    {
+      "corruption": "wrong-result-digest",
+      "message": "raw correctness, timing, memory, order, or metadata drift at row 1: ('cal.search.literal.hit', 0, 'candidates.rust_candidate')",
+      "rejected": true,
+      "type": "RuntimeError"
+    },
+    {
+      "corruption": "wrong-frozen-operations",
+      "message": "raw correctness, timing, memory, order, or metadata drift at row 1: ('cal.search.literal.hit', 0, 'candidates.rust_candidate')",
+      "rejected": true,
+      "type": "RuntimeError"
+    },
+    {
+      "corruption": "out-of-range-trial",
+      "message": "raw trial/module drift at row 1",
+      "rejected": true,
+      "type": "RuntimeError"
+    },
+    {
+      "corruption": "boolean-trial",
+      "message": "raw trial/module drift at row 1",
+      "rejected": true,
+      "type": "RuntimeError"
+    },
+    {
+      "corruption": "unexpected-engine",
+      "message": "raw trial/module drift at row 1",
+      "rejected": true,
+      "type": "RuntimeError"
+    },
+    {
+      "corruption": "tampered-paired-order",
+      "message": "raw correctness, timing, memory, order, or metadata drift at row 1: ('cal.search.literal.hit', 0, 'candidates.rust_candidate')",
+      "rejected": true,
+      "type": "RuntimeError"
+    },
+    {
+      "corruption": "zero-elapsed-time",
+      "message": "raw correctness, timing, memory, order, or metadata drift at row 1: ('cal.search.literal.hit', 0, 'candidates.rust_candidate')",
+      "rejected": true,
+      "type": "RuntimeError"
+    },
+    {
+      "corruption": "inconsistent-per-operation-time",
+      "message": "raw correctness, timing, memory, order, or metadata drift at row 1: ('cal.search.literal.hit', 0, 'candidates.rust_candidate')",
+      "rejected": true,
+      "type": "RuntimeError"
+    },
+    {
+      "corruption": "negative-traced-memory",
+      "message": "raw correctness, timing, memory, order, or metadata drift at row 1: ('cal.search.literal.hit', 0, 'candidates.rust_candidate')",
+      "rejected": true,
+      "type": "RuntimeError"
+    }
+  ],
+  "schema": "rebar-rust-v6-runner-integrity-v1",
+  "source_all_engine_order_validated": true,
+  "source_raw_sha256": "a6fefab9e97c21e1ea17d258860fd05dbbc9adc3bb2154b66935abe3d3d84907",
+  "source_rows": 808080,
+  "source_schema": "rebar-performance-row-v6",
+  "temporary_raw": "/tmp/rebar-rust-v6-historical-integrity-raw.jsonl",
+  "temporary_summary": "/tmp/rebar-rust-v6-historical-integrity-summary.json"
+}
