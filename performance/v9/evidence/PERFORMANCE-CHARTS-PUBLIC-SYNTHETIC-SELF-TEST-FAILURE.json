@@ -1,0 +1,23 @@
+{
+  "candidate_processes_started": 0,
+  "combined_process_output": "error: a synthetic chart corruption was silently accepted\n",
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 -B tools/performance_v9_charts.py --self-test",
+  "duplicate_control_id": "changed-public-opening-commitment",
+  "duplicate_control_sources": [
+    "final-summary poison controls",
+    "public-manifest poison controls"
+  ],
+  "exit_code": 1,
+  "final_charts_created": 0,
+  "holdout_accessed": false,
+  "one_run": true,
+  "opening_read": false,
+  "schema": "rebar-v9-performance-charts-synthetic-self-test-failure-v1",
+  "source_path": "tools/performance_v9_charts.py",
+  "source_sha256_before_fix": "15a094b96d3e1152efe65367fde4038b6267baca5a693d30fdd9396a16e10f26",
+  "status": "FAIL",
+  "stdout_json": null,
+  "stdout_note": "The process did not emit a synthetic result JSON; the command runner returned combined process output.",
+  "synthetic_only": true,
+  "timing_performed": false
+}
