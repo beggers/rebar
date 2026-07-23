@@ -1,0 +1,98 @@
+{
+  "case_equivalence_groups": 24,
+  "case_equivalence_keys": 50,
+  "category_counts": {
+    "alpha": 141028,
+    "decimal": 760,
+    "digit": 888,
+    "numeric": 2002,
+    "whitespace": 29,
+    "word": 142940,
+    "xid_continue": 144522,
+    "xid_start": 141247
+  },
+  "codepoints": 1114112,
+  "comparisons_per_codepoint": 12,
+  "failures": [],
+  "forbidden_regex_imports": [],
+  "frozen_fixture": {
+    "bootstrap_seed": 1985072202,
+    "expected_sha256": "c8e32e879cc7a134748f8f3f29fed49678895745fdecebe63ceec46b6a3b5335",
+    "manifest_sha256": "06c3b09a203d036e3129d90b6c412e716a3835e4c4e2827df73c189dec4956f1",
+    "order_seed": 1985072201,
+    "suite_sha256": "091d7be04f7251781e2b8568f6cb19acbe603cb1d945926a69ba32adaf9b6b0f"
+  },
+  "full_plane_comparisons": 13369344,
+  "mismatch_counts": {
+    "alpha": 0,
+    "decimal": 0,
+    "digit": 0,
+    "literal_fold": 0,
+    "multi_upper": 0,
+    "numeric": 0,
+    "simple_lower": 0,
+    "simple_upper": 0,
+    "whitespace": 0,
+    "word": 0,
+    "xid_continue": 0,
+    "xid_start": 0
+  },
+  "mismatch_examples": {},
+  "multi_upper_count": 102,
+  "out_of_range": [
+    {
+      "literal_fold": 1114112,
+      "mask": 0,
+      "multi_upper": false,
+      "simple_lower": 1114112,
+      "simple_upper": 1114112,
+      "value": 1114112,
+      "xid_continue": false,
+      "xid_start": false
+    },
+    {
+      "literal_fold": 2097152,
+      "mask": 0,
+      "multi_upper": false,
+      "simple_lower": 2097152,
+      "simple_upper": 2097152,
+      "value": 2097152,
+      "xid_continue": false,
+      "xid_start": false
+    },
+    {
+      "literal_fold": 4294967295,
+      "mask": 0,
+      "multi_upper": false,
+      "simple_lower": 4294967295,
+      "simple_upper": 4294967295,
+      "value": 4294967295,
+      "xid_continue": false,
+      "xid_start": false
+    }
+  ],
+  "out_of_range_failures": 0,
+  "production_property_data_sha256": "83f5a79a2914dfa69fae8628f501de6185525776905abfba80862017ba28b77b",
+  "python": "3.14.6",
+  "schema": "rebar-rust-production-unicode-full-plane-v1",
+  "source": "candidates/rust/src/unicode_tables.rs",
+  "source_data_hashes": {
+    "literal_fold": "9d2779e2c62d3b0b1347bb203400e7b8549bdce88cec65269433c77aae7b1bb6",
+    "property": "1319144f169e188aeef4f778a4506bfb1a941c9d4519f25714c640e45a5a60bc",
+    "simple_lower": "dc773c96a0faf9357e7244c4758295e2c7d4651104703758cf830a1fd6734299",
+    "simple_upper": "86f1f043f57ba429c209379543cf370614bd070f76402bc18d1f4fe2584cdc41"
+  },
+  "source_digest_failures": [],
+  "source_hash_match": true,
+  "source_header_hashes": {
+    "literal_fold": "9d2779e2c62d3b0b1347bb203400e7b8549bdce88cec65269433c77aae7b1bb6",
+    "property": "1319144f169e188aeef4f778a4506bfb1a941c9d4519f25714c640e45a5a60bc",
+    "simple_lower": "dc773c96a0faf9357e7244c4758295e2c7d4651104703758cf830a1fd6734299",
+    "simple_upper": "86f1f043f57ba429c209379543cf370614bd070f76402bc18d1f4fe2584cdc41"
+  },
+  "source_sha256": "f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af",
+  "source_sha256_expected": "f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af",
+  "total_mismatches": 0,
+  "unicode": "16.0.0",
+  "unpaired_surrogates": 2048
+}
