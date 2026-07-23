@@ -2,13 +2,13 @@
 
 `rebar` is an experiment to build a faster, fully compatible replacement for Python's `re`, from scratch. It compares independently written Zig, C, Rust, and Python engines with [stable Python 3.14.6](https://www.python.org/downloads/release/python-3146/). No engine may use Python's existing regex implementation, an external regex package, or another candidate's engine. The intended public import is `import rebar as re`.
 
-**Current status:** all four independently written engines pass every original matching test. Zig also passes every tougher real-world behavior test. Rust, C, and independent Python still have recorded differences, so the final head-to-head speed test remains sealed.
+**Current status:** all four independently written engines pass every original matching test. Zig and C also pass every tougher real-world behavior test. Rust is undergoing final verification; the independent Python implementation still has recorded differences. The larger, final speed test remains sealed.
 
 | From-scratch engine | Original compatibility tests | Tougher object and lifetime tests |
 | --- | ---: | ---: |
 | [Rust](candidates/evidence/rust-v8-edge-oracle-rust-scanner-cmethod.json.gz) | 223,198/223,198 | [43 differences](candidates/audits/RUST-V8-DEEP-CONTRACT-SCANNER-CMETHOD.json.gz) |
 | [Zig](candidates/evidence/rust-v8-edge-oracle-zig-deep-stage-04.json.gz) | 223,198/223,198 | [0 differences](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-STAGE-04.json.gz) |
-| [C](candidates/evidence/rust-v8-edge-oracle-vm-corrected-v1.json.gz) | 223,198/223,198 | [130 differences](candidates/audits/RUST-V8-DEEP-CONTRACT-C-CORRECTED-V1.json.gz) |
+| [C](candidates/evidence/rust-v8-edge-oracle-vm-deep-stage-03.json.gz) | 223,198/223,198 | [0 differences](candidates/audits/RUST-V8-DEEP-CONTRACT-C-STAGE-03.json.gz) |
 | [Independent Python](candidates/evidence/rust-v8-edge-oracle-ast-deep-stage-01.json.gz) | 223,198/223,198 | [93 differences](candidates/audits/RUST-V8-DEEP-CONTRACT-AST-STAGE-01.json.gz) |
 
 The [original 104 Rust failures](candidates/audits/RUST-V8-DEEP-CONTRACT.json.gz) remain preserved. The final speed of a fully compatible engine is **NOT MEASURED**.
@@ -50,7 +50,7 @@ The [14,783-check object and API audit](candidates/evidence/RUST-V7-OBJECT-ORACL
 
 The [independent tracing and callback audit](candidates/evidence/RUST-V7-OBSERVABILITY-ORACLE.md) adds **479** Python-visible checks, **34** malformed native calls, and **13** active checks against using Python's regex engine. The [latest Rust result](candidates/evidence/rust-v8-observability-scanner-cmethod.json.gz) passes every check and verifies that its genuine native iterator behaves like Python's. Its [source and native-code audit](candidates/audits/RUST-V8-CMETHOD-FROM-SCRATCH.json) verifies all five Rust artifacts, zero external packages, **76** shared no-delegation checks, and **104** variant-specific integrity checks.
 
-The stronger tests preserve all **104** original Rust failures and both intermediate Rust results, at **62** and **43** differences. Zig improves from **141** differences to **zero**; C currently has **130**, and independent Python improves from **129** to **93**. All engines face exactly the same frozen **393** cases. Python agrees with itself on every case, and private garbage-collector details are never counted as public failures.
+The stronger tests preserve all **104** original Rust failures and both intermediate Rust results, at **62** and **43** differences. Zig improves from **141** differences to **zero**; C improves from **130**, through **38**, to **zero**; and independent Python improves from **129** to **93**. All engines face exactly the same frozen **393** cases. Python agrees with itself on every case, and private garbage-collector details are never counted as public failures.
 
 Rust improvements are compared using a [sealed practice-only test](candidates/evidence/RUST-V7-CALIBRATION-ISOLATION.md). It keeps all **10,312** unseen final cases inaccessible while testing **624** representative practice cases; improved Rust speed remains **NOT MEASURED**.
 

@@ -2,9 +2,10 @@
 
 import enum
 import os
-import types
 import unicodedata
 import warnings
+
+from copyreg import _reconstructor as _copy_reconstructor
 
 from candidates import _vm_native
 
@@ -983,41 +984,23 @@ def _template(value, match):
     return empty.join(match.group(part) or empty if isinstance(part, int) else part for part in _template_parts(value, match.re, byte_mode))
 
 
+def _pattern_reduce(pattern):
+    return compile, (pattern.pattern, pattern.flags)
+
+
+class _PatternType(type):
+    def __new__(metaclass, name, bases, namespace):
+        return _vm_native.pattern_type(name, bases, namespace)
+
+
+class Pattern(_vm_native.Pattern, metaclass=_PatternType):
+    __module__ = "re"
+    __slots__ = ()
+
+
 Match = _vm_native.Match
 _vm_native.configure(_template, _template_parts)
 
-
-class Pattern(_vm_native.Pattern):
-    __slots__ = ("__weakref__",)
-
-    def __copy__(self):
-        return self
-
-    def __deepcopy__(self, memo):
-        return self
-
-    def __reduce__(self):
-        return compile, (self.pattern, self.flags)
-
-    @classmethod
-    def __class_getitem__(cls, item):
-        return types.GenericAlias(cls, item)
-
-    def __repr__(self):
-        flags = self.flags & ~int(UNICODE)
-        shown = repr(self.pattern)
-        if len(shown) > 200:
-            shown = shown[:200]
-        suffix = f", {RegexFlag(flags)!r}" if flags else ""
-        return f"re.compile({shown}{suffix})"
-
-    def __eq__(self, other):
-        if not isinstance(other, Pattern):
-            return NotImplemented
-        return (type(self.pattern), self.pattern, self.flags) == (type(other.pattern), other.pattern, other.flags)
-
-    def __hash__(self):
-        return hash((type(self.pattern), self.pattern, self.flags))
 
 class Scanner:
     def __init__(self, lexicon, flags=0):
