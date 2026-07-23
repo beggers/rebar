@@ -1,0 +1,113 @@
+{
+  "schema": "rebar-zig-stage-08-sealed-campaign-failure-v1",
+  "status": "ABORTED",
+  "candidate_module": "candidates.zig_candidate",
+  "python": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 -B -m tools.rust_v8_multi_candidate_campaign --module candidates.zig_candidate --edge-oracle candidates/evidence/rust-v8-edge-oracle-zig-deep-stage-08.json.gz --deep-proof candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-STAGE-08.json.gz --output candidates/evidence/rust-v8-zig-stage-08-sealed-campaign.json",
+  "requested_campaign_output": "candidates/evidence/rust-v8-zig-stage-08-sealed-campaign.json",
+  "campaign_invocation_count": 1,
+  "rerun_count": 0,
+  "process_exit_code": 1,
+  "failed_stage": "isolated-crash-and-resource-safety",
+  "failure_class": "actual-frozen-subprocess-safety-mismatches-and-crashes",
+  "failure_message": "isolated suite failed: isolated-crash-and-resource-safety",
+  "actual_frozen_child_summary": {
+    "categories": {
+      "allocation-boundary": 8,
+      "buffer-boundary": 20,
+      "malformed-pattern": 27,
+      "nesting-depth": 16,
+      "repetition-boundary": 24,
+      "seeded-malformed": 48,
+      "surrogate-pattern": 44,
+      "surrogate-reversed-range": 20,
+      "unicode-group-name": 12,
+      "window-boundary": 35
+    },
+    "core_dumps": "disabled in every child process",
+    "correctness_checks": 254,
+    "cpu_limit_seconds": 5,
+    "crashes": 3,
+    "failed": 22,
+    "failed_categories": {
+      "allocation-boundary": 1,
+      "nesting-depth": 8,
+      "repetition-boundary": 2,
+      "seeded-malformed": 3,
+      "surrogate-reversed-range": 8
+    },
+    "isolation": "one independent subprocess per engine and case",
+    "memory_limit_mib": 768,
+    "module": "candidates.zig_candidate",
+    "oracle": "CPython stdlib re",
+    "oracle_failures": 0,
+    "python_version": "3.14.6",
+    "schema": "rebar-rust-subprocess-safety-v1",
+    "seed": 2026072319,
+    "timeout_seconds": 4,
+    "timeouts": 0
+  },
+  "actual_frozen_child_progress": [
+    "AssertionError: isolated suite failed: isolated-crash-and-resource-safety; exit=1; stderr=; stdout=checked 32/254; failures=8 crashes=0 timeouts=0",
+    "checked 64/254; failures=8 crashes=0 timeouts=0",
+    "checked 96/254; failures=8 crashes=0 timeouts=0",
+    "checked 128/254; failures=10 crashes=0 timeouts=0",
+    "checked 160/254; failures=19 crashes=3 timeouts=0",
+    "checked 192/254; failures=19 crashes=3 timeouts=0",
+    "checked 224/254; failures=20 crashes=3 timeouts=0"
+  ],
+  "individual_failing_cases": "NOT MEASURED: the unchanged isolated runner emitted aggregate category counts, not individual case records",
+  "completed_campaign_steps": "NOT MEASURED: the fail-fast campaign did not publish a passing sealed report",
+  "full_unicode_correctness_checks": "NOT MEASURED: the fail-fast safety gate aborted the campaign before the full-Unicode report",
+  "performance": "NOT MEASURED",
+  "holdout": "NOT ACCESSED",
+  "timing_performed": false,
+  "captured_process_output": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1439, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1427, in main\n    result = run_campaign(\n        args.module,\n    ...<3 lines>...\n        args.memory_mib,\n    )\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1054, in run_campaign\n    report[\"steps\"].append(child_step(step, module, memory_mib))\n                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 679, in child_step\n    raise AssertionError(\n    ...<2 lines>...\n    )\nAssertionError: isolated suite failed: isolated-crash-and-resource-safety; exit=1; stderr=; stdout=checked 32/254; failures=8 crashes=0 timeouts=0\nchecked 64/254; failures=8 crashes=0 timeouts=0\nchecked 96/254; failures=8 crashes=0 timeouts=0\nchecked 128/254; failures=10 crashes=0 timeouts=0\nchecked 160/254; failures=19 crashes=3 timeouts=0\nchecked 192/254; failures=19 crashes=3 timeouts=0\nchecked 224/254; failures=20 crashes=3 timeouts=0\n{\"categories\": {\"allocation-boundary\": 8, \"buffer-boundary\": 20, \"malformed-pattern\": 27, \"nesting-depth\": 16, \"repetition-boundary\": 24, \"seeded-malformed\": 48, \"surrogate-pattern\": 44, \"surrogate-reversed-range\": 20, \"unicode-group-name\": 12, \"window-boundary\": 35}, \"core_dumps\": \"disabled in every child process\", \"correctness_checks\": 254, \"cpu_limit_seconds\": 5, \"crashes\": 3, \"failed\": 22, \"failed_categories\": {\"allocation-boundary\": 1, \"nesting-depth\": 8, \"repetition-boundary\": 2, \"seeded-malformed\": 3, \"surrogate-reversed-range\": 8}, \"isolation\": \"one independent subprocess per engine and case\", \"memory_limit_mib\": 768, \"module\": \"candidates.zig_candidate\", \"oracle\": \"CPython stdlib re\", \"oracle_failures\": 0, \"python_version\": \"3.14.6\", \"schema\": \"rebar-rust-subprocess-safety-v1\", \"seed\": 2026072319, \"timeout_seconds\": 4.0, \"timeouts\": 0}\n\n",
+  "process_output_capture": "Exact combined managed-process stdout/stderr, including the complete Python traceback, isolated-child progress, and frozen safety JSON.",
+  "frozen_campaign_runner": {
+    "path": "tools/rust_v8_multi_candidate_campaign.py",
+    "sha256": "46e53abac0d2347d5fc505aa792a5ee5f55489a6e73b1f57edf37a93a0a6d45d"
+  },
+  "frozen_production_artifacts": [
+    {
+      "path": "candidates/zig/mini_regex.zig",
+      "sha256": "b0e26337eb007793639b678d967ef55eb24b060a64f736185eb2745afd0b6d2f"
+    },
+    {
+      "path": "candidates/zig/py_bridge.c",
+      "sha256": "45ba87678defde5a23fa385622b727758c92dc78275ed2e855d5a0a883251676"
+    },
+    {
+      "path": "candidates/zig_candidate.py",
+      "sha256": "d3a7e35711f402db85f42e96470caf8a9393f1171e5bc7f26a55e0a138638ac5"
+    },
+    {
+      "path": "candidates/_zig_probe.so",
+      "sha256": "d35fb09dce43fcea2bb70f0ca9dd8e95cc05380fe983539dcee810d64aa9393e"
+    },
+    {
+      "path": "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "7d7ae8bef50e4bce06786dd20248b41b0ac74651ff4fae2d229d8b032b8dee1d"
+    }
+  ],
+  "stage08_dependencies": {
+    "edge_oracle": {
+      "path": "candidates/evidence/rust-v8-edge-oracle-zig-deep-stage-08.json.gz",
+      "sha256": "f51b20cbaf5c8342fbcd59f02d2b042b3e6e526457f3d49d0298ccd88096971f"
+    },
+    "deep_public_contract": {
+      "path": "candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-STAGE-08.json.gz",
+      "sha256": "d20b606278c9073fa8c5f46cc8efa4774f48daa46e5c373f5c157a6d3480669f"
+    },
+    "extended_path_diagnostic": {
+      "path": "candidates/evidence/rust-v8-zig-stage-08-extended-path-failures.json.gz",
+      "sha256": "a440656f508343f406930c7934ccbd521499395f62e7eda88082023cd45a8c73"
+    },
+    "frozen_extended_path_source": {
+      "path": "tools/rust_v6_paths_probe.py",
+      "sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3"
+    }
+  },
+  "success_evidence_created": false
+}
+

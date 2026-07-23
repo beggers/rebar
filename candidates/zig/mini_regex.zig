@@ -1595,18 +1595,21 @@ const Compiler = struct {
     }
 };
 
+fn addLiteralStarts(starts: *[256]u8, value: u32, flags: u32) void {
+    if (flags & 2 == 0) {
+        if (value < 256) starts[value] = 1;
+        return;
+    }
+    for (0..256) |raw| {
+        if (equal(value, @intCast(raw), flags)) starts[raw] = 1;
+    }
+}
+
 fn addStarts(program: *const Program, index: u32, starts: *[256]u8, flags: u32) bool {
     return switch (program.nodes.items[index]) {
         .empty, .begin, .end, .absolute_begin, .absolute_end, .boundary => true,
         .literal => |value| blk: {
-            if (value < 256) {
-                const byte: u8 = @intCast(value);
-                starts[value] = 1;
-                if (flags & 2 != 0) {
-                    starts[std.ascii.toLower(byte)] = 1;
-                    starts[std.ascii.toUpper(byte)] = 1;
-                }
-            }
+            addLiteralStarts(starts, value, flags);
             break :blk false;
         },
         .dot => blk: {
@@ -1694,17 +1697,8 @@ fn quickPrefix(program: *const Program, index: u32, flags: u32) QuickPrefix {
         .empty, .begin, .end, .absolute_begin, .absolute_end, .boundary => QuickPrefix{ .empty = true },
         .literal => |value| blk: {
             var result = QuickPrefix{};
-            if (value < 256) {
-                const byte: u8 = @intCast(value);
-                result.first[value] = 1;
-                result.single[value] = 1;
-                if (flags & 2 != 0) {
-                    result.first[std.ascii.toLower(byte)] = 1;
-                    result.first[std.ascii.toUpper(byte)] = 1;
-                    result.single[std.ascii.toLower(byte)] = 1;
-                    result.single[std.ascii.toUpper(byte)] = 1;
-                }
-            }
+            addLiteralStarts(&result.first, value, flags);
+            result.single = result.first;
             break :blk result;
         },
         .dot => blk: {

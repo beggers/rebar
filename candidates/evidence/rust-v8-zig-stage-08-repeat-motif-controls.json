@@ -1,0 +1,96 @@
+{
+  "schema": "rebar-zig-stage-08-repeat-motif-controls-evidence-v1",
+  "stage": "08",
+  "status": "PASS",
+  "attempt": 1,
+  "process_exit_code": 0,
+  "frozen_production_artifacts": [
+    {
+      "path": "candidates/zig/mini_regex.zig",
+      "sha256": "b0e26337eb007793639b678d967ef55eb24b060a64f736185eb2745afd0b6d2f"
+    },
+    {
+      "path": "candidates/zig/py_bridge.c",
+      "sha256": "45ba87678defde5a23fa385622b727758c92dc78275ed2e855d5a0a883251676"
+    },
+    {
+      "path": "candidates/zig_candidate.py",
+      "sha256": "d3a7e35711f402db85f42e96470caf8a9393f1171e5bc7f26a55e0a138638ac5"
+    },
+    {
+      "path": "candidates/_zig_probe.so",
+      "sha256": "d35fb09dce43fcea2bb70f0ca9dd8e95cc05380fe983539dcee810d64aa9393e"
+    },
+    {
+      "path": "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "7d7ae8bef50e4bce06786dd20248b41b0ac74651ff4fae2d229d8b032b8dee1d"
+    }
+  ],
+  "preserved_stage07_failure_artifacts": [
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-07-extended-path-failures.json.gz",
+      "sha256": "789483fdbedf595c26830db8495d03ff71e5fda567fba084b8e370ac24f06a54"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-07-sealed-campaign-failure.json",
+      "sha256": "faaa3036b4afc89ca02a4fa6416791140c292f1ed769d13c533c57305f3df5cc"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-07-sealed-campaign-attempt-02-failure.json",
+      "sha256": "f987753e9f877ee6e3878fd8c306f7c6ee39e48e3d755d15656265c58e17afce"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-07-repeat-motif-controls-attempt-01-failure.json",
+      "sha256": "03b537258a54531c34a076730f46a062db53a80da9a144f6837d618b5e5e43ce"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-07-repeat-motif-controls-attempt-02-failure.json",
+      "sha256": "97123b4dc54cec347c032ad8a7bd0a70efbc3d96a47accc4fa77f045d9e0ce7a"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-07-repeat-motif-controls-attempt-03-failure.json",
+      "sha256": "cfc1b559d19e67b59401d123047d6fe9fce1253dfcbb1839a9ab298563a5200d"
+    }
+  ],
+  "lossless_extended_path_proof": {
+    "path": "candidates/evidence/rust-v8-zig-stage-08-extended-path-failures.json.gz",
+    "sha256": "a440656f508343f406930c7934ccbd521499395f62e7eda88082023cd45a8c73",
+    "correctness_checks": 72248,
+    "failed": 0,
+    "independent_reference_processes": 2,
+    "checks_per_reference": 72248,
+    "expected_observations_sha256": "210a9562dcb915f352b15f55e86d863159bea548fe69ed4e2edccf009b097d8a",
+    "actual_observations_sha256": "210a9562dcb915f352b15f55e86d863159bea548fe69ed4e2edccf009b097d8a"
+  },
+  "exact_process_stdout": "{\"candidate_module\": \"candidates.zig_candidate\", \"category_checks\": {\"bounded-repeat-mode\": 10290, \"captured-and-general-motifs\": 14700, \"homogeneous-repeat\": 4900, \"multi-character-repeat\": 4900, \"overflow-and-exact-quantifier-errors\": 18, \"unicode-flags-multiline-and-backreferences\": 1764, \"zero-width-and-nullable\": 2940}, \"correctness_checks\": 39512, \"failed\": 0, \"frozen_comparison_source\": \"tools/rust_v6_paths_probe.py\", \"invalid_compile_cases\": 18, \"pattern_subject_cases\": 806, \"performance\": \"NOT MEASURED\", \"reference_module\": \"re\", \"schema\": \"rebar-zig-stage-07-bounded-repeat-controls-v1\", \"seed\": 2026072307, \"status\": \"PASS\", \"tested_rejected_repeat_minimum\": 4294967295, \"tested_valid_repeat_maximum\": 4294967294}\n",
+  "result": {
+    "candidate_module": "candidates.zig_candidate",
+    "category_checks": {
+      "bounded-repeat-mode": 10290,
+      "captured-and-general-motifs": 14700,
+      "homogeneous-repeat": 4900,
+      "multi-character-repeat": 4900,
+      "overflow-and-exact-quantifier-errors": 18,
+      "unicode-flags-multiline-and-backreferences": 1764,
+      "zero-width-and-nullable": 2940
+    },
+    "correctness_checks": 39512,
+    "failed": 0,
+    "frozen_comparison_source": "tools/rust_v6_paths_probe.py",
+    "invalid_compile_cases": 18,
+    "pattern_subject_cases": 806,
+    "performance": "NOT MEASURED",
+    "reference_module": "re",
+    "schema": "rebar-zig-stage-07-bounded-repeat-controls-v1",
+    "seed": 2026072307,
+    "status": "PASS",
+    "tested_rejected_repeat_minimum": 4294967295,
+    "tested_valid_repeat_maximum": 4294967294
+  },
+  "frozen_individual_gates": "NOT YET COMPLETE",
+  "full_campaign": "NOT RUN",
+  "unicode_full_plane": "NOT RUN",
+  "holdout": "NOT ACCESSED",
+  "performance": "NOT MEASURED"
+}
+

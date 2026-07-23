@@ -320,7 +320,7 @@
               "mapping_count": 3,
               "matches_static_elf": true,
               "role": "engine",
-              "sha256": "d35fb09dce43fcea2bb70f0ca9dd8e95cc05380fe983539dcee810d64aa9393e"
+              "sha256": "8303d0b0fed831b7da8b3fd233051e8c15aaead3654731e616103b25bff9b76a"
             }
           ],
           "passed": true,
@@ -356,7 +356,7 @@
           "file": "candidates/zig/mini_regex.zig",
           "issues": [],
           "passed": true,
-          "sha256": "b0e26337eb007793639b678d967ef55eb24b060a64f736185eb2745afd0b6d2f"
+          "sha256": "b6a63e12b1405dfd2d2553465b88290909ea24bd3063687cc2ff92f64ccec366"
         }
       ],
       "owned_pipeline": {
@@ -910,7 +910,7 @@
               "_PyUnicode_ToUppercase"
             ],
             "runpaths": [],
-            "sha256": "d35fb09dce43fcea2bb70f0ca9dd8e95cc05380fe983539dcee810d64aa9393e",
+            "sha256": "8303d0b0fed831b7da8b3fd233051e8c15aaead3654731e616103b25bff9b76a",
             "undefined_symbol_count": 15
           }
         },
@@ -1806,7 +1806,7 @@
           "_PyUnicode_ToUppercase"
         ],
         "runpaths": [],
-        "sha256": "d35fb09dce43fcea2bb70f0ca9dd8e95cc05380fe983539dcee810d64aa9393e",
+        "sha256": "8303d0b0fed831b7da8b3fd233051e8c15aaead3654731e616103b25bff9b76a",
         "undefined_symbol_count": 15
       }
     },
