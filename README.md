@@ -6,7 +6,7 @@
 
 | From-scratch engine | Original compatibility tests | Tougher object and lifetime tests |
 | --- | ---: | ---: |
-| [Rust](candidates/evidence/rust-v8-edge-oracle-rust-scanner-lifetimes.json.gz) | 223,198/223,198 | [62 differences](candidates/audits/RUST-V8-DEEP-CONTRACT-SCANNER-LIFETIMES.json.gz) |
+| [Rust](candidates/evidence/rust-v8-edge-oracle-rust-scanner-cmethod.json.gz) | 223,198/223,198 | [43 differences](candidates/audits/RUST-V8-DEEP-CONTRACT-SCANNER-CMETHOD.json.gz) |
 | [Zig](candidates/evidence/rust-v8-edge-oracle-zig-corrected-v1.json.gz) | 223,198/223,198 | [141 differences](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-CORRECTED-V1.json.gz) |
 | [C](candidates/evidence/rust-v8-edge-oracle-vm-corrected-v1.json.gz) | 223,198/223,198 | [130 differences](candidates/audits/RUST-V8-DEEP-CONTRACT-C-CORRECTED-V1.json.gz) |
 | [Independent Python](candidates/evidence/rust-v8-edge-oracle-ast-corrected-v2.json.gz) | 223,198/223,198 | [129 differences](candidates/audits/RUST-V8-DEEP-CONTRACT-AST-CORRECTED-V2.json.gz) |
@@ -44,9 +44,9 @@ The [independent 20,480-pattern grammar audit](candidates/evidence/RUST-V7-GRAMM
 
 The [14,783-check object and API audit](candidates/evidence/RUST-V7-OBJECT-ORACLE.md) separately verifies Python's match objects, exact byte identity, search windows, buffer lifetimes, signatures, hashing, warnings, and errors.
 
-The [independent tracing and callback audit](candidates/evidence/RUST-V7-OBSERVABILITY-ORACLE.md) adds **479** Python-visible checks, **34** malformed native calls, and **13** active checks against using Python's regex engine. The [repaired Rust result](candidates/evidence/rust-v8-observability-scanner-lifetimes.json.gz) passes every check and verifies that its improved iterator really has the same observable behavior as Python's. Its [current source and native-code audit](candidates/audits/RUST-V8-SCANNER-FROM-SCRATCH.json) verifies all five Rust artifacts, zero external packages, and **125** poisoned-input and no-delegation controls.
+The [independent tracing and callback audit](candidates/evidence/RUST-V7-OBSERVABILITY-ORACLE.md) adds **479** Python-visible checks, **34** malformed native calls, and **13** active checks against using Python's regex engine. The [latest Rust result](candidates/evidence/rust-v8-observability-scanner-cmethod.json.gz) passes every check and verifies that its genuine native iterator behaves like Python's. Its [source and native-code audit](candidates/audits/RUST-V8-CMETHOD-FROM-SCRATCH.json) verifies all five Rust artifacts, zero external packages, **76** shared no-delegation checks, and **104** variant-specific integrity checks.
 
-The stronger tests preserve all **104** original Rust failures; the latest committed Rust version has **62**. Zig, C, and independent Python have **141**, **130**, and **129** failures, respectively, against exactly the same frozen **393** cases. Python agrees with itself on every case. Private garbage-collector details are recorded separately and never counted as public failures.
+The stronger tests preserve all **104** original Rust failures and both intermediate Rust results, at **62** and **43** differences. Zig, C, and independent Python have **141**, **130**, and **129** failures, respectively, against exactly the same frozen **393** cases. Python agrees with itself on every case. Private garbage-collector details are recorded separately and never counted as public failures.
 
 Rust improvements are compared using a [sealed practice-only test](candidates/evidence/RUST-V7-CALIBRATION-ISOLATION.md). It keeps all **10,312** unseen final cases inaccessible while testing **624** representative practice cases; improved Rust speed remains **NOT MEASURED**.
 
@@ -60,7 +60,7 @@ The test covers text, bytes and buffers; Unicode; short and long inputs; capture
 
 ![Coverage of the expanded Python regular-expression benchmark](performance/v7/evidence/coverage.svg)
 
-All five original engines agreed with Python on the **20,624 original speed-test answers**; the separate **223,198-check** compatibility test exposes the more difficult differences. The [original measurement protocol](performance/v7/PROTOCOL.md) fixes cases, repetitions, correctness checks, and memory reporting. The preserved [all-engine audit](candidates/audits/FROM-SCRATCH-AUDIT.json) records the exact original source and libraries it verified; historical results do not certify newer binaries. The [current Rust-only audit](candidates/audits/RUST-V8-SCANNER-FROM-SCRATCH.json) separately verifies the repaired Rust source, compiler, engine, native bindings, actual loaded libraries, and **zero external Rust packages**.
+All five original engines agreed with Python on the **20,624 original speed-test answers**; the separate **223,198-check** compatibility test exposes the more difficult differences. The [original measurement protocol](performance/v7/PROTOCOL.md) fixes cases, repetitions, correctness checks, and memory reporting. The preserved [all-engine audit](candidates/audits/FROM-SCRATCH-AUDIT.json) records the exact original source and libraries it verified; historical results do not certify newer binaries. The [current Rust-only audit](candidates/audits/RUST-V8-CMETHOD-FROM-SCRATCH.json) separately verifies the latest Rust source, compiler, engine, native bindings, actual loaded libraries, and **zero external Rust packages**.
 
 ## Detailed graphs
 
@@ -105,6 +105,11 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/audit_rust_from_scratch.py \
   --edge-oracle candidates/evidence/rust-v8-edge-oracle-rust-scanner-lifetimes.json.gz
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  tools/audit_rust_variants_from_scratch.py --self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  tools/audit_rust_variants_from_scratch.py \
+  --edge-oracle candidates/evidence/rust-v8-edge-oracle-rust-scanner-cmethod.json.gz
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.audit_from_scratch
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.rust_v8_holdout_protocol self-test
@@ -132,6 +137,8 @@ PYTHONPATH=. "$PY" tools/rust_v7_observability_oracle.py --self-test
 PYTHONPATH=. "$PY" tools/rust_v7_observability_oracle.py verify
 PYTHONPATH=. "$PY" tools/rust_v7_observability_variant.py verify \
   --edge-oracle candidates/evidence/rust-v8-edge-oracle-rust-scanner-lifetimes.json.gz
+PYTHONPATH=. "$PY" tools/rust_v8_observability_variants.py verify \
+  --edge-oracle candidates/evidence/rust-v8-edge-oracle-rust-scanner-cmethod.json.gz
 PYTHONPATH=. "$PY" tools/rust_v8_deep_contract_oracle.py --self-test
 PYTHONPATH=. "$PY" tools/rust_v8_deep_contract_variant.py --self-test
 PYTHONPATH=. "$PY" tools/rust_v8_multi_candidate_contract.py --self-test

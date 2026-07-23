@@ -1786,7 +1786,7 @@ static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const 
 
 static int rust_iterator_traverse(RustIterator *iterator, visitproc visit, void *arg) {
     Py_VISIT(iterator->pattern);
-    Py_VISIT(iterator->string);
+    if (Py_TYPE(iterator) != &RustScannerType) Py_VISIT(iterator->string);
     Py_VISIT(iterator->groupindex);
     return 0;
 }
@@ -1865,6 +1865,33 @@ static PyObject *rust_scanner_match(RustIterator *iterator, PyObject *ignored) {
     if (match == NULL && !PyErr_Occurred()) Py_RETURN_NONE;
     return match;
 }
+
+static PyObject *rust_iterator_scanner_search(
+    PyObject *value,
+    PyTypeObject *defining_class,
+    PyObject *const *args,
+    Py_ssize_t nargs,
+    PyObject *kwnames
+) {
+    (void)defining_class;
+    (void)args;
+    Py_ssize_t keywords = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    if (nargs != 0 || keywords != 0) {
+        return PyErr_Format(
+            PyExc_TypeError,
+            "search() takes no arguments (%zd given)",
+            nargs + keywords
+        );
+    }
+    return rust_scanner_search((RustIterator *)value, NULL);
+}
+
+static PyMethodDef rust_iterator_scanner_search_method = {
+    "search",
+    _PyCFunction_CAST(rust_iterator_scanner_search),
+    METH_METHOD | METH_FASTCALL | METH_KEYWORDS,
+    "Search for the next regular-expression match.",
+};
 
 static PyObject *rust_scanner_reduce(RustIterator *iterator, PyObject *ignored) {
     (void)ignored;
@@ -1989,7 +2016,12 @@ static PyObject *bridge_bound_finditer(PyObject *module, PyObject *const *args, 
     (void)module;
     PyObject *scanner = rust_bound_iterator(args, nargs, kwnames, "finditer", &RustScannerType);
     if (scanner == NULL) return NULL;
-    PyObject *search = PyObject_GetAttrString(scanner, "search");
+    PyObject *search = PyCMethod_New(
+        &rust_iterator_scanner_search_method,
+        scanner,
+        NULL,
+        &RustScannerType
+    );
     Py_DECREF(scanner);
     if (search == NULL) return NULL;
     PyObject *iterator = PyCallIter_New(search, Py_None);
