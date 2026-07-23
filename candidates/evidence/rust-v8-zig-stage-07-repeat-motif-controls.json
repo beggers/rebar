@@ -1,0 +1,82 @@
+{
+  "schema": "rebar-zig-stage-07-repeat-motif-controls-evidence-v1",
+  "stage": "07",
+  "attempt": 4,
+  "status": "PASS",
+  "process_exit_code": 0,
+  "source_hashes": [
+    {
+      "path": "candidates/zig/mini_regex.zig",
+      "sha256": "b6a63e12b1405dfd2d2553465b88290909ea24bd3063687cc2ff92f64ccec366"
+    },
+    {
+      "path": "candidates/zig/py_bridge.c",
+      "sha256": "45ba87678defde5a23fa385622b727758c92dc78275ed2e855d5a0a883251676"
+    },
+    {
+      "path": "candidates/zig_candidate.py",
+      "sha256": "d3a7e35711f402db85f42e96470caf8a9393f1171e5bc7f26a55e0a138638ac5"
+    },
+    {
+      "path": "candidates/_zig_probe.so",
+      "sha256": "8303d0b0fed831b7da8b3fd233051e8c15aaead3654731e616103b25bff9b76a"
+    },
+    {
+      "path": "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "7d7ae8bef50e4bce06786dd20248b41b0ac74651ff4fae2d229d8b032b8dee1d"
+    }
+  ],
+  "preserved_failure_hashes": [
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-06-sealed-campaign-failure.json",
+      "sha256": "c2ad7685466eb713c8c6297fcd263460ff06f8b9213f832b9df37c38556ddc71"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-06-extended-path-first-mismatch.json",
+      "sha256": "605d5c1b8b1959858c6d2fab7c987ed592e2fd4a3f4c3307e1e644fc0d20f5ff"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-07-repeat-motif-controls-attempt-01-failure.json",
+      "sha256": "03b537258a54531c34a076730f46a062db53a80da9a144f6837d618b5e5e43ce"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-07-repeat-motif-controls-attempt-02-failure.json",
+      "sha256": "97123b4dc54cec347c032ad8a7bd0a70efbc3d96a47accc4fa77f045d9e0ce7a"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-07-repeat-motif-controls-attempt-03-failure.json",
+      "sha256": "cfc1b559d19e67b59401d123047d6fe9fce1253dfcbb1839a9ab298563a5200d"
+    }
+  ],
+  "exact_process_stdout": "{\"candidate_module\": \"candidates.zig_candidate\", \"category_checks\": {\"bounded-repeat-mode\": 10290, \"captured-and-general-motifs\": 14700, \"homogeneous-repeat\": 4900, \"multi-character-repeat\": 4900, \"overflow-and-exact-quantifier-errors\": 18, \"unicode-flags-multiline-and-backreferences\": 1764, \"zero-width-and-nullable\": 2940}, \"correctness_checks\": 39512, \"failed\": 0, \"frozen_comparison_source\": \"tools/rust_v6_paths_probe.py\", \"invalid_compile_cases\": 18, \"pattern_subject_cases\": 806, \"performance\": \"NOT MEASURED\", \"reference_module\": \"re\", \"schema\": \"rebar-zig-stage-07-bounded-repeat-controls-v1\", \"seed\": 2026072307, \"status\": \"PASS\", \"tested_rejected_repeat_minimum\": 4294967295, \"tested_valid_repeat_maximum\": 4294967294}\n",
+  "result": {
+    "candidate_module": "candidates.zig_candidate",
+    "category_checks": {
+      "bounded-repeat-mode": 10290,
+      "captured-and-general-motifs": 14700,
+      "homogeneous-repeat": 4900,
+      "multi-character-repeat": 4900,
+      "overflow-and-exact-quantifier-errors": 18,
+      "unicode-flags-multiline-and-backreferences": 1764,
+      "zero-width-and-nullable": 2940
+    },
+    "correctness_checks": 39512,
+    "failed": 0,
+    "frozen_comparison_source": "tools/rust_v6_paths_probe.py",
+    "invalid_compile_cases": 18,
+    "pattern_subject_cases": 806,
+    "performance": "NOT MEASURED",
+    "reference_module": "re",
+    "schema": "rebar-zig-stage-07-bounded-repeat-controls-v1",
+    "seed": 2026072307,
+    "status": "PASS",
+    "tested_rejected_repeat_minimum": 4294967295,
+    "tested_valid_repeat_maximum": 4294967294
+  },
+  "frozen_individual_gates": "NOT YET RUN",
+  "full_campaign": "NOT RUN",
+  "unicode_full_plane": "NOT RUN",
+  "holdout": "NOT ACCESSED",
+  "performance": "NOT MEASURED"
+}
+

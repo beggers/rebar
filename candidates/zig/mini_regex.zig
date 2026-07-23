@@ -431,6 +431,7 @@ const Parser = struct {
         while (self.at < self.source.len and std.ascii.isDigit(self.source[self.at])) : (self.at += 1) {
             value = std.math.mul(usize, value, 10) catch return error.InvalidPattern;
             value = std.math.add(usize, value, self.source[self.at] - '0') catch return error.InvalidPattern;
+            if (value >= std.math.maxInt(u32)) return error.InvalidPattern;
         }
         if (self.at == begin) return error.InvalidPattern;
         return value;
@@ -922,6 +923,17 @@ fn runLength(program: *const Program, run: Run, text: Subject, pos: usize, maxim
                 }
             } else while (length < maximum and classMatch(program, class, text.at(pos + length), run.flags)) : (length += 1) {}
         },
+        .sequence, .repeat, .group, .atomic, .scoped => {
+            const endpos = std.math.add(usize, pos, maximum) catch return length;
+            while (length < maximum) {
+                const begin = std.math.add(usize, pos, length) catch break;
+                var at = begin;
+                if (!literalTextMatches(program, run.atom, text, endpos, &at, run.flags)) break;
+                const consumed = at - begin;
+                if (consumed != run.width) break;
+                length = std.math.add(usize, length, consumed) catch break;
+            }
+        },
         else => while (length < maximum and atomMatch(program, run.atom, text.at(pos + length), run.flags)) : (length += 1) {},
     }
     return length;
@@ -1080,7 +1092,28 @@ fn literalTextMatches(program: *const Program, index: u32, text: Subject, endpos
             at.* += 1;
             break :blk true;
         },
+        .dot => blk: {
+            if (at.* >= endpos or (flags & 16 == 0 and text.at(at.*) == '\n')) break :blk false;
+            at.* += 1;
+            break :blk true;
+        },
+        .class => |class| blk: {
+            if (at.* >= endpos or !classMatch(program, &program.classes.items[class], text.at(at.*), flags)) break :blk false;
+            at.* += 1;
+            break :blk true;
+        },
         .sequence => |pair| literalTextMatches(program, pair.left, text, endpos, at, flags) and literalTextMatches(program, pair.right, text, endpos, at, flags),
+        .repeat => |repeat| blk: {
+            if (repeat.minimum != repeat.maximum) break :blk false;
+            var count: usize = 0;
+            while (count < repeat.minimum) : (count += 1) {
+                const before = at.*;
+                if (!literalTextMatches(program, repeat.child, text, endpos, at, flags)) break :blk false;
+                if (at.* == before) break :blk true;
+            }
+            break :blk true;
+        },
+        .group => |group| literalTextMatches(program, group.child, text, endpos, at, flags),
         .atomic => |child| literalTextMatches(program, child, text, endpos, at, flags),
         .scoped => |scoped| literalTextMatches(program, scoped.child, text, endpos, at, scoped.flags),
         else => false,
@@ -1132,6 +1165,45 @@ fn flatten(program: *const Program, index: u32, flags: u32, base: usize, flat: *
         },
         .atomic => |child| flatten(program, child, flags, base, flat),
         .scoped => |scoped| flatten(program, scoped.child, scoped.flags, base, flat),
+        else => null,
+    };
+}
+
+fn flattenRepeatMotif(program: *const Program, index: u32, base: usize, flat: *Flat) ?usize {
+    return switch (program.nodes.items[index]) {
+        .empty => 0,
+        .literal, .dot, .class => 1,
+        .sequence => |pair| blk: {
+            const left = flattenRepeatMotif(program, pair.left, base, flat) orelse break :blk null;
+            const next = std.math.add(usize, base, left) catch break :blk null;
+            const right = flattenRepeatMotif(program, pair.right, next, flat) orelse break :blk null;
+            break :blk std.math.add(usize, left, right) catch null;
+        },
+        .repeat => |repeat| blk: {
+            if (repeat.minimum != repeat.maximum) break :blk null;
+            const first_layout = flat.layout_count;
+            const child = flattenRepeatMotif(program, repeat.child, base, flat) orelse break :blk null;
+            if (repeat.minimum == 0) {
+                flat.layout_count = first_layout;
+                break :blk 0;
+            }
+            const shift = std.math.mul(usize, child, repeat.minimum - 1) catch break :blk null;
+            for (flat.layouts[first_layout..flat.layout_count]) |*layout| {
+                layout.begin = std.math.add(usize, layout.begin, shift) catch break :blk null;
+                layout.end = std.math.add(usize, layout.end, shift) catch break :blk null;
+            }
+            break :blk std.math.mul(usize, child, repeat.minimum) catch null;
+        },
+        .group => |group| blk: {
+            const width = flattenRepeatMotif(program, group.child, base, flat) orelse break :blk null;
+            if (flat.layout_count >= flat.layouts.len) break :blk null;
+            const end = std.math.add(usize, base, width) catch break :blk null;
+            flat.layouts[flat.layout_count] = .{ .number = group.number, .begin = base, .end = end };
+            flat.layout_count += 1;
+            break :blk width;
+        },
+        .atomic => |child| flattenRepeatMotif(program, child, base, flat),
+        .scoped => |scoped| flattenRepeatMotif(program, scoped.child, base, flat),
         else => null,
     };
 }
@@ -1287,7 +1359,19 @@ const Compiler = struct {
                 else => {},
             }
         }
-        const width = flatten(self.program, child, self.flags, 0, &flat) orelse return error.UnsupportedRepeat;
+        const width = flatten(self.program, child, self.flags, 0, &flat) orelse blk: {
+            flat = Flat{};
+            const motif_width = flattenRepeatMotif(self.program, child, 0, &flat) orelse return error.UnsupportedRepeat;
+            if (motif_width <= 1 or
+                (repeat.minimum <= 128 and
+                    (repeat.maximum == unbounded or repeat.maximum <= 256)))
+            {
+                return error.UnsupportedRepeat;
+            }
+            flat.atom = child;
+            flat.flags = self.flags;
+            break :blk motif_width;
+        };
         if (width == 0 or flat.atom == null or self.program.runs.items.len >= std.math.maxInt(u32) or self.program.layouts.items.len >= std.math.maxInt(u32)) return error.UnsupportedRepeat;
         const layout_start: u32 = @intCast(self.program.layouts.items.len);
         try self.program.layouts.appendSlice(self.program.arena.allocator(), flat.layouts[0..flat.layout_count]);
@@ -2302,6 +2386,17 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, logical_
             },
             .run => blk: {
                 const run = program.runs.items[instruction.value];
+                if (pos > logical_endpos) {
+                    const repeated_motif = switch (program.nodes.items[run.atom]) {
+                        .sequence, .repeat, .group, .atomic, .scoped => true,
+                        else => false,
+                    };
+                    if (repeated_motif) {
+                        if (run.minimum != 0) break :blk;
+                        pc += 1;
+                        continue;
+                    }
+                }
                 if (pos > logical_endpos and run.layout_count == 0) break :blk;
                 const room = endpos - pos;
                 const allowed = if (run.maximum == unbounded) room / run.width else @min(run.maximum, room / run.width);

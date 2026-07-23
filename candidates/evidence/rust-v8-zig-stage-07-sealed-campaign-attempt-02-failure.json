@@ -1,0 +1,107 @@
+{
+  "schema": "rebar-zig-stage-07-sealed-campaign-attempt-02-failure-v1",
+  "status": "ABORTED",
+  "candidate_module": "candidates.zig_candidate",
+  "python": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 -B -m tools.rust_v8_multi_candidate_campaign --module candidates.zig_candidate --edge-oracle candidates/evidence/rust-v8-edge-oracle-zig-deep-stage-07.json.gz --deep-proof candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-STAGE-07.json.gz --output candidates/evidence/rust-v8-zig-stage-07-sealed-campaign.json",
+  "requested_campaign_output": "candidates/evidence/rust-v8-zig-stage-07-sealed-campaign.json",
+  "total_stage07_campaign_invocations": 2,
+  "corrected_authorization_invocations": 1,
+  "reruns_after_corrected_failure": 0,
+  "process_exit_code": 1,
+  "failed_stage": "extended-cpython-paths",
+  "failure_class": "actual-frozen-differential-mismatches",
+  "failure_message": "isolated suite failed: extended-cpython-paths",
+  "actual_frozen_child_summary": {
+    "backreference_pairs": 235,
+    "backreference_variants": 7,
+    "case_index": null,
+    "casefix_components": 24,
+    "casefix_directed_edges": 56,
+    "casefix_keys": 50,
+    "casefold_groups": 26,
+    "correctness_checks": 72248,
+    "failed": 308,
+    "invalid_window_checks": 1260,
+    "manual_cases": 895,
+    "manual_index": null,
+    "module": "candidates.zig_candidate",
+    "multi_upper_codepoints": 102,
+    "schema": "rebar-rust-v6-paths-probe-v1",
+    "seed": 2026072307,
+    "seeded_cases": 512,
+    "surrogate_checks": 380
+  },
+  "failing_case": "NOT MEASURED: the frozen isolated child published aggregate counts without individual mismatch details",
+  "completed_campaign_steps": "NOT MEASURED: the aborted runner did not publish a sealed campaign report",
+  "full_unicode_correctness_checks": "NOT MEASURED: the full-Unicode step did not publish a report",
+  "performance": "NOT MEASURED",
+  "holdout": "NOT ACCESSED",
+  "timing_performed": false,
+  "captured_process_output": "Traceback (most recent call last):\n  File \"<frozen runpy>\", line 203, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1439, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1427, in main\n    result = run_campaign(\n        args.module,\n    ...<3 lines>...\n        args.memory_mib,\n    )\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1054, in run_campaign\n    report[\"steps\"].append(child_step(step, module, memory_mib))\n                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 679, in child_step\n    raise AssertionError(\n    ...<2 lines>...\n    )\nAssertionError: isolated suite failed: extended-cpython-paths; exit=1; stderr=; stdout={\"backreference_pairs\": 235, \"backreference_variants\": 7, \"case_index\": null, \"casefix_components\": 24, \"casefix_directed_edges\": 56, \"casefix_keys\": 50, \"casefold_groups\": 26, \"correctness_checks\": 72248, \"failed\": 308, \"invalid_window_checks\": 1260, \"manual_cases\": 895, \"manual_index\": null, \"module\": \"candidates.zig_candidate\", \"multi_upper_codepoints\": 102, \"schema\": \"rebar-rust-v6-paths-probe-v1\", \"seed\": 2026072307, \"seeded_cases\": 512, \"surrogate_checks\": 380}\n\n",
+  "process_output_capture": "Combined managed-process stdout/stderr; the Python traceback and exact frozen child JSON are reproduced verbatim.",
+  "frozen_campaign_runner": {
+    "path": "tools/rust_v8_multi_candidate_campaign.py",
+    "sha256": "46e53abac0d2347d5fc505aa792a5ee5f55489a6e73b1f57edf37a93a0a6d45d"
+  },
+  "frozen_production_artifacts": [
+    {
+      "path": "candidates/zig/mini_regex.zig",
+      "sha256": "b6a63e12b1405dfd2d2553465b88290909ea24bd3063687cc2ff92f64ccec366"
+    },
+    {
+      "path": "candidates/zig/py_bridge.c",
+      "sha256": "45ba87678defde5a23fa385622b727758c92dc78275ed2e855d5a0a883251676"
+    },
+    {
+      "path": "candidates/zig_candidate.py",
+      "sha256": "d3a7e35711f402db85f42e96470caf8a9393f1171e5bc7f26a55e0a138638ac5"
+    },
+    {
+      "path": "candidates/_zig_probe.so",
+      "sha256": "8303d0b0fed831b7da8b3fd233051e8c15aaead3654731e616103b25bff9b76a"
+    },
+    {
+      "path": "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "7d7ae8bef50e4bce06786dd20248b41b0ac74651ff4fae2d229d8b032b8dee1d"
+    }
+  ],
+  "stage07_dependencies": {
+    "edge_oracle": {
+      "path": "candidates/evidence/rust-v8-edge-oracle-zig-deep-stage-07.json.gz",
+      "sha256": "427c833e4108376f42cbdc669ff81008c5c7a9ce6bbed550cda88ed648322c83"
+    },
+    "deep_public_contract": {
+      "path": "candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-STAGE-07.json.gz",
+      "sha256": "eba7e32be625b5abcb72cf2bfaf86c882a3f2ce275ce735d043559229b0532b9"
+    }
+  },
+  "preserved_prior_failure_artifacts": [
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-07-sealed-campaign-failure.json",
+      "sha256": "faaa3036b4afc89ca02a4fa6416791140c292f1ed769d13c533c57305f3df5cc"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-06-sealed-campaign-failure.json",
+      "sha256": "c2ad7685466eb713c8c6297fcd263460ff06f8b9213f832b9df37c38556ddc71"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-06-extended-path-first-mismatch.json",
+      "sha256": "605d5c1b8b1959858c6d2fab7c987ed592e2fd4a3f4c3307e1e644fc0d20f5ff"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-07-repeat-motif-controls-attempt-01-failure.json",
+      "sha256": "03b537258a54531c34a076730f46a062db53a80da9a144f6837d618b5e5e43ce"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-07-repeat-motif-controls-attempt-02-failure.json",
+      "sha256": "97123b4dc54cec347c032ad8a7bd0a70efbc3d96a47accc4fa77f045d9e0ce7a"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-07-repeat-motif-controls-attempt-03-failure.json",
+      "sha256": "cfc1b559d19e67b59401d123047d6fe9fce1253dfcbb1839a9ab298563a5200d"
+    }
+  ],
+  "success_evidence_created": false
+}
+

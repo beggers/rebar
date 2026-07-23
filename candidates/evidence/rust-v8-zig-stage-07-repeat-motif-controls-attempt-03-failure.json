@@ -1,0 +1,63 @@
+{
+  "schema": "rebar-zig-stage-07-repeat-motif-control-failure-v1",
+  "stage": "07",
+  "attempt": 3,
+  "status": "FAIL",
+  "process_exit_code": 1,
+  "frozen_comparison_source": "tools/rust_v6_paths_probe.py",
+  "source_under_test": "candidates/zig/mini_regex.zig",
+  "engine_under_test": "candidates/_zig_probe.so",
+  "bridge_under_test": "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so",
+  "candidate_module": "candidates.zig_candidate",
+  "exact_process_stdout": "{\"candidate_module\": \"candidates.zig_candidate\", \"completed_category_checks\": {\"bounded-repeat-mode\": 10290, \"captured-and-general-motifs\": 14700, \"homogeneous-repeat\": 4900, \"multi-character-repeat\": 4900, \"unicode-flags-multiline-and-backreferences\": 1764, \"zero-width-and-nullable\": 2940}, \"completed_correctness_checks\": 39494, \"current_case\": {\"category\": \"overflow-and-exact-quantifier-errors\", \"flags\": 0, \"label\": \"text/maxrepeat-overflow\", \"pattern\": \"'a{4294967295}'\", \"subject\": \"''\"}, \"failed\": 1, \"first_failure\": {\"actual\": {\"value\": {\"__diagnostic_type__\": \"candidates.zig_candidate.Pattern\", \"flags\": 32, \"groupindex\": {}, \"groups\": 0, \"pattern\": \"a{4294967295}\"}}, \"expected\": {\"error\": \"OverflowError\", \"message\": \"the repetition number is too large\"}, \"flags\": 0, \"label\": \"text/maxrepeat-overflow\", \"operation\": \"compile\", \"pattern\": \"'a{4294967295}'\", \"subject\": \"''\"}, \"frozen_comparison_source\": \"tools/rust_v6_paths_probe.py\", \"performance\": \"NOT MEASURED\", \"reference_module\": \"re\", \"schema\": \"rebar-zig-stage-07-bounded-repeat-controls-v1\", \"seed\": 2026072307, \"status\": \"FAIL\"}\n",
+  "result": {
+    "candidate_module": "candidates.zig_candidate",
+    "completed_category_checks": {
+      "bounded-repeat-mode": 10290,
+      "captured-and-general-motifs": 14700,
+      "homogeneous-repeat": 4900,
+      "multi-character-repeat": 4900,
+      "unicode-flags-multiline-and-backreferences": 1764,
+      "zero-width-and-nullable": 2940
+    },
+    "completed_correctness_checks": 39494,
+    "current_case": {
+      "category": "overflow-and-exact-quantifier-errors",
+      "flags": 0,
+      "label": "text/maxrepeat-overflow",
+      "pattern": "'a{4294967295}'",
+      "subject": "''"
+    },
+    "failed": 1,
+    "first_failure": {
+      "actual": {
+        "value": {
+          "__diagnostic_type__": "candidates.zig_candidate.Pattern",
+          "flags": 32,
+          "groupindex": {},
+          "groups": 0,
+          "pattern": "a{4294967295}"
+        }
+      },
+      "expected": {
+        "error": "OverflowError",
+        "message": "the repetition number is too large"
+      },
+      "flags": 0,
+      "label": "text/maxrepeat-overflow",
+      "operation": "compile",
+      "pattern": "'a{4294967295}'",
+      "subject": "''"
+    },
+    "frozen_comparison_source": "tools/rust_v6_paths_probe.py",
+    "performance": "NOT MEASURED",
+    "reference_module": "re",
+    "schema": "rebar-zig-stage-07-bounded-repeat-controls-v1",
+    "seed": 2026072307,
+    "status": "FAIL"
+  },
+  "performance": "NOT MEASURED",
+  "full_campaign": "NOT RUN",
+  "holdout": "NOT ACCESSED"
+}
+

@@ -1,0 +1,73 @@
+{
+  "schema": "rebar-zig-stage-07-repeat-motif-attempt-failure-v1",
+  "status": "FAIL",
+  "process_exit_code": 1,
+  "diagnostic_stdout": "{\"candidate_module\": \"candidates.zig_candidate\", \"completed_category_checks\": {\"homogeneous-repeat\": 245, \"multi-character-repeat\": 49}, \"completed_correctness_checks\": 294, \"current_case\": {\"category\": \"multi-character-repeat\", \"flags\": 0, \"label\": \"text/motif/0/subject-1\", \"pattern\": \"'(?:ab){0}'\", \"subject\": \"'a'\"}, \"failed\": 1, \"first_failure\": {\"actual\": {\"value\": null}, \"endpos\": 0, \"expected\": {\"value\": {\"endpos\": 0, \"group\": \"\", \"groupdict\": {}, \"groups\": {\"tuple\": []}, \"groups_default\": {\"tuple\": []}, \"lastgroup\": null, \"lastindex\": null, \"pos\": 1, \"regs\": {\"tuple\": [{\"tuple\": [1, 1]}]}, \"span\": {\"tuple\": [1, 1]}}}, \"flags\": 0, \"label\": \"text/motif/0/subject-1\", \"operation\": \"match\", \"pattern\": \"'(?:ab){0}'\", \"pos\": 3, \"subject\": \"'a'\"}, \"frozen_comparison_source\": \"tools/rust_v6_paths_probe.py\", \"performance\": \"NOT MEASURED\", \"reference_module\": \"re\", \"schema\": \"rebar-zig-stage-07-bounded-repeat-controls-v1\", \"seed\": 2026072307, \"status\": \"FAIL\"}\n",
+  "observed": {
+    "candidate_module": "candidates.zig_candidate",
+    "completed_category_checks": {
+      "homogeneous-repeat": 245,
+      "multi-character-repeat": 49
+    },
+    "completed_correctness_checks": 294,
+    "current_case": {
+      "category": "multi-character-repeat",
+      "flags": 0,
+      "label": "text/motif/0/subject-1",
+      "pattern": "'(?:ab){0}'",
+      "subject": "'a'"
+    },
+    "failed": 1,
+    "first_failure": {
+      "actual": {
+        "value": null
+      },
+      "endpos": 0,
+      "expected": {
+        "value": {
+          "endpos": 0,
+          "group": "",
+          "groupdict": {},
+          "groups": {
+            "tuple": []
+          },
+          "groups_default": {
+            "tuple": []
+          },
+          "lastgroup": null,
+          "lastindex": null,
+          "pos": 1,
+          "regs": {
+            "tuple": [
+              {
+                "tuple": [
+                  1,
+                  1
+                ]
+              }
+            ]
+          },
+          "span": {
+            "tuple": [
+              1,
+              1
+            ]
+          }
+        }
+      },
+      "flags": 0,
+      "label": "text/motif/0/subject-1",
+      "operation": "match",
+      "pattern": "'(?:ab){0}'",
+      "pos": 3,
+      "subject": "'a'"
+    },
+    "frozen_comparison_source": "tools/rust_v6_paths_probe.py",
+    "performance": "NOT MEASURED",
+    "reference_module": "re",
+    "schema": "rebar-zig-stage-07-bounded-repeat-controls-v1",
+    "seed": 2026072307,
+    "status": "FAIL"
+  },
+  "performance": "NOT MEASURED"
+}
