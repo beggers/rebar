@@ -25,6 +25,7 @@ extern int rebar_zig_match_inverted_wide(const void *, const uint8_t *, size_t, 
 extern intptr_t rebar_zig_collect_records_wide(const void *, const uint8_t *, size_t, uint8_t, size_t, size_t, intptr_t *, size_t *, uint8_t *);
 
 #define ZIG_LOCAL_CAPTURE_WORDS 1024
+#define ZIG_LOCAL_SPAN_WORDS 256
 #define ZIG_ITERATOR_RECORD_WORDS 64
 #define ZIG_INITIAL_CAPTURE_COUNT 64
 
@@ -41,7 +42,7 @@ typedef struct {
 } ZigCaptureBuffer;
 
 typedef struct {
-    intptr_t local[514];
+    intptr_t local[ZIG_LOCAL_SPAN_WORDS];
     intptr_t *storage;
     size_t stride;
 } ZigSpanBuffer;

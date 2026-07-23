@@ -314,7 +314,7 @@
               "mapping_count": 5,
               "matches_static_elf": true,
               "role": "bridge",
-              "sha256": "4d0dc7ece7ef42e34a8f425fab55429460e2fd66c587ce13c70539979393d13c"
+              "sha256": "4d1eb307eabc8b254ac0724aeb8ba106105d9879b7d46054b2355621fb330a92"
             },
             {
               "file": "candidates/_zig_probe.so",
@@ -349,7 +349,7 @@
           "file": "candidates/zig/py_bridge.c",
           "issues": [],
           "passed": true,
-          "sha256": "cdcf335f92f90c7ce98a93add914dabd0b607dc2742a4e7190a2187e538e959d"
+          "sha256": "cb14210092d9ec92a2ac8c458d7b713342c8662bcf3318f954e0c520bc7b1589"
         },
         {
           "allowed_native_python_imports": [],
@@ -880,7 +880,7 @@
             "runpaths": [
               "$ORIGIN"
             ],
-            "sha256": "4d0dc7ece7ef42e34a8f425fab55429460e2fd66c587ce13c70539979393d13c",
+            "sha256": "4d1eb307eabc8b254ac0724aeb8ba106105d9879b7d46054b2355621fb330a92",
             "undefined_symbol_count": 122
           },
           "engine": {
@@ -1792,7 +1792,7 @@
         "runpaths": [
           "$ORIGIN"
         ],
-        "sha256": "4d0dc7ece7ef42e34a8f425fab55429460e2fd66c587ce13c70539979393d13c",
+        "sha256": "4d1eb307eabc8b254ac0724aeb8ba106105d9879b7d46054b2355621fb330a92",
         "undefined_symbol_count": 122
       },
       "engine": {
