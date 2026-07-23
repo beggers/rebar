@@ -1,82 +1,76 @@
 # rebar: a faster Python `re`
 
-`rebar` is a from-scratch replacement for Python's regular-expression module. Use it with `import rebar as re`. Four independent engines were built and checked against stable CPython 3.14.6; matching never delegates to Python `re`, `_sre`, or an external regular-expression package.
+`rebar` is an experiment in building Python regular-expression replacements from scratch. It compares independent Zig, C, Rust, and Python engines against stable CPython 3.14.6. No candidate delegates matching to Python `re`, `_sre`, a third-party regular-expression package, or another candidate. The current public import is `import rebar as re`.
 
-## Current results
+## Overall results
 
-On **6,216 separate, unseen tasks**, Zig / `rebar` is **1.733× as fast overall** (95% range **1.732–1.735×**) and clearly faster on **5,691/6,216 tasks (91.6%)**. There are **seven** tasks more than 20% slower: six very short version-string searches and one short character-exclusion search. **1× means the same speed as Python `re`; higher is faster.**
+The larger frozen test contains **20,624 cases**, including **10,312 independently held-back cases**. Every engine was run against the same inputs for **13 paired trials**, producing **1,340,560 recorded measurements**. In every graph, **1× means the speed of Python `re`; higher is faster**.
 
-![Overall speed compared with Python re](candidates/evidence/zig-v6-threshold-corrected-overall.svg)
+![Overall speed of all four replacements compared with Python re on 10,312 unseen cases](performance/v7/evidence/initial-overall.svg)
 
-| Engine | Overall speed | Clearly faster | Large slowdowns |
-| --- | ---: | ---: | ---: |
-| Zig / `rebar` | **1.733×** | **5,691/6,216** | **7/6,216** |
-| Native C | 1.283× | 4,577/6,216 | 742/6,216 |
-| Rust | 0.134× | 229/6,216 | 5,892/6,216 |
-| Python | 0.021× | 195/6,216 | 5,919/6,216 |
+| From-scratch engine | Speed on unseen cases | 95% confidence interval | Clearly faster cases | Cases more than 20% slower |
+| --- | ---: | ---: | ---: | ---: |
+| Zig, the current `rebar` import | **1.609×** | 1.608–1.610× | **8,868/10,312** | **105/10,312** |
+| C | **1.271×** | 1.270–1.272× | 7,369/10,312 | 1,116/10,312 |
+| Rust | **0.925×** | 0.925–0.926× | 3,623/10,312 | 3,905/10,312 |
+| Independent Python engine | **0.022×** | 0.022–0.022× | 271/10,312 | 9,884/10,312 |
 
-![Zig speed across every unseen workload](candidates/evidence/zig-v6-threshold-corrected-zig-speed.svg)
+Zig currently has the best measured speed; the Rust engine is not yet faster than standard Python. These are results for the frozen benchmark, not a promise of complete compatibility. Additional independent grammar and object-behavior tests have found real differences in every candidate. **No candidate is currently established as a drop-in replacement for every Python `re` user.** The experiment remains open until those differences are fixed and the complete correctness tests pass.
 
-The test covers everyday text and bytes, common calls, compilation, Unicode, captures, replacements, scanners, input slices, structured data, hits, misses, and short and long inputs. The initial five-engine comparison and final Zig rerun retain **1,131,312** timing rows, memory observations, confidence ranges, individual results, and every slowdown. The [slowdown audit](performance/v6/evidence/REGRESSION-THRESHOLD-AUDIT.md) explains all seven Zig losses and corrects an earlier reporting rule that missed tasks taking 20–25% longer; none of the original measurements have been changed or discarded.
+![Overall rankings on the practice cases, independently unseen cases, and all cases](performance/v7/evidence/initial-rankings.svg)
 
-The Rust result in the table is the [recorded original baseline](candidates/evidence/RUST-V6-BASELINE.md). The [rewritten, from-scratch Rust engine](candidates/evidence/RUST-V6-VM-ARCHITECTURE.md) now passes its [complete compatibility and safety checks](candidates/evidence/RUST-V6-CAMPAIGN-GATE.md), including Unicode, Python APIs, replacements, crashes, and the official CPython tests. Its updated speed is **NOT MEASURED** until the larger frozen benchmark is run.
+The [complete slowdown audit](performance/v7/evidence/REGRESSION-AUDIT.md) lists all **105** unseen Zig slowdowns and preserves all **29,771** slowdowns across all four engines and both cohorts. A slowdown means a task actually took more than 20% longer than Python: `Python time / candidate time < 5/6`. No case, candidate, unfavorable result, or confidence interval has been removed.
 
-## Larger test, frozen before timing
+## What was tested
 
-The next benchmark preserves every earlier example and adds **64 new kinds of work**, for **20,624** total cases: **10,312 practice cases and 10,312 genuinely unseen cases**. No practice input is reused as an unseen input. Python and all four independently built replacements give the correct answer on every case: **103,120/103,120 checks passed**.
+The test covers text, bytes and buffers; Unicode; short and long inputs; captures; replacements; search, match, split, scanners, and iteration; compilation and repeated calls; source code, configuration, structured data, and logs; lookarounds, boundaries, and backreferences; matching, nonmatching, and zero-length results. All **64 added workload families** contain distinct practice and unseen examples.
 
-![What the larger Python re benchmark tests](performance/v7/evidence/coverage.svg)
+![Coverage of the expanded Python regular-expression benchmark](performance/v7/evidence/coverage.svg)
 
-The [larger test protocol](performance/v7/PROTOCOL.md) fixes the inputs, weights, random seeds, confidence rules, memory measurements, and the correct definition of a slowdown before timing. The [independent-engine audit](performance/v7/evidence/delegation-audit.jsonl) confirms that none of the replacements wraps Python `re` or an external regular-expression package; the Rust engine has **zero external Rust dependencies**. Results on this larger test are **NOT MEASURED**. The speed and graphs above remain the actual results from the earlier **6,216-case** test.
+All five engines agree with Python on the **20,624 frozen benchmark answers**. Stronger, separately generated parser, object, whitespace, buffer, error, and API checks expose additional compatibility gaps; those checks must pass before any engine is called a complete replacement. The [frozen benchmark protocol](performance/v7/PROTOCOL.md) fixes the inputs, weights, seeds, trial counts, correctness gates, confidence calculations, and memory measurements. The [independence audit](performance/v7/evidence/delegation-audit.jsonl) verifies that the candidates do not wrap an external regex engine and that the Rust implementation has **zero external Rust dependencies**.
 
-## Compatibility
+## Detailed graphs
 
-`rebar` passes the frozen **44,084-case** correctness suite, including **35,840** unseen text, bytes, Unicode, buffer, scanner, property, and invalid-input cases, all **144** runnable official CPython `re` tests, **109,848** established focused checks, **163,960** alternative/run/delimiter/API checks, **156,484** direct-scan checks, and **230,337** new literal, alternative, Unicode, line, buffer, and call-surface checks. Debug, address, and undefined-behavior checks and the zero-delegation audit are clean.
+These graphs show the complete unseen results, not selected examples. Each new workload row represents all **64** independently held-back cases.
 
-![Large correctness holdout coverage and results](oracle/v3/evidence/qualified-correctness.svg)
+![Where the from-scratch Zig replacement is faster or slower than Python](performance/v7/evidence/initial-zig-speed.svg)
 
-![Broader performance holdout coverage](performance/v6/evidence/coverage.svg)
+![Where the from-scratch Rust replacement is faster or slower than Python](performance/v7/evidence/initial-rust-speed.svg)
 
-| Check | Current result |
-| --- | --- |
-| Frozen correctness | **PASS** — stdlib and all four engines pass all 44,084 cases |
-| Official CPython tests | **PASS** — 144/144 runnable methods; zero failures, crashes, or timeouts |
-| Focused Zig/API/safety | **PASS** — Unicode, large patterns, groups, repeats, flags, errors, spans, captures, buffers, and public calls |
-| Performance holdout | **PASS** — 1.733× overall, 91.6% clearly faster; all seven large slowdowns are listed and explained |
-| Public import | **AVAILABLE** — `import rebar as re` selects the independent Zig engine |
+![Speed of every candidate across the 64 expanded workload families](performance/v7/evidence/initial-family-speed.svg)
 
-## Detailed current graphs
+![Temporary Python memory used by each candidate relative to Python re](performance/v7/evidence/initial-memory.svg)
 
-The following views keep the **48 new kinds of workload** separate so it is easy to see where each engine helps or hurts. Temporary Python memory for Zig is at or below Python `re` on **5,722/6,216** holdout tasks, with a **0.54×** median ratio. The raw data also retains process-memory observations.
+![Every clearly faster case and every slowdown for each candidate and workload](performance/v7/evidence/initial-win-loss.svg)
 
-![Speed by workload and engine](candidates/evidence/zig-v6-threshold-corrected-family-speed.svg)
-
-![Temporary Python memory by workload and engine](candidates/evidence/zig-v6-threshold-corrected-memory.svg)
-
-![Wins and large slowdowns by workload and engine](candidates/evidence/zig-v6-threshold-corrected-win-loss.svg)
-
-![Overall rankings on practice, unseen, and all tasks](candidates/evidence/zig-v6-threshold-corrected-rankings.svg)
-
-The [complete slowdown audit](performance/v6/evidence/REGRESSION-THRESHOLD-AUDIT.md) keeps every family, engine, original measurement, and corrected result visible.
+Python-traced temporary memory on the unseen cases has a median ratio of **0.503×** for Zig, **0.442×** for C, **0.676×** for Rust, and **9.687×** for the independent Python engine. Process memory was also recorded for every trial, but all engines shared one measurement process, so those observations **cannot establish engine-specific process-memory usage**.
 
 ## Reproduce
 
-The [broader performance protocol](performance/v6/PROTOCOL.md) records coverage, equal weights, seeds, timing rules, and correctness gates. The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; scope notes are in [AMENDMENTS.md](AMENDMENTS.md), and the chronological record is in the [experiment log](docs/EXPERIMENT-LOG.md).
+The [complete experiment log](docs/EXPERIMENT-LOG.md) keeps previous designs, measurements, rejected experiments, and correctness failures out of the headline results. The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; scope amendments are recorded in [AMENDMENTS.md](AMENDMENTS.md).
 
 ```sh
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
-PYTHON="$PY" sh tools/build_zig_probe.sh
 
-PYTHONPATH=. "$PY" -c 'import rebar as re; print(re.findall(r"[A-Za-z]+", "a faster python re"))'
-PYTHONPATH=. "$PY" tools/oracle_v3.py verify --module rebar --cohort holdout --output /tmp/rebar-correctness.json
-PYTHONPATH=. "$PY" tools/cpython_re_oracle.py verify --module rebar --output /tmp/rebar-official.json
-PYTHONPATH=. "$PY" tools/zig_v6_paths_probe.py --module rebar --seeded-cases 8192 --output /tmp/rebar-paths.json
-PYTHONPATH=. "$PY" tools/perf_v6.py verify --module rebar --output /tmp/rebar-performance-check.json
-PYTHONPATH=. "$PY" tools/perf_v7.py verify --output /tmp/rebar-larger-correctness.json
+PYTHONPATH=. "$PY" tools/perf_v7.py self-test
+PYTHONPATH=. "$PY" tools/perf_v7.py verify --output /tmp/rebar-v7-correctness.json
 PYTHONPATH=. "$PY" tools/perf_v7_delegation_audit.py
-PYTHONPATH=. "$PY" tools/zig_perf_v6.py self-test
-gzip -dc candidates/evidence/zig-v6-final-raw.jsonl.gz > /tmp/rebar-raw.jsonl
-PYTHONPATH=. "$PY" tools/zig_perf_v6.py analyze --input /tmp/rebar-raw.jsonl --output /tmp/rebar-summary.json
-PYTHONPATH=. "$PY" tools/zig_merge_v6.py --initial performance/v6/evidence/initial-summary.json.gz --zig /tmp/rebar-summary.json --output /tmp/rebar-combined.json
-PYTHONPATH=. "$PY" tools/performance_v6_charts.py --summary /tmp/rebar-combined.json --prefix /tmp/rebar
+PYTHONPATH=. "$PY" tools/perf_v7_regression_audit.py --self-test
+
+gzip -dc performance/v7/evidence/initial-raw.jsonl.gz > /tmp/rebar-v7-raw.jsonl
+gzip -dc performance/v7/evidence/initial-summary.json.gz > /tmp/rebar-v7-summary.json
+
+PYTHONPATH=. "$PY" tools/perf_v7_result_audit.py \
+  --raw /tmp/rebar-v7-raw.jsonl \
+  --summary /tmp/rebar-v7-summary.json \
+  --output /tmp/rebar-v7-integrity.json
+
+PYTHONPATH=. "$PY" tools/performance_v7_charts.py \
+  --summary /tmp/rebar-v7-summary.json --prefix /tmp/rebar-v7
+
+PYTHONPATH=. "$PY" tools/perf_v7_regression_audit.py \
+  --integrity performance/v7/evidence/initial-integrity.json \
+  --summary performance/v7/evidence/initial-summary.json.gz \
+  --output /tmp/rebar-v7-regressions.md \
+  --json-output /tmp/rebar-v7-regressions.json.gz
 ```
