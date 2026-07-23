@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="778" viewBox="0 0 1320 778" role="img" aria-label="How often does each replacement win or lose?">
+<title>How often does each replacement win or lose?</title>
+<desc>PRACTICE ONLY. Every replacement and standard Python ran the same 624 public practice tasks in the same 7 paired trials. The unseen final test remains sealed. Measured outcomes and confidence-supported outcomes use the same 624 tasks; large slowdowns are counted separately</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:25px;font-weight:750}.sub{font-size:13px;fill:#52627a}.head{font-size:15px;font-weight:700}.label{font-size:12px}.small{font-size:11px;fill:#52627a}.value{font-size:12px;font-weight:700}.tick{font-size:10.5px;fill:#64748b}.banner{font-size:12px;font-weight:700;fill:#92400e}.grid{stroke:#e2e8f0;stroke-width:1}.base{stroke:#475569;stroke-width:1.7}.panel{fill:#f8fafc;stroke:#e2e8f0;stroke-width:1}</style>
+<text x="26" y="39" class="title">How often does each replacement win or lose?</text>
+<text x="26" y="63" class="sub">Measured outcomes and confidence-supported outcomes use the same 624 tasks; large slowdowns are counted separately</text>
+<rect x="20" y="78" width="1280" height="34" rx="7" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="33" y="100" class="banner">PRACTICE ONLY — the unseen final test remains sealed; final speed NOT MEASURED</text>
+<rect x="18" y="131" width="1284" height="182" rx="9" class="panel"/>
+<text x="29" y="153" class="head">C · all 624 cases</text>
+<text x="29" y="190" class="label">Measured result</text>
+<rect x="305.00" y="173" width="599.88" height="19" fill="#047857"/>
+<text x="604.94" y="187" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">483</text>
+<rect x="904.88" y="173" width="175.12" height="19" fill="#dc2626"/>
+<text x="992.44" y="187" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">141</text>
+<text x="1092" y="189" class="value">624/624</text>
+<text x="305" y="207" class="small">483/624 measured faster · 0/624 equal · 141/624 measured slower</text>
+<text x="29" y="235" class="label">Confidence-based result</text>
+<rect x="305.00" y="218" width="532.81" height="19" fill="#047857"/>
+<text x="571.41" y="232" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">429</text>
+<rect x="837.81" y="218" width="120.47" height="19" fill="#94a3b8"/>
+<text x="898.05" y="232" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">97</text>
+<rect x="958.29" y="218" width="121.71" height="19" fill="#dc2626"/>
+<text x="1019.14" y="232" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">98</text>
+<text x="1092" y="234" class="value">624/624</text>
+<text x="305" y="252" class="small">429/624 clearly faster · 97/624 no clear difference · 98/624 clearly slower</text>
+<text x="29" y="284" class="label">Took more than 20% longer</text>
+<rect x="305" y="267" width="775" height="19" fill="#fee2e2"/>
+<rect x="305" y="267" width="58.37" height="19" fill="#dc2626"/>
+<text x="1092" y="282" class="value">47/624</text>
+<text x="305" y="304" class="small">A separate timing rule; every large slowdown remains visible even when its confidence range crosses 1×.</text>
+<rect x="18" y="322" width="1284" height="182" rx="9" class="panel"/>
+<text x="29" y="344" class="head">Rust · all 624 cases</text>
+<text x="29" y="381" class="label">Measured result</text>
+<rect x="305.00" y="364" width="414.82" height="19" fill="#047857"/>
+<text x="512.41" y="378" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">334</text>
+<rect x="719.82" y="364" width="360.18" height="19" fill="#dc2626"/>
+<text x="899.91" y="378" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">290</text>
+<text x="1092" y="380" class="value">624/624</text>
+<text x="305" y="398" class="small">334/624 measured faster · 0/624 equal · 290/624 measured slower</text>
+<text x="29" y="426" class="label">Confidence-based result</text>
+<rect x="305.00" y="409" width="325.40" height="19" fill="#047857"/>
+<text x="467.70" y="423" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">262</text>
+<rect x="630.40" y="409" width="186.30" height="19" fill="#94a3b8"/>
+<text x="723.55" y="423" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">150</text>
+<rect x="816.70" y="409" width="263.30" height="19" fill="#dc2626"/>
+<text x="948.35" y="423" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">212</text>
+<text x="1092" y="425" class="value">624/624</text>
+<text x="305" y="443" class="small">262/624 clearly faster · 150/624 no clear difference · 212/624 clearly slower</text>
+<text x="29" y="475" class="label">Took more than 20% longer</text>
+<rect x="305" y="458" width="775" height="19" fill="#fee2e2"/>
+<rect x="305" y="458" width="155.25" height="19" fill="#dc2626"/>
+<text x="1092" y="473" class="value">125/624</text>
+<text x="305" y="495" class="small">A separate timing rule; every large slowdown remains visible even when its confidence range crosses 1×.</text>
+<rect x="18" y="513" width="1284" height="182" rx="9" class="panel"/>
+<text x="29" y="535" class="head">Zig · all 624 cases</text>
+<text x="29" y="572" class="label">Measured result</text>
+<rect x="305.00" y="555" width="344.03" height="19" fill="#047857"/>
+<text x="477.02" y="569" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">277</text>
+<rect x="649.03" y="555" width="430.97" height="19" fill="#dc2626"/>
+<text x="864.52" y="569" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">347</text>
+<text x="1092" y="571" class="value">624/624</text>
+<text x="305" y="589" class="small">277/624 measured faster · 0/624 equal · 347/624 measured slower</text>
+<text x="29" y="617" class="label">Confidence-based result</text>
+<rect x="305.00" y="600" width="286.90" height="19" fill="#047857"/>
+<text x="448.45" y="614" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">231</text>
+<rect x="591.90" y="600" width="117.99" height="19" fill="#94a3b8"/>
+<text x="650.89" y="614" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">95</text>
+<rect x="709.89" y="600" width="370.11" height="19" fill="#dc2626"/>
+<text x="894.94" y="614" text-anchor="middle" style="font-size:11px;font-weight:700;fill:#ffffff">298</text>
+<text x="1092" y="616" class="value">624/624</text>
+<text x="305" y="634" class="small">231/624 clearly faster · 95/624 no clear difference · 298/624 clearly slower</text>
+<text x="29" y="666" class="label">Took more than 20% longer</text>
+<rect x="305" y="649" width="775" height="19" fill="#fee2e2"/>
+<rect x="305" y="649" width="291.87" height="19" fill="#dc2626"/>
+<text x="1092" y="664" class="value">235/624</text>
+<text x="305" y="686" class="small">A separate timing rule; every large slowdown remains visible even when its confidence range crosses 1×.</text>
+<text x="26" y="766" class="small">All 407 recorded large slowdowns are retained. Practice results are not final results.</text>
+</svg>

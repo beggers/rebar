@@ -2954,7 +2954,7 @@ static PyObject *pattern_iterator(PatternObject *pattern, PyObject *const *args,
     }
     PyObject_GC_Track(iterator);
     if (!return_iterator) return (PyObject *)iterator;
-    PyObject *search=PyObject_GetAttrString((PyObject *)iterator,"search");
+    PyObject *search = PyCMethod_New(&ScannerMethods[0], (PyObject *)iterator, NULL, &ScannerType);
     if (!search) { Py_DECREF(iterator); return NULL; }
     PyObject *result=PyCallIter_New(search,Py_None);
     Py_DECREF(search);
