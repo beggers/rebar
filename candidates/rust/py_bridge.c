@@ -403,16 +403,16 @@ static PyObject *rust_match_get_private_spans(RustMatch *match, void *closure) {
 }
 
 static int rust_match_traverse(RustMatch *match, visitproc visit, void *arg) {
-    Py_VISIT(match->pattern);
     Py_VISIT(match->string);
+    Py_VISIT(match->pattern);
     Py_VISIT(match->groupindex);
     Py_VISIT(match->regs);
     return 0;
 }
 
 static int rust_match_clear(RustMatch *match) {
-    Py_CLEAR(match->pattern);
     Py_CLEAR(match->string);
+    Py_CLEAR(match->pattern);
     Py_CLEAR(match->groupindex);
     Py_CLEAR(match->regs);
     return 0;
@@ -495,19 +495,35 @@ static PyObject *rust_match_new(PyTypeObject *type, PyObject *args, PyObject *kw
 }
 
 static PyMethodDef rust_match_methods[] = {
-    {"group", (PyCFunction)(void (*)(void))rust_match_group, METH_FASTCALL, "Return one or more captured groups."},
+    {"group", (PyCFunction)(void (*)(void))rust_match_group, METH_FASTCALL,
+     "group([group1, ...]) -> str or tuple.\n"
+     "    Return subgroup(s) of the match by indices or names.\n"
+     "    For 0 returns the entire match."},
     {"groups", (PyCFunction)(void (*)(void))rust_match_groups, METH_FASTCALL | METH_KEYWORDS,
-     "groups($self, /, default=None)\n--\n\nReturn all captured groups."},
+     "groups($self, /, default=None)\n--\n\n"
+     "Return a tuple containing all the subgroups of the match, from 1.\n\n"
+     "  default\n"
+     "    Is used for groups that did not participate in the match."},
     {"groupdict", (PyCFunction)(void (*)(void))rust_match_groupdict, METH_FASTCALL | METH_KEYWORDS,
-     "groupdict($self, /, default=None)\n--\n\nReturn named captured groups."},
+     "groupdict($self, /, default=None)\n--\n\n"
+     "Return a dictionary containing all the named subgroups of the match, "
+     "keyed by the subgroup name.\n\n"
+     "  default\n"
+     "    Is used for groups that did not participate in the match."},
     {"start", (PyCFunction)(void (*)(void))rust_match_start, METH_FASTCALL,
-     "start($self, group=0, /)\n--\n\nReturn the beginning of a captured group."},
+     "start($self, group=0, /)\n--\n\n"
+     "Return index of the start of the substring matched by group."},
     {"end", (PyCFunction)(void (*)(void))rust_match_end, METH_FASTCALL,
-     "end($self, group=0, /)\n--\n\nReturn the end of a captured group."},
+     "end($self, group=0, /)\n--\n\n"
+     "Return index of the end of the substring matched by group."},
     {"span", (PyCFunction)(void (*)(void))rust_match_span_method, METH_FASTCALL,
-     "span($self, group=0, /)\n--\n\nReturn a captured group's offsets."},
+     "span($self, group=0, /)\n--\n\n"
+     "For match object m, return the 2-tuple "
+     "(m.start(group), m.end(group))."},
     {"expand", (PyCFunction)rust_match_expand, METH_O,
-     "expand($self, /, template)\n--\n\nExpand a replacement template."},
+     "expand($self, /, template)\n--\n\n"
+     "Return the string obtained by doing backslash substitution on "
+     "the string template, as done by the sub() method."},
     {"__copy__", (PyCFunction)rust_match_copy, METH_NOARGS, "Return this immutable match."},
     {"__deepcopy__", (PyCFunction)rust_match_deepcopy, METH_O, "Return this immutable match."},
     {"__reduce__", (PyCFunction)rust_match_reduce, METH_NOARGS, "Matches cannot be pickled."},
@@ -1785,8 +1801,8 @@ static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const 
 }
 
 static int rust_iterator_traverse(RustIterator *iterator, visitproc visit, void *arg) {
-    Py_VISIT(iterator->pattern);
     if (Py_TYPE(iterator) != &RustScannerType) Py_VISIT(iterator->string);
+    Py_VISIT(iterator->pattern);
     Py_VISIT(iterator->groupindex);
     return 0;
 }
@@ -1797,8 +1813,8 @@ static int rust_iterator_clear(RustIterator *iterator) {
     iterator->heap = NULL;
     iterator->done = 1;
     iterator->subject.object = NULL;
-    Py_CLEAR(iterator->pattern);
     Py_CLEAR(iterator->string);
+    Py_CLEAR(iterator->pattern);
     Py_CLEAR(iterator->groupindex);
     return 0;
 }
@@ -2619,6 +2635,386 @@ static PyObject *bridge_bound_subn(PyObject *module, PyObject *const *args, Py_s
     return rust_bound_substitute(args, nargs, kwnames, 1);
 }
 
+typedef enum {
+    RUST_PATTERN_SEARCH,
+    RUST_PATTERN_MATCH,
+    RUST_PATTERN_FULLMATCH,
+    RUST_PATTERN_FINDALL,
+    RUST_PATTERN_FINDITER,
+    RUST_PATTERN_SCANNER,
+    RUST_PATTERN_SPLIT,
+    RUST_PATTERN_SUB,
+    RUST_PATTERN_SUBN,
+} RustPatternMethod;
+
+typedef PyObject *(*RustPatternBridgeCall)(
+    PyObject *, PyObject *const *, Py_ssize_t, PyObject *
+);
+
+static int rust_pattern_append_attribute(
+    PyObject *pattern,
+    const char *name,
+    PyObject **owned,
+    size_t *owned_count,
+    PyObject **prefix,
+    size_t *prefix_count
+) {
+    PyObject *value = PyObject_GetAttrString(pattern, name);
+    if (value == NULL) return 0;
+    owned[*owned_count] = value;
+    (*owned_count)++;
+    prefix[*prefix_count] = value;
+    (*prefix_count)++;
+    return 1;
+}
+
+#define RUST_PATTERN_APPEND_ATTRIBUTE(name) \
+    do { \
+        if (!rust_pattern_append_attribute( \
+                pattern, name, owned, &owned_count, prefix, &prefix_count \
+            )) { \
+            goto cleanup; \
+        } \
+    } while (0)
+
+static PyObject *rust_pattern_dispatch(
+    PyObject *pattern,
+    PyObject *const *args,
+    Py_ssize_t nargs,
+    PyObject *kwnames,
+    RustPatternMethod operation
+) {
+    PyObject *owned[7] = {NULL};
+    PyObject *prefix[7] = {NULL};
+    size_t owned_count = 0;
+    size_t prefix_count = 0;
+    RustPatternBridgeCall function = NULL;
+    PyObject *result = NULL;
+
+    switch (operation) {
+        case RUST_PATTERN_SEARCH:
+        case RUST_PATTERN_MATCH:
+        case RUST_PATTERN_FULLMATCH:
+            prefix[prefix_count++] = pattern;
+            RUST_PATTERN_APPEND_ATTRIBUTE("_handle");
+            RUST_PATTERN_APPEND_ATTRIBUTE("_groupindex");
+            RUST_PATTERN_APPEND_ATTRIBUTE("pattern");
+            RUST_PATTERN_APPEND_ATTRIBUTE("_literal");
+            function = operation == RUST_PATTERN_SEARCH
+                ? bridge_bound_search
+                : operation == RUST_PATTERN_MATCH
+                    ? bridge_bound_match
+                    : bridge_bound_fullmatch;
+            break;
+        case RUST_PATTERN_FINDALL:
+            RUST_PATTERN_APPEND_ATTRIBUTE("_literal");
+            if (prefix[0] != Py_None) {
+                function = bridge_bound_literal_findall;
+            } else {
+                prefix_count = 0;
+                RUST_PATTERN_APPEND_ATTRIBUTE("_handle");
+                RUST_PATTERN_APPEND_ATTRIBUTE("pattern");
+                RUST_PATTERN_APPEND_ATTRIBUTE("groups");
+                function = bridge_bound_findall;
+            }
+            break;
+        case RUST_PATTERN_FINDITER:
+        case RUST_PATTERN_SCANNER:
+            prefix[prefix_count++] = pattern;
+            RUST_PATTERN_APPEND_ATTRIBUTE("_handle");
+            RUST_PATTERN_APPEND_ATTRIBUTE("_groupindex");
+            RUST_PATTERN_APPEND_ATTRIBUTE("pattern");
+            RUST_PATTERN_APPEND_ATTRIBUTE("groups");
+            function = operation == RUST_PATTERN_FINDITER
+                ? bridge_bound_finditer
+                : bridge_bound_scanner;
+            break;
+        case RUST_PATTERN_SPLIT:
+            RUST_PATTERN_APPEND_ATTRIBUTE("_handle");
+            RUST_PATTERN_APPEND_ATTRIBUTE("pattern");
+            RUST_PATTERN_APPEND_ATTRIBUTE("groups");
+            function = bridge_bound_split;
+            break;
+        case RUST_PATTERN_SUB:
+        case RUST_PATTERN_SUBN:
+            prefix[prefix_count++] = pattern;
+            RUST_PATTERN_APPEND_ATTRIBUTE("_handle");
+            RUST_PATTERN_APPEND_ATTRIBUTE("_groupindex");
+            RUST_PATTERN_APPEND_ATTRIBUTE("pattern");
+            RUST_PATTERN_APPEND_ATTRIBUTE("_literal");
+            RUST_PATTERN_APPEND_ATTRIBUTE("_templates");
+            if (prefix[prefix_count - 1] == Py_None) {
+                PyObject *templates = PyDict_New();
+                if (templates == NULL) goto cleanup;
+                if (
+                    PyObject_SetAttrString(
+                        pattern, "_templates", templates
+                    ) < 0
+                ) {
+                    Py_DECREF(templates);
+                    goto cleanup;
+                }
+                Py_SETREF(owned[owned_count - 1], templates);
+                prefix[prefix_count - 1] = templates;
+            }
+            RUST_PATTERN_APPEND_ATTRIBUTE("groups");
+            function = operation == RUST_PATTERN_SUB
+                ? bridge_bound_sub
+                : bridge_bound_subn;
+            break;
+        default:
+            PyErr_SetString(
+                PyExc_SystemError,
+                "invalid native regular-expression pattern method"
+            );
+            goto cleanup;
+    }
+
+    if (nargs < 0 || nargs > PY_SSIZE_T_MAX - (Py_ssize_t)prefix_count) {
+        PyErr_NoMemory();
+        goto cleanup;
+    }
+    size_t positional = (size_t)nargs;
+    size_t keywords = kwnames == NULL
+        ? 0
+        : (size_t)PyTuple_GET_SIZE(kwnames);
+    if (
+        positional > SIZE_MAX - keywords
+        || prefix_count > SIZE_MAX - positional - keywords
+    ) {
+        PyErr_NoMemory();
+        goto cleanup;
+    }
+    size_t user_count = positional + keywords;
+    size_t total = prefix_count + user_count;
+    PyObject *local[RUST_LOCAL_BOUND_ARGS];
+    PyObject **call = local;
+    if (total > RUST_LOCAL_BOUND_ARGS) {
+        if (total > SIZE_MAX / sizeof(PyObject *)) {
+            PyErr_NoMemory();
+            goto cleanup;
+        }
+        call = PyMem_Malloc(total * sizeof(PyObject *));
+        if (call == NULL) {
+            PyErr_NoMemory();
+            goto cleanup;
+        }
+    }
+    for (size_t index = 0; index < prefix_count; index++) {
+        call[index] = prefix[index];
+    }
+    for (size_t index = 0; index < user_count; index++) {
+        call[prefix_count + index] = args[index];
+    }
+    result = function(
+        NULL,
+        call,
+        (Py_ssize_t)(prefix_count + positional),
+        kwnames
+    );
+    if (call != local) PyMem_Free(call);
+
+cleanup:
+    for (size_t index = 0; index < owned_count; index++) {
+        Py_DECREF(owned[index]);
+    }
+    return result;
+}
+
+#undef RUST_PATTERN_APPEND_ATTRIBUTE
+
+#define RUST_PATTERN_CMETHOD(name, operation) \
+    static PyObject *rust_pattern_##name( \
+        PyObject *pattern, \
+        PyTypeObject *defining_class, \
+        PyObject *const *args, \
+        Py_ssize_t nargs, \
+        PyObject *kwnames \
+    ) { \
+        (void)defining_class; \
+        return rust_pattern_dispatch( \
+            pattern, args, nargs, kwnames, operation \
+        ); \
+    }
+
+RUST_PATTERN_CMETHOD(search, RUST_PATTERN_SEARCH)
+RUST_PATTERN_CMETHOD(match, RUST_PATTERN_MATCH)
+RUST_PATTERN_CMETHOD(fullmatch, RUST_PATTERN_FULLMATCH)
+RUST_PATTERN_CMETHOD(finditer, RUST_PATTERN_FINDITER)
+RUST_PATTERN_CMETHOD(scanner, RUST_PATTERN_SCANNER)
+RUST_PATTERN_CMETHOD(sub, RUST_PATTERN_SUB)
+RUST_PATTERN_CMETHOD(subn, RUST_PATTERN_SUBN)
+
+#undef RUST_PATTERN_CMETHOD
+
+static PyObject *rust_pattern_findall(
+    PyObject *pattern,
+    PyObject *const *args,
+    Py_ssize_t nargs,
+    PyObject *kwnames
+) {
+    return rust_pattern_dispatch(
+        pattern, args, nargs, kwnames, RUST_PATTERN_FINDALL
+    );
+}
+
+static PyObject *rust_pattern_split(
+    PyObject *pattern,
+    PyObject *const *args,
+    Py_ssize_t nargs,
+    PyObject *kwnames
+) {
+    return rust_pattern_dispatch(
+        pattern, args, nargs, kwnames, RUST_PATTERN_SPLIT
+    );
+}
+
+static PyMethodDef rust_pattern_methods[] = {
+    {
+        "search",
+        _PyCFunction_CAST(rust_pattern_search),
+        METH_METHOD | METH_FASTCALL | METH_KEYWORDS,
+        "search($self, /, string, pos=0, endpos=sys.maxsize)\n--\n\n"
+        "Scan through string looking for a match, and return a "
+        "corresponding match object instance.\n\n"
+        "Return None if no position in the string matches.",
+    },
+    {
+        "match",
+        _PyCFunction_CAST(rust_pattern_match),
+        METH_METHOD | METH_FASTCALL | METH_KEYWORDS,
+        "match($self, /, string, pos=0, endpos=sys.maxsize)\n--\n\n"
+        "Matches zero or more characters at the beginning of the string.",
+    },
+    {
+        "fullmatch",
+        _PyCFunction_CAST(rust_pattern_fullmatch),
+        METH_METHOD | METH_FASTCALL | METH_KEYWORDS,
+        "fullmatch($self, /, string, pos=0, endpos=sys.maxsize)\n--\n\n"
+        "Matches against all of the string.",
+    },
+    {
+        "findall",
+        _PyCFunction_CAST(rust_pattern_findall),
+        METH_FASTCALL | METH_KEYWORDS,
+        "findall($self, /, string, pos=0, endpos=sys.maxsize)\n--\n\n"
+        "Return a list of all non-overlapping matches of pattern "
+        "in string.",
+    },
+    {
+        "finditer",
+        _PyCFunction_CAST(rust_pattern_finditer),
+        METH_METHOD | METH_FASTCALL | METH_KEYWORDS,
+        "finditer($self, /, string, pos=0, endpos=sys.maxsize)\n--\n\n"
+        "Return an iterator over all non-overlapping matches for "
+        "the RE pattern in string.\n\n"
+        "For each match, the iterator returns a match object.",
+    },
+    {
+        "scanner",
+        _PyCFunction_CAST(rust_pattern_scanner),
+        METH_METHOD | METH_FASTCALL | METH_KEYWORDS,
+        "scanner($self, /, string, pos=0, endpos=sys.maxsize)\n--\n\n",
+    },
+    {
+        "split",
+        _PyCFunction_CAST(rust_pattern_split),
+        METH_FASTCALL | METH_KEYWORDS,
+        "split($self, /, string, maxsplit=0)\n--\n\n"
+        "Split string by the occurrences of pattern.",
+    },
+    {
+        "sub",
+        _PyCFunction_CAST(rust_pattern_sub),
+        METH_METHOD | METH_FASTCALL | METH_KEYWORDS,
+        "sub($self, /, repl, string, count=0)\n--\n\n"
+        "Return the string obtained by replacing the leftmost "
+        "non-overlapping occurrences of pattern in string "
+        "by the replacement repl.",
+    },
+    {
+        "subn",
+        _PyCFunction_CAST(rust_pattern_subn),
+        METH_METHOD | METH_FASTCALL | METH_KEYWORDS,
+        "subn($self, /, repl, string, count=0)\n--\n\n"
+        "Return the tuple (new_string, number_of_subs_made) found "
+        "by replacing the leftmost non-overlapping occurrences "
+        "of pattern with the replacement repl.",
+    },
+    {NULL, NULL, 0, NULL},
+};
+
+static PyObject *bridge_pattern_descriptors(
+    PyObject *module, PyObject *pattern_type
+) {
+    (void)module;
+    if (!PyType_Check(pattern_type)) {
+        PyErr_SetString(
+            PyExc_TypeError,
+            "pattern_descriptors() requires a pattern type"
+        );
+        return NULL;
+    }
+    const Py_ssize_t count = 9;
+    PyObject *descriptors = PyTuple_New(count);
+    if (descriptors == NULL) return NULL;
+    for (Py_ssize_t index = 0; index < count; index++) {
+        PyObject *descriptor = PyDescr_NewMethod(
+            (PyTypeObject *)pattern_type,
+            &rust_pattern_methods[index]
+        );
+        if (descriptor == NULL) {
+            Py_DECREF(descriptors);
+            return NULL;
+        }
+        PyTuple_SET_ITEM(descriptors, index, descriptor);
+    }
+    return descriptors;
+}
+
+static PyObject *bridge_pattern_type(
+    PyObject *module, PyObject *pattern_base
+) {
+    (void)module;
+    if (!PyType_Check(pattern_base)) {
+        PyErr_SetString(
+            PyExc_TypeError,
+            "pattern_type() requires a pattern base type"
+        );
+        return NULL;
+    }
+    PyTypeObject *base = (PyTypeObject *)pattern_base;
+    if (
+        base->tp_basicsize < 0
+        || base->tp_basicsize > INT32_MAX
+        || base->tp_itemsize != 0
+        || !(base->tp_flags & Py_TPFLAGS_BASETYPE)
+    ) {
+        PyErr_SetString(
+            PyExc_TypeError,
+            "pattern_type() requires a fixed-size subclassable pattern base"
+        );
+        return NULL;
+    }
+    PyType_Slot slots[] = {
+        {0, NULL},
+    };
+    PyType_Spec specification = {
+        .name = "re.Pattern",
+        .basicsize = (int)base->tp_basicsize,
+        .itemsize = 0,
+        .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
+        .slots = slots,
+    };
+    PyObject *bases = PyTuple_Pack(1, pattern_base);
+    if (bases == NULL) return NULL;
+    PyObject *pattern_type = PyType_FromSpecWithBases(
+        &specification, bases
+    );
+    Py_DECREF(bases);
+    return pattern_type;
+}
+
 static PyObject *rust_bound_call(PyObject *value, PyObject *const *args, size_t nargsf, PyObject *kwnames) {
     RustBoundMethod *method = (RustBoundMethod *)value;
     size_t prefix = (size_t)Py_SIZE(method);
@@ -2813,6 +3209,12 @@ static PyMethodDef bridge_methods[] = {
     {"error", (PyCFunction)bridge_error, METH_NOARGS, "Return the most recent Rust compilation error."},
     {"set_template", (PyCFunction)bridge_set_template, METH_O, "Configure the compatible Rust match-template expander."},
     {"bind", (PyCFunction)(void (*)(void))bridge_bind, METH_FASTCALL, "bind($module, function, pattern, /, *prefix)\n--\n\nCreate a fresh native-vectorcall bound regular-expression method."},
+    {"pattern_type", (PyCFunction)bridge_pattern_type, METH_O,
+     "pattern_type($module, pattern_base, /)\n--\n\n"
+     "Create the native public regular-expression pattern type."},
+    {"pattern_descriptors", (PyCFunction)bridge_pattern_descriptors, METH_O,
+     "pattern_descriptors($module, pattern_type, /)\n--\n\n"
+     "Create native regular-expression pattern method descriptors."},
     {"pattern_match", (PyCFunction)(void (*)(void))bridge_pattern_match, METH_FASTCALL, "Run Rust and create a native match in one call."},
     {"bound_search", (PyCFunction)(void (*)(void))bridge_bound_search, METH_FASTCALL | METH_KEYWORDS, "bound_search($module, pattern, handle, groupindex, pattern_value, literal, string, pos=0, endpos=9223372036854775807)\n--\n\nSearch with a compiled Rust pattern."},
     {"bound_match", (PyCFunction)(void (*)(void))bridge_bound_match, METH_FASTCALL | METH_KEYWORDS, "bound_match($module, pattern, handle, groupindex, pattern_value, literal, string, pos=0, endpos=9223372036854775807)\n--\n\nMatch at the start with a compiled Rust pattern."},

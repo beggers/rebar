@@ -1,0 +1,2635 @@
+{
+  "audit": "rust-v8-native-heap-from-scratch-provenance",
+  "deep_contract_proof": {
+    "archive_sha256": "f31ec92ffa7975406267ee9cdb29e2a3e0314d436d643ccfb34862f09956c2c5",
+    "artifact_count": 5,
+    "canonical_component_sha256": {
+      "candidate": "f08224f9b6d494921a08887466a0aa66481353d5a0cb706406f9a6dfc6ceaaa4",
+      "differential_poison_self_tests": "f23f83fb8ce0e57fcf8a10b9470413b6c3d990812579eaaa906cd11259e692b5",
+      "edge_oracle": "da79e3f9ba08486d55267e0df30d21176af6c058bbfb84b531081928a29f16be",
+      "frozen_failure_evidence": "e04bc22376c1b340716606f328fd2159ef12eb25aaf04a3604fc09d8e63a7246",
+      "guard_observations": "475b0d1c0feca44e158cdf050a63da17c27c852db93ca0d9e0387463a0f99f5c",
+      "implementation_private_gc_topology_differences": "55754ce8c8cb8665fe4ad5212511882e97e0e8503c49eeb63045ae4ab2a2d652",
+      "native_artifacts": "302105309470f31a63806e56aa8dada3dac57171bceb21dee7ec8ad42d6ac3ec",
+      "native_under_poison": "5994d57987f56611abf5212d8d1dfb4951947bd3221214b82e5fd335a66ca50d",
+      "public_mismatch_family_counts": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+      "public_mismatches": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "reference": "6e1ea37bf3cd3907da4b3a1679bd81a79f9218c31ac192dbea56cff2902ad88a",
+      "reference_independent_repeat": "9693fb77da9ff4fa6c1e0c4be8353a1cc735bfab14c825bc5dcd6f8ce3e5757f",
+      "stdlib_vs_stdlib_mismatches": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+      "variant_runner": "0f1b451354cbd69315e5d765cc5fa10cdf78bdfa312ed932358b8ade4c48f754"
+    },
+    "canonical_sha256": "841191fb4704f12b07e31231de5d20663d069f2eacb77d90927a3cc0ff42381b",
+    "checks": 393,
+    "complete_observation_rows_per_snapshot": [
+      393,
+      393,
+      393
+    ],
+    "edge_archive_sha256": "0c8748f78809e0f29f4bbacaad48296d4f51ca14445a4f9e8938376b37d85a21",
+    "expected_archive_sha256": "f31ec92ffa7975406267ee9cdb29e2a3e0314d436d643ccfb34862f09956c2c5",
+    "expected_canonical_sha256": "841191fb4704f12b07e31231de5d20663d069f2eacb77d90927a3cc0ff42381b",
+    "file": "candidates/audits/RUST-V8-DEEP-CONTRACT-NATIVE-HEAP-FINAL.json.gz",
+    "guard_count": 13,
+    "holdout": "NOT ACCESSED",
+    "issues": [],
+    "passed": true,
+    "performance": "NOT MEASURED",
+    "public_mismatch_count": 0,
+    "reference_snapshot_count": 3,
+    "schema": "rebar-rust-v8-deep-public-contract-v1",
+    "status": "PASS"
+  },
+  "edge_oracle": {
+    "actual_sha256": "b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526",
+    "archive_sha256": "0c8748f78809e0f29f4bbacaad48296d4f51ca14445a4f9e8938376b37d85a21",
+    "artifact_count": 5,
+    "canonical_component_sha256": {
+      "candidate_artifacts": "463076b18c1ca413259d700224c60ff9d990e3379e10516438141b80200c9359",
+      "categories": "99a76d581e3fd8b68239867722a032e6f67701524896ec75684e11184f721ca8",
+      "embedded_frozen_oracles": "7ba1fe99e4fd8389e1a4116c85c611ad847dcb41478d367c6ca059f24b57d4bc",
+      "independent_source_seeds": "10b94594042987a1e9229b782bcdc9ce5d7d0543e91a203df18fef5733416bb0",
+      "json_normalization": "62c42c6358643a3f99ff9cf4721059c8425965c59aec25c49b4efbd0219b4544",
+      "membership_partitions": "785157a16916365ec6d9c6516a0c13499dca10c50ef4d2a988f2d145e69a9855"
+    },
+    "category_check_sum": 223198,
+    "category_count": 49,
+    "correctness_checks": 223198,
+    "expected_archive_sha256": "0c8748f78809e0f29f4bbacaad48296d4f51ca14445a4f9e8938376b37d85a21",
+    "expected_sha256": "b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526",
+    "failed": 0,
+    "file": "candidates/evidence/rust-v8-edge-oracle-rust-native-heap-final.json.gz",
+    "holdout": "NOT ACCESSED",
+    "issues": [],
+    "module": "candidates.rust_candidate",
+    "passed": true,
+    "performance": "NOT MEASURED",
+    "schema": "rebar-v7-independent-edge-oracle-v1",
+    "script_sha256": "fe6a263a48f243ea02faaa78fc3bbd051233a2b2221967a5f76dd1bb79d242ca"
+  },
+  "frozen_live_artifacts": {
+    "artifacts": [
+      {
+        "expected_sha256": "6fc3b6f52a9e7beebfb099160f19565e8c5fb663fab899478bdc00ce9aac8ec7",
+        "matches_frozen_edge": true,
+        "path": "candidates/rust/py_bridge.c",
+        "role": "bridge-source",
+        "sha256": "6fc3b6f52a9e7beebfb099160f19565e8c5fb663fab899478bdc00ce9aac8ec7"
+      },
+      {
+        "expected_sha256": "840497035864542caf33bdc80a7c1cf5f1a31414a8bd28699536927b3a4732c8",
+        "matches_frozen_edge": true,
+        "path": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+        "role": "native-bridge",
+        "sha256": "840497035864542caf33bdc80a7c1cf5f1a31414a8bd28699536927b3a4732c8"
+      },
+      {
+        "expected_sha256": "890f9e34e966244067a3dc173c2276043ae15d4830a05228fb37ec2571aa17cd",
+        "matches_frozen_edge": true,
+        "path": "candidates/_rust_engine.so",
+        "role": "native-engine",
+        "sha256": "890f9e34e966244067a3dc173c2276043ae15d4830a05228fb37ec2571aa17cd"
+      },
+      {
+        "expected_sha256": "a2fa04912bb1f6957f833560446f4d3d1c5d13df8b5efac992fa63e28803668b",
+        "matches_frozen_edge": true,
+        "path": "candidates/rust/src/lib.rs",
+        "role": "native-source",
+        "sha256": "a2fa04912bb1f6957f833560446f4d3d1c5d13df8b5efac992fa63e28803668b"
+      },
+      {
+        "expected_sha256": "80812459261edb9585bdf703f137af3e0e788638af2ad7183d00b6d357e8a926",
+        "matches_frozen_edge": true,
+        "path": "candidates/rust_candidate.py",
+        "role": "public-python",
+        "sha256": "80812459261edb9585bdf703f137af3e0e788638af2ad7183d00b6d357e8a926"
+      }
+    ],
+    "expected_count": 5,
+    "issues": [],
+    "observed_count": 5,
+    "passed": true
+  },
+  "inherited_variant_poison_controls": {
+    "expected_count": 104,
+    "expected_negative_count": 99,
+    "issues": [],
+    "passed": true,
+    "validated_count": 104
+  },
+  "input_issues": [],
+  "isolated_runtime": {
+    "fixed_smoke_checks": 3,
+    "forbidden_candidate_import_attempts": [],
+    "forbidden_loaded_modules": [],
+    "loaded_candidate_modules": [
+      "candidates._rust_bridge",
+      "candidates.rust_candidate"
+    ],
+    "module": "candidates.rust_candidate",
+    "native_mapping_provenance": {
+      "expected_owned_mapping_count": 2,
+      "issues": [],
+      "observed_owned_mapping_count": 2,
+      "observed_owned_mappings": [
+        {
+          "file": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+          "mapping_count": 5,
+          "matches_static_elf": true,
+          "role": "bridge",
+          "sha256": "840497035864542caf33bdc80a7c1cf5f1a31414a8bd28699536927b3a4732c8"
+        },
+        {
+          "file": "candidates/_rust_engine.so",
+          "mapping_count": 4,
+          "matches_static_elf": true,
+          "role": "engine",
+          "sha256": "890f9e34e966244067a3dc173c2276043ae15d4830a05228fb37ec2571aa17cd"
+        }
+      ],
+      "passed": true,
+      "source": "/proc/self/maps",
+      "unrelated_system_libraries_ignored": true
+    },
+    "owned_native_loads": [],
+    "passed": true,
+    "prohibited_import_and_loader_probes": {
+      "cpython_sre": true,
+      "foreign_native_loader": true,
+      "other_candidate": true,
+      "stdlib_re": true,
+      "third_party_regex": true
+    },
+    "unexpected_candidate_modules": []
+  },
+  "limitations": [
+    "The frozen 223198-case edge and three complete, matching 393-row deep-contract snapshots are independently hash-validated; no correctness cases are rerun.",
+    "The certificate binds precisely five final Rust artifacts, six owned Rust native sources, zero-external-dependency manifests, and two independently hashed actually mapped Rust ELF binaries.",
+    "All four original scanner and cmethod auditors and reports are independently hash-verified read-only and remain immutable.",
+    "All 36 implementation-private GC-topology differences are preserved; they are not represented as documented public-contract mismatches.",
+    "Static and isolated mapped-runtime evidence does not prove unexercised future execution paths."
+  ],
+  "manifest_provenance": {
+    "issues": [],
+    "passed": true,
+    "python_dependencies": [],
+    "rust_lock_packages": [
+      "rebar-rust-continuation"
+    ],
+    "rust_third_party_dependency_count": 0
+  },
+  "module": "candidates.rust_candidate",
+  "native_sources": [
+    {
+      "allowed_native_python_imports": [
+        "copyreg",
+        "functools",
+        "inspect"
+      ],
+      "family": "rust",
+      "file": "candidates/rust/py_bridge.c",
+      "issues": [],
+      "passed": true,
+      "sha256": "6fc3b6f52a9e7beebfb099160f19565e8c5fb663fab899478bdc00ce9aac8ec7"
+    },
+    {
+      "allowed_native_python_imports": [],
+      "family": "rust",
+      "file": "candidates/rust/src/lib.rs",
+      "issues": [],
+      "passed": true,
+      "sha256": "a2fa04912bb1f6957f833560446f4d3d1c5d13df8b5efac992fa63e28803668b"
+    },
+    {
+      "allowed_native_python_imports": [],
+      "family": "rust",
+      "file": "candidates/rust/src/search.rs",
+      "issues": [],
+      "passed": true,
+      "sha256": "6b5ef878d49fc461d69d6b765b3c78c41218c2685b461b54feae526a50de010c"
+    },
+    {
+      "allowed_native_python_imports": [],
+      "family": "rust",
+      "file": "candidates/rust/src/newline.rs",
+      "issues": [],
+      "passed": true,
+      "sha256": "13216ffbea967af121c77d57abe14906030e7f3a6906c554399511154a3d6d8b"
+    },
+    {
+      "allowed_native_python_imports": [],
+      "family": "rust",
+      "file": "candidates/rust/src/stack.rs",
+      "issues": [],
+      "passed": true,
+      "sha256": "5198a056e99bde5632169cfc5b07ad913910cdb1b30785dad4744ccb9a30809e"
+    },
+    {
+      "allowed_native_python_imports": [],
+      "family": "rust",
+      "file": "candidates/rust/src/unicode_tables.rs",
+      "issues": [],
+      "passed": true,
+      "sha256": "f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af"
+    }
+  ],
+  "owned_pipeline": {
+    "compiler": "rust::Compiler",
+    "executor": "rust::run_program",
+    "issues": [],
+    "parser": "rust::Parser",
+    "passed": true
+  },
+  "passed": true,
+  "pinned_interpreter": {
+    "actual_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+    "actual_version": [
+      3,
+      14,
+      6
+    ],
+    "expected_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+    "expected_version": [
+      3,
+      14,
+      6
+    ],
+    "issues": [],
+    "passed": true
+  },
+  "prior_stage_certificates": {
+    "artifacts": [
+      {
+        "expected_sha256": "31e8db794c36b083b4ab0a75b96d0ac6e73eb13c0d0b601a42dcbbed28ce1475",
+        "matches": true,
+        "path": "tools/audit_rust_from_scratch.py",
+        "role": "scanner-auditor",
+        "sha256": "31e8db794c36b083b4ab0a75b96d0ac6e73eb13c0d0b601a42dcbbed28ce1475"
+      },
+      {
+        "expected_sha256": "d761686c7a4cb2f5b65ddae37272bd5f644894eb157fb9b56735e6747685f70b",
+        "matches": true,
+        "path": "candidates/audits/RUST-V8-SCANNER-FROM-SCRATCH.json",
+        "role": "scanner-report",
+        "sha256": "d761686c7a4cb2f5b65ddae37272bd5f644894eb157fb9b56735e6747685f70b"
+      },
+      {
+        "expected_sha256": "fca9cd90cf7a74a3bebc4e30c8d05a77a0a42f27d4b7836e73c1f9822fd78998",
+        "matches": true,
+        "path": "tools/audit_rust_variants_from_scratch.py",
+        "role": "cmethod-auditor",
+        "sha256": "fca9cd90cf7a74a3bebc4e30c8d05a77a0a42f27d4b7836e73c1f9822fd78998"
+      },
+      {
+        "expected_sha256": "2c18f7797d91fcb507043bff13fa166deb952ad9abf1c82455ac8712fe70390a",
+        "matches": true,
+        "path": "candidates/audits/RUST-V8-CMETHOD-FROM-SCRATCH.json",
+        "role": "cmethod-report",
+        "sha256": "2c18f7797d91fcb507043bff13fa166deb952ad9abf1c82455ac8712fe70390a"
+      }
+    ],
+    "expected_count": 4,
+    "issues": [],
+    "observed_count": 4,
+    "passed": true
+  },
+  "python_source": {
+    "file": "candidates/rust_candidate.py",
+    "imports": [
+      "candidates._rust_bridge",
+      "enum",
+      "operator",
+      "os",
+      "types",
+      "unicodedata",
+      "warnings"
+    ],
+    "issues": [],
+    "native_loads": [],
+    "passed": true,
+    "sha256": "80812459261edb9585bdf703f137af3e0e788638af2ad7183d00b6d357e8a926"
+  },
+  "result": "PASS",
+  "runtime_native_mapping_provenance": {
+    "expected_owned_mapping_count": 2,
+    "issues": [],
+    "observed_owned_mapping_count": 2,
+    "observed_owned_mappings": [
+      {
+        "file": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+        "mapping_count": 5,
+        "matches_static_elf": true,
+        "role": "bridge",
+        "sha256": "840497035864542caf33bdc80a7c1cf5f1a31414a8bd28699536927b3a4732c8"
+      },
+      {
+        "file": "candidates/_rust_engine.so",
+        "mapping_count": 4,
+        "matches_static_elf": true,
+        "role": "engine",
+        "sha256": "890f9e34e966244067a3dc173c2276043ae15d4830a05228fb37ec2571aa17cd"
+      }
+    ],
+    "passed": true,
+    "source": "/proc/self/maps",
+    "unrelated_system_libraries_ignored": true
+  },
+  "rust_native_elf_provenance": {
+    "files": {
+      "bridge": {
+        "cross_candidate_symbols": [],
+        "elf_class": 64,
+        "file": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+        "forbidden_regex_symbols": [],
+        "needed": [
+          "_rust_engine.so",
+          "libc.so.6"
+        ],
+        "owned_exports": [
+          "PyInit__rust_bridge"
+        ],
+        "owned_undefined": [
+          "rebar_collect_ascii",
+          "rebar_collect_wide",
+          "rebar_compile",
+          "rebar_error_copy",
+          "rebar_error_include",
+          "rebar_error_len",
+          "rebar_error_pos",
+          "rebar_flags",
+          "rebar_free",
+          "rebar_groups",
+          "rebar_match",
+          "rebar_match_ascii",
+          "rebar_match_wide",
+          "rebar_name_copy",
+          "rebar_name_count",
+          "rebar_name_group",
+          "rebar_name_len"
+        ],
+        "python_api_undefined_count": 104,
+        "python_api_undefined_symbols": [
+          "PyArg_ParseTuple",
+          "PyBaseObject_Type",
+          "PyBool_FromLong",
+          "PyBool_Type",
+          "PyBuffer_Release",
+          "PyBytes_FromObject",
+          "PyBytes_FromStringAndSize",
+          "PyBytes_Join",
+          "PyBytes_Type",
+          "PyCMethod_New",
+          "PyCallIter_New",
+          "PyCallable_Check",
+          "PyDescr_NewMethod",
+          "PyDict_GetItemWithError",
+          "PyDict_New",
+          "PyDict_Next",
+          "PyDict_SetItem",
+          "PyErr_Clear",
+          "PyErr_ExceptionMatches",
+          "PyErr_Format",
+          "PyErr_GetRaisedException",
+          "PyErr_NoMemory",
+          "PyErr_Occurred",
+          "PyErr_SetRaisedException",
+          "PyErr_SetString",
+          "PyExc_AttributeError",
+          "PyExc_IndexError",
+          "PyExc_KeyError",
+          "PyExc_OverflowError",
+          "PyExc_RuntimeError",
+          "PyExc_TypeError",
+          "PyExc_ValueError",
+          "PyImport_ImportModule",
+          "PyIndex_Check",
+          "PyList_Append",
+          "PyList_New",
+          "PyLong_AsSize_t",
+          "PyLong_AsSsize_t",
+          "PyLong_AsUnsignedLong",
+          "PyLong_AsVoidPtr",
+          "PyLong_FromSize_t",
+          "PyLong_FromSsize_t",
+          "PyLong_FromUnsignedLong",
+          "PyLong_FromVoidPtr",
+          "PyLong_Type",
+          "PyMapping_Items",
+          "PyMapping_Size",
+          "PyMem_Free",
+          "PyMem_Malloc",
+          "PyModule_AddObjectRef",
+          "PyModule_Create2",
+          "PyNumber_Index",
+          "PyObject_CallFunctionObjArgs",
+          "PyObject_CallMethod",
+          "PyObject_CallObject",
+          "PyObject_CallOneArg",
+          "PyObject_GC_UnTrack",
+          "PyObject_GetAttrString",
+          "PyObject_GetBuffer",
+          "PyObject_GetItem",
+          "PyObject_HasAttrString",
+          "PyObject_Hash",
+          "PyObject_HashNotImplemented",
+          "PyObject_IsTrue",
+          "PyObject_SelfIter",
+          "PyObject_SetAttrString",
+          "PyObject_Vectorcall",
+          "PySequence_Fast",
+          "PyTuple_New",
+          "PyTuple_Pack",
+          "PyType_FromSpecWithBases",
+          "PyType_GenericAlloc",
+          "PyType_Ready",
+          "PyUnicodeWriter_Create",
+          "PyUnicodeWriter_Discard",
+          "PyUnicodeWriter_Finish",
+          "PyUnicodeWriter_WriteStr",
+          "PyUnicodeWriter_WriteSubstring",
+          "PyUnicode_CompareWithASCIIString",
+          "PyUnicode_Count",
+          "PyUnicode_DecodeUTF8",
+          "PyUnicode_Find",
+          "PyUnicode_FindChar",
+          "PyUnicode_FromFormat",
+          "PyUnicode_FromObject",
+          "PyUnicode_InternFromString",
+          "PyUnicode_Join",
+          "PyUnicode_New",
+          "PyUnicode_Substring",
+          "PyUnicode_Tailmatch",
+          "PyUnicode_Type",
+          "PyVectorcall_Call",
+          "Py_GenericAlias",
+          "Py_GetConstant",
+          "_PyBytes_Resize",
+          "_PyUnicode_IsAlpha",
+          "_PyUnicode_IsDecimalDigit",
+          "_PyUnicode_IsDigit",
+          "_PyUnicode_IsNumeric",
+          "_PyUnicode_IsWhitespace",
+          "_PyUnicode_ToLowercase",
+          "_Py_Dealloc",
+          "_Py_NoneStruct",
+          "_Py_ascii_whitespace"
+        ],
+        "runpaths": [
+          "$ORIGIN"
+        ],
+        "sha256": "840497035864542caf33bdc80a7c1cf5f1a31414a8bd28699536927b3a4732c8",
+        "undefined_symbol_count": 131
+      },
+      "engine": {
+        "cross_candidate_symbols": [],
+        "elf_class": 64,
+        "file": "candidates/_rust_engine.so",
+        "forbidden_regex_symbols": [],
+        "needed": [
+          "ld-linux-x86-64.so.2",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ],
+        "owned_exports": [
+          "rebar_collect_ascii",
+          "rebar_collect_wide",
+          "rebar_compile",
+          "rebar_error_copy",
+          "rebar_error_include",
+          "rebar_error_len",
+          "rebar_error_pos",
+          "rebar_flags",
+          "rebar_free",
+          "rebar_groups",
+          "rebar_match",
+          "rebar_match_ascii",
+          "rebar_match_wide",
+          "rebar_name_copy",
+          "rebar_name_count",
+          "rebar_name_group",
+          "rebar_name_len"
+        ],
+        "owned_undefined": [],
+        "python_api_undefined_count": 1,
+        "python_api_undefined_symbols": [
+          "Py_GetRecursionLimit"
+        ],
+        "runpaths": [],
+        "sha256": "890f9e34e966244067a3dc173c2276043ae15d4830a05228fb37ec2571aa17cd",
+        "undefined_symbol_count": 51
+      }
+    },
+    "issues": [],
+    "passed": true
+  },
+  "schema_version": 1,
+  "scope": {
+    "benchmark_or_timing_executed": false,
+    "family": "rust only",
+    "holdout_accessed": false,
+    "immutable_deep_contract_proof": "candidates/audits/RUST-V8-DEEP-CONTRACT-NATIVE-HEAP-FINAL.json.gz",
+    "immutable_edge_oracle": "candidates/evidence/rust-v8-edge-oracle-rust-native-heap-final.json.gz",
+    "maximum_compressed_evidence_bytes": 16777216,
+    "maximum_decompressed_evidence_bytes": 33554432,
+    "minimum_native_heap_negative_controls": 49,
+    "native_elf_paths": [
+      "candidates/_rust_engine.so",
+      "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so"
+    ],
+    "other_candidate_native_binaries_read": false,
+    "other_candidate_production_sources_read": false,
+    "prior_stage_artifacts": [
+      "tools/audit_rust_from_scratch.py",
+      "candidates/audits/RUST-V8-SCANNER-FROM-SCRATCH.json",
+      "tools/audit_rust_variants_from_scratch.py",
+      "candidates/audits/RUST-V8-CMETHOD-FROM-SCRATCH.json"
+    ],
+    "synthetic_malicious_fixtures": "in-memory only",
+    "variant": "genuine-native-heap"
+  },
+  "self_test": {
+    "check_count": 115,
+    "checks": [
+      {
+        "name": "preserve_all_104_cmethod_variant_controls",
+        "passed": true
+      },
+      {
+        "name": "preserve_all_49_original_scanner_controls",
+        "passed": true
+      },
+      {
+        "name": "preserve_all_76_isolated_shared_poison_controls",
+        "passed": true
+      },
+      {
+        "name": "accept_complete_synthetic_native_heap_edge",
+        "passed": true
+      },
+      {
+        "name": "accept_complete_synthetic_393_row_native_heap_deep_proof",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_wrong_edge_module",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_wrong_edge_schema",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_wrong_edge_python",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_nonzero_edge_failures",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_boolean_edge_failure_count",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_missing_edge_failure_rows",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_nonempty_edge_failure_rows",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_incomplete_edge_count",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_previous_32_edge_stage",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_boolean_edge_count",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_edge_result_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_edge_reference_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_edge_script_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_edge_category_drift",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_missing_edge_category",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_edge_oracle_component",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_edge_seed_component",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_edge_normalization",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_edge_membership_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_missing_edge_partition",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_edge_holdout_access",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_edge_timing_access",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_missing_edge_artifact",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_duplicate_edge_artifact",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_changed_edge_artifact_path",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_changed_edge_artifact_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_previous_43_check_deep_proof",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_previous_32_check_deep_proof",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_previous_392_check_deep_proof",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_boolean_deep_check_count",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_failed_deep_status",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_nonzero_public_mismatches",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_missing_deep_public_rows",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_nonempty_deep_public_rows",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_missing_stdlib_repeat_rows",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_deep_candidate_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_deep_first_reference_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_deep_repeat_reference_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_deep_fixture_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_deep_suite_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_deep_missing_candidate_snapshot",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_deep_missing_reference_snapshot",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_deep_missing_independent_reference",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_incomplete_candidate_393_rows",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_incomplete_reference_393_rows",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_incomplete_repeat_393_rows",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_changed_candidate_observation",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_duplicate_candidate_observation",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_missing_candidate_observation_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_incomplete_family_counts",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_negative_family_counts",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_missing_forbidden_engine_guard",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_changed_guard_count",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_missing_candidate_guard",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_missing_private_gc_diagnostics",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_missing_deep_native_artifact",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_changed_deep_native_bridge",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_missing_deep_edge_binding",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_stale_deep_edge_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_stale_deep_edge_count",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_incomplete_bound_edge_artifacts",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_changed_differential_poison",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_missing_differential_poison",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_deep_holdout_access",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_deep_timing_access",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_changed_seed",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_stale_live_public_python",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_stale_live_native_bridge",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_stale_live_native_engine",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_stale_live_native_source",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_stale_live_bridge_source",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_prior_stage_0_public_python",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_prior_stage_1_native_bridge",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_prior_stage_2_bridge_source",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_prior_stage_3_native_bridge",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_prior_stage_4_bridge_source",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_prior_stage_5_native_bridge",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_prior_stage_6_bridge_source",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_wrong_edge_path",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_wrong_deep_path",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_previous_output_path",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_wrong_interpreter",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_stdlib_regex",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_cpython_sre",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_external_regex",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_cross_candidate",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_dynamic_import",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_environment_dispatch",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_external_process",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_foreign_native_loader",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_native_pcre",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_native_dynamic_loader",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_native_cpython_re",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_unowned_native_extern",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_external_rust_crate",
+        "passed": true
+      },
+      {
+        "name": "accept_native_heap_owned_synthetic_elf",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_elf_compiler_bypass",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_elf_executor_bypass",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_cross_family_native_elf",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_external_regex_elf",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_untrusted_elf_runpath",
+        "passed": true
+      },
+      {
+        "name": "accept_native_heap_exact_owned_synthetic_maps",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_cross_family_memory_mapping",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_external_regex_memory_mapping",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_unapproved_memory_mapping",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_deleted_engine_memory_mapping",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_missing_bridge_memory_mapping",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_corrupted_76_control_count",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_bypassed_shared_control",
+        "passed": true
+      },
+      {
+        "name": "reject_native_heap_unisolated_shared_controls",
+        "passed": true
+      }
+    ],
+    "execution": {
+      "exit_code": 0,
+      "interpreter": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+      "isolated_subprocess": true,
+      "maximum_response_bytes": 262144,
+      "response_bytes": 33831,
+      "validated": true
+    },
+    "failed": [],
+    "fixture_storage": "in-memory only",
+    "inherited_variant_control_issues": [],
+    "inherited_variant_controls": {
+      "check_count": 104,
+      "checks": [
+        {
+          "name": "preserve_all_49_scanner_negative_controls",
+          "passed": true
+        },
+        {
+          "name": "preserve_all_76_independently_isolated_shared_controls",
+          "passed": true
+        },
+        {
+          "name": "accept_complete_cmethod_in_memory_canonical_edge",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_wrong_candidate_module",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_wrong_edge_schema",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_wrong_frozen_python_version",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_nonzero_edge_failures",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_missing_failure_count",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_boolean_failure_count",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_missing_failure_list",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_nonempty_failure_list",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_boolean_correctness_count",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_missing_correctness_count",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_correctness_count",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_actual_result_digest",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_expected_result_digest",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_script_digest",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_category_component",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_missing_category",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_boolean_category_count",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_negative_category_count",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_frozen_oracles",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_independent_seeds",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_json_normalization",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_missing_frozen_oracle_component",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_missing_independent_seed_component",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_missing_normalization_component",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_membership_digest",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_membership_stride",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_missing_membership_partition",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_missing_membership_component",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_holdout_declaration",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_no_timing_declaration",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_frozen_artifact_path",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_frozen_artifact_digest",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_duplicate_frozen_artifact_role",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_unapproved_frozen_artifact_role",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_missing_frozen_artifact",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_malformed_frozen_artifact",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_stale_live_public_python",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_stale_live_native_bridge",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_stale_live_native_engine",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_stale_live_native_source",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_stale_live_bridge_source",
+          "passed": true
+        },
+        {
+          "name": "reject_previous_scanner_native_bridge",
+          "passed": true
+        },
+        {
+          "name": "reject_previous_scanner_bridge_source",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_changed_compressed_archive",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_truncated_compressed_archive",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_hash_matching_invalid_gzip",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_hash_matching_invalid_json",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_wrong_output_path",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_wrong_edge_path",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_previous_scanner_edge_path",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_previous_scanner_output_path",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_wrong_interpreter_version",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_wrong_interpreter_executable",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_stdlib_regex_import",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_cpython_sre_import",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_external_regex_package",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_cross_candidate_import",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_obfuscated_dynamic_import",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_importlib_indirection",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_environment_dispatch",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_environment_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_external_process",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_dynamic_evaluation",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_unowned_ctypes_loader",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_indirect_builtin_loader",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_native_pcre_engine",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_native_dynamic_loader",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_native_cpython_regex",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_native_unowned_extern",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_native_hidden_header",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_external_rust_crate",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_external_rust_use",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_unowned_rust_extern",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_renamed_transitive_cargo_engine",
+          "passed": true
+        },
+        {
+          "name": "accept_cmethod_owned_in_memory_rust_elf",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_elf_compiler_bypass",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_elf_executor_bypass",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_elf_cross_candidate_link",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_elf_external_regex_link",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_elf_untrusted_runpath",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_elf_wrong_bridge_initializer",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_elf_unresolved_owned_symbol",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_invalid_owned_engine_elf",
+          "passed": true
+        },
+        {
+          "name": "accept_cmethod_exact_owned_synthetic_mappings",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_cross_candidate_memory_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_external_regex_memory_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_unapproved_candidate_memory_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_deleted_engine_memory_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_missing_engine_memory_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_missing_bridge_memory_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_corrupted_upstream_control_count",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_corrupted_upstream_control_name",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_bypassed_upstream_control",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_unisolated_upstream_controls",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_unvalidated_upstream_controls",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_nonmemory_upstream_fixtures",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_failed_upstream_report",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_corrupted_scanner_control_count",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_corrupted_scanner_control_name",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_bypassed_scanner_control",
+          "passed": true
+        },
+        {
+          "name": "reject_cmethod_nonmemory_scanner_fixtures",
+          "passed": true
+        }
+      ],
+      "failed": [],
+      "fixture_storage": "in-memory only",
+      "inherited_scanner_control_issues": [],
+      "inherited_scanner_controls": {
+        "check_count": 49,
+        "checks": [
+          {
+            "name": "all_76_isolated_shared_poison_controls",
+            "passed": true
+          },
+          {
+            "name": "accept_complete_in_memory_canonical_edge",
+            "passed": true
+          },
+          {
+            "name": "reject_wrong_candidate_module",
+            "passed": true
+          },
+          {
+            "name": "reject_wrong_canonical_edge_schema",
+            "passed": true
+          },
+          {
+            "name": "reject_nonzero_canonical_edge_failures",
+            "passed": true
+          },
+          {
+            "name": "reject_missing_canonical_failure_list",
+            "passed": true
+          },
+          {
+            "name": "reject_malformed_canonical_check_count",
+            "passed": true
+          },
+          {
+            "name": "reject_missing_canonical_check_count",
+            "passed": true
+          },
+          {
+            "name": "reject_changed_canonical_check_count",
+            "passed": true
+          },
+          {
+            "name": "reject_changed_canonical_result_digest",
+            "passed": true
+          },
+          {
+            "name": "reject_changed_canonical_expected_digest",
+            "passed": true
+          },
+          {
+            "name": "reject_changed_frozen_edge_categories",
+            "passed": true
+          },
+          {
+            "name": "reject_nonempty_edge_failure_list",
+            "passed": true
+          },
+          {
+            "name": "reject_changed_frozen_script_digest",
+            "passed": true
+          },
+          {
+            "name": "reject_changed_frozen_oracle_component",
+            "passed": true
+          },
+          {
+            "name": "reject_changed_membership_partition",
+            "passed": true
+          },
+          {
+            "name": "reject_changed_holdout_declaration",
+            "passed": true
+          },
+          {
+            "name": "reject_changed_no_timing_declaration",
+            "passed": true
+          },
+          {
+            "name": "reject_stale_native_engine",
+            "passed": true
+          },
+          {
+            "name": "reject_stale_native_bridge",
+            "passed": true
+          },
+          {
+            "name": "reject_changed_live_bridge_source",
+            "passed": true
+          },
+          {
+            "name": "reject_missing_frozen_live_artifact",
+            "passed": true
+          },
+          {
+            "name": "reject_duplicate_frozen_artifact_role",
+            "passed": true
+          },
+          {
+            "name": "reject_changed_immutable_gzip_digest",
+            "passed": true
+          },
+          {
+            "name": "reject_truncated_immutable_gzip",
+            "passed": true
+          },
+          {
+            "name": "reject_wrong_output_path",
+            "passed": true
+          },
+          {
+            "name": "reject_wrong_edge_oracle_path",
+            "passed": true
+          },
+          {
+            "name": "reject_wrong_python_version",
+            "passed": true
+          },
+          {
+            "name": "reject_stdlib_re_import",
+            "passed": true
+          },
+          {
+            "name": "reject_cpython_sre_import",
+            "passed": true
+          },
+          {
+            "name": "reject_external_regex_package",
+            "passed": true
+          },
+          {
+            "name": "reject_cross_candidate_module",
+            "passed": true
+          },
+          {
+            "name": "reject_obfuscated_dynamic_import_bypass",
+            "passed": true
+          },
+          {
+            "name": "reject_environment_engine_dispatch",
+            "passed": true
+          },
+          {
+            "name": "reject_native_external_regex",
+            "passed": true
+          },
+          {
+            "name": "reject_native_dynamic_engine",
+            "passed": true
+          },
+          {
+            "name": "reject_native_cpython_engine",
+            "passed": true
+          },
+          {
+            "name": "reject_native_cross_engine_extern",
+            "passed": true
+          },
+          {
+            "name": "reject_renamed_external_cargo_manifest",
+            "passed": true
+          },
+          {
+            "name": "accept_owned_in_memory_rust_elf_pipeline",
+            "passed": true
+          },
+          {
+            "name": "reject_native_bridge_compiler_bypass",
+            "passed": true
+          },
+          {
+            "name": "reject_cross_family_native_bridge_link",
+            "passed": true
+          },
+          {
+            "name": "accept_owned_in_memory_rust_mappings",
+            "passed": true
+          },
+          {
+            "name": "reject_cross_family_native_memory_mapping",
+            "passed": true
+          },
+          {
+            "name": "reject_external_regex_memory_mapping",
+            "passed": true
+          },
+          {
+            "name": "reject_corrupted_upstream_poison_count",
+            "passed": true
+          },
+          {
+            "name": "reject_corrupted_upstream_poison_names",
+            "passed": true
+          },
+          {
+            "name": "reject_bypassed_upstream_poison_control",
+            "passed": true
+          },
+          {
+            "name": "reject_unisolated_upstream_poison_execution",
+            "passed": true
+          }
+        ],
+        "failed": [],
+        "fixture_storage": "in-memory only",
+        "passed": true,
+        "upstream_control_issues": [],
+        "upstream_controls": {
+          "check_count": 76,
+          "checks": [
+            {
+              "name": "direct_stdlib_re",
+              "passed": true
+            },
+            {
+              "name": "direct_cpython_sre",
+              "passed": true
+            },
+            {
+              "name": "third_party_regex",
+              "passed": true
+            },
+            {
+              "name": "aliased_regex",
+              "passed": true
+            },
+            {
+              "name": "cross_candidate",
+              "passed": true
+            },
+            {
+              "name": "cross_candidate_dotted",
+              "passed": true
+            },
+            {
+              "name": "dynamic_import",
+              "passed": true
+            },
+            {
+              "name": "chr_obfuscated_import",
+              "passed": true
+            },
+            {
+              "name": "join_obfuscated_import",
+              "passed": true
+            },
+            {
+              "name": "importlib_indirection",
+              "passed": true
+            },
+            {
+              "name": "builtins_subscript",
+              "passed": true
+            },
+            {
+              "name": "getattr_indirection",
+              "passed": true
+            },
+            {
+              "name": "foreign_ctypes",
+              "passed": true
+            },
+            {
+              "name": "unowned_zig_library",
+              "passed": true
+            },
+            {
+              "name": "zig_owned_path_reassignment",
+              "passed": true
+            },
+            {
+              "name": "environment_dispatch",
+              "passed": true
+            },
+            {
+              "name": "environment_mapping",
+              "passed": true
+            },
+            {
+              "name": "external_process",
+              "passed": true
+            },
+            {
+              "name": "dynamic_eval",
+              "passed": true
+            },
+            {
+              "name": "dynamic_exec",
+              "passed": true
+            },
+            {
+              "name": "benchmark_clock",
+              "passed": true
+            },
+            {
+              "name": "holdout_path",
+              "passed": true
+            },
+            {
+              "name": "benchmark_file",
+              "passed": true
+            },
+            {
+              "name": "unowned_vm_configuration",
+              "passed": true
+            },
+            {
+              "name": "native_posix_regex",
+              "passed": true
+            },
+            {
+              "name": "native_pcre",
+              "passed": true
+            },
+            {
+              "name": "native_cpython_import",
+              "passed": true
+            },
+            {
+              "name": "native_copyreg_unowned_family",
+              "passed": true
+            },
+            {
+              "name": "native_copyreg_near_miss",
+              "passed": true
+            },
+            {
+              "name": "native_dynamic_loader",
+              "passed": true
+            },
+            {
+              "name": "native_hidden_header",
+              "passed": true
+            },
+            {
+              "name": "native_hidden_extern",
+              "passed": true
+            },
+            {
+              "name": "rust_external_crate",
+              "passed": true
+            },
+            {
+              "name": "rust_environment",
+              "passed": true
+            },
+            {
+              "name": "rust_hidden_extern",
+              "passed": true
+            },
+            {
+              "name": "zig_external_package",
+              "passed": true
+            },
+            {
+              "name": "zig_hidden_extern",
+              "passed": true
+            },
+            {
+              "name": "zig_c_import",
+              "passed": true
+            },
+            {
+              "name": "native_benchmark_clock",
+              "passed": true
+            },
+            {
+              "name": "ignore_native_comments_and_display_literals",
+              "passed": true
+            },
+            {
+              "name": "allow_owned_rust_generic_object_copy_protocol_only",
+              "passed": true
+            },
+            {
+              "name": "preserve_rust_lifetimes_and_owned_pipeline",
+              "passed": true
+            },
+            {
+              "name": "parse_in_memory_owned_elf",
+              "passed": true
+            },
+            {
+              "name": "reject_excessive_elf_section_count",
+              "passed": true
+            },
+            {
+              "name": "reject_excessive_elf_symbol_string",
+              "passed": true
+            },
+            {
+              "name": "reject_in_memory_external_elf_dependency",
+              "passed": true
+            },
+            {
+              "name": "reject_bridge_without_owned_elf_link",
+              "passed": true
+            },
+            {
+              "name": "reject_disguised_third_party_elf_dependency",
+              "passed": true
+            },
+            {
+              "name": "accept_five_owned_synthetic_elf_binaries_and_python_api_symbols",
+              "passed": true
+            },
+            {
+              "name": "reject_vm_disguised_external_engine",
+              "passed": true
+            },
+            {
+              "name": "reject_vm_external_regex_symbol",
+              "passed": true
+            },
+            {
+              "name": "reject_vm_cross_candidate_engine_symbol",
+              "passed": true
+            },
+            {
+              "name": "reject_vm_untrusted_runpath",
+              "passed": true
+            },
+            {
+              "name": "reject_vm_wrong_module_initializer",
+              "passed": true
+            },
+            {
+              "name": "reject_zig_engine_disguised_external_dependency",
+              "passed": true
+            },
+            {
+              "name": "reject_zig_bridge_disguised_external_dependency",
+              "passed": true
+            },
+            {
+              "name": "reject_zig_bridge_wrong_linked_rust_engine",
+              "passed": true
+            },
+            {
+              "name": "reject_zig_bridge_wrong_engine_cross_candidate",
+              "passed": true
+            },
+            {
+              "name": "reject_zig_bridge_compiler_bypass",
+              "passed": true
+            },
+            {
+              "name": "reject_zig_bridge_executor_bypass",
+              "passed": true
+            },
+            {
+              "name": "reject_zig_bridge_unresolved_owned_symbols",
+              "passed": true
+            },
+            {
+              "name": "reject_zig_engine_untrusted_runpath",
+              "passed": true
+            },
+            {
+              "name": "reject_zig_bridge_untrusted_runpath",
+              "passed": true
+            },
+            {
+              "name": "reject_zig_rust_cross_candidate_symbol",
+              "passed": true
+            },
+            {
+              "name": "reject_rust_zig_cross_candidate_symbol",
+              "passed": true
+            },
+            {
+              "name": "reject_rust_bridge_untrusted_runpath",
+              "passed": true
+            },
+            {
+              "name": "accept_exact_ast_owned_memory_mappings",
+              "passed": true
+            },
+            {
+              "name": "accept_exact_vm_owned_memory_mappings",
+              "passed": true
+            },
+            {
+              "name": "accept_exact_rust_owned_memory_mappings",
+              "passed": true
+            },
+            {
+              "name": "accept_exact_zig_owned_memory_mappings",
+              "passed": true
+            },
+            {
+              "name": "reject_cross_candidate_actual_memory_mapping",
+              "passed": true
+            },
+            {
+              "name": "reject_external_regex_actual_memory_mapping",
+              "passed": true
+            },
+            {
+              "name": "reject_unapproved_candidate_actual_memory_mapping",
+              "passed": true
+            },
+            {
+              "name": "reject_deleted_owned_native_memory_mapping",
+              "passed": true
+            },
+            {
+              "name": "reject_invalid_elf",
+              "passed": true
+            },
+            {
+              "name": "reject_renamed_and_transitive_cargo_dependency",
+              "passed": true
+            }
+          ],
+          "execution": {
+            "exit_code": 0,
+            "expected_check_count": 76,
+            "interpreter": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+            "isolated_subprocess": true,
+            "maximum_response_bytes": 262144,
+            "response_bytes": 4529,
+            "validated": true,
+            "validated_check_count": 76
+          },
+          "failed": [],
+          "fixture_storage": "in-memory only",
+          "passed": true
+        }
+      },
+      "minimum_negative_control_count": 49,
+      "negative_control_count": 99,
+      "passed": true,
+      "upstream_control_issues": [],
+      "upstream_controls": {
+        "check_count": 76,
+        "checks": [
+          {
+            "name": "direct_stdlib_re",
+            "passed": true
+          },
+          {
+            "name": "direct_cpython_sre",
+            "passed": true
+          },
+          {
+            "name": "third_party_regex",
+            "passed": true
+          },
+          {
+            "name": "aliased_regex",
+            "passed": true
+          },
+          {
+            "name": "cross_candidate",
+            "passed": true
+          },
+          {
+            "name": "cross_candidate_dotted",
+            "passed": true
+          },
+          {
+            "name": "dynamic_import",
+            "passed": true
+          },
+          {
+            "name": "chr_obfuscated_import",
+            "passed": true
+          },
+          {
+            "name": "join_obfuscated_import",
+            "passed": true
+          },
+          {
+            "name": "importlib_indirection",
+            "passed": true
+          },
+          {
+            "name": "builtins_subscript",
+            "passed": true
+          },
+          {
+            "name": "getattr_indirection",
+            "passed": true
+          },
+          {
+            "name": "foreign_ctypes",
+            "passed": true
+          },
+          {
+            "name": "unowned_zig_library",
+            "passed": true
+          },
+          {
+            "name": "zig_owned_path_reassignment",
+            "passed": true
+          },
+          {
+            "name": "environment_dispatch",
+            "passed": true
+          },
+          {
+            "name": "environment_mapping",
+            "passed": true
+          },
+          {
+            "name": "external_process",
+            "passed": true
+          },
+          {
+            "name": "dynamic_eval",
+            "passed": true
+          },
+          {
+            "name": "dynamic_exec",
+            "passed": true
+          },
+          {
+            "name": "benchmark_clock",
+            "passed": true
+          },
+          {
+            "name": "holdout_path",
+            "passed": true
+          },
+          {
+            "name": "benchmark_file",
+            "passed": true
+          },
+          {
+            "name": "unowned_vm_configuration",
+            "passed": true
+          },
+          {
+            "name": "native_posix_regex",
+            "passed": true
+          },
+          {
+            "name": "native_pcre",
+            "passed": true
+          },
+          {
+            "name": "native_cpython_import",
+            "passed": true
+          },
+          {
+            "name": "native_copyreg_unowned_family",
+            "passed": true
+          },
+          {
+            "name": "native_copyreg_near_miss",
+            "passed": true
+          },
+          {
+            "name": "native_dynamic_loader",
+            "passed": true
+          },
+          {
+            "name": "native_hidden_header",
+            "passed": true
+          },
+          {
+            "name": "native_hidden_extern",
+            "passed": true
+          },
+          {
+            "name": "rust_external_crate",
+            "passed": true
+          },
+          {
+            "name": "rust_environment",
+            "passed": true
+          },
+          {
+            "name": "rust_hidden_extern",
+            "passed": true
+          },
+          {
+            "name": "zig_external_package",
+            "passed": true
+          },
+          {
+            "name": "zig_hidden_extern",
+            "passed": true
+          },
+          {
+            "name": "zig_c_import",
+            "passed": true
+          },
+          {
+            "name": "native_benchmark_clock",
+            "passed": true
+          },
+          {
+            "name": "ignore_native_comments_and_display_literals",
+            "passed": true
+          },
+          {
+            "name": "allow_owned_rust_generic_object_copy_protocol_only",
+            "passed": true
+          },
+          {
+            "name": "preserve_rust_lifetimes_and_owned_pipeline",
+            "passed": true
+          },
+          {
+            "name": "parse_in_memory_owned_elf",
+            "passed": true
+          },
+          {
+            "name": "reject_excessive_elf_section_count",
+            "passed": true
+          },
+          {
+            "name": "reject_excessive_elf_symbol_string",
+            "passed": true
+          },
+          {
+            "name": "reject_in_memory_external_elf_dependency",
+            "passed": true
+          },
+          {
+            "name": "reject_bridge_without_owned_elf_link",
+            "passed": true
+          },
+          {
+            "name": "reject_disguised_third_party_elf_dependency",
+            "passed": true
+          },
+          {
+            "name": "accept_five_owned_synthetic_elf_binaries_and_python_api_symbols",
+            "passed": true
+          },
+          {
+            "name": "reject_vm_disguised_external_engine",
+            "passed": true
+          },
+          {
+            "name": "reject_vm_external_regex_symbol",
+            "passed": true
+          },
+          {
+            "name": "reject_vm_cross_candidate_engine_symbol",
+            "passed": true
+          },
+          {
+            "name": "reject_vm_untrusted_runpath",
+            "passed": true
+          },
+          {
+            "name": "reject_vm_wrong_module_initializer",
+            "passed": true
+          },
+          {
+            "name": "reject_zig_engine_disguised_external_dependency",
+            "passed": true
+          },
+          {
+            "name": "reject_zig_bridge_disguised_external_dependency",
+            "passed": true
+          },
+          {
+            "name": "reject_zig_bridge_wrong_linked_rust_engine",
+            "passed": true
+          },
+          {
+            "name": "reject_zig_bridge_wrong_engine_cross_candidate",
+            "passed": true
+          },
+          {
+            "name": "reject_zig_bridge_compiler_bypass",
+            "passed": true
+          },
+          {
+            "name": "reject_zig_bridge_executor_bypass",
+            "passed": true
+          },
+          {
+            "name": "reject_zig_bridge_unresolved_owned_symbols",
+            "passed": true
+          },
+          {
+            "name": "reject_zig_engine_untrusted_runpath",
+            "passed": true
+          },
+          {
+            "name": "reject_zig_bridge_untrusted_runpath",
+            "passed": true
+          },
+          {
+            "name": "reject_zig_rust_cross_candidate_symbol",
+            "passed": true
+          },
+          {
+            "name": "reject_rust_zig_cross_candidate_symbol",
+            "passed": true
+          },
+          {
+            "name": "reject_rust_bridge_untrusted_runpath",
+            "passed": true
+          },
+          {
+            "name": "accept_exact_ast_owned_memory_mappings",
+            "passed": true
+          },
+          {
+            "name": "accept_exact_vm_owned_memory_mappings",
+            "passed": true
+          },
+          {
+            "name": "accept_exact_rust_owned_memory_mappings",
+            "passed": true
+          },
+          {
+            "name": "accept_exact_zig_owned_memory_mappings",
+            "passed": true
+          },
+          {
+            "name": "reject_cross_candidate_actual_memory_mapping",
+            "passed": true
+          },
+          {
+            "name": "reject_external_regex_actual_memory_mapping",
+            "passed": true
+          },
+          {
+            "name": "reject_unapproved_candidate_actual_memory_mapping",
+            "passed": true
+          },
+          {
+            "name": "reject_deleted_owned_native_memory_mapping",
+            "passed": true
+          },
+          {
+            "name": "reject_invalid_elf",
+            "passed": true
+          },
+          {
+            "name": "reject_renamed_and_transitive_cargo_dependency",
+            "passed": true
+          }
+        ],
+        "execution": {
+          "exit_code": 0,
+          "expected_check_count": 76,
+          "interpreter": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+          "isolated_subprocess": true,
+          "maximum_response_bytes": 262144,
+          "response_bytes": 4529,
+          "validated": true,
+          "validated_check_count": 76
+        },
+        "failed": [],
+        "fixture_storage": "in-memory only",
+        "passed": true
+      }
+    },
+    "minimum_negative_control_count": 49,
+    "negative_control_count": 108,
+    "passed": true,
+    "upstream_control_issues": [],
+    "upstream_controls": {
+      "check_count": 76,
+      "checks": [
+        {
+          "name": "direct_stdlib_re",
+          "passed": true
+        },
+        {
+          "name": "direct_cpython_sre",
+          "passed": true
+        },
+        {
+          "name": "third_party_regex",
+          "passed": true
+        },
+        {
+          "name": "aliased_regex",
+          "passed": true
+        },
+        {
+          "name": "cross_candidate",
+          "passed": true
+        },
+        {
+          "name": "cross_candidate_dotted",
+          "passed": true
+        },
+        {
+          "name": "dynamic_import",
+          "passed": true
+        },
+        {
+          "name": "chr_obfuscated_import",
+          "passed": true
+        },
+        {
+          "name": "join_obfuscated_import",
+          "passed": true
+        },
+        {
+          "name": "importlib_indirection",
+          "passed": true
+        },
+        {
+          "name": "builtins_subscript",
+          "passed": true
+        },
+        {
+          "name": "getattr_indirection",
+          "passed": true
+        },
+        {
+          "name": "foreign_ctypes",
+          "passed": true
+        },
+        {
+          "name": "unowned_zig_library",
+          "passed": true
+        },
+        {
+          "name": "zig_owned_path_reassignment",
+          "passed": true
+        },
+        {
+          "name": "environment_dispatch",
+          "passed": true
+        },
+        {
+          "name": "environment_mapping",
+          "passed": true
+        },
+        {
+          "name": "external_process",
+          "passed": true
+        },
+        {
+          "name": "dynamic_eval",
+          "passed": true
+        },
+        {
+          "name": "dynamic_exec",
+          "passed": true
+        },
+        {
+          "name": "benchmark_clock",
+          "passed": true
+        },
+        {
+          "name": "holdout_path",
+          "passed": true
+        },
+        {
+          "name": "benchmark_file",
+          "passed": true
+        },
+        {
+          "name": "unowned_vm_configuration",
+          "passed": true
+        },
+        {
+          "name": "native_posix_regex",
+          "passed": true
+        },
+        {
+          "name": "native_pcre",
+          "passed": true
+        },
+        {
+          "name": "native_cpython_import",
+          "passed": true
+        },
+        {
+          "name": "native_copyreg_unowned_family",
+          "passed": true
+        },
+        {
+          "name": "native_copyreg_near_miss",
+          "passed": true
+        },
+        {
+          "name": "native_dynamic_loader",
+          "passed": true
+        },
+        {
+          "name": "native_hidden_header",
+          "passed": true
+        },
+        {
+          "name": "native_hidden_extern",
+          "passed": true
+        },
+        {
+          "name": "rust_external_crate",
+          "passed": true
+        },
+        {
+          "name": "rust_environment",
+          "passed": true
+        },
+        {
+          "name": "rust_hidden_extern",
+          "passed": true
+        },
+        {
+          "name": "zig_external_package",
+          "passed": true
+        },
+        {
+          "name": "zig_hidden_extern",
+          "passed": true
+        },
+        {
+          "name": "zig_c_import",
+          "passed": true
+        },
+        {
+          "name": "native_benchmark_clock",
+          "passed": true
+        },
+        {
+          "name": "ignore_native_comments_and_display_literals",
+          "passed": true
+        },
+        {
+          "name": "allow_owned_rust_generic_object_copy_protocol_only",
+          "passed": true
+        },
+        {
+          "name": "preserve_rust_lifetimes_and_owned_pipeline",
+          "passed": true
+        },
+        {
+          "name": "parse_in_memory_owned_elf",
+          "passed": true
+        },
+        {
+          "name": "reject_excessive_elf_section_count",
+          "passed": true
+        },
+        {
+          "name": "reject_excessive_elf_symbol_string",
+          "passed": true
+        },
+        {
+          "name": "reject_in_memory_external_elf_dependency",
+          "passed": true
+        },
+        {
+          "name": "reject_bridge_without_owned_elf_link",
+          "passed": true
+        },
+        {
+          "name": "reject_disguised_third_party_elf_dependency",
+          "passed": true
+        },
+        {
+          "name": "accept_five_owned_synthetic_elf_binaries_and_python_api_symbols",
+          "passed": true
+        },
+        {
+          "name": "reject_vm_disguised_external_engine",
+          "passed": true
+        },
+        {
+          "name": "reject_vm_external_regex_symbol",
+          "passed": true
+        },
+        {
+          "name": "reject_vm_cross_candidate_engine_symbol",
+          "passed": true
+        },
+        {
+          "name": "reject_vm_untrusted_runpath",
+          "passed": true
+        },
+        {
+          "name": "reject_vm_wrong_module_initializer",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_engine_disguised_external_dependency",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_bridge_disguised_external_dependency",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_bridge_wrong_linked_rust_engine",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_bridge_wrong_engine_cross_candidate",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_bridge_compiler_bypass",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_bridge_executor_bypass",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_bridge_unresolved_owned_symbols",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_engine_untrusted_runpath",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_bridge_untrusted_runpath",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_rust_cross_candidate_symbol",
+          "passed": true
+        },
+        {
+          "name": "reject_rust_zig_cross_candidate_symbol",
+          "passed": true
+        },
+        {
+          "name": "reject_rust_bridge_untrusted_runpath",
+          "passed": true
+        },
+        {
+          "name": "accept_exact_ast_owned_memory_mappings",
+          "passed": true
+        },
+        {
+          "name": "accept_exact_vm_owned_memory_mappings",
+          "passed": true
+        },
+        {
+          "name": "accept_exact_rust_owned_memory_mappings",
+          "passed": true
+        },
+        {
+          "name": "accept_exact_zig_owned_memory_mappings",
+          "passed": true
+        },
+        {
+          "name": "reject_cross_candidate_actual_memory_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_external_regex_actual_memory_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_unapproved_candidate_actual_memory_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_deleted_owned_native_memory_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_invalid_elf",
+          "passed": true
+        },
+        {
+          "name": "reject_renamed_and_transitive_cargo_dependency",
+          "passed": true
+        }
+      ],
+      "execution": {
+        "exit_code": 0,
+        "expected_check_count": 76,
+        "interpreter": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "isolated_subprocess": true,
+        "maximum_response_bytes": 262144,
+        "response_bytes": 4529,
+        "validated": true,
+        "validated_check_count": 76
+      },
+      "failed": [],
+      "fixture_storage": "in-memory only",
+      "passed": true
+    }
+  },
+  "upstream_poison_controls": {
+    "expected_count": 76,
+    "issues": [],
+    "passed": true,
+    "validated_count": 76
+  }
+}

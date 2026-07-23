@@ -436,13 +436,11 @@ _NATIVE_BIND = _rust_bridge.bind
 
 
 class _PatternType(type):
-    def __getattribute__(cls, name):
-        if name in _PATTERN_METHODS:
-            return _PATTERN_UNBOUND[name]
-        return super().__getattribute__(name)
+    pass
 
 
 class Pattern(metaclass=_PatternType):
+    __module__ = "re"
     __slots__ = (
         "pattern", "flags", "groups", "_groupindex", "_handle",
         "_literal", "_bound_methods", "_templates", "__weakref__",
@@ -532,86 +530,11 @@ class Pattern(metaclass=_PatternType):
         templates[raw] = tokens
         return raw, tokens
 
-def _unbound_pattern_method(name):
-    def call(self, *args, **kwargs):
-        if not isinstance(self, Pattern):
-            raise TypeError(
-                f"descriptor '{name}' for 're.Pattern' objects "
-                f"doesn't apply to a '{type(self).__name__}' object"
-            )
-        return getattr(self, name)(*args, **kwargs)
+Pattern = _rust_bridge.pattern_type(Pattern)
 
-    call.__name__ = name
-    call.__qualname__ = f"Pattern.{name}"
-    if name in ("search", "match", "fullmatch", "findall", "finditer", "scanner"):
-        call.__text_signature__ = "(self, /, string, pos=0, endpos=9223372036854775807)"
-    elif name == "split":
-        call.__text_signature__ = "(self, /, string, maxsplit=0)"
-    else:
-        call.__text_signature__ = "(self, /, repl, string, count=0)"
-    return call
-
-
-_PATTERN_UNBOUND = {name: _unbound_pattern_method(name) for name in _PATTERN_METHODS}
-
-
-class _NativePatternMethod:
-    __slots__ = ("name", "function")
-
-    def __init__(self, name, function):
-        self.name = name
-        self.function = function
-
-    def __get__(self, pattern, owner=None):
-        if pattern is None:
-            return _PATTERN_UNBOUND[self.name]
-        methods = pattern._bound_methods
-        if methods is not None:
-            cached = methods.get(self.name)
-            if cached is not None:
-                function, prefix = cached
-                return _NATIVE_BIND(function, pattern, prefix)
-        else:
-            methods = {}
-            object.__setattr__(pattern, "_bound_methods", methods)
-
-        if self.name in ("search", "match", "fullmatch"):
-            function = self.function
-            prefix = (
-                pattern, pattern._handle, pattern._groupindex,
-                pattern.pattern, pattern._literal,
-            )
-        elif self.name in ("finditer", "scanner"):
-            function = self.function
-            prefix = (
-                pattern, pattern._handle, pattern._groupindex,
-                pattern.pattern, pattern.groups,
-            )
-        elif self.name in ("sub", "subn"):
-            templates = pattern._templates
-            if templates is None:
-                templates = {}
-                object.__setattr__(pattern, "_templates", templates)
-            function = self.function
-            prefix = (
-                pattern, pattern._handle, pattern._groupindex,
-                pattern.pattern, pattern._literal, templates, pattern.groups,
-            )
-        elif self.name == "findall" and pattern._literal is not None:
-            function = _rust_bridge.bound_literal_findall
-            prefix = (pattern._literal,)
-        else:
-            function = self.function
-            prefix = (pattern._handle, pattern.pattern, pattern.groups)
-        methods[self.name] = (function, prefix)
-        return _NATIVE_BIND(function, pattern, prefix)
-
-
-for _method_name in ("search", "match", "fullmatch", "findall", "finditer", "scanner", "split", "sub", "subn"):
-    _native_bound_method = getattr(_rust_bridge, "bound_" + _method_name)
+for _pattern_descriptor in _rust_bridge.pattern_descriptors(Pattern):
     type.__setattr__(
-        Pattern, _method_name,
-        _NativePatternMethod(_method_name, _native_bound_method),
+        Pattern, _pattern_descriptor.__name__, _pattern_descriptor
     )
 
 
