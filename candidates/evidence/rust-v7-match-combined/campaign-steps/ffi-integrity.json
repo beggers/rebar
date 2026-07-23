@@ -1,0 +1,17 @@
+{
+  "holdout_accessed": false,
+  "kind": "self-test",
+  "python": [
+    3,
+    14,
+    6
+  ],
+  "rejected_corrupt_observations": 5,
+  "result": "PASS",
+  "runtime_regression_threshold": 1.2,
+  "schema": "rebar-rust-ffi-lab-v1",
+  "semantic_cases": 354,
+  "speedup_regression_threshold": 0.8333333333333334,
+  "timing_cases": 192,
+  "timing_families": 24
+}

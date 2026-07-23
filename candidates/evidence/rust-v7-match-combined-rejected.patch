@@ -1,0 +1,163 @@
+diff --git a/candidates/rust/py_bridge.c b/candidates/rust/py_bridge.c
+index 4814d9ac..df9d617a 100644
+--- a/candidates/rust/py_bridge.c
++++ b/candidates/rust/py_bridge.c
+@@ -5,6 +5,10 @@
+ #include <stdint.h>
+ #include <string.h>
+ 
++extern int _PyDict_SetItem_KnownHash(
++    PyObject *, PyObject *, PyObject *, Py_hash_t
++);
++
+ extern void *rebar_compile(const uint32_t *, size_t, uint32_t, uint8_t, const size_t *, const uint32_t *, size_t);
+ extern void rebar_free(void *);
+ extern size_t rebar_groups(const void *);
+@@ -99,13 +103,47 @@ static RustMatch *rust_match_allocate(PyObject *pattern, PyObject *string, PyObj
+     return match;
+ }
+ 
++static inline Py_ssize_t rust_match_ssize_value(PyObject *value) {
++    if (
++        PyLong_CheckExact(value)
++        && PyUnstable_Long_IsCompact((PyLongObject *)value)
++    ) {
++        return PyUnstable_Long_CompactValue((PyLongObject *)value);
++    }
++    return PyLong_AsSsize_t(value);
++}
++
++static inline PyObject *rust_match_lookup_name(
++    PyObject *mapping, PyObject *name
++) {
++    if (PyDict_CheckExact(mapping) && PyUnicode_CheckExact(name)) {
++        Py_hash_t hash = ((PyASCIIObject *)name)->hash;
++        if (hash != -1) {
++            return _PyDict_GetItem_KnownHash(mapping, name, hash);
++        }
++    }
++    return PyDict_GetItemWithError(mapping, name);
++}
++
++static inline int rust_match_set_name(
++    PyObject *mapping, PyObject *name, PyObject *value
++) {
++    if (PyUnicode_CheckExact(name)) {
++        Py_hash_t hash = ((PyASCIIObject *)name)->hash;
++        if (hash != -1) {
++            return _PyDict_SetItem_KnownHash(mapping, name, value, hash);
++        }
++    }
++    return PyDict_SetItem(mapping, name, value);
++}
++
+ static int rust_match_group_number(RustMatch *match, PyObject *value, Py_ssize_t *number) {
+     if (PyLong_CheckExact(value)) {
+-        *number = PyLong_AsSsize_t(value);
++        *number = rust_match_ssize_value(value);
+     } else if (PyIndex_Check(value)) {
+         PyObject *index = PyNumber_Index(value);
+         if (index == NULL) return 0;
+-        *number = PyLong_AsSsize_t(index);
++        *number = rust_match_ssize_value(index);
+         Py_DECREF(index);
+     } else {
+         int borrowed = PyDict_Check(match->groupindex);
+@@ -115,14 +153,16 @@ static int rust_match_group_number(RustMatch *match, PyObject *value, Py_ssize_t
+             PyErr_SetString(PyExc_IndexError, "no such group");
+             return 0;
+         }
+-        PyObject *item = borrowed ? PyDict_GetItemWithError(match->groupindex, value) : PyObject_GetItem(match->groupindex, value);
++        PyObject *item = borrowed
++            ? rust_match_lookup_name(match->groupindex, value)
++            : PyObject_GetItem(match->groupindex, value);
+         if (item == NULL) {
+             if (PyErr_Occurred() && !PyErr_ExceptionMatches(PyExc_KeyError)) return 0;
+             PyErr_Clear();
+             PyErr_SetString(PyExc_IndexError, "no such group");
+             return 0;
+         }
+-        *number = PyLong_AsSsize_t(item);
++        *number = rust_match_ssize_value(item);
+         if (!borrowed) Py_DECREF(item);
+     }
+     if (PyErr_Occurred() || *number < 0 || *number > match->groups) {
+@@ -138,7 +178,18 @@ static PyObject *rust_match_piece(RustMatch *match, Py_ssize_t group, PyObject *
+     intptr_t begin = match->spans[group];
+     intptr_t end = match->spans[stride + (size_t)group];
+     if (begin < 0) return Py_NewRef(missing);
+-    if (PyUnicode_Check(match->string)) return PyUnicode_Substring(match->string, (Py_ssize_t)begin, (Py_ssize_t)end);
++    if (PyUnicode_Check(match->string)) {
++        if (
++            PyUnicode_CheckExact(match->string)
++            && begin == 0
++            && end == PyUnicode_GET_LENGTH(match->string)
++        ) {
++            return Py_NewRef(match->string);
++        }
++        return PyUnicode_Substring(
++            match->string, (Py_ssize_t)begin, (Py_ssize_t)end
++        );
++    }
+     if (PyBytes_CheckExact(match->string)) {
+         if (begin == 0 && end == (intptr_t)PyBytes_GET_SIZE(match->string)) {
+             return Py_NewRef(match->string);
+@@ -227,16 +278,22 @@ static PyObject *rust_match_groups(RustMatch *match, PyObject *const *args, Py_s
+ static PyObject *rust_match_groupdict(RustMatch *match, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+     PyObject *missing;
+     if (!rust_default_arg(args, nargs, kwnames, &missing, "groupdict")) return NULL;
+-    PyObject *result = PyDict_New();
++    Py_ssize_t names = PyDict_CheckExact(match->groupindex)
++        ? PyDict_GET_SIZE(match->groupindex)
++        : 0;
++    PyObject *result = names > 0 ? _PyDict_NewPresized(names) : PyDict_New();
+     if (result == NULL) return NULL;
+     if (PyDict_Check(match->groupindex)) {
+         PyObject *name;
+         PyObject *number;
+         Py_ssize_t cursor = 0;
+         while (PyDict_Next(match->groupindex, &cursor, &name, &number)) {
+-            Py_ssize_t group = PyLong_AsSsize_t(number);
++            Py_ssize_t group = rust_match_ssize_value(number);
+             PyObject *piece = PyErr_Occurred() ? NULL : rust_match_piece(match, group, missing);
+-            if (piece == NULL || PyDict_SetItem(result, name, piece) != 0) {
++            if (
++                piece == NULL
++                || rust_match_set_name(result, name, piece) != 0
++            ) {
+                 Py_XDECREF(piece);
+                 Py_DECREF(result);
+                 return NULL;
+@@ -253,9 +310,12 @@ static PyObject *rust_match_groupdict(RustMatch *match, PyObject *const *args, P
+     for (Py_ssize_t index = 0; index < PyList_GET_SIZE(items); index++) {
+         PyObject *pair = PyList_GET_ITEM(items, index);
+         PyObject *name = PyTuple_GET_ITEM(pair, 0);
+-        Py_ssize_t group = PyLong_AsSsize_t(PyTuple_GET_ITEM(pair, 1));
++        Py_ssize_t group = rust_match_ssize_value(PyTuple_GET_ITEM(pair, 1));
+         PyObject *piece = PyErr_Occurred() ? NULL : rust_match_piece(match, group, missing);
+-        if (piece == NULL || PyDict_SetItem(result, name, piece) != 0) {
++        if (
++            piece == NULL
++            || rust_match_set_name(result, name, piece) != 0
++        ) {
+             Py_XDECREF(piece);
+             Py_DECREF(items);
+             Py_DECREF(result);
+@@ -346,7 +406,7 @@ static PyObject *rust_match_get_lastgroup(RustMatch *match, void *closure) {
+         PyObject *number;
+         Py_ssize_t cursor = 0;
+         while (PyDict_Next(match->groupindex, &cursor, &name, &number)) {
+-            Py_ssize_t value = PyLong_AsSsize_t(number);
++            Py_ssize_t value = rust_match_ssize_value(number);
+             if (PyErr_Occurred()) return NULL;
+             if (value == match->lastindex) return Py_NewRef(name);
+         }
+@@ -356,7 +416,7 @@ static PyObject *rust_match_get_lastgroup(RustMatch *match, void *closure) {
+     if (items == NULL) return NULL;
+     for (Py_ssize_t index = 0; index < PyList_GET_SIZE(items); index++) {
+         PyObject *pair = PyList_GET_ITEM(items, index);
+-        Py_ssize_t value = PyLong_AsSsize_t(PyTuple_GET_ITEM(pair, 1));
++        Py_ssize_t value = rust_match_ssize_value(PyTuple_GET_ITEM(pair, 1));
+         if (PyErr_Occurred()) {
+             Py_DECREF(items);
+             return NULL;

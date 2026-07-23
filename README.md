@@ -23,7 +23,7 @@ The [corrected, from-scratch Rust engine](candidates/evidence/RUST-V7-CORRECTED-
 
 ![Corrected Rust passes all 223,198 Python compatibility checks; every original from-scratch engine has visible mismatches](candidates/evidence/rust-v7-correctness.svg)
 
-The first [corrected-Rust practice comparison](performance/v7/evidence/RUST-CALIBRATION-BASELINE.md) measures **624** separate practice cases, not the unseen test. Rust runs at **0.994×** Python's speed, with a **0.956–1.034×** confidence interval. Because that interval includes **1×**, a speedup has **not** been established. The complete results preserve all **175/624** cases taking more than 20% longer.
+The [corrected-Rust practice comparison](performance/v7/evidence/RUST-CALIBRATION-BASELINE.md) measures **624** separate practice cases, not the unseen test. Rust runs at **0.994×** Python's speed, with a **0.956–1.034×** confidence interval. Because that interval includes **1×**, a speedup has **not** been established. The complete results preserve all **175/624** cases taking more than 20% longer. All unsuccessful changes and their measurements remain in the [experiment log](docs/EXPERIMENT-LOG.md).
 
 ![Corrected Rust practice speed compared with Python, including its full confidence interval; the unseen test remains sealed](performance/v7/evidence/rust-v7-calibration-overall.svg)
 

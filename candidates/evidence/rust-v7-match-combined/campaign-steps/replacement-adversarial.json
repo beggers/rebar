@@ -1,0 +1,79 @@
+{
+  "bridge_path": null,
+  "bridge_sha256": null,
+  "canonical_checks": 8264,
+  "canonical_failed": 0,
+  "categories": [
+    {
+      "category": "callback-exceptions",
+      "checks": 72,
+      "cohort": "canonical-8264",
+      "failed": 0,
+      "failure_kinds": {}
+    },
+    {
+      "category": "callback-types",
+      "checks": 1512,
+      "cohort": "canonical-8264",
+      "failed": 0,
+      "failure_kinds": {}
+    },
+    {
+      "category": "method-binding",
+      "checks": 56,
+      "cohort": "canonical-8264",
+      "failed": 0,
+      "failure_kinds": {}
+    },
+    {
+      "category": "nullable-and-groups",
+      "checks": 4032,
+      "cohort": "canonical-8264",
+      "failed": 0,
+      "failure_kinds": {}
+    },
+    {
+      "category": "validation",
+      "checks": 2592,
+      "cohort": "canonical-8264",
+      "failed": 0,
+      "failure_kinds": {}
+    },
+    {
+      "category": "deferred-join-order",
+      "checks": 160,
+      "cohort": "extended",
+      "failed": 0,
+      "failure_kinds": {}
+    },
+    {
+      "category": "shared-mutable-return",
+      "checks": 54,
+      "cohort": "extended",
+      "failed": 0,
+      "failure_kinds": {}
+    },
+    {
+      "category": "template-validation-timing",
+      "checks": 384,
+      "cohort": "extended",
+      "failed": 0,
+      "failure_kinds": {}
+    }
+  ],
+  "checks": 8862,
+  "deep": false,
+  "engine_path": null,
+  "engine_sha256": null,
+  "failed": 0,
+  "failures": [],
+  "module": "candidates.rust_candidate",
+  "module_sha256": "1111a419d65d44775d1f4b0cb6a728dea8de44a592597341596533351c16018e",
+  "oracle": "stdlib re",
+  "python_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "python_version": "3.14.6 (main, Jun 23 2026, 15:18:23) [Clang 22.1.3 ]",
+  "runner_sha256": "1497d892a53e98fa33136b5748ecb2b6d9b590cccb42260e230dd6be98505662",
+  "schema": "rebar-rust-native-replacement-adversarial-v1",
+  "self_oracle_failures": [],
+  "self_oracle_passes": 2
+}
