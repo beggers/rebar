@@ -1,0 +1,31 @@
+{
+  "categories": {
+    "allocation-width": 20,
+    "bounded-backtracking": 15,
+    "dynamic-recursion-limit": 112,
+    "malformed-nesting": 4,
+    "nested-matching": 16,
+    "numeric-condition-overflow": 20,
+    "parser-nesting": 105,
+    "repetition-overflow": 24,
+    "seeded-nesting": 32
+  },
+  "core_dumps": "disabled in every child process",
+  "correctness_checks": 348,
+  "cpu_limit_seconds": 6,
+  "crashes": 0,
+  "failed": 0,
+  "failed_categories": {},
+  "failures": [],
+  "isolation": "one independent subprocess per engine and case",
+  "memory_limit_mib": 768,
+  "module": "re",
+  "oracle": "CPython stdlib re",
+  "oracle_failures": 0,
+  "pattern_transport": "compact generator descriptor over subprocess standard input",
+  "python_version": "3.14.6",
+  "schema": "rebar-rust-depth-safety-v1",
+  "seed": 2026072323,
+  "timeout_seconds": 5.0,
+  "timeouts": 0
+}

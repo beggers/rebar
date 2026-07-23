@@ -1,0 +1,4138 @@
+{
+  "categories": {
+    "allocation-width": 20,
+    "bounded-backtracking": 15,
+    "dynamic-recursion-limit": 112,
+    "malformed-nesting": 4,
+    "nested-matching": 16,
+    "numeric-condition-overflow": 20,
+    "parser-nesting": 105,
+    "repetition-overflow": 24,
+    "seeded-nesting": 32
+  },
+  "core_dumps": "disabled in every child process",
+  "correctness_checks": 348,
+  "cpu_limit_seconds": 6,
+  "crashes": 31,
+  "failed": 154,
+  "failed_categories": {
+    "dynamic-recursion-limit": 70,
+    "malformed-nesting": 3,
+    "numeric-condition-overflow": 8,
+    "parser-nesting": 63,
+    "seeded-nesting": 10
+  },
+  "failures": [
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 496,
+            "pattern_length": 993,
+            "pattern_sha256": "78a1514e8df3d399ec0fe86004777fcdbaed2dacdf35462170ce3a65b1bcd5d0"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "parser-nesting",
+        "depth": 496,
+        "id": "depth.groups.496"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1985,
+            "pattern_sha256": "61b98da7b49fc61ed2d9b4b5b155a57c7dbd4ee00f127e22a59a028b8648d17a"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "parser-nesting",
+        "depth": 496,
+        "id": "depth.lookahead.496"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1985,
+            "pattern_sha256": "203fa372115240b14f62d33631ad940df85a5bc802fe750a78522519c8b6114f"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "negative-lookahead",
+        "category": "parser-nesting",
+        "depth": 496,
+        "id": "depth.negative-lookahead.496"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1985,
+            "pattern_sha256": "81050d7e85df09c689ccb286df649fe3927fa78052d86d0559736fef09edad05"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "noncapture",
+        "category": "parser-nesting",
+        "depth": 496,
+        "id": "depth.noncapture.496"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1985,
+            "pattern_sha256": "5b26bb0e267896e7de9cc09c5ec133d75f011e5dbdfb1f5866304a6fc24f0b2b"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "atomic",
+        "category": "parser-nesting",
+        "depth": 496,
+        "id": "depth.atomic.496"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2482,
+            "pattern_sha256": "7a63416d3cd50f2160a4c3fcddce8b788cc97c49ed75b28c930c8fe3e34d8259"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "nullable",
+        "category": "parser-nesting",
+        "depth": 496,
+        "id": "depth.nullable.496"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2481,
+            "pattern_sha256": "bc2fe43f13c612dff73d2f3796bbf209f2c3e3917b00b76967d2e16e90636235"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookbehind",
+        "category": "parser-nesting",
+        "depth": 496,
+        "id": "depth.lookbehind.496"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 497,
+            "pattern_length": 995,
+            "pattern_sha256": "7d6902ada568f0d398528d9c8bd2654ce5d24b3484233e5641747e6be4c3ac61"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "parser-nesting",
+        "depth": 497,
+        "id": "depth.groups.497"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1989,
+            "pattern_sha256": "1c0303cf6caaf81f51ae7f65bc42c67f7174cc69c1cefdc73d92a5ff5e8e731b"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "parser-nesting",
+        "depth": 497,
+        "id": "depth.lookahead.497"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1989,
+            "pattern_sha256": "5cbef9cc005f1c5c31f91596b1b63d6dbe1d187089e9f506904964233a6ef9bb"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "negative-lookahead",
+        "category": "parser-nesting",
+        "depth": 497,
+        "id": "depth.negative-lookahead.497"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1989,
+            "pattern_sha256": "3975c777d6f72ff4664d346f87578a9e89141f4a2202ab1e2f8a79b033a6ad79"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "noncapture",
+        "category": "parser-nesting",
+        "depth": 497,
+        "id": "depth.noncapture.497"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1989,
+            "pattern_sha256": "d3904ffc72c018d428a78a6018b207d443eb822d5fca50e80c5524174bf0fb65"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "atomic",
+        "category": "parser-nesting",
+        "depth": 497,
+        "id": "depth.atomic.497"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2487,
+            "pattern_sha256": "93f2c29653f8db833f3b095537d63165369246d5b5d521bf2ce6ea8845f779df"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "nullable",
+        "category": "parser-nesting",
+        "depth": 497,
+        "id": "depth.nullable.497"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2486,
+            "pattern_sha256": "2a8346f7fcdc4c6b804b1e5c61ee03ed985e1804fdaabf1826e750aa50f1dde5"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookbehind",
+        "category": "parser-nesting",
+        "depth": 497,
+        "id": "depth.lookbehind.497"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 512,
+            "pattern_length": 1025,
+            "pattern_sha256": "62a811cf6526c1fb97a56faa8f40bbf7d044adc1340e0020b82b2ee8ec21f96c"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "parser-nesting",
+        "depth": 512,
+        "id": "depth.groups.512"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2049,
+            "pattern_sha256": "56b1d79fe40523b7a10b63333c013cc2f36ddeb6d98f382b06912fe272e1b5ac"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "parser-nesting",
+        "depth": 512,
+        "id": "depth.lookahead.512"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2049,
+            "pattern_sha256": "9fea3a4839005d67f3f20dbc6172f3a95cea06e5a8d4c4656ec4ddcf7a899b5c"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "negative-lookahead",
+        "category": "parser-nesting",
+        "depth": 512,
+        "id": "depth.negative-lookahead.512"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2049,
+            "pattern_sha256": "eb5ad8f80da4d8f7511686f7ddfdba235856d9b9b96d5b301a3d501de24d450c"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "noncapture",
+        "category": "parser-nesting",
+        "depth": 512,
+        "id": "depth.noncapture.512"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2049,
+            "pattern_sha256": "dfa6e40856a2b854c4c8a9dd90724d1bfda521b8bea352f5d1e5b5a9413f484d"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "atomic",
+        "category": "parser-nesting",
+        "depth": 512,
+        "id": "depth.atomic.512"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2562,
+            "pattern_sha256": "8db8fe0bd7ae4593e0eb26f7dfba0e8937d873493bdeb7b506514cefac961076"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "nullable",
+        "category": "parser-nesting",
+        "depth": 512,
+        "id": "depth.nullable.512"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2561,
+            "pattern_sha256": "625e44fa8643e8f8038c0b72cad5ebda6b8168a0d62be8e3802bacce6caaf398"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookbehind",
+        "category": "parser-nesting",
+        "depth": 512,
+        "id": "depth.lookbehind.512"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1024,
+            "pattern_length": 2049,
+            "pattern_sha256": "a1a88df3b25b2a7ccbd6d962fb1f109ea965d5de87f00f14236769a6befda4d3"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "parser-nesting",
+        "depth": 1024,
+        "id": "depth.groups.1024"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 4097,
+            "pattern_sha256": "e5d77125f11b0cb663aa7883552e7bd32ec52ea61548481efd4a2ab77389881b"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "parser-nesting",
+        "depth": 1024,
+        "id": "depth.lookahead.1024"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 4097,
+            "pattern_sha256": "e7cd8c675caaeeb413d51e16f7417ce2979cc98e160cb97f81f57a54583f91bc"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "negative-lookahead",
+        "category": "parser-nesting",
+        "depth": 1024,
+        "id": "depth.negative-lookahead.1024"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 4097,
+            "pattern_sha256": "1ccd5d41c3dbe8c0c78a7dc9147af8618c443598b5b79a4bec7cc058c3ec6732"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "noncapture",
+        "category": "parser-nesting",
+        "depth": 1024,
+        "id": "depth.noncapture.1024"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 4097,
+            "pattern_sha256": "a660d1f95acc650161229c1345fed902788d75fa38194ad5c21c355a37d71d1a"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "atomic",
+        "category": "parser-nesting",
+        "depth": 1024,
+        "id": "depth.atomic.1024"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 5122,
+            "pattern_sha256": "2902105c1e20cb3cbbb945511951e36e0e618c2d9fbe8f519a6f108745f52418"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "nullable",
+        "category": "parser-nesting",
+        "depth": 1024,
+        "id": "depth.nullable.1024"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 5121,
+            "pattern_sha256": "2c9fadc668f140fff54e38429574e2ebcd2aa53deaa9359d715229a325c9ab15"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookbehind",
+        "category": "parser-nesting",
+        "depth": 1024,
+        "id": "depth.lookbehind.1024"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 2048,
+            "pattern_length": 4097,
+            "pattern_sha256": "50af583c264e76d25b505daaefeaa9f0603fa6df283b1d6009bc7859634198e7"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "parser-nesting",
+        "depth": 2048,
+        "id": "depth.groups.2048"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 8193,
+            "pattern_sha256": "0301cc3458bff3f492d16815235693b6db14e82ccd05c6c8aa8a000a69f155d6"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "parser-nesting",
+        "depth": 2048,
+        "id": "depth.lookahead.2048"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 8193,
+            "pattern_sha256": "32e9f45ee3e8f26fe2cb89396609a0b2efbbdf4359c02d303c17cf191f348ab8"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "negative-lookahead",
+        "category": "parser-nesting",
+        "depth": 2048,
+        "id": "depth.negative-lookahead.2048"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 8193,
+            "pattern_sha256": "9c1ef132edc0cb0a49e34901ead5b41e261451dd36cebd8ca2b3a8ad02079f3b"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "noncapture",
+        "category": "parser-nesting",
+        "depth": 2048,
+        "id": "depth.noncapture.2048"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 8193,
+            "pattern_sha256": "10b4b8ede35c703c01e65ae9f13f8b9ddff9531315ea4a5e2f24fb97e1ef6818"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "atomic",
+        "category": "parser-nesting",
+        "depth": 2048,
+        "id": "depth.atomic.2048"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 10242,
+            "pattern_sha256": "ac3000b902b5149e8774bee550a1d01e334646f9d852ee96220fb6345b33593f"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "nullable",
+        "category": "parser-nesting",
+        "depth": 2048,
+        "id": "depth.nullable.2048"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 10241,
+            "pattern_sha256": "e2e3f98f8c108b31d54e2be66e254cf4dcf0c4f370a805eb5ee2faaecb591382"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookbehind",
+        "category": "parser-nesting",
+        "depth": 2048,
+        "id": "depth.lookbehind.2048"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 4096,
+            "pattern_length": 8193,
+            "pattern_sha256": "22c114325c5bfdccf0134addc39cd54b661974948811f2c121cd5d278ff145d0"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "parser-nesting",
+        "depth": 4096,
+        "id": "depth.groups.4096"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 16385,
+            "pattern_sha256": "f3750bd3d92fa87b9a6a025f9fb4ca0cd3266b2979ffdad9b5fb719cc7970b10"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "parser-nesting",
+        "depth": 4096,
+        "id": "depth.lookahead.4096"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 16385,
+            "pattern_sha256": "5db67f01fee13d359083d64bf71fc1012bc381bca5a184115cc6f3334b8a4a50"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "negative-lookahead",
+        "category": "parser-nesting",
+        "depth": 4096,
+        "id": "depth.negative-lookahead.4096"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 16385,
+            "pattern_sha256": "976498c282b8aa08236ec9972e0490066a10658c203c90f4fb3f935d3f9d1795"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "noncapture",
+        "category": "parser-nesting",
+        "depth": 4096,
+        "id": "depth.noncapture.4096"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 16385,
+            "pattern_sha256": "6b91c7745d1770c95725da24c24c0b874cdb686412e92ca6c3988b715afbf766"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "atomic",
+        "category": "parser-nesting",
+        "depth": 4096,
+        "id": "depth.atomic.4096"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 20482,
+            "pattern_sha256": "77772ba73676caea761b5c332633ce8de11557b9d73604a2af5a19d2d6d55e82"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "nullable",
+        "category": "parser-nesting",
+        "depth": 4096,
+        "id": "depth.nullable.4096"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 20481,
+            "pattern_sha256": "271e4029fa3dbdaa47275ea7b9e424847acdbbe5ba3c10573bd6ec96b1da4234"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookbehind",
+        "category": "parser-nesting",
+        "depth": 4096,
+        "id": "depth.lookbehind.4096"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "groups",
+        "category": "parser-nesting",
+        "depth": 8192,
+        "id": "depth.groups.8192"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "parser-nesting",
+        "depth": 8192,
+        "id": "depth.lookahead.8192"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "negative-lookahead",
+        "category": "parser-nesting",
+        "depth": 8192,
+        "id": "depth.negative-lookahead.8192"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "noncapture",
+        "category": "parser-nesting",
+        "depth": 8192,
+        "id": "depth.noncapture.8192"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "atomic",
+        "category": "parser-nesting",
+        "depth": 8192,
+        "id": "depth.atomic.8192"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "nullable",
+        "category": "parser-nesting",
+        "depth": 8192,
+        "id": "depth.nullable.8192"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "lookbehind",
+        "category": "parser-nesting",
+        "depth": 8192,
+        "id": "depth.lookbehind.8192"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "groups",
+        "category": "parser-nesting",
+        "depth": 16384,
+        "id": "depth.groups.16384"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "parser-nesting",
+        "depth": 16384,
+        "id": "depth.lookahead.16384"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "negative-lookahead",
+        "category": "parser-nesting",
+        "depth": 16384,
+        "id": "depth.negative-lookahead.16384"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "noncapture",
+        "category": "parser-nesting",
+        "depth": 16384,
+        "id": "depth.noncapture.16384"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "atomic",
+        "category": "parser-nesting",
+        "depth": 16384,
+        "id": "depth.atomic.16384"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "nullable",
+        "category": "parser-nesting",
+        "depth": 16384,
+        "id": "depth.nullable.16384"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "lookbehind",
+        "category": "parser-nesting",
+        "depth": 16384,
+        "id": "depth.lookbehind.16384"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "groups",
+        "category": "parser-nesting",
+        "depth": 32768,
+        "id": "depth.groups.32768"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "parser-nesting",
+        "depth": 32768,
+        "id": "depth.lookahead.32768"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "negative-lookahead",
+        "category": "parser-nesting",
+        "depth": 32768,
+        "id": "depth.negative-lookahead.32768"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "noncapture",
+        "category": "parser-nesting",
+        "depth": 32768,
+        "id": "depth.noncapture.32768"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "atomic",
+        "category": "parser-nesting",
+        "depth": 32768,
+        "id": "depth.atomic.32768"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "nullable",
+        "category": "parser-nesting",
+        "depth": 32768,
+        "id": "depth.nullable.32768"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "lookbehind",
+        "category": "parser-nesting",
+        "depth": 32768,
+        "id": "depth.lookbehind.32768"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 24,
+            "pattern_length": 49,
+            "pattern_sha256": "14cfa9972ae5628e83e2270d69770904a016c17aade445df8c2a4bea335d6008"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 24,
+        "id": "limit.49.groups.+0",
+        "recursion_limit": 49
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 97,
+            "pattern_sha256": "481685632812a0183f8fe9d75d868612b9e121120637bad6efbe1a33acb84837"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 24,
+        "id": "limit.49.lookahead.+0",
+        "recursion_limit": 49
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 28,
+            "pattern_length": 57,
+            "pattern_sha256": "d4e18149642982c16bcf0be01033afa27e5934b5bc79d1c5282d91417b8c87c7"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 28,
+        "id": "limit.49.groups.+4",
+        "recursion_limit": 49
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 113,
+            "pattern_sha256": "8ee06ef50bfd011618823202af9d22fa683aeb88c6dee3491b8c485a4d3061d9"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 28,
+        "id": "limit.49.lookahead.+4",
+        "recursion_limit": 49
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 25,
+            "pattern_length": 51,
+            "pattern_sha256": "1c06b42f95a347f86609070a5b14bf1cc597e93065a67ef219aac6a818ddc883"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 25,
+        "id": "limit.51.groups.+0",
+        "recursion_limit": 51
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 101,
+            "pattern_sha256": "c54c816c9200a7e1731e81901c178be6f53c50ba89c3e509d5d785e148115021"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 25,
+        "id": "limit.51.lookahead.+0",
+        "recursion_limit": 51
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 29,
+            "pattern_length": 59,
+            "pattern_sha256": "72be96cc6eda95af2204e2f2c22e8852817031e49d6b6a7a559f02c7fb2b36f8"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 29,
+        "id": "limit.51.groups.+4",
+        "recursion_limit": 51
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 117,
+            "pattern_sha256": "deea89544945a1257a92e23a86b4163c10d9ede1348aa6252f92ad36af4dd434"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 29,
+        "id": "limit.51.lookahead.+4",
+        "recursion_limit": 51
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 28,
+            "pattern_length": 57,
+            "pattern_sha256": "d4e18149642982c16bcf0be01033afa27e5934b5bc79d1c5282d91417b8c87c7"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 28,
+        "id": "limit.64.groups.-4",
+        "recursion_limit": 64
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 113,
+            "pattern_sha256": "8ee06ef50bfd011618823202af9d22fa683aeb88c6dee3491b8c485a4d3061d9"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 28,
+        "id": "limit.64.lookahead.-4",
+        "recursion_limit": 64
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 32,
+            "pattern_length": 65,
+            "pattern_sha256": "3f72458c1b8da29f4b3f05029964f328ccb5180c3f217fce951f0811095da924"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 32,
+        "id": "limit.64.groups.+0",
+        "recursion_limit": 64
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 129,
+            "pattern_sha256": "0f9916e7a71dd32154aee882c218fe4a18bd9129c5b2c8a35518716c88659ed2"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 32,
+        "id": "limit.64.lookahead.+0",
+        "recursion_limit": 64
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 36,
+            "pattern_length": 73,
+            "pattern_sha256": "d84bf1e39874e5a426dcd08d064eef3dd3ab82fbaea4329c4e748636a9bf8c91"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 36,
+        "id": "limit.64.groups.+4",
+        "recursion_limit": 64
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 145,
+            "pattern_sha256": "5df2695151b82507ecc16bbc9698d9ff5e1b98dff97ed2dadcccd58ad92f2e4e"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 36,
+        "id": "limit.64.lookahead.+4",
+        "recursion_limit": 64
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 50,
+            "pattern_length": 101,
+            "pattern_sha256": "39a08d70b9b8548f5335a7e3328056ad73fc299a2346519212e74e72cff3397f"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 50,
+        "id": "limit.101.groups.+0",
+        "recursion_limit": 101
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 201,
+            "pattern_sha256": "291acaa43a65733f360cfae4d2e754385372a09f900d8da747c1792f1c99cb89"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 50,
+        "id": "limit.101.lookahead.+0",
+        "recursion_limit": 101
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 54,
+            "pattern_length": 109,
+            "pattern_sha256": "56b23b2e4adf0722f66758203a77f57e7761c4b6c073cdd5bb08f0066bbd5b08"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 54,
+        "id": "limit.101.groups.+4",
+        "recursion_limit": 101
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 217,
+            "pattern_sha256": "ea0c510a07765a01f51ee812730f32ab226ec051e17e59c38b9becd82168e517"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 54,
+        "id": "limit.101.lookahead.+4",
+        "recursion_limit": 101
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 60,
+            "pattern_length": 121,
+            "pattern_sha256": "51d1d2d0907199b4c1b70b6cf89759aa3f85953a2e86095cfbd7242e2334b158"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 60,
+        "id": "limit.128.groups.-4",
+        "recursion_limit": 128
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 241,
+            "pattern_sha256": "a2f8b85fb7be409f5df453e0bad3f2fb00dbc694f59a79db8be294afde28660f"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 60,
+        "id": "limit.128.lookahead.-4",
+        "recursion_limit": 128
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 64,
+            "pattern_length": 129,
+            "pattern_sha256": "ad721d776ced045ee9cd7ba026cb3425d48056b83742ab000cdfed5421b1c472"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 64,
+        "id": "limit.128.groups.+0",
+        "recursion_limit": 128
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 257,
+            "pattern_sha256": "ef1583ccd6753bfd4e30b974667298caba42225e99a5e8596a8a6d95dc1f768e"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 64,
+        "id": "limit.128.lookahead.+0",
+        "recursion_limit": 128
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 68,
+            "pattern_length": 137,
+            "pattern_sha256": "ce532276b58c05bb7af270479f07349e45a7c82385324257fc1aeaac9cc54a4a"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 68,
+        "id": "limit.128.groups.+4",
+        "recursion_limit": 128
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 273,
+            "pattern_sha256": "02e95fa350446eff9b14b4424dae07ae2a7c63af38cb750acddddeb68ba7c57e"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 68,
+        "id": "limit.128.lookahead.+4",
+        "recursion_limit": 128
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 89,
+            "pattern_length": 179,
+            "pattern_sha256": "6e6e7134e9efc79378d9d994458af84460d4d9b1b01fbafd05820a85101446e6"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 89,
+        "id": "limit.179.groups.+0",
+        "recursion_limit": 179
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 357,
+            "pattern_sha256": "f8399f21d1d5ce45d7993d98e70c46aa55d3bd598df6f02344be05c6d24c20f7"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 89,
+        "id": "limit.179.lookahead.+0",
+        "recursion_limit": 179
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 93,
+            "pattern_length": 187,
+            "pattern_sha256": "b7a15d4dc34284b68a99e8170e5e0967699d8522a8a26dfd193a8178685943fa"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 93,
+        "id": "limit.179.groups.+4",
+        "recursion_limit": 179
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 373,
+            "pattern_sha256": "7e5c61e32e01bb930ffcec9c44fcb2d7697afe73f5a82194b245a41bb0036ded"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 93,
+        "id": "limit.179.lookahead.+4",
+        "recursion_limit": 179
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 90,
+            "pattern_length": 181,
+            "pattern_sha256": "f89ffa8f9442bdc0a3e317505dc75e760e039a5e9e28e07e3e29e720ce54f738"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 90,
+        "id": "limit.181.groups.+0",
+        "recursion_limit": 181
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 361,
+            "pattern_sha256": "678a3d85835e47bd3a49c0ad16d71eb037c1c5a26aa4c0d55e18298b79fc86c4"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 90,
+        "id": "limit.181.lookahead.+0",
+        "recursion_limit": 181
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 94,
+            "pattern_length": 189,
+            "pattern_sha256": "4b55d4663a19bb2682333e71f40a82afc83a22b6e7cf6f500651aadeb2034dc3"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 94,
+        "id": "limit.181.groups.+4",
+        "recursion_limit": 181
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 377,
+            "pattern_sha256": "445587fb76b32474948d1d8fb7c6ed09abca8afb88cdeb84dc7d72e1a85dc04a"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 94,
+        "id": "limit.181.lookahead.+4",
+        "recursion_limit": 181
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 124,
+            "pattern_length": 249,
+            "pattern_sha256": "908e2348471171e983852e4e001079816fdfa8ddff3ec10c4d2bdad99299ab41"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 124,
+        "id": "limit.256.groups.-4",
+        "recursion_limit": 256
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 497,
+            "pattern_sha256": "f9246b7940c5e9491e4fbf332c7774359a17b6eeb26a5a9790e81ec68094f297"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 124,
+        "id": "limit.256.lookahead.-4",
+        "recursion_limit": 256
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 128,
+            "pattern_length": 257,
+            "pattern_sha256": "145da3c21220e1cd13d265a185c4c8c26033c04d97811b25a5ae4b4ad4d88112"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 128,
+        "id": "limit.256.groups.+0",
+        "recursion_limit": 256
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 513,
+            "pattern_sha256": "0c67f9c21493d504a50b9c839cec0bc5b5cd73a5e3778efb7c3a122f8b8da74d"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 128,
+        "id": "limit.256.lookahead.+0",
+        "recursion_limit": 256
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 132,
+            "pattern_length": 265,
+            "pattern_sha256": "f4679b427f68311999dc6a297beedad7f208923f948fcda40aef946bbc883740"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 132,
+        "id": "limit.256.groups.+4",
+        "recursion_limit": 256
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 529,
+            "pattern_sha256": "769f8f9c72a61835ffa9ee715ba8dc5293b0bd5387aa9528c44c3821cca6e52e"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 132,
+        "id": "limit.256.lookahead.+4",
+        "recursion_limit": 256
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 252,
+            "pattern_length": 505,
+            "pattern_sha256": "504e44a957bdfd12826001d9893226a4c191d888918a65ec5872e8b030f4932b"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 252,
+        "id": "limit.512.groups.-4",
+        "recursion_limit": 512
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1009,
+            "pattern_sha256": "5b72bc271dfc977e801c1f4a7b9755322bf3f5bfad806559178f11b51adccb39"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 252,
+        "id": "limit.512.lookahead.-4",
+        "recursion_limit": 512
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 256,
+            "pattern_length": 513,
+            "pattern_sha256": "beaab5d1ba868260d441b5926382c835a9870743886287ff97980284ea6ded1f"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 256,
+        "id": "limit.512.groups.+0",
+        "recursion_limit": 512
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1025,
+            "pattern_sha256": "e13a623d7821a02fad4ba7f01342927ce292a9b4ad49d21304bb76f608fc5389"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 256,
+        "id": "limit.512.lookahead.+0",
+        "recursion_limit": 512
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 260,
+            "pattern_length": 521,
+            "pattern_sha256": "4d127c1ec09cfdd726ad26d1daf54eac9fec76c1392a182f402bcb93248d9532"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 260,
+        "id": "limit.512.groups.+4",
+        "recursion_limit": 512
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1041,
+            "pattern_sha256": "4d86553ce536b2e49dfdd6d1a78dbaa6acf94d643439b0d956e5dc7e54e7a106"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 260,
+        "id": "limit.512.lookahead.+4",
+        "recursion_limit": 512
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 380,
+            "pattern_length": 761,
+            "pattern_sha256": "2dfa582eb2a7aae0ef87a4840281c899ae9d0b968163ab7f1aded627ef079f55"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 380,
+        "id": "limit.768.groups.-4",
+        "recursion_limit": 768
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1521,
+            "pattern_sha256": "1108e5e630b2718257f962d1a61f1322ca085e05689a984de96cf7f75def2d35"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 380,
+        "id": "limit.768.lookahead.-4",
+        "recursion_limit": 768
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 384,
+            "pattern_length": 769,
+            "pattern_sha256": "3ca5875b5d04de638f0ef527e049afaae6801f9c23b95deb8bed001f5b36158f"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 384,
+        "id": "limit.768.groups.+0",
+        "recursion_limit": 768
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1537,
+            "pattern_sha256": "13bf77afa22f77fd771e8868dba1f9551f90db0ad0e392a04166685a1ab25b36"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 384,
+        "id": "limit.768.lookahead.+0",
+        "recursion_limit": 768
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 388,
+            "pattern_length": 777,
+            "pattern_sha256": "db713c3b137b1c55744ae25af532f7ecd4f5981fd8e3f0d8d42fa0ee81dff186"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 388,
+        "id": "limit.768.groups.+4",
+        "recursion_limit": 768
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1553,
+            "pattern_sha256": "a8b47c2952a46c443f9c704d488750f9e66477c5a84c40861589f27f84a35dd8"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 388,
+        "id": "limit.768.lookahead.+4",
+        "recursion_limit": 768
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 499,
+            "pattern_length": 999,
+            "pattern_sha256": "c6d988c63c98d1bdb0895ccffaac2dd0b33c71dfd2ffa32714e9cedc806e32a3"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 499,
+        "id": "limit.999.groups.+0",
+        "recursion_limit": 999
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1997,
+            "pattern_sha256": "2026e5aa45e71421d6c706d72ab61cb7d856082cc69d5c660732382de1607594"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 499,
+        "id": "limit.999.lookahead.+0",
+        "recursion_limit": 999
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 503,
+            "pattern_length": 1007,
+            "pattern_sha256": "f9c33022b72325c15a9ccd16d60e01ab6746c68ae8e45d125e79e30ab835e841"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 503,
+        "id": "limit.999.groups.+4",
+        "recursion_limit": 999
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2013,
+            "pattern_sha256": "47aeadd793e4e044cd78b2705b05620b0bdcf1e52e811d5addeb29a1403aab14"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 503,
+        "id": "limit.999.lookahead.+4",
+        "recursion_limit": 999
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 496,
+            "pattern_length": 993,
+            "pattern_sha256": "78a1514e8df3d399ec0fe86004777fcdbaed2dacdf35462170ce3a65b1bcd5d0"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 496,
+        "id": "limit.1000.groups.-4",
+        "recursion_limit": 1000
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 1985,
+            "pattern_sha256": "61b98da7b49fc61ed2d9b4b5b155a57c7dbd4ee00f127e22a59a028b8648d17a"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 496,
+        "id": "limit.1000.lookahead.-4",
+        "recursion_limit": 1000
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 500,
+            "pattern_length": 1001,
+            "pattern_sha256": "78c7d50067b8519836d5728cbc6e263b5a12396dbaea34bf833cd6e1079dd3d9"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 500,
+        "id": "limit.1000.groups.+0",
+        "recursion_limit": 1000
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2001,
+            "pattern_sha256": "8fa0df2843a4b09a23ee58c4ec67a850a481a1ec13294f71bea729ee3dfe1b99"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 500,
+        "id": "limit.1000.lookahead.+0",
+        "recursion_limit": 1000
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 504,
+            "pattern_length": 1009,
+            "pattern_sha256": "65a26025a21fee31cb19f674f3ecb12ac778d2c9588d57cc2de41044a0f32249"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 504,
+        "id": "limit.1000.groups.+4",
+        "recursion_limit": 1000
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2017,
+            "pattern_sha256": "157295a5066d0cf90c28be83a7926e33c1daf610a8d391597eb742c7f06cce1c"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 504,
+        "id": "limit.1000.lookahead.+4",
+        "recursion_limit": 1000
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 500,
+            "pattern_length": 1001,
+            "pattern_sha256": "78c7d50067b8519836d5728cbc6e263b5a12396dbaea34bf833cd6e1079dd3d9"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 500,
+        "id": "limit.1001.groups.+0",
+        "recursion_limit": 1001
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2001,
+            "pattern_sha256": "8fa0df2843a4b09a23ee58c4ec67a850a481a1ec13294f71bea729ee3dfe1b99"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 500,
+        "id": "limit.1001.lookahead.+0",
+        "recursion_limit": 1001
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 504,
+            "pattern_length": 1009,
+            "pattern_sha256": "65a26025a21fee31cb19f674f3ecb12ac778d2c9588d57cc2de41044a0f32249"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 504,
+        "id": "limit.1001.groups.+4",
+        "recursion_limit": 1001
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2017,
+            "pattern_sha256": "157295a5066d0cf90c28be83a7926e33c1daf610a8d391597eb742c7f06cce1c"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 504,
+        "id": "limit.1001.lookahead.+4",
+        "recursion_limit": 1001
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 2044,
+            "pattern_length": 4089,
+            "pattern_sha256": "d5b7fa878d93277df12079316a3b9376c0867412bd9d0af62f850d7be1b27bac"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 2044,
+        "id": "limit.4096.groups.-4",
+        "recursion_limit": 4096
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 8177,
+            "pattern_sha256": "a1fc23b462a83abcb66cb43d1254c88ed195bf5dca21c9e962c5069690d32b9f"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 2044,
+        "id": "limit.4096.lookahead.-4",
+        "recursion_limit": 4096
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 2048,
+            "pattern_length": 4097,
+            "pattern_sha256": "50af583c264e76d25b505daaefeaa9f0603fa6df283b1d6009bc7859634198e7"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 2048,
+        "id": "limit.4096.groups.+0",
+        "recursion_limit": 4096
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 8193,
+            "pattern_sha256": "0301cc3458bff3f492d16815235693b6db14e82ccd05c6c8aa8a000a69f155d6"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 2048,
+        "id": "limit.4096.lookahead.+0",
+        "recursion_limit": 4096
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 2052,
+            "pattern_length": 4105,
+            "pattern_sha256": "e4c899a853bd2c0941a32266c9da309f1f47ae9c662c97675b4be296ebacabd0"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 2052,
+        "id": "limit.4096.groups.+4",
+        "recursion_limit": 4096
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 8209,
+            "pattern_sha256": "185ef76719b8a91d8faf48191816e1773b7483ca52c0737a4bc2e223aa70daf3"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 2052,
+        "id": "limit.4096.lookahead.+4",
+        "recursion_limit": 4096
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "missing ), unterminated subpattern at position 511",
+          "pattern_error": {
+            "colno": 512,
+            "lineno": 1,
+            "msg": "missing ), unterminated subpattern",
+            "pattern_length": 513,
+            "pos": 511
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "unclosed",
+        "category": "malformed-nesting",
+        "depth": 512,
+        "id": "unclosed.512"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "unclosed",
+        "category": "malformed-nesting",
+        "depth": 8192,
+        "id": "unclosed.8192"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "unclosed",
+        "category": "malformed-nesting",
+        "depth": 16384,
+        "id": "unclosed.16384"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (652) panicked at src/lib.rs:1047:58:\ncalled `Result::unwrap()` on an `Err` value: ParseIntError { kind: PosOverflow }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "builder": "literal",
+        "category": "numeric-condition-overflow",
+        "id": "conditional.u64-overflow.plain",
+        "pattern": "(?(18446744073709551616)a|b)"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "invalid group reference 18446744073709551616 at position 3",
+          "pattern_error": {
+            "colno": 4,
+            "lineno": 1,
+            "msg": "invalid group reference 18446744073709551616",
+            "pattern_length": 28,
+            "pos": 3
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (654) panicked at src/lib.rs:1047:58:\ncalled `Result::unwrap()` on an `Err` value: ParseIntError { kind: PosOverflow }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "builder": "literal",
+        "category": "numeric-condition-overflow",
+        "id": "conditional.u64-overflow.capture",
+        "pattern": "(a)?(?(18446744073709551616)a|b)"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "invalid group reference 18446744073709551616 at position 7",
+          "pattern_error": {
+            "colno": 8,
+            "lineno": 1,
+            "msg": "invalid group reference 18446744073709551616",
+            "pattern_length": 32,
+            "pos": 7
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (656) panicked at src/lib.rs:1047:58:\ncalled `Result::unwrap()` on an `Err` value: ParseIntError { kind: PosOverflow }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "builder": "literal",
+        "category": "numeric-condition-overflow",
+        "id": "conditional.all-nine-64.plain",
+        "pattern": "(?(9999999999999999999999999999999999999999999999999999999999999999)a|b)"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "invalid group reference 9999999999999999999999999999999999999999999999999999999999999999 at position 3",
+          "pattern_error": {
+            "colno": 4,
+            "lineno": 1,
+            "msg": "invalid group reference 9999999999999999999999999999999999999999999999999999999999999999",
+            "pattern_length": 72,
+            "pos": 3
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (658) panicked at src/lib.rs:1047:58:\ncalled `Result::unwrap()` on an `Err` value: ParseIntError { kind: PosOverflow }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "builder": "literal",
+        "category": "numeric-condition-overflow",
+        "id": "conditional.all-nine-64.capture",
+        "pattern": "(a)?(?(9999999999999999999999999999999999999999999999999999999999999999)a|b)"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "invalid group reference 9999999999999999999999999999999999999999999999999999999999999999 at position 7",
+          "pattern_error": {
+            "colno": 8,
+            "lineno": 1,
+            "msg": "invalid group reference 9999999999999999999999999999999999999999999999999999999999999999",
+            "pattern_length": 76,
+            "pos": 7
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (660) panicked at src/lib.rs:1047:58:\ncalled `Result::unwrap()` on an `Err` value: ParseIntError { kind: PosOverflow }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "builder": "literal",
+        "category": "numeric-condition-overflow",
+        "id": "conditional.all-nine-80.plain",
+        "pattern": "(?(99999999999999999999999999999999999999999999999999999999999999999999999999999999)a|b)"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "invalid group reference 99999999999999999999999999999999999999999999999999999999999999999999999999999999 at position 3",
+          "pattern_error": {
+            "colno": 4,
+            "lineno": 1,
+            "msg": "invalid group reference 99999999999999999999999999999999999999999999999999999999999999999999999999999999",
+            "pattern_length": 88,
+            "pos": 3
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (662) panicked at src/lib.rs:1047:58:\ncalled `Result::unwrap()` on an `Err` value: ParseIntError { kind: PosOverflow }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "builder": "literal",
+        "category": "numeric-condition-overflow",
+        "id": "conditional.all-nine-80.capture",
+        "pattern": "(a)?(?(99999999999999999999999999999999999999999999999999999999999999999999999999999999)a|b)"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "invalid group reference 99999999999999999999999999999999999999999999999999999999999999999999999999999999 at position 7",
+          "pattern_error": {
+            "colno": 8,
+            "lineno": 1,
+            "msg": "invalid group reference 99999999999999999999999999999999999999999999999999999999999999999999999999999999",
+            "pattern_length": 92,
+            "pos": 7
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (664) panicked at src/lib.rs:1047:58:\ncalled `Result::unwrap()` on an `Err` value: ParseIntError { kind: PosOverflow }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "builder": "literal",
+        "category": "numeric-condition-overflow",
+        "id": "conditional.all-nine-100.plain",
+        "pattern": "(?(9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)a|b)"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "invalid group reference 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 at position 3",
+          "pattern_error": {
+            "colno": 4,
+            "lineno": 1,
+            "msg": "invalid group reference 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+            "pattern_length": 108,
+            "pos": 3
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (666) panicked at src/lib.rs:1047:58:\ncalled `Result::unwrap()` on an `Err` value: ParseIntError { kind: PosOverflow }\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "builder": "literal",
+        "category": "numeric-condition-overflow",
+        "id": "conditional.all-nine-100.capture",
+        "pattern": "(a)?(?(9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999)a|b)"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "invalid group reference 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999 at position 7",
+          "pattern_error": {
+            "colno": 8,
+            "lineno": 1,
+            "msg": "invalid group reference 9999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999",
+            "pattern_length": 112,
+            "pos": 7
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 604,
+            "pattern_length": 1209,
+            "pattern_sha256": "4c8780126d233cb537a105d5f59cdb778c15d3eb97287376cb9e2427c6d290b5"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "seeded-nesting",
+        "depth": 604,
+        "id": "seeded.01"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2546,
+            "pattern_sha256": "eed68d3ff9cba2e997b119f58c32d0c7865b442a769db6b868972ae2c528457c"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookbehind",
+        "category": "seeded-nesting",
+        "depth": 509,
+        "id": "seeded.08"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 3297,
+            "pattern_sha256": "0a0f79f6aa9ab55ad5175ef63e3124be3dcbe7897cf5c29de60d6e89e5085e9c"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "nullable",
+        "category": "seeded-nesting",
+        "depth": 659,
+        "id": "seeded.09"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2789,
+            "pattern_sha256": "c36e379501cd57a1a04e846828f469828def4ee46f2c42e221b9d888638f2713"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "seeded-nesting",
+        "depth": 697,
+        "id": "seeded.16"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 727,
+            "pattern_length": 1455,
+            "pattern_sha256": "c40febf9eca469a070ed354c1690fffd840bc545f277db4688133cca83c6d938"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "groups",
+        "category": "seeded-nesting",
+        "depth": 727,
+        "id": "seeded.17"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2637,
+            "pattern_sha256": "82b3e79441b17203f50d2a87346ef045b3400a0d03be1ce91628d37682b82c4a"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "nullable",
+        "category": "seeded-nesting",
+        "depth": 527,
+        "id": "seeded.18"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 3467,
+            "pattern_sha256": "7b294287a607f61a5a1b6bcf2f59a3ba5be9e3b6bc871e9f7c07222cbc20cea0"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "nullable",
+        "category": "seeded-nesting",
+        "depth": 693,
+        "id": "seeded.20"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2305,
+            "pattern_sha256": "f2e7f8fa8fcc7eef7fc33915169ac58bdbb44c7e204df0fa46c51c34ac2b9719"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "seeded-nesting",
+        "depth": 576,
+        "id": "seeded.23"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 3732,
+            "pattern_sha256": "b31c6a94e231eb62a8812f30372f2381d60344b7aeef06f6c205904e19f02766"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "nullable",
+        "category": "seeded-nesting",
+        "depth": 746,
+        "id": "seeded.24"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 2313,
+            "pattern_sha256": "7d92bc809821433f342407a5e8e1482e488132cac0ea1e37a64127def00e8aee"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "builder": "atomic",
+        "category": "seeded-nesting",
+        "depth": 578,
+        "id": "seeded.30"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    }
+  ],
+  "isolation": "one independent subprocess per engine and case",
+  "memory_limit_mib": 768,
+  "module": "candidates.rust_candidate",
+  "oracle": "CPython stdlib re",
+  "oracle_failures": 0,
+  "pattern_transport": "compact generator descriptor over subprocess standard input",
+  "python_version": "3.14.6",
+  "schema": "rebar-rust-depth-safety-v1",
+  "seed": 2026072323,
+  "timeout_seconds": 5.0,
+  "timeouts": 0
+}
