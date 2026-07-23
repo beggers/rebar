@@ -1,0 +1,74 @@
+{
+  "correctness_checks": 190,
+  "failed": 6,
+  "failures": [
+    {
+      "actual": {
+        "error": "TypeError",
+        "message": "function takes at most 1 argument (2 given)"
+      },
+      "case": "text.match.start-extra",
+      "expected": {
+        "error": "TypeError",
+        "message": "start expected at most 1 argument, got 2"
+      }
+    },
+    {
+      "actual": {
+        "error": "TypeError",
+        "message": "function takes at most 1 argument (2 given)"
+      },
+      "case": "text.match.end-extra",
+      "expected": {
+        "error": "TypeError",
+        "message": "end expected at most 1 argument, got 2"
+      }
+    },
+    {
+      "actual": {
+        "error": "TypeError",
+        "message": "function takes at most 1 argument (2 given)"
+      },
+      "case": "text.match.span-extra",
+      "expected": {
+        "error": "TypeError",
+        "message": "span expected at most 1 argument, got 2"
+      }
+    },
+    {
+      "actual": {
+        "error": "TypeError",
+        "message": "function takes at most 1 argument (2 given)"
+      },
+      "case": "bytes.match.start-extra",
+      "expected": {
+        "error": "TypeError",
+        "message": "start expected at most 1 argument, got 2"
+      }
+    },
+    {
+      "actual": {
+        "error": "TypeError",
+        "message": "function takes at most 1 argument (2 given)"
+      },
+      "case": "bytes.match.end-extra",
+      "expected": {
+        "error": "TypeError",
+        "message": "end expected at most 1 argument, got 2"
+      }
+    },
+    {
+      "actual": {
+        "error": "TypeError",
+        "message": "function takes at most 1 argument (2 given)"
+      },
+      "case": "bytes.match.span-extra",
+      "expected": {
+        "error": "TypeError",
+        "message": "span expected at most 1 argument, got 2"
+      }
+    }
+  ],
+  "module": "candidates.vm_candidate",
+  "schema": "rebar-zig-public-surface-v1"
+}

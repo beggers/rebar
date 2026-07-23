@@ -2116,7 +2116,8 @@ static PyObject *match_groupdict(MatchObject *match, PyObject *args, PyObject *k
 
 static PyObject *match_bound(MatchObject *match, PyObject *args, int which) {
     PyObject *group=NULL;
-    if (!PyArg_ParseTuple(args,"|O",&group)) return NULL;
+    const char *name=which==0 ? "start" : which==1 ? "end" : "span";
+    if (!PyArg_UnpackTuple(args,name,0,1,&group)) return NULL;
     Py_ssize_t number=0;
     if (group && !match_number(match,group,&number)) return NULL;
     Py_ssize_t begin=match->caps[2*number],end=match->caps[2*number+1];
