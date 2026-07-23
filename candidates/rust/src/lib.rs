@@ -124,9 +124,10 @@ struct Program {
     guards: usize,
 }
 
+#[derive(Clone, Copy)]
 struct MandatoryRunDelimiter {
     run: usize,
-    delimiter: search::StartSet,
+    delimiter: u8,
 }
 
 #[derive(Clone, Copy, Default)]
@@ -183,7 +184,7 @@ pub struct Engine {
     flags: u32,
     starts: Option<[u8; 256]>,
     start_set: Option<search::StartSet>,
-    mandatory_run_delimiter: Option<Box<MandatoryRunDelimiter>>,
+    mandatory_run_delimiter: Option<MandatoryRunDelimiter>,
     leading_lookbehind: Option<usize>,
     start_anchor: SearchAnchor,
     byte_mode: bool,
@@ -2201,7 +2202,7 @@ impl Compiler {
 ///
 /// Capture instructions do not consume a character. Any other instruction can
 /// affect whether the run or delimiter is required, so it disables the filter.
-fn mandatory_run_delimiter(program: &Program) -> Option<Box<MandatoryRunDelimiter>> {
+fn mandatory_run_delimiter(program: &Program) -> Option<MandatoryRunDelimiter> {
     let mut pc = 0_usize;
     while matches!(
         program.code.get(pc).map(|instruction| instruction.op),
@@ -2232,13 +2233,10 @@ fn mandatory_run_delimiter(program: &Program) -> Option<Box<MandatoryRunDelimite
     if instruction.op != Op::Literal || instruction.flags & I != 0 {
         return None;
     }
-    let byte = u8::try_from(instruction.value).ok()?;
-    let mut table = [0_u8; 256];
-    table[usize::from(byte)] = 1;
-    Some(Box::new(MandatoryRunDelimiter {
+    Some(MandatoryRunDelimiter {
         run: run_index,
-        delimiter: search::StartSet::new(&table),
-    }))
+        delimiter: u8::try_from(instruction.value).ok()?,
+    })
 }
 
 #[unsafe(no_mangle)]
@@ -3056,7 +3054,9 @@ fn mandatory_run_delimiter_allows(
         return false;
     };
 
-    while let Some(delimiter) = required.delimiter.next(values, cursor, context.end) {
+    while let Some(delimiter) =
+        search::next_singleton(values, required.delimiter, cursor, context.end)
+    {
         let mut preceding = delimiter;
         let mut remaining = run.minimum;
         let mut viable = true;
@@ -3116,7 +3116,7 @@ fn run_match(
     if mode == 0
         && engine.start_anchor == SearchAnchor::Unrestricted
         && engine.leading_lookbehind.is_none()
-        && let Some(required) = engine.mandatory_run_delimiter.as_deref()
+        && let Some(required) = engine.mandatory_run_delimiter.as_ref()
         && let Some(values) = context.bytes.or_else(|| {
             context
                 .wide

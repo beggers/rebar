@@ -124,6 +124,16 @@ fn scalar_table(haystack: &[u8], table: &[u8; 256]) -> Option<usize> {
         .position(|&byte| table[usize::from(byte)] != 0)
 }
 
+/// Find one exact byte within the safely clamped `[from, end)` window.
+#[inline]
+pub(crate) fn next_singleton(haystack: &[u8], byte: u8, from: usize, end: usize) -> Option<usize> {
+    let end = end.min(haystack.len());
+    if from >= end {
+        return None;
+    }
+    find_singleton(&haystack[from..end], byte).and_then(|position| from.checked_add(position))
+}
+
 #[inline]
 fn find_singleton(haystack: &[u8], byte: u8) -> Option<usize> {
     #[cfg(unix)]
