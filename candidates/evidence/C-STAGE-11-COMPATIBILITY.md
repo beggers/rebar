@@ -18,7 +18,7 @@ The errors occur inside the C candidate's own parser before its native matcher r
 | Deep replacements and callbacks | 11,266/11,266 |
 | Complete 22-stage campaign | **FAIL: extended Python compatibility** |
 
-The [one complete campaign attempt](rust-v8-vm-stage-11-sealed-campaign-failure.json) reaches the frozen `extended-cpython-paths` test and fails. Its unmodified reporter cannot serialize Python's compiled `Pattern` object while reporting the first actual mismatch. The number of completed extended checks and the mismatching case are **NOT REPORTED** and are not guessed. The [separate first-mismatch diagnostic](rust-v8-vm-stage-11-extended-path-first-mismatch-interrupted.json) was explicitly stopped before any case was emitted to provide an uncontended Rust timing slot; it is **INCONCLUSIVE**, not a passing check. Both failures, their exact command, exit codes, sources, unchanged full-campaign reporter, and all previous mismatches remain visible.
+The [one complete campaign attempt](rust-v8-vm-stage-11-sealed-campaign-failure.json) reaches the frozen `extended-cpython-paths` test and fails. Its unmodified reporter cannot serialize Python's compiled `Pattern` object while reporting the first actual mismatch. The number of completed extended checks and the mismatching case are **NOT REPORTED** and are not guessed. The [first diagnostic](rust-v8-vm-stage-11-extended-path-first-mismatch-interrupted.json) and [lossless follow-up](rust-v8-vm-stage-11-lossless-extended-path-diagnostic-interrupted.json) were explicitly stopped before any C case was emitted; the follow-up exposed that its worker lacked a timeout. Both are **INCONCLUSIVE**, not passing checks. Their actual commands, interruption status, sources, unchanged full-campaign reporter, and all previous mismatches remain visible.
 
 - [Original 144 Unicode group-name failures](rust-v8-vm-stage-10-unicode-group-name-failure.json).
 - [All repaired Unicode group-name checks](rust-v8-vm-stage-11-unicode-group-name.json).
@@ -33,5 +33,6 @@ The [one complete campaign attempt](rust-v8-vm-stage-11-sealed-campaign-failure.
 - [Deep replacements](rust-v8-replacement-vm-deep-stage-11.json.gz).
 - [Complete preserved failed campaign](rust-v8-vm-stage-11-sealed-campaign-failure.json).
 - [Preserved interrupted mismatch diagnostic](rust-v8-vm-stage-11-extended-path-first-mismatch-interrupted.json).
+- [Preserved interruption of the unbounded lossless C diagnostic](rust-v8-vm-stage-11-lossless-extended-path-diagnostic-interrupted.json).
 
 Full compatibility: **NOT QUALIFIED**. Final benchmark: **NOT ACCESSED**. Final speed: **NOT MEASURED**.

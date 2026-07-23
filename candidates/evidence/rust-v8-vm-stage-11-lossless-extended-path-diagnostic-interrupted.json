@@ -1,0 +1,80 @@
+{
+  "schema": "rebar-vm-stage-11-lossless-extended-path-diagnostic-interrupted-v1",
+  "status": "INCONCLUSIVE",
+  "diagnostic_status": "INTERRUPTED",
+  "candidate_family": "C",
+  "candidate_module": "candidates.vm_candidate",
+  "python": "3.14.6",
+  "python_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "diagnostic_runner": "tools/rust_v8_extended_paths_diagnostic.py",
+  "frozen_suite": {
+    "path": "tools/rust_v6_paths_probe.py",
+    "sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+    "seed": 2026072307,
+    "planned_seeded_cases": 512,
+    "planned_full_suite_correctness_checks": 72248
+  },
+  "diagnostic_attempts": 1,
+  "diagnostic_reruns": 0,
+  "process_session_id": 70933,
+  "interruption": {
+    "requested_by": "root",
+    "reason": "The isolated C candidate process has no configured timeout or heartbeat; release the exclusive full-campaign resource without waiting indefinitely.",
+    "method": "Ctrl-C sent only to the owned C lossless diagnostic session",
+    "signal": "SIGINT",
+    "process_exit_code": 130
+  },
+  "diagnostic_stdout": "",
+  "diagnostic_stderr": "",
+  "candidate_correctness_checks": null,
+  "candidate_mismatch_count": null,
+  "candidate_first_mismatch": null,
+  "candidate_progress": "NOT REPORTED BEFORE INTERRUPTION",
+  "candidate_result": "NOT MEASURED",
+  "candidate_evidence_target": "candidates/evidence/rust-v8-vm-stage-11-extended-path-failures.json.gz",
+  "candidate_evidence_status": "NOT PRODUCED BEFORE INTERRUPTION",
+  "independently_completed_self_reference": {
+    "path": "candidates/evidence/rust-v8-extended-path-diagnostic-self-test.json",
+    "status": "PASS",
+    "isolated_reference_processes": 2,
+    "correctness_checks_per_reference": 72248,
+    "self_oracle_failures": 0
+  },
+  "independently_completed_zig_diagnostic": {
+    "path": "candidates/evidence/rust-v8-zig-stage-07-extended-path-failures.json.gz",
+    "status": "MISMATCH",
+    "correctness_checks": 72248,
+    "failed": 308,
+    "self_oracle_failures": 0
+  },
+  "production_artifacts": [
+    {
+      "path": "candidates/vm_candidate.py",
+      "role": "public-python",
+      "sha256": "4cf7b654925c1ed20e571f4f87e8cd4e459f0136dbf9d738b50f92e0c2ac77bb"
+    },
+    {
+      "path": "candidates/_vm_native.c",
+      "role": "native-source",
+      "sha256": "7af879d6601603b7700e1447c47e227a565df9b64e4c78992b88c79e8521f7c7"
+    },
+    {
+      "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+      "role": "native-bridge",
+      "sha256": "ba4a49afb0e45618e6ccc90033775645da7b274984a71f0bd1623c40fc449a08"
+    }
+  ],
+  "preserved_sealed_campaign_failure": {
+    "path": "candidates/evidence/rust-v8-vm-stage-11-sealed-campaign-failure.json",
+    "sha256": "56b2e2516571f894c7dc6791ce815c7e8a6d24dc0f020fb8dfde29db410a4055",
+    "failed_step": "extended-cpython-paths",
+    "status": "FAIL"
+  },
+  "prior_interruption": {
+    "path": "candidates/evidence/rust-v8-vm-stage-11-extended-path-first-mismatch-interrupted.json",
+    "sha256": "4c5943325560a2b4692880ddd9390c3c428cb61a6974de4ad19df816ea3d8467",
+    "preserved_unchanged": true
+  },
+  "holdout": "NOT ACCESSED",
+  "performance": "NOT MEASURED"
+}

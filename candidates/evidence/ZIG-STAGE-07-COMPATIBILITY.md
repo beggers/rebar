@@ -16,7 +16,7 @@ The first three focused attempts honestly exposed two empty-match and unusual-wi
 | Extended Python compatibility | **308 differences in 72,248 checks** |
 | Complete 22-stage campaign | **FAIL** |
 
-The [first complete campaign](rust-v8-zig-stage-07-sealed-campaign-failure.json) fails before testing while the all-engine native-code audit is unstable. Once every independent source and actual library is frozen and the audit separately passes all **76** controls, the [one corrected campaign](rust-v8-zig-stage-07-sealed-campaign-attempt-02-failure.json) reaches the actual unchanged extended Python suite. It reports **72,248** checks and **308** differences. Its frozen child reports aggregate results only, so individual failed cases are **NOT REPORTED**, not invented. The complete Unicode step is **NOT MEASURED** because the campaign correctly stops at the preceding failure.
+The [first complete campaign](rust-v8-zig-stage-07-sealed-campaign-failure.json) fails before testing while the all-engine native-code audit is unstable. Once every independent source and actual library is frozen and the audit separately passes all **76** controls, the [one corrected campaign](rust-v8-zig-stage-07-sealed-campaign-attempt-02-failure.json) reaches the actual unchanged extended Python suite. It reports **72,248** checks and **308** differences. That frozen campaign child reports aggregate results only. A separate [lossless differential diagnosis](rust-v8-zig-stage-07-extended-path-failures.json.gz), using exactly the same unchanged cases, seed, and equivalence, subsequently preserves **all 308** individual failures. Its first real failure is case-insensitive matching of the Unicode pattern `İ` against `i`; two independent Python references agree. The complete Unicode step is **NOT MEASURED** because the campaign correctly stops at its earlier failure.
 
 - [Preserved initial large-repeat incompatibility](rust-v8-zig-stage-06-extended-path-first-mismatch.json).
 - [First genuine empty-match failure](rust-v8-zig-stage-07-repeat-motif-controls-attempt-01-failure.json).
@@ -31,5 +31,6 @@ The [first complete campaign](rust-v8-zig-stage-07-sealed-campaign-failure.json)
 - [Deep replacements and callbacks](rust-v8-replacement-zig-stage-07-from-scratch-deep-failures.json.gz).
 - [Preserved first full-campaign failure](rust-v8-zig-stage-07-sealed-campaign-failure.json).
 - [Preserved 72,248-check full-campaign failure](rust-v8-zig-stage-07-sealed-campaign-attempt-02-failure.json).
+- [All 308 individual extended-suite failures](rust-v8-zig-stage-07-extended-path-failures.json.gz).
 
 Full compatibility: **NOT QUALIFIED**. Final benchmark: **NOT ACCESSED**. Final speed: **NOT MEASURED**.

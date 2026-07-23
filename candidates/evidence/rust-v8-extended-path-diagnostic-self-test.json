@@ -1,0 +1,87 @@
+{
+  "controls": {
+    "independent_reference_digests_match": true,
+    "original_frozen_source_unchanged": true,
+    "reference_a_denominator": true,
+    "reference_a_expected_equals_actual": true,
+    "reference_a_poison_controls": true,
+    "reference_a_zero_failures": true,
+    "reference_b_denominator": true,
+    "reference_b_expected_equals_actual": true,
+    "reference_b_poison_controls": true,
+    "reference_b_zero_failures": true
+  },
+  "correctness_checks_per_reference": 72248,
+  "expected_observations_sha256": "210a9562dcb915f352b15f55e86d863159bea548fe69ed4e2edccf009b097d8a",
+  "frozen_suite": {
+    "equivalence": "unchanged tools.rust_v6_paths_probe.equivalent",
+    "only_observation_change": "uniform structural pattern, flags, groups, and groupindex encoding for successfully compiled patterns",
+    "path": "tools/rust_v6_paths_probe.py",
+    "seed": 2026072307,
+    "seeded_cases": 512,
+    "sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3"
+  },
+  "holdout_cases_read": 0,
+  "independent_reference_processes": 2,
+  "performance": "NOT MEASURED",
+  "performance_fixtures_read": 0,
+  "python": "3.14.6",
+  "python_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "reference_a": {
+    "checks": 72248,
+    "failed": 0,
+    "observations_sha256": "210a9562dcb915f352b15f55e86d863159bea548fe69ed4e2edccf009b097d8a",
+    "phase_checks": {
+      "backreference": 1645,
+      "invalid-window": 1260,
+      "manual": 43855,
+      "public-error": 20,
+      "seeded": 25088,
+      "surrogate": 380
+    },
+    "poison_controls": {
+      "compiler_failure_cannot_be_concealed": true,
+      "compiler_failure_retains_pattern_error": true,
+      "different_compiled_flags_rejected": true,
+      "different_compiled_patterns_rejected": true,
+      "identical_compiled_patterns": true,
+      "original_frozen_equivalence_used": true,
+      "uniform_candidate_pattern_metadata": true
+    },
+    "process": {
+      "process_exit_code": 0,
+      "stderr": "",
+      "stdout": "{\"correctness_checks\": 72248, \"failed\": 0, \"module\": \"re\", \"schema\": \"rebar-v8-lossless-frozen-extended-path-diagnostic-v1\"}\n"
+    }
+  },
+  "reference_b": {
+    "checks": 72248,
+    "failed": 0,
+    "observations_sha256": "210a9562dcb915f352b15f55e86d863159bea548fe69ed4e2edccf009b097d8a",
+    "phase_checks": {
+      "backreference": 1645,
+      "invalid-window": 1260,
+      "manual": 43855,
+      "public-error": 20,
+      "seeded": 25088,
+      "surrogate": 380
+    },
+    "poison_controls": {
+      "compiler_failure_cannot_be_concealed": true,
+      "compiler_failure_retains_pattern_error": true,
+      "different_compiled_flags_rejected": true,
+      "different_compiled_patterns_rejected": true,
+      "identical_compiled_patterns": true,
+      "original_frozen_equivalence_used": true,
+      "uniform_candidate_pattern_metadata": true
+    },
+    "process": {
+      "process_exit_code": 0,
+      "stderr": "",
+      "stdout": "{\"correctness_checks\": 72248, \"failed\": 0, \"module\": \"re\", \"schema\": \"rebar-v8-lossless-frozen-extended-path-diagnostic-v1\"}\n"
+    }
+  },
+  "schema": "rebar-v8-lossless-frozen-extended-path-self-test-v1",
+  "status": "PASS",
+  "timing_performed": false
+}
