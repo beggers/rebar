@@ -3270,6 +3270,9 @@ fn run_match(
     {
         return 0;
     }
+    begins.fill(-1);
+    ends.fill(-1);
+    *last = -1;
     let mut start = first_start;
     while start <= last_start {
         if mode == 0 && engine.start_anchor == SearchAnchor::Line {
@@ -3332,9 +3335,6 @@ fn run_match(
                 continue;
             }
         }
-        begins.fill(-1);
-        ends.fill(-1);
-        *last = -1;
         if let Some(finish) = run_program(
             program,
             context,
