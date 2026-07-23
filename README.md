@@ -19,6 +19,8 @@ Zig currently has the best measured speed; the Rust engine is not yet faster tha
 
 A separate [223,198-check compatibility test](candidates/evidence/RUST-V7-EDGE-ORACLE.md) was frozen before changing any engine. Standard Python passes all **223,198** checks. The original Zig engine has **5,281** differences, Rust **24,462**, C **52,655**, and the independent Python engine **52,151**. **No original candidate is a drop-in replacement for every Python `re` user.** The original failures, inputs, expected answers, and seeds are preserved; a replacement must pass every check before it can be selected.
 
+The [independent 20,480-pattern grammar audit](candidates/evidence/RUST-V7-GRAMMAR-ORACLE.md) additionally retains all **5,662 invalid patterns**, their exact Python error messages and positions, and every original candidate failure.
+
 ![Overall rankings on the practice cases, independently unseen cases, and all cases](performance/v7/evidence/initial-rankings.svg)
 
 The [complete slowdown audit](performance/v7/evidence/REGRESSION-AUDIT.md) lists all **105** unseen Zig slowdowns and preserves all **29,771** slowdowns across all four engines and both cohorts. A slowdown means a task actually took more than 20% longer than Python: `Python time / candidate time < 5/6`. No case, candidate, unfavorable result, or confidence interval has been removed.
@@ -60,6 +62,7 @@ PYTHONPATH=. "$PY" tools/perf_v7_delegation_audit.py
 PYTHONPATH=. "$PY" tools/perf_v7_regression_audit.py --self-test
 PYTHONPATH=. "$PY" tools/rust_v7_edge_oracle.py \
   --module re --output /tmp/rebar-v7-edge-self.json.gz
+PYTHONPATH=. "$PY" tools/rust_v7_grammar_oracle.py verify
 
 gzip -dc performance/v7/evidence/initial-raw.jsonl.gz > /tmp/rebar-v7-raw.jsonl
 gzip -dc performance/v7/evidence/initial-summary.json.gz > /tmp/rebar-v7-summary.json
