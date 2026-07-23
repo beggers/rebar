@@ -1,0 +1,44 @@
+{
+  "schema": "rebar-v8-independently-recorded-campaign-process-failure-v1",
+  "record_kind": "independently recorded failed campaign process",
+  "runner_generated_report": false,
+  "complete_twenty_two_stage_proof": false,
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 -B tools/rust_v8_multi_candidate_campaign.py --module candidates.vm_candidate --edge-oracle candidates/evidence/rust-v8-edge-oracle-vm-deep-stage-07.json.gz --deep-proof candidates/audits/RUST-V8-DEEP-CONTRACT-C-STAGE-07.json.gz --output candidates/evidence/rust-v8-vm-stage-07-sealed-campaign.json",
+  "requested_runner_output": "candidates/evidence/rust-v8-vm-stage-07-sealed-campaign.json",
+  "requested_runner_output_written": false,
+  "exit_code": 1,
+  "failed_mandatory_stage": "frozen-correctness-v2",
+  "captured_runner_exception": "AssertionError: isolated suite failed: frozen-correctness-v2; exit=1",
+  "worker_stdout": {
+    "schema": "rebar-correctness-result-v2",
+    "module": "candidates.vm_candidate",
+    "cases": 8244,
+    "passed": 8238,
+    "failed": 6,
+    "obligations": 45,
+    "mapped_obligations": 45,
+    "expected_sha256": "ae6a095bc0cd2b3ba1512a04f0d4fbe57916cf2d5b583fd4ecdda5c2c70a5bb2"
+  },
+  "captured_worker_stdout": "{\"cases\": 8244, \"expected_sha256\": \"ae6a095bc0cd2b3ba1512a04f0d4fbe57916cf2d5b583fd4ecdda5c2c70a5bb2\", \"failed\": 6, \"mapped_obligations\": 45, \"module\": \"candidates.vm_candidate\", \"obligations\": 45, \"passed\": 8238, \"schema\": \"rebar-correctness-result-v2\"}",
+  "captured_worker_stderr": "syntax.unicode.case\nv2.deep.str.1336\nv2.deep.str.1515\nv2.deep.str.2604\nv2.deep.str.2843\nv2.deep.str.3468\n",
+  "failure_ids": [
+    "syntax.unicode.case",
+    "v2.deep.str.1336",
+    "v2.deep.str.1515",
+    "v2.deep.str.2604",
+    "v2.deep.str.2843",
+    "v2.deep.str.3468"
+  ],
+  "per_case_expected_observations": "NOT CAPTURED",
+  "per_case_actual_observations": "NOT CAPTURED",
+  "candidate_source": {
+    "path": "candidates/_vm_native.c",
+    "sha256": "9781c3bff7c28e31f98eabcd37ab77349c44bfb747a75a50945c3a5eb806273e"
+  },
+  "candidate_native_binary": {
+    "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+    "sha256": "842ba350f0b3148e580aed9f0227ced271d1163858e7a3aa2e4d5d51fcb0dcf5"
+  },
+  "holdout": "NOT ACCESSED",
+  "performance": "NOT MEASURED"
+}
