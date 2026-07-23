@@ -1,0 +1,50 @@
+{
+  "schema": "rebar-zig-stage-06-sealed-campaign-failure-v1",
+  "status": "ABORTED",
+  "candidate_module": "candidates.zig_candidate",
+  "python": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 -B tools/rust_v8_multi_candidate_campaign.py --module candidates.zig_candidate --edge-oracle candidates/evidence/rust-v8-edge-oracle-zig-deep-stage-06.json.gz --deep-proof candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-STAGE-06.json.gz --output candidates/evidence/rust-v8-zig-stage-06-sealed-campaign.json",
+  "requested_campaign_output": "candidates/evidence/rust-v8-zig-stage-06-sealed-campaign.json",
+  "process_exit_code": 1,
+  "failed_stage": "extended-cpython-paths",
+  "failure_class": "frozen-child-report-json-serialization",
+  "failure_message": "Object of type Pattern is not JSON serializable",
+  "failing_case": "NOT MEASURED: the frozen isolated child aborted while serializing failures[0].expected.value",
+  "completed_campaign_steps": "NOT MEASURED: the aborted runner did not publish a sealed campaign report",
+  "performance": "NOT MEASURED",
+  "holdout": "NOT MEASURED",
+  "rerun_count": 0,
+  "captured_process_output": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1439, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1427, in main\n    result = run_campaign(\n        args.module,\n    ...<3 lines>...\n        args.memory_mib,\n    )\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1054, in run_campaign\n    report[\"steps\"].append(child_step(step, module, memory_mib))\n                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 679, in child_step\n    raise AssertionError(\n    ...<2 lines>...\n    )\nAssertionError: isolated suite failed: extended-cpython-paths; exit=1; stderr=Traceback (most recent call last):\n  File \"<string>\", line 42, in <module>\n    runpy.run_path(str(SCRIPT), run_name=\"__main__\")\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen runpy>\", line 294, in run_path\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/dev-user/src/rebar/tools/rust_v6_paths_probe.py\", line 532, in <module>\n    main()\n    ~~~~^^\n  File \"/home/dev-user/src/rebar/tools/rust_v6_paths_probe.py\", line 525, in main\n    Path(args.output).write_text(json.dumps(report, ensure_ascii=True, indent=2, sort_keys=True) + \"\\n\", encoding=\"utf-8\")\n                                 ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/json/__init__.py\", line 242, in dumps\n    **kw).encode(obj)\n          ~~~~~~^^^^^\n  File \"/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/json/encoder.py\", line 202, in encode\n    chunks = self.iterencode(o, _one_shot=True)\n  File \"/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/json/encoder.py\", line 263, in iterencode\n    return _iterencode(o, 0)\n  File \"/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/json/encoder.py\", line 182, in default\n    raise TypeError(f'Object of type {o.__class__.__name__} '\n                    f'is not JSON serializable')\nTypeError: Object of type Pattern is not JSON serializable\nwhen serializing dict item 'value'\nwhen serializing dict item 'expected'\nwhen serializing list item 0\nwhen serializing dict item 'failures'\n; stdout=",
+  "frozen_production_artifacts": [
+    {
+      "path": "candidates/zig_candidate.py",
+      "sha256": "d3a7e35711f402db85f42e96470caf8a9393f1171e5bc7f26a55e0a138638ac5"
+    },
+    {
+      "path": "candidates/zig/py_bridge.c",
+      "sha256": "45ba87678defde5a23fa385622b727758c92dc78275ed2e855d5a0a883251676"
+    },
+    {
+      "path": "candidates/zig/mini_regex.zig",
+      "sha256": "2b54f9c244dae29a71cee088077fe5abc420f5b2dca070cbe9774eab75ebb2f4"
+    },
+    {
+      "path": "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "7d7ae8bef50e4bce06786dd20248b41b0ac74651ff4fae2d229d8b032b8dee1d"
+    },
+    {
+      "path": "candidates/_zig_probe.so",
+      "sha256": "c99f0660393cfdfdfa06478216ccc37e2daff3925933ae0c383b32d92fefe6f8"
+    }
+  ],
+  "preserved_stage06_dependencies": {
+    "edge_oracle": {
+      "path": "candidates/evidence/rust-v8-edge-oracle-zig-deep-stage-06.json.gz",
+      "sha256": "5cc3ef4c53370a7d40e503669134b1f068a1c978ec815bc99ad98804266fa80a"
+    },
+    "deep_public_contract": {
+      "path": "candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-STAGE-06.json.gz",
+      "sha256": "59d09e259702662bbf8c53481630334c38d865a847966d520f13fc879a60e768"
+    }
+  }
+}
