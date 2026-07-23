@@ -2,6 +2,10 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## The frozen final runner is repaired without opening the benchmark
+
+The [complete pre-unseal incident report](../performance/v9/evidence/FINAL-PREUNSEAL-MISSING-TIME-INCIDENT.md) preserves the exact first attempted final command and its actual `NameError`: the frozen runner referred to Python's standard-library `time` module before importing it. The failure occurred **before the first worker started, before the one-time marker, and before any hidden case or timing**. The original [final protocol](../tools/rust_v9_holdout_protocol.py), manifest, candidates, proofs, stopping commit, and freeze remain byte-for-byte unchanged. The independent [five-check, no-opening launcher](../tools/run_frozen_v9_final.py) verifies the original protocol's exact SHA-256 and runs that identical code with only the genuine standard-library `time` module supplied. It does not change the test, authorization, candidate selection, clock, correctness checks, or one-time marker. The **24,576-case** final benchmark remains unopened and **NOT MEASURED**.
+
 ## Final candidates are fixed before the hidden benchmark
 
 After the nine complete public practice runs, the [candidate stopping-point report](../performance/v9/evidence/FINAL-CANDIDATE-FREEZE.md) records pushed commit `89e550923ede9cbd558c02f91b235aa17ffaff97`. The unchanged original final protocol created the [exclusive candidate freeze](../performance/v9/evidence/V9-FINAL-CANDIDATE-SELECTION-FREEZE.json) for CPython **3.14.6** and the independently written C, Rust, and Zig engines. It validates all three current matching, public-object, and genuine **22-stage** correctness proofs, the original no-delegation audit, and all five actual loaded native libraries. The freeze reports **zero** hidden cases, `opening_read=false`, and `performance_measured=false`. No final result or winner exists. The **24,576-case** final benchmark remains unopened and **NOT MEASURED**.

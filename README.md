@@ -100,6 +100,8 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.rust_v9_holdout_protocol verify \
   --manifest performance/v9/holdout-manifest.json --evidence
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  tools/run_frozen_v9_final.py --self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.rust_v7_multi_candidate_practice_audit self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.rust_v7_multi_candidate_practice_charts --self-test
