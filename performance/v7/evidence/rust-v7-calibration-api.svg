@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="634" viewBox="0 0 1320 634" role="img" aria-label="Where Rust is faster or slower">
+<title>Where Rust is faster or slower</title>
+<desc>PRACTICE ONLY. 624 practice tasks and 7 paired runs. The unseen test has not been opened. All 12 kinds of Python re operation · all 624 practice tasks · dots are group averages, not group confidence intervals</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:25px;font-weight:750}.sub{font-size:13px;fill:#52627a}.head{font-size:15px;font-weight:700}.label{font-size:12px}.small{font-size:11px;fill:#52627a}.value{font-size:12px;font-weight:700}.tick{font-size:10.5px;fill:#64748b}.banner{font-size:12px;font-weight:700;fill:#92400e}.grid{stroke:#e2e8f0;stroke-width:1}.base{stroke:#475569;stroke-width:1.7}.panel{fill:#f8fafc;stroke:#e2e8f0;stroke-width:1}</style>
+<text x="26" y="39" class="title">Where Rust is faster or slower</text>
+<text x="26" y="63" class="sub">All 12 kinds of Python re operation · all 624 practice tasks · dots are group averages, not group confidence intervals</text>
+<rect x="20" y="78" width="1280" height="34" rx="7" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="33" y="100" class="banner">PRACTICE ONLY — the final unseen test has not been opened</text>
+<rect x="18" y="129" width="1284" height="438" rx="9" class="panel"/>
+<text x="29" y="149" class="head">Corrected Rust baseline</text>
+<line x1="327.00" y1="182" x2="327.00" y2="573" class="grid"/>
+<text x="327.00" y="174" text-anchor="middle" class="tick">0.2×</text>
+<line x1="409.08" y1="182" x2="409.08" y2="573" class="grid"/>
+<text x="409.08" y="174" text-anchor="middle" class="tick">0.3×</text>
+<line x1="512.49" y1="182" x2="512.49" y2="573" class="grid"/>
+<text x="512.49" y="174" text-anchor="middle" class="tick">0.5×</text>
+<line x1="594.57" y1="182" x2="594.57" y2="573" class="grid"/>
+<text x="594.57" y="174" text-anchor="middle" class="tick">0.75×</text>
+<line x1="652.81" y1="182" x2="652.81" y2="573" class="base"/>
+<text x="652.81" y="174" text-anchor="middle" class="tick">1× Python</text>
+<line x1="734.89" y1="182" x2="734.89" y2="573" class="grid"/>
+<text x="734.89" y="174" text-anchor="middle" class="tick">1.5×</text>
+<line x1="793.12" y1="182" x2="793.12" y2="573" class="grid"/>
+<text x="793.12" y="174" text-anchor="middle" class="tick">2×</text>
+<text x="29" y="212" class="label">Prepare a pattern (compile)</text>
+<circle cx="832.71" cy="208" r="5" fill="#047857" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="212" class="value">2.432×</text>
+<text x="958" y="212" class="small">48/48 clearly faster · 0/48 &gt;20% slower</text>
+<text x="29" y="244" class="label">Escape special characters (escape)</text>
+<circle cx="652.31" cy="240" r="5" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="244" class="value">0.998×</text>
+<text x="958" y="244" class="small">1/48 clearly faster · 0/48 &gt;20% slower</text>
+<text x="29" y="276" class="label">Find every match (findall)</text>
+<circle cx="632.87" cy="272" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="276" class="value">0.906×</text>
+<text x="958" y="276" class="small">27/80 clearly faster · 31/80 &gt;20% slower</text>
+<text x="29" y="308" class="label">Stream each match (finditer)</text>
+<circle cx="656.49" cy="304" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="308" class="value">1.018×</text>
+<text x="958" y="308" class="small">34/67 clearly faster · 15/67 &gt;20% slower</text>
+<text x="29" y="340" class="label">Match the entire input (fullmatch)</text>
+<circle cx="640.14" cy="336" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="340" class="value">0.939×</text>
+<text x="958" y="340" class="small">13/47 clearly faster · 19/47 &gt;20% slower</text>
+<text x="29" y="372" class="label">Match at the beginning (match)</text>
+<circle cx="633.44" cy="368" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="372" class="value">0.909×</text>
+<text x="958" y="372" class="small">0/48 clearly faster · 5/48 &gt;20% slower</text>
+<text x="29" y="404" class="label">Read the match details (match-surface)</text>
+<circle cx="426.35" cy="400" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="404" class="value">0.327×</text>
+<text x="958" y="404" class="small">0/48 clearly faster · 48/48 &gt;20% slower</text>
+<text x="29" y="436" class="label">Scan repeated matches (scanner)</text>
+<circle cx="614.47" cy="432" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="436" class="value">0.827×</text>
+<text x="958" y="436" class="small">5/48 clearly faster · 25/48 &gt;20% slower</text>
+<text x="29" y="468" class="label">Search for a match (search)</text>
+<circle cx="657.65" cy="464" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="468" class="value">1.024×</text>
+<text x="958" y="468" class="small">16/48 clearly faster · 18/48 &gt;20% slower</text>
+<text x="29" y="500" class="label">Split around matches (split)</text>
+<circle cx="696.51" cy="496" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="500" class="value">1.241×</text>
+<text x="958" y="500" class="small">34/47 clearly faster · 11/47 &gt;20% slower</text>
+<text x="29" y="532" class="label">Replace matches (sub)</text>
+<circle cx="699.49" cy="528" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="532" class="value">1.259×</text>
+<text x="958" y="532" class="small">35/48 clearly faster · 1/48 &gt;20% slower</text>
+<text x="29" y="564" class="label">Replace and count matches (subn)</text>
+<circle cx="688.23" cy="560" r="5" fill="#dc2626" stroke="#ffffff" stroke-width="1.2"/>
+<text x="878" y="564" class="value">1.191×</text>
+<text x="958" y="564" class="small">32/47 clearly faster · 2/47 &gt;20% slower</text>
+<text x="26" y="620" class="small">Every group includes every one of its practice cases. Group-average dots must not be mistaken for confidence intervals.</text>
+</svg>

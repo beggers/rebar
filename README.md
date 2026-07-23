@@ -15,13 +15,17 @@ The larger frozen test contains **20,624 cases**, including **10,312 independent
 | Original Rust, before compatibility fixes | **0.925×** | 0.925–0.926× | 3,623/10,312 | 3,905/10,312 |
 | Independent Python engine | **0.022×** | 0.022–0.022× | 271/10,312 | 9,884/10,312 |
 
-The original Zig engine has the best measured speed, but none of these original engines passes the complete compatibility test. The newly corrected Rust engine passes the full test; its improved speed is **NOT MEASURED**.
+The original Zig engine has the best measured speed, but none of these original engines passes the complete compatibility test. The corrected Rust engine passes the full test; its speed on the **10,312 unseen cases is NOT MEASURED**.
 
 A separate [223,198-check compatibility test](candidates/evidence/RUST-V7-EDGE-ORACLE.md) was frozen before changing any engine. Standard Python passes all **223,198** checks. The original Zig engine has **5,281** differences, Rust **24,462**, C **52,655**, and the independent Python engine **52,151**. **No original candidate is a drop-in replacement for every Python `re` user.** The original failures, inputs, expected answers, and seeds are preserved; a replacement must pass every check before it can be selected.
 
 The [corrected, from-scratch Rust engine](candidates/evidence/RUST-V7-CORRECTED-V4.md) now passes **223,198/223,198** compatibility checks, **20,480/20,480** independent parser tests, **14,783/14,783** object checks, and **4,494,555/4,494,555** full-Unicode checks. It also passes Python's upstream test suite, apart from two explicitly recorded unavailable-locale skips. It uses **zero external Rust packages**. The unseen performance test remains sealed.
 
 ![Corrected Rust passes all 223,198 Python compatibility checks; every original from-scratch engine has visible mismatches](candidates/evidence/rust-v7-correctness.svg)
+
+The first [corrected-Rust practice comparison](performance/v7/evidence/RUST-CALIBRATION-BASELINE.md) measures **624** separate practice cases, not the unseen test. Rust runs at **0.994×** Python's speed, with a **0.956–1.034×** confidence interval. Because that interval includes **1×**, a speedup has **not** been established. The complete results preserve all **175/624** cases taking more than 20% longer.
+
+![Corrected Rust practice speed compared with Python, including its full confidence interval; the unseen test remains sealed](performance/v7/evidence/rust-v7-calibration-overall.svg)
 
 The [independent 20,480-pattern grammar audit](candidates/evidence/RUST-V7-GRAMMAR-ORACLE.md) additionally retains all **5,662 invalid patterns**, their exact Python error messages and positions, and every original candidate failure.
 
@@ -43,7 +47,17 @@ All five original engines agreed with Python on the **20,624 frozen benchmark an
 
 ## Detailed graphs
 
-These graphs show the complete unseen results, not selected examples. Each new workload row represents all **64** independently held-back cases.
+The first two graphs are explicitly **practice-only** and include all **624** corrected-Rust cases; they are not final unseen results.
+
+![Corrected Rust practice results for all 12 regular-expression operations](performance/v7/evidence/rust-v7-calibration-api.svg)
+
+![Every faster, slower, unresolved, and more-than-20-percent-slower corrected-Rust practice case](performance/v7/evidence/rust-v7-calibration-win-loss.svg)
+
+![Every one of the 175 corrected-Rust practice cases taking more than 20 percent longer, shown by operation](performance/v7/evidence/rust-v7-calibration-regressions.svg)
+
+![Python-traced temporary memory for corrected Rust across all 12 practice operations; this does not estimate native process memory](performance/v7/evidence/rust-v7-calibration-memory.svg)
+
+The remaining historical graphs show the complete original unseen results, not selected examples. Each new workload row represents all **64** independently held-back cases.
 
 ![Where the from-scratch Zig replacement is faster or slower than Python](performance/v7/evidence/initial-zig-speed.svg)
 
@@ -84,6 +98,8 @@ PYTHONPATH=. "$PY" tools/rust_campaign_gate.py --sealed-practice-only \
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_pilot.py self-test
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_pilot.py plan --verify
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_priorities.py --self-test
+PYTHONPATH=. "$PY" tools/rust_v7_calibration_result_audit.py --self-test
+PYTHONPATH=. "$PY" tools/rust_v7_calibration_charts.py --self-test
 
 gzip -dc performance/v7/evidence/initial-raw.jsonl.gz > /tmp/rebar-v7-raw.jsonl
 gzip -dc performance/v7/evidence/initial-summary.json.gz > /tmp/rebar-v7-summary.json

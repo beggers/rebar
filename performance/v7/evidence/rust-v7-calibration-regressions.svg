@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1210" height="611" viewBox="0 0 1210 611" role="img" aria-label="Every slowdown of more than 20%">
+<title>Every slowdown of more than 20%</title>
+<desc>PRACTICE ONLY. 624 practice tasks and 7 paired runs. The unseen test has not been opened. All 624 practice tasks · all 12 kinds of operation · zero-count groups are retained</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:25px;font-weight:750}.sub{font-size:13px;fill:#52627a}.head{font-size:15px;font-weight:700}.label{font-size:12px}.small{font-size:11px;fill:#52627a}.value{font-size:12px;font-weight:700}.tick{font-size:10.5px;fill:#64748b}.banner{font-size:12px;font-weight:700;fill:#92400e}.grid{stroke:#e2e8f0;stroke-width:1}.base{stroke:#475569;stroke-width:1.7}.panel{fill:#f8fafc;stroke:#e2e8f0;stroke-width:1}</style>
+<text x="26" y="39" class="title">Every slowdown of more than 20%</text>
+<text x="26" y="63" class="sub">All 624 practice tasks · all 12 kinds of operation · zero-count groups are retained</text>
+<rect x="20" y="78" width="1170" height="34" rx="7" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="33" y="100" class="banner">PRACTICE ONLY — the final unseen test has not been opened</text>
+<rect x="18" y="129" width="1174" height="417" rx="9" class="panel"/>
+<text x="29" y="149" class="head">Corrected Rust baseline · 175/624 large slowdowns</text>
+<text x="29" y="192" class="label">Prepare a pattern (compile)</text>
+<rect x="333" y="179" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="179" width="0.00" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="192" class="value">0/48</text>
+<text x="991" y="192" class="small">0.0% of this group</text>
+<text x="29" y="222" class="label">Escape special characters (escape)</text>
+<rect x="333" y="209" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="209" width="0.00" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="222" class="value">0/48</text>
+<text x="991" y="222" class="small">0.0% of this group</text>
+<text x="29" y="252" class="label">Find every match (findall)</text>
+<rect x="333" y="239" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="239" width="370.06" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="252" class="value">31/80</text>
+<text x="991" y="252" class="small">38.8% of this group</text>
+<text x="29" y="282" class="label">Stream each match (finditer)</text>
+<rect x="333" y="269" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="269" width="179.06" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="282" class="value">15/67</text>
+<text x="991" y="282" class="small">22.4% of this group</text>
+<text x="29" y="312" class="label">Match the entire input (fullmatch)</text>
+<rect x="333" y="299" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="299" width="226.81" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="312" class="value">19/47</text>
+<text x="991" y="312" class="small">40.4% of this group</text>
+<text x="29" y="342" class="label">Match at the beginning (match)</text>
+<rect x="333" y="329" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="329" width="59.69" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="342" class="value">5/48</text>
+<text x="991" y="342" class="small">10.4% of this group</text>
+<text x="29" y="372" class="label">Read the match details (match-surface)</text>
+<rect x="333" y="359" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="359" width="573.00" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="372" class="value">48/48</text>
+<text x="991" y="372" class="small">100.0% of this group</text>
+<text x="29" y="402" class="label">Scan repeated matches (scanner)</text>
+<rect x="333" y="389" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="389" width="298.44" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="402" class="value">25/48</text>
+<text x="991" y="402" class="small">52.1% of this group</text>
+<text x="29" y="432" class="label">Search for a match (search)</text>
+<rect x="333" y="419" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="419" width="214.88" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="432" class="value">18/48</text>
+<text x="991" y="432" class="small">37.5% of this group</text>
+<text x="29" y="462" class="label">Split around matches (split)</text>
+<rect x="333" y="449" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="449" width="131.31" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="462" class="value">11/47</text>
+<text x="991" y="462" class="small">23.4% of this group</text>
+<text x="29" y="492" class="label">Replace matches (sub)</text>
+<rect x="333" y="479" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="479" width="11.94" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="492" class="value">1/48</text>
+<text x="991" y="492" class="small">2.1% of this group</text>
+<text x="29" y="522" class="label">Replace and count matches (subn)</text>
+<rect x="333" y="509" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="509" width="23.88" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="522" class="value">2/47</text>
+<text x="991" y="522" class="small">4.3% of this group</text>
+<text x="26" y="596" class="small">A slowdown is counted when Rust takes more than 20% longer than Python; no operation or loss is excluded.</text>
+</svg>

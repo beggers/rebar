@@ -50,4 +50,4 @@ PYTHONPATH=. "$PY" tools/rust_campaign_gate.py --sealed-practice-only \
   --output /tmp/rebar-rust-v7-corrected-campaign.json
 ```
 
-Corrected Rust speed: **NOT MEASURED**. Final performance holdout: **NOT ACCESSED**.
+The first [624-case practice-only speed baseline](../../performance/v7/evidence/RUST-CALIBRATION-BASELINE.md) is **0.994×** Python, with a **0.956–1.034×** confidence interval; it does not establish a speedup. The final unseen performance result remains **NOT MEASURED**; the final holdout is **NOT ACCESSED**.
