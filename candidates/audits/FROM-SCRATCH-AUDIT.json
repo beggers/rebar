@@ -314,7 +314,7 @@
               "mapping_count": 5,
               "matches_static_elf": true,
               "role": "bridge",
-              "sha256": "4d1eb307eabc8b254ac0724aeb8ba106105d9879b7d46054b2355621fb330a92"
+              "sha256": "80d7dab57cbee317ee1727862e27cd7dcf4cb22e1a944f4b29f2e4e983f940ed"
             },
             {
               "file": "candidates/_zig_probe.so",
@@ -349,7 +349,7 @@
           "file": "candidates/zig/py_bridge.c",
           "issues": [],
           "passed": true,
-          "sha256": "cb14210092d9ec92a2ac8c458d7b713342c8662bcf3318f954e0c520bc7b1589"
+          "sha256": "92d4039e1db2e01757edfd4edf56006c4735c3bc64352b6ce9c5d1f69decafcf"
         },
         {
           "allowed_native_python_imports": [],
@@ -777,7 +777,7 @@
               "rebar_zig_name_group",
               "rebar_zig_name_length"
             ],
-            "python_api_undefined_count": 97,
+            "python_api_undefined_count": 98,
             "python_api_undefined_symbols": [
               "PyBool_FromLong",
               "PyBool_Type",
@@ -834,6 +834,7 @@
               "PyObject_CallOneArg",
               "PyObject_GC_UnTrack",
               "PyObject_GenericSetAttr",
+              "PyObject_GetAttr",
               "PyObject_GetAttrString",
               "PyObject_GetBuffer",
               "PyObject_GetItem",
@@ -880,8 +881,8 @@
             "runpaths": [
               "$ORIGIN"
             ],
-            "sha256": "4d1eb307eabc8b254ac0724aeb8ba106105d9879b7d46054b2355621fb330a92",
-            "undefined_symbol_count": 122
+            "sha256": "80d7dab57cbee317ee1727862e27cd7dcf4cb22e1a944f4b29f2e4e983f940ed",
+            "undefined_symbol_count": 123
           },
           "engine": {
             "cross_candidate_symbols": [],
@@ -1689,7 +1690,7 @@
           "rebar_zig_name_group",
           "rebar_zig_name_length"
         ],
-        "python_api_undefined_count": 97,
+        "python_api_undefined_count": 98,
         "python_api_undefined_symbols": [
           "PyBool_FromLong",
           "PyBool_Type",
@@ -1746,6 +1747,7 @@
           "PyObject_CallOneArg",
           "PyObject_GC_UnTrack",
           "PyObject_GenericSetAttr",
+          "PyObject_GetAttr",
           "PyObject_GetAttrString",
           "PyObject_GetBuffer",
           "PyObject_GetItem",
@@ -1792,8 +1794,8 @@
         "runpaths": [
           "$ORIGIN"
         ],
-        "sha256": "4d1eb307eabc8b254ac0724aeb8ba106105d9879b7d46054b2355621fb330a92",
-        "undefined_symbol_count": 122
+        "sha256": "80d7dab57cbee317ee1727862e27cd7dcf4cb22e1a944f4b29f2e4e983f940ed",
+        "undefined_symbol_count": 123
       },
       "engine": {
         "cross_candidate_symbols": [],

@@ -3110,24 +3110,55 @@ typedef enum {
     ZIG_PATTERN_SUBN,
 } ZigPatternOperation;
 
+typedef enum {
+    ZIG_PATTERN_ATTR_PATTERN,
+    ZIG_PATTERN_ATTR_FLAGS,
+    ZIG_PATTERN_ATTR_GROUPS,
+    ZIG_PATTERN_ATTR_GROUPINDEX,
+    ZIG_PATTERN_ATTR_HANDLE,
+    ZIG_PATTERN_ATTR_LITERAL,
+    ZIG_PATTERN_ATTR_TEMPLATES,
+    ZIG_PATTERN_ATTR_COUNT,
+} ZigPatternAttribute;
+
+static const char *const zig_pattern_attribute_names[ZIG_PATTERN_ATTR_COUNT] = {
+    "pattern", "flags", "groups", "_groupindex", "_handle", "_literal",
+    "_templates",
+};
+static PyObject *zig_pattern_attribute_keys[ZIG_PATTERN_ATTR_COUNT] = {NULL};
+
+static PyObject *zig_pattern_get_attribute(PyObject *pattern, uint8_t index) {
+    PyObject *key = zig_pattern_attribute_keys[index];
+    if (key == NULL) {
+        key = PyUnicode_InternFromString(zig_pattern_attribute_names[index]);
+        if (key == NULL) return NULL;
+        zig_pattern_attribute_keys[index] = key;
+    }
+    return PyObject_GetAttr(pattern, key);
+}
+
 static PyObject *zig_pattern_dispatch(PyObject *pattern,
                                       PyObject *const *args,
                                       Py_ssize_t nargs, PyObject *kwnames,
                                       ZigPatternOperation operation) {
-    static const char *const match_names[] = {
-        "_handle", "_groupindex", "pattern", "_literal",
+    static const uint8_t match_names[] = {
+        ZIG_PATTERN_ATTR_HANDLE, ZIG_PATTERN_ATTR_GROUPINDEX,
+        ZIG_PATTERN_ATTR_PATTERN, ZIG_PATTERN_ATTR_LITERAL,
     };
-    static const char *const scanner_names[] = {
-        "_handle", "_groupindex", "pattern", "groups",
+    static const uint8_t scanner_names[] = {
+        ZIG_PATTERN_ATTR_HANDLE, ZIG_PATTERN_ATTR_GROUPINDEX,
+        ZIG_PATTERN_ATTR_PATTERN, ZIG_PATTERN_ATTR_GROUPS,
     };
-    static const char *const collection_names[] = {
-        "_handle", "pattern", "groups",
+    static const uint8_t collection_names[] = {
+        ZIG_PATTERN_ATTR_HANDLE, ZIG_PATTERN_ATTR_PATTERN,
+        ZIG_PATTERN_ATTR_GROUPS,
     };
-    static const char *const replacement_names[] = {
-        "_handle", "_groupindex", "pattern", "_literal", "_templates",
-        "groups",
+    static const uint8_t replacement_names[] = {
+        ZIG_PATTERN_ATTR_HANDLE, ZIG_PATTERN_ATTR_GROUPINDEX,
+        ZIG_PATTERN_ATTR_PATTERN, ZIG_PATTERN_ATTR_LITERAL,
+        ZIG_PATTERN_ATTR_TEMPLATES, ZIG_PATTERN_ATTR_GROUPS,
     };
-    const char *const *names = NULL;
+    const uint8_t *names = NULL;
     Py_ssize_t name_count = 0;
     int include_pattern = 0;
     ZigPatternBridge bridge = NULL;
@@ -3154,7 +3185,8 @@ static PyObject *zig_pattern_dispatch(PyObject *pattern,
                 ? bridge_bound_finditer : bridge_bound_scanner;
             break;
         case ZIG_PATTERN_FINDALL: {
-            PyObject *literal = PyObject_GetAttrString(pattern, "_literal");
+            PyObject *literal = zig_pattern_get_attribute(
+                pattern, ZIG_PATTERN_ATTR_LITERAL);
             if (literal == NULL) return NULL;
             if (literal != Py_None) {
                 hidden[hidden_count++] = literal;
@@ -3184,7 +3216,7 @@ static PyObject *zig_pattern_dispatch(PyObject *pattern,
 
     if (include_pattern) hidden[hidden_count++] = Py_NewRef(pattern);
     for (Py_ssize_t index = 0; index < name_count; index++) {
-        PyObject *value = PyObject_GetAttrString(pattern, names[index]);
+        PyObject *value = zig_pattern_get_attribute(pattern, names[index]);
         if (value == NULL) {
             for (Py_ssize_t owned = 0; owned < hidden_count; owned++) {
                 Py_DECREF(hidden[owned]);
@@ -3346,15 +3378,16 @@ static PyObject *bridge_initialize_pattern(PyObject *module, PyObject *const *ar
         PyErr_Format(PyExc_TypeError, "initialize_pattern() takes exactly 9 arguments (%zd given)", nargs);
         return NULL;
     }
-    static const char *attribute_names[] = {"pattern", "flags", "groups", "_groupindex", "_handle", "_literal", "_templates"};
     static const size_t argument_indexes[] = {1, 2, 3, 5, 6, 7, 8};
-    static PyObject *attribute_keys[7] = {NULL};
-    for (size_t index = 0; index < 7; index++) {
-        if (attribute_keys[index] == NULL) {
-            attribute_keys[index] = PyUnicode_InternFromString(attribute_names[index]);
-            if (attribute_keys[index] == NULL) return NULL;
+    for (size_t index = 0; index < ZIG_PATTERN_ATTR_COUNT; index++) {
+        if (zig_pattern_attribute_keys[index] == NULL) {
+            zig_pattern_attribute_keys[index] = PyUnicode_InternFromString(
+                zig_pattern_attribute_names[index]);
+            if (zig_pattern_attribute_keys[index] == NULL) return NULL;
         }
-        if (PyObject_GenericSetAttr(args[0], attribute_keys[index], args[argument_indexes[index]]) < 0) return NULL;
+        if (PyObject_GenericSetAttr(
+                args[0], zig_pattern_attribute_keys[index],
+                args[argument_indexes[index]]) < 0) return NULL;
     }
     Py_RETURN_NONE;
 }
