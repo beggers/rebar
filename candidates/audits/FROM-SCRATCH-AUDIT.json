@@ -240,7 +240,7 @@
               "mapping_count": 5,
               "matches_static_elf": true,
               "role": "native",
-              "sha256": "ba4a49afb0e45618e6ccc90033775645da7b274984a71f0bd1623c40fc449a08"
+              "sha256": "d3ec19d66161f789056f2146c3abadccb98fa7bfd979fd66e1fb68540ad0f078"
             }
           ],
           "passed": true,
@@ -266,7 +266,7 @@
           "file": "candidates/_vm_native.c",
           "issues": [],
           "passed": true,
-          "sha256": "7af879d6601603b7700e1447c47e227a565df9b64e4c78992b88c79e8521f7c7"
+          "sha256": "bb4df5960e169c24e772d9fa0a193fcc6a9e8d31ab60d20aabb48ab07e5fe06d"
         }
       ],
       "owned_pipeline": {
@@ -284,13 +284,14 @@
           "copyreg",
           "enum",
           "os",
+          "struct",
           "unicodedata",
           "warnings"
         ],
         "issues": [],
         "native_loads": [],
         "passed": true,
-        "sha256": "4cf7b654925c1ed20e571f4f87e8cd4e459f0136dbf9d738b50f92e0c2ac77bb"
+        "sha256": "91d848e2627f19e552fef19b9943eb3e265e25537934128875645bab63cf7b80"
       }
     },
     "zig": {
@@ -621,7 +622,7 @@
               "PyInit__vm_native"
             ],
             "owned_undefined": [],
-            "python_api_undefined_count": 108,
+            "python_api_undefined_count": 114,
             "python_api_undefined_symbols": [
               "PyArg_ParseTuple",
               "PyArg_ParseTupleAndKeywords",
@@ -656,8 +657,11 @@
               "PyErr_SetString",
               "PyExc_AttributeError",
               "PyExc_IndexError",
+              "PyExc_RecursionError",
               "PyExc_RuntimeError",
               "PyExc_TypeError",
+              "PyExc_ValueError",
+              "PyFrame_GetBack",
               "PyFunction_GetGlobals",
               "PyFunction_Type",
               "PyIndex_Check",
@@ -691,6 +695,8 @@
               "PyObject_RichCompare",
               "PyObject_RichCompareBool",
               "PySequence_Fast",
+              "PyThreadState_Get",
+              "PyThreadState_GetFrame",
               "PyTuple_New",
               "PyTuple_Pack",
               "PyTuple_Type",
@@ -716,6 +722,7 @@
               "PyUnicode_Type",
               "Py_BuildValue",
               "Py_GenericAlias",
+              "Py_GetRecursionLimit",
               "_PyByteArray_empty_string",
               "_PyObject_GC_New",
               "_PyUnicode_IsAlpha",
@@ -733,8 +740,8 @@
               "_Py_ascii_whitespace"
             ],
             "runpaths": [],
-            "sha256": "ba4a49afb0e45618e6ccc90033775645da7b274984a71f0bd1623c40fc449a08",
-            "undefined_symbol_count": 118
+            "sha256": "d3ec19d66161f789056f2146c3abadccb98fa7bfd979fd66e1fb68540ad0f078",
+            "undefined_symbol_count": 124
           }
         },
         "issues": [],
@@ -1517,7 +1524,7 @@
           "PyInit__vm_native"
         ],
         "owned_undefined": [],
-        "python_api_undefined_count": 108,
+        "python_api_undefined_count": 114,
         "python_api_undefined_symbols": [
           "PyArg_ParseTuple",
           "PyArg_ParseTupleAndKeywords",
@@ -1552,8 +1559,11 @@
           "PyErr_SetString",
           "PyExc_AttributeError",
           "PyExc_IndexError",
+          "PyExc_RecursionError",
           "PyExc_RuntimeError",
           "PyExc_TypeError",
+          "PyExc_ValueError",
+          "PyFrame_GetBack",
           "PyFunction_GetGlobals",
           "PyFunction_Type",
           "PyIndex_Check",
@@ -1587,6 +1597,8 @@
           "PyObject_RichCompare",
           "PyObject_RichCompareBool",
           "PySequence_Fast",
+          "PyThreadState_Get",
+          "PyThreadState_GetFrame",
           "PyTuple_New",
           "PyTuple_Pack",
           "PyTuple_Type",
@@ -1612,6 +1624,7 @@
           "PyUnicode_Type",
           "Py_BuildValue",
           "Py_GenericAlias",
+          "Py_GetRecursionLimit",
           "_PyByteArray_empty_string",
           "_PyObject_GC_New",
           "_PyUnicode_IsAlpha",
@@ -1629,8 +1642,8 @@
           "_Py_ascii_whitespace"
         ],
         "runpaths": [],
-        "sha256": "ba4a49afb0e45618e6ccc90033775645da7b274984a71f0bd1623c40fc449a08",
-        "undefined_symbol_count": 118
+        "sha256": "d3ec19d66161f789056f2146c3abadccb98fa7bfd979fd66e1fb68540ad0f078",
+        "undefined_symbol_count": 124
       }
     },
     "issues": [],

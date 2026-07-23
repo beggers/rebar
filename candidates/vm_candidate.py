@@ -6,6 +6,7 @@ import unicodedata
 import warnings
 
 from copyreg import _reconstructor as _copy_reconstructor
+from struct import calcsize as _native_calcsize
 
 from candidates import _vm_native
 
@@ -46,6 +47,8 @@ DEBUG = RegexFlag.DEBUG
 NOFLAG = RegexFlag(0)
 _BYTE = 1 << 31
 _MAXREPEAT = (1 << 32) - 1
+_MAX_INLINE_REPEAT = 128
+_MAX_NATIVE_REPEAT_WIDTH = (1 << (_native_calcsize("n") * 8 - 1)) - 1
 _MISSING = object()
 _WARNING_PREFIX = (os.path.dirname(__file__),)
 
@@ -120,7 +123,8 @@ class _BytecodeParser:
                 break
 
     def frame(self, tag, flags, start, value=None):
-        return {"tag": tag, "flags": flags, "start": start, "value": value, "parts": [[]]}
+        cost = 0 if tag == "root" else 1 if tag == "conditional" else 2
+        return {"tag": tag, "flags": flags, "start": start, "value": value, "parts": [[]], "depth_cost": cost}
 
     def sequence_node(self, parts):
         return ("seq", parts)
@@ -321,7 +325,6 @@ class _BytecodeParser:
                 left = ("lit", self.advance(), flags)
             warn_set_operator(self.at)
             if self.current() == "-" and self.at + 1 < len(self.source) and self.source[self.at + 1] != "]":
-                dash = self.at
                 self.at += 1
                 right_start = self.at
                 if self.current() == "\\":
@@ -330,12 +333,21 @@ class _BytecodeParser:
                     right = self.escaped(flags, True, slash)
                 else:
                     right = ("lit", self.advance(), flags)
-                if left[0] != "lit" or right[0] != "lit":
-                    self.error(f"bad character range {self.source[left_start:self.at]}", left_start)
-                if ord(left[1]) > ord(right[1]):
-                    if self.source.startswith("\\x", left_start) and self.source.startswith("\\x", right_start):
-                        self.error("bad character range \\x-\\x", dash)
-                    self.error(f"bad character range {left[1]}-{right[1]}", dash - 1)
+                if (
+                    left[0] != "lit"
+                    or right[0] != "lit"
+                    or ord(left[1]) > ord(right[1])
+                ):
+                    left_head = self.source[
+                        left_start:left_start + (2 if self.source.startswith("\\", left_start) else 1)
+                    ]
+                    right_head = self.source[
+                        right_start:right_start + (2 if self.source.startswith("\\", right_start) else 1)
+                    ]
+                    message = f"bad character range {left_head}-{right_head}"
+                    if self.byte_mode:
+                        message = message.encode("ascii", "backslashreplace").decode("ascii")
+                    self.error(message, self.at - len(left_head) - 1 - len(right_head))
                 members.append(("range", left[1], right[1]))
             else:
                 members.append(left)
@@ -393,6 +405,7 @@ class _BytecodeParser:
 
     def parse(self):
         stack = [self.frame("root", self.flags, 0)]
+        semantic_depth = 0
         while stack:
             active = stack[-1]
             flags = active["flags"]
@@ -419,6 +432,7 @@ class _BytecodeParser:
                     self.error("unbalanced parenthesis", self.at)
                 self.at += 1
                 closed = stack.pop()
+                semantic_depth -= closed["depth_cost"]
                 node = self.frame_node(closed)
                 if closed["tag"] == "capture":
                     self.open_groups.remove(closed["value"])
@@ -434,22 +448,32 @@ class _BytecodeParser:
                 if self.current() != "?":
                     self.groups += 1
                     self.open_groups.add(self.groups)
+                    _vm_native.check_recursion(semantic_depth + 2)
+                    semantic_depth += 2
                     stack.append(self.frame("capture", flags, opening, self.groups))
                     continue
                 self.at += 1
                 extension = self.advance()
                 if extension == ":":
+                    _vm_native.check_recursion(semantic_depth + 2)
+                    semantic_depth += 2
                     stack.append(self.frame("plain", flags, opening))
                     continue
                 if extension in {"=", "!"}:
+                    _vm_native.check_recursion(semantic_depth + 2)
+                    semantic_depth += 2
                     stack.append(self.frame("ahead+" if extension == "=" else "ahead-", flags, opening))
                     continue
                 if extension == "<" and self.current() in {"=", "!"}:
                     sign = self.advance()
                     self.lookbehind_bases.append(self.groups)
+                    _vm_native.check_recursion(semantic_depth + 2)
+                    semantic_depth += 2
                     stack.append(self.frame("behind+" if sign == "=" else "behind-", flags, opening))
                     continue
                 if extension == ">":
+                    _vm_native.check_recursion(semantic_depth + 2)
+                    semantic_depth += 2
                     stack.append(self.frame("atomic", flags, opening))
                     continue
                 if extension == "#":
@@ -469,6 +493,8 @@ class _BytecodeParser:
                             self.error(f"redefinition of group name {label!r} as group {number}; was group {self.groupindex[label]}", name_start)
                         self.groupindex[label] = number
                         self.open_groups.add(number)
+                        _vm_native.check_recursion(semantic_depth + 2)
+                        semantic_depth += 2
                         stack.append(self.frame("capture", flags, opening, number))
                         continue
                     if form == "=":
@@ -514,6 +540,8 @@ class _BytecodeParser:
                             self.error(f"unknown group name {reference!r}", reference_start)
                         number = self.groupindex[reference]
                         self.check_reference(number, reference_start)
+                    _vm_native.check_recursion(semantic_depth + 1)
+                    semantic_depth += 1
                     stack.append(self.frame("conditional", flags, opening, number))
                     continue
                 if extension is not None and extension in "aiLmsux-":
@@ -571,6 +599,8 @@ class _BytecodeParser:
                         active["flags"] = changed
                         self.flags = changed
                         continue
+                    _vm_native.check_recursion(semantic_depth + 2)
+                    semantic_depth += 2
                     stack.append(self.frame("plain", changed, opening))
                     continue
                 if extension is None:
@@ -703,8 +733,36 @@ def _fixed_layout(node):
     return None
 
 
+def _fixed_repeat_body_width(node):
+    """Return the checked width of a deterministic, consuming repeat body."""
+    kind = node[0]
+    if kind in {"lit", "dot", "category", "class"}:
+        return 1
+    if kind == "seq":
+        width = 0
+        for child in node[1]:
+            child_width = _fixed_repeat_body_width(child)
+            if child_width is None:
+                return None
+            width = min(_MAX_NATIVE_REPEAT_WIDTH, width + child_width)
+        return width
+    if kind == "group":
+        return _fixed_repeat_body_width(node[2])
+    if kind == "atomic":
+        return _fixed_repeat_body_width(node[1])
+    if kind == "repeat" and node[3] == node[2]:
+        width = _fixed_repeat_body_width(node[1])
+        if width is None:
+            return None
+        count = node[2]
+        if width and count > _MAX_NATIVE_REPEAT_WIDTH // width:
+            return _MAX_NATIVE_REPEAT_WIDTH
+        return width * count
+    return None
+
+
 class _BytecodeCompiler:
-    CHAR, DOT, CAT, CLASS, ANCHOR, BOUNDARY, BACKREF, SAVE_START, SAVE_END, SPLIT, JUMP, LOOK, ATOMIC_START, ATOMIC_END, COND, MATCH, REPEAT1 = range(1, 18)
+    CHAR, DOT, CAT, CLASS, ANCHOR, BOUNDARY, BACKREF, SAVE_START, SAVE_END, SPLIT, JUMP, LOOK, ATOMIC_START, ATOMIC_END, COND, MATCH, REPEAT1, REPEAT_BODY = range(1, 19)
 
     def __init__(self):
         self.programs = [[]]
@@ -724,13 +782,13 @@ class _BytecodeCompiler:
         if c is not None:
             row[3] = c
 
-    def child_program(self, node):
+    def child_program(self, node, *, repeat_width=0, repeat_mode=0):
         saved = self.current
         index = len(self.programs)
         self.current = []
         self.programs.append(self.current)
         self.emit(node)
-        self.instruction(self.MATCH)
+        self.instruction(self.MATCH, repeat_width, repeat_mode)
         self.current = saved
         return index
 
@@ -754,6 +812,8 @@ class _BytecodeCompiler:
                 self.instruction(self.SAVE_START, number)
 
     def emit(self, node):
+        while node[0] == "seq" and len(node[1]) == 1:
+            node = node[1][0]
         kind = node[0]
         if kind == "lit":
             self.instruction(self.CHAR, ord(node[1]), node[2])
@@ -813,7 +873,7 @@ class _BytecodeCompiler:
                         alternatives = []
                         break
                     literal = branch[1][0]
-                    if literal[0] != "lit":
+                    if literal[0] not in {"lit", "category"}:
                         alternatives = []
                         break
                     alternatives.append(literal)
@@ -831,15 +891,41 @@ class _BytecodeCompiler:
                 self.instruction(self.REPEAT1, minimum, -1 if maximum is None else maximum, {"greedy": 0, "lazy": 1, "possessive": 2}[mode])
                 self.emit(atom)
                 return
+            body_width = _fixed_repeat_body_width(child)
+            safe_to_inline = minimum <= _MAX_INLINE_REPEAT and (
+                maximum is None
+                or maximum - minimum <= _MAX_INLINE_REPEAT
+            )
+            if body_width and not safe_to_inline:
+                body = self.child_program(
+                    child,
+                    repeat_width=body_width,
+                    repeat_mode={"greedy": 0, "lazy": 1, "possessive": 2}[mode],
+                )
+                self.instruction(
+                    self.REPEAT_BODY,
+                    body,
+                    minimum,
+                    -1 if maximum is None else maximum,
+                )
+                return
             atomic = mode == "possessive"
             if atomic:
                 self.instruction(self.ATOMIC_START)
             for _ in range(minimum):
+                if atomic:
+                    self.instruction(self.ATOMIC_START)
                 self.emit(child)
+                if atomic:
+                    self.instruction(self.ATOMIC_END)
             if maximum is None:
                 split = self.instruction(self.SPLIT)
                 child_start = len(self.current)
+                if atomic:
+                    self.instruction(self.ATOMIC_START)
                 self.emit(child)
+                if atomic:
+                    self.instruction(self.ATOMIC_END)
                 self.instruction(self.JUMP, split)
                 end = len(self.current)
                 if mode == "lazy":
@@ -850,7 +936,11 @@ class _BytecodeCompiler:
                 for _ in range(maximum - minimum):
                     split = self.instruction(self.SPLIT)
                     child_start = len(self.current)
+                    if atomic:
+                        self.instruction(self.ATOMIC_START)
                     self.emit(child)
+                    if atomic:
+                        self.instruction(self.ATOMIC_END)
                     end = len(self.current)
                     if mode == "lazy":
                         self.patch(split, a=end, b=child_start, c=-1)
