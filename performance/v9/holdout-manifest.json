@@ -1,0 +1,326 @@
+{
+  "binding_sha256": "1ebfa3b1a57c285826627e0362c78daff016b4029529639502325550a1ac0aaf",
+  "correctness": {
+    "crashes_allowed": 0,
+    "deep_contract_answer_sha256": "b184f3388320909b3c28fbd3ce9c15cefc992d3e852e9495ad8fb503d1cbaad8",
+    "deep_contract_checks": 393,
+    "deep_contract_fixture_sha256": "c72a5e47f15c94ce13ce34d4918c05ef81eea5b010ac119b255264e60939ef16",
+    "deep_contract_source_sha256": "ba4b640d12444a5346d918a039d8a7a9fef0c78a54f6b66c6f0eb0c9dddbe978",
+    "edge_answer_sha256": "b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526",
+    "edge_categories": 49,
+    "edge_checks": 223198,
+    "edge_runner_sha256": "fe6a263a48f243ea02faaa78fc3bbd051233a2b2221967a5f76dd1bb79d242ca",
+    "goal_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+    "grammar_checks": 20480,
+    "minimum_current_campaign_stages": 22,
+    "mismatches_allowed": 0,
+    "named_private_waivers": [
+      "PRIVATE-CACHE-LAYOUT",
+      "PRIVATE-DEBUG-TEXT"
+    ],
+    "native_binder_checks": 34,
+    "object_checks": 14783,
+    "observable_checks": 479,
+    "snapshots_per_timed_row": 3,
+    "timeouts_allowed": 0,
+    "unicode_checks": 4494555
+  },
+  "history": {
+    "combined_results": "NOT MEASURED",
+    "original_v7_cases": 10312,
+    "original_v7_status": "preserved-not-accessed-by-v9",
+    "v8_status": "preserved-sealed-not-accessed-by-v9",
+    "v9_results": "NOT MEASURED"
+  },
+  "independence": {
+    "benchmark_detection": "forbidden",
+    "candidate_delegation": "forbidden",
+    "candidate_worker_python_regex": "forbidden",
+    "external_regex_engines": "forbidden",
+    "memory_instrumentation": "separate-worker-tracemalloc-imports-re",
+    "minimum_distinct_semantic_pipelines": 3,
+    "native_identity": "edge-campaign-live-audit-and-live-mappings-all-exactly-bound",
+    "previous_holdout_access": "forbidden",
+    "required_owned_native_artifacts": 5
+  },
+  "layout": {
+    "apis": [
+      "compile",
+      "escape",
+      "search",
+      "match",
+      "fullmatch",
+      "findall",
+      "finditer",
+      "split",
+      "sub",
+      "subn",
+      "match-surface",
+      "scanner"
+    ],
+    "applicability": {
+      "compile": {
+        "input": [
+          "str",
+          "bytes"
+        ],
+        "lifecycle": [
+          "cold-cache",
+          "warm-cache"
+        ],
+        "surface": [
+          "module"
+        ],
+        "variants_per_factor": 64
+      },
+      "escape": {
+        "input": [
+          "str",
+          "bytes"
+        ],
+        "special_density": [
+          "ordinary",
+          "regex-special"
+        ],
+        "surface": [
+          "module"
+        ],
+        "variants_per_factor": 64
+      },
+      "findall": {
+        "input": [
+          "str",
+          "bytes"
+        ],
+        "outcome": [
+          "hit",
+          "miss"
+        ],
+        "surface": [
+          "module",
+          "compiled"
+        ],
+        "variants_per_factor": 32
+      },
+      "finditer": {
+        "input": [
+          "str",
+          "bytes"
+        ],
+        "outcome": [
+          "hit",
+          "miss"
+        ],
+        "surface": [
+          "module",
+          "compiled"
+        ],
+        "variants_per_factor": 32
+      },
+      "fullmatch": {
+        "input": [
+          "str",
+          "bytes"
+        ],
+        "outcome": [
+          "hit",
+          "miss"
+        ],
+        "surface": [
+          "module",
+          "compiled"
+        ],
+        "variants_per_factor": 32
+      },
+      "match": {
+        "input": [
+          "str",
+          "bytes"
+        ],
+        "outcome": [
+          "hit",
+          "miss"
+        ],
+        "surface": [
+          "module",
+          "compiled"
+        ],
+        "variants_per_factor": 32
+      },
+      "match-surface": {
+        "capture": [
+          "numbered",
+          "named",
+          "optional",
+          "multiple"
+        ],
+        "input": [
+          "str",
+          "bytes"
+        ],
+        "outcome": [
+          "hit"
+        ],
+        "surface": [
+          "module",
+          "compiled"
+        ],
+        "variants_per_factor": 16
+      },
+      "scanner": {
+        "input": [
+          "str",
+          "bytes"
+        ],
+        "progression": [
+          "ordinary",
+          "zero-width"
+        ],
+        "scanner_method": [
+          "search",
+          "match"
+        ],
+        "surface": [
+          "compiled-pattern-scanner"
+        ],
+        "variants_per_factor": 32
+      },
+      "search": {
+        "input": [
+          "str",
+          "bytes"
+        ],
+        "outcome": [
+          "hit",
+          "miss"
+        ],
+        "surface": [
+          "module",
+          "compiled"
+        ],
+        "variants_per_factor": 32
+      },
+      "split": {
+        "input": [
+          "str",
+          "bytes"
+        ],
+        "outcome": [
+          "hit",
+          "miss"
+        ],
+        "surface": [
+          "module",
+          "compiled"
+        ],
+        "variants_per_factor": 32
+      },
+      "sub": {
+        "input": [
+          "str",
+          "bytes"
+        ],
+        "outcome": [
+          "hit",
+          "miss"
+        ],
+        "surface": [
+          "module",
+          "compiled"
+        ],
+        "variants_per_factor": 32
+      },
+      "subn": {
+        "input": [
+          "str",
+          "bytes"
+        ],
+        "outcome": [
+          "hit",
+          "miss"
+        ],
+        "surface": [
+          "module",
+          "compiled"
+        ],
+        "variants_per_factor": 32
+      }
+    },
+    "cases": 24576,
+    "cases_per_api": 2048,
+    "cases_per_cell": 256,
+    "mutable_buffer_transport": "actual-bytearray-or-memoryview-created-before-timing",
+    "semantic_identity": "keyed-pattern-subject-captures-flags-window-and-replacement",
+    "workloads": [
+      "literal-and-long-prefix",
+      "character-class-and-unicode",
+      "anchors-boundaries-and-windows",
+      "greedy-lazy-atomic-and-possessive",
+      "alternation-groups-and-backreferences",
+      "lookaround-and-zero-width",
+      "replacement-split-and-result-density",
+      "logs-paths-urls-identifiers-and-noise"
+    ]
+  },
+  "memory": {
+    "boundary_cost": "included-in-actual-public-operation",
+    "cases": 1536,
+    "cases_per_cell": 16,
+    "process_current": "procfs-resident-bytes",
+    "process_peak": "whole-process-peak-resident-bytes",
+    "python_peak": "tracemalloc-python-allocations-only"
+  },
+  "reference": {
+    "enforced_worker_locale": "C",
+    "implementation": "CPython",
+    "unicode_version": "16.0.0",
+    "version": "3.14.6"
+  },
+  "schema": "rebar-v9-prospective-semantic-performance-holdout-v1",
+  "seal": {
+    "algorithm": "sha256",
+    "case_derivation": "domain-separated-HMAC-SHA256-drives-real-regex-semantics",
+    "isolation": "procedural-same-unix-user-not-security-boundary",
+    "opening_bytes": 32,
+    "opening_mode": "0600",
+    "opening_path": "/tmp/rebar-v9-final-holdout-opening-20260723-24576-v1.bin",
+    "opening_sha256": "3ad3ff2bc34fd1dc371aa6516ac0a122f1d3e3e9da373d0db8c5cb5589da5bbb"
+  },
+  "source": {
+    "derivation": "open independent additive correction of public v8",
+    "path": "tools/rust_v9_holdout_protocol.py",
+    "sha256": "a699ce1e661ead447af0643584d69f080e72712059ad611fbd6b998f2ca19219"
+  },
+  "state": "prospectively-sealed-not-materialized",
+  "statistics": {
+    "bootstrap_seed": 20260723999,
+    "case_method": "paired-log-student-t-df30",
+    "case_student_t_critical": 2.0422724563012373,
+    "case_win_lower_bound": 1.0,
+    "confidence": 0.95,
+    "minimum_significant_wins": 14746,
+    "overall_bootstrap_draws": 9999,
+    "overall_lower_bound": 1.5,
+    "overall_method": "stratified-paired-whole-case-cluster-percentile-bootstrap",
+    "runtime_regression": "candidate_time > 1.2 * baseline_time"
+  },
+  "trials": {
+    "case_timeout_seconds": 5.0,
+    "compiled_lifecycle": "retained-precompiled-object-outside-timed-operation",
+    "four_engine_correctness_snapshots": 9142272,
+    "four_engine_timed_rows": 3047424,
+    "minimum_candidates": 3,
+    "operations_per_sample": 16,
+    "order_method": "seeded-counterbalanced-rotating-latin-square",
+    "order_seed": 20260723931,
+    "paired_rounds": 31,
+    "required_independent_native_families": [
+      "vm",
+      "rust",
+      "zig"
+    ],
+    "timed_operation": "actual-public-call-only-no-normalization-or-wire-decoding",
+    "timeout_method": "absolute-monotonic-whole-response-deadline",
+    "warmups": 4
+  }
+}

@@ -69,6 +69,32 @@ previously nonexistent evidence outputs. An exclusive one-use marker is
 created before the opening. An interrupted or failed opening cannot be
 retried, replaced, or quietly called a fresh experiment.
 
+## The actual prospective seal
+
+After the Rust, C, and Zig engines each passed the complete 22-stage correctness
+campaign, and before any further candidate optimization, the
+[public manifest](holdout-manifest.json) was generated from a single genuine
+32-byte operating-system-random opening. Its SHA-256 commitment is
+`3ad3ff2bc34fd1dc371aa6516ac0a122f1d3e3e9da373d0db8c5cb5589da5bbb`.
+The opening remains outside the repository and has not been read back or used
+to generate a final case.
+
+The [custodian](../../tools/rust_v9_opening_custodian.py) creates the fixed
+owner-only file exclusively, refuses an existing file or symlink, synchronizes
+both the file and directory, erases its working secret buffer, and publishes
+only its [public attestation](evidence/HOLDOUT-CUSTODIAN-ATTESTATION.json).
+Its [27 synthetic-only controls](evidence/HOLDOUT-CUSTODIAN-SELF-TEST.json)
+include partial writes, existing files, symlinks, and synchronization errors.
+Its isolation is honestly **procedural**: processes running as the same user
+could read the file. It is not a separate-user security boundary.
+
+The [75-check manifest-bound synthetic proof](evidence/HOLDOUT-PROTOCOL-SELF-TEST.json)
+and [independent protocol verification](evidence/HOLDOUT-PROTOCOL-VERIFIED.json)
+confirm the exact prospective source, case weights, confidence rules, and
+commitment. Both record **zero** final openings, final cases, imported
+candidates, or performance measurements. They are distinct from the earlier
+public-only, uncommitted synthetic self-test.
+
 ## Exactly what is timed
 
 Every engine runs in a different persistent isolated Python process.
