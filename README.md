@@ -20,7 +20,7 @@ The second graph compares all three fully checked engines against Python on the 
 
 **Rust, Zig, and C each independently pass all 22 complete compatibility and safety stages.** Each has its own matching engine; none wraps Python's `re`, an external package, or another candidate. The independent Python prototype remains incomplete.
 
-The [**24,576-case final benchmark**](performance/v9/HOLDOUT-PROTOCOL.md) is now [prospectively sealed](performance/v9/holdout-manifest.json) and [independently verified](performance/v9/evidence/HOLDOUT-PROTOCOL-VERIFIED.json), but has not been opened. Final speed, memory use, and rankings for all three qualified engines are **NOT MEASURED**.
+The [**24,576-case final benchmark**](performance/v9/HOLDOUT-PROTOCOL.md) remains [prospectively sealed](performance/v9/holdout-manifest.json) and [independently verified](performance/v9/evidence/HOLDOUT-PROTOCOL-VERIFIED.json). The three implementations are now [frozen at a pushed stopping commit](performance/v9/evidence/FINAL-CANDIDATE-FREEZE.md), with their exact correctness proofs and native binaries [recorded before any hidden input is opened](performance/v9/evidence/V9-FINAL-CANDIDATE-SELECTION-FREEZE.json). Final speed, memory use, rankings, and the winner are **NOT MEASURED**.
 
 ## Compatibility at a glance
 

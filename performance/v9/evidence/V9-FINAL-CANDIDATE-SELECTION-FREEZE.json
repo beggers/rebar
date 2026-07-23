@@ -1,0 +1,76 @@
+{
+  "baseline": "re",
+  "candidates": [
+    {
+      "artifacts": {
+        "native-bridge": {
+          "path": "/home/dev-user/src/rebar/candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "f6458cb4bf190f042e7d417a40020d2d58cebcb39671fda7352aab9725a7f633"
+        },
+        "public-python": {
+          "path": "/home/dev-user/src/rebar/candidates/vm_candidate.py",
+          "sha256": "91d848e2627f19e552fef19b9943eb3e265e25537934128875645bab63cf7b80"
+        }
+      },
+      "campaign_sha256": "a29b540e01fc9f565e01e5cc62af14db30b38d9bacbaf55e4950e95b17c7ea40",
+      "deep_contract_sha256": "0b25f1793636eac02d9231b0d5ec546aa6800eab118b0e98f98f5e6276dbb65e",
+      "edge_sha256": "c843dccc2d0b8eb1dcada2af282679ca05a1be2de98afc39bad95e7f448f4d7a",
+      "module": "candidates.vm_candidate"
+    },
+    {
+      "artifacts": {
+        "bridge-source": {
+          "path": "/home/dev-user/src/rebar/candidates/rust/py_bridge.c",
+          "sha256": "83afb5a709a6d0ea1701dfd64db30644edbf2cb0276c2db731a8119cfd52d8ed"
+        },
+        "native-bridge": {
+          "path": "/home/dev-user/src/rebar/candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "1f072e81ba9339a8b2e52a7e93b7bcde791c4d518620b6bd760af67c7c89af34"
+        },
+        "native-engine": {
+          "path": "/home/dev-user/src/rebar/candidates/_rust_engine.so",
+          "sha256": "e7177c97070b2d0073a721044c4d23bb93e0d0883c1f2ccaa07c41eda8b96255"
+        },
+        "native-source": {
+          "path": "/home/dev-user/src/rebar/candidates/rust/src/lib.rs",
+          "sha256": "4b89d916e4c33e2b516be570ff3e75694f03dcea5eccf9320cedf07471b07dac"
+        },
+        "public-python": {
+          "path": "/home/dev-user/src/rebar/candidates/rust_candidate.py",
+          "sha256": "80812459261edb9585bdf703f137af3e0e788638af2ad7183d00b6d357e8a926"
+        }
+      },
+      "campaign_sha256": "9ddbab81b16f0440ca19bffb8a539ea08d4a7ff33606ee3019eaf85977c2249a",
+      "deep_contract_sha256": "f012d5e16305783d70fe6b7ece86a7692b2ac37c310c9a7e12cc856f91e0d1d0",
+      "edge_sha256": "c3e67b08ac34540dbbd248b5ffb07161ae7e9b815a6f6bcbc757ef178f7585b1",
+      "module": "candidates.rust_candidate"
+    },
+    {
+      "artifacts": {
+        "native-bridge": {
+          "path": "/home/dev-user/src/rebar/candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "80d7dab57cbee317ee1727862e27cd7dcf4cb22e1a944f4b29f2e4e983f940ed"
+        },
+        "native-engine": {
+          "path": "/home/dev-user/src/rebar/candidates/_zig_probe.so",
+          "sha256": "70bafca56a3f48477b2011f016a81b625e5f40a772af6a986d32b9098269f614"
+        },
+        "public-python": {
+          "path": "/home/dev-user/src/rebar/candidates/zig_candidate.py",
+          "sha256": "95a2010152099f2db61595927542b2f25a675eb72bd33125659969d804360239"
+        }
+      },
+      "campaign_sha256": "4ba7cb9c45a70b747cc0a6eb721f6bb51081157f527d1bf5e578e603715ae5dc",
+      "deep_contract_sha256": "422f662f7c01e961ae0e913ed8e1bc1927b80c70530d7982a4a65784bf649a91",
+      "edge_sha256": "a4c8b75811b5304ab115fb387f821127a20ed2615e7948ab4b96443dbe1ebe5c",
+      "module": "candidates.zig_candidate"
+    }
+  ],
+  "from_scratch_audit_sha256": "a790fe1a75c8748df7f8bb6f1e39d0be841636055358aaee94db0aa35523f326",
+  "hidden_cases_generated": 0,
+  "opening_read": false,
+  "performance_measured": false,
+  "protocol_binding_sha256": "1ebfa3b1a57c285826627e0362c78daff016b4029529639502325550a1ac0aaf",
+  "schema": "rebar-v9-current-native-candidate-freeze-v1",
+  "stopping_commit": "89e550923ede9cbd558c02f91b235aa17ffaff97"
+}
