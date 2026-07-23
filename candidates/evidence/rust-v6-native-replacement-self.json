@@ -1,0 +1,344 @@
+{
+  "after": {
+    "cases": 697,
+    "ci95_high": 0.7962509282504827,
+    "ci95_low": 0.789580757090837,
+    "cohort": "calibration",
+    "correctness_checks": 12546,
+    "families": 24,
+    "family_regressions_gt_20pct": [
+      {
+        "cases": 1,
+        "category": "bytes-replace",
+        "historical_archive_slow_flags": 0,
+        "regressions_gt_20pct": 0
+      },
+      {
+        "cases": 64,
+        "category": "deeper-module-warm-sub",
+        "historical_archive_slow_flags": 63,
+        "regressions_gt_20pct": 63
+      },
+      {
+        "cases": 64,
+        "category": "deeper-shell-vars",
+        "historical_archive_slow_flags": 29,
+        "regressions_gt_20pct": 37
+      },
+      {
+        "cases": 64,
+        "category": "deeper-source-comments",
+        "historical_archive_slow_flags": 64,
+        "regressions_gt_20pct": 64
+      },
+      {
+        "cases": 48,
+        "category": "expanded-cold-module",
+        "historical_archive_slow_flags": 0,
+        "regressions_gt_20pct": 0
+      },
+      {
+        "cases": 48,
+        "category": "expanded-comment-strip",
+        "historical_archive_slow_flags": 33,
+        "regressions_gt_20pct": 37
+      },
+      {
+        "cases": 48,
+        "category": "expanded-newline-normalize",
+        "historical_archive_slow_flags": 19,
+        "regressions_gt_20pct": 29
+      },
+      {
+        "cases": 48,
+        "category": "expanded-replace-callback",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 2
+      },
+      {
+        "cases": 48,
+        "category": "expanded-replace-redact",
+        "historical_archive_slow_flags": 0,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 48,
+        "category": "expanded-replace-template",
+        "historical_archive_slow_flags": 31,
+        "regressions_gt_20pct": 42
+      },
+      {
+        "cases": 48,
+        "category": "expanded-whitespace-clean",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 32,
+        "category": "large-bytes-replace",
+        "historical_archive_slow_flags": 0,
+        "regressions_gt_20pct": 0
+      },
+      {
+        "cases": 32,
+        "category": "large-cleanup",
+        "historical_archive_slow_flags": 5,
+        "regressions_gt_20pct": 10
+      },
+      {
+        "cases": 32,
+        "category": "large-module-replace",
+        "historical_archive_slow_flags": 16,
+        "regressions_gt_20pct": 22
+      },
+      {
+        "cases": 32,
+        "category": "large-replace-callback",
+        "historical_archive_slow_flags": 2,
+        "regressions_gt_20pct": 2
+      },
+      {
+        "cases": 32,
+        "category": "large-replace-groups",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 1,
+        "category": "literal-replace",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 1,
+        "category": "module-replace",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 1,
+        "category": "real-lines",
+        "historical_archive_slow_flags": 0,
+        "regressions_gt_20pct": 0
+      },
+      {
+        "cases": 1,
+        "category": "real-whitespace",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 1,
+        "category": "replace-limited",
+        "historical_archive_slow_flags": 0,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 1,
+        "category": "sub",
+        "historical_archive_slow_flags": 0,
+        "regressions_gt_20pct": 0
+      },
+      {
+        "cases": 1,
+        "category": "subn-callable",
+        "historical_archive_slow_flags": 0,
+        "regressions_gt_20pct": 0
+      },
+      {
+        "cases": 1,
+        "category": "template-repeat",
+        "historical_archive_slow_flags": 0,
+        "regressions_gt_20pct": 1
+      }
+    ],
+    "historical_archive_slow_flags": 268,
+    "historical_archive_slow_speedup_threshold": 0.8,
+    "raw_gzip_sha256": "ba03b2cb281e1168e0ca2be91be762f6aa13c1a3ca41b1d4e836cbae66c5d246",
+    "raw_sha256": "3258380928054210d2853834b840510432dc46f9a0183bfc76b76eb5013b728a",
+    "regression_gt_20pct_speedup_threshold": 0.8333333333333334,
+    "regressions_gt_20pct": 316,
+    "rows": 4182,
+    "speedup": 0.7936338133012204,
+    "stage": "after",
+    "statistically_faster": 186,
+    "summary_gzip_sha256": "8d45b88b8c9e4ec0bb43995997fb9e048578d365547b0c5d05fff8c92a20bd85",
+    "summary_sha256": "3e202b82ec41a8129baf7c76d457416924a8b8975fb5e5324993611e17c0047b"
+  },
+  "before": {
+    "cases": 697,
+    "ci95_high": 0.2661043595744276,
+    "ci95_low": 0.26424159361174326,
+    "cohort": "calibration",
+    "correctness_checks": 12546,
+    "families": 24,
+    "family_regressions_gt_20pct": [
+      {
+        "cases": 1,
+        "category": "bytes-replace",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 64,
+        "category": "deeper-module-warm-sub",
+        "historical_archive_slow_flags": 64,
+        "regressions_gt_20pct": 64
+      },
+      {
+        "cases": 64,
+        "category": "deeper-shell-vars",
+        "historical_archive_slow_flags": 64,
+        "regressions_gt_20pct": 64
+      },
+      {
+        "cases": 64,
+        "category": "deeper-source-comments",
+        "historical_archive_slow_flags": 64,
+        "regressions_gt_20pct": 64
+      },
+      {
+        "cases": 48,
+        "category": "expanded-cold-module",
+        "historical_archive_slow_flags": 0,
+        "regressions_gt_20pct": 0
+      },
+      {
+        "cases": 48,
+        "category": "expanded-comment-strip",
+        "historical_archive_slow_flags": 48,
+        "regressions_gt_20pct": 48
+      },
+      {
+        "cases": 48,
+        "category": "expanded-newline-normalize",
+        "historical_archive_slow_flags": 48,
+        "regressions_gt_20pct": 48
+      },
+      {
+        "cases": 48,
+        "category": "expanded-replace-callback",
+        "historical_archive_slow_flags": 47,
+        "regressions_gt_20pct": 47
+      },
+      {
+        "cases": 48,
+        "category": "expanded-replace-redact",
+        "historical_archive_slow_flags": 48,
+        "regressions_gt_20pct": 48
+      },
+      {
+        "cases": 48,
+        "category": "expanded-replace-template",
+        "historical_archive_slow_flags": 48,
+        "regressions_gt_20pct": 48
+      },
+      {
+        "cases": 48,
+        "category": "expanded-whitespace-clean",
+        "historical_archive_slow_flags": 48,
+        "regressions_gt_20pct": 48
+      },
+      {
+        "cases": 32,
+        "category": "large-bytes-replace",
+        "historical_archive_slow_flags": 32,
+        "regressions_gt_20pct": 32
+      },
+      {
+        "cases": 32,
+        "category": "large-cleanup",
+        "historical_archive_slow_flags": 16,
+        "regressions_gt_20pct": 16
+      },
+      {
+        "cases": 32,
+        "category": "large-module-replace",
+        "historical_archive_slow_flags": 32,
+        "regressions_gt_20pct": 32
+      },
+      {
+        "cases": 32,
+        "category": "large-replace-callback",
+        "historical_archive_slow_flags": 31,
+        "regressions_gt_20pct": 32
+      },
+      {
+        "cases": 32,
+        "category": "large-replace-groups",
+        "historical_archive_slow_flags": 32,
+        "regressions_gt_20pct": 32
+      },
+      {
+        "cases": 1,
+        "category": "literal-replace",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 1,
+        "category": "module-replace",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 1,
+        "category": "real-lines",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 1,
+        "category": "real-whitespace",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 1,
+        "category": "replace-limited",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 1,
+        "category": "sub",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 1,
+        "category": "subn-callable",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 1
+      },
+      {
+        "cases": 1,
+        "category": "template-repeat",
+        "historical_archive_slow_flags": 1,
+        "regressions_gt_20pct": 1
+      }
+    ],
+    "historical_archive_slow_flags": 631,
+    "historical_archive_slow_speedup_threshold": 0.8,
+    "raw_gzip_sha256": "89848d5364c03ab89018957e30bd6b96c834b8efa7488c470fd55be71b0a764a",
+    "raw_sha256": "6e73bda0cb4140c432f3e42dd08ea7b24aa0a5a8a4317fcd918197e563f4f595",
+    "regression_gt_20pct_speedup_threshold": 0.8333333333333334,
+    "regressions_gt_20pct": 632,
+    "rows": 4182,
+    "speedup": 0.2650197284455215,
+    "stage": "before",
+    "statistically_faster": 62,
+    "summary_gzip_sha256": "19fda98eb6f36251be8124d6066f1cdc03ba47efcd10dbcac0bd10706cf823db",
+    "summary_sha256": "a4abded3516eff9c902e5fcbd3b74f8e715c0aab5adf75c1bea829d592683333"
+  },
+  "expected_sha256": "c8e32e879cc7a134748f8f3f29fed49678895745fdecebe63ceec46b6a3b5335",
+  "frozen_bootstraps": 2000,
+  "frozen_cases": 12432,
+  "frozen_trials": 13,
+  "holdout_cases_accessed": 0,
+  "passed": true,
+  "pilot_bootstraps": 101,
+  "pilot_trials": 3,
+  "schema": "rebar-rust-v6-native-replacement-evidence-self-test-v1",
+  "scope": "calibration evidence integrity only; not replacement correctness"
+}
