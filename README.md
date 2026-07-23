@@ -90,6 +90,8 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/rust_v8_multi_candidate_observability.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  tools/rust_v8_multi_candidate_campaign.py --self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.rust_v8_holdout_protocol verify --evidence
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/performance_v8_charts.py --self-test
