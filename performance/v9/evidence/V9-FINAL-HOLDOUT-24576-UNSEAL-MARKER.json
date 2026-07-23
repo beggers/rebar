@@ -1,0 +1,13 @@
+{
+  "candidate_freeze_sha256": "52066760bb4210a57f7b10f13e9ff73e36c53982a5b97aff40ead330c79edf41",
+  "modules": [
+    "re",
+    "candidates.vm_candidate",
+    "candidates.rust_candidate",
+    "candidates.zig_candidate"
+  ],
+  "opening_sha256": "3ad3ff2bc34fd1dc371aa6516ac0a122f1d3e3e9da373d0db8c5cb5589da5bbb",
+  "protocol_binding_sha256": "1ebfa3b1a57c285826627e0362c78daff016b4029529639502325550a1ac0aaf",
+  "schema": "rebar-v9-single-use-final-unseal-v1",
+  "state": "irreversibly-authorized-no-retry"
+}

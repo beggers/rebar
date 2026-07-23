@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="438" viewBox="0 0 1180 438" role="img" aria-label="Final timing regressions: not established">
+<title>Final timing regressions: not established</title>
+<desc>The final benchmark failed and cannot be retried. Only 14,342 of 24,576 final cases completed before a real Zig split mismatch during warmup. Final speed, confidence, memory, regressions, rankings, and a winner are not established. An incomplete 24,576-case final run cannot establish candidate slowdown totals.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:25px;font-weight:760}.sub{font-size:13px;fill:#52627a}.head{font-size:15px;font-weight:720}.label{font-size:12px}.small{font-size:11px;fill:#52627a}.value{font-size:12px;font-weight:720}.banner{font-size:13px;font-weight:750;fill:#991b1b}.panel{fill:#fff7f7;stroke:#fecaca;stroke-width:1}.neutral{fill:#f8fafc;stroke:#e2e8f0;stroke-width:1}.failed{fill:#b91c1c}.unknown{fill:#64748b}.note{font-size:11px;fill:#7f1d1d}</style>
+<text x="26" y="39" class="title">Final timing regressions: not established</text>
+<text x="26" y="63" class="sub">An incomplete 24,576-case final run cannot establish candidate slowdown totals.</text>
+<rect x="20" y="78" width="1140" height="39" rx="7" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="33" y="103" class="banner">FINAL FAILED — NO RETRY — NO COMPLETE SPEED, MEMORY, RANKING, OR WINNER</text>
+<rect x="22" y="146" width="1120" height="70" rx="8" class="neutral"/>
+<text x="40" y="173" class="head">C</text>
+<text x="265" y="173" style="font-size:13px;font-weight:750;fill:#64748b">FINAL REGRESSIONS NOT ESTABLISHED</text>
+<text x="265" y="195" class="small">No complete final-case denominator or more-than-20%-slower total exists.</text>
+<rect x="22" y="225" width="1120" height="70" rx="8" class="neutral"/>
+<text x="40" y="252" class="head">Rust</text>
+<text x="265" y="252" style="font-size:13px;font-weight:750;fill:#64748b">FINAL REGRESSIONS NOT ESTABLISHED</text>
+<text x="265" y="274" class="small">No complete final-case denominator or more-than-20%-slower total exists.</text>
+<rect x="22" y="304" width="1120" height="70" rx="8" class="neutral"/>
+<text x="40" y="331" class="head">Zig</text>
+<text x="265" y="331" style="font-size:13px;font-weight:750;fill:#64748b">FINAL REGRESSIONS NOT ESTABLISHED</text>
+<text x="265" y="353" class="small">No complete final-case denominator or more-than-20%-slower total exists.</text>
+<text x="38" y="404" class="small">The observed Zig split error is a correctness failure, not a measured performance regression.</text>
+<text x="26" y="423" class="small">One irreversible, independently audited run; partial measurements cannot establish a final result.</text>
+</svg>

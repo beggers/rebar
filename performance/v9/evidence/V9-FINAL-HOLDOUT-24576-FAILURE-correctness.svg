@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="603" viewBox="0 0 1180 603" role="img" aria-label="The final compatibility test failed">
+<title>The final compatibility test failed</title>
+<desc>The final benchmark failed and cannot be retried. Only 14,342 of 24,576 final cases completed before a real Zig split mismatch during warmup. Final speed, confidence, memory, regressions, rankings, and a winner are not established. A real hidden split case disagreed with pinned standard Python during warmup.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:25px;font-weight:760}.sub{font-size:13px;fill:#52627a}.head{font-size:15px;font-weight:720}.label{font-size:12px}.small{font-size:11px;fill:#52627a}.value{font-size:12px;font-weight:720}.banner{font-size:13px;font-weight:750;fill:#991b1b}.panel{fill:#fff7f7;stroke:#fecaca;stroke-width:1}.neutral{fill:#f8fafc;stroke:#e2e8f0;stroke-width:1}.failed{fill:#b91c1c}.unknown{fill:#64748b}.note{font-size:11px;fill:#7f1d1d}</style>
+<text x="26" y="39" class="title">The final compatibility test failed</text>
+<text x="26" y="63" class="sub">A real hidden split case disagreed with pinned standard Python during warmup.</text>
+<rect x="20" y="78" width="1140" height="39" rx="7" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="33" y="103" class="banner">FINAL FAILED — NO RETRY — NO COMPLETE SPEED, MEMORY, RANKING, OR WINNER</text>
+<rect x="22" y="139" width="1120" height="105" rx="9" class="panel"/>
+<text x="40" y="168" class="head">First observed final mismatch</text>
+<text x="40" y="193" class="value">Case: v9.split.literal-and-long-prefix.006</text>
+<text x="40" y="215" class="value">Operation: split · phase: warmup · replacement: Zig</text>
+<text x="40" y="234" class="note">The runner stopped immediately. Remaining cases were not tested.</text>
+<rect x="22" y="263" width="1120" height="70" rx="8" class="neutral"/>
+<text x="40" y="290" class="head">Standard Python</text>
+<text x="265" y="290" style="font-size:13px;font-weight:750;fill:#64748b">ORACLE ONLY</text>
+<text x="265" y="312" class="small">Pinned reference; no complete final comparison was produced.</text>
+<rect x="22" y="342" width="1120" height="70" rx="8" class="neutral"/>
+<text x="40" y="369" class="head">C</text>
+<text x="265" y="369" style="font-size:13px;font-weight:750;fill:#64748b">FINAL QUALIFICATION NOT ESTABLISHED</text>
+<text x="265" y="391" class="small">The final correctness campaign stopped before all 24,576 cases completed.</text>
+<rect x="22" y="421" width="1120" height="70" rx="8" class="neutral"/>
+<text x="40" y="448" class="head">Rust</text>
+<text x="265" y="448" style="font-size:13px;font-weight:750;fill:#64748b">FINAL QUALIFICATION NOT ESTABLISHED</text>
+<text x="265" y="470" class="small">The final correctness campaign stopped before all 24,576 cases completed.</text>
+<rect x="22" y="500" width="1120" height="70" rx="8" class="panel"/>
+<text x="40" y="527" class="head">Zig</text>
+<text x="265" y="527" style="font-size:13px;font-weight:750;fill:#b91c1c">FINAL MISMATCH OBSERVED</text>
+<text x="265" y="549" class="small">The hidden split case disagreed with standard Python during warmup.</text>
+<text x="26" y="588" class="small">One irreversible, independently audited run; partial measurements cannot establish a final result.</text>
+</svg>
