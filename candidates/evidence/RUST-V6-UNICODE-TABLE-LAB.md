@@ -45,6 +45,18 @@ production module currently uses the smaller-memory middle-sized design;
 whether the larger design improves the complete regex engine is **NOT
 MEASURED** here and must be decided by the full paired calibration.
 
+The larger option is also retained as an independently reproducible,
+complete-API candidate. Its [isolated production generator](../../tools/rust_unicode_bmp_production_generate.py)
+reuses the same frozen Unicode source rather than copying another engine, and
+its [full-character compatibility proof](rust-v6-unicode-bmp-production-fullplane.json)
+passes all **13,369,344** direct Python comparisons. The exact generated
+alternative has SHA-256
+`ea93d9bfd3d089a9333a38e3eabdaf05ae932a6b01b3a6fe8f388808ae47107d`;
+its committed proof has SHA-256
+`52fd24d5fc4189e1be08d2b4493cd7cff07f80cabcccce559ab4f98f635723d6`.
+Generating or checking this alternative does not change the selected
+production module.
+
 The adopted design is faster on **39 of 40** subject-and-operation comparisons.
 Its one nominally slower case is the word-character check on
 `hold.deeper.unicode-casefold.03`: **0.9947×**, with 95% range
@@ -158,6 +170,9 @@ PYTHONPATH=. "$PY" tools/rust_unicode_table_lab.py \
 PYTHONPATH=. "$PY" tools/rust_unicode_table_lab.py \
   --generate-only \
   --emit-production-module /tmp/rebar-rust-unicode-tables-reproduced.rs
+
+PYTHONPATH=. "$PY" tools/rust_unicode_bmp_production_generate.py \
+  --output /tmp/rebar-rust-unicode-bmp-production-fullplane-reproduced.json
 
 sha256sum /tmp/rebar-rust-unicode-tables-reproduced.rs \
   candidates/rust/src/unicode_tables.rs

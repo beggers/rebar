@@ -1,0 +1,122 @@
+{
+  "alternative": {
+    "additional_property_bytes": 49152,
+    "base_generator_sha256": "a880a4d20055ff5bbc43758e0419017521567770cc72ab5b85180ab085ac2fbf",
+    "end_to_end_performance": "NOT MEASURED",
+    "generator": "tools/rust_unicode_bmp_production_generate.py",
+    "generator_sha256": "dc34a4f509eaab0cab853809fcacd991b034b8b73f68166c4d6ba3b99afd1247",
+    "property_prefix_bytes": 65536,
+    "scalar_lab": {
+      "additional_property_bytes": 49152,
+      "alternative_implementation": "mixed-prefix-propertybmp-fold4k",
+      "alternative_scalar_speedup": 1.4906551142715032,
+      "baseline_implementation": "mixed-prefix-property16k-fold4k",
+      "baseline_scalar_speedup": 1.4629571249022866,
+      "end_to_end_performance": "NOT MEASURED",
+      "full_plane_comparisons": 72417280,
+      "implementations": 14,
+      "path": "candidates/evidence/rust-v6-unicode-table-lab.json.gz",
+      "raw_rows": 7280,
+      "sha256": "4727f71b229a893d0d4dfe621f6ee6f6cab491589264188995d7b9b037f95791"
+    },
+    "selected_production_sha256": "f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af",
+    "selected_production_unchanged": true,
+    "selected_property_prefix_bytes": 16384
+  },
+  "case_equivalence_groups": 24,
+  "case_equivalence_keys": 50,
+  "category_counts": {
+    "alpha": 141028,
+    "decimal": 760,
+    "digit": 888,
+    "numeric": 2002,
+    "whitespace": 29,
+    "word": 142940,
+    "xid_continue": 144522,
+    "xid_start": 141247
+  },
+  "codepoints": 1114112,
+  "comparisons_per_codepoint": 12,
+  "failures": [],
+  "forbidden_regex_imports": [],
+  "frozen_fixture": {
+    "bootstrap_seed": 1985072202,
+    "expected_sha256": "c8e32e879cc7a134748f8f3f29fed49678895745fdecebe63ceec46b6a3b5335",
+    "manifest_sha256": "06c3b09a203d036e3129d90b6c412e716a3835e4c4e2827df73c189dec4956f1",
+    "order_seed": 1985072201,
+    "suite_sha256": "091d7be04f7251781e2b8568f6cb19acbe603cb1d945926a69ba32adaf9b6b0f"
+  },
+  "full_plane_comparisons": 13369344,
+  "mismatch_counts": {
+    "alpha": 0,
+    "decimal": 0,
+    "digit": 0,
+    "literal_fold": 0,
+    "multi_upper": 0,
+    "numeric": 0,
+    "simple_lower": 0,
+    "simple_upper": 0,
+    "whitespace": 0,
+    "word": 0,
+    "xid_continue": 0,
+    "xid_start": 0
+  },
+  "mismatch_examples": {},
+  "multi_upper_count": 102,
+  "out_of_range": [
+    {
+      "literal_fold": 1114112,
+      "mask": 0,
+      "multi_upper": false,
+      "simple_lower": 1114112,
+      "simple_upper": 1114112,
+      "value": 1114112,
+      "xid_continue": false,
+      "xid_start": false
+    },
+    {
+      "literal_fold": 2097152,
+      "mask": 0,
+      "multi_upper": false,
+      "simple_lower": 2097152,
+      "simple_upper": 2097152,
+      "value": 2097152,
+      "xid_continue": false,
+      "xid_start": false
+    },
+    {
+      "literal_fold": 4294967295,
+      "mask": 0,
+      "multi_upper": false,
+      "simple_lower": 4294967295,
+      "simple_upper": 4294967295,
+      "value": 4294967295,
+      "xid_continue": false,
+      "xid_start": false
+    }
+  ],
+  "out_of_range_failures": 0,
+  "production_property_data_sha256": "83f5a79a2914dfa69fae8628f501de6185525776905abfba80862017ba28b77b",
+  "python": "3.14.6",
+  "schema": "rebar-rust-production-unicode-full-plane-v1",
+  "source": "/tmp/rebar-rust-unicode-bmp-production.rs",
+  "source_data_hashes": {
+    "literal_fold": "9d2779e2c62d3b0b1347bb203400e7b8549bdce88cec65269433c77aae7b1bb6",
+    "property": "1319144f169e188aeef4f778a4506bfb1a941c9d4519f25714c640e45a5a60bc",
+    "simple_lower": "dc773c96a0faf9357e7244c4758295e2c7d4651104703758cf830a1fd6734299",
+    "simple_upper": "86f1f043f57ba429c209379543cf370614bd070f76402bc18d1f4fe2584cdc41"
+  },
+  "source_digest_failures": [],
+  "source_hash_match": true,
+  "source_header_hashes": {
+    "literal_fold": "9d2779e2c62d3b0b1347bb203400e7b8549bdce88cec65269433c77aae7b1bb6",
+    "property": "1319144f169e188aeef4f778a4506bfb1a941c9d4519f25714c640e45a5a60bc",
+    "simple_lower": "dc773c96a0faf9357e7244c4758295e2c7d4651104703758cf830a1fd6734299",
+    "simple_upper": "86f1f043f57ba429c209379543cf370614bd070f76402bc18d1f4fe2584cdc41"
+  },
+  "source_sha256": "ea93d9bfd3d089a9333a38e3eabdaf05ae932a6b01b3a6fe8f388808ae47107d",
+  "source_sha256_expected": "ea93d9bfd3d089a9333a38e3eabdaf05ae932a6b01b3a6fe8f388808ae47107d",
+  "total_mismatches": 0,
+  "unicode": "16.0.0",
+  "unpaired_surrogates": 2048
+}
