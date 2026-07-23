@@ -1262,9 +1262,10 @@ class Match(metaclass=_MatchMeta):
 
     def _number(self, group):
         if isinstance(group, str):
-            if group not in self._pattern.groupindex:
+            number = self._pattern._groupindex.get(group, _MISSING)
+            if number is _MISSING:
                 raise IndexError("no such group")
-            return self._pattern.groupindex[group]
+            return number
         try:
             group = operator.index(group)
         except TypeError:
@@ -1318,7 +1319,12 @@ class _Scanner:
     def __init__(self, pattern, string, pos=0, endpos=_MISSING):
         self.pattern = pattern
         self._string = string
-        self._view = None if isinstance(string, (str, bytes)) else memoryview(string)
+        if isinstance(string, (str, bytes)):
+            self._view = None
+        elif isinstance(string, memoryview):
+            self._view = string.__buffer__(0)
+        else:
+            self._view = memoryview(string)
         self._start, self._end = _normalize_window(string, pos, endpos)
         self._pos = self._start
         self._empty = False
@@ -1350,6 +1356,7 @@ class _Scanner:
 
 
 class Pattern:
+    __module__ = "re"
     __slots__ = ("pattern", "flags", "groups", "_groupindex", "_node", "_literal", "_starts", "_start_table", "_tables", "__weakref__")
 
     def __init__(self, value, flags, node, groups, groupindex):
@@ -1413,6 +1420,10 @@ class Pattern:
             try:
                 contiguous = memoryview(string).c_contiguous
             except TypeError:
+                contiguous = False
+            except ValueError:
+                if not isinstance(string, memoryview):
+                    raise
                 contiguous = False
             if not contiguous:
                 raise TypeError(f"expected string or bytes-like object, got '{type(string).__name__}'")
@@ -1514,28 +1525,8 @@ class Pattern:
         string, pos, endpos = _bind_window_call("finditer", args, kwargs)
         self._validate_string(string)
         start, end = _normalize_window(string, pos, endpos)
-        view = None if isinstance(string, str) else memoryview(string)
-        return self._finditer(string, start, end, view)
-
-    def _finditer(self, string, pos, end, view):
-        current = max(pos, 0)
-        empty = False
-        engine = None
-        if isinstance(string, (str, bytes)):
-            text = string if isinstance(string, str) else string.decode("latin1")
-            engine = _Engine(self._node, text, end, self._tables)
-        while current <= end:
-            result = self._search(string, current, end, empty, max(pos, 0), engine)
-            if result is None:
-                break
-            yield result
-            begin, finish = result._spans[0]
-            if begin == finish:
-                empty = True
-                current = begin
-            else:
-                current = finish
-                empty = False
+        scanner = _Scanner(self, string, start, end)
+        return iter(scanner.search, None)
 
     def findall(self, /, *args, **kwargs):
         string, pos, endpos = _bind_window_call("findall", args, kwargs)
@@ -1589,7 +1580,8 @@ class Pattern:
             else:
                 raw = bytes(repl) if isinstance(repl, (bytearray, memoryview)) else repl
                 value = item.expand(repl) if (b"\\" in raw if isinstance(raw, bytes) else "\\" in raw) else repl
-            parts.append(value)
+            if value is not None:
+                parts.append(value)
             previous = finish
             replacements += 1
         tail = _slice(string, previous, length)
