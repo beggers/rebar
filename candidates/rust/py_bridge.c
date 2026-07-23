@@ -89,6 +89,151 @@ static PyObject *rust_pattern_attribute_names[
     RUST_PATTERN_ATTRIBUTE_COUNT
 ];
 
+#ifndef Py_GIL_DISABLED
+typedef struct {
+    PyTypeObject *type;
+    unsigned int version;
+    Py_ssize_t offsets[RUST_PATTERN_ATTRIBUTE_COUNT];
+    uint8_t eligible[RUST_PATTERN_ATTRIBUTE_COUNT];
+} RustPatternSlotCache;
+
+static PyTypeObject *rust_primary_pattern_type;
+static RustPatternSlotCache rust_pattern_slot_cache;
+
+static int rust_pattern_refresh_slot_cache(
+    PyTypeObject *type,
+    unsigned int version
+) {
+    PyObject *mro = type->tp_mro;
+    if (!PyTuple_CheckExact(mro)) return 0;
+    if (type->tp_basicsize < (Py_ssize_t)sizeof(PyObject *)) return 0;
+
+    Py_ssize_t offsets[RUST_PATTERN_ATTRIBUTE_COUNT] = {0};
+    uint8_t eligible[RUST_PATTERN_ATTRIBUTE_COUNT] = {0};
+    Py_ssize_t count = PyTuple_GET_SIZE(mro);
+
+    for (
+        size_t attribute = 0;
+        attribute < RUST_PATTERN_ATTRIBUTE_COUNT;
+        attribute++
+    ) {
+        for (Py_ssize_t index = 0; index < count; index++) {
+            PyObject *base_object = PyTuple_GET_ITEM(mro, index);
+            if (!PyType_Check(base_object)) return 0;
+
+            PyTypeObject *base = (PyTypeObject *)base_object;
+            PyObject *dict = base->tp_dict;
+            if (dict == NULL || !PyDict_CheckExact(dict)) return 0;
+
+            PyObject *descriptor = PyDict_GetItemWithError(
+                dict,
+                rust_pattern_attribute_names[attribute]
+            );
+            if (descriptor == NULL) {
+                if (PyErr_Occurred()) return -1;
+                continue;
+            }
+
+            if (
+                Py_TYPE(descriptor) == &PyMemberDescr_Type
+                && PyDescr_TYPE(descriptor) == base
+            ) {
+                PyMemberDescrObject *member =
+                    (PyMemberDescrObject *)descriptor;
+                PyMemberDef *definition = member->d_member;
+                if (
+                    definition != NULL
+                    && definition->type == Py_T_OBJECT_EX
+                    && (
+                        definition->flags
+                        & (Py_AUDIT_READ | Py_RELATIVE_OFFSET)
+                    ) == 0
+                    && definition->offset >= 0
+                    && definition->offset
+                        <= type->tp_basicsize
+                            - (Py_ssize_t)sizeof(PyObject *)
+                ) {
+                    offsets[attribute] = definition->offset;
+                    eligible[attribute] = 1;
+                }
+            }
+
+            /* Never bypass the first descriptor in the actual MRO. */
+            break;
+        }
+    }
+
+    if (
+        type->tp_version_tag != version
+        || type->tp_getattro != PyObject_GenericGetAttr
+    ) {
+        return 0;
+    }
+
+    memcpy(
+        rust_pattern_slot_cache.offsets,
+        offsets,
+        sizeof(offsets)
+    );
+    memcpy(
+        rust_pattern_slot_cache.eligible,
+        eligible,
+        sizeof(eligible)
+    );
+    rust_pattern_slot_cache.type = type;
+    rust_pattern_slot_cache.version = version;
+    return 1;
+}
+#endif
+
+static PyObject *rust_pattern_get_attribute(
+    PyObject *pattern,
+    RustPatternAttribute attribute
+) {
+#ifndef Py_GIL_DISABLED
+    PyTypeObject *type = Py_TYPE(pattern);
+    unsigned int version = type->tp_version_tag;
+
+    if (
+        type == rust_primary_pattern_type
+        && version != 0
+        && (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
+        && type->tp_itemsize == 0
+        && type->tp_getattro == PyObject_GenericGetAttr
+    ) {
+        if (
+            rust_pattern_slot_cache.type != type
+            || rust_pattern_slot_cache.version != version
+        ) {
+            int refreshed = rust_pattern_refresh_slot_cache(
+                type,
+                version
+            );
+            if (refreshed < 0) return NULL;
+            if (refreshed == 0) {
+                return PyObject_GetAttr(
+                    pattern,
+                    rust_pattern_attribute_names[attribute]
+                );
+            }
+        }
+
+        if (rust_pattern_slot_cache.eligible[attribute]) {
+            PyObject *value = *(PyObject **)(
+                (char *)pattern
+                + rust_pattern_slot_cache.offsets[attribute]
+            );
+            if (value != NULL) return Py_NewRef(value);
+        }
+    }
+#endif
+
+    return PyObject_GetAttr(
+        pattern,
+        rust_pattern_attribute_names[attribute]
+    );
+}
+
 static int rust_initialize_pattern_attribute_names(void) {
     for (size_t index = 0; index < RUST_PATTERN_ATTRIBUTE_COUNT; index++) {
         if (rust_pattern_attribute_names[index] != NULL) continue;
@@ -2788,8 +2933,9 @@ static int rust_pattern_append_attribute(
     PyObject **prefix,
     size_t *prefix_count
 ) {
-    PyObject *value = PyObject_GetAttr(
-        pattern, rust_pattern_attribute_names[attribute]
+    PyObject *value = rust_pattern_get_attribute(
+        pattern,
+        attribute
     );
     if (value == NULL) return 0;
     owned[*owned_count] = value;
@@ -3147,6 +3293,12 @@ static PyObject *bridge_pattern_type(
         &specification, bases
     );
     Py_DECREF(bases);
+#ifndef Py_GIL_DISABLED
+    if (pattern_type != NULL && rust_primary_pattern_type == NULL) {
+        rust_primary_pattern_type =
+            (PyTypeObject *)Py_NewRef(pattern_type);
+    }
+#endif
     return pattern_type;
 }
 
