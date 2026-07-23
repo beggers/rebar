@@ -15,7 +15,9 @@ The larger frozen test contains **20,624 cases**, including **10,312 independent
 | Rust | **0.925×** | 0.925–0.926× | 3,623/10,312 | 3,905/10,312 |
 | Independent Python engine | **0.022×** | 0.022–0.022× | 271/10,312 | 9,884/10,312 |
 
-Zig currently has the best measured speed; the Rust engine is not yet faster than standard Python. These are results for the frozen benchmark, not a promise of complete compatibility. Additional independent grammar and object-behavior tests have found real differences in every candidate. **No candidate is currently established as a drop-in replacement for every Python `re` user.** The experiment remains open until those differences are fixed and the complete correctness tests pass.
+Zig currently has the best measured speed; the Rust engine is not yet faster than standard Python. These are results for the frozen benchmark, not a promise of complete compatibility.
+
+A separate [223,198-check compatibility test](candidates/evidence/RUST-V7-EDGE-ORACLE.md) was frozen before changing any engine. Standard Python passes all **223,198** checks. The original Zig engine has **5,281** differences, Rust **24,462**, C **52,655**, and the independent Python engine **52,151**. **No original candidate is a drop-in replacement for every Python `re` user.** The original failures, inputs, expected answers, and seeds are preserved; a replacement must pass every check before it can be selected.
 
 ![Overall rankings on the practice cases, independently unseen cases, and all cases](performance/v7/evidence/initial-rankings.svg)
 
@@ -27,7 +29,7 @@ The test covers text, bytes and buffers; Unicode; short and long inputs; capture
 
 ![Coverage of the expanded Python regular-expression benchmark](performance/v7/evidence/coverage.svg)
 
-All five engines agree with Python on the **20,624 frozen benchmark answers**. Stronger, separately generated parser, object, whitespace, buffer, error, and API checks expose additional compatibility gaps; those checks must pass before any engine is called a complete replacement. The [frozen benchmark protocol](performance/v7/PROTOCOL.md) fixes the inputs, weights, seeds, trial counts, correctness gates, confidence calculations, and memory measurements. The [independence audit](performance/v7/evidence/delegation-audit.jsonl) verifies that the candidates do not wrap an external regex engine and that the Rust implementation has **zero external Rust dependencies**.
+All five engines agree with Python on the **20,624 frozen benchmark answers**. The independent **223,198-check** compatibility test separately covers parser behavior, object identity, whitespace, buffers, errors, flags, windows, and the full Python API. The [frozen benchmark protocol](performance/v7/PROTOCOL.md) fixes the inputs, weights, seeds, trial counts, correctness gates, confidence calculations, and memory measurements. The [independence audit](performance/v7/evidence/delegation-audit.jsonl) verifies that the candidates do not wrap an external regex engine and that the Rust implementation has **zero external Rust dependencies**.
 
 ## Detailed graphs
 
@@ -56,6 +58,8 @@ PYTHONPATH=. "$PY" tools/perf_v7.py self-test
 PYTHONPATH=. "$PY" tools/perf_v7.py verify --output /tmp/rebar-v7-correctness.json
 PYTHONPATH=. "$PY" tools/perf_v7_delegation_audit.py
 PYTHONPATH=. "$PY" tools/perf_v7_regression_audit.py --self-test
+PYTHONPATH=. "$PY" tools/rust_v7_edge_oracle.py \
+  --module re --output /tmp/rebar-v7-edge-self.json.gz
 
 gzip -dc performance/v7/evidence/initial-raw.jsonl.gz > /tmp/rebar-v7-raw.jsonl
 gzip -dc performance/v7/evidence/initial-summary.json.gz > /tmp/rebar-v7-summary.json
