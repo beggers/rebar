@@ -38,7 +38,7 @@ MAX_PROC_MAP_ROWS = 16384
 MAX_PROC_MAP_LINE_BYTES = 16384
 MAX_WORKER_RESPONSE_BYTES = 256 * 1024
 HASH_CHUNK_BYTES = 1024 * 1024
-EXPECTED_SELF_TEST_CHECKS = 73
+EXPECTED_SELF_TEST_CHECKS = 76
 EXPECTED_SELF_TEST_NAMES = frozenset({
     "direct_stdlib_re",
     "direct_cpython_sre",
@@ -67,6 +67,8 @@ EXPECTED_SELF_TEST_NAMES = frozenset({
     "native_posix_regex",
     "native_pcre",
     "native_cpython_import",
+    "native_copyreg_unowned_family",
+    "native_copyreg_near_miss",
     "native_dynamic_loader",
     "native_hidden_header",
     "native_hidden_extern",
@@ -78,6 +80,7 @@ EXPECTED_SELF_TEST_NAMES = frozenset({
     "zig_c_import",
     "native_benchmark_clock",
     "ignore_native_comments_and_display_literals",
+    "allow_owned_rust_generic_object_copy_protocol_only",
     "preserve_rust_lifetimes_and_owned_pipeline",
     "parse_in_memory_owned_elf",
     "reject_excessive_elf_section_count",
@@ -646,7 +649,11 @@ def analyze_native(source: str, path: str, family: str) -> dict[str, Any]:
                     path, "unowned_native_extern", target,
                     code.count("\n", 0, match.start()) + 1,
                 ))
-    allowed_python_imports = {"functools", "inspect"} if path == "candidates/rust/py_bridge.c" else set()
+    allowed_python_imports = (
+        {"copyreg", "functools", "inspect"}
+        if path == "candidates/rust/py_bridge.c"
+        else set()
+    )
     native_python_imports: list[str] = []
     call_pattern = re.compile(r"\bPyImport_(?:ImportModule(?:NoBlock)?|Import)\s*\(")
     for match in call_pattern.finditer(with_strings):
@@ -1683,6 +1690,8 @@ def self_test() -> dict[str, Any]:
         ("native_posix_regex", "regexec(pattern, text, 0, 0, 0);", "candidates/_vm_native.c", "vm"),
         ("native_pcre", "pcre2_match(pattern, text, 0, 0, 0, 0, 0, 0);", "candidates/rust/py_bridge.c", "rust"),
         ("native_cpython_import", 'PyImport_ImportModule("re");', "candidates/rust/py_bridge.c", "rust"),
+        ("native_copyreg_unowned_family", 'PyImport_ImportModule("copyreg");', "candidates/_vm_native.c", "vm"),
+        ("native_copyreg_near_miss", 'PyImport_ImportModule("copyregex");', "candidates/rust/py_bridge.c", "rust"),
         ("native_dynamic_loader", 'dlopen("libpcre.so", 1);', "candidates/_vm_native.c", "vm"),
         ("native_hidden_header", '#include "innocent_engine.h"\n', "candidates/rust/py_bridge.c", "rust"),
         ("native_hidden_extern", "extern int innocent_engine_match(const char *);\n", "candidates/rust/py_bridge.c", "rust"),
@@ -1700,6 +1709,19 @@ def self_test() -> dict[str, Any]:
 
     benign = analyze_native('/* pcre2_match(fake) */\nconst char *s = "regexec(fake)";\n', "<synthetic:comments>", "vm")
     checks.append({"name": "ignore_native_comments_and_display_literals", "passed": benign["passed"]})
+
+    benign_copyreg = analyze_native(
+        'PyImport_ImportModule("copyreg");',
+        "candidates/rust/py_bridge.c",
+        "rust",
+    )
+    checks.append({
+        "name": "allow_owned_rust_generic_object_copy_protocol_only",
+        "passed": (
+            benign_copyreg["passed"]
+            and benign_copyreg["allowed_native_python_imports"] == ["copyreg"]
+        ),
+    })
 
     lifetime_code = strip_native(
         "struct Parser<'source> { source: &'source str }\n"
@@ -2161,7 +2183,10 @@ def isolated_self_test() -> dict[str, Any]:
         or result["check_count"] != EXPECTED_SELF_TEST_CHECKS
         or len(checks) != EXPECTED_SELF_TEST_CHECKS
     ):
-        return rejected("the complete set of 73 malicious controls did not execute", process.returncode)
+        return rejected(
+            f"the complete set of {EXPECTED_SELF_TEST_CHECKS} malicious controls did not execute",
+            process.returncode,
+        )
 
     names: set[str] = set()
     for item in checks:
@@ -2391,7 +2416,10 @@ def run_audit() -> dict[str, Any]:
             "benchmark_or_timing_executed": False,
             "holdout_or_case_fixture_access": False,
             "synthetic_malicious_fixtures": "in-memory only",
-            "malicious_self_tests": "all 73 exact named controls validated in a fresh pinned isolated subprocess",
+            "malicious_self_tests": (
+                f"all {EXPECTED_SELF_TEST_CHECKS} exact named controls "
+                "validated in a fresh pinned isolated subprocess"
+            ),
         },
         "limitations": [
             "Static and guarded-runtime auditing is evidence about the enumerated source graph and exercised entry points; it is not a mathematical proof of all future execution paths.",

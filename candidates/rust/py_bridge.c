@@ -1786,6 +1786,7 @@ static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const 
 
 static int rust_iterator_traverse(RustIterator *iterator, visitproc visit, void *arg) {
     Py_VISIT(iterator->pattern);
+    Py_VISIT(iterator->string);
     Py_VISIT(iterator->groupindex);
     return 0;
 }
@@ -1865,9 +1866,43 @@ static PyObject *rust_scanner_match(RustIterator *iterator, PyObject *ignored) {
     return match;
 }
 
+static PyObject *rust_scanner_reduce(RustIterator *iterator, PyObject *ignored) {
+    (void)ignored;
+    PyObject *copyreg = PyImport_ImportModule("copyreg");
+    if (copyreg == NULL) return NULL;
+    PyObject *reconstructor = PyObject_GetAttrString(copyreg, "_reconstructor");
+    Py_DECREF(copyreg);
+    if (reconstructor == NULL) return NULL;
+    PyObject *arguments = PyTuple_Pack(
+        3,
+        (PyObject *)Py_TYPE(iterator),
+        (PyObject *)&PyBaseObject_Type,
+        Py_None
+    );
+    if (arguments == NULL) {
+        Py_DECREF(reconstructor);
+        return NULL;
+    }
+    PyObject *result = PyTuple_Pack(2, reconstructor, arguments);
+    Py_DECREF(arguments);
+    Py_DECREF(reconstructor);
+    return result;
+}
+
+static PyObject *rust_scanner_reduce_ex(RustIterator *iterator, PyObject *protocol) {
+    (void)protocol;
+    return PyErr_Format(
+        PyExc_TypeError,
+        "cannot pickle '%.200s' object",
+        Py_TYPE(iterator)->tp_name
+    );
+}
+
 static PyMethodDef rust_scanner_methods[] = {
     {"search", (PyCFunction)rust_scanner_search, METH_NOARGS, "Search for the next regular-expression match."},
     {"match", (PyCFunction)rust_scanner_match, METH_NOARGS, "Match at the scanner's current position."},
+    {"__reduce__", (PyCFunction)rust_scanner_reduce, METH_NOARGS, "Return the generic scanner reconstruction protocol."},
+    {"__reduce_ex__", (PyCFunction)rust_scanner_reduce_ex, METH_O, "Scanners cannot be pickled."},
     {NULL, NULL, 0, NULL},
 };
 
@@ -1892,7 +1927,7 @@ static PyTypeObject RustIteratorType = {
 
 static PyTypeObject RustScannerType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "re.SRE_Scanner",
+    .tp_name = "_sre.SRE_Scanner",
     .tp_basicsize = sizeof(RustIterator),
     .tp_dealloc = (destructor)rust_iterator_dealloc,
     .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
@@ -1952,7 +1987,14 @@ static PyObject *rust_bound_iterator(PyObject *const *args, Py_ssize_t nargs, Py
 
 static PyObject *bridge_bound_finditer(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
     (void)module;
-    return rust_bound_iterator(args, nargs, kwnames, "finditer", &RustIteratorType);
+    PyObject *scanner = rust_bound_iterator(args, nargs, kwnames, "finditer", &RustScannerType);
+    if (scanner == NULL) return NULL;
+    PyObject *search = PyObject_GetAttrString(scanner, "search");
+    Py_DECREF(scanner);
+    if (search == NULL) return NULL;
+    PyObject *iterator = PyCallIter_New(search, Py_None);
+    Py_DECREF(search);
+    return iterator;
 }
 
 static PyObject *bridge_bound_scanner(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {

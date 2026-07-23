@@ -1,0 +1,994 @@
+{
+  "audit": "rust-v8-scanner-from-scratch-provenance",
+  "edge_oracle": {
+    "actual_sha256": "b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526",
+    "archive_sha256": "113fd5cae48a4e808d782259bbc116b47a8eee68f22afa8b5cd74f77803dc288",
+    "artifact_count": 5,
+    "canonical_component_sha256": {
+      "candidate_artifacts": "6ebdbf3ff482da3fd2ca58981b8acfcc5d77d65ca249a2e5b33171378ea58fd5",
+      "categories": "99a76d581e3fd8b68239867722a032e6f67701524896ec75684e11184f721ca8",
+      "embedded_frozen_oracles": "7ba1fe99e4fd8389e1a4116c85c611ad847dcb41478d367c6ca059f24b57d4bc",
+      "independent_source_seeds": "10b94594042987a1e9229b782bcdc9ce5d7d0543e91a203df18fef5733416bb0",
+      "json_normalization": "62c42c6358643a3f99ff9cf4721059c8425965c59aec25c49b4efbd0219b4544",
+      "membership_partitions": "785157a16916365ec6d9c6516a0c13499dca10c50ef4d2a988f2d145e69a9855"
+    },
+    "category_check_sum": 223198,
+    "category_count": 49,
+    "correctness_checks": 223198,
+    "expected_archive_sha256": "113fd5cae48a4e808d782259bbc116b47a8eee68f22afa8b5cd74f77803dc288",
+    "expected_sha256": "b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526",
+    "failed": 0,
+    "file": "candidates/evidence/rust-v8-edge-oracle-rust-scanner-lifetimes.json.gz",
+    "holdout": "NOT ACCESSED",
+    "issues": [],
+    "module": "candidates.rust_candidate",
+    "passed": true,
+    "performance": "NOT MEASURED",
+    "schema": "rebar-v7-independent-edge-oracle-v1",
+    "script_sha256": "fe6a263a48f243ea02faaa78fc3bbd051233a2b2221967a5f76dd1bb79d242ca"
+  },
+  "frozen_live_artifacts": {
+    "artifacts": [
+      {
+        "expected_sha256": "6aca53810d44cea6321f1e229b71fb41c60742a51da75ca2243604a60468134f",
+        "matches_frozen_edge": true,
+        "path": "candidates/rust/py_bridge.c",
+        "role": "bridge-source",
+        "sha256": "6aca53810d44cea6321f1e229b71fb41c60742a51da75ca2243604a60468134f"
+      },
+      {
+        "expected_sha256": "a1cf1384d20e20a8a744ead2a5952457d04c3a49d118ca87cd7977700d068073",
+        "matches_frozen_edge": true,
+        "path": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+        "role": "native-bridge",
+        "sha256": "a1cf1384d20e20a8a744ead2a5952457d04c3a49d118ca87cd7977700d068073"
+      },
+      {
+        "expected_sha256": "890f9e34e966244067a3dc173c2276043ae15d4830a05228fb37ec2571aa17cd",
+        "matches_frozen_edge": true,
+        "path": "candidates/_rust_engine.so",
+        "role": "native-engine",
+        "sha256": "890f9e34e966244067a3dc173c2276043ae15d4830a05228fb37ec2571aa17cd"
+      },
+      {
+        "expected_sha256": "a2fa04912bb1f6957f833560446f4d3d1c5d13df8b5efac992fa63e28803668b",
+        "matches_frozen_edge": true,
+        "path": "candidates/rust/src/lib.rs",
+        "role": "native-source",
+        "sha256": "a2fa04912bb1f6957f833560446f4d3d1c5d13df8b5efac992fa63e28803668b"
+      },
+      {
+        "expected_sha256": "1111a419d65d44775d1f4b0cb6a728dea8de44a592597341596533351c16018e",
+        "matches_frozen_edge": true,
+        "path": "candidates/rust_candidate.py",
+        "role": "public-python",
+        "sha256": "1111a419d65d44775d1f4b0cb6a728dea8de44a592597341596533351c16018e"
+      }
+    ],
+    "expected_count": 5,
+    "issues": [],
+    "observed_count": 5,
+    "passed": true
+  },
+  "input_issues": [],
+  "isolated_runtime": {
+    "fixed_smoke_checks": 3,
+    "forbidden_candidate_import_attempts": [],
+    "forbidden_loaded_modules": [],
+    "loaded_candidate_modules": [
+      "candidates._rust_bridge",
+      "candidates.rust_candidate"
+    ],
+    "module": "candidates.rust_candidate",
+    "native_mapping_provenance": {
+      "expected_owned_mapping_count": 2,
+      "issues": [],
+      "observed_owned_mapping_count": 2,
+      "observed_owned_mappings": [
+        {
+          "file": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+          "mapping_count": 5,
+          "matches_static_elf": true,
+          "role": "bridge",
+          "sha256": "a1cf1384d20e20a8a744ead2a5952457d04c3a49d118ca87cd7977700d068073"
+        },
+        {
+          "file": "candidates/_rust_engine.so",
+          "mapping_count": 4,
+          "matches_static_elf": true,
+          "role": "engine",
+          "sha256": "890f9e34e966244067a3dc173c2276043ae15d4830a05228fb37ec2571aa17cd"
+        }
+      ],
+      "passed": true,
+      "source": "/proc/self/maps",
+      "unrelated_system_libraries_ignored": true
+    },
+    "owned_native_loads": [],
+    "passed": true,
+    "prohibited_import_and_loader_probes": {
+      "cpython_sre": true,
+      "foreign_native_loader": true,
+      "other_candidate": true,
+      "stdlib_re": true,
+      "third_party_regex": true
+    },
+    "unexpected_candidate_modules": []
+  },
+  "limitations": [
+    "The frozen 223198-check oracle is independently hash-validated; its cases are not regenerated or rerun by this provenance-only gate.",
+    "The certificate applies only to the exact five frozen Rust artifacts and the additional explicitly enumerated owned Rust source graph.",
+    "Static source, ELF and actual mapped runtime checks do not constitute a mathematical proof of unexercised future execution paths."
+  ],
+  "manifest_provenance": {
+    "issues": [],
+    "passed": true,
+    "python_dependencies": [],
+    "rust_lock_packages": [
+      "rebar-rust-continuation"
+    ],
+    "rust_third_party_dependency_count": 0
+  },
+  "module": "candidates.rust_candidate",
+  "native_sources": [
+    {
+      "allowed_native_python_imports": [
+        "copyreg",
+        "functools",
+        "inspect"
+      ],
+      "family": "rust",
+      "file": "candidates/rust/py_bridge.c",
+      "issues": [],
+      "passed": true,
+      "sha256": "6aca53810d44cea6321f1e229b71fb41c60742a51da75ca2243604a60468134f"
+    },
+    {
+      "allowed_native_python_imports": [],
+      "family": "rust",
+      "file": "candidates/rust/src/lib.rs",
+      "issues": [],
+      "passed": true,
+      "sha256": "a2fa04912bb1f6957f833560446f4d3d1c5d13df8b5efac992fa63e28803668b"
+    },
+    {
+      "allowed_native_python_imports": [],
+      "family": "rust",
+      "file": "candidates/rust/src/search.rs",
+      "issues": [],
+      "passed": true,
+      "sha256": "6b5ef878d49fc461d69d6b765b3c78c41218c2685b461b54feae526a50de010c"
+    },
+    {
+      "allowed_native_python_imports": [],
+      "family": "rust",
+      "file": "candidates/rust/src/newline.rs",
+      "issues": [],
+      "passed": true,
+      "sha256": "13216ffbea967af121c77d57abe14906030e7f3a6906c554399511154a3d6d8b"
+    },
+    {
+      "allowed_native_python_imports": [],
+      "family": "rust",
+      "file": "candidates/rust/src/stack.rs",
+      "issues": [],
+      "passed": true,
+      "sha256": "5198a056e99bde5632169cfc5b07ad913910cdb1b30785dad4744ccb9a30809e"
+    },
+    {
+      "allowed_native_python_imports": [],
+      "family": "rust",
+      "file": "candidates/rust/src/unicode_tables.rs",
+      "issues": [],
+      "passed": true,
+      "sha256": "f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af"
+    }
+  ],
+  "owned_pipeline": {
+    "compiler": "rust::Compiler",
+    "executor": "rust::run_program",
+    "issues": [],
+    "parser": "rust::Parser",
+    "passed": true
+  },
+  "passed": true,
+  "pinned_interpreter": {
+    "actual_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+    "actual_version": [
+      3,
+      14,
+      6
+    ],
+    "expected_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+    "expected_version": [
+      3,
+      14,
+      6
+    ],
+    "issues": [],
+    "passed": true
+  },
+  "python_source": {
+    "file": "candidates/rust_candidate.py",
+    "imports": [
+      "candidates._rust_bridge",
+      "enum",
+      "operator",
+      "os",
+      "types",
+      "unicodedata",
+      "warnings"
+    ],
+    "issues": [],
+    "native_loads": [],
+    "passed": true,
+    "sha256": "1111a419d65d44775d1f4b0cb6a728dea8de44a592597341596533351c16018e"
+  },
+  "result": "PASS",
+  "runtime_native_mapping_provenance": {
+    "expected_owned_mapping_count": 2,
+    "issues": [],
+    "observed_owned_mapping_count": 2,
+    "observed_owned_mappings": [
+      {
+        "file": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+        "mapping_count": 5,
+        "matches_static_elf": true,
+        "role": "bridge",
+        "sha256": "a1cf1384d20e20a8a744ead2a5952457d04c3a49d118ca87cd7977700d068073"
+      },
+      {
+        "file": "candidates/_rust_engine.so",
+        "mapping_count": 4,
+        "matches_static_elf": true,
+        "role": "engine",
+        "sha256": "890f9e34e966244067a3dc173c2276043ae15d4830a05228fb37ec2571aa17cd"
+      }
+    ],
+    "passed": true,
+    "source": "/proc/self/maps",
+    "unrelated_system_libraries_ignored": true
+  },
+  "rust_native_elf_provenance": {
+    "files": {
+      "bridge": {
+        "cross_candidate_symbols": [],
+        "elf_class": 64,
+        "file": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+        "forbidden_regex_symbols": [],
+        "needed": [
+          "_rust_engine.so",
+          "libc.so.6"
+        ],
+        "owned_exports": [
+          "PyInit__rust_bridge"
+        ],
+        "owned_undefined": [
+          "rebar_collect_ascii",
+          "rebar_collect_wide",
+          "rebar_compile",
+          "rebar_error_copy",
+          "rebar_error_include",
+          "rebar_error_len",
+          "rebar_error_pos",
+          "rebar_flags",
+          "rebar_free",
+          "rebar_groups",
+          "rebar_match",
+          "rebar_match_ascii",
+          "rebar_match_wide",
+          "rebar_name_copy",
+          "rebar_name_count",
+          "rebar_name_group",
+          "rebar_name_len"
+        ],
+        "python_api_undefined_count": 101,
+        "python_api_undefined_symbols": [
+          "PyArg_ParseTuple",
+          "PyBaseObject_Type",
+          "PyBool_FromLong",
+          "PyBool_Type",
+          "PyBuffer_Release",
+          "PyBytes_FromObject",
+          "PyBytes_FromStringAndSize",
+          "PyBytes_Join",
+          "PyBytes_Type",
+          "PyCallIter_New",
+          "PyCallable_Check",
+          "PyDict_GetItemWithError",
+          "PyDict_New",
+          "PyDict_Next",
+          "PyDict_SetItem",
+          "PyErr_Clear",
+          "PyErr_ExceptionMatches",
+          "PyErr_Format",
+          "PyErr_GetRaisedException",
+          "PyErr_NoMemory",
+          "PyErr_Occurred",
+          "PyErr_SetRaisedException",
+          "PyErr_SetString",
+          "PyExc_AttributeError",
+          "PyExc_IndexError",
+          "PyExc_KeyError",
+          "PyExc_OverflowError",
+          "PyExc_RuntimeError",
+          "PyExc_TypeError",
+          "PyExc_ValueError",
+          "PyImport_ImportModule",
+          "PyIndex_Check",
+          "PyList_Append",
+          "PyList_New",
+          "PyLong_AsSize_t",
+          "PyLong_AsSsize_t",
+          "PyLong_AsUnsignedLong",
+          "PyLong_AsVoidPtr",
+          "PyLong_FromSize_t",
+          "PyLong_FromSsize_t",
+          "PyLong_FromUnsignedLong",
+          "PyLong_FromVoidPtr",
+          "PyLong_Type",
+          "PyMapping_Items",
+          "PyMapping_Size",
+          "PyMem_Free",
+          "PyMem_Malloc",
+          "PyModule_AddObjectRef",
+          "PyModule_Create2",
+          "PyNumber_Index",
+          "PyObject_CallFunctionObjArgs",
+          "PyObject_CallMethod",
+          "PyObject_CallObject",
+          "PyObject_CallOneArg",
+          "PyObject_GC_UnTrack",
+          "PyObject_GetAttrString",
+          "PyObject_GetBuffer",
+          "PyObject_GetItem",
+          "PyObject_HasAttrString",
+          "PyObject_Hash",
+          "PyObject_HashNotImplemented",
+          "PyObject_IsTrue",
+          "PyObject_SelfIter",
+          "PyObject_SetAttrString",
+          "PyObject_Vectorcall",
+          "PySequence_Fast",
+          "PyTuple_New",
+          "PyTuple_Pack",
+          "PyType_GenericAlloc",
+          "PyType_Ready",
+          "PyUnicodeWriter_Create",
+          "PyUnicodeWriter_Discard",
+          "PyUnicodeWriter_Finish",
+          "PyUnicodeWriter_WriteStr",
+          "PyUnicodeWriter_WriteSubstring",
+          "PyUnicode_CompareWithASCIIString",
+          "PyUnicode_Count",
+          "PyUnicode_DecodeUTF8",
+          "PyUnicode_Find",
+          "PyUnicode_FindChar",
+          "PyUnicode_FromFormat",
+          "PyUnicode_FromObject",
+          "PyUnicode_InternFromString",
+          "PyUnicode_Join",
+          "PyUnicode_New",
+          "PyUnicode_Substring",
+          "PyUnicode_Tailmatch",
+          "PyUnicode_Type",
+          "PyVectorcall_Call",
+          "Py_GenericAlias",
+          "Py_GetConstant",
+          "_PyBytes_Resize",
+          "_PyUnicode_IsAlpha",
+          "_PyUnicode_IsDecimalDigit",
+          "_PyUnicode_IsDigit",
+          "_PyUnicode_IsNumeric",
+          "_PyUnicode_IsWhitespace",
+          "_PyUnicode_ToLowercase",
+          "_Py_Dealloc",
+          "_Py_NoneStruct",
+          "_Py_ascii_whitespace"
+        ],
+        "runpaths": [
+          "$ORIGIN"
+        ],
+        "sha256": "a1cf1384d20e20a8a744ead2a5952457d04c3a49d118ca87cd7977700d068073",
+        "undefined_symbol_count": 128
+      },
+      "engine": {
+        "cross_candidate_symbols": [],
+        "elf_class": 64,
+        "file": "candidates/_rust_engine.so",
+        "forbidden_regex_symbols": [],
+        "needed": [
+          "ld-linux-x86-64.so.2",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ],
+        "owned_exports": [
+          "rebar_collect_ascii",
+          "rebar_collect_wide",
+          "rebar_compile",
+          "rebar_error_copy",
+          "rebar_error_include",
+          "rebar_error_len",
+          "rebar_error_pos",
+          "rebar_flags",
+          "rebar_free",
+          "rebar_groups",
+          "rebar_match",
+          "rebar_match_ascii",
+          "rebar_match_wide",
+          "rebar_name_copy",
+          "rebar_name_count",
+          "rebar_name_group",
+          "rebar_name_len"
+        ],
+        "owned_undefined": [],
+        "python_api_undefined_count": 1,
+        "python_api_undefined_symbols": [
+          "Py_GetRecursionLimit"
+        ],
+        "runpaths": [],
+        "sha256": "890f9e34e966244067a3dc173c2276043ae15d4830a05228fb37ec2571aa17cd",
+        "undefined_symbol_count": 51
+      }
+    },
+    "issues": [],
+    "passed": true
+  },
+  "schema_version": 1,
+  "scope": {
+    "benchmark_or_timing_executed": false,
+    "family": "rust only",
+    "holdout_accessed": false,
+    "immutable_edge_oracle": "candidates/evidence/rust-v8-edge-oracle-rust-scanner-lifetimes.json.gz",
+    "maximum_compressed_edge_bytes": 16777216,
+    "maximum_decompressed_edge_bytes": 33554432,
+    "native_elf_paths": [
+      "candidates/_rust_engine.so",
+      "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so"
+    ],
+    "other_candidate_native_binaries_read": false,
+    "other_candidate_production_sources_read": false,
+    "synthetic_malicious_fixtures": "in-memory only"
+  },
+  "self_test": {
+    "check_count": 49,
+    "checks": [
+      {
+        "name": "all_76_isolated_shared_poison_controls",
+        "passed": true
+      },
+      {
+        "name": "accept_complete_in_memory_canonical_edge",
+        "passed": true
+      },
+      {
+        "name": "reject_wrong_candidate_module",
+        "passed": true
+      },
+      {
+        "name": "reject_wrong_canonical_edge_schema",
+        "passed": true
+      },
+      {
+        "name": "reject_nonzero_canonical_edge_failures",
+        "passed": true
+      },
+      {
+        "name": "reject_missing_canonical_failure_list",
+        "passed": true
+      },
+      {
+        "name": "reject_malformed_canonical_check_count",
+        "passed": true
+      },
+      {
+        "name": "reject_missing_canonical_check_count",
+        "passed": true
+      },
+      {
+        "name": "reject_changed_canonical_check_count",
+        "passed": true
+      },
+      {
+        "name": "reject_changed_canonical_result_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_changed_canonical_expected_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_changed_frozen_edge_categories",
+        "passed": true
+      },
+      {
+        "name": "reject_nonempty_edge_failure_list",
+        "passed": true
+      },
+      {
+        "name": "reject_changed_frozen_script_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_changed_frozen_oracle_component",
+        "passed": true
+      },
+      {
+        "name": "reject_changed_membership_partition",
+        "passed": true
+      },
+      {
+        "name": "reject_changed_holdout_declaration",
+        "passed": true
+      },
+      {
+        "name": "reject_changed_no_timing_declaration",
+        "passed": true
+      },
+      {
+        "name": "reject_stale_native_engine",
+        "passed": true
+      },
+      {
+        "name": "reject_stale_native_bridge",
+        "passed": true
+      },
+      {
+        "name": "reject_changed_live_bridge_source",
+        "passed": true
+      },
+      {
+        "name": "reject_missing_frozen_live_artifact",
+        "passed": true
+      },
+      {
+        "name": "reject_duplicate_frozen_artifact_role",
+        "passed": true
+      },
+      {
+        "name": "reject_changed_immutable_gzip_digest",
+        "passed": true
+      },
+      {
+        "name": "reject_truncated_immutable_gzip",
+        "passed": true
+      },
+      {
+        "name": "reject_wrong_output_path",
+        "passed": true
+      },
+      {
+        "name": "reject_wrong_edge_oracle_path",
+        "passed": true
+      },
+      {
+        "name": "reject_wrong_python_version",
+        "passed": true
+      },
+      {
+        "name": "reject_stdlib_re_import",
+        "passed": true
+      },
+      {
+        "name": "reject_cpython_sre_import",
+        "passed": true
+      },
+      {
+        "name": "reject_external_regex_package",
+        "passed": true
+      },
+      {
+        "name": "reject_cross_candidate_module",
+        "passed": true
+      },
+      {
+        "name": "reject_obfuscated_dynamic_import_bypass",
+        "passed": true
+      },
+      {
+        "name": "reject_environment_engine_dispatch",
+        "passed": true
+      },
+      {
+        "name": "reject_native_external_regex",
+        "passed": true
+      },
+      {
+        "name": "reject_native_dynamic_engine",
+        "passed": true
+      },
+      {
+        "name": "reject_native_cpython_engine",
+        "passed": true
+      },
+      {
+        "name": "reject_native_cross_engine_extern",
+        "passed": true
+      },
+      {
+        "name": "reject_renamed_external_cargo_manifest",
+        "passed": true
+      },
+      {
+        "name": "accept_owned_in_memory_rust_elf_pipeline",
+        "passed": true
+      },
+      {
+        "name": "reject_native_bridge_compiler_bypass",
+        "passed": true
+      },
+      {
+        "name": "reject_cross_family_native_bridge_link",
+        "passed": true
+      },
+      {
+        "name": "accept_owned_in_memory_rust_mappings",
+        "passed": true
+      },
+      {
+        "name": "reject_cross_family_native_memory_mapping",
+        "passed": true
+      },
+      {
+        "name": "reject_external_regex_memory_mapping",
+        "passed": true
+      },
+      {
+        "name": "reject_corrupted_upstream_poison_count",
+        "passed": true
+      },
+      {
+        "name": "reject_corrupted_upstream_poison_names",
+        "passed": true
+      },
+      {
+        "name": "reject_bypassed_upstream_poison_control",
+        "passed": true
+      },
+      {
+        "name": "reject_unisolated_upstream_poison_execution",
+        "passed": true
+      }
+    ],
+    "execution": {
+      "exit_code": 0,
+      "interpreter": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+      "isolated_subprocess": true,
+      "maximum_response_bytes": 262144,
+      "response_bytes": 8104,
+      "validated": true
+    },
+    "failed": [],
+    "fixture_storage": "in-memory only",
+    "passed": true,
+    "upstream_control_issues": [],
+    "upstream_controls": {
+      "check_count": 76,
+      "checks": [
+        {
+          "name": "direct_stdlib_re",
+          "passed": true
+        },
+        {
+          "name": "direct_cpython_sre",
+          "passed": true
+        },
+        {
+          "name": "third_party_regex",
+          "passed": true
+        },
+        {
+          "name": "aliased_regex",
+          "passed": true
+        },
+        {
+          "name": "cross_candidate",
+          "passed": true
+        },
+        {
+          "name": "cross_candidate_dotted",
+          "passed": true
+        },
+        {
+          "name": "dynamic_import",
+          "passed": true
+        },
+        {
+          "name": "chr_obfuscated_import",
+          "passed": true
+        },
+        {
+          "name": "join_obfuscated_import",
+          "passed": true
+        },
+        {
+          "name": "importlib_indirection",
+          "passed": true
+        },
+        {
+          "name": "builtins_subscript",
+          "passed": true
+        },
+        {
+          "name": "getattr_indirection",
+          "passed": true
+        },
+        {
+          "name": "foreign_ctypes",
+          "passed": true
+        },
+        {
+          "name": "unowned_zig_library",
+          "passed": true
+        },
+        {
+          "name": "zig_owned_path_reassignment",
+          "passed": true
+        },
+        {
+          "name": "environment_dispatch",
+          "passed": true
+        },
+        {
+          "name": "environment_mapping",
+          "passed": true
+        },
+        {
+          "name": "external_process",
+          "passed": true
+        },
+        {
+          "name": "dynamic_eval",
+          "passed": true
+        },
+        {
+          "name": "dynamic_exec",
+          "passed": true
+        },
+        {
+          "name": "benchmark_clock",
+          "passed": true
+        },
+        {
+          "name": "holdout_path",
+          "passed": true
+        },
+        {
+          "name": "benchmark_file",
+          "passed": true
+        },
+        {
+          "name": "unowned_vm_configuration",
+          "passed": true
+        },
+        {
+          "name": "native_posix_regex",
+          "passed": true
+        },
+        {
+          "name": "native_pcre",
+          "passed": true
+        },
+        {
+          "name": "native_cpython_import",
+          "passed": true
+        },
+        {
+          "name": "native_copyreg_unowned_family",
+          "passed": true
+        },
+        {
+          "name": "native_copyreg_near_miss",
+          "passed": true
+        },
+        {
+          "name": "native_dynamic_loader",
+          "passed": true
+        },
+        {
+          "name": "native_hidden_header",
+          "passed": true
+        },
+        {
+          "name": "native_hidden_extern",
+          "passed": true
+        },
+        {
+          "name": "rust_external_crate",
+          "passed": true
+        },
+        {
+          "name": "rust_environment",
+          "passed": true
+        },
+        {
+          "name": "rust_hidden_extern",
+          "passed": true
+        },
+        {
+          "name": "zig_external_package",
+          "passed": true
+        },
+        {
+          "name": "zig_hidden_extern",
+          "passed": true
+        },
+        {
+          "name": "zig_c_import",
+          "passed": true
+        },
+        {
+          "name": "native_benchmark_clock",
+          "passed": true
+        },
+        {
+          "name": "ignore_native_comments_and_display_literals",
+          "passed": true
+        },
+        {
+          "name": "allow_owned_rust_generic_object_copy_protocol_only",
+          "passed": true
+        },
+        {
+          "name": "preserve_rust_lifetimes_and_owned_pipeline",
+          "passed": true
+        },
+        {
+          "name": "parse_in_memory_owned_elf",
+          "passed": true
+        },
+        {
+          "name": "reject_excessive_elf_section_count",
+          "passed": true
+        },
+        {
+          "name": "reject_excessive_elf_symbol_string",
+          "passed": true
+        },
+        {
+          "name": "reject_in_memory_external_elf_dependency",
+          "passed": true
+        },
+        {
+          "name": "reject_bridge_without_owned_elf_link",
+          "passed": true
+        },
+        {
+          "name": "reject_disguised_third_party_elf_dependency",
+          "passed": true
+        },
+        {
+          "name": "accept_five_owned_synthetic_elf_binaries_and_python_api_symbols",
+          "passed": true
+        },
+        {
+          "name": "reject_vm_disguised_external_engine",
+          "passed": true
+        },
+        {
+          "name": "reject_vm_external_regex_symbol",
+          "passed": true
+        },
+        {
+          "name": "reject_vm_cross_candidate_engine_symbol",
+          "passed": true
+        },
+        {
+          "name": "reject_vm_untrusted_runpath",
+          "passed": true
+        },
+        {
+          "name": "reject_vm_wrong_module_initializer",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_engine_disguised_external_dependency",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_bridge_disguised_external_dependency",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_bridge_wrong_linked_rust_engine",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_bridge_wrong_engine_cross_candidate",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_bridge_compiler_bypass",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_bridge_executor_bypass",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_bridge_unresolved_owned_symbols",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_engine_untrusted_runpath",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_bridge_untrusted_runpath",
+          "passed": true
+        },
+        {
+          "name": "reject_zig_rust_cross_candidate_symbol",
+          "passed": true
+        },
+        {
+          "name": "reject_rust_zig_cross_candidate_symbol",
+          "passed": true
+        },
+        {
+          "name": "reject_rust_bridge_untrusted_runpath",
+          "passed": true
+        },
+        {
+          "name": "accept_exact_ast_owned_memory_mappings",
+          "passed": true
+        },
+        {
+          "name": "accept_exact_vm_owned_memory_mappings",
+          "passed": true
+        },
+        {
+          "name": "accept_exact_rust_owned_memory_mappings",
+          "passed": true
+        },
+        {
+          "name": "accept_exact_zig_owned_memory_mappings",
+          "passed": true
+        },
+        {
+          "name": "reject_cross_candidate_actual_memory_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_external_regex_actual_memory_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_unapproved_candidate_actual_memory_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_deleted_owned_native_memory_mapping",
+          "passed": true
+        },
+        {
+          "name": "reject_invalid_elf",
+          "passed": true
+        },
+        {
+          "name": "reject_renamed_and_transitive_cargo_dependency",
+          "passed": true
+        }
+      ],
+      "execution": {
+        "exit_code": 0,
+        "expected_check_count": 76,
+        "interpreter": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "isolated_subprocess": true,
+        "maximum_response_bytes": 262144,
+        "response_bytes": 4529,
+        "validated": true,
+        "validated_check_count": 76
+      },
+      "failed": [],
+      "fixture_storage": "in-memory only",
+      "passed": true
+    }
+  },
+  "upstream_poison_controls": {
+    "expected_count": 76,
+    "issues": [],
+    "passed": true,
+    "validated_count": 76
+  }
+}
