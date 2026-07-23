@@ -240,7 +240,7 @@
               "mapping_count": 5,
               "matches_static_elf": true,
               "role": "native",
-              "sha256": "afb2a9c0eb8adf3264b69dd7d0b12a16cf3ffd89cfb21295536ac0da7b2b53e3"
+              "sha256": "71b56ae91a24badd67798f29d6f4d1cf60e16ab182f2e858f3fe5c99937e97f9"
             }
           ],
           "passed": true,
@@ -266,7 +266,7 @@
           "file": "candidates/_vm_native.c",
           "issues": [],
           "passed": true,
-          "sha256": "a6cfd55a1da4fc95308f0977953defaf5c0516131be511ebc2b2cf103231bba8"
+          "sha256": "0b1dab88cc95cc863e54a794084fb3669b051f7d711996e7df118e0c72ee0bab"
         }
       ],
       "owned_pipeline": {
@@ -722,7 +722,7 @@
               "_Py_ascii_whitespace"
             ],
             "runpaths": [],
-            "sha256": "afb2a9c0eb8adf3264b69dd7d0b12a16cf3ffd89cfb21295536ac0da7b2b53e3",
+            "sha256": "71b56ae91a24badd67798f29d6f4d1cf60e16ab182f2e858f3fe5c99937e97f9",
             "undefined_symbol_count": 114
           }
         },
@@ -1605,7 +1605,7 @@
           "_Py_ascii_whitespace"
         ],
         "runpaths": [],
-        "sha256": "afb2a9c0eb8adf3264b69dd7d0b12a16cf3ffd89cfb21295536ac0da7b2b53e3",
+        "sha256": "71b56ae91a24badd67798f29d6f4d1cf60e16ab182f2e858f3fe5c99937e97f9",
         "undefined_symbol_count": 114
       }
     },
