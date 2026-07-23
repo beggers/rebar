@@ -17,7 +17,17 @@ Every result below uses the same frozen Python answers. “Differences” means 
 
 ![All four from-scratch engines compared with Python on the same 223,198 matching tests, including every original failure and every current result](candidates/evidence/rust-v8-correctness-progress.svg)
 
-This graph shows matching correctness, not speed. Rust, Zig, and C additionally pass the complete behavior and tracing checks. All [75 original C argument failures](candidates/evidence/rust-v8-observability-vm-qualified.json.gz) remain recorded; the independent Python engine still has 93 object-behavior differences and is not presented as fully compatible.
+This graph shows matching correctness, not speed. Rust, Zig, and C additionally pass the object and tracing checks in the table. All [75 original C argument failures](candidates/evidence/rust-v8-observability-vm-qualified.json.gz) remain recorded; the independent Python engine still has 93 object-behavior differences.
+
+The larger frozen replacement-and-callback suites expose further real differences:
+
+| Engine | Replacement and callback checks | Deep replacement and callback checks |
+| --- | ---: | ---: |
+| Rust | [0/8,862 differences](candidates/evidence/rust-v8-rust-native-heap-final-sealed-campaign.json) | [0/11,266 differences](candidates/evidence/rust-v8-rust-native-heap-final-sealed-campaign.json) |
+| Zig | [3,392/8,862 differences](candidates/evidence/rust-v8-replacement-zig-stage-04-original-failures.json.gz) | [5,043/11,266 differences](candidates/evidence/rust-v8-replacement-zig-stage-04-original-deep-failures.json.gz) |
+| C | [361/8,862 differences](candidates/evidence/rust-v8-replacement-vm-stage-04-original-failures.json.gz) | [1,879/11,266 differences](candidates/evidence/rust-v8-replacement-vm-stage-04-original-deep-failures.json.gz) |
+
+Rust also passes the entire [22-stage compatibility campaign](candidates/evidence/rust-v8-rust-native-heap-final-sealed-campaign.json), including Python's own tests and **4,494,555** full-Unicode comparisons. Zig and C are not called complete replacements until these independently recorded callback differences are fixed.
 
 The [current all-engine audit](candidates/audits/FROM-SCRATCH-AUDIT.json) independently verifies all four parsers and matching engines, all five actually loaded native libraries, and **76** checks against external engines, hidden delegation, altered binaries, and unsafe loading. Both the [original audit](candidates/audits/FROM-SCRATCH-AUDIT-HISTORICAL-BEFORE-V8-FINAL.json) and the [pre-repair audit](candidates/audits/FROM-SCRATCH-AUDIT-BEFORE-C-BINDER-REPAIR.json) are preserved unchanged.
 
