@@ -2,7 +2,7 @@
 
 `rebar` is an experiment to build a faster, fully compatible replacement for Python's `re`, from scratch. It compares independently written Zig, C, Rust, and Python engines with [stable Python 3.14.6](https://www.python.org/downloads/release/python-3146/). No engine may use Python's existing regex implementation, an external regex package, or another candidate's engine. The intended public import is `import rebar as re`.
 
-**Current status:** no engine can yet be recommended as a complete replacement. The latest Rust implementation passes **223,198 of 223,198** original compatibility tests. On a stronger, independently frozen **393-test** suite, the first iterator and lifetime repair reduces its failures from **104 to 62**. Both the [original failures](candidates/audits/RUST-V8-DEEP-CONTRACT.json.gz) and [the complete new result](candidates/audits/RUST-V8-DEEP-CONTRACT-SCANNER-LIFETIMES.json.gz) are preserved. The speed of a fully compatible engine is **NOT MEASURED**.
+**Current status:** no engine can yet be recommended as a complete replacement. Rebuilt [Rust](candidates/evidence/rust-v8-edge-oracle-rust-scanner-lifetimes.json.gz) and [Zig](candidates/evidence/rust-v8-edge-oracle-zig-corrected-v1.json.gz) each pass **223,198 of 223,198** original compatibility tests. A stronger, independently frozen **393-test** suite still exposes **62** Rust differences and **141** Zig differences. The [original Rust failures](candidates/audits/RUST-V8-DEEP-CONTRACT.json.gz), [repaired Rust results](candidates/audits/RUST-V8-DEEP-CONTRACT-SCANNER-LIFETIMES.json.gz), and [complete Zig results](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-CORRECTED-V1.json.gz) are preserved. The speed of a fully compatible engine is **NOT MEASURED**.
 
 The [expanded final speed test](performance/v8/HOLDOUT-PROTOCOL.md) contains **12,288 genuinely different, still-unseen cases**, with **31** repeated comparisons per case. It stays sealed until at least three independently written engines pass every compatibility and no-wrapper check. Its results are **NOT MEASURED**.
 
@@ -37,7 +37,7 @@ The [14,783-check object and API audit](candidates/evidence/RUST-V7-OBJECT-ORACL
 
 The [independent tracing and callback audit](candidates/evidence/RUST-V7-OBSERVABILITY-ORACLE.md) adds **479** Python-visible checks, **34** malformed native calls, and **13** active checks against using Python's regex engine. The [repaired Rust result](candidates/evidence/rust-v8-observability-scanner-lifetimes.json.gz) passes every check and verifies that its improved iterator really has the same observable behavior as Python's. Its [current source and native-code audit](candidates/audits/RUST-V8-SCANNER-FROM-SCRATCH.json) verifies all five Rust artifacts, zero external packages, and **125** poisoned-input and no-delegation controls.
 
-The [original object and lifetime result](candidates/audits/RUST-V8-DEEP-CONTRACT.json.gz) preserves all **104** initial public failures; the [repaired result](candidates/audits/RUST-V8-DEEP-CONTRACT-SCANNER-LIFETIMES.json.gz) preserves all **62** remaining failures. Python agrees with itself on all **393** cases. Private garbage-collector details are recorded separately and are never counted as user-visible failures.
+The [original Rust lifetime result](candidates/audits/RUST-V8-DEEP-CONTRACT.json.gz) preserves all **104** initial public failures; the [repaired result](candidates/audits/RUST-V8-DEEP-CONTRACT-SCANNER-LIFETIMES.json.gz) preserves all **62** remaining failures. The [independent Zig result](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-CORRECTED-V1.json.gz) preserves all **141** Zig failures against exactly the same frozen cases. Python agrees with itself on all **393**. Private garbage-collector details are recorded separately and never counted as public failures.
 
 Rust improvements are compared using a [sealed practice-only test](candidates/evidence/RUST-V7-CALIBRATION-ISOLATION.md). It keeps all **10,312** unseen final cases inaccessible while testing **624** representative practice cases; improved Rust speed remains **NOT MEASURED**.
 
@@ -125,6 +125,7 @@ PYTHONPATH=. "$PY" tools/rust_v7_observability_variant.py verify \
   --edge-oracle candidates/evidence/rust-v8-edge-oracle-rust-scanner-lifetimes.json.gz
 PYTHONPATH=. "$PY" tools/rust_v8_deep_contract_oracle.py --self-test
 PYTHONPATH=. "$PY" tools/rust_v8_deep_contract_variant.py --self-test
+PYTHONPATH=. "$PY" tools/rust_v8_multi_candidate_contract.py --self-test
 # Inspect both preserved complete compatibility results without overwriting them:
 gzip -dc candidates/audits/RUST-V8-DEEP-CONTRACT.json.gz \
   | jq '{checks, status, public_mismatch_count, public_mismatch_family_counts}'

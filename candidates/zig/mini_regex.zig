@@ -474,6 +474,7 @@ const Parser = struct {
 
     fn repeated(self: *Parser) ParseError!u32 {
         const child = try self.atom();
+        self.skip();
         if (self.at >= self.source.len) return child;
         const mark = self.source[self.at];
         if (mark == '{' and !self.braceRepeat()) return child;
@@ -687,6 +688,17 @@ fn equal(left: u32, right: u32, flags: u32) bool {
     return folded(left, ascii_only) == folded(right, ascii_only);
 }
 
+fn backrefEqual(left: u32, right: u32, flags: u32) bool {
+    if (left == right) return true;
+    if (flags & 2 == 0) return false;
+    if (asciiMode(flags)) {
+        const lower_left = if (left >= 'A' and left <= 'Z') left + 32 else left;
+        const lower_right = if (right >= 'A' and right <= 'Z') right + 32 else right;
+        return lower_left == lower_right;
+    }
+    return _PyUnicode_ToLowercase(left) == _PyUnicode_ToLowercase(right);
+}
+
 fn categoryBit(code: u8) u8 {
     return switch (code) {
         'd' => 1,
@@ -730,25 +742,26 @@ fn rangeCase(left: u32, right: u32, value: u32, flags: u32) bool {
         .{ 0xfb05, 0xfb06, 0xfb05, 0xfb06 },
         .{ 0xdf, 0x1e9e, 0xdf, 0x1e9e },
         .{ 0xb5, 0x3bc, 0xb5, 0x3bc },
-        .{ 0x345, 0x3b9, 0x1fbe, 0x345 },
+        .{ 0x399, 0x3b9, 0x345, 0x1fbe },
         .{ 0x390, 0x1fd3, 0x390, 0x1fd3 },
         .{ 0x3b0, 0x1fe3, 0x3b0, 0x1fe3 },
-        .{ 0x3b2, 0x3d0, 0x3b2, 0x3d0 },
-        .{ 0x3b5, 0x3f5, 0x3b5, 0x3f5 },
-        .{ 0x3b8, 0x3d1, 0x3b8, 0x3d1 },
-        .{ 0x3ba, 0x3f0, 0x3ba, 0x3f0 },
-        .{ 0x3c0, 0x3d6, 0x3c0, 0x3d6 },
-        .{ 0x3c1, 0x3f1, 0x3c1, 0x3f1 },
-        .{ 0x3c2, 0x3c3, 0x3c2, 0x3c3 },
-        .{ 0x3c6, 0x3d5, 0x3c6, 0x3d5 },
-        .{ 0x434, 0x1c81, 0x434, 0x1c81 },
-        .{ 0x43e, 0x1c82, 0x43e, 0x1c82 },
-        .{ 0x441, 0x1c83, 0x441, 0x1c83 },
-        .{ 0x442, 0x1c84, 0x1c85, 0x442 },
-        .{ 0x44a, 0x1c86, 0x44a, 0x1c86 },
-        .{ 0x463, 0x1c87, 0x463, 0x1c87 },
-        .{ 0xa64b, 0x1c88, 0xa64b, 0x1c88 },
-        .{ 0x1e61, 0x1e9b, 0x1e61, 0x1e9b },
+        .{ 0x392, 0x3b2, 0x3d0, 0x392 },
+        .{ 0x395, 0x3b5, 0x3f5, 0x395 },
+        .{ 0x398, 0x3b8, 0x3d1, 0x3f4 },
+        .{ 0x39a, 0x3ba, 0x3f0, 0x39a },
+        .{ 0x3a0, 0x3c0, 0x3d6, 0x3a0 },
+        .{ 0x3a1, 0x3c1, 0x3f1, 0x3a1 },
+        .{ 0x3a3, 0x3c2, 0x3c3, 0x3a3 },
+        .{ 0x3a6, 0x3c6, 0x3d5, 0x3a6 },
+        .{ 0x3a9, 0x3c9, 0x2126, 0x3a9 },
+        .{ 0x414, 0x434, 0x1c81, 0x414 },
+        .{ 0x41e, 0x43e, 0x1c82, 0x41e },
+        .{ 0x421, 0x441, 0x1c83, 0x421 },
+        .{ 0x422, 0x442, 0x1c84, 0x1c85 },
+        .{ 0x42a, 0x44a, 0x1c86, 0x42a },
+        .{ 0x462, 0x463, 0x1c87, 0x462 },
+        .{ 0xa64a, 0xa64b, 0x1c88, 0xa64a },
+        .{ 0x1e60, 0x1e61, 0x1e9b, 0x1e60 },
     };
     for (variants) |set| {
         var member = false;
@@ -2014,7 +2027,7 @@ fn runBytecode(program: *const Program, text: Subject, endpos: usize, start: usi
 const CaptureState = struct { pos: usize, undo: usize, run_limit: usize = unbounded, run_max: usize = 0, pc: u32, atomic: u16 };
 const Undo = struct { previous: isize, slot: u16, last: i16 };
 
-fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: usize, entry: u32, full: bool, captures: *[max_groups * 2]isize, last: *isize, reset: bool, nonempty: bool) isize {
+fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, logical_endpos: usize, start: usize, entry: u32, full: bool, captures: *[max_groups * 2]isize, last: *isize, reset: bool, nonempty: bool) isize {
     var stack_local: [max_stack]CaptureState = undefined;
     var stack: []CaptureState = &stack_local;
     var stack_heap: ?[]CaptureState = null;
@@ -2077,7 +2090,9 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                 pc += 1;
                 continue;
             },
-            .end => if (pos == endpos or (pos + 1 == endpos and text.at(pos) == '\n') or (instruction.extra & 8 != 0 and pos < endpos and text.at(pos) == '\n')) {
+            .end => if (pos == logical_endpos or
+                (pos + 1 == logical_endpos and pos < text.length and text.at(pos) == '\n') or
+                (instruction.extra & 8 != 0 and pos < text.length and text.at(pos) == '\n')) {
                 pc += 1;
                 continue;
             },
@@ -2085,13 +2100,13 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                 pc += 1;
                 continue;
             },
-            .absolute_end => if (pos == endpos) {
+            .absolute_end => if (pos == logical_endpos) {
                 pc += 1;
                 continue;
             },
             .boundary => {
                 const left = pos > 0 and word(text.at(pos - 1), instruction.extra);
-                const right = pos < endpos and word(text.at(pos), instruction.extra);
+                const right = pos < logical_endpos and word(text.at(pos), instruction.extra);
                 if ((left != right) == (instruction.value != 0)) {
                     pc += 1;
                     continue;
@@ -2099,10 +2114,14 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
             },
             .boundary_peek => {
                 const left_word = pos > 0 and word(text.at(pos - 1), instruction.extra);
-                const right_word = pos < endpos and word(text.at(pos), instruction.extra);
+                const right_word = pos < logical_endpos and word(text.at(pos), instruction.extra);
                 const boundary_found = (left_word != right_word) == (instruction.value & 1 != 0);
                 const behind = instruction.value & 4 != 0;
-                const peek_found = if (behind) pos > 0 and atomMatch(program, instruction.left, text.at(pos - 1), instruction.extra) else pos < endpos and atomMatch(program, instruction.left, text.at(pos), instruction.extra);
+                const peek_found = if (behind)
+                    pos <= logical_endpos and pos > 0 and
+                        atomMatch(program, instruction.left, text.at(pos - 1), instruction.extra)
+                else pos < logical_endpos and
+                    atomMatch(program, instruction.left, text.at(pos), instruction.extra);
                 if (boundary_found or peek_found == (instruction.value & 2 != 0)) {
                     pc += 1;
                     continue;
@@ -2215,7 +2234,7 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
                     if (width <= endpos - pos) {
                         var matched = true;
                         for (0..width) |offset| {
-                            if (!equal(text.at(@as(usize, @intCast(begin)) + offset), text.at(pos + offset), instruction.extra)) {
+                            if (!backrefEqual(text.at(@as(usize, @intCast(begin)) + offset), text.at(pos + offset), instruction.extra)) {
                                 matched = false;
                                 break;
                             }
@@ -2251,11 +2270,11 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
             .look => {
                 const behind = instruction.value & 2 != 0;
                 const positive = instruction.value & 1 != 0;
-                const begin: ?usize = if (behind) (if (pos < instruction.extra) null else pos - instruction.extra) else pos;
+                const begin: ?usize = if (behind) (if (pos > logical_endpos or pos < instruction.extra) null else pos - instruction.extra) else pos;
                 var looked: [max_groups * 2]isize = undefined;
                 @memcpy(looked[0..@as(usize, program.groups) * 2], captures[0..@as(usize, program.groups) * 2]);
                 var look_last = last.*;
-                const result = if (begin) |value| runCapturedAt(program, text, if (behind) pos else endpos, value, instruction.left, behind, &looked, &look_last, false, false) else -1;
+                const result = if (begin) |value| runCapturedAt(program, text, if (behind) pos else endpos, if (behind) pos else logical_endpos, value, instruction.left, behind, &looked, &look_last, false, false) else -1;
                 if (result == -2) return -2;
                 const found = result >= 0;
                 if (found == positive) {
@@ -2283,6 +2302,7 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
             },
             .run => blk: {
                 const run = program.runs.items[instruction.value];
+                if (pos > logical_endpos and run.layout_count == 0) break :blk;
                 const room = endpos - pos;
                 const allowed = if (run.maximum == unbounded) room / run.width else @min(run.maximum, room / run.width);
                 var available = resumed_max;
@@ -2347,6 +2367,7 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
             },
             .lazy_dot => blk: {
                 const run = program.runs.items[instruction.value];
+                if (pos > logical_endpos) break :blk;
                 const room = endpos - pos;
                 const allowed = if (run.maximum == unbounded) room else @min(run.maximum, room);
                 const from = if (resumed_limit != unbounded) resumed_limit else run.minimum;
@@ -2392,7 +2413,11 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
             },
             .peek => {
                 const behind = instruction.value & 2 != 0;
-                const found = if (behind) pos > 0 and atomMatch(program, instruction.left, text.at(pos - 1), instruction.extra) else pos < endpos and atomMatch(program, instruction.left, text.at(pos), instruction.extra);
+                const found = if (behind)
+                    pos <= logical_endpos and pos > 0 and
+                        atomMatch(program, instruction.left, text.at(pos - 1), instruction.extra)
+                else pos < logical_endpos and
+                    atomMatch(program, instruction.left, text.at(pos), instruction.extra);
                 if (found == (instruction.value & 1 != 0)) {
                     pc += 1;
                     continue;
@@ -2401,7 +2426,10 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
             .peek_text => {
                 const behind = instruction.value & 2 != 0;
                 var at = if (behind) (if (pos >= instruction.right) pos - instruction.right else endpos) else pos;
-                const found = (!behind or pos >= instruction.right) and literalTextMatches(program, instruction.left, text, if (behind) pos else endpos, &at, instruction.extra);
+                const found = (!behind or
+                    (pos <= logical_endpos and pos >= instruction.right)) and
+                    literalTextMatches(program, instruction.left, text,
+                        if (behind) pos else endpos, &at, instruction.extra);
                 if (found == (instruction.value & 1 != 0)) {
                     pc += 1;
                     continue;
@@ -2463,7 +2491,7 @@ fn runCapturedAt(program: *const Program, text: Subject, endpos: usize, start: u
 }
 
 fn runCaptured(program: *const Program, text: Subject, endpos: usize, start: usize, full: bool, captures: *[max_groups * 2]isize, last: *isize, nonempty: bool) isize {
-    return runCapturedAt(program, text, endpos, start, 0, full, captures, last, true, nonempty);
+    return runCapturedAt(program, text, endpos, endpos, start, 0, full, captures, last, true, nonempty);
 }
 
 fn destroyProgram(program: *Program) void {
@@ -3001,7 +3029,7 @@ pub export fn rebar_zig_match_captures_wide(program_value: ?*const Program, text
                     while (closing_at < endpos) : (closing_at += 1) {
                         const value = text.at(closing_at);
                         if (run.flags & 16 == 0 and value == '\n') break;
-                        if (!equal(opener, value, closing.extra)) continue;
+                        if (!backrefEqual(opener, value, closing.extra)) continue;
                         begins[0] = @intCast(opening_at);
                         ends[0] = @intCast(closing_at + 1);
                         begins[open_begin.left] = @intCast(opening_at);
@@ -3086,6 +3114,37 @@ pub export fn rebar_zig_match_captures_wide(program_value: ?*const Program, text
         return 1;
     }
     return 0;
+}
+
+pub export fn rebar_zig_match_inverted_wide(
+    program_value: ?*const Program,
+    text_value: [*]const u8,
+    length: usize,
+    kind: u8,
+    pos: usize,
+    endpos_value: usize,
+    nonempty: u8,
+    begins: [*]isize,
+    ends: [*]isize,
+    last: *isize,
+) c_int {
+    const program = program_value orelse return -1;
+    if (kind != 1 and kind != 2 and kind != 4) return -1;
+    const logical_endpos = @min(length, endpos_value);
+    if (pos <= logical_endpos or pos > length) return 0;
+    const text = Subject{ .data = text_value, .length = length, .kind = kind };
+    var captures: [max_groups * 2]isize = undefined;
+    const finish = runCapturedAt(program, text, pos, logical_endpos, pos, 0,
+        false, &captures, last, true, nonempty != 0);
+    if (finish == -2) return -1;
+    if (finish < 0) return 0;
+    begins[0] = @intCast(pos);
+    ends[0] = finish;
+    for (0..program.groups) |index| {
+        begins[index + 1] = captures[index * 2];
+        ends[index + 1] = captures[index * 2 + 1];
+    }
+    return 1;
 }
 
 pub export fn rebar_zig_collect_captures(program_value: ?*const Program, text_value: [*]const u8, length: usize, pos: usize, endpos_value: usize, capacity: usize, begins: [*]isize, ends: [*]isize, lasts: [*]isize) isize {

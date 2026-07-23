@@ -15,6 +15,7 @@ extern size_t rebar_zig_name_length(const void *, size_t);
 extern size_t rebar_zig_name_group(const void *, size_t);
 extern size_t rebar_zig_name_copy(const void *, size_t, uint8_t *, size_t);
 extern int rebar_zig_match_captures_wide(const void *, const uint8_t *, size_t, uint8_t, size_t, size_t, uint8_t, uint8_t, intptr_t *, intptr_t *, intptr_t *);
+extern int rebar_zig_match_inverted_wide(const void *, const uint8_t *, size_t, uint8_t, size_t, size_t, uint8_t, intptr_t *, intptr_t *, intptr_t *);
 extern intptr_t rebar_zig_collect_records_wide(const void *, const uint8_t *, size_t, uint8_t, size_t, size_t, intptr_t *, size_t *, uint8_t *);
 
 #define ZIG_LOCAL_CAPTURE_WORDS 1024
@@ -66,6 +67,7 @@ typedef struct {
 static PyTypeObject ZigMatchType;
 static PyTypeObject ZigIteratorType;
 static PyTypeObject ZigScannerType;
+static PyObject *zig_default_endpos;
 static PyObject *zig_span(intptr_t begin, intptr_t finish);
 
 static ZigMatch *zig_match_new(PyObject *pattern, PyObject *string, PyObject *groupindex, size_t groups, Py_ssize_t pos, Py_ssize_t endpos) {
@@ -100,6 +102,11 @@ static int zig_match_number(ZigMatch *match, PyObject *value, Py_ssize_t *number
     } else {
         PyObject *item = PyNumber_Index(value);
         if (item == NULL) {
+            if (!PyErr_ExceptionMatches(PyExc_TypeError) ||
+                (Py_TYPE(value)->tp_as_number != NULL &&
+                 Py_TYPE(value)->tp_as_number->nb_index != NULL)) {
+                return 0;
+            }
             PyErr_Clear();
             PyErr_SetString(PyExc_IndexError, "no such group");
             return 0;
@@ -115,6 +122,15 @@ static int zig_match_number(ZigMatch *match, PyObject *value, Py_ssize_t *number
     return 1;
 }
 
+static PyObject *zig_bytes_piece(PyObject *subject, const uint8_t *data,
+                                 size_t length, size_t first, size_t last) {
+    if (PyBytes_CheckExact(subject) && first == 0 && last == length) {
+        return Py_NewRef(subject);
+    }
+    return PyBytes_FromStringAndSize((const char *)data + first,
+                                     (Py_ssize_t)(last - first));
+}
+
 static PyObject *zig_match_piece(ZigMatch *match, Py_ssize_t group, PyObject *missing) {
     size_t stride = (size_t)match->groups + 1;
     intptr_t begin = match->spans[group];
@@ -128,7 +144,8 @@ static PyObject *zig_match_piece(ZigMatch *match, Py_ssize_t group, PyObject *mi
     if (first > view.len) first = view.len;
     if (last > view.len) last = view.len;
     if (last < first) last = first;
-    PyObject *result = PyBytes_FromStringAndSize((const char *)view.buf + first, last - first);
+    PyObject *result = zig_bytes_piece(match->string, (const uint8_t *)view.buf,
+                                      (size_t)view.len, (size_t)first, (size_t)last);
     PyBuffer_Release(&view);
     return result;
 }
@@ -436,22 +453,44 @@ static PyObject *zig_match_get_regs(ZigMatch *match, void *closure) {
 static PyObject *zig_match_get_private_spans(ZigMatch *match, void *closure) { (void)closure; return zig_match_spans(match, 1); }
 static PyObject *zig_match_get_private_last(ZigMatch *match, void *closure) { return zig_match_get_lastindex(match, closure); }
 
+static int zig_match_traverse(ZigMatch *match, visitproc visit, void *arg) {
+    Py_VISIT(match->pattern);
+    Py_VISIT(match->string);
+    Py_VISIT(match->groupindex);
+    Py_VISIT(match->regs);
+    return 0;
+}
+
+static int zig_match_clear(ZigMatch *match) {
+    Py_CLEAR(match->pattern);
+    Py_CLEAR(match->string);
+    Py_CLEAR(match->groupindex);
+    Py_CLEAR(match->regs);
+    return 0;
+}
+
 static void zig_match_dealloc(ZigMatch *match) {
-    Py_XDECREF(match->pattern);
-    Py_XDECREF(match->string);
-    Py_XDECREF(match->groupindex);
-    Py_XDECREF(match->regs);
+    PyObject_GC_UnTrack(match);
+    zig_match_clear(match);
     Py_TYPE(match)->tp_free((PyObject *)match);
+}
+
+static int zig_match_readonly(PyObject *match, PyObject *value, void *closure) {
+    (void)match;
+    (void)value;
+    (void)closure;
+    PyErr_SetString(PyExc_AttributeError, "readonly attribute");
+    return -1;
 }
 
 static PyMethodDef zig_match_methods[] = {
     {"group", (PyCFunction)(void (*)(void))zig_match_group, METH_FASTCALL, "Return one or more captured groups."},
-    {"groups", (PyCFunction)(void (*)(void))zig_match_groups, METH_FASTCALL | METH_KEYWORDS, "Return all captured groups."},
-    {"groupdict", (PyCFunction)(void (*)(void))zig_match_groupdict, METH_FASTCALL | METH_KEYWORDS, "Return named captured groups."},
-    {"start", (PyCFunction)(void (*)(void))zig_match_start, METH_FASTCALL, "Return the start of a group."},
-    {"end", (PyCFunction)(void (*)(void))zig_match_end, METH_FASTCALL, "Return the end of a group."},
-    {"span", (PyCFunction)(void (*)(void))zig_match_span, METH_FASTCALL, "Return a group span."},
-    {"expand", (PyCFunction)zig_match_expand, METH_O, "Expand a replacement template."},
+    {"groups", (PyCFunction)(void (*)(void))zig_match_groups, METH_FASTCALL | METH_KEYWORDS, "groups($self, /, default=None)\n--\n\nReturn all captured groups."},
+    {"groupdict", (PyCFunction)(void (*)(void))zig_match_groupdict, METH_FASTCALL | METH_KEYWORDS, "groupdict($self, /, default=None)\n--\n\nReturn named captured groups."},
+    {"start", (PyCFunction)(void (*)(void))zig_match_start, METH_FASTCALL, "start($self, group=0, /)\n--\n\nReturn the start of a group."},
+    {"end", (PyCFunction)(void (*)(void))zig_match_end, METH_FASTCALL, "end($self, group=0, /)\n--\n\nReturn the end of a group."},
+    {"span", (PyCFunction)(void (*)(void))zig_match_span, METH_FASTCALL, "span($self, group=0, /)\n--\n\nReturn a group span."},
+    {"expand", (PyCFunction)zig_match_expand, METH_O, "expand($self, /, template)\n--\n\nExpand a replacement template."},
     {"__copy__", (PyCFunction)zig_match_copy, METH_NOARGS, "Return the immutable match."},
     {"__deepcopy__", (PyCFunction)zig_match_deepcopy, METH_O, "Return the immutable match."},
     {"__reduce__", (PyCFunction)zig_match_reduce, METH_NOARGS, "Matches cannot be pickled."},
@@ -461,10 +500,10 @@ static PyMethodDef zig_match_methods[] = {
 };
 
 static PyGetSetDef zig_match_getsets[] = {
-    {"re", (getter)zig_match_get_re, NULL, "Compiled pattern.", NULL},
-    {"string", (getter)zig_match_get_string, NULL, "Input string.", NULL},
-    {"pos", (getter)zig_match_get_pos, NULL, "Search start.", NULL},
-    {"endpos", (getter)zig_match_get_endpos, NULL, "Search end.", NULL},
+    {"re", (getter)zig_match_get_re, zig_match_readonly, "Compiled pattern.", NULL},
+    {"string", (getter)zig_match_get_string, zig_match_readonly, "Input string.", NULL},
+    {"pos", (getter)zig_match_get_pos, zig_match_readonly, "Search start.", NULL},
+    {"endpos", (getter)zig_match_get_endpos, zig_match_readonly, "Search end.", NULL},
     {"lastindex", (getter)zig_match_get_lastindex, NULL, "Last matched group index.", NULL},
     {"lastgroup", (getter)zig_match_get_lastgroup, NULL, "Last matched group name.", NULL},
     {"regs", (getter)zig_match_get_regs, NULL, "Captured spans.", NULL},
@@ -482,8 +521,10 @@ static PyTypeObject ZigMatchType = {
     .tp_itemsize = sizeof(intptr_t),
     .tp_dealloc = (destructor)zig_match_dealloc,
     .tp_repr = (reprfunc)zig_match_repr,
-    .tp_flags = Py_TPFLAGS_DEFAULT,
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
     .tp_doc = "Capture-aware Zig regular expression match.",
+    .tp_traverse = (traverseproc)zig_match_traverse,
+    .tp_clear = (inquiry)zig_match_clear,
     .tp_methods = zig_match_methods,
     .tp_getset = zig_match_getsets,
     .tp_as_mapping = &zig_match_mapping,
@@ -797,6 +838,19 @@ static int zig_index_arg(PyObject *value, Py_ssize_t *result) {
     return !PyErr_Occurred();
 }
 
+static PyObject *zig_bad_bound_keyword(const char *method, PyObject *subject,
+                                      PyObject *name) {
+    if (subject == NULL) {
+        PyErr_Format(PyExc_TypeError,
+                     "%s() missing required argument 'string' (pos 1)", method);
+    } else {
+        PyErr_Format(PyExc_TypeError,
+                     "%s() got an unexpected keyword argument '%U'", method,
+                     name);
+    }
+    return NULL;
+}
+
 static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
     (void)module;
     if (nargs != 9) {
@@ -840,15 +894,15 @@ static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, P
         data = view.buf;
         length = (size_t)view.len;
     }
-    if (args[7] == Py_None) requested_end = (Py_ssize_t)length;
-    else if (!zig_index_arg(args[7], &requested_end)) {
+    if (!zig_index_arg(args[7], &requested_end)) {
         if (view.obj != NULL) PyBuffer_Release(&view);
         return NULL;
     }
     Py_ssize_t start = pos < 0 ? 0 : pos;
     Py_ssize_t end = requested_end < 0 ? 0 : requested_end;
+    if ((size_t)start > length) start = (Py_ssize_t)length;
     if ((size_t)end > length) end = (Py_ssize_t)length;
-    if (start > end) {
+    if (start > end && mode != 1) {
         if (view.obj != NULL) PyBuffer_Release(&view);
         Py_RETURN_NONE;
     }
@@ -860,7 +914,14 @@ static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, P
     intptr_t ends[257];
     intptr_t last = -1;
     int result = 0;
-    if (literal != Py_None) {
+    if (start > end) {
+        result = rebar_zig_match_inverted_wide(handle, data, length, kind,
+            (size_t)start, (size_t)end, 0, begins, ends, &last);
+        if (result > 0) {
+            begin = begins[0];
+            finish = ends[0];
+        }
+    } else if (literal != Py_None) {
         Py_ssize_t width = text_mode ? PyUnicode_GET_LENGTH(literal) : PyBytes_GET_SIZE(literal);
         if (mode == 0) {
             if (text_mode && kind == 1 && PyUnicode_KIND(literal) == 1) {
@@ -918,7 +979,7 @@ static PyObject *bridge_bound_search(PyObject *module, PyObject *const *args, Py
     }
     PyObject *subject = nargs >= 6 ? args[5] : NULL;
     PyObject *pos = nargs >= 7 ? args[6] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
-    PyObject *endpos = nargs >= 8 ? args[7] : Py_None;
+    PyObject *endpos = nargs >= 8 ? args[7] : zig_default_endpos;
     for (Py_ssize_t index = 0; index < keyword_count; index++) {
         PyObject *name = PyTuple_GET_ITEM(kwnames, index);
         if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
@@ -939,10 +1000,7 @@ static PyObject *bridge_bound_search(PyObject *module, PyObject *const *args, Py
                 return NULL;
             }
             endpos = args[nargs + index];
-        } else {
-            PyErr_Format(PyExc_TypeError, "search() got an unexpected keyword argument '%U'", name);
-            return NULL;
-        }
+        } else return zig_bad_bound_keyword("search", subject, name);
     }
     if (subject == NULL) {
         PyErr_SetString(PyExc_TypeError, "search() missing required argument 'string' (pos 1)");
@@ -960,7 +1018,7 @@ static PyObject *bridge_bound_pattern_mode(PyObject *module, PyObject *const *ar
     }
     PyObject *subject = nargs >= 6 ? args[5] : NULL;
     PyObject *pos = nargs >= 7 ? args[6] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
-    PyObject *endpos = nargs >= 8 ? args[7] : Py_None;
+    PyObject *endpos = nargs >= 8 ? args[7] : zig_default_endpos;
     for (Py_ssize_t index = 0; index < keyword_count; index++) {
         PyObject *name = PyTuple_GET_ITEM(kwnames, index);
         if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
@@ -981,10 +1039,7 @@ static PyObject *bridge_bound_pattern_mode(PyObject *module, PyObject *const *ar
                 return NULL;
             }
             endpos = args[nargs + index];
-        } else {
-            PyErr_Format(PyExc_TypeError, "%s() got an unexpected keyword argument '%U'", method, name);
-            return NULL;
-        }
+        } else return zig_bad_bound_keyword(method, subject, name);
     }
     if (subject == NULL) {
         PyErr_Format(PyExc_TypeError, "%s() missing required argument 'string' (pos 1)", method);
@@ -1029,7 +1084,10 @@ static ZigMatch *zig_iterator_record(ZigIterator *iterator, const intptr_t *reco
 static PyObject *zig_iterator_next(PyObject *value) {
     ZigIterator *iterator = (ZigIterator *)value;
     if (iterator->record_at == iterator->record_count) {
-        if (iterator->done || iterator->cursor > iterator->endpos) return NULL;
+        if (iterator->done || iterator->cursor > iterator->endpos) {
+            iterator->done = 1;
+            return NULL;
+        }
         size_t words = (iterator->groups + 1) * 2 + 1;
         size_t capacity = ZIG_ITERATOR_RECORD_WORDS / words;
         intptr_t *records = iterator->records;
@@ -1076,14 +1134,25 @@ static PyObject *zig_scanner_match(ZigIterator *iterator, PyObject *ignored) {
     (void)ignored;
     iterator->record_at = 0;
     iterator->record_count = 0;
-    if (iterator->done || iterator->cursor > iterator->endpos) Py_RETURN_NONE;
+    if (iterator->done) Py_RETURN_NONE;
     size_t stride = iterator->groups + 1;
     intptr_t begins[257];
     intptr_t ends[257];
     intptr_t last = -1;
     int result;
-    if (iterator->groups == 0) result = rebar_zig_match_nonempty_wide(iterator->handle, iterator->data, iterator->length, iterator->kind, iterator->cursor, iterator->endpos, 1, iterator->nonempty, &begins[0], &ends[0]);
-    else result = rebar_zig_match_captures_wide(iterator->handle, iterator->data, iterator->length, iterator->kind, iterator->cursor, iterator->endpos, 1, iterator->nonempty, begins, ends, &last);
+    if (iterator->cursor > iterator->endpos) {
+        result = rebar_zig_match_inverted_wide(iterator->handle, iterator->data,
+            iterator->length, iterator->kind, iterator->cursor,
+            iterator->endpos, iterator->nonempty, begins, ends, &last);
+    } else if (iterator->groups == 0) {
+        result = rebar_zig_match_nonempty_wide(iterator->handle, iterator->data,
+            iterator->length, iterator->kind, iterator->cursor,
+            iterator->endpos, 1, iterator->nonempty, &begins[0], &ends[0]);
+    } else {
+        result = rebar_zig_match_captures_wide(iterator->handle, iterator->data,
+            iterator->length, iterator->kind, iterator->cursor,
+            iterator->endpos, 1, iterator->nonempty, begins, ends, &last);
+    }
     if (result < 0) {
         PyErr_SetString(PyExc_RuntimeError, "Zig matcher rejected the scanner bridge call");
         return NULL;
@@ -1194,18 +1263,18 @@ static PyObject *bridge_pattern_iterator(PyObject *module, PyObject *const *args
         iterator->data = iterator->view.buf;
         iterator->length = (size_t)iterator->view.len;
     }
-    if (args[6] == Py_None) requested_end = (Py_ssize_t)iterator->length;
-    else if (!zig_index_arg(args[6], &requested_end)) {
+    if (!zig_index_arg(args[6], &requested_end)) {
         Py_DECREF(iterator);
         return NULL;
     }
     Py_ssize_t start = pos < 0 ? 0 : pos;
     Py_ssize_t end = requested_end < 0 ? 0 : requested_end;
+    if ((size_t)start > iterator->length) start = (Py_ssize_t)iterator->length;
     if ((size_t)end > iterator->length) end = (Py_ssize_t)iterator->length;
     iterator->original_pos = (size_t)start;
     iterator->cursor = (size_t)start;
     iterator->endpos = (size_t)end;
-    iterator->done = start > end;
+    iterator->done = start > end && !scanner;
     return (PyObject *)iterator;
 }
 
@@ -1217,7 +1286,7 @@ static PyObject *bridge_bound_finditer(PyObject *module, PyObject *const *args, 
     }
     PyObject *subject = nargs >= 6 ? args[5] : NULL;
     PyObject *pos = nargs >= 7 ? args[6] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
-    PyObject *endpos = nargs >= 8 ? args[7] : Py_None;
+    PyObject *endpos = nargs >= 8 ? args[7] : zig_default_endpos;
     for (Py_ssize_t index = 0; index < keyword_count; index++) {
         PyObject *name = PyTuple_GET_ITEM(kwnames, index);
         if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
@@ -1238,10 +1307,7 @@ static PyObject *bridge_bound_finditer(PyObject *module, PyObject *const *args, 
                 return NULL;
             }
             endpos = args[nargs + index];
-        } else {
-            PyErr_Format(PyExc_TypeError, "finditer() got an unexpected keyword argument '%U'", name);
-            return NULL;
-        }
+        } else return zig_bad_bound_keyword("finditer", subject, name);
     }
     if (subject == NULL) {
         PyErr_SetString(PyExc_TypeError, "finditer() missing required argument 'string' (pos 1)");
@@ -1259,7 +1325,7 @@ static PyObject *bridge_bound_scanner(PyObject *module, PyObject *const *args, P
     }
     PyObject *subject = nargs >= 6 ? args[5] : NULL;
     PyObject *pos = nargs >= 7 ? args[6] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
-    PyObject *endpos = nargs >= 8 ? args[7] : Py_None;
+    PyObject *endpos = nargs >= 8 ? args[7] : zig_default_endpos;
     for (Py_ssize_t index = 0; index < keyword_count; index++) {
         PyObject *name = PyTuple_GET_ITEM(kwnames, index);
         if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
@@ -1280,10 +1346,7 @@ static PyObject *bridge_bound_scanner(PyObject *module, PyObject *const *args, P
                 return NULL;
             }
             endpos = args[nargs + index];
-        } else {
-            PyErr_Format(PyExc_TypeError, "scanner() got an unexpected keyword argument '%U'", name);
-            return NULL;
-        }
+        } else return zig_bad_bound_keyword("scanner", subject, name);
     }
     if (subject == NULL) {
         PyErr_SetString(PyExc_TypeError, "scanner() missing required argument 'string' (pos 1)");
@@ -1532,13 +1595,13 @@ static PyObject *bridge_findall(PyObject *module, PyObject *const *args, Py_ssiz
         data = view.buf;
         length = (size_t)view.len;
     }
-    if (args[5] == Py_None) requested_end = (Py_ssize_t)length;
-    else if (!zig_index_arg(args[5], &requested_end)) {
+    if (!zig_index_arg(args[5], &requested_end)) {
         if (view.obj != NULL) PyBuffer_Release(&view);
         return NULL;
     }
     size_t pos = requested_pos < 0 ? 0 : (size_t)requested_pos;
     size_t end = requested_end < 0 ? 0 : (size_t)requested_end;
+    if (pos > length) pos = length;
     if (end > length) end = length;
     if (pos > end) {
         if (view.obj != NULL) PyBuffer_Release(&view);
@@ -1569,7 +1632,8 @@ static PyObject *bridge_findall(PyObject *module, PyObject *const *args, Py_ssiz
             PyObject *item;
             if (begin < 0) item = text_mode ? PyUnicode_New(0, 127) : PyBytes_FromStringAndSize("", 0);
             else if (text_mode) item = PyUnicode_Substring(subject, (Py_ssize_t)begin, (Py_ssize_t)finish);
-            else item = PyBytes_FromStringAndSize((const char *)data + begin, (Py_ssize_t)(finish - begin));
+            else item = zig_bytes_piece(subject, data, length,
+                                        (size_t)begin, (size_t)finish);
             if (item == NULL) {
                 Py_XDECREF(row);
                 goto findall_error;
@@ -1598,7 +1662,7 @@ static PyObject *bridge_bound_findall(PyObject *module, PyObject *const *args, P
     }
     PyObject *subject = nargs >= 4 ? args[3] : NULL;
     PyObject *pos = nargs >= 5 ? args[4] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
-    PyObject *endpos = nargs >= 6 ? args[5] : Py_None;
+    PyObject *endpos = nargs >= 6 ? args[5] : zig_default_endpos;
     for (Py_ssize_t index = 0; index < keyword_count; index++) {
         PyObject *name = PyTuple_GET_ITEM(kwnames, index);
         if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
@@ -1619,10 +1683,7 @@ static PyObject *bridge_bound_findall(PyObject *module, PyObject *const *args, P
                 return NULL;
             }
             endpos = args[nargs + index];
-        } else {
-            PyErr_Format(PyExc_TypeError, "findall() got an unexpected keyword argument '%U'", name);
-            return NULL;
-        }
+        } else return zig_bad_bound_keyword("findall", subject, name);
     }
     if (subject == NULL) {
         PyErr_SetString(PyExc_TypeError, "findall() missing required argument 'string' (pos 1)");
@@ -1642,7 +1703,7 @@ static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const 
     PyObject *literal = args[0];
     PyObject *subject = nargs >= 2 ? args[1] : NULL;
     PyObject *pos_value = nargs >= 3 ? args[2] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
-    PyObject *end_value = nargs >= 4 ? args[3] : Py_None;
+    PyObject *end_value = nargs >= 4 ? args[3] : zig_default_endpos;
     for (Py_ssize_t index = 0; index < keyword_count; index++) {
         PyObject *name = PyTuple_GET_ITEM(kwnames, index);
         if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
@@ -1663,10 +1724,7 @@ static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const 
                 return NULL;
             }
             end_value = args[nargs + index];
-        } else {
-            PyErr_Format(PyExc_TypeError, "findall() got an unexpected keyword argument '%U'", name);
-            return NULL;
-        }
+        } else return zig_bad_bound_keyword("findall", subject, name);
     }
     if (subject == NULL) {
         PyErr_SetString(PyExc_TypeError, "findall() missing required argument 'string' (pos 1)");
@@ -1701,13 +1759,13 @@ static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const 
         length = view.len;
         literal_length = PyBytes_GET_SIZE(literal);
     }
-    if (end_value == Py_None) requested_end = length;
-    else if (!zig_index_arg(end_value, &requested_end)) {
+    if (!zig_index_arg(end_value, &requested_end)) {
         if (view.obj != NULL) PyBuffer_Release(&view);
         return NULL;
     }
     Py_ssize_t pos = requested_pos < 0 ? 0 : requested_pos;
     Py_ssize_t end = requested_end < 0 ? 0 : requested_end;
+    if (pos > length) pos = length;
     if (end > length) end = length;
     PyObject *result = PyList_New(0);
     if (result == NULL) goto literal_findall_error;
@@ -1724,7 +1782,10 @@ static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const 
             if (PyErr_Occurred()) goto literal_findall_error;
             break;
         }
-        PyObject *item = text_mode ? PyUnicode_Substring(subject, found, found + literal_length) : PyBytes_FromStringAndSize(data + found, literal_length);
+        PyObject *item = text_mode
+            ? PyUnicode_Substring(subject, found, found + literal_length)
+            : zig_bytes_piece(subject, (const uint8_t *)data, (size_t)length,
+                              (size_t)found, (size_t)(found + literal_length));
         if (item == NULL) goto literal_findall_error;
         PyListObject *list = (PyListObject *)result;
         Py_ssize_t used = PyList_GET_SIZE(result);
@@ -1760,8 +1821,8 @@ static PyObject *bridge_split(PyObject *module, PyObject *const *args, Py_ssize_
     PyObject *pattern_value = args[1];
     PyObject *subject = args[2];
     size_t groups = PyLong_AsSize_t(args[3]);
-    Py_ssize_t maxsplit = PyLong_AsSsize_t(args[4]);
-    if (PyErr_Occurred() || groups == SIZE_MAX) {
+    Py_ssize_t maxsplit;
+    if (PyErr_Occurred() || groups == SIZE_MAX || !zig_index_arg(args[4], &maxsplit)) {
         if (!PyErr_Occurred()) PyErr_SetString(PyExc_OverflowError, "invalid Zig regex split argument");
         return NULL;
     }
@@ -1906,8 +1967,8 @@ static PyObject *bridge_subn(PyObject *module, PyObject *const *args, Py_ssize_t
     PyObject *subject = args[2];
     size_t groups = PyLong_AsSize_t(args[3]);
     PyObject *tokens = args[4];
-    Py_ssize_t limit = PyLong_AsSsize_t(args[5]);
-    if (PyErr_Occurred() || groups == SIZE_MAX) {
+    Py_ssize_t limit;
+    if (PyErr_Occurred() || groups == SIZE_MAX || !zig_index_arg(args[5], &limit)) {
         if (!PyErr_Occurred()) PyErr_SetString(PyExc_OverflowError, "invalid Zig regex replacement argument");
         return NULL;
     }
@@ -2093,8 +2154,8 @@ static PyObject *bridge_literal_subn(PyObject *module, PyObject *const *args, Py
     PyObject *literal = args[0];
     PyObject *replacement = args[1];
     PyObject *subject = args[2];
-    Py_ssize_t limit = PyLong_AsSsize_t(args[3]);
-    if (PyErr_Occurred()) return NULL;
+    Py_ssize_t limit;
+    if (!zig_index_arg(args[3], &limit)) return NULL;
     int text_mode = PyUnicode_Check(literal);
     if (text_mode != PyUnicode_Check(replacement)) {
         PyErr_Format(PyExc_TypeError, "sequence item 0: expected %s, %.200s found", text_mode ? "str instance" : "a bytes-like object", Py_TYPE(replacement)->tp_name);
@@ -2494,14 +2555,15 @@ static PyObject *bridge_initialize_pattern(PyObject *module, PyObject *const *ar
         PyErr_Format(PyExc_TypeError, "initialize_pattern() takes exactly 9 arguments (%zd given)", nargs);
         return NULL;
     }
-    static const char *attribute_names[] = {"pattern", "flags", "groups", "groupindex", "_groupindex", "_handle", "_literal", "_templates"};
-    static PyObject *attribute_keys[8] = {NULL};
-    for (size_t index = 0; index < 8; index++) {
+    static const char *attribute_names[] = {"pattern", "flags", "groups", "_groupindex", "_handle", "_literal", "_templates"};
+    static const size_t argument_indexes[] = {1, 2, 3, 5, 6, 7, 8};
+    static PyObject *attribute_keys[7] = {NULL};
+    for (size_t index = 0; index < 7; index++) {
         if (attribute_keys[index] == NULL) {
             attribute_keys[index] = PyUnicode_InternFromString(attribute_names[index]);
             if (attribute_keys[index] == NULL) return NULL;
         }
-        if (PyObject_GenericSetAttr(args[0], attribute_keys[index], args[index + 1]) < 0) return NULL;
+        if (PyObject_GenericSetAttr(args[0], attribute_keys[index], args[argument_indexes[index]]) < 0) return NULL;
     }
     Py_RETURN_NONE;
 }
@@ -2550,6 +2612,10 @@ static struct PyModuleDef bridge_module = {
 
 PyMODINIT_FUNC PyInit__zig_bridge(void) {
     if (PyType_Ready(&ZigMatchType) < 0 || PyType_Ready(&ZigIteratorType) < 0 || PyType_Ready(&ZigScannerType) < 0) return NULL;
+    if (zig_default_endpos == NULL) {
+        zig_default_endpos = PyLong_FromSsize_t(PY_SSIZE_T_MAX);
+        if (zig_default_endpos == NULL) return NULL;
+    }
     PyObject *module = PyModule_Create(&bridge_module);
     if (module == NULL) return NULL;
     if (PyModule_AddObjectRef(module, "Match", (PyObject *)&ZigMatchType) < 0) {

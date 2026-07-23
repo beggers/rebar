@@ -285,6 +285,7 @@ def _preflight_pattern(pattern, flags):
     conditionals = []
     conditional_branches = {}
     stack = []
+    pending_lookbehind_width_error = False
     active_flags = flags
     root_prefix = True
     can_repeat = False
@@ -403,6 +404,8 @@ def _preflight_pattern(pattern, flags):
                 if right_category:
                     fail(f"bad character range {previous}-{right}", opening + 1)
                 if scalar(right) < scalar(previous):
+                    if previous.startswith(("\\x", "\\u", "\\U")) and right.startswith(("\\x", "\\u", "\\U")):
+                        fail(f"bad character range {previous[:2]}-{right[:2]}", index)
                     fail(f"bad character range {previous}-{right}", opening + 1)
                 index = right_end
                 previous = None
@@ -612,10 +615,10 @@ def _preflight_pattern(pattern, flags):
                 variable = "*" in body or "+" in body or any(body[offset] == "?" and (offset == 0 or body[offset - 1] != "(") for offset in range(len(body)))
                 variable = variable or any("," in value and value.split(",", 1)[0] != value.split(",", 1)[1] for value in (part.split("}", 1)[0] for part in body.split("{")[1:]))
                 variable = variable or any(f"\\{number}" in body or any(f"(?P={name})" in body for name, value in groups.items() if value == number) for number in variable_groups)
-                if variable:
-                    fail("look-behind requires fixed-width pattern", keep_pattern=False)
                 width = _fixed_width(body)
-                if width is not None and width > _MAXREPEAT:
+                if variable or width is None:
+                    pending_lookbehind_width_error = True
+                elif width > _MAXREPEAT:
                     fail("looks too much behind", keep_pattern=False)
             active_flags = parent_flags
             can_repeat, repeated = kind != "lookbehind", False
@@ -679,6 +682,8 @@ def _preflight_pattern(pattern, flags):
     for number, position in conditionals:
         if number > group_count:
             fail(f"invalid group reference {number}", position)
+    if pending_lookbehind_width_error:
+        fail("look-behind requires fixed-width pattern", keep_pattern=False)
 
 
 def _may_accept_invalid_pattern(pattern):
@@ -913,7 +918,12 @@ class _PatternType(type):
 
 
 class Pattern(metaclass=_PatternType):
-    __slots__ = ("pattern", "flags", "groups", "groupindex", "_groupindex", "_handle", "_literal", "_templates", "search", "match", "fullmatch", "findall", "finditer", "split", "sub", "subn", "scanner", "__weakref__")
+    __slots__ = ("pattern", "flags", "groups", "_groupindex", "_handle", "_literal", "_templates", "search", "match", "fullmatch", "findall", "finditer", "split", "sub", "subn", "scanner", "__weakref__")
+
+    @property
+    def groupindex(self):
+        names = self._groupindex
+        return types.MappingProxyType(names) if names else {}
 
     def __init__(self, value, flags, handle, groups, groupindex):
         names = dict(groupindex)
@@ -1109,20 +1119,36 @@ class Scanner:
 
 
 _CACHE = {}
+_CACHE2 = {}
+_MAX_CACHE = 512
+_MAX_CACHE2 = 256
 
 
 def compile(pattern, flags=0):
-    flags = int(flags)
+    if isinstance(flags, RegexFlag):
+        flags = flags.value
+    try:
+        return _CACHE2[type(pattern), pattern, flags]
+    except KeyError:
+        pass
+    key = (type(pattern), pattern, flags)
+    cached = _CACHE.pop(key, None)
+    if cached is not None:
+        _CACHE[key] = cached
+        if len(_CACHE2) >= _MAX_CACHE2:
+            try:
+                del _CACHE2[next(iter(_CACHE2))]
+            except (StopIteration, RuntimeError, KeyError):
+                pass
+        _CACHE2[key] = cached
+        return cached
     if isinstance(pattern, Pattern):
         if flags:
             raise ValueError("cannot process flags argument with a compiled pattern")
         return pattern
     if not isinstance(pattern, (str, bytes)):
         raise TypeError("first argument must be string or compiled pattern")
-    key = (type(pattern), pattern, flags)
-    cached = _CACHE.get(key)
-    if cached is not None:
-        return cached
+    flags = int(flags)
     if isinstance(pattern, str) and flags & int(LOCALE):
         raise ValueError("cannot use LOCALE flag with a str pattern")
     if isinstance(pattern, bytes) and flags & int(UNICODE):
@@ -1149,14 +1175,27 @@ def compile(pattern, flags=0):
         _zig_bridge.free(handle)
         raise ValueError("ASCII and LOCALE flags are incompatible")
     result = Pattern(pattern, effective_flags, handle, groups, groupindex)
-    _CACHE[key] = result
     if flags & int(DEBUG):
         print(f"ZIG-BYTECODE groups={groups} flags={effective_flags}")
+        return result
+    if len(_CACHE) >= _MAX_CACHE:
+        try:
+            del _CACHE[next(iter(_CACHE))]
+        except (StopIteration, RuntimeError, KeyError):
+            pass
+    _CACHE[key] = result
+    if len(_CACHE2) >= _MAX_CACHE2:
+        try:
+            del _CACHE2[next(iter(_CACHE2))]
+        except (StopIteration, RuntimeError, KeyError):
+            pass
+    _CACHE2[key] = result
     return result
 
 
 def purge():
     _CACHE.clear()
+    _CACHE2.clear()
 
 
 def search(pattern, string, flags=0):
@@ -1234,6 +1273,11 @@ def escape(pattern):
     if isinstance(pattern, str):
         return pattern.translate(_ESCAPE_MAP)
     return str(pattern, "latin1").translate(_ESCAPE_MAP).encode("latin1")
+
+
+split.__text_signature__ = "(pattern, string, maxsplit=0, flags=0)"
+sub.__text_signature__ = "(pattern, repl, string, count=0, flags=0)"
+subn.__text_signature__ = "(pattern, repl, string, count=0, flags=0)"
 
 
 __all__ = ["match", "fullmatch", "search", "sub", "subn", "split", "findall", "finditer", "compile", "purge", "escape", "error", "Pattern", "Match", "A", "I", "L", "M", "S", "X", "U", "ASCII", "IGNORECASE", "LOCALE", "MULTILINE", "DOTALL", "VERBOSE", "UNICODE", "NOFLAG", "RegexFlag", "PatternError"]
