@@ -104,6 +104,7 @@ PYTHONPATH=. "$PY" tools/rust_campaign_gate.py --sealed-practice-only \
 PYTHONPATH=. "$PY" tools/rust_v7_observability_oracle.py --self-test
 PYTHONPATH=. "$PY" tools/rust_v7_observability_oracle.py verify
 PYTHONPATH=. "$PY" tools/rust_v8_deep_contract_oracle.py --self-test
+PYTHONPATH=. "$PY" tools/rust_v8_deep_contract_variant.py --self-test
 # Currently exits nonzero and preserves all 104 real compatibility failures:
 PYTHONPATH=. "$PY" tools/rust_v8_deep_contract_oracle.py --gate
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_pilot.py self-test
