@@ -6,6 +6,7 @@ import os
 import types
 import unicodedata
 import warnings
+from struct import calcsize as _calcsize
 
 
 class RegexFlag(enum.IntFlag):
@@ -43,11 +44,14 @@ U = UNICODE = RegexFlag.UNICODE
 DEBUG = RegexFlag.DEBUG
 NOFLAG = RegexFlag(0)
 _BYTE = 1 << 31
+_ROOT_ASCII = 1 << 30
 _IGNORE = int(IGNORECASE)
 _DOT = int(DOTALL)
 _ASCII_MODES = int(ASCII) | int(LOCALE) | _BYTE
 _MAXREPEAT = (1 << 32) - 1
+_MAXSIZE = (1 << (8 * _calcsize("n") - 1)) - 1
 _ESCAPE_MAP = {ord(char): "\\" + char for char in "()[]{}?*+-|^$\\.&~# \t\n\r\v\f"}
+_BYTE_SINGLETONS = tuple(bytes((value,)) for value in range(256))
 _MISSING = object()
 _WARNING_PREFIX = (os.path.dirname(__file__),)
 
@@ -84,7 +88,10 @@ class _Parser:
         self.original = original
         self.text = original.decode("latin1") if isinstance(original, bytes) else original
         self.byte_mode = isinstance(original, bytes)
-        self.flags = int(flags) | (_BYTE if self.byte_mode else 0)
+        root_flags = int(flags)
+        self.flags = root_flags | (_BYTE if self.byte_mode else 0)
+        if self.byte_mode or root_flags & int(ASCII | LOCALE):
+            self.flags |= _ROOT_ASCII
         self.index = 0
         self.groups = 0
         self.groupindex = {}
@@ -94,6 +101,7 @@ class _Parser:
         self.open_groups = set()
         self.lookbehind_bases = []
         self.pending_conditionals = []
+        self.pending_lookbehinds = []
 
     def fail(self, msg, pos=None, pattern=True):
         raise PatternError(msg, self.original if pattern else None, pos)
@@ -127,6 +135,8 @@ class _Parser:
         for number, position in self.pending_conditionals:
             if number > self.groups:
                 self.fail(f"invalid group reference {number}", position)
+        if self.pending_lookbehinds:
+            self.fail(self.pending_lookbehinds[0], pattern=False)
         return node
 
     def alternation(self, flags, stop=")"):
@@ -169,7 +179,7 @@ class _Parser:
         return ("seq", nodes)
 
     def quantifier(self, atom, flags):
-        if atom[0] in {"anchor", "boundary", "look"}:
+        if atom[0] in {"anchor", "boundary"}:
             self.fail("nothing to repeat", self.index)
         start = self.index
         char = self.take()
@@ -349,7 +359,14 @@ class _Parser:
                 left = ("lit", self.take(), flags)
             if self.peek() == "-" and self.index + 1 < len(self.text) and self.text[self.index + 1] != "]":
                 dash = self.index
+                if self.text[dash:dash + 2] == "--":
+                    warnings.warn(
+                        f"Possible set difference at position {dash}",
+                        FutureWarning,
+                        skip_file_prefixes=_WARNING_PREFIX,
+                    )
                 self.index += 1
+                right_start = self.index
                 if self.peek() == "\\":
                     self.index += 1
                     right = self.escape(flags, True, dash + 1)
@@ -358,7 +375,18 @@ class _Parser:
                 if left[0] != "lit" or right[0] != "lit":
                     self.fail(f"bad character range {self.text[left_start:self.index]}", left_start)
                 if ord(left[1]) > ord(right[1]):
-                    self.fail(f"bad character range {left[1]}-{right[1]}", dash - 1)
+                    left_token = (
+                        self.text[left_start:left_start + 2]
+                        if self.text[left_start:left_start + 1] == "\\"
+                        else self.text[left_start:left_start + 1]
+                    )
+                    right_token = (
+                        self.text[right_start:right_start + 2]
+                        if self.text[right_start:right_start + 1] == "\\"
+                        else self.text[right_start:right_start + 1]
+                    )
+                    position = self.index - len(left_token) - 1 - len(right_token)
+                    self.fail(f"bad character range {left_token}-{right_token}", position)
                 items.append(("range", left[1], right[1]))
             else:
                 items.append(left)
@@ -434,9 +462,9 @@ class _Parser:
             minimum, maximum = _width(child, self.groupwidth)
             self.lookbehind_bases.pop()
             if minimum != maximum:
-                self.fail("look-behind requires fixed-width pattern", pattern=False)
-            if minimum > _MAXREPEAT:
-                self.fail("looks too much behind", pattern=False)
+                self.pending_lookbehinds.append("look-behind requires fixed-width pattern")
+            elif minimum > _MAXREPEAT:
+                self.pending_lookbehinds.append("looks too much behind")
             return ("look", "behind", positive, child, minimum)
         if char == ">":
             child = self.alternation(flags)
@@ -521,6 +549,8 @@ class _Parser:
             while self.peek() is not None and self.peek() not in {":", ")"}:
                 item = self.take()
                 if item == "-":
+                    if negative:
+                        self.fail("missing flag", self.index - 1)
                     negative = True
                 elif item in mapping:
                     if negative:
@@ -552,7 +582,7 @@ class _Parser:
                 new_flags &= ~int(ASCII | LOCALE)
             terminator = self.take()
             if negative and not disabled:
-                self.fail("missing flag", self.index)
+                self.fail("missing flag", self.index - (terminator is not None))
             if negative and terminator in {None, ")"}:
                 self.fail("missing :", self.index - (terminator == ")"))
             if terminator is None:
@@ -613,7 +643,13 @@ def _range_case_match(left, right, char, ascii_only):
         variants = {char, char.lower(), char.upper()} if char.isascii() else {char}
     else:
         variants = {char}
-        variants.update(value for value in (char.lower(), char.upper(), char.casefold()) if len(value) == 1)
+        pending = [char]
+        while pending:
+            current = pending.pop()
+            for value in (current.lower(), current.upper(), current.casefold()):
+                if len(value) == 1 and value not in variants:
+                    variants.add(value)
+                    pending.append(value)
         closures = ("Iiİı", "Ssſ", "KkK", "Ввᲀ", "ﬅﬆ", "ßẞ")
         for closure in closures:
             if char in closure:
@@ -625,6 +661,14 @@ def _equal(left, right, flags):
     if flags & _IGNORE:
         return _fold(left, bool(flags & _ASCII_MODES)) == _fold(right, bool(flags & _ASCII_MODES))
     return left == right
+
+
+def _backreference_equal(left, right, flags):
+    if not flags & _IGNORE:
+        return left == right
+    if flags & _ASCII_MODES:
+        return _fold(left, True) == _fold(right, True)
+    return left.lower()[0] == right.lower()[0]
 
 
 def _category(char, code, flags):
@@ -707,6 +751,18 @@ def _repeat_atom_match(node, char):
     return False
 
 
+def _prefix_atom_match(node, char, flags):
+    if node[0] == "category":
+        mode_bits = int(ASCII | LOCALE | UNICODE) | _BYTE
+        prefix_flags = (node[2] & ~mode_bits) | (flags & mode_bits)
+        return _repeat_atom_match(("category", node[1], prefix_flags), char)
+    if node[0] == "class":
+        mode_bits = int(ASCII | LOCALE | UNICODE) | _BYTE
+        prefix_flags = (node[3] & ~mode_bits) | (flags & mode_bits)
+        return _repeat_atom_match(("class", node[1], node[2], prefix_flags), char)
+    return _repeat_atom_match(node, char)
+
+
 def _literal_start(node):
     kind = node[0]
     if kind == "lit":
@@ -761,6 +817,27 @@ def _start_atoms(node):
     return (), False, False
 
 
+def _inverted_match_possible(node):
+    kind = node[0]
+    if kind in {"anchor", "boundary", "look", "setflags"}:
+        return True
+    if kind in {"group", "atomic"}:
+        return _inverted_match_possible(node[-1])
+    if kind == "seq":
+        return all(_inverted_match_possible(child) for child in node[1])
+    if kind == "alt":
+        return any(_inverted_match_possible(branch) for branch in node[1])
+    if kind == "conditional":
+        return _inverted_match_possible(node[2]) or _inverted_match_possible(node[3])
+    if kind == "repeat":
+        child = node[1]
+        layout = _repeat_layout(child)
+        if child[0] == "look" or (layout is not None and layout[1] and not layout[2]):
+            return False
+        return node[2] == 0 or _inverted_match_possible(child)
+    return False
+
+
 class _Engine:
     __slots__ = ("node", "text", "endpos", "layouts", "tables")
 
@@ -795,7 +872,7 @@ class _Engine:
             if code == "^":
                 okay = pos == 0 or (flags & int(MULTILINE) and pos > 0 and self.text[pos - 1] == "\n")
             elif code == "$":
-                okay = pos == self.endpos or (pos + 1 == self.endpos and self.text[pos:pos + 1] == "\n") or (flags & int(MULTILINE) and pos < self.endpos and self.text[pos] == "\n")
+                okay = pos == self.endpos or (pos + 1 == self.endpos and self.text[pos:pos + 1] == "\n") or (flags & int(MULTILINE) and pos < len(self.text) and self.text[pos] == "\n")
             elif code == "A":
                 okay = pos == 0
             else:
@@ -844,7 +921,7 @@ class _Engine:
                 return
             value = self.text[span[0]:span[1]]
             target = self.text[pos:pos + len(value)]
-            if pos + len(value) <= self.endpos and len(target) == len(value) and all(_equal(a, b, node[2]) for a, b in zip(value, target)):
+            if pos + len(value) <= self.endpos and len(target) == len(value) and all(_backreference_equal(a, b, node[2]) for a, b in zip(value, target)):
                 yield pos + len(value), captures, last
             return
         if kind == "repeat":
@@ -1040,7 +1117,11 @@ def _template(value, match, validate_only=False):
 def _slice(value, start, end):
     if isinstance(value, str):
         return str(value)[start:end]
-    return memoryview(value).cast("B")[start:end].tobytes()
+    if type(value) is bytes and start == 0 and end == len(value):
+        return value
+    if end - start == 1:
+        return _BYTE_SINGLETONS[memoryview(value).cast("B")[start]]
+    return bytes(value)[start:end]
 
 
 def _subject_length(value):
@@ -1049,17 +1130,99 @@ def _subject_length(value):
     return memoryview(value).nbytes
 
 
-class Match:
+def _ssize_index(value):
+    index = operator.index(value)
+    if index < -_MAXSIZE - 1 or index > _MAXSIZE:
+        raise OverflowError("Python int too large to convert to C ssize_t")
+    return index
+
+
+def _normalize_window(string, pos, endpos):
+    length = _subject_length(string)
+    start = _ssize_index(pos)
+    end = length if endpos is _MISSING else _ssize_index(endpos)
+    return min(max(start, 0), length), min(max(end, 0), length)
+
+
+def _bind_window_call(name, args, kwargs):
+    given = len(args) + len(kwargs)
+    if given > 3:
+        raise TypeError(f"{name}() takes at most 3 arguments ({given} given)")
+    if not args and "string" not in kwargs:
+        raise TypeError(f"{name}() missing required argument 'string' (pos 1)")
+    fields = ("string", "pos", "endpos")
+    values = [_MISSING, 0, _MISSING]
+    for index, value in enumerate(args):
+        values[index] = value
+    for field, value in kwargs.items():
+        try:
+            index = fields.index(field)
+        except ValueError:
+            raise TypeError(f"{name}() got an unexpected keyword argument '{field}'") from None
+        if index < len(args):
+            raise TypeError(
+                f"argument for {name}() given by name ('{field}') and position ({index + 1})"
+            )
+        values[index] = value
+    return tuple(values)
+
+
+class _MatchMeta(type):
+    def __getattribute__(cls, name):
+        if name == "__name__":
+            return "Match"
+        return type.__getattribute__(cls, name)
+
+
+class _GroupProxy:
+    __slots__ = ("_match",)
+
+    def __init__(self, match):
+        self._match = match
+
+    @property
+    def __signature__(self):
+        if self._match is None:
+            raise ValueError("no signature found for builtin <method 'group' of 're.Match' objects>")
+        raise ValueError(
+            f"no signature found for builtin <built-in method group of re.Match object at {id(self._match):#x}>"
+        )
+
+    def __call__(self, *groups):
+        if self._match is None:
+            if not groups or not isinstance(groups[0], Match):
+                raise TypeError("descriptor 'group' for 're.Match' objects doesn't apply")
+            return groups[0]._group(*groups[1:])
+        return self._match._group(*groups)
+
+
+class _GroupDescriptor:
+    __slots__ = ()
+
+    def __get__(self, match, owner=None):
+        return _GroupProxy(match)
+
+
+class Match(metaclass=_MatchMeta):
     __module__ = "re"
-    __slots__ = ("_pattern", "_string", "_spans", "_lastindex", "pos", "endpos")
+    __slots__ = ("_pattern", "_string", "_spans", "_lastindex", "_regs", "pos", "endpos")
+    group = _GroupDescriptor()
 
     def __init__(self, pattern, string, spans, lastindex, pos, endpos):
         self._pattern = pattern
         self._string = string
         self._spans = spans
         self._lastindex = lastindex
-        self.pos = pos
-        self.endpos = endpos
+        self._regs = tuple((-1, -1) if span is None else span for span in spans)
+        object.__setattr__(self, "pos", pos)
+        object.__setattr__(self, "endpos", endpos)
+
+    def __setattr__(self, name, value):
+        if name in {"lastindex", "lastgroup", "regs"}:
+            raise AttributeError(f"attribute '{name}' of 're.Match' objects is not writable")
+        if name in {"re", "string", "pos", "endpos"}:
+            raise AttributeError("readonly attribute")
+        object.__setattr__(self, name, value)
 
     @classmethod
     def __class_getitem__(cls, item):
@@ -1087,7 +1250,7 @@ class Match:
 
     @property
     def regs(self):
-        return tuple((-1, -1) if value is None else value for value in self._spans)
+        return self._regs
 
     @property
     def lastindex(self):
@@ -1105,12 +1268,14 @@ class Match:
         try:
             group = operator.index(group)
         except TypeError:
+            if getattr(type(group), "__index__", None) is not None:
+                raise
             raise IndexError("no such group") from None
         if group < 0 or group > self._pattern.groups:
             raise IndexError("no such group")
         return group
 
-    def group(self, *groups):
+    def _group(self, *groups):
         if not groups:
             groups = (0,)
         values = []
@@ -1120,56 +1285,64 @@ class Match:
         return values[0] if len(values) == 1 else tuple(values)
 
     def __getitem__(self, group):
-        return self.group(group)
+        return self._group(group)
 
-    def groups(self, default=None):
+    def groups(self, /, default=None):
         return tuple(default if item is None else _slice(self._string, item[0], item[1]) for item in self._spans[1:])
 
-    def groupdict(self, default=None):
+    def groupdict(self, /, default=None):
         return {name: default if self._spans[number] is None else _slice(self._string, self._spans[number][0], self._spans[number][1]) for name, number in self._pattern.groupindex.items()}
 
-    def start(self, group=0):
+    def start(self, group=0, /):
         span = self._spans[self._number(group)]
         return -1 if span is None else span[0]
 
-    def end(self, group=0):
+    def end(self, group=0, /):
         span = self._spans[self._number(group)]
         return -1 if span is None else span[1]
 
-    def span(self, group=0):
+    def span(self, group=0, /):
         value = self._spans[self._number(group)]
         return (-1, -1) if value is None else value
 
-    def expand(self, template):
+    def expand(self, /, template):
         return _template(template, self)
 
 
-class _Scanner:
-    __slots__ = ("pattern", "_string", "_pos", "_start", "_end", "_empty")
+type.__setattr__(Match, "__name__", "re.Match")
 
-    def __init__(self, pattern, string, pos=0, endpos=None):
+
+class _Scanner:
+    __slots__ = ("pattern", "_string", "_view", "_pos", "_start", "_end", "_empty", "_done")
+
+    def __init__(self, pattern, string, pos=0, endpos=_MISSING):
         self.pattern = pattern
         self._string = string
-        self._start = self._pos = max(pos, 0)
-        length = _subject_length(string)
-        self._end = length if endpos is None else min(max(endpos, 0), length)
+        self._view = None if isinstance(string, (str, bytes)) else memoryview(string)
+        self._start, self._end = _normalize_window(string, pos, endpos)
+        self._pos = self._start
         self._empty = False
+        self._done = False
 
     def search(self):
+        if self._done:
+            return None
         result = self.pattern._search(self._string, self._pos, self._end, self._empty, self._start)
         if result is None:
             self._pos = self._end + 1
+            self._done = True
             return None
         self._empty = result.end() == result.start()
         self._pos = result.end() if not self._empty else result.start()
         return result
 
     def match(self):
-        if self._pos > self._end:
+        if self._done:
             return None
         result = self.pattern._at(self._string, self._pos, self._end, self._start, self._empty)
         if result is None:
             self._pos = self._end + 1
+            self._done = True
             return None
         self._empty = result.end() == result.start()
         self._pos = result.end()
@@ -1177,19 +1350,34 @@ class _Scanner:
 
 
 class Pattern:
-    __slots__ = ("pattern", "flags", "groups", "groupindex", "_node", "_literal", "_starts", "_start_table", "_tables", "__weakref__")
+    __slots__ = ("pattern", "flags", "groups", "_groupindex", "_node", "_literal", "_starts", "_start_table", "_tables", "__weakref__")
 
     def __init__(self, value, flags, node, groups, groupindex):
-        self.pattern = value
-        self.flags = flags
-        self.groups = groups
-        self.groupindex = types.MappingProxyType(dict(groupindex))
+        object.__setattr__(self, "pattern", value)
+        object.__setattr__(self, "flags", flags)
+        object.__setattr__(self, "groups", groups)
+        self._groupindex = dict(groupindex)
         self._node = node
         self._literal = _literal_start(node)[0]
         atoms, nullable, known = _start_atoms(node)
         self._starts = atoms if known and not nullable else ()
         self._start_table = None
         self._tables = {}
+
+    @property
+    def groupindex(self):
+        if self._groupindex:
+            return types.MappingProxyType(self._groupindex)
+        return {}
+
+    def __setattr__(self, name, value):
+        if name in {"pattern", "flags", "groups"}:
+            raise AttributeError("readonly attribute")
+        if name == "groupindex":
+            raise AttributeError("attribute 'groupindex' of 're.Pattern' objects is not writable")
+        if name in {"search", "match", "fullmatch", "findall", "finditer", "scanner", "split", "sub", "subn"}:
+            raise AttributeError(f"'re.Pattern' object attribute '{name}' is read-only")
+        object.__setattr__(self, name, value)
 
     def __copy__(self):
         return self
@@ -1235,6 +1423,8 @@ class Pattern:
 
     def _at(self, string, start, endpos, original_pos, require_nonempty=False):
         self._validate_string(string)
+        if start > endpos and not _inverted_match_possible(self._node):
+            return None
         text = bytes(string).decode("latin1") if not isinstance(string, str) else string
         engine = _Engine(self._node, text, endpos, self._tables)
         state = (start, tuple([None] * (self.groups + 1)), None)
@@ -1266,7 +1456,16 @@ class Pattern:
         literal = self._literal
         start_table = self._start_table
         if not literal and self._starts and start_table is None:
-            start_table = tuple(any(_repeat_atom_match(atom, chr(value)) for atom in self._starts) for value in range(256))
+            root_flags = self.flags | (_BYTE if isinstance(self.pattern, bytes) else 0)
+            start_table = tuple(
+                any(
+                    _prefix_atom_match(atom, chr(value), root_flags)
+                    if len(self._starts) == 1
+                    else _repeat_atom_match(atom, chr(value))
+                    for atom in self._starts
+                )
+                for value in range(256)
+            )
             self._start_table = start_table
         while start <= endpos:
             if literal:
@@ -1286,24 +1485,23 @@ class Pattern:
             start += 1
         return None
 
-    def search(self, string, pos=0, endpos=None):
+    def search(self, /, *args, **kwargs):
+        string, pos, endpos = _bind_window_call("search", args, kwargs)
         self._validate_string(string)
-        length = _subject_length(string)
-        end = length if endpos is None else min(max(endpos, 0), length)
-        return self._search(string, max(pos, 0), end)
+        start, end = _normalize_window(string, pos, endpos)
+        return self._search(string, start, end)
 
-    def match(self, string, pos=0, endpos=None):
+    def match(self, /, *args, **kwargs):
+        string, pos, endpos = _bind_window_call("match", args, kwargs)
         self._validate_string(string)
-        length = _subject_length(string)
-        end = length if endpos is None else min(max(endpos, 0), length)
-        return self._at(string, max(pos, 0), end, max(pos, 0)) if pos <= end else None
+        start, end = _normalize_window(string, pos, endpos)
+        return self._at(string, start, end, start)
 
-    def fullmatch(self, string, pos=0, endpos=None):
+    def fullmatch(self, /, *args, **kwargs):
+        string, pos, endpos = _bind_window_call("fullmatch", args, kwargs)
         self._validate_string(string)
-        length = _subject_length(string)
-        end = length if endpos is None else min(max(endpos, 0), length)
+        start, end = _normalize_window(string, pos, endpos)
         text = bytes(string).decode("latin1") if not isinstance(string, str) else string
-        start = max(pos, 0)
         state = (start, tuple([None] * (self.groups + 1)), None)
         for result in _Engine(self._node, text, end, self._tables).run(self._node, state):
             if result[0] == end:
@@ -1312,12 +1510,12 @@ class Pattern:
                 return Match(self, string, tuple(captures), result[2], start, end)
         return None
 
-    def finditer(self, string, pos=0, endpos=None):
+    def finditer(self, /, *args, **kwargs):
+        string, pos, endpos = _bind_window_call("finditer", args, kwargs)
         self._validate_string(string)
-        length = _subject_length(string)
-        end = length if endpos is None else min(max(endpos, 0), length)
+        start, end = _normalize_window(string, pos, endpos)
         view = None if isinstance(string, str) else memoryview(string)
-        return self._finditer(string, pos, end, view)
+        return self._finditer(string, start, end, view)
 
     def _finditer(self, string, pos, end, view):
         current = max(pos, 0)
@@ -1339,7 +1537,8 @@ class Pattern:
                 current = finish
                 empty = False
 
-    def findall(self, string, pos=0, endpos=None):
+    def findall(self, /, *args, **kwargs):
+        string, pos, endpos = _bind_window_call("findall", args, kwargs)
         empty = b"" if not isinstance(string, str) else ""
         output = []
         for item in self.finditer(string, pos, endpos):
@@ -1353,7 +1552,8 @@ class Pattern:
                 output.append(tuple(empty if span is None else _slice(string, span[0], span[1]) for span in item._spans[1:]))
         return output
 
-    def split(self, string, maxsplit=0):
+    def split(self, /, string, maxsplit=0):
+        maxsplit = _ssize_index(maxsplit)
         result = []
         previous = 0
         count = 0
@@ -1368,7 +1568,8 @@ class Pattern:
         result.append(_slice(string, previous, _subject_length(string)))
         return result
 
-    def subn(self, repl, string, count=0):
+    def subn(self, /, repl, string, count=0):
+        count = _ssize_index(count)
         self._validate_string(string)
         length = _subject_length(string)
         if not callable(repl):
@@ -1396,10 +1597,11 @@ class Pattern:
             parts.append(tail)
         return (b"" if not isinstance(string, str) else "").join(parts), replacements
 
-    def sub(self, repl, string, count=0):
+    def sub(self, /, repl, string, count=0):
         return self.subn(repl, string, count)[0]
 
-    def scanner(self, string, pos=0, endpos=None):
+    def scanner(self, /, *args, **kwargs):
+        string, pos, endpos = _bind_window_call("scanner", args, kwargs)
         self._validate_string(string)
         return _Scanner(self, string, pos, endpos)
 
@@ -1444,43 +1646,64 @@ class Scanner:
 
 
 _CACHE = {}
+_CACHE2 = {}
+_MAXCACHE = 512
+_MAXCACHE2 = 256
 
 
 def compile(pattern, flags=0):
-    flags = int(flags)
-    if isinstance(pattern, Pattern):
-        if flags:
-            raise ValueError("cannot process flags argument with a compiled pattern")
-        return pattern
-    if not isinstance(pattern, (str, bytes)):
-        raise TypeError("first argument must be string or compiled pattern")
-    if isinstance(pattern, str) and flags & int(LOCALE):
-        raise ValueError("cannot use LOCALE flag with a str pattern")
-    if isinstance(pattern, bytes) and flags & int(UNICODE):
-        raise ValueError("cannot use UNICODE flag with a bytes pattern")
-    if isinstance(pattern, str) and flags & int(ASCII) and flags & int(UNICODE):
-        raise ValueError("ASCII and UNICODE flags are incompatible")
-    if isinstance(pattern, bytes) and flags & int(ASCII) and flags & int(LOCALE):
-        raise ValueError("ASCII and LOCALE flags are incompatible")
+    if isinstance(flags, RegexFlag):
+        flags = flags.value
+    try:
+        return _CACHE2[type(pattern), pattern, flags]
+    except KeyError:
+        pass
     key = (type(pattern), pattern, flags)
-    if key in _CACHE:
-        return _CACHE[key]
-    implicit_unicode = int(UNICODE) if isinstance(pattern, str) and not flags & int(ASCII) else 0
-    parser = _Parser(pattern, flags | implicit_unicode)
-    node = parser.parse()
-    if isinstance(pattern, str) and ((flags & int(ASCII) and parser.flags & int(UNICODE)) or (flags & int(UNICODE) and parser.flags & int(ASCII))):
-        raise ValueError("ASCII and UNICODE flags are incompatible")
-    if isinstance(pattern, bytes) and ((flags & int(ASCII) and parser.flags & int(LOCALE)) or (flags & int(LOCALE) and parser.flags & int(ASCII))):
-        raise ValueError("ASCII and LOCALE flags are incompatible")
-    result = Pattern(pattern, parser.flags & ~_BYTE, node, parser.groups, dict(parser.groupindex))
+    result = _CACHE.pop(key, None)
+    if result is None:
+        if isinstance(pattern, Pattern):
+            if flags:
+                raise ValueError("cannot process flags argument with a compiled pattern")
+            return pattern
+        if not isinstance(pattern, (str, bytes)):
+            raise TypeError("first argument must be string or compiled pattern")
+        if isinstance(pattern, str) and flags & int(LOCALE):
+            raise ValueError("cannot use LOCALE flag with a str pattern")
+        if isinstance(pattern, bytes) and flags & int(UNICODE):
+            raise ValueError("cannot use UNICODE flag with a bytes pattern")
+        if isinstance(pattern, str) and flags & int(ASCII) and flags & int(UNICODE):
+            raise ValueError("ASCII and UNICODE flags are incompatible")
+        if isinstance(pattern, bytes) and flags & int(ASCII) and flags & int(LOCALE):
+            raise ValueError("ASCII and LOCALE flags are incompatible")
+        implicit_unicode = int(UNICODE) if isinstance(pattern, str) and not flags & int(ASCII) else 0
+        parser = _Parser(pattern, flags | implicit_unicode)
+        node = parser.parse()
+        if isinstance(pattern, str) and ((flags & int(ASCII) and parser.flags & int(UNICODE)) or (flags & int(UNICODE) and parser.flags & int(ASCII))):
+            raise ValueError("ASCII and UNICODE flags are incompatible")
+        if isinstance(pattern, bytes) and ((flags & int(ASCII) and parser.flags & int(LOCALE)) or (flags & int(LOCALE) and parser.flags & int(ASCII))):
+            raise ValueError("ASCII and LOCALE flags are incompatible")
+        result = Pattern(pattern, parser.flags & ~(_BYTE | _ROOT_ASCII), node, parser.groups, dict(parser.groupindex))
+        if flags & int(DEBUG):
+            print(f"AST {node!r}")
+            return result
+    if len(_CACHE) >= _MAXCACHE:
+        try:
+            del _CACHE[next(iter(_CACHE))]
+        except (StopIteration, RuntimeError, KeyError):
+            pass
     _CACHE[key] = result
-    if flags & int(DEBUG):
-        print(f"AST {node!r}")
+    if len(_CACHE2) >= _MAXCACHE2:
+        try:
+            del _CACHE2[next(iter(_CACHE2))]
+        except (StopIteration, RuntimeError, KeyError):
+            pass
+    _CACHE2[key] = result
     return result
 
 
 def purge():
     _CACHE.clear()
+    _CACHE2.clear()
 
 
 def search(pattern, string, flags=0):
@@ -1561,3 +1784,17 @@ def escape(pattern):
 
 
 __all__ = ["match", "fullmatch", "search", "sub", "subn", "split", "findall", "finditer", "compile", "purge", "escape", "error", "Pattern", "Match", "A", "I", "L", "M", "S", "X", "U", "ASCII", "IGNORECASE", "LOCALE", "MULTILINE", "DOTALL", "VERBOSE", "UNICODE", "NOFLAG", "RegexFlag", "PatternError"]
+
+
+for _window_method in ("search", "match", "fullmatch", "findall", "finditer", "scanner"):
+    getattr(Pattern, _window_method).__text_signature__ = (
+        f"(self, /, string, pos=0, endpos={_MAXSIZE})"
+    )
+
+Pattern.split.__text_signature__ = "(self, /, string, maxsplit=0)"
+Pattern.sub.__text_signature__ = "(self, /, repl, string, count=0)"
+Pattern.subn.__text_signature__ = "(self, /, repl, string, count=0)"
+
+split.__text_signature__ = "(pattern, string, maxsplit=0, flags=0)"
+sub.__text_signature__ = "(pattern, repl, string, count=0, flags=0)"
+subn.__text_signature__ = "(pattern, repl, string, count=0, flags=0)"
