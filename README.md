@@ -23,6 +23,8 @@ The [independent 20,480-pattern grammar audit](candidates/evidence/RUST-V7-GRAMM
 
 The [14,783-check object and API audit](candidates/evidence/RUST-V7-OBJECT-ORACLE.md) separately verifies Python's match objects, exact byte identity, search windows, buffer lifetimes, signatures, hashing, warnings, and errors.
 
+Rust improvements are compared using a [sealed practice-only test](candidates/evidence/RUST-V7-CALIBRATION-ISOLATION.md). It keeps all **10,312** unseen final cases inaccessible while testing **624** representative practice cases; improved Rust speed remains **NOT MEASURED**.
+
 ![Overall rankings on the practice cases, independently unseen cases, and all cases](performance/v7/evidence/initial-rankings.svg)
 
 The [complete slowdown audit](performance/v7/evidence/REGRESSION-AUDIT.md) lists all **105** unseen Zig slowdowns and preserves all **29,771** slowdowns across all four engines and both cohorts. A slowdown means a task actually took more than 20% longer than Python: `Python time / candidate time < 5/6`. No case, candidate, unfavorable result, or confidence interval has been removed.
@@ -66,6 +68,9 @@ PYTHONPATH=. "$PY" tools/rust_v7_edge_oracle.py \
   --module re --output /tmp/rebar-v7-edge-self.json.gz
 PYTHONPATH=. "$PY" tools/rust_v7_grammar_oracle.py verify
 PYTHONPATH=. "$PY" tools/rust_v7_object_oracle.py --check
+PYTHONPATH=. "$PY" tools/rust_v7_calibration_pilot.py self-test
+PYTHONPATH=. "$PY" tools/rust_v7_calibration_pilot.py plan --verify
+PYTHONPATH=. "$PY" tools/rust_v7_calibration_priorities.py --self-test
 
 gzip -dc performance/v7/evidence/initial-raw.jsonl.gz > /tmp/rebar-v7-raw.jsonl
 gzip -dc performance/v7/evidence/initial-summary.json.gz > /tmp/rebar-v7-summary.json

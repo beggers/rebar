@@ -1,0 +1,94 @@
+{
+  "candidate_case_results": 41248,
+  "cases": 10312,
+  "cohort": "calibration",
+  "expected_sha256": "2e6c098bd3a4757620461363106a9795f8defa98fe8bc9c13c0ebbf7ed58b598",
+  "failed": 0,
+  "fixture": "performance/v7/evidence/rust-calibration-fixture.jsonl.gz",
+  "fixture_sha256": "c9fb716b609bfd1b007482db251bc8095990ba7f571e5f041db0dbc6abf41bf5",
+  "held_out_cases_generated": 0,
+  "held_out_records_deserialized": 0,
+  "historical_practice_rankings": [
+    {
+      "candidate": "candidates.zig_candidate",
+      "cases": 10312,
+      "ci95_high": 1.6130764081326632,
+      "ci95_low": 1.6111853214571854,
+      "cohort": "calibration",
+      "geomean_speedup": 1.612172359326945,
+      "regressions_gt_20pct": 112,
+      "statistically_faster_cases": 8883,
+      "weight": 10312
+    },
+    {
+      "candidate": "candidates.vm_candidate",
+      "cases": 10312,
+      "ci95_high": 1.2904342929869694,
+      "ci95_low": 1.2889623450143612,
+      "cohort": "calibration",
+      "geomean_speedup": 1.2897073711337979,
+      "regressions_gt_20pct": 1055,
+      "statistically_faster_cases": 7422,
+      "weight": 10312
+    },
+    {
+      "candidate": "candidates.rust_candidate",
+      "cases": 10312,
+      "ci95_high": 0.9372231550184388,
+      "ci95_low": 0.9361788434496215,
+      "cohort": "calibration",
+      "geomean_speedup": 0.9367039215837637,
+      "regressions_gt_20pct": 3723,
+      "statistically_faster_cases": 3671,
+      "weight": 10312
+    },
+    {
+      "candidate": "candidates.ast_candidate",
+      "cases": 10312,
+      "ci95_high": 0.022103077237128222,
+      "ci95_low": 0.02208429662366553,
+      "cohort": "calibration",
+      "geomean_speedup": 0.022093666249342003,
+      "regressions_gt_20pct": 9871,
+      "statistically_faster_cases": 286,
+      "weight": 10312
+    }
+  ],
+  "historical_raw_sha256": "28777bab1930508446e53eeeb8a08190f9121be3617198c1132beb713be059c7",
+  "historical_summary_sha256": "076d66bb0606a6acebcaf1d1e2c510d35b232f16710b1024f1fe0f55aee521da",
+  "holdout_accessed": false,
+  "performance": "NOT MEASURED",
+  "python": "3.14.6",
+  "schema": "rebar-rust-sealed-calibration-fixture-manifest-v7",
+  "source_expected_sha256": "2e6c098bd3a4757620461363106a9795f8defa98fe8bc9c13c0ebbf7ed58b598",
+  "source_practice_archive_sha256": "3ce4c876fab304dc474e3b77b57bd6d6f4ce545ad6d7097de3534e991291cba0",
+  "source_suite_sha256": {
+    "performance/v3/suite.py": "bd6979590b3fbdcbfcfd582f0097630781d572f003bfc980f8f68368bb5bf7a3",
+    "performance/v4/suite.py": "55dbbc593585a3bd826e9aec6b25edfc0e7571e07631dc389b59274e7ce6907f",
+    "performance/v5/suite.py": "f06cb6eb1a236fce83c7c827bfb58b78029241c978132dd8405cece4e7abc3ba",
+    "performance/v6/suite.py": "091d7be04f7251781e2b8568f6cb19acbe603cb1d945926a69ba32adaf9b6b0f",
+    "performance/v7/suite.py": "0252981ce207c36c3e0d3ccd48e0429332507efe904012b0ecd03db75fa3d4af"
+  },
+  "source_v7_manifest_sha256": "106d66ddfc578a82802b98409c2912f2d23d8ec8958d1ee6a7d78d81b00eddee",
+  "source_v7_runner_sha256": "49101e306014faa17f24b69771a01c668b2afbb546ec30eb8b352c2ce6a3a8f6",
+  "source_v7_suite_sha256": "0252981ce207c36c3e0d3ccd48e0429332507efe904012b0ecd03db75fa3d4af",
+  "suite": {
+    "BOOTSTRAPS": 2000,
+    "BOOTSTRAP_SEED": 1986072302,
+    "CASES_PER_COHORT": 10312,
+    "MODULES": [
+      "re",
+      "candidates.ast_candidate",
+      "candidates.vm_candidate",
+      "candidates.rust_candidate",
+      "candidates.zig_candidate"
+    ],
+    "ORDER_SEED": 1986072301,
+    "SEEDS": {
+      "calibration": 1986072311
+    },
+    "TRIALS": 13,
+    "WARMUPS": 4
+  },
+  "uncompressed_fixture_sha256": "98f4dd746a1512da736598c9de6a99e7e85fd64911e77296122b4b38241a0407"
+}
