@@ -1,0 +1,221 @@
+{
+  "schema": "rebar-stage10-frozen-static-audit-diagnostic-v1",
+  "evidence_kind": "READ_ONLY_FROZEN_STATIC_AUDIT_DIAGNOSTIC",
+  "stage": "zig-stage-10",
+  "status": "FAIL",
+  "pinned_cpython": "3.14.6",
+  "diagnostic_scope": "Evidence-only archive of already-executed original frozen audit processes. Creating this archive runs no candidate, audit, test, build, campaign, benchmark, or holdout.",
+  "process_invocation_accounting": {
+    "canonical_original_audit_invocations_total": 2,
+    "canonical_first_invocation_count": 1,
+    "canonical_serialized_retry_count": 1,
+    "direct_frozen_run_audit_diagnostic_count": 1,
+    "frozen_static_only_diagnostic_count": 1,
+    "additional_invocations_during_archive_creation": 0
+  },
+  "first_failure_evidence": {
+    "path": "candidates/audits/FROM-SCRATCH-AUDIT-ZIG-STAGE-10-FAILURE.json",
+    "sha256": "03e818e7df469a4488340b4a3e7058589396e4fdc1c5587fd79acef59f2c9509",
+    "role": "preserved-original-process-output-not-canonical-report"
+  },
+  "serialized_canonical_retry": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 -B -m tools.audit_from_scratch",
+    "invocation_count": 1,
+    "exit_code": 1,
+    "stdout": "{\"family_results\": {\"ast\": true, \"rust\": true, \"vm\": true, \"zig\": false}, \"manifest_passed\": true, \"native_elf_binary_count\": 5, \"native_elf_passed\": true, \"native_mapping_passed\": false, \"passed\": false, \"report\": \"candidates/audits/FROM-SCRATCH-AUDIT.json\", \"result\": \"FAIL\", \"rust_native_elf_passed\": true, \"self_test_checks\": 76, \"verified_core_family_count\": 3, \"verified_distinct_pipeline_count\": 4, \"vm_native_elf_passed\": true, \"zig_native_elf_passed\": true}\n",
+    "stdout_summary": {
+      "family_results": {
+        "ast": true,
+        "rust": true,
+        "vm": true,
+        "zig": false
+      },
+      "manifest_passed": true,
+      "native_elf_binary_count": 5,
+      "native_elf_passed": true,
+      "native_mapping_passed": false,
+      "passed": false,
+      "report": "candidates/audits/FROM-SCRATCH-AUDIT.json",
+      "result": "FAIL",
+      "rust_native_elf_passed": true,
+      "self_test_checks": 76,
+      "verified_core_family_count": 3,
+      "verified_distinct_pipeline_count": 4,
+      "vm_native_elf_passed": true,
+      "zig_native_elf_passed": true
+    },
+    "canonical_report_overwritten": false
+  },
+  "direct_frozen_run_audit_diagnostic": {
+    "method": "tools.audit_from_scratch.run_audit()",
+    "invocation_count": 1,
+    "zig_runtime": {
+      "passed": false,
+      "skipped": "static source or owned native ELF provenance failed"
+    },
+    "zig_static_binary": {
+      "passed": true,
+      "issues": []
+    },
+    "zig_runtime_native_mapping": {
+      "expected_owned_mapping_count": 0,
+      "observed_owned_mapping_count": 0,
+      "mapped_paths": "NOT OBSERVED: candidate runtime was skipped",
+      "mapped_sha256": "NOT OBSERVED: candidate runtime was skipped"
+    }
+  },
+  "frozen_static_only_diagnostic": {
+    "evidence_kind": "READ_ONLY_FROZEN_STATIC_AUDIT_DIAGNOSTIC",
+    "invocation_count": 1,
+    "exit_code": 1,
+    "helpers_invoked_once": [
+      "read_authorized_inputs",
+      "analyze_python",
+      "analyze_native",
+      "verify_pipeline"
+    ],
+    "stdout": "{\"evidence_kind\":\"READ_ONLY_FROZEN_STATIC_AUDIT_DIAGNOSTIC\",\"native_sources\":[{\"file\":\"candidates/zig/py_bridge.c\",\"issues\":[],\"passed\":true},{\"file\":\"candidates/zig/mini_regex.zig\",\"issues\":[{\"code\":\"unowned_zig_extern\",\"detail\":\"Py_EnterRecursiveCall\",\"file\":\"candidates/zig/mini_regex.zig\",\"line\":20},{\"code\":\"unowned_zig_extern\",\"detail\":\"Py_LeaveRecursiveCall\",\"file\":\"candidates/zig/mini_regex.zig\",\"line\":21}],\"passed\":false}],\"pipeline\":{\"compiler\":\"zig::Compiler\",\"executor\":\"zig::runBytecode/runCapturedAt\",\"issues\":[],\"parser\":\"zig::Parser\",\"passed\":true},\"read_issues\":[],\"source\":{\"issues\":[],\"native_loads\":[{\"expected_basename\":\"_zig_probe.so\",\"line\":85,\"loader\":\"ctypes.CDLL\"}],\"passed\":true}}\n",
+    "stdout_summary": {
+      "evidence_kind": "READ_ONLY_FROZEN_STATIC_AUDIT_DIAGNOSTIC",
+      "native_sources": [
+        {
+          "file": "candidates/zig/py_bridge.c",
+          "issues": [],
+          "passed": true
+        },
+        {
+          "file": "candidates/zig/mini_regex.zig",
+          "issues": [
+            {
+              "code": "unowned_zig_extern",
+              "detail": "Py_EnterRecursiveCall",
+              "file": "candidates/zig/mini_regex.zig",
+              "line": 20
+            },
+            {
+              "code": "unowned_zig_extern",
+              "detail": "Py_LeaveRecursiveCall",
+              "file": "candidates/zig/mini_regex.zig",
+              "line": 21
+            }
+          ],
+          "passed": false
+        }
+      ],
+      "pipeline": {
+        "compiler": "zig::Compiler",
+        "executor": "zig::runBytecode/runCapturedAt",
+        "issues": [],
+        "parser": "zig::Parser",
+        "passed": true
+      },
+      "read_issues": [],
+      "source": {
+        "issues": [],
+        "native_loads": [
+          {
+            "expected_basename": "_zig_probe.so",
+            "line": 85,
+            "loader": "ctypes.CDLL"
+          }
+        ],
+        "passed": true
+      }
+    }
+  },
+  "root_cause": {
+    "gate": "native_zig_source_static_analysis",
+    "frozen_issue_code": "unowned_zig_extern",
+    "issue_count": 2,
+    "issues": [
+      {
+        "code": "unowned_zig_extern",
+        "detail": "Py_EnterRecursiveCall",
+        "file": "candidates/zig/mini_regex.zig",
+        "line": 20
+      },
+      {
+        "code": "unowned_zig_extern",
+        "detail": "Py_LeaveRecursiveCall",
+        "file": "candidates/zig/mini_regex.zig",
+        "line": 21
+      }
+    ],
+    "python_source_passed": true,
+    "native_bridge_source_passed": true,
+    "owned_zig_pipeline_passed": true,
+    "owned_static_native_binary_passed": true,
+    "runtime_executed": false,
+    "runtime_skipped": "static source or owned native ELF provenance failed",
+    "actual_mapped_paths": "NOT OBSERVED: runtime was skipped",
+    "actual_mapped_sha256": "NOT OBSERVED: runtime was skipped"
+  },
+  "frozen_auditor": {
+    "path": "tools/audit_from_scratch.py",
+    "sha256": "4c47a77cf096df354e59d03096447c56bff890389869c6a75667a36c8471d024",
+    "role": "unchanged-original-independence-auditor"
+  },
+  "immutable_goal": {
+    "path": "GOAL.md",
+    "sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+    "role": "immutable-project-objective"
+  },
+  "unchanged_previous_canonical_audit": {
+    "path": "candidates/audits/FROM-SCRATCH-AUDIT.json",
+    "sha256": "6867580e7634163bd009d1f4e699d3fe4fb9ddc89b183ef60200363d1a8ab24e",
+    "passed": true,
+    "result": "PASS",
+    "status_for_stage10": "STALE_FOR_STAGE_10",
+    "written_by_either_failing_stage10_invocation": false,
+    "write_policy": "The unchanged frozen original auditor writes the canonical report only when report.passed is true."
+  },
+  "stage10_source_snapshot_scope": {
+    "basis": "Stage 10 source and native hashes were independently verified before the sole authorized Stage 11 source writer began its later correction.",
+    "source_evidence": "The exact rejected Stage 10 snapshot is preserved in candidates/audits/FROM-SCRATCH-AUDIT-ZIG-STAGE-10-FAILURE.json and in the Stage 10 pre-change SHA-256 verification.",
+    "live_source_policy": "The current working-tree candidates/zig/mini_regex.zig may already belong to Stage 11. Its live hash is not Stage 10 evidence and is not required to equal the archived Stage 10 source hash.",
+    "stage10_mini_regex_sha256": "666d9431b5151383eefd78db3fdffc5626685260db474fbecd1d7277da605dc5",
+    "candidate_runtime_mapping": "NOT OBSERVED: the frozen Stage 10 auditor skipped the candidate runtime after its static-source rejection"
+  },
+  "stage10_zig_production_artifacts": [
+    {
+      "path": "candidates/zig/mini_regex.zig",
+      "sha256": "666d9431b5151383eefd78db3fdffc5626685260db474fbecd1d7277da605dc5",
+      "role": "zig-native-engine-source"
+    },
+    {
+      "path": "candidates/zig/py_bridge.c",
+      "sha256": "dfc791360c116fabca4b782fc506ea02b67ca77f84bb500d134b4cd1154300cb",
+      "role": "zig-native-bridge-source"
+    },
+    {
+      "path": "candidates/zig_candidate.py",
+      "sha256": "95a2010152099f2db61595927542b2f25a675eb72bd33125659969d804360239",
+      "role": "zig-public-python"
+    },
+    {
+      "path": "candidates/_zig_probe.so",
+      "sha256": "1a692ca2cabcb30f9605676adac83a43685b8ef3e8aa2d3d9f4e93dd97b0e32e",
+      "role": "zig-native-engine"
+    },
+    {
+      "path": "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "411a337fef2c6a524bf58043923fb26470031e1ede5da5b8dfc67b08d06cf8bb",
+      "role": "zig-native-bridge"
+    }
+  ],
+  "preserved_stage10_original_correctness_evidence": [
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-10-depth-safety.json",
+      "sha256": "1874c3f1802482a946fde8838620024ff399943388bd02dbe8ce207aed687032",
+      "role": "original-348-case-depth-pass"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-10-isolated-safety.json",
+      "sha256": "e7b6cd5c90a3539f767c622d640d6f38cfd7b088938a5acb2b3054a14e7e5e58",
+      "role": "original-254-case-isolated-safety-pass"
+    }
+  ],
+  "holdout": "NOT ACCESSED",
+  "performance": "NOT MEASURED",
+  "timing_performed": false
+}

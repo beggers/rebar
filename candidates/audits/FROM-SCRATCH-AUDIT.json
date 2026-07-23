@@ -314,14 +314,14 @@
               "mapping_count": 5,
               "matches_static_elf": true,
               "role": "bridge",
-              "sha256": "7d7ae8bef50e4bce06786dd20248b41b0ac74651ff4fae2d229d8b032b8dee1d"
+              "sha256": "4d0dc7ece7ef42e34a8f425fab55429460e2fd66c587ce13c70539979393d13c"
             },
             {
               "file": "candidates/_zig_probe.so",
               "mapping_count": 3,
               "matches_static_elf": true,
               "role": "engine",
-              "sha256": "d35fb09dce43fcea2bb70f0ca9dd8e95cc05380fe983539dcee810d64aa9393e"
+              "sha256": "70bafca56a3f48477b2011f016a81b625e5f40a772af6a986d32b9098269f614"
             }
           ],
           "passed": true,
@@ -349,7 +349,7 @@
           "file": "candidates/zig/py_bridge.c",
           "issues": [],
           "passed": true,
-          "sha256": "45ba87678defde5a23fa385622b727758c92dc78275ed2e855d5a0a883251676"
+          "sha256": "cdcf335f92f90c7ce98a93add914dabd0b607dc2742a4e7190a2187e538e959d"
         },
         {
           "allowed_native_python_imports": [],
@@ -357,7 +357,7 @@
           "file": "candidates/zig/mini_regex.zig",
           "issues": [],
           "passed": true,
-          "sha256": "b0e26337eb007793639b678d967ef55eb24b060a64f736185eb2745afd0b6d2f"
+          "sha256": "4deca5a442cccd02bebfcecd4ceeb73de62a68837c5a3bdadee4dcaf84cf0ee3"
         }
       ],
       "owned_pipeline": {
@@ -388,7 +388,7 @@
           }
         ],
         "passed": true,
-        "sha256": "d3a7e35711f402db85f42e96470caf8a9393f1171e5bc7f26a55e0a138638ac5"
+        "sha256": "95a2010152099f2db61595927542b2f25a675eb72bd33125659969d804360239"
       }
     }
   },
@@ -764,6 +764,7 @@
             "owned_undefined": [
               "rebar_zig_collect_records_wide",
               "rebar_zig_compile",
+              "rebar_zig_compile_guarded",
               "rebar_zig_flags",
               "rebar_zig_free",
               "rebar_zig_groups",
@@ -776,8 +777,9 @@
               "rebar_zig_name_group",
               "rebar_zig_name_length"
             ],
-            "python_api_undefined_count": 89,
+            "python_api_undefined_count": 97,
             "python_api_undefined_symbols": [
+              "PyBool_FromLong",
               "PyBool_Type",
               "PyBuffer_Release",
               "PyByteArray_Type",
@@ -804,9 +806,11 @@
               "PyExc_IndexError",
               "PyExc_KeyError",
               "PyExc_OverflowError",
+              "PyExc_RecursionError",
               "PyExc_RuntimeError",
               "PyExc_TypeError",
               "PyExc_ValueError",
+              "PyFrame_GetBack",
               "PyList_Append",
               "PyList_New",
               "PyLong_AsSize_t",
@@ -835,6 +839,8 @@
               "PyObject_GetItem",
               "PyObject_IsTrue",
               "PyObject_SetAttrString",
+              "PyThreadState_Get",
+              "PyThreadState_GetFrame",
               "PyTuple_New",
               "PyTuple_Pack",
               "PyType_FromSpec",
@@ -861,8 +867,11 @@
               "PyUnicode_Tailmatch",
               "PyUnicode_Type",
               "Py_BuildValue",
+              "Py_EnterRecursiveCall",
               "Py_GenericAlias",
               "Py_GetConstantBorrowed",
+              "Py_GetRecursionLimit",
+              "Py_LeaveRecursiveCall",
               "_Py_Dealloc",
               "_Py_FalseStruct",
               "_Py_NoneStruct",
@@ -871,8 +880,8 @@
             "runpaths": [
               "$ORIGIN"
             ],
-            "sha256": "7d7ae8bef50e4bce06786dd20248b41b0ac74651ff4fae2d229d8b032b8dee1d",
-            "undefined_symbol_count": 113
+            "sha256": "4d0dc7ece7ef42e34a8f425fab55429460e2fd66c587ce13c70539979393d13c",
+            "undefined_symbol_count": 122
           },
           "engine": {
             "cross_candidate_symbols": [],
@@ -888,6 +897,7 @@
               "rebar_zig_collect_records",
               "rebar_zig_collect_records_wide",
               "rebar_zig_compile",
+              "rebar_zig_compile_guarded",
               "rebar_zig_flags",
               "rebar_zig_free",
               "rebar_zig_groups",
@@ -917,7 +927,7 @@
               "_PyUnicode_ToUppercase"
             ],
             "runpaths": [],
-            "sha256": "d35fb09dce43fcea2bb70f0ca9dd8e95cc05380fe983539dcee810d64aa9393e",
+            "sha256": "70bafca56a3f48477b2011f016a81b625e5f40a772af6a986d32b9098269f614",
             "undefined_symbol_count": 15
           }
         },
@@ -1666,6 +1676,7 @@
         "owned_undefined": [
           "rebar_zig_collect_records_wide",
           "rebar_zig_compile",
+          "rebar_zig_compile_guarded",
           "rebar_zig_flags",
           "rebar_zig_free",
           "rebar_zig_groups",
@@ -1678,8 +1689,9 @@
           "rebar_zig_name_group",
           "rebar_zig_name_length"
         ],
-        "python_api_undefined_count": 89,
+        "python_api_undefined_count": 97,
         "python_api_undefined_symbols": [
+          "PyBool_FromLong",
           "PyBool_Type",
           "PyBuffer_Release",
           "PyByteArray_Type",
@@ -1706,9 +1718,11 @@
           "PyExc_IndexError",
           "PyExc_KeyError",
           "PyExc_OverflowError",
+          "PyExc_RecursionError",
           "PyExc_RuntimeError",
           "PyExc_TypeError",
           "PyExc_ValueError",
+          "PyFrame_GetBack",
           "PyList_Append",
           "PyList_New",
           "PyLong_AsSize_t",
@@ -1737,6 +1751,8 @@
           "PyObject_GetItem",
           "PyObject_IsTrue",
           "PyObject_SetAttrString",
+          "PyThreadState_Get",
+          "PyThreadState_GetFrame",
           "PyTuple_New",
           "PyTuple_Pack",
           "PyType_FromSpec",
@@ -1763,8 +1779,11 @@
           "PyUnicode_Tailmatch",
           "PyUnicode_Type",
           "Py_BuildValue",
+          "Py_EnterRecursiveCall",
           "Py_GenericAlias",
           "Py_GetConstantBorrowed",
+          "Py_GetRecursionLimit",
+          "Py_LeaveRecursiveCall",
           "_Py_Dealloc",
           "_Py_FalseStruct",
           "_Py_NoneStruct",
@@ -1773,8 +1792,8 @@
         "runpaths": [
           "$ORIGIN"
         ],
-        "sha256": "7d7ae8bef50e4bce06786dd20248b41b0ac74651ff4fae2d229d8b032b8dee1d",
-        "undefined_symbol_count": 113
+        "sha256": "4d0dc7ece7ef42e34a8f425fab55429460e2fd66c587ce13c70539979393d13c",
+        "undefined_symbol_count": 122
       },
       "engine": {
         "cross_candidate_symbols": [],
@@ -1790,6 +1809,7 @@
           "rebar_zig_collect_records",
           "rebar_zig_collect_records_wide",
           "rebar_zig_compile",
+          "rebar_zig_compile_guarded",
           "rebar_zig_flags",
           "rebar_zig_free",
           "rebar_zig_groups",
@@ -1819,7 +1839,7 @@
           "_PyUnicode_ToUppercase"
         ],
         "runpaths": [],
-        "sha256": "d35fb09dce43fcea2bb70f0ca9dd8e95cc05380fe983539dcee810d64aa9393e",
+        "sha256": "70bafca56a3f48477b2011f016a81b625e5f40a772af6a986d32b9098269f614",
         "undefined_symbol_count": 15
       }
     },

@@ -271,6 +271,97 @@ def _fixed_width(text):
     return width if at == length else None
 
 
+def _pattern_recursion_weight(pattern, flags):
+    """Measure real nested groups without counting escapes, sets, or comments."""
+    text = pattern.decode("latin1") if isinstance(pattern, bytes) else pattern
+    length = len(text)
+    index = 0
+    weight = 0
+    maximum = 0
+    verbose = bool(flags & int(VERBOSE))
+    scopes = []
+
+    while index < length:
+        char = text[index]
+        if verbose and char in " \t\n\r\v\f":
+            index += 1
+            continue
+        if verbose and char == "#":
+            newline = text.find("\n", index + 1)
+            index = length if newline < 0 else newline + 1
+            continue
+        if char == "\\":
+            index += min(2, length - index)
+            continue
+        if char == "[":
+            index += 1
+            if index < length and text[index] == "^":
+                index += 1
+            if index < length and text[index] == "]":
+                index += 1
+            while index < length and text[index] != "]":
+                index += 2 if text[index] == "\\" and index + 1 < length else 1
+            if index < length:
+                index += 1
+            continue
+        if char == ")":
+            if scopes:
+                group_weight, verbose = scopes.pop()
+                weight -= group_weight
+            index += 1
+            continue
+        if char != "(":
+            index += 1
+            continue
+        if text.startswith("(?#", index):
+            close = text.find(")", index + 3)
+            index = length if close < 0 else close + 1
+            continue
+        if text.startswith("(?P=", index):
+            close = text.find(")", index + 4)
+            index = length if close < 0 else close + 1
+            continue
+
+        scoped_verbose = verbose
+        next_index = index + 1
+        conditional = text.startswith("(?(", index)
+        if conditional:
+            close = text.find(")", index + 3)
+            next_index = close + 1 if close >= 0 else index + 3
+        elif text.startswith("(?P<", index):
+            close = text.find(">", index + 4)
+            next_index = close + 1 if close >= 0 else index + 4
+        elif text.startswith(("(?<=", "(?<!"), index):
+            next_index = index + 4
+        elif text.startswith(("(?=", "(?!", "(?:", "(?>"), index):
+            next_index = index + 3
+        elif text.startswith("(?", index):
+            cursor = index + 2
+            while cursor < length and text[cursor] in "aiLmsux-":
+                cursor += 1
+            if cursor < length and text[cursor] in ":)":
+                marks = text[index + 2:cursor]
+                adding, separator, removing = marks.partition("-")
+                scoped_verbose = (verbose or "x" in adding) and not (
+                    separator and "x" in removing
+                )
+                if text[cursor] == ")":
+                    verbose = scoped_verbose
+                    index = cursor + 1
+                    continue
+                next_index = cursor + 1
+
+        group_weight = 1 if conditional else 2
+        scopes.append((group_weight, verbose))
+        weight += group_weight
+        if weight > maximum:
+            maximum = weight
+        verbose = scoped_verbose
+        index = next_index
+
+    return maximum
+
+
 def _preflight_pattern(pattern, flags):
     """Validate syntax and preserve Python-compatible errors before Zig compilation."""
     byte_mode = isinstance(pattern, bytes)
@@ -284,6 +375,7 @@ def _preflight_pattern(pattern, flags):
     conditionals = []
     conditional_branches = {}
     stack = []
+    recursion_weight = 0
     pending_lookbehind_width_error = False
     active_flags = flags
     root_prefix = True
@@ -403,9 +495,10 @@ def _preflight_pattern(pattern, flags):
                 if right_category:
                     fail(f"bad character range {previous}-{right}", opening + 1)
                 if scalar(right) < scalar(previous):
-                    if previous.startswith(("\\x", "\\u", "\\U")) and right.startswith(("\\x", "\\u", "\\U")):
-                        fail(f"bad character range {previous[:2]}-{right[:2]}", index)
-                    fail(f"bad character range {previous}-{right}", opening + 1)
+                    left_head = previous[:2] if previous.startswith("\\") else previous
+                    right_head = right[:2] if right.startswith("\\") else right
+                    position = right_end - len(left_head) - 1 - len(right_head)
+                    fail(f"bad character range {left_head}-{right_head}", position)
                 index = right_end
                 previous = None
                 previous_category = False
@@ -503,7 +596,10 @@ def _preflight_pattern(pattern, flags):
                 index = close + 1
             elif text.startswith(("(?<=", "(?<!"), index):
                 index += 4
-                stack.append((opening, active_flags, can_repeat, repeated, None, "lookbehind"))
+                _zig_bridge.recursion_guard(recursion_weight + 2, False)
+                stack.append((opening, active_flags, can_repeat, repeated,
+                              None, "lookbehind"))
+                recursion_weight += 2
                 lookbehind_bases.append(group_count)
                 can_repeat = repeated = False
                 root_prefix = False
@@ -580,7 +676,10 @@ def _preflight_pattern(pattern, flags):
                     active_flags = local_flags
                     index = cursor + 1
                     continue
-                stack.append((opening, active_flags, can_repeat, repeated, None, "group"))
+                _zig_bridge.recursion_guard(recursion_weight + 2, False)
+                stack.append((opening, active_flags, can_repeat, repeated,
+                              None, "group"))
+                recursion_weight += 2
                 active_flags = local_flags
                 can_repeat = repeated = False
                 root_prefix = False
@@ -591,7 +690,11 @@ def _preflight_pattern(pattern, flags):
                 group_number = group_count
                 capture = True
                 index += 1
-            stack.append((opening, active_flags, can_repeat, repeated, group_number if capture else None, kind))
+            group_weight = 1 if kind == "conditional" else 2
+            _zig_bridge.recursion_guard(recursion_weight + group_weight, False)
+            stack.append((opening, active_flags, can_repeat, repeated,
+                          group_number if capture else None, kind))
+            recursion_weight += group_weight
             if capture:
                 open_groups.append(group_number)
             can_repeat = repeated = False
@@ -601,6 +704,7 @@ def _preflight_pattern(pattern, flags):
             if not stack:
                 fail("unbalanced parenthesis", index)
             opening, parent_flags, _, _, group_number, kind = stack.pop()
+            recursion_weight -= 1 if kind == "conditional" else 2
             if group_number is not None:
                 open_groups.remove(group_number)
                 body = text[opening + 1:index]
@@ -677,7 +781,7 @@ def _preflight_pattern(pattern, flags):
         index += 1
 
     if stack:
-        fail("missing ), unterminated subpattern", stack[0][0])
+        fail("missing ), unterminated subpattern", stack[-1][0])
     for number, position in conditionals:
         if number > group_count:
             fail(f"invalid group reference {number}", position)
@@ -1136,6 +1240,11 @@ def compile(pattern, flags=0):
     if isinstance(pattern, bytes) and flags & int(ASCII) and flags & int(LOCALE):
         raise ValueError("ASCII and LOCALE flags are incompatible")
     implicit_unicode = int(UNICODE) if isinstance(pattern, str) and not flags & int(ASCII) else 0
+    opening = b"(" if isinstance(pattern, bytes) else "("
+    if opening in pattern and _zig_bridge.recursion_guard(
+        _pattern_recursion_weight(pattern, flags | implicit_unicode), True
+    ):
+        _preflight_pattern(pattern, flags | implicit_unicode)
     if _may_accept_invalid_pattern(pattern):
         _preflight_pattern(pattern, flags | implicit_unicode)
     markers = (b"[[", b"&&", b"||", b"~~", b"--") if isinstance(pattern, bytes) else ("[[", "&&", "||", "~~", "--")

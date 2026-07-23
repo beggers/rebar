@@ -1,0 +1,21 @@
+{
+  "backreference_pairs": 235,
+  "backreference_variants": 7,
+  "case_index": null,
+  "casefix_components": 24,
+  "casefix_directed_edges": 56,
+  "casefix_keys": 50,
+  "casefold_groups": 26,
+  "correctness_checks": 72248,
+  "failed": 0,
+  "failures": [],
+  "invalid_window_checks": 1260,
+  "manual_cases": 895,
+  "manual_index": null,
+  "module": "candidates.zig_candidate",
+  "multi_upper_codepoints": 102,
+  "schema": "rebar-rust-v6-paths-probe-v1",
+  "seed": 2026072307,
+  "seeded_cases": 512,
+  "surrogate_checks": 380
+}

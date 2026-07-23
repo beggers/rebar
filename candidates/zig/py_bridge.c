@@ -6,6 +6,12 @@
 
 extern int rebar_zig_match_wide(const void *, const uint8_t *, size_t, uint8_t, size_t, size_t, uint8_t, intptr_t *, intptr_t *);
 extern void *rebar_zig_compile(const uint8_t *, size_t, uint32_t);
+typedef void *(*ZigOwnedCompile)(const uint8_t *, size_t, uint32_t);
+typedef int (*ZigRecursionEnter)(void *);
+typedef void (*ZigRecursionLeave)(void *);
+extern void *rebar_zig_compile_guarded(const uint8_t *, size_t, uint32_t,
+                                        ZigRecursionEnter, ZigRecursionLeave,
+                                        void *);
 extern void rebar_zig_free(void *);
 extern int rebar_zig_match_nonempty_wide(const void *, const uint8_t *, size_t, uint8_t, size_t, size_t, uint8_t, uint8_t, intptr_t *, intptr_t *);
 extern size_t rebar_zig_groups(const void *);
@@ -23,11 +29,22 @@ extern intptr_t rebar_zig_collect_records_wide(const void *, const uint8_t *, si
 #define ZIG_INITIAL_CAPTURE_COUNT 64
 
 typedef struct {
+    ZigOwnedCompile owned_compile;
+    size_t entered;
+} ZigRecursionContext;
+
+typedef struct {
     intptr_t local[ZIG_LOCAL_CAPTURE_WORDS];
     intptr_t *storage;
     size_t stride;
     size_t words_per_match;
 } ZigCaptureBuffer;
+
+typedef struct {
+    intptr_t local[514];
+    intptr_t *storage;
+    size_t stride;
+} ZigSpanBuffer;
 
 typedef struct {
     PyObject_VAR_HEAD
@@ -596,6 +613,87 @@ static void zig_capture_release(ZigCaptureBuffer *buffer) {
     buffer->storage = NULL;
 }
 
+static int zig_span_buffer_init(ZigSpanBuffer *buffer, size_t groups) {
+    buffer->storage = NULL;
+    buffer->stride = 0;
+    if (groups > (size_t)PY_SSIZE_T_MAX / 2 - 1 ||
+        groups > SIZE_MAX / (2 * sizeof(intptr_t)) - 1) {
+        PyErr_NoMemory();
+        return 0;
+    }
+    buffer->stride = groups + 1;
+    size_t words = buffer->stride * 2;
+    if (words <= sizeof(buffer->local) / sizeof(buffer->local[0])) {
+        buffer->storage = buffer->local;
+        return 1;
+    }
+    buffer->storage = PyMem_Malloc(words * sizeof(intptr_t));
+    if (buffer->storage == NULL) {
+        PyErr_NoMemory();
+        return 0;
+    }
+    return 1;
+}
+
+static void zig_span_buffer_release(ZigSpanBuffer *buffer) {
+    if (buffer->storage != NULL && buffer->storage != buffer->local) {
+        PyMem_Free(buffer->storage);
+    }
+    buffer->storage = NULL;
+}
+
+static PyObject *bridge_recursion_guard(PyObject *module,
+                                        PyObject *const *args,
+                                        Py_ssize_t nargs) {
+    (void)module;
+    if (nargs != 2) {
+        PyErr_Format(PyExc_TypeError,
+                     "recursion_guard() takes exactly 2 arguments (%zd given)",
+                     nargs);
+        return NULL;
+    }
+    Py_ssize_t weight = PyLong_AsSsize_t(args[0]);
+    if (weight == -1 && PyErr_Occurred()) return NULL;
+    if (weight < 0) {
+        PyErr_SetString(PyExc_ValueError,
+                        "recursion weight must not be negative");
+        return NULL;
+    }
+    int screening = PyObject_IsTrue(args[1]);
+    if (screening < 0) return NULL;
+
+    PyFrameObject *frame = PyThreadState_GetFrame(PyThreadState_Get());
+    if (frame == NULL && PyErr_Occurred()) return NULL;
+    Py_ssize_t depth = 0;
+    while (frame != NULL) {
+        PyFrameObject *previous = PyFrame_GetBack(frame);
+        Py_DECREF(frame);
+        if (previous == NULL && PyErr_Occurred()) return NULL;
+        if (depth == PY_SSIZE_T_MAX) {
+            Py_XDECREF(previous);
+            if (screening) Py_RETURN_TRUE;
+            PyErr_SetString(PyExc_RecursionError,
+                            "maximum recursion depth exceeded");
+            return NULL;
+        }
+        depth++;
+        frame = previous;
+    }
+
+    Py_ssize_t reserve = screening ? 6 : 5;
+    int exceeded = weight > PY_SSIZE_T_MAX - reserve ||
+                   depth > PY_SSIZE_T_MAX - reserve - weight ||
+                   depth + weight + reserve >=
+                       (Py_ssize_t)Py_GetRecursionLimit();
+    if (screening) return PyBool_FromLong(exceeded);
+    if (exceeded) {
+        PyErr_SetString(PyExc_RecursionError,
+                        "maximum recursion depth exceeded");
+        return NULL;
+    }
+    Py_RETURN_NONE;
+}
+
 /*
  * Start with a small stack-backed capture buffer and grow only when the
  * matcher fills it. Records are append-only and matching resumes at the
@@ -706,6 +804,23 @@ static PyObject *bridge_match_object(PyObject *module, PyObject *const *args, Py
     return (PyObject *)match;
 }
 
+static int zig_owned_recursion_enter(void *value) {
+    ZigRecursionContext *context = (ZigRecursionContext *)value;
+    if (context == NULL || context->owned_compile == NULL) {
+        PyErr_SetString(PyExc_RuntimeError, "Zig recursion guard requires its owned compiler");
+        return -1;
+    }
+    int result = Py_EnterRecursiveCall("");
+    if (result == 0) context->entered++;
+    return result;
+}
+
+static void zig_owned_recursion_leave(void *value) {
+    ZigRecursionContext *context = (ZigRecursionContext *)value;
+    if (context != NULL && context->entered != 0) context->entered--;
+    Py_LeaveRecursiveCall();
+}
+
 static PyObject *bridge_compile(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
     (void)module;
     if (nargs != 3) {
@@ -721,8 +836,18 @@ static PyObject *bridge_compile(PyObject *module, PyObject *const *args, Py_ssiz
     if (PyErr_Occurred() || flags > UINT32_MAX || byte_mode < 0) return NULL;
     const uint8_t *source = (const uint8_t *)PyBytes_AS_STRING(args[0]);
     size_t length = (size_t)PyBytes_GET_SIZE(args[0]);
-    void *handle = rebar_zig_compile(source, length, (uint32_t)flags);
-    if (handle == NULL) Py_RETURN_NONE;
+    ZigRecursionContext recursion = {
+        .owned_compile = rebar_zig_compile,
+        .entered = 0,
+    };
+    void *handle = rebar_zig_compile_guarded(source, length, (uint32_t)flags,
+                                             zig_owned_recursion_enter,
+                                             zig_owned_recursion_leave,
+                                             &recursion);
+    if (handle == NULL) {
+        if (PyErr_Occurred()) return NULL;
+        Py_RETURN_NONE;
+    }
     PyObject *names = PyDict_New();
     if (names == NULL) {
         rebar_zig_free(handle);
@@ -731,20 +856,32 @@ static PyObject *bridge_compile(PyObject *module, PyObject *const *args, Py_ssiz
     size_t count = rebar_zig_name_count(handle);
     for (size_t index = 0; index < count; index++) {
         size_t width = rebar_zig_name_length(handle, index);
-        if (width > 256) {
+        if (width > (size_t)PY_SSIZE_T_MAX) {
             Py_DECREF(names);
             rebar_zig_free(handle);
-            PyErr_SetString(PyExc_OverflowError, "Zig group name exceeds the bridge limit");
+            PyErr_SetString(PyExc_OverflowError,
+                            "Zig group name exceeds Python string limits");
             return NULL;
         }
-        uint8_t name[256];
+        uint8_t local_name[256];
+        uint8_t *name = local_name;
+        if (width > sizeof(local_name)) {
+            name = PyMem_Malloc(width);
+            if (name == NULL) {
+                Py_DECREF(names);
+                rebar_zig_free(handle);
+                return PyErr_NoMemory();
+            }
+        }
         if (rebar_zig_name_copy(handle, index, name, width) != width) {
+            if (name != local_name) PyMem_Free(name);
             Py_DECREF(names);
             rebar_zig_free(handle);
             PyErr_SetString(PyExc_RuntimeError, "Zig group-name copy failed");
             return NULL;
         }
         PyObject *key = byte_mode ? PyUnicode_DecodeASCII((const char *)name, (Py_ssize_t)width, "strict") : PyUnicode_DecodeUTF8((const char *)name, (Py_ssize_t)width, "strict");
+        if (name != local_name) PyMem_Free(name);
         PyObject *value = key == NULL ? NULL : PyLong_FromSize_t(rebar_zig_name_group(handle, index));
         if (key == NULL || value == NULL || PyDict_SetItem(names, key, value) < 0) {
             Py_XDECREF(key);
@@ -954,9 +1091,14 @@ static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, P
     intptr_t begin = -1;
     intptr_t finish = -1;
     size_t groups = rebar_zig_groups(handle);
-    size_t stride = groups + 1;
-    intptr_t begins[257];
-    intptr_t ends[257];
+    ZigSpanBuffer captures;
+    if (!zig_span_buffer_init(&captures, groups)) {
+        if (view.obj != NULL) PyBuffer_Release(&view);
+        return NULL;
+    }
+    size_t stride = captures.stride;
+    intptr_t *begins = captures.storage;
+    intptr_t *ends = captures.storage + stride;
     intptr_t last = -1;
     int result = 0;
     if (start > end) {
@@ -982,6 +1124,7 @@ static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, P
                 int matches = PyUnicode_Tailmatch(subject, literal, start, end, -1);
                 if (matches < 0) {
                     if (view.obj != NULL) PyBuffer_Release(&view);
+                    zig_span_buffer_release(&captures);
                     return NULL;
                 }
                 begin = matches ? start : -1;
@@ -995,14 +1138,17 @@ static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, P
     else result = rebar_zig_match_captures_wide(handle, data, length, kind, (size_t)start, (size_t)end, (uint8_t)mode, 0, begins, ends, &last);
     if (view.obj != NULL) PyBuffer_Release(&view);
     if (result < 0) {
+        zig_span_buffer_release(&captures);
         PyErr_SetString(PyExc_RuntimeError, "Zig matcher rejected the pattern bridge call");
         return NULL;
     }
     if (result == 0) {
+        zig_span_buffer_release(&captures);
         Py_RETURN_NONE;
     }
     ZigMatch *match = zig_match_new(pattern, subject, groupindex, groups, start, end);
     if (match == NULL) {
+        zig_span_buffer_release(&captures);
         return NULL;
     }
     if (groups == 0 || literal != Py_None) {
@@ -1013,6 +1159,7 @@ static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, P
         memcpy(match->spans + stride, ends, stride * sizeof(intptr_t));
         match->lastindex = last;
     }
+    zig_span_buffer_release(&captures);
     return (PyObject *)match;
 }
 
@@ -1218,9 +1365,11 @@ static PyObject *zig_scanner_match(ZigIterator *iterator,
     iterator->record_at = 0;
     iterator->record_count = 0;
     if (iterator->done) Py_RETURN_NONE;
-    size_t stride = iterator->groups + 1;
-    intptr_t begins[257];
-    intptr_t ends[257];
+    ZigSpanBuffer captures;
+    if (!zig_span_buffer_init(&captures, iterator->groups)) return NULL;
+    size_t stride = captures.stride;
+    intptr_t *begins = captures.storage;
+    intptr_t *ends = captures.storage + stride;
     intptr_t last = -1;
     int result;
     if (iterator->cursor > iterator->endpos) {
@@ -1237,20 +1386,26 @@ static PyObject *zig_scanner_match(ZigIterator *iterator,
             iterator->endpos, 1, iterator->nonempty, begins, ends, &last);
     }
     if (result < 0) {
+        zig_span_buffer_release(&captures);
         PyErr_SetString(PyExc_RuntimeError, "Zig matcher rejected the scanner bridge call");
         return NULL;
     }
     if (result == 0) {
+        zig_span_buffer_release(&captures);
         iterator->done = 1;
         Py_RETURN_NONE;
     }
     ZigMatch *match = zig_match_new(iterator->pattern, iterator->string, iterator->groupindex, iterator->groups, (Py_ssize_t)iterator->original_pos, (Py_ssize_t)iterator->endpos);
-    if (match == NULL) return NULL;
+    if (match == NULL) {
+        zig_span_buffer_release(&captures);
+        return NULL;
+    }
     memcpy(match->spans, begins, stride * sizeof(intptr_t));
     memcpy(match->spans + stride, ends, stride * sizeof(intptr_t));
     match->lastindex = last;
     iterator->nonempty = begins[0] == ends[0];
     iterator->cursor = (size_t)ends[0];
+    zig_span_buffer_release(&captures);
     return (PyObject *)match;
 }
 
@@ -1319,6 +1474,11 @@ static PyObject *bridge_pattern_iterator(PyObject *module, PyObject *const *args
     if (PyErr_Occurred() || scanner < 0 || !zig_index_arg(args[5], &pos) || groups != rebar_zig_groups(handle)) {
         if (!PyErr_Occurred()) PyErr_SetString(PyExc_ValueError, "Zig regex group count does not match the compiled program");
         return NULL;
+    }
+    if (groups > (size_t)PY_SSIZE_T_MAX / 2 - 1 ||
+        groups > (SIZE_MAX - 3) / 2 ||
+        groups > SIZE_MAX / (2 * sizeof(intptr_t)) - 1) {
+        return PyErr_NoMemory();
     }
     ZigIterator *iterator =
         (ZigIterator *)ZigScannerType->tp_alloc(ZigScannerType, 0);
@@ -1533,30 +1693,36 @@ static PyObject *bridge_match(PyObject *module, PyObject *const *args, Py_ssize_
         data = view.buf;
         length = (size_t)view.len;
     }
-    size_t stride = rebar_zig_groups(handle) + 1;
-    intptr_t local_begins[257];
-    intptr_t local_ends[257];
-    intptr_t *begins = local_begins;
-    intptr_t *ends = local_ends;
-    if (stride > 257) {
+    ZigSpanBuffer captures;
+    if (!zig_span_buffer_init(&captures, rebar_zig_groups(handle))) {
         if (view.obj != NULL) PyBuffer_Release(&view);
-        PyErr_SetString(PyExc_OverflowError, "too many Zig capture groups");
         return NULL;
     }
+    size_t stride = captures.stride;
+    intptr_t *begins = captures.storage;
+    intptr_t *ends = captures.storage + stride;
     intptr_t last = -1;
     int result = rebar_zig_match_captures_wide(handle, data, length, kind, pos, endpos, (uint8_t)mode, (uint8_t)nonempty, begins, ends, &last);
     if (view.obj != NULL) PyBuffer_Release(&view);
     if (result < 0) {
+        zig_span_buffer_release(&captures);
         PyErr_SetString(PyExc_RuntimeError, "Zig capture matcher rejected the bridge call");
         return NULL;
     }
-    if (result == 0) Py_RETURN_NONE;
+    if (result == 0) {
+        zig_span_buffer_release(&captures);
+        Py_RETURN_NONE;
+    }
     PyObject *spans = PyTuple_New((Py_ssize_t)stride);
-    if (spans == NULL) return NULL;
+    if (spans == NULL) {
+        zig_span_buffer_release(&captures);
+        return NULL;
+    }
     for (size_t index = 0; index < stride; index++) {
         PyObject *item = begins[index] < 0 ? Py_NewRef(Py_None) : zig_span(begins[index], ends[index]);
         if (item == NULL) {
             Py_DECREF(spans);
+            zig_span_buffer_release(&captures);
             return NULL;
         }
         PyTuple_SET_ITEM(spans, (Py_ssize_t)index, item);
@@ -1564,11 +1730,13 @@ static PyObject *bridge_match(PyObject *module, PyObject *const *args, Py_ssize_
     PyObject *last_value = last < 0 ? Py_NewRef(Py_None) : PyLong_FromSsize_t((Py_ssize_t)last);
     if (last_value == NULL) {
         Py_DECREF(spans);
+        zig_span_buffer_release(&captures);
         return NULL;
     }
     PyObject *value = PyTuple_Pack(2, spans, last_value);
     Py_DECREF(spans);
     Py_DECREF(last_value);
+    zig_span_buffer_release(&captures);
     return value;
 }
 
@@ -3192,6 +3360,8 @@ static PyObject *bridge_initialize_pattern(PyObject *module, PyObject *const *ar
 
 static PyMethodDef bridge_methods[] = {
     {"compile", (PyCFunction)(void (*)(void))bridge_compile, METH_FASTCALL, "Compile a Zig regex and return its metadata in one boundary crossing."},
+    {"recursion_guard", (PyCFunction)(void (*)(void))bridge_recursion_guard,
+     METH_FASTCALL, "Check the live Python frame depth and regex nesting."},
     {"free", (PyCFunction)bridge_free, METH_O, "Release a compiled Zig regex."},
     {"install_pattern_methods", (PyCFunction)bridge_install_pattern_methods,
      METH_O, "Install the independent native pattern method descriptors."},
