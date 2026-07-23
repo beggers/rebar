@@ -2,6 +2,12 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## Rejected first C compact-repeat implementation
+
+The [first proposed compact C repeat](../candidates/evidence/C-STAGE-12-REJECTED-COMPACT-REPEAT.patch) adds a real native instruction and avoids expanding large multi-character patterns, but its first genuine [bounded frozen verification](../candidates/evidence/rust-v8-vm-stage-12-bounded-manual-path-diagnostic.json) exposes **two** capture differences in **98** checks. For frozen `((a)?)*` with an inverted matching window, standard Python preserves an empty first capture; the proposed C implementation incorrectly returns an unmatched capture in both `match` and `scanner.match`.
+
+The exact failed implementation, native source hashes, complete observed outcomes, original two-reference self-test, and timeout bounds are preserved. Only **2/16** manual patterns were reached, so the remaining cases are **NOT MEASURED**. The candidate is rejected rather than merged into `main`; no complete campaign, performance, or final-test result is claimed. The [rejection report](../candidates/evidence/C-STAGE-12-REJECTED-COMPACT-REPEAT.md) records the exact backtracking and zero-repeat problem.
+
 ## Latest C investigation: bounded diagnosis of a large-repeat hang
 
 The preserved C campaign failed its frozen extended Python check, but the original runner discarded the actual failing case. The previous [unbounded diagnostic](../tools/rust_v8_extended_paths_diagnostic_unbounded_v1.py) is archived byte-for-byte. The [updated diagnostic](../tools/rust_v8_extended_paths_diagnostic.py) keeps the exact same frozen Python tests, answers, errors, and compiled-pattern representation while imposing a **three-second isolated case limit**, a **60-second global limit**, flushed progress, and a maximum of **16** original manual patterns.

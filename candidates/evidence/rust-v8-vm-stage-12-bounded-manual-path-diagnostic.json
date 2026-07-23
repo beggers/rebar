@@ -1,0 +1,491 @@
+{
+  "candidate_correctness_checks": 98,
+  "case_timeout_seconds": 3,
+  "completed_candidate_mismatches": 2,
+  "completed_cases": [
+    {
+      "actual_observations_sha256": "74898712368e702c2611643859a58fdc7c7a3c2c6531b1245ae3fcd5b073c618",
+      "case_index": 0,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "74898712368e702c2611643859a58fdc7c7a3c2c6531b1245ae3fcd5b073c618",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 0, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'((a)?)*'\", \"subject\": \"''\"}\n{\"case_index\": 0, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 0, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-0",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'((a)?)*'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "c24705dd008f83b2d268482cb1fb0b1269e160a38e6a0b13b9514c2dd7eed0a5"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "66ddb1c9282e556ec2de0f8df518ca876b0a939f06fc87bed9895b8a548098c3"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "636d398906d409c6362d904b2126417801b857ec2818825a3e1796f2118f2983"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "''",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "70e855a34dbca8676d70096007618b2895e6fd5bd636dc04b6e1a0b314b61c79",
+      "case_index": 1,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "e9c882440679fc9e34bde515be1f100619fe383c91e91ec49099558b6fa2b56c",
+      "failed": 2,
+      "failures": [
+        {
+          "actual": {
+            "value": {
+              "endpos": 0,
+              "group": "",
+              "groupdict": {},
+              "groups": {
+                "tuple": [
+                  null,
+                  null
+                ]
+              },
+              "groups_default": {
+                "tuple": [
+                  "!",
+                  "!"
+                ]
+              },
+              "lastgroup": null,
+              "lastindex": null,
+              "pos": 1,
+              "regs": {
+                "tuple": [
+                  {
+                    "tuple": [
+                      1,
+                      1
+                    ]
+                  },
+                  {
+                    "tuple": [
+                      -1,
+                      -1
+                    ]
+                  },
+                  {
+                    "tuple": [
+                      -1,
+                      -1
+                    ]
+                  }
+                ]
+              },
+              "span": {
+                "tuple": [
+                  1,
+                  1
+                ]
+              }
+            }
+          },
+          "endpos": 0,
+          "expected": {
+            "value": {
+              "endpos": 0,
+              "group": "",
+              "groupdict": {},
+              "groups": {
+                "tuple": [
+                  "",
+                  null
+                ]
+              },
+              "groups_default": {
+                "tuple": [
+                  "",
+                  "!"
+                ]
+              },
+              "lastgroup": null,
+              "lastindex": 1,
+              "pos": 1,
+              "regs": {
+                "tuple": [
+                  {
+                    "tuple": [
+                      1,
+                      1
+                    ]
+                  },
+                  {
+                    "tuple": [
+                      1,
+                      1
+                    ]
+                  },
+                  {
+                    "tuple": [
+                      -1,
+                      -1
+                    ]
+                  }
+                ]
+              },
+              "span": {
+                "tuple": [
+                  1,
+                  1
+                ]
+              }
+            }
+          },
+          "flags": 0,
+          "label": "manual-1",
+          "operation": "match",
+          "pattern": "'((a)?)*'",
+          "pos": 3,
+          "subject": "'a'"
+        },
+        {
+          "actual": {
+            "value": [
+              {
+                "endpos": 0,
+                "group": "",
+                "groupdict": {},
+                "groups": {
+                  "tuple": [
+                    null,
+                    null
+                  ]
+                },
+                "groups_default": {
+                  "tuple": [
+                    "!",
+                    "!"
+                  ]
+                },
+                "lastgroup": null,
+                "lastindex": null,
+                "pos": 1,
+                "regs": {
+                  "tuple": [
+                    {
+                      "tuple": [
+                        1,
+                        1
+                      ]
+                    },
+                    {
+                      "tuple": [
+                        -1,
+                        -1
+                      ]
+                    },
+                    {
+                      "tuple": [
+                        -1,
+                        -1
+                      ]
+                    }
+                  ]
+                },
+                "span": {
+                  "tuple": [
+                    1,
+                    1
+                  ]
+                }
+              },
+              null
+            ]
+          },
+          "endpos": 0,
+          "expected": {
+            "value": [
+              {
+                "endpos": 0,
+                "group": "",
+                "groupdict": {},
+                "groups": {
+                  "tuple": [
+                    "",
+                    null
+                  ]
+                },
+                "groups_default": {
+                  "tuple": [
+                    "",
+                    "!"
+                  ]
+                },
+                "lastgroup": null,
+                "lastindex": 1,
+                "pos": 1,
+                "regs": {
+                  "tuple": [
+                    {
+                      "tuple": [
+                        1,
+                        1
+                      ]
+                    },
+                    {
+                      "tuple": [
+                        1,
+                        1
+                      ]
+                    },
+                    {
+                      "tuple": [
+                        -1,
+                        -1
+                      ]
+                    }
+                  ]
+                },
+                "span": {
+                  "tuple": [
+                    1,
+                    1
+                  ]
+                }
+              },
+              null
+            ]
+          },
+          "flags": 0,
+          "label": "manual-1",
+          "operation": "scanner-match",
+          "pattern": "'((a)?)*'",
+          "pos": 3,
+          "subject": "'a'"
+        }
+      ],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 1, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'((a)?)*'\", \"subject\": \"'a'\"}\n{\"case_index\": 1, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 2, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 1, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 2, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-1",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'((a)?)*'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "c24705dd008f83b2d268482cb1fb0b1269e160a38e6a0b13b9514c2dd7eed0a5"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "66ddb1c9282e556ec2de0f8df518ca876b0a939f06fc87bed9895b8a548098c3"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "636d398906d409c6362d904b2126417801b857ec2818825a3e1796f2118f2983"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "MISMATCH",
+      "subject": "'a'",
+      "timing_performed": false
+    }
+  ],
+  "completed_manual_cases": 2,
+  "failure": {
+    "case_index": 1,
+    "failed": 2,
+    "first_failure": {
+      "actual": {
+        "value": {
+          "endpos": 0,
+          "group": "",
+          "groupdict": {},
+          "groups": {
+            "tuple": [
+              null,
+              null
+            ]
+          },
+          "groups_default": {
+            "tuple": [
+              "!",
+              "!"
+            ]
+          },
+          "lastgroup": null,
+          "lastindex": null,
+          "pos": 1,
+          "regs": {
+            "tuple": [
+              {
+                "tuple": [
+                  1,
+                  1
+                ]
+              },
+              {
+                "tuple": [
+                  -1,
+                  -1
+                ]
+              },
+              {
+                "tuple": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          },
+          "span": {
+            "tuple": [
+              1,
+              1
+            ]
+          }
+        }
+      },
+      "endpos": 0,
+      "expected": {
+        "value": {
+          "endpos": 0,
+          "group": "",
+          "groupdict": {},
+          "groups": {
+            "tuple": [
+              "",
+              null
+            ]
+          },
+          "groups_default": {
+            "tuple": [
+              "",
+              "!"
+            ]
+          },
+          "lastgroup": null,
+          "lastindex": 1,
+          "pos": 1,
+          "regs": {
+            "tuple": [
+              {
+                "tuple": [
+                  1,
+                  1
+                ]
+              },
+              {
+                "tuple": [
+                  1,
+                  1
+                ]
+              },
+              {
+                "tuple": [
+                  -1,
+                  -1
+                ]
+              }
+            ]
+          },
+          "span": {
+            "tuple": [
+              1,
+              1
+            ]
+          }
+        }
+      },
+      "flags": 0,
+      "label": "manual-1",
+      "operation": "match",
+      "pattern": "'((a)?)*'",
+      "pos": 3,
+      "subject": "'a'"
+    },
+    "flags": 0,
+    "kind": "CORRECTNESS_MISMATCH",
+    "label": "manual-1",
+    "pattern": "'((a)?)*'",
+    "subject": "'a'"
+  },
+  "frozen_suite": {
+    "equivalence": "unchanged tools.rust_v6_paths_probe.equivalent",
+    "path": "tools/rust_v6_paths_probe.py",
+    "seed": 2026072307,
+    "sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3"
+  },
+  "full_suite_performed": false,
+  "global_timeout_seconds": 60,
+  "holdout_cases_read": 0,
+  "independent_self_reference": {
+    "completed_manual_cases": 16,
+    "isolated_processes_per_case": 2,
+    "path": "candidates/evidence/rust-v8-extended-path-diagnostic-bounded-self-test.json",
+    "self_oracle_failures": 0,
+    "sha256": "f976f49734317e03a6c2041eca6eda65966f4f68404fd4039cd63e69a145bf14"
+  },
+  "manual_case_limit": 16,
+  "module": "candidates.vm_candidate",
+  "performance": "NOT MEASURED",
+  "performance_fixtures_read": 0,
+  "production_artifacts": [
+    {
+      "path": "candidates/vm_candidate.py",
+      "sha256": "c24705dd008f83b2d268482cb1fb0b1269e160a38e6a0b13b9514c2dd7eed0a5"
+    },
+    {
+      "path": "candidates/_vm_native.c",
+      "sha256": "66ddb1c9282e556ec2de0f8df518ca876b0a939f06fc87bed9895b8a548098c3"
+    },
+    {
+      "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "636d398906d409c6362d904b2126417801b857ec2818825a3e1796f2118f2983"
+    }
+  ],
+  "schema": "rebar-v8-bounded-frozen-manual-path-diagnostic-v1",
+  "scope": "only the first frozen manual cases; not the full extended-path suite",
+  "status": "MISMATCH",
+  "timing_performed": false
+}

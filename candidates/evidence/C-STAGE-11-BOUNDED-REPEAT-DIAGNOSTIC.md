@@ -16,3 +16,5 @@ The self-test also checks that a timeout fails safely, original worker output is
 The [one actual C run](rust-v8-vm-stage-11-bounded-manual-path-diagnostic.json) passes **441** checks across the first **nine** patterns. Frozen manual pattern **9** is `(?:ab){4294967294}` against `abab`. Python handles it within the bounded check, while the C implementation's Python front-end tries to expand **4,294,967,294** copies of the two-character pattern. The isolated C process exceeds its **three-second** limit and is terminated. Its unobserved matching answer is recorded as **NOT OBSERVED**, not as a guessed incorrect result.
 
 This is a diagnosis, not a passing C campaign or performance benchmark. The complete **72,248-case** extended C result remains **NOT MEASURED**. The hidden final benchmark is **NOT ACCESSED**. C remains **NOT QUALIFIED**.
+
+A [first attempted compact-repeat repair](C-STAGE-12-REJECTED-COMPACT-REPEAT.md) was independently checked, found to change optional-capture behavior, and rejected. Its exact failed implementation and both genuine differences remain preserved.
