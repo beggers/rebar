@@ -99,6 +99,7 @@ PYTHONPATH=. "$PY" tools/rust_v7_calibration_pilot.py self-test
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_pilot.py plan --verify
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_priorities.py --self-test
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_result_audit.py --self-test
+PYTHONPATH=. "$PY" tools/rust_v7_calibration_variant_audit.py --self-test
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_charts.py --self-test
 
 gzip -dc performance/v7/evidence/initial-raw.jsonl.gz > /tmp/rebar-v7-raw.jsonl

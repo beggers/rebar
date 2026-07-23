@@ -41,6 +41,7 @@ The median Python-traced temporary-memory ratio is **0.288×**. This measures al
 - [All 8,736 original paired observations](rust-v7-calibration-corrected-v4-baseline-raw.jsonl.gz).
 - [All 624 case results and all 175 large slowdowns](rust-v7-calibration-corrected-v4-baseline-summary.json).
 - [Independent full-result and native-artifact integrity audit](rust-v7-calibration-corrected-v4-baseline-integrity.json).
+- [Frozen architecture-comparison integrity control](rust-v7-calibration-baseline-variant-control-integrity.json).
 - [Overall practice speed and confidence interval](rust-v7-calibration-overall.svg).
 - [All 12 public operations](rust-v7-calibration-api.svg).
 - [Every faster, slower, unresolved, and substantially slower case](rust-v7-calibration-win-loss.svg).
@@ -58,6 +59,8 @@ Reproduce the independent audit and charts without accessing the final benchmark
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_result_audit.py --self-test
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_result_audit.py
+PYTHONPATH=. "$PY" tools/rust_v7_calibration_variant_audit.py --self-test
+PYTHONPATH=. "$PY" tools/rust_v7_calibration_variant_audit.py
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_charts.py --self-test
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_charts.py
 ```
