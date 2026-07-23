@@ -64,6 +64,43 @@ static PyTypeObject RustScannerType;
 static PyTypeObject RustBoundMethodType;
 static PyObject *rust_template_helper;
 
+typedef enum {
+    RUST_PATTERN_ATTRIBUTE_HANDLE,
+    RUST_PATTERN_ATTRIBUTE_GROUPINDEX,
+    RUST_PATTERN_ATTRIBUTE_PATTERN,
+    RUST_PATTERN_ATTRIBUTE_LITERAL,
+    RUST_PATTERN_ATTRIBUTE_TEMPLATES,
+    RUST_PATTERN_ATTRIBUTE_GROUPS,
+    RUST_PATTERN_ATTRIBUTE_COUNT,
+} RustPatternAttribute;
+
+static const char *const rust_pattern_attribute_spellings[
+    RUST_PATTERN_ATTRIBUTE_COUNT
+] = {
+    "_handle",
+    "_groupindex",
+    "pattern",
+    "_literal",
+    "_templates",
+    "groups",
+};
+
+static PyObject *rust_pattern_attribute_names[
+    RUST_PATTERN_ATTRIBUTE_COUNT
+];
+
+static int rust_initialize_pattern_attribute_names(void) {
+    for (size_t index = 0; index < RUST_PATTERN_ATTRIBUTE_COUNT; index++) {
+        if (rust_pattern_attribute_names[index] != NULL) continue;
+        PyObject *name = PyUnicode_InternFromString(
+            rust_pattern_attribute_spellings[index]
+        );
+        if (name == NULL) return -1;
+        rust_pattern_attribute_names[index] = name;
+    }
+    return 0;
+}
+
 static PyObject *rust_span(intptr_t begin, intptr_t end) {
     PyObject *pair = PyTuple_New(2);
     if (pair == NULL) return NULL;
@@ -2653,13 +2690,15 @@ typedef PyObject *(*RustPatternBridgeCall)(
 
 static int rust_pattern_append_attribute(
     PyObject *pattern,
-    const char *name,
+    RustPatternAttribute attribute,
     PyObject **owned,
     size_t *owned_count,
     PyObject **prefix,
     size_t *prefix_count
 ) {
-    PyObject *value = PyObject_GetAttrString(pattern, name);
+    PyObject *value = PyObject_GetAttr(
+        pattern, rust_pattern_attribute_names[attribute]
+    );
     if (value == NULL) return 0;
     owned[*owned_count] = value;
     (*owned_count)++;
@@ -2696,10 +2735,10 @@ static PyObject *rust_pattern_dispatch(
         case RUST_PATTERN_MATCH:
         case RUST_PATTERN_FULLMATCH:
             prefix[prefix_count++] = pattern;
-            RUST_PATTERN_APPEND_ATTRIBUTE("_handle");
-            RUST_PATTERN_APPEND_ATTRIBUTE("_groupindex");
-            RUST_PATTERN_APPEND_ATTRIBUTE("pattern");
-            RUST_PATTERN_APPEND_ATTRIBUTE("_literal");
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_HANDLE);
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_GROUPINDEX);
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_PATTERN);
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_LITERAL);
             function = operation == RUST_PATTERN_SEARCH
                 ? bridge_bound_search
                 : operation == RUST_PATTERN_MATCH
@@ -2707,48 +2746,52 @@ static PyObject *rust_pattern_dispatch(
                     : bridge_bound_fullmatch;
             break;
         case RUST_PATTERN_FINDALL:
-            RUST_PATTERN_APPEND_ATTRIBUTE("_literal");
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_LITERAL);
             if (prefix[0] != Py_None) {
                 function = bridge_bound_literal_findall;
             } else {
                 prefix_count = 0;
-                RUST_PATTERN_APPEND_ATTRIBUTE("_handle");
-                RUST_PATTERN_APPEND_ATTRIBUTE("pattern");
-                RUST_PATTERN_APPEND_ATTRIBUTE("groups");
+                RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_HANDLE);
+                RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_PATTERN);
+                RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_GROUPS);
                 function = bridge_bound_findall;
             }
             break;
         case RUST_PATTERN_FINDITER:
         case RUST_PATTERN_SCANNER:
             prefix[prefix_count++] = pattern;
-            RUST_PATTERN_APPEND_ATTRIBUTE("_handle");
-            RUST_PATTERN_APPEND_ATTRIBUTE("_groupindex");
-            RUST_PATTERN_APPEND_ATTRIBUTE("pattern");
-            RUST_PATTERN_APPEND_ATTRIBUTE("groups");
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_HANDLE);
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_GROUPINDEX);
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_PATTERN);
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_GROUPS);
             function = operation == RUST_PATTERN_FINDITER
                 ? bridge_bound_finditer
                 : bridge_bound_scanner;
             break;
         case RUST_PATTERN_SPLIT:
-            RUST_PATTERN_APPEND_ATTRIBUTE("_handle");
-            RUST_PATTERN_APPEND_ATTRIBUTE("pattern");
-            RUST_PATTERN_APPEND_ATTRIBUTE("groups");
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_HANDLE);
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_PATTERN);
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_GROUPS);
             function = bridge_bound_split;
             break;
         case RUST_PATTERN_SUB:
         case RUST_PATTERN_SUBN:
             prefix[prefix_count++] = pattern;
-            RUST_PATTERN_APPEND_ATTRIBUTE("_handle");
-            RUST_PATTERN_APPEND_ATTRIBUTE("_groupindex");
-            RUST_PATTERN_APPEND_ATTRIBUTE("pattern");
-            RUST_PATTERN_APPEND_ATTRIBUTE("_literal");
-            RUST_PATTERN_APPEND_ATTRIBUTE("_templates");
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_HANDLE);
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_GROUPINDEX);
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_PATTERN);
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_LITERAL);
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_TEMPLATES);
             if (prefix[prefix_count - 1] == Py_None) {
                 PyObject *templates = PyDict_New();
                 if (templates == NULL) goto cleanup;
                 if (
-                    PyObject_SetAttrString(
-                        pattern, "_templates", templates
+                    PyObject_SetAttr(
+                        pattern,
+                        rust_pattern_attribute_names[
+                            RUST_PATTERN_ATTRIBUTE_TEMPLATES
+                        ],
+                        templates
                     ) < 0
                 ) {
                     Py_DECREF(templates);
@@ -2757,7 +2800,7 @@ static PyObject *rust_pattern_dispatch(
                 Py_SETREF(owned[owned_count - 1], templates);
                 prefix[prefix_count - 1] = templates;
             }
-            RUST_PATTERN_APPEND_ATTRIBUTE("groups");
+            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_GROUPS);
             function = operation == RUST_PATTERN_SUB
                 ? bridge_bound_sub
                 : bridge_bound_subn;
@@ -3245,6 +3288,7 @@ static struct PyModuleDef bridge_module = {
 };
 
 PyMODINIT_FUNC PyInit__rust_bridge(void) {
+    if (rust_initialize_pattern_attribute_names() < 0) return NULL;
     if (PyType_Ready(&RustMatchType) < 0 || PyType_Ready(&RustIteratorType) < 0 || PyType_Ready(&RustScannerType) < 0 || PyType_Ready(&RustBoundMethodType) < 0) return NULL;
     PyObject *module = PyModule_Create(&bridge_module);
     if (module == NULL) return NULL;

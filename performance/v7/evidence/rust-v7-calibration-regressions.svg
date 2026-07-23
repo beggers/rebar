@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1210" height="1036" viewBox="0 0 1210 1036" role="img" aria-label="Every slowdown of more than 20%">
+<svg xmlns="http://www.w3.org/2000/svg" width="1210" height="1461" viewBox="0 0 1210 1461" role="img" aria-label="Every slowdown of more than 20%">
 <title>Every slowdown of more than 20%</title>
 <desc>PRACTICE ONLY. 624 practice tasks and 7 paired runs. The unseen test has not been opened. All 624 practice tasks · all 12 kinds of operation · zero-count groups are retained</desc>
 <rect width="100%" height="100%" fill="#ffffff"/>
@@ -70,7 +70,7 @@
 <text x="921" y="522" class="value">2/47</text>
 <text x="991" y="522" class="small">4.3% of this group</text>
 <rect x="18" y="554" width="1174" height="417" rx="9" class="panel"/>
-<text x="29" y="574" class="head">Rust: native heap certified baseline · 347/624 large slowdowns</text>
+<text x="29" y="574" class="head">Rust: native heap interned attributes · 243/624 large slowdowns</text>
 <text x="29" y="617" class="label">Prepare a pattern (compile)</text>
 <rect x="333" y="604" width="573" height="17" rx="3" fill="#f1f5f9"/>
 <rect x="333" y="604" width="0.00" height="17" rx="3" fill="#dc2626"/>
@@ -78,58 +78,120 @@
 <text x="991" y="617" class="small">0.0% of this group</text>
 <text x="29" y="647" class="label">Escape special characters (escape)</text>
 <rect x="333" y="634" width="573" height="17" rx="3" fill="#f1f5f9"/>
-<rect x="333" y="634" width="0.00" height="17" rx="3" fill="#dc2626"/>
-<text x="921" y="647" class="value">0/48</text>
-<text x="991" y="647" class="small">0.0% of this group</text>
+<rect x="333" y="634" width="11.94" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="647" class="value">1/48</text>
+<text x="991" y="647" class="small">2.1% of this group</text>
 <text x="29" y="677" class="label">Find every match (findall)</text>
 <rect x="333" y="664" width="573" height="17" rx="3" fill="#f1f5f9"/>
-<rect x="333" y="664" width="573.00" height="17" rx="3" fill="#dc2626"/>
-<text x="921" y="677" class="value">53/80</text>
-<text x="991" y="677" class="small">66.2% of this group</text>
+<rect x="333" y="664" width="429.75" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="677" class="value">36/80</text>
+<text x="991" y="677" class="small">45.0% of this group</text>
 <text x="29" y="707" class="label">Stream each match (finditer)</text>
 <rect x="333" y="694" width="573" height="17" rx="3" fill="#f1f5f9"/>
-<rect x="333" y="694" width="432.45" height="17" rx="3" fill="#dc2626"/>
-<text x="921" y="707" class="value">40/67</text>
-<text x="991" y="707" class="small">59.7% of this group</text>
+<rect x="333" y="694" width="310.38" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="707" class="value">26/67</text>
+<text x="991" y="707" class="small">38.8% of this group</text>
 <text x="29" y="737" class="label">Match the entire input (fullmatch)</text>
 <rect x="333" y="724" width="573" height="17" rx="3" fill="#f1f5f9"/>
-<rect x="333" y="724" width="410.83" height="17" rx="3" fill="#dc2626"/>
-<text x="921" y="737" class="value">38/47</text>
-<text x="991" y="737" class="small">80.9% of this group</text>
+<rect x="333" y="724" width="286.50" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="737" class="value">24/47</text>
+<text x="991" y="737" class="small">51.1% of this group</text>
 <text x="29" y="767" class="label">Match at the beginning (match)</text>
 <rect x="333" y="754" width="573" height="17" rx="3" fill="#f1f5f9"/>
-<rect x="333" y="754" width="518.94" height="17" rx="3" fill="#dc2626"/>
-<text x="921" y="767" class="value">48/48</text>
-<text x="991" y="767" class="small">100.0% of this group</text>
+<rect x="333" y="754" width="501.38" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="767" class="value">42/48</text>
+<text x="991" y="767" class="small">87.5% of this group</text>
 <text x="29" y="797" class="label">Read the match details (match-surface)</text>
 <rect x="333" y="784" width="573" height="17" rx="3" fill="#f1f5f9"/>
-<rect x="333" y="784" width="518.94" height="17" rx="3" fill="#dc2626"/>
+<rect x="333" y="784" width="573.00" height="17" rx="3" fill="#dc2626"/>
 <text x="921" y="797" class="value">48/48</text>
 <text x="991" y="797" class="small">100.0% of this group</text>
 <text x="29" y="827" class="label">Scan repeated matches (scanner)</text>
 <rect x="333" y="814" width="573" height="17" rx="3" fill="#f1f5f9"/>
-<rect x="333" y="814" width="324.34" height="17" rx="3" fill="#dc2626"/>
-<text x="921" y="827" class="value">30/48</text>
-<text x="991" y="827" class="small">62.5% of this group</text>
+<rect x="333" y="814" width="226.81" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="827" class="value">19/48</text>
+<text x="991" y="827" class="small">39.6% of this group</text>
 <text x="29" y="857" class="label">Search for a match (search)</text>
 <rect x="333" y="844" width="573" height="17" rx="3" fill="#f1f5f9"/>
-<rect x="333" y="844" width="356.77" height="17" rx="3" fill="#dc2626"/>
-<text x="921" y="857" class="value">33/48</text>
-<text x="991" y="857" class="small">68.8% of this group</text>
+<rect x="333" y="844" width="358.12" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="857" class="value">30/48</text>
+<text x="991" y="857" class="small">62.5% of this group</text>
 <text x="29" y="887" class="label">Split around matches (split)</text>
 <rect x="333" y="874" width="573" height="17" rx="3" fill="#f1f5f9"/>
-<rect x="333" y="874" width="205.42" height="17" rx="3" fill="#dc2626"/>
-<text x="921" y="887" class="value">19/47</text>
-<text x="991" y="887" class="small">40.4% of this group</text>
+<rect x="333" y="874" width="155.19" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="887" class="value">13/47</text>
+<text x="991" y="887" class="small">27.7% of this group</text>
 <text x="29" y="917" class="label">Replace matches (sub)</text>
 <rect x="333" y="904" width="573" height="17" rx="3" fill="#f1f5f9"/>
-<rect x="333" y="904" width="140.55" height="17" rx="3" fill="#dc2626"/>
-<text x="921" y="917" class="value">13/48</text>
-<text x="991" y="917" class="small">27.1% of this group</text>
+<rect x="333" y="904" width="47.75" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="917" class="value">4/48</text>
+<text x="991" y="917" class="small">8.3% of this group</text>
 <text x="29" y="947" class="label">Replace and count matches (subn)</text>
 <rect x="333" y="934" width="573" height="17" rx="3" fill="#f1f5f9"/>
-<rect x="333" y="934" width="270.28" height="17" rx="3" fill="#dc2626"/>
-<text x="921" y="947" class="value">25/47</text>
-<text x="991" y="947" class="small">53.2% of this group</text>
-<text x="26" y="1021" class="small">A slowdown is counted when Rust takes more than 20% longer than Python; no operation or loss is excluded.</text>
+<rect x="333" y="934" width="0.00" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="947" class="value">0/47</text>
+<text x="991" y="947" class="small">0.0% of this group</text>
+<rect x="18" y="979" width="1174" height="417" rx="9" class="panel"/>
+<text x="29" y="999" class="head">Rust: native heap certified baseline · 347/624 large slowdowns</text>
+<text x="29" y="1042" class="label">Prepare a pattern (compile)</text>
+<rect x="333" y="1029" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="1029" width="0.00" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="1042" class="value">0/48</text>
+<text x="991" y="1042" class="small">0.0% of this group</text>
+<text x="29" y="1072" class="label">Escape special characters (escape)</text>
+<rect x="333" y="1059" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="1059" width="0.00" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="1072" class="value">0/48</text>
+<text x="991" y="1072" class="small">0.0% of this group</text>
+<text x="29" y="1102" class="label">Find every match (findall)</text>
+<rect x="333" y="1089" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="1089" width="573.00" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="1102" class="value">53/80</text>
+<text x="991" y="1102" class="small">66.2% of this group</text>
+<text x="29" y="1132" class="label">Stream each match (finditer)</text>
+<rect x="333" y="1119" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="1119" width="432.45" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="1132" class="value">40/67</text>
+<text x="991" y="1132" class="small">59.7% of this group</text>
+<text x="29" y="1162" class="label">Match the entire input (fullmatch)</text>
+<rect x="333" y="1149" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="1149" width="410.83" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="1162" class="value">38/47</text>
+<text x="991" y="1162" class="small">80.9% of this group</text>
+<text x="29" y="1192" class="label">Match at the beginning (match)</text>
+<rect x="333" y="1179" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="1179" width="518.94" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="1192" class="value">48/48</text>
+<text x="991" y="1192" class="small">100.0% of this group</text>
+<text x="29" y="1222" class="label">Read the match details (match-surface)</text>
+<rect x="333" y="1209" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="1209" width="518.94" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="1222" class="value">48/48</text>
+<text x="991" y="1222" class="small">100.0% of this group</text>
+<text x="29" y="1252" class="label">Scan repeated matches (scanner)</text>
+<rect x="333" y="1239" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="1239" width="324.34" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="1252" class="value">30/48</text>
+<text x="991" y="1252" class="small">62.5% of this group</text>
+<text x="29" y="1282" class="label">Search for a match (search)</text>
+<rect x="333" y="1269" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="1269" width="356.77" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="1282" class="value">33/48</text>
+<text x="991" y="1282" class="small">68.8% of this group</text>
+<text x="29" y="1312" class="label">Split around matches (split)</text>
+<rect x="333" y="1299" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="1299" width="205.42" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="1312" class="value">19/47</text>
+<text x="991" y="1312" class="small">40.4% of this group</text>
+<text x="29" y="1342" class="label">Replace matches (sub)</text>
+<rect x="333" y="1329" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="1329" width="140.55" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="1342" class="value">13/48</text>
+<text x="991" y="1342" class="small">27.1% of this group</text>
+<text x="29" y="1372" class="label">Replace and count matches (subn)</text>
+<rect x="333" y="1359" width="573" height="17" rx="3" fill="#f1f5f9"/>
+<rect x="333" y="1359" width="270.28" height="17" rx="3" fill="#dc2626"/>
+<text x="921" y="1372" class="value">25/47</text>
+<text x="991" y="1372" class="small">53.2% of this group</text>
+<text x="26" y="1446" class="small">A slowdown is counted when Rust takes more than 20% longer than Python; no operation or loss is excluded.</text>
 </svg>
