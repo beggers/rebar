@@ -73,7 +73,7 @@ Python-traced temporary memory on the unseen cases has a median ratio of **0.503
 
 ## Reproduce
 
-The [complete experiment log](docs/EXPERIMENT-LOG.md) keeps previous designs, measurements, rejected experiments, and correctness failures out of the headline results. The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; scope amendments are recorded in [AMENDMENTS.md](AMENDMENTS.md).
+The [complete experiment log](docs/EXPERIMENT-LOG.md) keeps previous designs, measurements, rejected experiments, correctness failures, and isolation incidents out of the headline results. The immutable objective is [GOAL.md](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; scope amendments are recorded in [AMENDMENTS.md](AMENDMENTS.md).
 
 ```sh
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
