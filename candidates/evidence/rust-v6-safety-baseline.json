@@ -1,0 +1,3294 @@
+{
+  "categories": {
+    "allocation-boundary": 8,
+    "buffer-boundary": 20,
+    "malformed-pattern": 27,
+    "nesting-depth": 16,
+    "repetition-boundary": 24,
+    "seeded-malformed": 48,
+    "surrogate-pattern": 44,
+    "surrogate-reversed-range": 20,
+    "unicode-group-name": 12,
+    "window-boundary": 35
+  },
+  "core_dumps": "disabled in every child process",
+  "correctness_checks": 254,
+  "cpu_limit_seconds": 5,
+  "crashes": 20,
+  "failed": 89,
+  "failed_categories": {
+    "nesting-depth": 8,
+    "repetition-boundary": 2,
+    "seeded-malformed": 15,
+    "surrogate-pattern": 28,
+    "surrogate-reversed-range": 20,
+    "unicode-group-name": 12,
+    "window-boundary": 4
+  },
+  "failures": [
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (82) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 0,
+        "id": "surrogate-reversed.raw-pair.0",
+        "operation": "compile",
+        "pattern": "[\udfff-\ud800]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \udfff-\ud800 at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "bad character range \udfff-\ud800",
+            "pattern": "[\udfff-\ud800]",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (84) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 2,
+        "id": "surrogate-reversed.raw-pair.2",
+        "operation": "compile",
+        "pattern": "[\udfff-\ud800]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \udfff-\ud800 at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "bad character range \udfff-\ud800",
+            "pattern": "[\udfff-\ud800]",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (86) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 256,
+        "id": "surrogate-reversed.raw-pair.256",
+        "operation": "compile",
+        "pattern": "[\udfff-\ud800]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \udfff-\ud800 at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "bad character range \udfff-\ud800",
+            "pattern": "[\udfff-\ud800]",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (88) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 258,
+        "id": "surrogate-reversed.raw-pair.258",
+        "operation": "compile",
+        "pattern": "[\udfff-\ud800]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \udfff-\ud800 at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "bad character range \udfff-\ud800",
+            "pattern": "[\udfff-\ud800]",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (90) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 0,
+        "id": "surrogate-reversed.raw-low-ascii.0",
+        "operation": "compile",
+        "pattern": "[\ud800-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \ud800-a at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "bad character range \ud800-a",
+            "pattern": "[\ud800-a]",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (92) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 2,
+        "id": "surrogate-reversed.raw-low-ascii.2",
+        "operation": "compile",
+        "pattern": "[\ud800-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \ud800-a at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "bad character range \ud800-a",
+            "pattern": "[\ud800-a]",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (94) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 256,
+        "id": "surrogate-reversed.raw-low-ascii.256",
+        "operation": "compile",
+        "pattern": "[\ud800-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \ud800-a at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "bad character range \ud800-a",
+            "pattern": "[\ud800-a]",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (96) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 258,
+        "id": "surrogate-reversed.raw-low-ascii.258",
+        "operation": "compile",
+        "pattern": "[\ud800-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \ud800-a at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "bad character range \ud800-a",
+            "pattern": "[\ud800-a]",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (98) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 0,
+        "id": "surrogate-reversed.raw-high-ascii.0",
+        "operation": "compile",
+        "pattern": "[\udfff-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \udfff-a at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "bad character range \udfff-a",
+            "pattern": "[\udfff-a]",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (100) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 2,
+        "id": "surrogate-reversed.raw-high-ascii.2",
+        "operation": "compile",
+        "pattern": "[\udfff-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \udfff-a at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "bad character range \udfff-a",
+            "pattern": "[\udfff-a]",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (102) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 256,
+        "id": "surrogate-reversed.raw-high-ascii.256",
+        "operation": "compile",
+        "pattern": "[\udfff-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \udfff-a at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "bad character range \udfff-a",
+            "pattern": "[\udfff-a]",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (104) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 258,
+        "id": "surrogate-reversed.raw-high-ascii.258",
+        "operation": "compile",
+        "pattern": "[\udfff-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \udfff-a at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "bad character range \udfff-a",
+            "pattern": "[\udfff-a]",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (106) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 0,
+        "id": "surrogate-reversed.escaped-pair.0",
+        "operation": "compile",
+        "pattern": "[\\udfff-\\ud800]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-\\u at position 9",
+          "pattern_error": {
+            "colno": 10,
+            "lineno": 1,
+            "msg": "bad character range \\u-\\u",
+            "pattern": "[\\udfff-\\ud800]",
+            "pos": 9
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (108) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 2,
+        "id": "surrogate-reversed.escaped-pair.2",
+        "operation": "compile",
+        "pattern": "[\\udfff-\\ud800]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-\\u at position 9",
+          "pattern_error": {
+            "colno": 10,
+            "lineno": 1,
+            "msg": "bad character range \\u-\\u",
+            "pattern": "[\\udfff-\\ud800]",
+            "pos": 9
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (110) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 256,
+        "id": "surrogate-reversed.escaped-pair.256",
+        "operation": "compile",
+        "pattern": "[\\udfff-\\ud800]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-\\u at position 9",
+          "pattern_error": {
+            "colno": 10,
+            "lineno": 1,
+            "msg": "bad character range \\u-\\u",
+            "pattern": "[\\udfff-\\ud800]",
+            "pos": 9
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (112) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 258,
+        "id": "surrogate-reversed.escaped-pair.258",
+        "operation": "compile",
+        "pattern": "[\\udfff-\\ud800]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-\\u at position 9",
+          "pattern_error": {
+            "colno": 10,
+            "lineno": 1,
+            "msg": "bad character range \\u-\\u",
+            "pattern": "[\\udfff-\\ud800]",
+            "pos": 9
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (114) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 0,
+        "id": "surrogate-reversed.escaped-low-ascii.0",
+        "operation": "compile",
+        "pattern": "[\\ud800-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-a at position 5",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "bad character range \\u-a",
+            "pattern": "[\\ud800-a]",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (116) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 2,
+        "id": "surrogate-reversed.escaped-low-ascii.2",
+        "operation": "compile",
+        "pattern": "[\\ud800-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-a at position 5",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "bad character range \\u-a",
+            "pattern": "[\\ud800-a]",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (118) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 256,
+        "id": "surrogate-reversed.escaped-low-ascii.256",
+        "operation": "compile",
+        "pattern": "[\\ud800-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-a at position 5",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "bad character range \\u-a",
+            "pattern": "[\\ud800-a]",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -6,
+        "signal": 6,
+        "status": "crash",
+        "stderr": "\nthread '<unnamed>' (120) panicked at src/lib.rs:695:47:\ncalled `Option::unwrap()` on a `None` value\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 258,
+        "id": "surrogate-reversed.escaped-low-ascii.258",
+        "operation": "compile",
+        "pattern": "[\\ud800-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-a at position 5",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "bad character range \\u-a",
+            "pattern": "[\\ud800-a]",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\ud800",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-high.compile",
+        "operation": "compile",
+        "pattern": "\ud800",
+        "subject": "\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "\ud800"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\ud800",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-high.search",
+        "operation": "search",
+        "pattern": "\ud800",
+        "subject": "\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\ud800",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-high.fullmatch",
+        "operation": "fullmatch",
+        "pattern": "\ud800",
+        "subject": "\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\ud800",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-high.findall",
+        "operation": "findall",
+        "pattern": "\ud800",
+        "subject": "\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": [
+            "\ud800"
+          ]
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\udfff",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-low.compile",
+        "operation": "compile",
+        "pattern": "\udfff",
+        "subject": "\udfff"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "\udfff"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\udfff",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-low.search",
+        "operation": "search",
+        "pattern": "\udfff",
+        "subject": "\udfff"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\udfff",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-low.fullmatch",
+        "operation": "fullmatch",
+        "pattern": "\udfff",
+        "subject": "\udfff"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\udfff",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-low.findall",
+        "operation": "findall",
+        "pattern": "\udfff",
+        "subject": "\udfff"
+      },
+      "expected": {
+        "result": {
+          "value": [
+            "\udfff"
+          ]
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "missing ), unterminated subpattern at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "missing ), unterminated subpattern",
+            "pattern": "(\ud800)\\1",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-capture.compile",
+        "operation": "compile",
+        "pattern": "(\ud800)\\1",
+        "subject": "\ud800\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1,
+            "pattern": "(\ud800)\\1"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "missing ), unterminated subpattern at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "missing ), unterminated subpattern",
+            "pattern": "(\ud800)\\1",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-capture.search",
+        "operation": "search",
+        "pattern": "(\ud800)\\1",
+        "subject": "\ud800\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "endpos": 2,
+            "groupdict": {},
+            "groups": {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            "lastgroup": null,
+            "lastindex": 1,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    2
+                  ]
+                },
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                2
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "missing ), unterminated subpattern at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "missing ), unterminated subpattern",
+            "pattern": "(\ud800)\\1",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-capture.fullmatch",
+        "operation": "fullmatch",
+        "pattern": "(\ud800)\\1",
+        "subject": "\ud800\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "endpos": 2,
+            "groupdict": {},
+            "groups": {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            "lastgroup": null,
+            "lastindex": 1,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    2
+                  ]
+                },
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                2
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "missing ), unterminated subpattern at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "missing ), unterminated subpattern",
+            "pattern": "(\ud800)\\1",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-capture.findall",
+        "operation": "findall",
+        "pattern": "(\ud800)\\1",
+        "subject": "\ud800\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": [
+            "\ud800"
+          ]
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "missing ), unterminated subpattern at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "missing ), unterminated subpattern",
+            "pattern": "(?P<x>\ud800)(?P=x)",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-named-capture.compile",
+        "operation": "compile",
+        "pattern": "(?P<x>\ud800)(?P=x)",
+        "subject": "\ud800\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {
+              "x": 1
+            },
+            "groups": 1,
+            "pattern": "(?P<x>\ud800)(?P=x)"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "missing ), unterminated subpattern at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "missing ), unterminated subpattern",
+            "pattern": "(?P<x>\ud800)(?P=x)",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-named-capture.search",
+        "operation": "search",
+        "pattern": "(?P<x>\ud800)(?P=x)",
+        "subject": "\ud800\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "endpos": 2,
+            "groupdict": {
+              "x": "\ud800"
+            },
+            "groups": {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            "lastgroup": "x",
+            "lastindex": 1,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    2
+                  ]
+                },
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                2
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "missing ), unterminated subpattern at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "missing ), unterminated subpattern",
+            "pattern": "(?P<x>\ud800)(?P=x)",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-named-capture.fullmatch",
+        "operation": "fullmatch",
+        "pattern": "(?P<x>\ud800)(?P=x)",
+        "subject": "\ud800\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "endpos": 2,
+            "groupdict": {
+              "x": "\ud800"
+            },
+            "groups": {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            "lastgroup": "x",
+            "lastindex": 1,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    2
+                  ]
+                },
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                2
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "missing ), unterminated subpattern at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "missing ), unterminated subpattern",
+            "pattern": "(?P<x>\ud800)(?P=x)",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.raw-named-capture.findall",
+        "operation": "findall",
+        "pattern": "(?P<x>\ud800)(?P=x)",
+        "subject": "\ud800\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": [
+            "\ud800"
+          ]
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "missing ), unterminated subpattern at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "missing ), unterminated subpattern",
+            "pattern": "(?i:\ud800)",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.scoped.compile",
+        "operation": "compile",
+        "pattern": "(?i:\ud800)",
+        "subject": "\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "(?i:\ud800)"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "missing ), unterminated subpattern at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "missing ), unterminated subpattern",
+            "pattern": "(?i:\ud800)",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.scoped.search",
+        "operation": "search",
+        "pattern": "(?i:\ud800)",
+        "subject": "\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "missing ), unterminated subpattern at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "missing ), unterminated subpattern",
+            "pattern": "(?i:\ud800)",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.scoped.fullmatch",
+        "operation": "fullmatch",
+        "pattern": "(?i:\ud800)",
+        "subject": "\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "missing ), unterminated subpattern at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "missing ), unterminated subpattern",
+            "pattern": "(?i:\ud800)",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.scoped.findall",
+        "operation": "findall",
+        "pattern": "(?i:\ud800)",
+        "subject": "\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": [
+            "\ud800"
+          ]
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 5 (line 1, column 6)",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "(?x)#\ud800\n\ud800",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.verbose-comment.compile",
+        "operation": "compile",
+        "pattern": "(?x)#\ud800\n\ud800",
+        "subject": "\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 96,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "(?x)#\ud800\n\ud800"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 5 (line 1, column 6)",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "(?x)#\ud800\n\ud800",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.verbose-comment.search",
+        "operation": "search",
+        "pattern": "(?x)#\ud800\n\ud800",
+        "subject": "\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 5 (line 1, column 6)",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "(?x)#\ud800\n\ud800",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.verbose-comment.fullmatch",
+        "operation": "fullmatch",
+        "pattern": "(?x)#\ud800\n\ud800",
+        "subject": "\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 5 (line 1, column 6)",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "(?x)#\ud800\n\ud800",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.verbose-comment.findall",
+        "operation": "findall",
+        "pattern": "(?x)#\ud800\n\ud800",
+        "subject": "\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": [
+            "\ud800"
+          ]
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "a\ud800\ud83d\ude00",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.wide-mixed.compile",
+        "operation": "compile",
+        "pattern": "a\ud800\ud83d\ude00",
+        "subject": "a\ud800\ud83d\ude00"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "a\ud800\ud83d\ude00"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "a\ud800\ud83d\ude00",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.wide-mixed.search",
+        "operation": "search",
+        "pattern": "a\ud800\ud83d\ude00",
+        "subject": "a\ud800\ud83d\ude00"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "endpos": 3,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    3
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                3
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "a\ud800\ud83d\ude00",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.wide-mixed.fullmatch",
+        "operation": "fullmatch",
+        "pattern": "a\ud800\ud83d\ude00",
+        "subject": "a\ud800\ud83d\ude00"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "endpos": 3,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    3
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                3
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "a\ud800\ud83d\ude00",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-pattern",
+        "id": "surrogate-valid.wide-mixed.findall",
+        "operation": "findall",
+        "pattern": "a\ud800\ud83d\ude00",
+        "subject": "a\ud800\ud83d\ude00"
+      },
+      "expected": {
+        "result": {
+          "value": [
+            "a\ud800\ud83d\ude00"
+          ]
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character in group name 'a\u0301' at position 4",
+          "pattern_error": {
+            "colno": 5,
+            "lineno": 1,
+            "msg": "bad character in group name 'a\u0301'",
+            "pattern": "(?P<a\u0301>x)",
+            "pos": 4
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "unicode-group-name",
+        "id": "group-name.combining",
+        "operation": "compile",
+        "pattern": "(?P<a\u0301>x)"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {
+              "a\u0301": 1
+            },
+            "groups": 1,
+            "pattern": "(?P<a\u0301>x)"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character in group name '_\u0301' at position 4",
+          "pattern_error": {
+            "colno": 5,
+            "lineno": 1,
+            "msg": "bad character in group name '_\u0301'",
+            "pattern": "(?P<_\u0301>x)",
+            "pos": 4
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "unicode-group-name",
+        "id": "group-name.underscore-combining",
+        "operation": "compile",
+        "pattern": "(?P<_\u0301>x)"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {
+              "_\u0301": 1
+            },
+            "groups": 1,
+            "pattern": "(?P<_\u0301>x)"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character in group name 'a\u203f' at position 4",
+          "pattern_error": {
+            "colno": 5,
+            "lineno": 1,
+            "msg": "bad character in group name 'a\u203f'",
+            "pattern": "(?P<a\u203f>x)",
+            "pos": 4
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "unicode-group-name",
+        "id": "group-name.undertie",
+        "operation": "compile",
+        "pattern": "(?P<a\u203f>x)"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {
+              "a\u203f": 1
+            },
+            "groups": 1,
+            "pattern": "(?P<a\u203f>x)"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character in group name 'a\u2040' at position 4",
+          "pattern_error": {
+            "colno": 5,
+            "lineno": 1,
+            "msg": "bad character in group name 'a\u2040'",
+            "pattern": "(?P<a\u2040>x)",
+            "pos": 4
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "unicode-group-name",
+        "id": "group-name.character-tie",
+        "operation": "compile",
+        "pattern": "(?P<a\u2040>x)"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {
+              "a\u2040": 1
+            },
+            "groups": 1,
+            "pattern": "(?P<a\u2040>x)"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character in group name 'a\u00b7' at position 4",
+          "pattern_error": {
+            "colno": 5,
+            "lineno": 1,
+            "msg": "bad character in group name 'a\u00b7'",
+            "pattern": "(?P<a\u00b7>x)",
+            "pos": 4
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "unicode-group-name",
+        "id": "group-name.middle-dot",
+        "operation": "compile",
+        "pattern": "(?P<a\u00b7>x)"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {
+              "a\u00b7": 1
+            },
+            "groups": 1,
+            "pattern": "(?P<a\u00b7>x)"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character in group name 'a\u0387' at position 4",
+          "pattern_error": {
+            "colno": 5,
+            "lineno": 1,
+            "msg": "bad character in group name 'a\u0387'",
+            "pattern": "(?P<a\u0387>x)",
+            "pos": 4
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "unicode-group-name",
+        "id": "group-name.greek-dot",
+        "operation": "compile",
+        "pattern": "(?P<a\u0387>x)"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {
+              "a\u0387": 1
+            },
+            "groups": 1,
+            "pattern": "(?P<a\u0387>x)"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character in group name 'a\u200c' at position 4",
+          "pattern_error": {
+            "colno": 5,
+            "lineno": 1,
+            "msg": "bad character in group name 'a\u200c'",
+            "pattern": "(?P<a\u200c>x)",
+            "pos": 4
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "unicode-group-name",
+        "id": "group-name.join-control",
+        "operation": "compile",
+        "pattern": "(?P<a\u200c>x)"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {
+              "a\u200c": 1
+            },
+            "groups": 1,
+            "pattern": "(?P<a\u200c>x)"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character in group name 'a\u200d' at position 4",
+          "pattern_error": {
+            "colno": 5,
+            "lineno": 1,
+            "msg": "bad character in group name 'a\u200d'",
+            "pattern": "(?P<a\u200d>x)",
+            "pos": 4
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "unicode-group-name",
+        "id": "group-name.join-control-zwj",
+        "operation": "compile",
+        "pattern": "(?P<a\u200d>x)"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {
+              "a\u200d": 1
+            },
+            "groups": 1,
+            "pattern": "(?P<a\u200d>x)"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {
+              "\u0345": 1
+            },
+            "groups": 1,
+            "pattern": "(?P<\u0345>x)"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "unicode-group-name",
+        "id": "group-name.bare-combining",
+        "operation": "compile",
+        "pattern": "(?P<\u0345>x)"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character in group name '\u0345' at position 4",
+          "pattern_error": {
+            "colno": 5,
+            "lineno": 1,
+            "msg": "bad character in group name '\u0345'",
+            "pattern": "(?P<\u0345>x)",
+            "pos": 4
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {
+              "": 1
+            },
+            "groups": 1,
+            "pattern": "(?P<\ud800>x)"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "unicode-group-name",
+        "id": "group-name.raw-surrogate",
+        "operation": "compile",
+        "pattern": "(?P<\ud800>x)"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character in group name '\\ud800' at position 4",
+          "pattern_error": {
+            "colno": 5,
+            "lineno": 1,
+            "msg": "bad character in group name '\\ud800'",
+            "pattern": "(?P<\ud800>x)",
+            "pos": 4
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unknown group name '' at position 12",
+          "pattern_error": {
+            "colno": 13,
+            "lineno": 1,
+            "msg": "unknown group name ''",
+            "pattern": "(?P<x>x)(?P=\ud800)",
+            "pos": 12
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "unicode-group-name",
+        "id": "group-name.raw-surrogate-reference",
+        "operation": "compile",
+        "pattern": "(?P<x>x)(?P=\ud800)"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character in group name '\\ud800' at position 12",
+          "pattern_error": {
+            "colno": 13,
+            "lineno": 1,
+            "msg": "bad character in group name '\\ud800'",
+            "pattern": "(?P<x>x)(?P=\ud800)",
+            "pos": 12
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {
+              "\ua7cf": 1
+            },
+            "groups": 1,
+            "pattern": "(?P<\ua7cf>x)"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "unicode-group-name",
+        "id": "group-name.unicode17-unassigned",
+        "operation": "compile",
+        "pattern": "(?P<\ua7cf>x)"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character in group name '\\ua7cf' at position 4",
+          "pattern_error": {
+            "colno": 5,
+            "lineno": 1,
+            "msg": "bad character in group name '\\ua7cf'",
+            "pattern": "(?P<\ua7cf>x)",
+            "pos": 4
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "endpos": 2,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    2
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                2
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "repetition-boundary",
+        "id": "repetition.large-possessive.fullmatch",
+        "operation": "fullmatch",
+        "pattern": "(?:a{1,2}){2,4}+",
+        "subject": "aa"
+      },
+      "expected": {
+        "result": {
+          "value": null
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "endpos": 2,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    2
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                2
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "repetition-boundary",
+        "id": "repetition.large-choice-possessive.fullmatch",
+        "operation": "fullmatch",
+        "pattern": "(?:(?:a|b){1,2}){2,4}+",
+        "subject": "ab"
+      },
+      "expected": {
+        "result": {
+          "value": null
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 512,
+            "pattern": "((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "nesting-depth",
+        "id": "depth.groups.512",
+        "operation": "compile",
+        "pattern": "((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "nesting-depth",
+        "id": "depth.lookahead.512",
+        "operation": "compile",
+        "pattern": "(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1024,
+            "pattern": "((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "nesting-depth",
+        "id": "depth.groups.1024",
+        "operation": "compile",
+        "pattern": "((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "nesting-depth",
+        "id": "depth.lookahead.1024",
+        "operation": "compile",
+        "pattern": "(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 2048,
+            "pattern": "((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "nesting-depth",
+        "id": "depth.groups.2048",
+        "operation": "compile",
+        "pattern": "((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "nesting-depth",
+        "id": "depth.lookahead.2048",
+        "operation": "compile",
+        "pattern": "(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 4096,
+            "pattern": "((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "nesting-depth",
+        "id": "depth.groups.4096",
+        "operation": "compile",
+        "pattern": "((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((((a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "nesting-depth",
+        "id": "depth.lookahead.4096",
+        "operation": "compile",
+        "pattern": "(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=(?=a))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))))"
+      },
+      "expected": {
+        "result": {
+          "error": "RecursionError",
+          "message": "maximum recursion depth exceeded"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "args": [
+          0,
+          null
+        ],
+        "category": "window-boundary",
+        "id": "window.search.none-end",
+        "operation": "search",
+        "pattern": "a?",
+        "subject": "a"
+      },
+      "expected": {
+        "result": {
+          "error": "TypeError",
+          "message": "'NoneType' object cannot be interpreted as an integer"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "args": [
+          0,
+          null
+        ],
+        "category": "window-boundary",
+        "id": "window.match.none-end",
+        "operation": "match",
+        "pattern": "a?",
+        "subject": "a"
+      },
+      "expected": {
+        "result": {
+          "error": "TypeError",
+          "message": "'NoneType' object cannot be interpreted as an integer"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "args": [
+          0,
+          null
+        ],
+        "category": "window-boundary",
+        "id": "window.fullmatch.none-end",
+        "operation": "fullmatch",
+        "pattern": "a?",
+        "subject": "a"
+      },
+      "expected": {
+        "result": {
+          "error": "TypeError",
+          "message": "'NoneType' object cannot be interpreted as an integer"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": [
+            "a",
+            ""
+          ]
+        },
+        "status": "completed"
+      },
+      "case": {
+        "args": [
+          0,
+          null
+        ],
+        "category": "window-boundary",
+        "id": "window.findall.none-end",
+        "operation": "findall",
+        "pattern": "a?",
+        "subject": "a"
+      },
+      "expected": {
+        "result": {
+          "error": "TypeError",
+          "message": "'NoneType' object cannot be interpreted as an integer"
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 8",
+          "pattern_error": {
+            "colno": 9,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "]|]?\\+]a\udfff\ud800)[|[\\\udfffa",
+            "pos": 8
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.02",
+        "operation": "compile",
+        "pattern": "]|]?\\+]a\udfff\ud800)[|[\\\udfffa"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 10",
+          "pattern_error": {
+            "colno": 11,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "]|]?\\+]a\udfff\ud800)[|[\\\udfffa",
+            "pos": 10
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 5",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "{{()|\udfff}",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.09",
+        "operation": "compile",
+        "pattern": "{{()|\udfff}"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1,
+            "pattern": "{{()|\udfff}"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 5",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "[{**]\ud800|\udfff[0(|\udfff",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.15",
+        "operation": "compile",
+        "pattern": "[{**]\ud800|\udfff[0(|\udfff"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "unterminated character set at position 8",
+          "pattern_error": {
+            "colno": 9,
+            "lineno": 1,
+            "msg": "unterminated character set",
+            "pattern": "[{**]\ud800|\udfff[0(|\udfff",
+            "pos": 8
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\udfff?\udfff+[{+[?{}{?|+\udfff",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.20",
+        "operation": "compile",
+        "pattern": "\udfff?\udfff+[{+[?{}{?|+\udfff"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "unterminated character set at position 4",
+          "pattern_error": {
+            "colno": 5,
+            "lineno": 1,
+            "msg": "unterminated character set",
+            "pattern": "\udfff?\udfff+[{+[?{}{?|+\udfff",
+            "pos": 4
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\ud800",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.22",
+        "operation": "compile",
+        "pattern": "\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "\ud800"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 4",
+          "pattern_error": {
+            "colno": 5,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "0|0}\udfff]",
+            "pos": 4
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.25",
+        "operation": "compile",
+        "pattern": "0|0}\udfff]"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "0|0}\udfff]"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 9",
+          "pattern_error": {
+            "colno": 10,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "0\\+}()a]*\ud800",
+            "pos": 9
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.26",
+        "operation": "compile",
+        "pattern": "0\\+}()a]*\ud800"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 1,
+            "pattern": "0\\+}()a]*\ud800"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\udfff?[",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.29",
+        "operation": "compile",
+        "pattern": "\udfff?["
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "unterminated character set at position 2",
+          "pattern_error": {
+            "colno": 3,
+            "lineno": 1,
+            "msg": "unterminated character set",
+            "pattern": "\udfff?[",
+            "pos": 2
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 10",
+          "pattern_error": {
+            "colno": 11,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "]a[\ud800\ud800})]]|\ud800}])(\\?",
+            "pos": 10
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.30",
+        "operation": "compile",
+        "pattern": "]a[\ud800\ud800})]]|\ud800}])(\\?"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 13",
+          "pattern_error": {
+            "colno": 14,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "]a[\ud800\ud800})]]|\ud800}])(\\?",
+            "pos": 13
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\udfff}}+?*0\udfff0a\udfff\ud800*|0[\ud800",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.37",
+        "operation": "compile",
+        "pattern": "\udfff}}+?*0\udfff0a\udfff\ud800*|0[\ud800"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "multiple repeat at position 5",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "multiple repeat",
+            "pattern": "\udfff}}+?*0\udfff0a\udfff\ud800*|0[\ud800",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\ud800a\udfff\\a(a{)}})?]",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.38",
+        "operation": "compile",
+        "pattern": "\ud800a\udfff\\a(a{)}})?]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 11",
+          "pattern_error": {
+            "colno": 12,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\ud800a\udfff\\a(a{)}})?]",
+            "pos": 11
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad escape (end of pattern) at position 5",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "bad escape (end of pattern)",
+            "pattern": "}{*?}\\\udfff",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.40",
+        "operation": "compile",
+        "pattern": "}{*?}\\\udfff"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "}{*?}\\\udfff"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 2",
+          "pattern_error": {
+            "colno": 3,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "|}\udfff}}]](a(\udfff++a}(",
+            "pos": 2
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.42",
+        "operation": "compile",
+        "pattern": "|}\udfff}}]](a(\udfff++a}("
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "missing ), unterminated subpattern at position 15",
+          "pattern_error": {
+            "colno": 16,
+            "lineno": 1,
+            "msg": "missing ), unterminated subpattern",
+            "pattern": "|}\udfff}}]](a(\udfff++a}(",
+            "pos": 15
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 1",
+          "pattern_error": {
+            "colno": 2,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "}\ud800}}}|(a|])[a*\\*",
+            "pos": 1
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.46",
+        "operation": "compile",
+        "pattern": "}\ud800}}}|(a|])[a*\\*"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "unterminated character set at position 11",
+          "pattern_error": {
+            "colno": 12,
+            "lineno": 1,
+            "msg": "unterminated character set",
+            "pattern": "}\ud800}}}|(a|])[a*\\*",
+            "pos": 11
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "unbalanced parenthesis at position 0",
+          "pattern_error": {
+            "colno": 1,
+            "lineno": 1,
+            "msg": "unbalanced parenthesis",
+            "pattern": "\udfff}\\[0]a++",
+            "pos": 0
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "seeded-malformed",
+        "id": "seeded-malformed.47",
+        "operation": "compile",
+        "pattern": "\udfff}\\[0]a++"
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern": "\udfff}\\[0]a++"
+          }
+        },
+        "status": "completed"
+      }
+    }
+  ],
+  "isolation": "one independent subprocess per engine and case",
+  "memory_limit_mib": 768,
+  "module": "candidates.rust_candidate",
+  "oracle": "CPython stdlib re",
+  "oracle_failures": 0,
+  "python_version": "3.14.6",
+  "schema": "rebar-rust-subprocess-safety-v1",
+  "seed": 2026072319,
+  "timeout_seconds": 4.0,
+  "timeouts": 0
+}
