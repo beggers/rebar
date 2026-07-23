@@ -14,8 +14,8 @@ enum { F_I=2, F_L=4, F_M=8, F_S=16, F_A=256 };
 typedef struct { int op; Py_ssize_t a, b, c; } Ins;
 typedef struct { Py_ssize_t count, atomic_capacity, suffix_width; int linear, compact, has_suffix, has_loop, split_disjoint; Ins *ins; PyObject *literal; } Code;
 typedef struct { int kind; Py_UCS4 a, b; } ClassItem;
-typedef struct { Py_ssize_t count; ClassItem *items; unsigned char ascii[256], ignore_ascii[256], ignore_unicode[256]; int ready; } CharClass;
-typedef struct { Py_ssize_t code_count, class_count, groups; Code *codes; CharClass *classes; PyObject *literal; unsigned char starts[256]; uint64_t *start_pairs; uint32_t start_triples[128]; int starts_ready, cache_classes, triple_count; } VM;
+typedef struct { Py_ssize_t count; ClassItem *items; unsigned char ascii[256], scoped_ascii[256], ignore_ascii[256], ignore_unicode[256]; int ready; } CharClass;
+typedef struct { Py_ssize_t code_count, class_count, groups, root_flags; Code *codes; CharClass *classes; PyObject *literal; unsigned char starts[256]; uint64_t *start_pairs; uint32_t start_triples[128]; int starts_ready, cache_classes, triple_count; } VM;
 typedef struct { PyObject *obj; int byte_mode, unicode_kind; Py_ssize_t length; const char *bytes; const void *unicode_data; } Subject;
 typedef struct { Py_ssize_t pc, pos, last, repeat_step, repeat_limit; Py_ssize_t *caps, *seen, *barrier; int atomic_depth; } State;
 typedef struct { State **items; Py_ssize_t length, capacity; } Stack;
@@ -99,6 +99,59 @@ static Py_UCS4 subject_char(const Subject *s, Py_ssize_t pos) {
     return PyUnicode_READ(s->unicode_kind,s->unicode_data,pos);
 }
 
+static PyObject *unicode_casefold_cache=NULL;
+
+static PyObject *unicode_casefold(Py_UCS4 value) {
+    if (!unicode_casefold_cache) {
+        unicode_casefold_cache=PyDict_New();
+        if (!unicode_casefold_cache) return NULL;
+    }
+    PyObject *key=PyLong_FromUnsignedLong((unsigned long)value);
+    if (!key) return NULL;
+    PyObject *cached=PyDict_GetItemWithError(unicode_casefold_cache,key);
+    if (cached) {
+        Py_DECREF(key);
+        return Py_NewRef(cached);
+    }
+    if (PyErr_Occurred()) {
+        Py_DECREF(key);
+        return NULL;
+    }
+    PyObject *character=PyUnicode_FromOrdinal((int)value);
+    if (!character) {
+        Py_DECREF(key);
+        return NULL;
+    }
+    PyObject *fold=PyObject_CallMethod(character,"casefold",NULL);
+    Py_DECREF(character);
+    if (!fold) {
+        Py_DECREF(key);
+        return NULL;
+    }
+    if (PyDict_SetItem(unicode_casefold_cache,key,fold)<0) {
+        Py_DECREF(key);
+        Py_DECREF(fold);
+        return NULL;
+    }
+    Py_DECREF(key);
+    return fold;
+}
+
+static int unicode_casefold_equal(Py_UCS4 left, Py_UCS4 right) {
+    if (left==right) return 1;
+    PyObject *left_fold=unicode_casefold(left);
+    if (!left_fold) return 0;
+    PyObject *right_fold=unicode_casefold(right);
+    if (!right_fold) {
+        Py_DECREF(left_fold);
+        return 0;
+    }
+    int equal=PyObject_RichCompareBool(left_fold,right_fold,Py_EQ);
+    Py_DECREF(left_fold);
+    Py_DECREF(right_fold);
+    return equal>0;
+}
+
 static Py_UCS4 folded(Py_UCS4 c, int ascii_only) {
     if (ascii_only) return c < 128 ? (c >= 'A' && c <= 'Z' ? c + 32 : c) : c;
     if (c == 0x130 || c == 0x131) return 'i';
@@ -117,21 +170,31 @@ static int range_case_match(Py_UCS4 left, Py_UCS4 right, Py_UCS4 value, int asci
         Py_UCS4 upper=value<128 && value>='a' && value<='z' ? value-32 : value;
         return (lower>=left && lower<=right) || (upper>=left && upper<=right);
     }
-    Py_UCS4 lower=Py_UNICODE_TOLOWER(value),upper=Py_UNICODE_TOUPPER(value),fold=folded(value,0);
-    if ((lower>=left && lower<=right) || (upper>=left && upper<=right) || (fold>=left && fold<=right)) return 1;
-    if ((value==0x412 || value==0x432 || value==0x1c80) && ((0x412>=left && 0x412<=right) || (0x432>=left && 0x432<=right) || (0x1c80>=left && 0x1c80<=right))) return 1;
+    Py_UCS4 lower=Py_UNICODE_TOLOWER(value),upper=Py_UNICODE_TOUPPER(value);
+    if (lower>=left && lower<=right) return 1;
+    if (upper>=left && upper<=right && unicode_casefold_equal(value,upper)) return 1;
+    Py_UCS4 canonical_upper=Py_UNICODE_TOUPPER(lower);
+    if (canonical_upper>=left && canonical_upper<=right && unicode_casefold_equal(value,canonical_upper)) return 1;
     if ((value=='I' || value=='i' || value==0x130 || value==0x131) && (('I'>=left && 'I'<=right) || ('i'>=left && 'i'<=right) || (0x130>=left && 0x130<=right) || (0x131>=left && 0x131<=right))) return 1;
-    if ((value=='S' || value=='s' || value==0x17f) && (('S'>=left && 'S'<=right) || ('s'>=left && 's'<=right) || (0x17f>=left && 0x17f<=right))) return 1;
-    if ((value=='K' || value=='k' || value==0x212a) && (('K'>=left && 'K'<=right) || ('k'>=left && 'k'<=right) || (0x212a>=left && 0x212a<=right))) return 1;
-    if ((value==0xfb05 || value==0xfb06) && ((0xfb05>=left && 0xfb05<=right) || (0xfb06>=left && 0xfb06<=right))) return 1;
-    if ((value==0xdf || value==0x1e9e) && ((0xdf>=left && 0xdf<=right) || (0x1e9e>=left && 0x1e9e<=right))) return 1;
     return 0;
 }
 
 static int equal_char(Py_UCS4 a, Py_UCS4 b, Py_ssize_t flags) {
     if (!(flags & F_I)) return a == b;
     int ascii_only = !!(flags & (F_A|F_L|F_BYTE));
-    return folded(a, ascii_only) == folded(b, ascii_only);
+    if (ascii_only) return folded(a, 1)==folded(b, 1);
+    if (Py_UNICODE_TOLOWER(a)==Py_UNICODE_TOLOWER(b)) return 1;
+    if ((a=='I' || a=='i' || a==0x130 || a==0x131) &&
+        (b=='I' || b=='i' || b==0x130 || b==0x131)) return 1;
+    return unicode_casefold_equal(a,b);
+}
+
+static int equal_backref(Py_UCS4 a, Py_UCS4 b, Py_ssize_t flags) {
+    if (!(flags & F_I)) return a == b;
+    if (flags & (F_A|F_L|F_BYTE)) {
+        return folded(a, 1) == folded(b, 1);
+    }
+    return Py_UNICODE_TOLOWER(a) == Py_UNICODE_TOLOWER(b);
 }
 
 static int category(Py_UCS4 c, Py_ssize_t code, Py_ssize_t flags) {
@@ -171,11 +234,12 @@ static int class_match(const VM *vm, Py_ssize_t index, Py_UCS4 c, Py_ssize_t fla
     if (negate && (flags & (F_I|F_L))==(F_I|F_L)) return class_match_slow(vm,index,c,flags,negate);
     if (c<256 && vm->cache_classes) {
         CharClass *cls=&vm->classes[index];
-        int table=!(flags&F_I) ? 0 : (flags&(F_A|F_L|F_BYTE)) ? 1 : 2;
-        unsigned char *values=table==0 ? cls->ascii : table==1 ? cls->ignore_ascii : cls->ignore_unicode;
+        int ascii_only=!!(flags&(F_A|F_L|F_BYTE));
+        int table=!(flags&F_I) ? ascii_only : ascii_only ? 2 : 3;
+        unsigned char *values=table==0 ? cls->ascii : table==1 ? cls->scoped_ascii : table==2 ? cls->ignore_ascii : cls->ignore_unicode;
         if (!(cls->ready&(1<<table))) {
             for (Py_UCS4 value=0; value<256; value++) {
-                Py_ssize_t table_flags=table==0 ? 0 : table==1 ? F_I|F_A : F_I;
+                Py_ssize_t table_flags=(table>=2 ? F_I : 0) | (table==1 || table==2 ? F_A : 0);
                 values[value]=(unsigned char)class_match_slow(vm,index,value,table_flags,0);
             }
             cls->ready|=1<<table;
@@ -184,6 +248,26 @@ static int class_match(const VM *vm, Py_ssize_t index, Py_UCS4 c, Py_ssize_t fla
         return negate ? !found : found;
     }
     return class_match_slow(vm,index,c,flags,negate);
+}
+
+static int info_class_match(const VM *vm, Py_ssize_t index, Py_UCS4 value,
+                            Py_ssize_t scoped_flags, int negate) {
+    if (index<0 || index>=vm->class_count) return 0;
+    CharClass cls=vm->classes[index];
+    int found=0;
+    int scoped_ascii=!!(scoped_flags&(F_A|F_L|F_BYTE));
+    for (Py_ssize_t item_index=0; item_index<cls.count && !found; item_index++) {
+        ClassItem item=cls.items[item_index];
+        if (item.kind==1) found=equal_char(item.a,value,scoped_flags);
+        else if (item.kind==2) {
+            found=(scoped_flags&F_I)
+                ? range_case_match(item.a,item.b,value,scoped_ascii)
+                : value>=item.a && value<=item.b;
+        } else if (item.kind==3) {
+            found=category(value,item.a,vm->root_flags);
+        }
+    }
+    return negate ? !found : found;
 }
 
 static int atom_match(const VM *vm, const Subject *subject, Py_ssize_t pos, Ins atom) {
@@ -221,9 +305,10 @@ static Py_ssize_t atom_run(const VM *vm, const Subject *subject, Py_ssize_t pos,
     }
     if (atom.op==OP_CLASS && atom.a>=0 && atom.a<vm->class_count && (subject->byte_mode || subject->unicode_kind==PyUnicode_1BYTE_KIND)) {
         CharClass *cls=&vm->classes[atom.a];
-        int table=!(atom.b&F_I) ? 0 : (atom.b&(F_A|F_L|F_BYTE)) ? 1 : 2;
+        int ascii_only=!!(atom.b&(F_A|F_L|F_BYTE));
+        int table=!(atom.b&F_I) ? ascii_only : ascii_only ? 2 : 3;
         if (!(cls->ready&(1<<table))) (void)class_match(vm,atom.a,0,atom.b,0);
-        const unsigned char *values=table==0 ? cls->ascii : table==1 ? cls->ignore_ascii : cls->ignore_unicode;
+        const unsigned char *values=table==0 ? cls->ascii : table==1 ? cls->scoped_ascii : table==2 ? cls->ignore_ascii : cls->ignore_unicode;
         const unsigned char *data=subject->byte_mode ? (const unsigned char *)subject->bytes : (const unsigned char *)subject->unicode_data;
         Py_ssize_t matched=0;
         while (matched<maximum && (!!values[data[pos+matched]]!=!!atom.c)) matched++;
@@ -237,7 +322,9 @@ static Py_ssize_t atom_run(const VM *vm, const Subject *subject, Py_ssize_t pos,
 static int leading_accepts(const VM *vm, const Code *code, Py_ssize_t pc, Py_UCS4 value, int depth) {
     if (depth>128 || pc<0 || pc>=code->count) return 1;
     Ins in=code->ins[pc];
-    if (in.op==OP_CHAR || in.op==OP_DOT || in.op==OP_CAT || in.op==OP_CLASS) return atom_accepts(vm,in,value);
+    if (in.op==OP_CHAR || in.op==OP_DOT || in.op==OP_CAT || in.op==OP_CLASS) {
+        return atom_accepts(vm,in,value);
+    }
     if (in.op==OP_REPEAT1) {
         if (pc+1>=code->count) return 1;
         int atom=atom_accepts(vm,code->ins[pc+1],value);
@@ -313,10 +400,10 @@ static int repeat_needs_choice_inner(const VM *vm, const Code *code, Py_ssize_t 
         if (next.a=='$' && (next.b & F_M) && atom_accepts(vm,atom,'\n')) return 1;
         return 0;
     }
-    if (next.op==OP_CHAR && !atom_accepts(vm,atom,(Py_UCS4)next.a)) return 0;
+    if (next.op==OP_CHAR && !(next.b&F_I) && !atom_accepts(vm,atom,(Py_UCS4)next.a)) return 0;
     if (next.op==OP_LOOK && (next.b & 1) && !(next.b & 2) && next.a>=0 && next.a<vm->code_count) {
         Code look=vm->codes[next.a];
-        if (look.count && look.ins[0].op==OP_CHAR && !atom_accepts(vm,atom,(Py_UCS4)look.ins[0].a)) return 0;
+        if (look.count && look.ins[0].op==OP_CHAR && !(look.ins[0].b&F_I) && !atom_accepts(vm,atom,(Py_UCS4)look.ins[0].a)) return 0;
     }
     return 1;
 }
@@ -350,6 +437,7 @@ static int execute_linear(const VM *vm, Py_ssize_t code_index, const Subject *su
                 pos++; break;
             case OP_REPEAT1: {
                 if (pc+1>=code->count || in.a<0 || (in.b>=0 && in.b<in.a) || in.c==1) return -2;
+                if (pos>endpos) return 0;
                 Ins atom=code->ins[++pc];
                 Py_ssize_t maximum=in.b<0 ? endpos-pos : in.b;
                 if (maximum>endpos-pos) maximum=endpos-pos;
@@ -361,7 +449,7 @@ static int execute_linear(const VM *vm, Py_ssize_t code_index, const Subject *su
             case OP_ANCHOR: {
                 int ok=0;
                 if (in.a=='^') ok=pos==0 || ((in.b & F_M) && pos>0 && subject_char(subject,pos-1)=='\n');
-                else if (in.a=='$') ok=pos==endpos || (pos+1==endpos && pos<subject->length && subject_char(subject,pos)=='\n') || ((in.b & F_M) && pos<endpos && subject_char(subject,pos)=='\n');
+                else if (in.a=='$') ok=pos==endpos || (pos+1==endpos && pos<subject->length && subject_char(subject,pos)=='\n') || ((in.b & F_M) && pos<subject->length && subject_char(subject,pos)=='\n');
                 else if (in.a=='A') ok=pos==0;
                 else ok=pos==endpos;
                 if (!ok) return 0;
@@ -376,7 +464,7 @@ static int execute_linear(const VM *vm, Py_ssize_t code_index, const Subject *su
             case OP_BACKREF: {
                 Py_ssize_t begin=caps[2*in.a],finish=caps[2*in.a+1];
                 if (begin<0 || finish<begin || pos+finish-begin>endpos) return 0;
-                for (Py_ssize_t i=0; i<finish-begin; i++) if (!equal_char(subject_char(subject,begin+i),subject_char(subject,pos+i),in.b)) return 0;
+                for (Py_ssize_t i=0; i<finish-begin; i++) if (!equal_backref(subject_char(subject,begin+i),subject_char(subject,pos+i),in.b)) return 0;
                 pos+=finish-begin; break;
             }
             case OP_SAVE_START:
@@ -394,7 +482,8 @@ static int execute_linear(const VM *vm, Py_ssize_t code_index, const Subject *su
                 Py_ssize_t *look_caps=cap_count<=34 ? local_caps : PyMem_Malloc((size_t)cap_count*sizeof(Py_ssize_t));
                 if (!look_caps) return -1;
                 memcpy(look_caps,caps,(size_t)cap_count*sizeof(Py_ssize_t));
-                Py_ssize_t look_last=*last,look_end=-1,look_limit=behind ? pos : endpos;
+                Py_ssize_t look_last=*last,look_end=-1;
+                Py_ssize_t look_limit=behind ? (pos>endpos ? endpos : pos) : endpos;
                 int got=execute_linear(vm,in.a,subject,substart,look_limit,look_caps,&look_last,&look_end,behind,0);
                 if (got<0) { if (look_caps!=local_caps) PyMem_Free(look_caps); return got; }
                 int matched=got && (!behind || look_end==pos);
@@ -438,7 +527,7 @@ static int execute_compact_path(const VM *vm, const Code *code, const Subject *s
             case OP_ANCHOR: {
                 int ok=0;
                 if (in.a=='^') ok=pos==0 || ((in.b & F_M) && pos>0 && subject_char(subject,pos-1)=='\n');
-                else if (in.a=='$') ok=pos==endpos || (pos+1==endpos && pos<subject->length && subject_char(subject,pos)=='\n') || ((in.b & F_M) && pos<endpos && subject_char(subject,pos)=='\n');
+                else if (in.a=='$') ok=pos==endpos || (pos+1==endpos && pos<subject->length && subject_char(subject,pos)=='\n') || ((in.b & F_M) && pos<subject->length && subject_char(subject,pos)=='\n');
                 else if (in.a=='A') ok=pos==0;
                 else ok=pos==endpos;
                 if (!ok) return 0;
@@ -453,7 +542,7 @@ static int execute_compact_path(const VM *vm, const Code *code, const Subject *s
             case OP_BACKREF: {
                 Py_ssize_t begin=caps[2*in.a],finish=caps[2*in.a+1];
                 if (begin<0 || finish<begin || pos+finish-begin>endpos) return 0;
-                for (Py_ssize_t i=0; i<finish-begin; i++) if (!equal_char(subject_char(subject,begin+i),subject_char(subject,pos+i),in.b)) return 0;
+                for (Py_ssize_t i=0; i<finish-begin; i++) if (!equal_backref(subject_char(subject,begin+i),subject_char(subject,pos+i),in.b)) return 0;
                 pos+=finish-begin; pc++; break;
             }
             case OP_SAVE_START:
@@ -474,6 +563,7 @@ static int execute_compact_path(const VM *vm, const Code *code, const Subject *s
             }
             case OP_REPEAT1: {
                 if (pc+1>=code->count || in.a<0 || (in.b>=0 && in.b<in.a)) return -2;
+                if (pos>endpos) return 0;
                 Ins atom=code->ins[pc+1];
                 Py_ssize_t maximum=in.b<0 ? endpos-pos : in.b;
                 if (maximum>endpos-pos) maximum=endpos-pos;
@@ -500,7 +590,8 @@ static int execute_compact_path(const VM *vm, const Code *code, const Subject *s
                 int behind=!!(in.b & 2),positive=!!(in.b & 1);
                 Py_ssize_t substart=behind ? pos-in.c : pos;
                 if (substart<0) { if (positive) return 0; pc++; break; }
-                Py_ssize_t look_caps[34],look_last=*last,look_end=-1,look_limit=behind ? pos : endpos;
+                Py_ssize_t look_caps[34],look_last=*last,look_end=-1;
+                Py_ssize_t look_limit=behind ? (pos>endpos ? endpos : pos) : endpos;
                 memcpy(look_caps,caps,(size_t)cap_count*sizeof(Py_ssize_t));
                 int got=execute(vm,in.a,subject,substart,look_limit,look_caps,&look_last,&look_end,behind,0,depth+1);
                 if (got<0) return got;
@@ -619,7 +710,7 @@ static int execute(const VM *vm, Py_ssize_t code_index, const Subject *subject,
             case OP_ANCHOR: {
                 int ok = 0;
                 if (in.a == '^') ok = current->pos==0 || ((in.b & F_M) && current->pos>0 && subject_char(subject,current->pos-1)=='\n');
-                else if (in.a == '$') ok = current->pos==endpos || (current->pos+1==endpos && current->pos<subject->length && subject_char(subject,current->pos)=='\n') || ((in.b & F_M) && current->pos<endpos && subject_char(subject,current->pos)=='\n');
+                else if (in.a == '$') ok = current->pos==endpos || (current->pos+1==endpos && current->pos<subject->length && subject_char(subject,current->pos)=='\n') || ((in.b & F_M) && current->pos<subject->length && subject_char(subject,current->pos)=='\n');
                 else if (in.a == 'A') ok = current->pos==0;
                 else ok = current->pos==endpos;
                 if (!ok) goto fail;
@@ -634,7 +725,7 @@ static int execute(const VM *vm, Py_ssize_t code_index, const Subject *subject,
             case OP_BACKREF: {
                 Py_ssize_t begin = current->caps[2*in.a], finish = current->caps[2*in.a+1];
                 if (begin < 0 || finish < begin || current->pos + finish-begin > endpos) goto fail;
-                for (Py_ssize_t i=0; i<finish-begin; i++) if (!equal_char(subject_char(subject,begin+i),subject_char(subject,current->pos+i),in.b)) goto fail;
+                for (Py_ssize_t i=0; i<finish-begin; i++) if (!equal_backref(subject_char(subject,begin+i),subject_char(subject,current->pos+i),in.b)) goto fail;
                 current->pos += finish-begin; current->pc++; break;
             }
             case OP_SAVE_START:
@@ -654,6 +745,7 @@ static int execute(const VM *vm, Py_ssize_t code_index, const Subject *subject,
             }
             case OP_REPEAT1: {
                 if (current->pc+1>=code->count || in.a<0 || (in.b>=0 && in.b<in.a)) goto fail;
+                if (current->pos>endpos) goto fail;
                 Ins atom=code->ins[current->pc+1];
                 Py_ssize_t begin=current->pos,maximum=in.b<0 ? endpos-begin : in.b;
                 if (maximum>endpos-begin) maximum=endpos-begin;
@@ -694,7 +786,9 @@ static int execute(const VM *vm, Py_ssize_t code_index, const Subject *subject,
                 if (!look_caps) { state_free(current); stack_trim(&stack,0); PyMem_Free(stack.items); return -1; }
                 memcpy(look_caps,current->caps,(size_t)(2*(vm->groups+1))*sizeof(Py_ssize_t));
                 Py_ssize_t look_last=current->last, look_end=-1;
-                Py_ssize_t look_limit = behind ? current->pos : endpos;
+                Py_ssize_t look_limit = behind
+                    ? (current->pos>endpos ? endpos : current->pos)
+                    : endpos;
                 int got = execute(vm,in.a,subject,substart,look_limit,look_caps,&look_last,&look_end,behind,0,depth+1);
                 if (got < 0) { PyMem_Free(look_caps); state_free(current); stack_trim(&stack,0); PyMem_Free(stack.items); return got; }
                 int matched = got && (!behind || look_end==current->pos);
@@ -740,14 +834,15 @@ static void capsule_free(PyObject *capsule) { vm_free(PyCapsule_GetPointer(capsu
 static PyObject *native_build(PyObject *self, PyObject *args) {
     (void)self;
     PyObject *programs, *classes;
-    Py_ssize_t groups;
-    if (!PyArg_ParseTuple(args,"OOn",&programs,&classes,&groups)) return NULL;
+    Py_ssize_t groups,root_flags;
+    if (!PyArg_ParseTuple(args,"OOnn",&programs,&classes,&groups,&root_flags)) return NULL;
     PyObject *pseq = PySequence_Fast(programs,"programs must be a sequence");
     PyObject *cseq = PySequence_Fast(classes,"classes must be a sequence");
     if (!pseq || !cseq) { Py_XDECREF(pseq); Py_XDECREF(cseq); return NULL; }
     VM *vm = PyMem_Calloc(1,sizeof(VM));
     if (!vm) { Py_DECREF(pseq); Py_DECREF(cseq); return PyErr_NoMemory(); }
-    vm->groups=groups; vm->code_count=PySequence_Fast_GET_SIZE(pseq); vm->class_count=PySequence_Fast_GET_SIZE(cseq);
+    vm->groups=groups; vm->root_flags=root_flags;
+    vm->code_count=PySequence_Fast_GET_SIZE(pseq); vm->class_count=PySequence_Fast_GET_SIZE(cseq);
     vm->codes=PyMem_Calloc((size_t)vm->code_count,sizeof(Code)); vm->classes=PyMem_Calloc((size_t)vm->class_count,sizeof(CharClass));
     if (!vm->codes || (!vm->classes && vm->class_count)) { vm_free(vm); Py_DECREF(pseq); Py_DECREF(cseq); return PyErr_NoMemory(); }
     for (Py_ssize_t p=vm->code_count; p-->0;) {
@@ -897,6 +992,8 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
                     Py_ssize_t *caps, Py_ssize_t *last, Py_ssize_t *found,
                     Py_ssize_t *finish) {
     PROFILE_ADD(PROFILE_FIND,1);
+    for (Py_ssize_t index=0; index<2*(vm->groups+1); index++) caps[index]=-1;
+    *last=-1;
     if (mode!=0 && !vm->groups && vm->code_count && vm->codes[0].count>=6) {
         Code main=vm->codes[0];
         if (main.ins[0].op==OP_SPLIT && main.ins[0].c<0 && main.ins[main.count-3].op==OP_REPEAT1 && main.ins[main.count-3].a==0 && main.ins[main.count-3].b<0 && (main.ins[main.count-3].c==0 || main.ins[main.count-3].c==3) && (main.ins[main.count-2].op==OP_CLASS || main.ins[main.count-2].op==OP_CAT || main.ins[main.count-2].op==OP_CHAR) && main.ins[main.count-1].op==OP_MATCH) {
@@ -1073,7 +1170,7 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
                 for (Py_ssize_t close=start+1; close<endpos; close++) {
                     Py_UCS4 value=subject_char(subject,close);
                     if (!(dot.a&F_S) && value=='\n') break;
-                    if (!equal_char(value,open,closing.b)) continue;
+                    if (!equal_backref(value,open,closing.b)) continue;
                     caps[0]=start; caps[1]=close+1;
                     caps[2*open_save.a]=start; caps[2*open_save.a+1]=start+1;
                     caps[2*body_save.a]=start+1; caps[2*body_save.a+1]=close;
@@ -1319,7 +1416,7 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
     }
     for (Py_ssize_t start=first_start; start<=last_start; start++) {
         PROFILE_ADD(PROFILE_START,1);
-        if (start<pos || start>endpos) continue;
+        if (start<pos || (start>endpos && mode==0)) continue;
         if (mode==0 && vm->code_count && vm->codes[0].count && start<endpos) {
             Code main=vm->codes[0];
             Py_ssize_t first_pc=0;
@@ -1356,8 +1453,22 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
                 }
                 if (!equal_char(value,(Py_UCS4)first.a,first.b)) { PROFILE_ADD(PROFILE_START_REJECT,1); continue; }
             }
-            else if (first.op==OP_CLASS) { if (!class_match(vm,first.a,value,first.b,(int)first.c)) { PROFILE_ADD(PROFILE_START_REJECT,1); continue; } }
-            else if (first.op==OP_CAT) { if (!category(value,first.a,first.b)) { PROFILE_ADD(PROFILE_START_REJECT,1); continue; } }
+            else if (first.op==OP_CLASS) {
+                if ((!(vm->root_flags&F_BYTE) &&
+                     !info_class_match(vm,first.a,value,first.b,(int)first.c)) ||
+                    !class_match(vm,first.a,value,first.b,(int)first.c)) {
+                    PROFILE_ADD(PROFILE_START_REJECT,1);
+                    continue;
+                }
+            }
+            else if (first.op==OP_CAT) {
+                if ((!(vm->root_flags&F_BYTE) &&
+                     !category(value,first.a,vm->root_flags)) ||
+                    !category(value,first.a,first.b)) {
+                    PROFILE_ADD(PROFILE_START_REJECT,1);
+                    continue;
+                }
+            }
             else {
                 if (!start_accepts(vm,value)) { PROFILE_ADD(PROFILE_START_REJECT,1); continue; }
                 if (vm->start_pairs && value<256 && start+1<endpos) {
@@ -1425,7 +1536,12 @@ static PyObject *subject_slice(const Subject *subject, Py_ssize_t begin, Py_ssiz
     if (begin>subject->length) begin=subject->length;
     if (end<begin) end=begin;
     if (end>subject->length) end=subject->length;
-    if (subject->byte_mode) return PyBytes_FromStringAndSize(subject->bytes+begin,end-begin);
+    if (subject->byte_mode) {
+        if (begin==0 && end==subject->length && PyBytes_CheckExact(subject->obj)) {
+            return Py_NewRef(subject->obj);
+        }
+        return PyBytes_FromStringAndSize(subject->bytes+begin,end-begin);
+    }
     return PyUnicode_Substring(subject->obj,begin,end);
 }
 
@@ -1453,9 +1569,10 @@ static PyObject *native_match(PyObject *self, PyObject *args) {
     Subject subject;
     if (!subject_init(&subject,string)) return NULL;
     if (pos<0) pos=0;
+    if (pos>subject.length) pos=subject.length;
     if (endpos<0) endpos=0;
     if (endpos>subject.length) endpos=subject.length;
-    if (pos>endpos) Py_RETURN_NONE;
+    if (pos>endpos && mode==0) Py_RETURN_NONE;
     Py_ssize_t *caps=PyMem_Malloc((size_t)(2*(vm->groups+1))*sizeof(Py_ssize_t));
     if (!caps) return PyErr_NoMemory();
     Py_ssize_t last=-1,found=-1,finish=-1;
@@ -1472,6 +1589,7 @@ static PyObject *native_match(PyObject *self, PyObject *args) {
 
 static PyObject *collect_core(VM *vm, Subject subject, Py_ssize_t pos, Py_ssize_t endpos, Py_ssize_t limit, int mode) {
     if (pos<0) pos=0;
+    if (pos>subject.length) pos=subject.length;
     if (endpos<0) endpos=0;
     if (endpos>subject.length) endpos=subject.length;
     if (pos>endpos) pos=endpos+1;
@@ -1628,6 +1746,14 @@ static PyObject *collect_core(VM *vm, Subject subject, Py_ssize_t pos, Py_ssize_
             Py_ssize_t cursor=pos,previous=pos,matches=0;
             Ins atom=code.ins[1];
             while (cursor<endpos && (!limit || matches<limit)) {
+                Py_UCS4 value=subject_char(&subject,cursor);
+                if (!(vm->root_flags&F_BYTE) &&
+                    ((atom.op==OP_CAT && !category(value,atom.a,vm->root_flags)) ||
+                     (atom.op==OP_CLASS &&
+                      !info_class_match(vm,atom.a,value,atom.b,(int)atom.c)))) {
+                    cursor++;
+                    continue;
+                }
                 if (!atom_match(vm,&subject,cursor,atom)) { cursor++; continue; }
                 PyObject *prefix=subject_slice(&subject,previous,cursor),*capture=subject_slice(&subject,cursor,cursor+1);
                 if (!prefix || !capture || PyList_Append(output,prefix)<0 || PyList_Append(output,capture)<0) { Py_XDECREF(prefix); Py_XDECREF(capture); Py_DECREF(output); return NULL; }
@@ -1805,6 +1931,7 @@ typedef struct {
     PyObject_VAR_HEAD
     PatternObject *pattern;
     PyObject *string;
+    PyObject *regs;
     Py_ssize_t pos, endpos, lastindex;
     Py_ssize_t caps[];
 } MatchObject;
@@ -1844,6 +1971,7 @@ static MatchObject *match_alloc(PatternObject *pattern, PyObject *string, Py_ssi
     if (!match) return NULL;
     match->pattern=pattern; Py_INCREF(pattern);
     match->string=string; Py_INCREF(string);
+    match->regs=NULL;
     match->pos=pos; match->endpos=endpos; match->lastindex=-1;
     return match;
 }
@@ -1855,8 +1983,9 @@ static int match_number(MatchObject *match, PyObject *value, Py_ssize_t *number)
         *number=PyLong_AsSsize_t(index);
         return !PyErr_Occurred();
     }
+    if (!PyIndex_Check(value)) { PyErr_SetString(PyExc_IndexError,"no such group"); return 0; }
     PyObject *index=PyNumber_Index(value);
-    if (!index) { PyErr_Clear(); PyErr_SetString(PyExc_IndexError,"no such group"); return 0; }
+    if (!index) return 0;
     *number=PyLong_AsSsize_t(index);
     Py_DECREF(index);
     if (PyErr_Occurred()) { PyErr_Clear(); PyErr_SetString(PyExc_IndexError,"no such group"); return 0; }
@@ -2035,6 +2164,7 @@ static PyObject *match_get_lastgroup(MatchObject *match, void *closure) {
 
 static PyObject *match_get_regs(MatchObject *match, void *closure) {
     (void)closure;
+    if (match->regs) return Py_NewRef(match->regs);
     PyObject *result=PyTuple_New(match->pattern->groups+1);
     if (!result) return NULL;
     for (Py_ssize_t g=0; g<=match->pattern->groups; g++) {
@@ -2043,19 +2173,46 @@ static PyObject *match_get_regs(MatchObject *match, void *closure) {
         if (!item) { Py_DECREF(result); return NULL; }
         PyTuple_SET_ITEM(result,g,item);
     }
+    match->regs=Py_NewRef(result);
     return result;
 }
 
-static void match_dealloc(MatchObject *match) { Py_XDECREF(match->pattern); Py_XDECREF(match->string); Py_TYPE(match)->tp_free((PyObject *)match); }
+static int match_traverse(MatchObject *match, visitproc visit, void *arg) {
+    Py_VISIT(match->pattern);
+    Py_VISIT(match->string);
+    Py_VISIT(match->regs);
+    return 0;
+}
+
+static int match_clear(MatchObject *match) {
+    Py_CLEAR(match->pattern);
+    Py_CLEAR(match->string);
+    Py_CLEAR(match->regs);
+    return 0;
+}
+
+static void match_dealloc(MatchObject *match) {
+    PyObject_GC_UnTrack(match);
+    match_clear(match);
+    Py_TYPE(match)->tp_free((PyObject *)match);
+}
+
+static int readonly_attribute(PyObject *object, PyObject *value, void *closure) {
+    (void)object;
+    (void)value;
+    (void)closure;
+    PyErr_SetString(PyExc_AttributeError,"readonly attribute");
+    return -1;
+}
 
 static PyMethodDef MatchMethods[]={
     {"group",(PyCFunction)match_group,METH_VARARGS,"Return one or more captured groups."},
-    {"groups",(PyCFunction)(void(*)(void))match_groups,METH_VARARGS|METH_KEYWORDS,"Return all captured groups."},
-    {"groupdict",(PyCFunction)(void(*)(void))match_groupdict,METH_VARARGS|METH_KEYWORDS,"Return named captured groups."},
-    {"start",(PyCFunction)match_start,METH_VARARGS,"Return the start of a group."},
-    {"end",(PyCFunction)match_end,METH_VARARGS,"Return the end of a group."},
-    {"span",(PyCFunction)match_span,METH_VARARGS,"Return the span of a group."},
-    {"expand",(PyCFunction)match_expand,METH_O,"Expand a replacement template."},
+    {"groups",(PyCFunction)(void(*)(void))match_groups,METH_VARARGS|METH_KEYWORDS,"groups($self, /, default=None)\n--\n\nReturn all captured groups."},
+    {"groupdict",(PyCFunction)(void(*)(void))match_groupdict,METH_VARARGS|METH_KEYWORDS,"groupdict($self, /, default=None)\n--\n\nReturn named captured groups."},
+    {"start",(PyCFunction)match_start,METH_VARARGS,"start($self, group=0, /)\n--\n\nReturn the start of a group."},
+    {"end",(PyCFunction)match_end,METH_VARARGS,"end($self, group=0, /)\n--\n\nReturn the end of a group."},
+    {"span",(PyCFunction)match_span,METH_VARARGS,"span($self, group=0, /)\n--\n\nReturn the span of a group."},
+    {"expand",(PyCFunction)match_expand,METH_O,"expand($self, /, template)\n--\n\nExpand a replacement template."},
     {"__copy__",(PyCFunction)match_copy,METH_NOARGS,"Return the immutable match."},
     {"__deepcopy__",(PyCFunction)match_deepcopy,METH_O,"Return the immutable match."},
     {"__reduce__",(PyCFunction)match_reduce,METH_NOARGS,"Matches cannot be pickled."},
@@ -2065,8 +2222,8 @@ static PyMethodDef MatchMethods[]={
 };
 
 static PyGetSetDef MatchGetSet[]={
-    {"re",(getter)match_get_re,NULL,"Compiled pattern.",NULL},{"string",(getter)match_get_string,NULL,"Input string.",NULL},
-    {"pos",(getter)match_get_pos,NULL,"Search start.",NULL},{"endpos",(getter)match_get_endpos,NULL,"Search end.",NULL},
+    {"re",(getter)match_get_re,readonly_attribute,"Compiled pattern.",NULL},{"string",(getter)match_get_string,readonly_attribute,"Input string.",NULL},
+    {"pos",(getter)match_get_pos,readonly_attribute,"Search start.",NULL},{"endpos",(getter)match_get_endpos,readonly_attribute,"Search end.",NULL},
     {"lastindex",(getter)match_get_lastindex,NULL,"Last matched group index.",NULL},{"lastgroup",(getter)match_get_lastgroup,NULL,"Last matched group name.",NULL},
     {"regs",(getter)match_get_regs,NULL,"Captured spans.",NULL},{NULL,NULL,NULL,NULL,NULL}
 };
@@ -2076,7 +2233,8 @@ static PyMappingMethods MatchMapping={0,match_subscript,0};
 static PyTypeObject MatchType={
     PyVarObject_HEAD_INIT(NULL,0)
     .tp_name="re.Match", .tp_basicsize=offsetof(MatchObject,caps), .tp_itemsize=sizeof(Py_ssize_t),
-    .tp_dealloc=(destructor)match_dealloc, .tp_repr=(reprfunc)match_repr, .tp_flags=Py_TPFLAGS_DEFAULT, .tp_doc="Native regular expression match.",
+    .tp_dealloc=(destructor)match_dealloc, .tp_repr=(reprfunc)match_repr, .tp_flags=Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_GC, .tp_doc="Native regular expression match.",
+    .tp_traverse=(traverseproc)match_traverse, .tp_clear=(inquiry)match_clear,
     .tp_methods=MatchMethods, .tp_getset=MatchGetSet, .tp_as_mapping=&MatchMapping
 };
 
@@ -2088,24 +2246,65 @@ static int fast_index(PyObject *value, Py_ssize_t *result) {
     return !PyErr_Occurred();
 }
 
-static int pattern_window(PatternObject *pattern, PyObject *const *args, Py_ssize_t nargsf, PyObject *kwnames, Subject *subject, Py_ssize_t *pos, Py_ssize_t *endpos) {
+static int pattern_window(PatternObject *pattern, PyObject *const *args,
+                          Py_ssize_t nargsf, PyObject *kwnames, Subject *subject,
+                          Py_ssize_t *pos, Py_ssize_t *endpos,
+                          const char *method) {
     Py_ssize_t nargs=PyVectorcall_NARGS(nargsf),nkeys=kwnames ? PyTuple_GET_SIZE(kwnames) : 0;
-    if (nargs>3 || nkeys>3) { PyErr_SetString(PyExc_TypeError,"expected string and optional pos/endpos"); return 0; }
+    if (nargs>3 || nkeys>3) {
+        PyErr_Format(PyExc_TypeError,"%s() takes at most 3 arguments (%zd given)",
+                     method,nargs+nkeys);
+        return 0;
+    }
     PyObject *string=nargs>0 ? args[0] : NULL,*pos_value=nargs>1 ? args[1] : NULL,*end_value=nargs>2 ? args[2] : NULL;
+    PyObject *unknown=NULL;
     for (Py_ssize_t i=0; i<nkeys; i++) {
         PyObject *key=PyTuple_GET_ITEM(kwnames,i),*value=args[nargs+i];
-        if (PyUnicode_CompareWithASCIIString(key,"string")==0 && !string) string=value;
-        else if (PyUnicode_CompareWithASCIIString(key,"pos")==0 && !pos_value) pos_value=value;
-        else if (PyUnicode_CompareWithASCIIString(key,"endpos")==0 && !end_value) end_value=value;
-        else { PyErr_SetString(PyExc_TypeError,"invalid or repeated keyword argument"); return 0; }
+        if (PyUnicode_CompareWithASCIIString(key,"string")==0) {
+            if (string) {
+                PyErr_Format(PyExc_TypeError,
+                             "argument for %s() given by name ('string') and position (1)",
+                             method);
+                return 0;
+            }
+            string=value;
+        } else if (PyUnicode_CompareWithASCIIString(key,"pos")==0) {
+            if (pos_value) {
+                PyErr_Format(PyExc_TypeError,
+                             "argument for %s() given by name ('pos') and position (2)",
+                             method);
+                return 0;
+            }
+            pos_value=value;
+        } else if (PyUnicode_CompareWithASCIIString(key,"endpos")==0) {
+            if (end_value) {
+                PyErr_Format(PyExc_TypeError,
+                             "argument for %s() given by name ('endpos') and position (3)",
+                             method);
+                return 0;
+            }
+            end_value=value;
+        } else {
+            unknown=key;
+        }
     }
-    if (!string) { PyErr_SetString(PyExc_TypeError,"missing required argument 'string'"); return 0; }
+    if (!string) {
+        PyErr_Format(PyExc_TypeError,
+                     "%s() missing required argument 'string' (pos 1)",method);
+        return 0;
+    }
+    if (unknown) {
+        PyErr_Format(PyExc_TypeError,"'%U' is an invalid keyword argument for %s()",
+                     unknown,method);
+        return 0;
+    }
     *pos=0;
     if (pos_value && !fast_index(pos_value,pos)) return 0;
     if (!pattern_subject(pattern,string,subject)) return 0;
     if (!end_value) *endpos=subject->length;
     else if (!fast_index(end_value,endpos)) return 0;
     if (*pos<0) *pos=0;
+    if (*pos>subject->length) *pos=subject->length;
     if (*endpos<0) *endpos=0;
     if (*endpos>subject->length) *endpos=subject->length;
     return 1;
@@ -2114,8 +2313,9 @@ static int pattern_window(PatternObject *pattern, PyObject *const *args, Py_ssiz
 static PyObject *pattern_single(PatternObject *pattern, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames, int mode) {
     Subject subject;
     Py_ssize_t pos,endpos;
-    if (!pattern_window(pattern,args,nargs,kwnames,&subject,&pos,&endpos)) return NULL;
-    if (pos>endpos) Py_RETURN_NONE;
+    const char *method=mode==0 ? "search" : mode==1 ? "match" : "fullmatch";
+    if (!pattern_window(pattern,args,nargs,kwnames,&subject,&pos,&endpos,method)) return NULL;
+    if (pos>endpos && mode==0) Py_RETURN_NONE;
     Py_ssize_t local_caps[34];
     Py_ssize_t cap_count=2*(pattern->groups+1);
     Py_ssize_t *caps=cap_count<=34 ? local_caps : PyMem_Malloc((size_t)cap_count*sizeof(Py_ssize_t));
@@ -2140,7 +2340,8 @@ static PyObject *pattern_collect(PatternObject *pattern, PyObject *const *args, 
     Subject subject;
     Py_ssize_t pos=0,endpos=0,limit=0;
     if (mode==0) {
-        if (!pattern_window(pattern,args,nargsf,kwnames,&subject,&pos,&endpos)) return NULL;
+        if (!pattern_window(pattern,args,nargsf,kwnames,&subject,&pos,&endpos,
+                            "findall")) return NULL;
     } else {
         Py_ssize_t nargs=PyVectorcall_NARGS(nargsf),nkeys=kwnames ? PyTuple_GET_SIZE(kwnames) : 0;
         if (nargs>2 || nkeys>2) { PyErr_SetString(PyExc_TypeError,"expected string and optional maxsplit"); return NULL; }
@@ -2169,7 +2370,10 @@ static void finditer_dealloc(FindIterObject *iterator) {
 static PyObject *finditer_iter(PyObject *iterator) { return Py_NewRef(iterator); }
 
 static PyObject *finditer_next(FindIterObject *iterator) {
-    if (iterator->done || iterator->cursor>iterator->endpos) return NULL;
+    if (iterator->done || iterator->cursor>iterator->endpos) {
+        iterator->done=1;
+        return NULL;
+    }
     MatchObject *match=match_alloc(iterator->pattern,iterator->string,iterator->original_pos,iterator->endpos);
     if (!match) return NULL;
     Py_ssize_t found=-1,finish=-1;
@@ -2190,7 +2394,7 @@ static PyObject *scanner_search(FindIterObject *iterator, PyObject *ignored) {
 
 static PyObject *scanner_match(FindIterObject *iterator, PyObject *ignored) {
     (void)ignored;
-    if (iterator->done || iterator->cursor>iterator->endpos) Py_RETURN_NONE;
+    if (iterator->done) Py_RETURN_NONE;
     MatchObject *match=match_alloc(iterator->pattern,iterator->string,iterator->original_pos,iterator->endpos);
     if (!match) return NULL;
     Py_ssize_t found=-1,finish=-1;
@@ -2229,7 +2433,8 @@ static PyTypeObject FindIterType={
 static PyObject *pattern_iterator(PatternObject *pattern, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames, PyTypeObject *type) {
     Subject subject;
     Py_ssize_t pos,endpos;
-    if (!pattern_window(pattern,args,nargs,kwnames,&subject,&pos,&endpos)) return NULL;
+    if (!pattern_window(pattern,args,nargs,kwnames,&subject,&pos,&endpos,
+                        type==&ScannerType ? "scanner" : "finditer")) return NULL;
     FindIterObject *iterator=PyObject_New(FindIterObject,type);
     if (!iterator) return NULL;
     iterator->pattern=pattern; Py_INCREF(pattern);
@@ -2241,7 +2446,7 @@ static PyObject *pattern_iterator(PatternObject *pattern, PyObject *const *args,
         iterator->has_view=1;
     }
     iterator->cursor=pos; iterator->endpos=endpos; iterator->original_pos=pos;
-    iterator->nonempty=0; iterator->done=pos>endpos;
+    iterator->nonempty=0; iterator->done=0;
     return (PyObject *)iterator;
 }
 
@@ -2379,7 +2584,8 @@ static PyObject *pattern_substitute(PatternObject *pattern, PyObject *const *arg
         Py_DECREF(value);
         return NULL;
     }
-    if (!callable && !return_count && pattern->vm->literal && PyTuple_GET_SIZE(template_parts)==1) {
+    if (!callable && !return_count && limit>=0 && pattern->vm->literal &&
+        PyTuple_GET_SIZE(template_parts)==1) {
         PyObject *part=PyTuple_GET_ITEM(template_parts,0);
         if (!subject.byte_mode && PyUnicode_Check(part)) return PyUnicode_Replace(subject.obj,pattern->vm->literal,part,limit ? limit : -1);
     }
@@ -2467,32 +2673,52 @@ static void pattern_dealloc(PatternObject *pattern) { Py_XDECREF(pattern->patter
 static PyObject *pattern_get_pattern(PatternObject *pattern, void *closure) { (void)closure; return Py_NewRef(pattern->pattern); }
 static PyObject *pattern_get_flags(PatternObject *pattern, void *closure) { (void)closure; return PyLong_FromSsize_t(pattern->flags); }
 static PyObject *pattern_get_groups(PatternObject *pattern, void *closure) { (void)closure; return PyLong_FromSsize_t(pattern->groups); }
-static PyObject *pattern_get_groupindex(PatternObject *pattern, void *closure) { (void)closure; return PyDictProxy_New(pattern->groupindex); }
+static PyObject *pattern_get_groupindex(PatternObject *pattern, void *closure) {
+    (void)closure;
+    if (!PyDict_Size(pattern->groupindex)) return PyDict_New();
+    return PyDictProxy_New(pattern->groupindex);
+}
 static PyObject *pattern_get_vm(PatternObject *pattern, void *closure) { (void)closure; return Py_NewRef(pattern->capsule); }
 
 static PyMethodDef PatternMethods[]={
-    {"search",(PyCFunction)(void(*)(void))pattern_search,METH_FASTCALL|METH_KEYWORDS,"Scan for a match."},
-    {"match",(PyCFunction)(void(*)(void))pattern_match,METH_FASTCALL|METH_KEYWORDS,"Match at the start."},
-    {"fullmatch",(PyCFunction)(void(*)(void))pattern_fullmatch,METH_FASTCALL|METH_KEYWORDS,"Match the complete window."},
-    {"findall",(PyCFunction)(void(*)(void))pattern_findall,METH_FASTCALL|METH_KEYWORDS,"Return all non-overlapping matches."},
-    {"finditer",(PyCFunction)(void(*)(void))pattern_finditer,METH_FASTCALL|METH_KEYWORDS,"Iterate over non-overlapping matches."},
-    {"scanner",(PyCFunction)(void(*)(void))pattern_scanner,METH_FASTCALL|METH_KEYWORDS,"Create a native pattern scanner."},
-    {"split",(PyCFunction)(void(*)(void))pattern_split,METH_FASTCALL|METH_KEYWORDS,"Split around non-overlapping matches."},
-    {"sub",(PyCFunction)(void(*)(void))pattern_sub,METH_FASTCALL|METH_KEYWORDS,"Replace non-overlapping matches."},
-    {"subn",(PyCFunction)(void(*)(void))pattern_subn,METH_FASTCALL|METH_KEYWORDS,"Replace non-overlapping matches and return the count."},
+    {"search",(PyCFunction)(void(*)(void))pattern_search,METH_FASTCALL|METH_KEYWORDS,"search($self, /, string, pos=0, endpos=9223372036854775807)\n--\n\nScan for a match."},
+    {"match",(PyCFunction)(void(*)(void))pattern_match,METH_FASTCALL|METH_KEYWORDS,"match($self, /, string, pos=0, endpos=9223372036854775807)\n--\n\nMatch at the start."},
+    {"fullmatch",(PyCFunction)(void(*)(void))pattern_fullmatch,METH_FASTCALL|METH_KEYWORDS,"fullmatch($self, /, string, pos=0, endpos=9223372036854775807)\n--\n\nMatch the complete window."},
+    {"findall",(PyCFunction)(void(*)(void))pattern_findall,METH_FASTCALL|METH_KEYWORDS,"findall($self, /, string, pos=0, endpos=9223372036854775807)\n--\n\nReturn all non-overlapping matches."},
+    {"finditer",(PyCFunction)(void(*)(void))pattern_finditer,METH_FASTCALL|METH_KEYWORDS,"finditer($self, /, string, pos=0, endpos=9223372036854775807)\n--\n\nIterate over non-overlapping matches."},
+    {"scanner",(PyCFunction)(void(*)(void))pattern_scanner,METH_FASTCALL|METH_KEYWORDS,"scanner($self, /, string, pos=0, endpos=9223372036854775807)\n--\n\nCreate a native pattern scanner."},
+    {"split",(PyCFunction)(void(*)(void))pattern_split,METH_FASTCALL|METH_KEYWORDS,"split($self, /, string, maxsplit=0)\n--\n\nSplit around non-overlapping matches."},
+    {"sub",(PyCFunction)(void(*)(void))pattern_sub,METH_FASTCALL|METH_KEYWORDS,"sub($self, /, repl, string, count=0)\n--\n\nReplace non-overlapping matches."},
+    {"subn",(PyCFunction)(void(*)(void))pattern_subn,METH_FASTCALL|METH_KEYWORDS,"subn($self, /, repl, string, count=0)\n--\n\nReplace non-overlapping matches and return the count."},
     {NULL,NULL,0,NULL}
 };
 
+static int pattern_setattro(PyObject *object, PyObject *name, PyObject *value) {
+    if (PyUnicode_Check(name)) {
+        for (PyMethodDef *method=PatternMethods; method->ml_name; method++) {
+            int equal=PyUnicode_CompareWithASCIIString(name,method->ml_name);
+            if (equal<0 && PyErr_Occurred()) return -1;
+            if (!equal) {
+                PyErr_Format(PyExc_AttributeError,
+                             "'re.Pattern' object attribute '%U' is read-only",name);
+                return -1;
+            }
+        }
+    }
+    return PyObject_GenericSetAttr(object,name,value);
+}
+
 static PyGetSetDef PatternGetSet[]={
-    {"pattern",(getter)pattern_get_pattern,NULL,"Original pattern.",NULL},{"flags",(getter)pattern_get_flags,NULL,"Pattern flags.",NULL},
-    {"groups",(getter)pattern_get_groups,NULL,"Number of capture groups.",NULL},{"groupindex",(getter)pattern_get_groupindex,NULL,"Named group indexes.",NULL},
+    {"pattern",(getter)pattern_get_pattern,readonly_attribute,"Original pattern.",NULL},{"flags",(getter)pattern_get_flags,readonly_attribute,"Pattern flags.",NULL},
+    {"groups",(getter)pattern_get_groups,readonly_attribute,"Number of capture groups.",NULL},{"groupindex",(getter)pattern_get_groupindex,NULL,"Named group indexes.",NULL},
     {"_vm",(getter)pattern_get_vm,NULL,"Native bytecode program.",NULL},{NULL,NULL,NULL,NULL,NULL}
 };
 
 static PyTypeObject PatternType={
     PyVarObject_HEAD_INIT(NULL,0)
-    .tp_name="candidates._vm_native._Pattern", .tp_basicsize=sizeof(PatternObject), .tp_dealloc=(destructor)pattern_dealloc,
+    .tp_name="re.Pattern", .tp_basicsize=sizeof(PatternObject), .tp_dealloc=(destructor)pattern_dealloc,
     .tp_flags=Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE, .tp_doc="Native compiled regular expression.", .tp_methods=PatternMethods,
+    .tp_setattro=pattern_setattro,
     .tp_getset=PatternGetSet, .tp_init=(initproc)pattern_init, .tp_new=PyType_GenericNew
 };
 

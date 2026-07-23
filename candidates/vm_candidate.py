@@ -91,6 +91,7 @@ class _BytecodeParser:
         self.open_groups = set()
         self.lookbehind_bases = []
         self.pending_conditionals = []
+        self.pending_lookbehind_error = None
 
     def error(self, message, position=None, include_pattern=True):
         raise PatternError(message, self.original if include_pattern else None, position)
@@ -140,9 +141,11 @@ class _BytecodeParser:
             if behind:
                 minimum, maximum = _width(node, self.groupwidth)
                 if minimum != maximum:
-                    self.error("look-behind requires fixed-width pattern", include_pattern=False)
-                if minimum > _MAXREPEAT:
-                    self.error("looks too much behind", include_pattern=False)
+                    if self.pending_lookbehind_error is None:
+                        self.pending_lookbehind_error = "look-behind requires fixed-width pattern"
+                elif minimum > _MAXREPEAT:
+                    if self.pending_lookbehind_error is None:
+                        self.pending_lookbehind_error = "looks too much behind"
                 width = minimum
             return ("look", "behind" if behind else "ahead", tag.endswith("+"), node, width)
         if tag == "conditional":
@@ -275,19 +278,38 @@ class _BytecodeParser:
             self.at += 1
         members = []
         initial = True
+        warned_positions = set()
+
+        if self.source[opening + 1:opening + 2] == "[":
+            warnings.warn(
+                f"Possible nested set at position {opening + 1}",
+                FutureWarning,
+                skip_file_prefixes=_WARNING_PREFIX,
+            )
+
+        def warn_set_operator(position):
+            if position in warned_positions:
+                return
+            for marker, label in (
+                ("&&", "intersection"),
+                ("||", "union"),
+                ("~~", "symmetric difference"),
+                ("--", "difference"),
+            ):
+                if self.source.startswith(marker, position):
+                    warned_positions.add(position)
+                    warnings.warn(
+                        f"Possible set {label} at position {position}",
+                        FutureWarning,
+                        skip_file_prefixes=_WARNING_PREFIX,
+                    )
+                    return
+
         while self.current() is not None:
             if self.current() == "]" and not initial:
                 self.at += 1
-                intersection = self.source.find("&&", opening, self.at)
-                if intersection >= 0:
-                    warnings.warn(f"Possible set intersection at position {intersection}", FutureWarning, skip_file_prefixes=_WARNING_PREFIX)
-                if self.source[opening + 1:opening + 2] == "[":
-                    warnings.warn(f"Possible nested set at position {opening + 1}", FutureWarning, skip_file_prefixes=_WARNING_PREFIX)
-                for marker, label in (("||", "union"), ("~~", "symmetric difference"), ("--", "difference")):
-                    location = self.source.find(marker, opening, self.at)
-                    if location >= 0:
-                        warnings.warn(f"Possible set {label} at position {location}", FutureWarning, skip_file_prefixes=_WARNING_PREFIX)
                 return ("class", members, negative, flags)
+            warn_set_operator(self.at)
             initial = False
             left_start = self.at
             if self.current() == "\\":
@@ -296,9 +318,11 @@ class _BytecodeParser:
                 left = self.escaped(flags, True, slash)
             else:
                 left = ("lit", self.advance(), flags)
+            warn_set_operator(self.at)
             if self.current() == "-" and self.at + 1 < len(self.source) and self.source[self.at + 1] != "]":
                 dash = self.at
                 self.at += 1
+                right_start = self.at
                 if self.current() == "\\":
                     slash = self.at
                     self.at += 1
@@ -308,6 +332,8 @@ class _BytecodeParser:
                 if left[0] != "lit" or right[0] != "lit":
                     self.error(f"bad character range {self.source[left_start:self.at]}", left_start)
                 if ord(left[1]) > ord(right[1]):
+                    if self.source.startswith("\\x", left_start) and self.source.startswith("\\x", right_start):
+                        self.error("bad character range \\x-\\x", dash)
                     self.error(f"bad character range {left[1]}-{right[1]}", dash - 1)
                 members.append(("range", left[1], right[1]))
             else:
@@ -318,7 +344,7 @@ class _BytecodeParser:
         char = self.current()
         if char not in {"*", "+", "?", "{"}:
             return node
-        if node[0] in {"anchor", "boundary", "look"}:
+        if node[0] in {"anchor", "boundary"}:
             self.error("nothing to repeat", self.at)
         opening = self.at
         self.at += 1
@@ -377,6 +403,8 @@ class _BytecodeParser:
                 for number, position in self.pending_conditionals:
                     if number > self.groups:
                         self.error(f"invalid group reference {number}", position)
+                if self.pending_lookbehind_error is not None:
+                    self.error(self.pending_lookbehind_error, include_pattern=False)
                 self.flags = active["flags"]
                 return self.frame_node(active)
             if char == "|":
@@ -490,6 +518,8 @@ class _BytecodeParser:
                     while self.current() is not None and self.current() not in {":", ")"}:
                         item = self.advance()
                         if item == "-":
+                            if removing:
+                                self.error("missing flag", self.at - 1)
                             removing = True
                         elif item in table:
                             if removing:
@@ -521,7 +551,10 @@ class _BytecodeParser:
                         changed &= ~int(ASCII | LOCALE)
                     terminator = self.advance()
                     if removing and not turn_off:
-                        self.error("missing flag", self.at)
+                        self.error(
+                            "missing flag",
+                            self.at - (1 if terminator is not None else 0),
+                        )
                     if removing and terminator in {None, ")"}:
                         self.error("missing :", self.at - (terminator == ")"))
                     if terminator is None:
@@ -766,9 +799,31 @@ class _BytecodeCompiler:
             if layout is not None:
                 self.emit_fixed_layout(*layout)
                 return
-            if child[0] in {"lit", "dot", "category", "class"}:
+            atom = child
+            if child[0] == "alt":
+                alternatives = []
+                for branch in child[1]:
+                    if branch[0] != "seq" or len(branch[1]) != 1:
+                        alternatives = []
+                        break
+                    literal = branch[1][0]
+                    if literal[0] != "lit":
+                        alternatives = []
+                        break
+                    alternatives.append(literal)
+                if alternatives and all(
+                    literal[2] == alternatives[0][2]
+                    for literal in alternatives
+                ):
+                    atom = (
+                        "class",
+                        alternatives,
+                        False,
+                        alternatives[0][2],
+                    )
+            if atom[0] in {"lit", "dot", "category", "class"}:
                 self.instruction(self.REPEAT1, minimum, -1 if maximum is None else maximum, {"greedy": 0, "lazy": 1, "possessive": 2}[mode])
-                self.emit(child)
+                self.emit(atom)
                 return
             atomic = mode == "possessive"
             if atomic:
@@ -818,10 +873,15 @@ class _BytecodeCompiler:
         else:
             raise RuntimeError(f"unknown bytecode node {kind}")
 
-    def build(self, node, groups):
+    def build(self, node, groups, root_flags):
         self.emit(node)
         self.instruction(self.MATCH)
-        return _vm_native.build([list(map(tuple, program)) for program in self.programs], self.classes, groups)
+        return _vm_native.build(
+            [list(map(tuple, program)) for program in self.programs],
+            self.classes,
+            groups,
+            root_flags,
+        )
 
 
 def _template_parts(value, pattern, byte_mode):
@@ -1004,11 +1064,18 @@ _CACHE = {}
 
 
 def compile(pattern, flags=0):
-    flags = int(flags)
     if isinstance(pattern, Pattern):
         if flags:
             raise ValueError("cannot process flags argument with a compiled pattern")
         return pattern
+    key = (type(pattern), pattern, flags)
+    try:
+        return _CACHE[key]
+    except KeyError:
+        cached = _CACHE.get((type(pattern), pattern, flags))
+        if cached is not None:
+            return cached
+    flags = int(flags)
     if not isinstance(pattern, (str, bytes)):
         raise TypeError("first argument must be string or compiled pattern")
     if isinstance(pattern, str) and flags & int(LOCALE):
@@ -1019,9 +1086,6 @@ def compile(pattern, flags=0):
         raise ValueError("ASCII and UNICODE flags are incompatible")
     if isinstance(pattern, bytes) and flags & int(ASCII) and flags & int(LOCALE):
         raise ValueError("ASCII and LOCALE flags are incompatible")
-    key = (type(pattern), pattern, flags)
-    if key in _CACHE:
-        return _CACHE[key]
     implicit_unicode = int(UNICODE) if isinstance(pattern, str) and not flags & int(ASCII) else 0
     parser = _BytecodeParser(pattern, flags | implicit_unicode)
     node = parser.parse()
@@ -1029,9 +1093,10 @@ def compile(pattern, flags=0):
         raise ValueError("ASCII and UNICODE flags are incompatible")
     if isinstance(pattern, bytes) and ((flags & int(ASCII) and parser.flags & int(LOCALE)) or (flags & int(LOCALE) and parser.flags & int(ASCII))):
         raise ValueError("ASCII and LOCALE flags are incompatible")
-    vm = _BytecodeCompiler().build(node, parser.groups)
+    vm = _BytecodeCompiler().build(node, parser.groups, parser.flags)
     result = Pattern(pattern, parser.flags & ~_BYTE, vm, parser.groups, dict(parser.groupindex))
-    _CACHE[key] = result
+    canonical_pattern = str.__str__(pattern) if isinstance(pattern, str) else bytes(pattern)
+    _CACHE[(type(pattern), canonical_pattern, flags)] = result
     if flags & int(DEBUG):
         print(f"AST {node!r}")
     return result
@@ -1042,9 +1107,7 @@ def purge():
 
 
 def search(pattern, string, flags=0):
-    flags = int(flags)
-    cached = _CACHE.get((type(pattern), pattern, flags)) if isinstance(pattern, (str, bytes)) else None
-    return (cached if cached is not None else compile(pattern, flags)).search(string)
+    return compile(pattern, flags).search(string)
 
 
 def match(pattern, string, flags=0):
@@ -1116,6 +1179,11 @@ def subn(pattern, repl, string, *args, count=_MISSING, flags=_MISSING):
 
 def escape(pattern):
     return _vm_native.escape(pattern)
+
+
+split.__text_signature__ = "(pattern, string, maxsplit=0, flags=0)"
+sub.__text_signature__ = "(pattern, repl, string, count=0, flags=0)"
+subn.__text_signature__ = "(pattern, repl, string, count=0, flags=0)"
 
 
 __all__ = ["match", "fullmatch", "search", "sub", "subn", "split", "findall", "finditer", "compile", "purge", "escape", "error", "Pattern", "Match", "A", "I", "L", "M", "S", "X", "U", "ASCII", "IGNORECASE", "LOCALE", "MULTILINE", "DOTALL", "VERBOSE", "UNICODE", "NOFLAG", "RegexFlag", "PatternError"]
