@@ -15,6 +15,22 @@ from re import _casefix
 
 SEED = 2026072307
 MULTI_UPPER = tuple(value for value in range(0x110000) if len(chr(value).upper()) > 1)
+CASEFOLD_GROUPS = (
+    (0x0049, 0x0069, 0x0130, 0x0131),
+    (0x004B, 0x006B, 0x212A), (0x0053, 0x0073, 0x017F),
+    (0x00B5, 0x039C, 0x03BC), (0x00DF, 0x1E9E),
+    (0x0345, 0x0399, 0x03B9, 0x1FBE), (0x0390, 0x1FD3),
+    (0x03B0, 0x1FE3), (0x0392, 0x03B2, 0x03D0),
+    (0x0395, 0x03B5, 0x03F5), (0x0398, 0x03B8, 0x03D1),
+    (0x039A, 0x03BA, 0x03F0), (0x03A0, 0x03C0, 0x03D6),
+    (0x03A1, 0x03C1, 0x03F1), (0x03A3, 0x03C2, 0x03C3),
+    (0x03A6, 0x03C6, 0x03D5), (0x0412, 0x0432, 0x1C80),
+    (0x0414, 0x0434, 0x1C81), (0x041E, 0x043E, 0x1C82),
+    (0x0421, 0x0441, 0x1C83), (0x0422, 0x0442, 0x1C84, 0x1C85),
+    (0x042A, 0x044A, 0x1C86), (0x0462, 0x0463, 0x1C87),
+    (0xA64A, 0xA64B, 0x1C88), (0x1E60, 0x1E61, 0x1E9B),
+    (0xFB05, 0xFB06),
+)
 
 
 def casefix_components():
@@ -367,6 +383,87 @@ def error_surface(module, failures):
     return len(cases)
 
 
+def invalid_window_matrix(module, failures):
+    patterns = ("", r"\b", r"\B", "a?", "a*", "^", "$", "((a)?)*", "(a?){0}", "(?:|a)")
+    subjects = ("", "a", "ab")
+    windows = ((2, 0), (3, 0), (3, 1), (-3, -1), (-3, 0), (0, -2))
+    checks = 0
+    for pattern_index, pattern in enumerate(patterns):
+        oracle = re.compile(pattern)
+        actual = module.compile(pattern)
+        for subject_index, subject in enumerate(subjects):
+            for window_index, (pos, endpos) in enumerate(windows):
+                actions = (
+                    ("search", lambda item: match_value(item.search(subject, pos, endpos))),
+                    ("match", lambda item: match_value(item.match(subject, pos, endpos))),
+                    ("fullmatch", lambda item: match_value(item.fullmatch(subject, pos, endpos))),
+                    ("findall", lambda item: item.findall(subject, pos, endpos)),
+                    ("finditer", lambda item: [match_value(value) for value in item.finditer(subject, pos, endpos)]),
+                    ("scanner-search", lambda item: scan_values(item, subject, pos, endpos, "search")),
+                    ("scanner-match", lambda item: scan_values(item, subject, pos, endpos, "match")),
+                )
+                label = f"invalid-window-{pattern_index}-{subject_index}-{window_index}"
+                for operation, action in actions:
+                    checks += record_check(failures, label, operation, pattern, subject, 0, action, oracle, actual, pos, endpos)
+    return checks
+
+
+def surrogate_matrix(module, failures):
+    low, high = "\ud800", "\udfff"
+    cases = (
+        (low, low), (high, high), ("[" + low + "]", low),
+        ("[" + low + "-" + high + "]", low),
+        ("[" + low + "-" + high + "]", high),
+        (r"\ud800", low), (r"[\ud800-\udfff]", low),
+        (r"[\ud800-\udfff]", high),
+        ("(?P<x>" + low + ")(?P=x)", low + low),
+        ("(" + low + r")\1", low + low), (r"(.)\1", low + low),
+        ("x" + low + "y", "x" + low + "y"), ("[^" + low + "]", "x"),
+        (r"[\ud800-\udfff]+", "x" + low + high + "z"),
+        (r".", low), (r"\w", low), (r"\W", low),
+        (r"\b", low), ("😀", "😀"),
+    )
+    checks = 0
+    for index, (pattern, subject) in enumerate(cases):
+        for flags in (0, re.I, re.A, re.I | re.A):
+            for operation in ("search", "match", "fullmatch", "findall", "finditer"):
+                def action(engine, pattern=pattern, subject=subject, flags=flags, operation=operation):
+                    compiled = engine.compile(pattern, flags)
+                    value = getattr(compiled, operation)(subject)
+                    if operation == "findall":
+                        return value
+                    if operation == "finditer":
+                        return [match_value(match) for match in value]
+                    return match_value(value)
+
+                checks += record_check(failures, f"surrogate-{index}", operation, pattern, subject, flags, action, re, module)
+    return checks
+
+
+def backreference_matrix(module, failures):
+    variants = (
+        (r"(?i)(.)\1", 0),
+        (r"(?i)(?P<part>.)(?P=part)", 0),
+        (r"(.)(?i:\1)", 0),
+        (r"(?P<part>.)(?i:(?P=part))", 0),
+        (r"(?i:(.))(?-i:\1)", 0),
+        (r"(?ai)(.)\1", 0),
+        (r"(?ai)(?P<part>.)(?P=part)", 0),
+    )
+    checks = 0
+    for group_index, group in enumerate(CASEFOLD_GROUPS):
+        for left in group:
+            for right in group:
+                subject = chr(left) + chr(right)
+                for variant_index, (pattern, flags) in enumerate(variants):
+                    def action(engine, pattern=pattern, subject=subject, flags=flags):
+                        return match_value(engine.compile(pattern, flags).fullmatch(subject))
+
+                    label = f"backreference-{group_index}-U+{left:04X}-U+{right:04X}-{variant_index}"
+                    checks += record_check(failures, label, "fullmatch", pattern, subject, flags, action, re, module)
+    return checks
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--module", default="candidates.rust_candidate")
@@ -391,6 +488,9 @@ def main():
         for index, case in enumerate(manual):
             checks += check(module, *case, f"manual-{index}", failures)
         checks += error_surface(module, failures)
+        checks += invalid_window_matrix(module, failures)
+        checks += surrogate_matrix(module, failures)
+        checks += backreference_matrix(module, failures)
     elif not 0 <= args.case_index < args.seeded_cases:
         parser.error("--case-index must be nonnegative and less than --seeded-cases")
     rng = random.Random(args.seed)
@@ -411,13 +511,18 @@ def main():
         "casefix_directed_edges": sum(map(len, _casefix._EXTRA_CASES.values())),
         "casefix_components": casefix_components(),
         "multi_upper_codepoints": len(MULTI_UPPER),
+        "casefold_groups": len(CASEFOLD_GROUPS),
+        "backreference_pairs": sum(len(group) ** 2 for group in CASEFOLD_GROUPS),
+        "backreference_variants": 7,
+        "invalid_window_checks": 1260 if args.manual_index is None and args.case_index is None else 0,
+        "surrogate_checks": 380 if args.manual_index is None and args.case_index is None else 0,
         "seeded_cases": args.seeded_cases,
         "case_index": args.case_index,
         "correctness_checks": checks,
         "failed": len(failures),
         "failures": failures,
     }
-    Path(args.output).write_text(json.dumps(report, ensure_ascii=False, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    Path(args.output).write_text(json.dumps(report, ensure_ascii=True, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     print(json.dumps({key: value for key, value in report.items() if key != "failures"}, sort_keys=True))
     if failures:
         raise SystemExit(1)
