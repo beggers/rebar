@@ -198,6 +198,18 @@ struct Context<'a> {
 }
 
 impl Context<'_> {
+    /// Distinguish physical subject storage from a clamped regex end window.
+    #[inline(always)]
+    fn has_character(&self, pos: usize) -> bool {
+        if let Some(values) = self.bytes {
+            return pos < values.len();
+        }
+        if let Some(wide) = self.wide {
+            return pos < wide.data.len() / usize::from(wide.kind);
+        }
+        pos < self.chars.len()
+    }
+
     #[inline(always)]
     fn character(&self, pos: usize) -> u32 {
         if let Some(values) = self.bytes {
@@ -264,6 +276,7 @@ struct Parser {
     open_groups: Vec<usize>,
     lookbehind_bases: Vec<usize>,
     pending_conditionals: Vec<(usize, usize)>,
+    invalid_lookbehind_width: bool,
 }
 type PResult<T> = Result<T, (String, Option<usize>, bool)>;
 
@@ -330,6 +343,13 @@ impl Parser {
                 format!("invalid group reference {}", number),
                 Some(*position),
                 true,
+            );
+        }
+        if self.invalid_lookbehind_width {
+            return self.fail(
+                "look-behind requires fixed-width pattern".into(),
+                None,
+                false,
             );
         }
         Ok(result)
@@ -404,10 +424,7 @@ impl Parser {
         if !matches!(mark, '*' | '+' | '?' | '{') {
             return Ok(node);
         }
-        if matches!(
-            node,
-            Expr::Anchor(_, _) | Expr::Boundary(_, _) | Expr::Look(_, _, _, _)
-        ) {
+        if matches!(node, Expr::Anchor(_, _) | Expr::Boundary(_, _)) {
             return self.fail("nothing to repeat".into(), Some(start), true);
         }
         self.at += 1;
@@ -912,11 +929,7 @@ impl Parser {
                 let (low, high) = width(&child, &self.widths);
                 self.lookbehind_bases.pop();
                 if low != high {
-                    return self.fail(
-                        "look-behind requires fixed-width pattern".into(),
-                        None,
-                        false,
-                    );
+                    self.invalid_lookbehind_width = true;
                 }
                 if low > 0xffff_ffff {
                     return self.fail("looks too much behind".into(), None, false);
@@ -1105,6 +1118,9 @@ impl Parser {
                         break;
                     };
                     if value == '-' {
+                        if removing {
+                            return self.fail("missing flag".into(), Some(self.at - 1), true);
+                        }
                         removing = true;
                         continue;
                     }
@@ -1166,6 +1182,9 @@ impl Parser {
                         }
                         on |= flag;
                     }
+                }
+                if removing && off == 0 {
+                    return self.fail("missing flag".into(), Some(self.at), true);
                 }
                 if on & off != 0 {
                     return self.fail(
@@ -1666,7 +1685,73 @@ fn leading_lookbehind(node: &Expr) -> Option<usize> {
     }
 }
 
-fn add_starts(node: &Expr, starts: &mut [u8; 256], ctx: &Context<'_>) -> (bool, bool) {
+#[inline]
+fn prefix_iscased(value: u32, flags: u32) -> bool {
+    if flags & I == 0 {
+        return false;
+    }
+    if flags & (A | L | BYTE) != 0 {
+        return value.wrapping_sub(u32::from(b'A')) < 26
+            || value.wrapping_sub(u32::from(b'a')) < 26;
+    }
+    unicode_tables::simple_lower(value) != value || unicode_tables::simple_upper(value) != value
+}
+
+#[inline]
+fn prefix_charset_is_cased(members: &[Member], flags: u32) -> bool {
+    if flags & I == 0 {
+        return false;
+    }
+    members.iter().any(|member| match *member {
+        Member::Lit(value) => prefix_iscased(value, flags),
+        Member::Range(left, right) => {
+            right > 0xffff || (left..=right).any(|value| prefix_iscased(value, flags))
+        }
+        Member::Cat(_) | Member::Table(_) => false,
+    })
+}
+
+fn has_scoped_category_prefix(node: &Expr, global_flags: u32) -> bool {
+    match node {
+        Expr::Cat(_, flags) | Expr::Class(_, _, flags) => {
+            (*flags ^ global_flags) & (A | L | BYTE) != 0
+        }
+        Expr::Group(_, child) | Expr::Atomic(child) | Expr::Repeat(child, _, _, _) => {
+            has_scoped_category_prefix(child, global_flags)
+        }
+        Expr::Seq(values) => {
+            for value in values {
+                if has_scoped_category_prefix(value, global_flags) {
+                    return true;
+                }
+                if !Compiler::nullable(value) {
+                    break;
+                }
+            }
+            false
+        }
+        Expr::Alt(values) => values
+            .iter()
+            .any(|value| has_scoped_category_prefix(value, global_flags)),
+        Expr::Cond(_, yes, no) => {
+            has_scoped_category_prefix(yes, global_flags)
+                || has_scoped_category_prefix(no, global_flags)
+        }
+        Expr::Lit(_, _)
+        | Expr::Dot(_)
+        | Expr::Anchor(_, _)
+        | Expr::Boundary(_, _)
+        | Expr::Backref(_, _)
+        | Expr::Look(_, _, _, _) => false,
+    }
+}
+
+fn add_starts(
+    node: &Expr,
+    starts: &mut [u8; 256],
+    ctx: &Context<'_>,
+    global_flags: u32,
+) -> (bool, bool) {
     match node {
         Expr::Lit(value, flags) => {
             for index in 0..256 {
@@ -1685,26 +1770,38 @@ fn add_starts(node: &Expr, starts: &mut [u8; 256], ctx: &Context<'_>) -> (bool, 
             (false, true)
         }
         Expr::Cat(code, flags) => {
+            let prefix_flags = (*flags & !(A | L | BYTE)) | (global_flags & (A | L | BYTE));
             for (index, item) in starts.iter_mut().enumerate() {
-                if category(*code, *flags, ctx, index) {
+                if category(*code, prefix_flags, ctx, index) {
                     *item = 1;
                 }
             }
             (false, true)
         }
         Expr::Class(values, negative, flags) => {
+            let prefix_flags = (*flags & !(A | L | BYTE)) | (global_flags & (A | L | BYTE));
+            let members = if matches!(values.first(), Some(Member::Table(_))) {
+                &values[1..]
+            } else {
+                values
+            };
+            if (*flags ^ global_flags) & (A | L | BYTE) != 0
+                && prefix_charset_is_cased(members, *flags)
+            {
+                return (false, false);
+            }
             for (index, item) in starts.iter_mut().enumerate() {
-                if class_match(values, *negative, *flags, ctx, index) {
+                if class_match(members, *negative, prefix_flags, ctx, index) {
                     *item = 1;
                 }
             }
             (false, true)
         }
         Expr::Anchor(_, _) | Expr::Boundary(_, _) | Expr::Look(_, _, _, _) => (true, true),
-        Expr::Group(_, child) | Expr::Atomic(child) => add_starts(child, starts, ctx),
+        Expr::Group(_, child) | Expr::Atomic(child) => add_starts(child, starts, ctx, global_flags),
         Expr::Seq(values) => {
             for value in values {
-                let (nullable, known) = add_starts(value, starts, ctx);
+                let (nullable, known) = add_starts(value, starts, ctx, global_flags);
                 if !known {
                     return (false, false);
                 }
@@ -1715,9 +1812,15 @@ fn add_starts(node: &Expr, starts: &mut [u8; 256], ctx: &Context<'_>) -> (bool, 
             (true, true)
         }
         Expr::Alt(values) => {
+            if values
+                .iter()
+                .any(|value| has_scoped_category_prefix(value, global_flags))
+            {
+                return (false, false);
+            }
             let mut nullable = false;
             for value in values {
-                let (empty, known) = add_starts(value, starts, ctx);
+                let (empty, known) = add_starts(value, starts, ctx, global_flags);
                 if !known {
                     return (false, false);
                 }
@@ -1726,31 +1829,22 @@ fn add_starts(node: &Expr, starts: &mut [u8; 256], ctx: &Context<'_>) -> (bool, 
             (nullable, true)
         }
         Expr::Repeat(child, minimum, _, _) => {
-            let (nullable, known) = add_starts(child, starts, ctx);
+            let (nullable, known) = add_starts(child, starts, ctx, global_flags);
             (*minimum == 0 || nullable, known)
         }
         Expr::Cond(_, yes, no) => {
-            let (yes_empty, yes_known) = add_starts(yes, starts, ctx);
-            let (no_empty, no_known) = add_starts(no, starts, ctx);
+            let (yes_empty, yes_known) = add_starts(yes, starts, ctx, global_flags);
+            let (no_empty, no_known) = add_starts(no, starts, ctx, global_flags);
             (yes_empty || no_empty, yes_known && no_known)
         }
         Expr::Backref(_, _) => (false, false),
     }
 }
 
-fn start_table(root: &Expr) -> Option<[u8; 256]> {
-    let chars: Vec<u32> = (0..256).collect();
-    let folds: Vec<u32> = chars
-        .iter()
-        .map(|value| {
-            if (65..=90).contains(value) {
-                value + 32
-            } else {
-                *value
-            }
-        })
-        .collect();
-    let masks: Vec<u8> = chars.iter().copied().map(unicode_category_mask).collect();
+fn start_table(root: &Expr, global_flags: u32) -> Option<[u8; 256]> {
+    let chars: [u32; 256] = std::array::from_fn(|index| index as u32);
+    let folds: [u32; 256] = std::array::from_fn(|index| unicode_tables::simple_lower(index as u32));
+    let masks: [u8; 256] = std::array::from_fn(|index| unicode_category_mask(index as u32));
     let context = Context {
         chars: &chars,
         folds: &folds,
@@ -1760,13 +1854,36 @@ fn start_table(root: &Expr) -> Option<[u8; 256]> {
         end: 256,
     };
     let mut starts = [0; 256];
-    let (nullable, known) = add_starts(root, &mut starts, &context);
-    starts[128..].fill(1);
+    let (nullable, known) = add_starts(root, &mut starts, &context, global_flags);
     if known && !nullable {
         Some(starts)
     } else {
         None
     }
+}
+
+#[inline]
+fn wide_prefix_allows(engine: &Engine, context: &Context<'_>, pos: usize) -> bool {
+    let mut pc = 0;
+    for _ in 0..engine.program.code.len() {
+        let instruction = engine.program.code[pc];
+        match instruction.op {
+            Op::SaveBegin | Op::SaveEnd => pc += 1,
+            Op::Jump => pc = instruction.left,
+            Op::Category => {
+                let flags = (instruction.flags & !(A | L | BYTE)) | (engine.flags & (A | L | BYTE));
+                return char::from_u32(instruction.value as u32)
+                    .is_none_or(|code| category(code, flags, context, pos));
+            }
+            Op::Class => {
+                let class = &engine.program.classes[instruction.left];
+                let flags = (class.flags & !(A | L | BYTE)) | (engine.flags & (A | L | BYTE));
+                return class_match(&class.members, class.negative, flags, context, pos);
+            }
+            _ => return true,
+        }
+    }
+    true
 }
 
 struct Compiler {
@@ -2123,21 +2240,14 @@ pub unsafe extern "C" fn rebar_compile(
         open_groups: vec![],
         lookbehind_bases: vec![],
         pending_conditionals: vec![],
+        invalid_lookbehind_width: false,
     };
     match parser.parse() {
         Ok(mut root) => {
-            let chars: Vec<u32> = (0..128).collect();
-            let folds: Vec<u32> = chars
-                .iter()
-                .map(|value| {
-                    if (65..=90).contains(value) {
-                        value + 32
-                    } else {
-                        *value
-                    }
-                })
-                .collect();
-            let masks: Vec<u8> = chars.iter().copied().map(unicode_category_mask).collect();
+            let chars: [u32; 128] = std::array::from_fn(|index| index as u32);
+            let folds: [u32; 128] =
+                std::array::from_fn(|index| unicode_tables::simple_lower(index as u32));
+            let masks: [u8; 128] = std::array::from_fn(|index| unicode_category_mask(index as u32));
             let context = Context {
                 chars: &chars,
                 folds: &folds,
@@ -2149,7 +2259,7 @@ pub unsafe extern "C" fn rebar_compile(
             prepare_classes(&mut root, &context);
             let lookbehind = leading_lookbehind(&root);
             let start_anchor = required_start_anchor(&root);
-            let starts = start_table(&root);
+            let starts = start_table(&root, parser.flags);
             let start_set = starts.as_ref().map(search::StartSet::new);
             let Some(program) = Compiler::compile(&root) else {
                 set_error(
@@ -2361,6 +2471,22 @@ fn run_look(
     last: &mut isize,
 ) -> Option<usize> {
     if instruction.flags & 2 != 0 {
+        if instruction.value == 0 {
+            return run_program(
+                program,
+                context,
+                pos,
+                instruction.left,
+                false,
+                false,
+                begins,
+                ends,
+                last,
+            );
+        }
+        if pos > context.end {
+            return None;
+        }
         let begin = pos.checked_sub(instruction.value)?;
         let behind_context = Context {
             chars: context.chars,
@@ -2487,7 +2613,7 @@ fn run_program(
                                 && pos < context.end
                                 && context.character(pos) == 10)
                             || (instruction.flags & M != 0
-                                && pos < context.end
+                                && context.has_character(pos)
                                 && context.character(pos) == 10)
                     }
                     b'A' => pos == 0,
@@ -2919,6 +3045,10 @@ fn run_match(
                     start += 1;
                     continue;
                 }
+                if first >= 256 && !wide_prefix_allows(engine, context, start) {
+                    start += 1;
+                    continue;
+                }
             }
         }
         begins.fill(-1);
@@ -3164,12 +3294,24 @@ pub unsafe extern "C" fn rebar_collect_ascii(
     let finishes = unsafe { slice::from_raw_parts_mut(ends, total) };
     let last_values = unsafe { slice::from_raw_parts_mut(lasts, capacity) };
     let end = endpos.min(length);
+    let storage = unsafe { slice::from_raw_parts(data, length) };
+    let (bytes, wide) = if engine.byte_mode {
+        (Some(storage), None)
+    } else {
+        (
+            None,
+            Some(BorrowedText {
+                data: storage,
+                kind: 1,
+            }),
+        )
+    };
     let context = Context {
         chars: &[],
         folds: &[],
         masks: &[],
-        bytes: Some(unsafe { slice::from_raw_parts(data, length) }),
-        wide: None,
+        bytes,
+        wide,
         end,
     };
     collect_matches(

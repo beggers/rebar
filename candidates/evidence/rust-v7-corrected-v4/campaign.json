@@ -1,0 +1,5539 @@
+{
+  "artifact_directory": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps",
+  "candidate": "candidates.rust_candidate",
+  "excluded_steps": [
+    {
+      "name": "frozen-performance-correctness-v6",
+      "reason": "performance fixture or held-out workload",
+      "script": "tools/perf_v6.py"
+    },
+    {
+      "name": "frozen-performance-v7-integrity",
+      "reason": "performance fixture or held-out workload",
+      "script": "tools/perf_v7.py"
+    },
+    {
+      "name": "frozen-performance-correctness-v7",
+      "reason": "performance fixture or held-out workload",
+      "script": "tools/perf_v7.py"
+    }
+  ],
+  "fail_fast": true,
+  "goal": {
+    "actual_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+    "expected_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+    "passed": true
+  },
+  "holdout_accessed": false,
+  "memory_limit_mib": 2048,
+  "mode": "sealed-practice-only",
+  "passed": true,
+  "performance": "NOT MEASURED",
+  "pinned_cpython": "3.14.6",
+  "python_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "python_version": "3.14.6",
+  "required_correctness_step_count": 17,
+  "schema": "rebar-rust-campaign-gate-v1",
+  "steps": [
+    {
+      "inspected_files": [
+        "candidates/rust_candidate.py",
+        "candidates/rust/src/lib.rs",
+        "candidates/rust/src/newline.rs",
+        "candidates/rust/src/search.rs",
+        "candidates/rust/src/stack.rs",
+        "candidates/rust/src/unicode_tables.rs",
+        "candidates/rust/py_bridge.c",
+        "candidates/rust/Cargo.toml",
+        "candidates/rust/Cargo.lock"
+      ],
+      "issues": [],
+      "name": "from-scratch-static-audit",
+      "passed": true
+    },
+    {
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/audit_candidate.py",
+        "candidates/rust_candidate.py",
+        "candidates.rust_candidate",
+        "candidates/rust/src/lib.rs"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 0.05441645532846451,
+      "expected_checks": null,
+      "memory_limit_mib": 2048,
+      "name": "rust-source-no-delegation",
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "{\"blocked_attempts\": 0, \"forbidden_markers\": 0, \"imports\": [\"candidates\", \"enum\", \"operator\", \"os\", \"types\", \"unicodedata\", \"warnings\"], \"module\": \"candidates.rust_candidate\", \"native_source\": \"candidates/rust/src/lib.rs\", \"smoke\": \"pass\", \"source\": \"candidates/rust_candidate.py\"}\n",
+      "timeout_seconds": 120
+    },
+    {
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/audit_candidate.py",
+        "candidates/rust_candidate.py",
+        "candidates.rust_candidate",
+        "candidates/rust/py_bridge.c"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 0.052843641489744186,
+      "expected_checks": null,
+      "memory_limit_mib": 2048,
+      "name": "rust-bridge-no-delegation",
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "{\"blocked_attempts\": 0, \"forbidden_markers\": 0, \"imports\": [\"candidates\", \"enum\", \"operator\", \"os\", \"types\", \"unicodedata\", \"warnings\"], \"module\": \"candidates.rust_candidate\", \"native_source\": \"candidates/rust/py_bridge.c\", \"smoke\": \"pass\", \"source\": \"candidates/rust_candidate.py\"}\n",
+      "timeout_seconds": 120
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/ffi-integrity.json",
+      "artifact_sha256": "2f955244add61f472c641854b25768f9e51f07c1f417143f09ae8501a304c78b",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/rust_ffi_lab.py",
+        "self-test",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/ffi-integrity.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 0.09892223123461008,
+      "expected_checks": null,
+      "memory_limit_mib": 2048,
+      "name": "rust-native-boundary-integrity",
+      "observed_metrics": [],
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "{\"cases\": 192, \"holdout_accessed\": false, \"kind\": \"self-test\", \"mismatches\": 0, \"result\": \"PASS\", \"schema\": \"rebar-rust-ffi-lab-v1\"}\n",
+      "timeout_seconds": 120
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/ffi-oracle-self.json",
+      "artifact_sha256": "15d52617ef2789ba42ffbd1ce41ee75c2eb175a7867364cf2770730d1e95b1bf",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/rust_ffi_lab.py",
+        "oracle-self",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/ffi-oracle-self.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 0.21212351601570845,
+      "expected_checks": 546,
+      "memory_limit_mib": 2048,
+      "name": "rust-native-boundary-self-oracle",
+      "observed_metrics": [
+        {
+          "key": "checks",
+          "value": 546
+        }
+      ],
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "{\"cases\": 546, \"holdout_accessed\": false, \"kind\": \"stdlib-vs-stdlib-boundary-oracle\", \"mismatches\": 0, \"result\": \"PASS\", \"schema\": \"rebar-rust-ffi-lab-v1\"}\n",
+      "timeout_seconds": 300
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/ffi-production.json",
+      "artifact_sha256": "e5976399e75b5e000c6a5cfab26f7d520c540096045d4cf2c95485bdc2be1259",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/rust_ffi_lab.py",
+        "verify",
+        "--module",
+        "candidates.rust_candidate",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/ffi-production.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 0.24219987448304892,
+      "expected_checks": 738,
+      "memory_limit_mib": 2048,
+      "name": "rust-native-boundary-compatibility",
+      "observed_metrics": [
+        {
+          "key": "checks",
+          "value": 738
+        }
+      ],
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "{\"cases\": 738, \"holdout_accessed\": false, \"kind\": \"semantic-verification\", \"mismatches\": 0, \"result\": \"PASS\", \"schema\": \"rebar-rust-ffi-lab-v1\"}\n",
+      "timeout_seconds": 300
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/v2.json",
+      "artifact_sha256": "baa445dd3ae830ad775dc3402b431d78e6dcd1f9a2a21840b1fecc87f9dd1afd",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/oracle_v2.py",
+        "verify",
+        "--module",
+        "candidates.rust_candidate",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/v2.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 0.9878392480313778,
+      "expected_checks": 8244,
+      "memory_limit_mib": 2048,
+      "name": "frozen-correctness-v2",
+      "observed_metrics": [
+        {
+          "key": "cases",
+          "value": 8244
+        },
+        {
+          "key": "passed",
+          "value": 8244
+        }
+      ],
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "{\"cases\": 8244, \"expected_sha256\": \"ae6a095bc0cd2b3ba1512a04f0d4fbe57916cf2d5b583fd4ecdda5c2c70a5bb2\", \"failed\": 0, \"mapped_obligations\": 45, \"module\": \"candidates.rust_candidate\", \"obligations\": 45, \"passed\": 8244, \"schema\": \"rebar-correctness-result-v2\"}\n",
+      "timeout_seconds": 900
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/v3.json",
+      "artifact_sha256": "5dcdc2a8d03908043f80308da6d9f9340420414f53a62649743bb17a32558506",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/oracle_v3.py",
+        "verify",
+        "--module",
+        "candidates.rust_candidate",
+        "--cohort",
+        "all",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/v3.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 7.530432726256549,
+      "expected_checks": 44084,
+      "fixture_sha256": {
+        "actual": "782c41ff0b1239eeb0bb5312b4a893b41d7882c7fdcf64b29587518839e51669",
+        "expected": "782c41ff0b1239eeb0bb5312b4a893b41d7882c7fdcf64b29587518839e51669"
+      },
+      "mapped_obligations": 51,
+      "memory_limit_mib": 2048,
+      "name": "frozen-correctness-v3",
+      "observed_metrics": [
+        {
+          "key": "cases",
+          "value": 44084
+        },
+        {
+          "key": "cases",
+          "value": 8192
+        },
+        {
+          "key": "passed",
+          "value": 8192
+        },
+        {
+          "key": "cases",
+          "value": 16384
+        },
+        {
+          "key": "passed",
+          "value": 16384
+        },
+        {
+          "key": "cases",
+          "value": 1024
+        },
+        {
+          "key": "passed",
+          "value": 1024
+        },
+        {
+          "key": "cases",
+          "value": 1024
+        },
+        {
+          "key": "passed",
+          "value": 1024
+        },
+        {
+          "key": "cases",
+          "value": 8244
+        },
+        {
+          "key": "passed",
+          "value": 8244
+        },
+        {
+          "key": "cases",
+          "value": 2048
+        },
+        {
+          "key": "passed",
+          "value": 2048
+        },
+        {
+          "key": "cases",
+          "value": 2048
+        },
+        {
+          "key": "passed",
+          "value": 2048
+        },
+        {
+          "key": "cases",
+          "value": 4096
+        },
+        {
+          "key": "passed",
+          "value": 4096
+        },
+        {
+          "key": "cases",
+          "value": 1024
+        },
+        {
+          "key": "passed",
+          "value": 1024
+        },
+        {
+          "key": "passed",
+          "value": 44084
+        }
+      ],
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "{\"cases\": 44084, \"cohort\": \"all\", \"expected_sha256\": \"782c41ff0b1239eeb0bb5312b4a893b41d7882c7fdcf64b29587518839e51669\", \"failed\": 0, \"families\": {\"deep-bytes\": {\"cases\": 8192, \"failed\": 0, \"passed\": 8192}, \"deep-text\": {\"cases\": 16384, \"failed\": 0, \"passed\": 16384}, \"invalid-pattern\": {\"cases\": 1024, \"failed\": 0, \"passed\": 1024}, \"invalid-template\": {\"cases\": 1024, \"failed\": 0, \"passed\": 1024}, \"parent\": {\"cases\": 8244, \"failed\": 0, \"passed\": 8244}, \"properties\": {\"cases\": 2048, \"failed\": 0, \"passed\": 2048}, \"real-bytes\": {\"cases\": 2048, \"failed\": 0, \"passed\": 2048}, \"real-text\": {\"cases\": 4096, \"failed\": 0, \"passed\": 4096}, \"scanner\": {\"cases\": 1024, \"failed\": 0, \"passed\": 1024}}, \"family\": null, \"mapped_obligations\": 51, \"module\": \"candidates.rust_candidate\", \"obligations\": 51, \"passed\": 44084, \"schema\": \"rebar-correctness-result-v3\"}\n",
+      "timeout_seconds": 1800
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/cpython.json",
+      "artifact_sha256": "604e2c271ff6eba613e0ecdc0fab5ce9565d2d00cc8b3ce5e688b85efdead15f",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/cpython_re_oracle.py",
+        "verify",
+        "--module",
+        "candidates.rust_candidate",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/cpython.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 18.908125223591924,
+      "expected_checks": 144,
+      "memory_limit_mib": 2048,
+      "name": "official-cpython-tests",
+      "observed_metrics": [
+        {
+          "key": "passed",
+          "value": 144
+        }
+      ],
+      "official_counts": {
+        "methods": 146,
+        "passed": 144,
+        "skipped": 2
+      },
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "{\"crashes\": 0, \"failed\": 0, \"methods\": 146, \"module\": \"candidates.rust_candidate\", \"passed\": 144, \"runner_sha256\": \"d5084fd43352f34267f3ed9b4b5d60a6070e2c50d4b787739270502c856e18bb\", \"schema\": \"rebar-cpython-re-result-v1\", \"skipped\": 2, \"source_sha256\": {\"LICENSE\": \"b0e25a78cffb43f4d92de8b61ccfa1f1f98ecbc22330b54b5251e7b6ba010231\", \"re_tests.py\": \"ec04a2b2a77338d20b37d931693c7e588a2896d3c73c7b4b47973e24c13b5aab\", \"test_re.py\": \"879c8b562a5bddb413e73ad6d026a6199785bd08fa1c2c5db1ef831b4e1c47e2\"}, \"timeouts\": 0}\n",
+      "timeout_seconds": 1800
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/official-surface.json",
+      "artifact_sha256": "29f57475b5a67dc91bdc7b4c03b35abf4c7bb688dc6d125db25bc3bc5aaaf633",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/zig_public_surface_probe.py",
+        "--module",
+        "candidates.rust_candidate",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/official-surface.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 0.06668930593878031,
+      "expected_checks": 190,
+      "memory_limit_mib": 2048,
+      "name": "upstream-public-surface",
+      "observed_metrics": [
+        {
+          "key": "correctness_checks",
+          "value": 190
+        }
+      ],
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "{\"correctness_checks\": 190, \"failed\": 0, \"module\": \"candidates.rust_candidate\", \"schema\": \"rebar-zig-public-surface-v1\"}\n",
+      "timeout_seconds": 300
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/rust-surface.json",
+      "artifact_sha256": "a2d37b0a779611670434797b03a33818059dcaf5a8b33202c98dee5c17536714",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/rust_surface_probe.py",
+        "--module",
+        "candidates.rust_candidate",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/rust-surface.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 0.08616417739540339,
+      "expected_checks": 1198,
+      "memory_limit_mib": 2048,
+      "name": "rust-public-surface",
+      "observed_metrics": [
+        {
+          "key": "correctness_checks",
+          "value": 1198
+        },
+        {
+          "key": "checks",
+          "value": 480
+        },
+        {
+          "key": "checks",
+          "value": 32
+        },
+        {
+          "key": "checks",
+          "value": 350
+        },
+        {
+          "key": "checks",
+          "value": 12
+        },
+        {
+          "key": "checks",
+          "value": 164
+        },
+        {
+          "key": "checks",
+          "value": 24
+        },
+        {
+          "key": "checks",
+          "value": 72
+        },
+        {
+          "key": "checks",
+          "value": 64
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        },
+        {
+          "key": "passed",
+          "value": true
+        }
+      ],
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "{\"correctness_checks\": 1198, \"failed\": 0, \"families\": [{\"checks\": 480, \"failed\": 0, \"family\": \"bound-keywords\"}, {\"checks\": 32, \"failed\": 0, \"family\": \"buffer-lifetime\"}, {\"checks\": 350, \"failed\": 0, \"family\": \"index-protocol\"}, {\"checks\": 12, \"failed\": 0, \"family\": \"malicious-hash\"}, {\"checks\": 164, \"failed\": 0, \"family\": \"match-surface\"}, {\"checks\": 24, \"failed\": 0, \"family\": \"pattern-surface\"}, {\"checks\": 72, \"failed\": 0, \"family\": \"replacement-count\"}, {\"checks\": 64, \"failed\": 0, \"family\": \"subclass-identity\"}], \"module\": \"candidates.rust_candidate\", \"oracle\": \"CPython stdlib re\", \"schema\": \"rebar-rust-public-surface-v1\"}\n",
+      "timeout_seconds": 300
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/group-name-errors.json",
+      "artifact_sha256": "a622c3a1d53e088aa535354ebe9740edd0a9c5836f384283e3076721e4837049",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/rust_group_name_adversarial.py",
+        "--module",
+        "candidates.rust_candidate",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/group-name-errors.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 0.069274066016078,
+      "expected_checks": 420,
+      "memory_limit_mib": 2048,
+      "name": "unicode-group-name-errors",
+      "observed_metrics": [
+        {
+          "key": "checks",
+          "value": 420
+        }
+      ],
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "{\"checks\": 420, \"failed\": 0, \"formatter\": \"production\", \"output\": \"/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/group-name-errors.json\", \"schema\": \"rebar-rust-unicode-group-name-adversarial-v1\", \"seed\": 5139257352621277517, \"self_oracle_failures\": 0}\n",
+      "timeout_seconds": 300
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/replacement-adversarial.json",
+      "artifact_sha256": "06e79e7a0d178e0f7b311f1468b447b51a063dcd0ae03e0977e419942ae46892",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/rust_replacement_adversarial.py",
+        "--module",
+        "candidates.rust_candidate",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/replacement-adversarial.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 0.2507053827866912,
+      "expected_checks": 8862,
+      "memory_limit_mib": 2048,
+      "name": "replacement-and-callback-adversarial",
+      "observed_metrics": [
+        {
+          "key": "checks",
+          "value": 72
+        },
+        {
+          "key": "checks",
+          "value": 1512
+        },
+        {
+          "key": "checks",
+          "value": 56
+        },
+        {
+          "key": "checks",
+          "value": 4032
+        },
+        {
+          "key": "checks",
+          "value": 2592
+        },
+        {
+          "key": "checks",
+          "value": 160
+        },
+        {
+          "key": "checks",
+          "value": 54
+        },
+        {
+          "key": "checks",
+          "value": 384
+        },
+        {
+          "key": "checks",
+          "value": 8862
+        }
+      ],
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "{\"bridge_path\": null, \"canonical_checks\": 8264, \"canonical_failed\": 0, \"categories\": [{\"category\": \"callback-exceptions\", \"checks\": 72, \"cohort\": \"canonical-8264\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"callback-types\", \"checks\": 1512, \"cohort\": \"canonical-8264\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"method-binding\", \"checks\": 56, \"cohort\": \"canonical-8264\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"nullable-and-groups\", \"checks\": 4032, \"cohort\": \"canonical-8264\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"validation\", \"checks\": 2592, \"cohort\": \"canonical-8264\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"deferred-join-order\", \"checks\": 160, \"cohort\": \"extended\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"shared-mutable-return\", \"checks\": 54, \"cohort\": \"extended\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"template-validation-timing\", \"checks\": 384, \"cohort\": \"extended\", \"failed\": 0, \"failure_kinds\": {}}], \"checks\": 8862, \"deep\": false, \"failed\": 0, \"output\": \"/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/replacement-adversarial.json\", \"schema\": \"rebar-rust-native-replacement-adversarial-v1\", \"self_oracle_failures\": 0}\n",
+      "timeout_seconds": 600
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/replacement-adversarial-deep.json",
+      "artifact_sha256": "97b4a19db6a0be9f1b539de8bcb78b956d2827c2faf10f2b679a3c227fa03682",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/rust_replacement_adversarial.py",
+        "--module",
+        "candidates.rust_candidate",
+        "--deep",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/replacement-adversarial-deep.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 0.4256490049883723,
+      "expected_checks": 11266,
+      "memory_limit_mib": 2048,
+      "name": "deep-replacement-and-callback-adversarial",
+      "observed_metrics": [
+        {
+          "key": "checks",
+          "value": 72
+        },
+        {
+          "key": "checks",
+          "value": 1512
+        },
+        {
+          "key": "checks",
+          "value": 56
+        },
+        {
+          "key": "checks",
+          "value": 4032
+        },
+        {
+          "key": "checks",
+          "value": 2592
+        },
+        {
+          "key": "checks",
+          "value": 12
+        },
+        {
+          "key": "checks",
+          "value": 112
+        },
+        {
+          "key": "checks",
+          "value": 160
+        },
+        {
+          "key": "checks",
+          "value": 72
+        },
+        {
+          "key": "checks",
+          "value": 384
+        },
+        {
+          "key": "checks",
+          "value": 1664
+        },
+        {
+          "key": "checks",
+          "value": 160
+        },
+        {
+          "key": "checks",
+          "value": 54
+        },
+        {
+          "key": "checks",
+          "value": 384
+        },
+        {
+          "key": "checks",
+          "value": 11266
+        }
+      ],
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "{\"bridge_path\": null, \"canonical_checks\": 8264, \"canonical_failed\": 0, \"categories\": [{\"category\": \"callback-exceptions\", \"checks\": 72, \"cohort\": \"canonical-8264\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"callback-types\", \"checks\": 1512, \"cohort\": \"canonical-8264\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"method-binding\", \"checks\": 56, \"cohort\": \"canonical-8264\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"nullable-and-groups\", \"checks\": 4032, \"cohort\": \"canonical-8264\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"validation\", \"checks\": 2592, \"cohort\": \"canonical-8264\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"callback-match-garbage-collection\", \"checks\": 12, \"cohort\": \"deep\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"literal-result-identity\", \"checks\": 112, \"cohort\": \"deep\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"mutable-subject\", \"checks\": 160, \"cohort\": \"deep\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"reentrant-callbacks\", \"checks\": 72, \"cohort\": \"deep\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"template-error-metadata\", \"checks\": 384, \"cohort\": \"deep\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"unhashable-and-buffer-replacements\", \"checks\": 1664, \"cohort\": \"deep\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"deferred-join-order\", \"checks\": 160, \"cohort\": \"extended\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"shared-mutable-return\", \"checks\": 54, \"cohort\": \"extended\", \"failed\": 0, \"failure_kinds\": {}}, {\"category\": \"template-validation-timing\", \"checks\": 384, \"cohort\": \"extended\", \"failed\": 0, \"failure_kinds\": {}}], \"checks\": 11266, \"deep\": true, \"failed\": 0, \"output\": \"/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/replacement-adversarial-deep.json\", \"schema\": \"rebar-rust-native-replacement-adversarial-v1\", \"self_oracle_failures\": 0}\n",
+      "timeout_seconds": 1200
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/extended-paths.json",
+      "artifact_sha256": "1166edb9b673ca7299f621b1b2b1e1513d77ccae1cf6f651767a416cac0b6ba4",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/rust_v6_paths_probe.py",
+        "--module",
+        "candidates.rust_candidate",
+        "--seeded-cases",
+        "512",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/extended-paths.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 0.9570044027641416,
+      "expected_checks": 72248,
+      "memory_limit_mib": 2048,
+      "name": "extended-cpython-paths",
+      "observed_metrics": [
+        {
+          "key": "correctness_checks",
+          "value": 72248
+        }
+      ],
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "{\"backreference_pairs\": 235, \"backreference_variants\": 7, \"case_index\": null, \"casefix_components\": 24, \"casefix_directed_edges\": 56, \"casefix_keys\": 50, \"casefold_groups\": 26, \"correctness_checks\": 72248, \"failed\": 0, \"invalid_window_checks\": 1260, \"manual_cases\": 895, \"manual_index\": null, \"module\": \"candidates.rust_candidate\", \"multi_upper_codepoints\": 102, \"schema\": \"rebar-rust-v6-paths-probe-v1\", \"seed\": 2026072307, \"seeded_cases\": 512, \"surrogate_checks\": 380}\n",
+      "timeout_seconds": 2400
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/safety.json",
+      "artifact_sha256": "4e4e533c249bbccd454a4145586133d3ecabf0e1a54f50b1f3f241156eaba3cb",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/rust_safety_probe.py",
+        "--module",
+        "candidates.rust_candidate",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/safety.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 14.748156862333417,
+      "expected_checks": 254,
+      "memory_limit_mib": 2048,
+      "name": "isolated-crash-and-resource-safety",
+      "observed_metrics": [
+        {
+          "key": "correctness_checks",
+          "value": 254
+        }
+      ],
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "checked 32/254; failures=0 crashes=0 timeouts=0\nchecked 64/254; failures=0 crashes=0 timeouts=0\nchecked 96/254; failures=0 crashes=0 timeouts=0\nchecked 128/254; failures=0 crashes=0 timeouts=0\nchecked 160/254; failures=0 crashes=0 timeouts=0\nchecked 192/254; failures=0 crashes=0 timeouts=0\nchecked 224/254; failures=0 crashes=0 timeouts=0\n{\"categories\": {\"allocation-boundary\": 8, \"buffer-boundary\": 20, \"malformed-pattern\": 27, \"nesting-depth\": 16, \"repetition-boundary\": 24, \"seeded-malformed\": 48, \"surrogate-pattern\": 44, \"surrogate-reversed-range\": 20, \"unicode-group-name\": 12, \"window-boundary\": 35}, \"core_dumps\": \"disabled in every child process\", \"correctness_checks\": 254, \"cpu_limit_seconds\": 5, \"crashes\": 0, \"failed\": 0, \"failed_categories\": {}, \"isolation\": \"one independent subprocess per engine and case\", \"memory_limit_mib\": 768, \"module\": \"candidates.rust_candidate\", \"oracle\": \"CPython stdlib re\", \"oracle_failures\": 0, \"python_version\": \"3.14.6\", \"schema\": \"rebar-rust-subprocess-safety-v1\", \"seed\": 2026072319, \"timeout_seconds\": 4.0, \"timeouts\": 0}\n",
+      "timeout_seconds": 1800
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/depth-safety.json",
+      "artifact_sha256": "3c419b7dbf34971b05dd40ff3f5ef857426bfd95d7ae78792ea1e62c860782bb",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/rust_depth_probe.py",
+        "--module",
+        "candidates.rust_candidate",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/depth-safety.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 22.45299873780459,
+      "expected_checks": 348,
+      "memory_limit_mib": 2048,
+      "name": "isolated-depth-and-overflow-safety",
+      "observed_metrics": [
+        {
+          "key": "correctness_checks",
+          "value": 348
+        }
+      ],
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "checked 24/348; failures=0 crashes=0 timeouts=0\nchecked 48/348; failures=0 crashes=0 timeouts=0\nchecked 72/348; failures=0 crashes=0 timeouts=0\nchecked 96/348; failures=0 crashes=0 timeouts=0\nchecked 120/348; failures=0 crashes=0 timeouts=0\nchecked 144/348; failures=0 crashes=0 timeouts=0\nchecked 168/348; failures=0 crashes=0 timeouts=0\nchecked 192/348; failures=0 crashes=0 timeouts=0\nchecked 216/348; failures=0 crashes=0 timeouts=0\nchecked 240/348; failures=0 crashes=0 timeouts=0\nchecked 264/348; failures=0 crashes=0 timeouts=0\nchecked 288/348; failures=0 crashes=0 timeouts=0\nchecked 312/348; failures=0 crashes=0 timeouts=0\nchecked 336/348; failures=0 crashes=0 timeouts=0\n{\"categories\": {\"allocation-width\": 20, \"bounded-backtracking\": 15, \"dynamic-recursion-limit\": 112, \"malformed-nesting\": 4, \"nested-matching\": 16, \"numeric-condition-overflow\": 20, \"parser-nesting\": 105, \"repetition-overflow\": 24, \"seeded-nesting\": 32}, \"core_dumps\": \"disabled in every child process\", \"correctness_checks\": 348, \"cpu_limit_seconds\": 6, \"crashes\": 0, \"failed\": 0, \"failed_categories\": {}, \"isolation\": \"one independent subprocess per engine and case\", \"memory_limit_mib\": 768, \"module\": \"candidates.rust_candidate\", \"oracle\": \"CPython stdlib re\", \"oracle_failures\": 0, \"pattern_transport\": \"compact generator descriptor over subprocess standard input\", \"python_version\": \"3.14.6\", \"schema\": \"rebar-rust-depth-safety-v1\", \"seed\": 2026072323, \"timeout_seconds\": 5.0, \"timeouts\": 0}\n",
+      "timeout_seconds": 2400
+    },
+    {
+      "artifact": "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/unicode.json",
+      "artifact_sha256": "11b275f03bc85a4c34ec83bba4b81ec519ac9b5c9fba15763d8ce5961772708a",
+      "command": [
+        "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "/home/dev-user/src/rebar/tools/rust_unicode_probe.py",
+        "--module",
+        "candidates.rust_candidate",
+        "--membership-stride",
+        "1",
+        "--seeded-cases",
+        "1024",
+        "--output",
+        "/home/dev-user/src/rebar/candidates/evidence/rust-v7-corrected-v4/campaign-steps/unicode.json"
+      ],
+      "core_dumps": "disabled",
+      "elapsed_seconds": 7.360867506824434,
+      "expected_checks": 4494555,
+      "memory_limit_mib": 2048,
+      "name": "full-unicode-plane",
+      "observed_metrics": [
+        {
+          "key": "correctness_checks",
+          "value": 4494555
+        }
+      ],
+      "passed": true,
+      "returncode": 0,
+      "status": "passed",
+      "stderr": "",
+      "stdout": "unicode-categories: checked 262144 codepoints; failures=0\nunicode-categories: checked 524288 codepoints; failures=0\nunicode-categories: checked 786432 codepoints; failures=0\nunicode-categories: checked 1048576 codepoints; failures=0\n{\"actual_sha256\": \"c6bb3b50278d370bd288a040d07976730f92fe4475c947a7ac8e4158cdda6ec5\", \"codepoints_checked\": 1114112, \"expected_sha256\": \"c6bb3b50278d370bd288a040d07976730f92fe4475c947a7ac8e4158cdda6ec5\", \"failed\": 0, \"flags\": 0, \"name\": \"unicode-categories\"}\nascii-categories: checked 262144 codepoints; failures=0\nascii-categories: checked 524288 codepoints; failures=0\nascii-categories: checked 786432 codepoints; failures=0\nascii-categories: checked 1048576 codepoints; failures=0\n{\"actual_sha256\": \"9888738c9f6e04a0b5e86300a648cf042531945a2761e7a666c2a407b5d6a339\", \"codepoints_checked\": 1114112, \"expected_sha256\": \"9888738c9f6e04a0b5e86300a648cf042531945a2761e7a666c2a407b5d6a339\", \"failed\": 0, \"flags\": 256, \"name\": \"ascii-categories\"}\nunicode-ignorecase-ranges: checked 262144 codepoints; failures=0\nunicode-ignorecase-ranges: checked 524288 codepoints; failures=0\nunicode-ignorecase-ranges: checked 786432 codepoints; failures=0\nunicode-ignorecase-ranges: checked 1048576 codepoints; failures=0\n{\"actual_sha256\": \"b9394ae400bc6c32867be06a02363c740cc670bbcfd89668949a422ad93d8f1a\", \"codepoints_checked\": 1114112, \"expected_sha256\": \"b9394ae400bc6c32867be06a02363c740cc670bbcfd89668949a422ad93d8f1a\", \"failed\": 0, \"flags\": 2, \"name\": \"unicode-ignorecase-ranges\"}\nascii-ignorecase-ranges: checked 262144 codepoints; failures=0\nascii-ignorecase-ranges: checked 524288 codepoints; failures=0\nascii-ignorecase-ranges: checked 786432 codepoints; failures=0\nascii-ignorecase-ranges: checked 1048576 codepoints; failures=0\n{\"actual_sha256\": \"5084555e7d9ccfbbc9db1ea1e85b1d28820120a085739322159fe3bf79a7a554\", \"codepoints_checked\": 1114112, \"expected_sha256\": \"5084555e7d9ccfbbc9db1ea1e85b1d28820120a085739322159fe3bf79a7a554\", \"failed\": 0, \"flags\": 258, \"name\": \"ascii-ignorecase-ranges\"}\n{\"case_equivalence_checks\": 1455, \"case_equivalence_groups\": 26, \"correctness_checks\": 4494555, \"cpython_extra_case_checks\": 280, \"cpython_extra_case_keys\": 50, \"cpython_extra_case_links\": 56, \"failed\": 0, \"manual_cases\": 54, \"manual_checks\": 1836, \"membership_stride\": 1, \"module\": \"candidates.rust_candidate\", \"oracle\": \"CPython stdlib re\", \"python_unicode_version\": \"16.0.0\", \"schema\": \"rebar-rust-unicode-probe-v1\", \"seed\": 2026072302, \"seeded_cases\": 1024, \"seeded_checks\": 34816, \"unicode_codepoints\": 1114112}\n",
+      "timeout_seconds": 3600
+    }
+  ],
+  "timing_performed": false
+}

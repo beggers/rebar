@@ -25,6 +25,30 @@ GOAL_SHA256 = "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62"
 V7_EXPECTED_SHA256 = "2e6c098bd3a4757620461363106a9795f8defa98fe8bc9c13c0ebbf7ed58b598"
 PINNED_CPYTHON = (3, 14, 6)
 RUST_MODULE = "candidates.rust_candidate"
+SEALED_EXCLUDED_STEP_NAMES = (
+    "frozen-performance-correctness-v6",
+    "frozen-performance-v7-integrity",
+    "frozen-performance-correctness-v7",
+)
+SEALED_REQUIRED_STEP_NAMES = frozenset({
+    "rust-source-no-delegation",
+    "rust-bridge-no-delegation",
+    "rust-native-boundary-integrity",
+    "rust-native-boundary-self-oracle",
+    "rust-native-boundary-compatibility",
+    "frozen-correctness-v2",
+    "frozen-correctness-v3",
+    "official-cpython-tests",
+    "upstream-public-surface",
+    "rust-public-surface",
+    "unicode-group-name-errors",
+    "replacement-and-callback-adversarial",
+    "deep-replacement-and-callback-adversarial",
+    "extended-cpython-paths",
+    "isolated-crash-and-resource-safety",
+    "isolated-depth-and-overflow-safety",
+    "full-unicode-plane",
+})
 
 
 @dataclasses.dataclass(frozen=True)
@@ -243,7 +267,22 @@ def failure_values(value):
     return output
 
 
-def suite_steps(artifact_dir):
+def performance_suite_step(step):
+    script = Path(step.script)
+    return (
+        step.name.startswith("frozen-performance-")
+        or script.name.startswith("perf_")
+        or "performance" in script.parts
+        or any(
+            "performance/" in argument
+            or "performance.v" in argument
+            or "tools/perf_" in argument
+            for argument in step.arguments
+        )
+    )
+
+
+def suite_steps(artifact_dir, sealed_practice_only=False):
     def output(name):
         return str(artifact_dir / (name + ".json"))
 
@@ -256,7 +295,7 @@ def suite_steps(artifact_dir):
     except (OSError, UnicodeError, json.JSONDecodeError):
         v3_cases = None
 
-    return (
+    steps = (
         Step("rust-source-no-delegation", "tools/audit_candidate.py",
              ("candidates/rust_candidate.py", RUST_MODULE, "candidates/rust/src/lib.rs"), None, 120),
         Step("rust-bridge-no-delegation", "tools/audit_candidate.py",
@@ -303,6 +342,33 @@ def suite_steps(artifact_dir):
              ("--module", RUST_MODULE, "--membership-stride", "1", "--seeded-cases", "1024", "--output", output("unicode")),
              4494555, 3600, output("unicode")),
     )
+    if not sealed_practice_only:
+        return steps
+
+    performance = tuple(step for step in steps if performance_suite_step(step))
+    if tuple(step.name for step in performance) != SEALED_EXCLUDED_STEP_NAMES:
+        raise RuntimeError(
+            "sealed campaign discovered an unclassified performance or hidden-workload step"
+        )
+    retained = tuple(step for step in steps if not performance_suite_step(step))
+    if len(retained) != len(SEALED_REQUIRED_STEP_NAMES):
+        raise RuntimeError("sealed campaign changed its mandatory correctness denominator")
+    if {step.name for step in retained} != SEALED_REQUIRED_STEP_NAMES:
+        raise RuntimeError("sealed campaign dropped or replaced a required correctness or safety gate")
+    if any(performance_suite_step(step) for step in retained):
+        raise RuntimeError("a performance or hidden-workload suite entered the sealed campaign")
+    return retained
+
+
+def execute_selected_step(step, memory_mib, sealed_practice_only=False):
+    if sealed_practice_only and (
+        performance_suite_step(step)
+        or step.name not in SEALED_REQUIRED_STEP_NAMES
+    ):
+        raise RuntimeError(
+            f"sealed campaign refused to execute a performance or unclassified step: {step.name}"
+        )
+    return execute(step, memory_mib)
 
 
 def restrict_process(memory_mib, cpu_seconds):
@@ -451,6 +517,100 @@ def execute(step, memory_mib):
     return {**result, "passed": True, "status": "passed"}
 
 
+def sealed_practice_self_test():
+    """Poison mixed-suite execution, imports, and file access without running a gate."""
+    import builtins
+    from unittest import mock
+
+    original_import = builtins.__import__
+    original_open = Path.open
+    forbidden_directory = (ROOT / "performance").resolve()
+    tools_directory = (ROOT / "tools").resolve()
+    poisoned_imports = []
+    poisoned_opens = []
+
+    def guarded_import(name, *args, **kwargs):
+        if (
+            name == "performance"
+            or name.startswith("performance.")
+            or name.startswith("tools.perf_")
+        ):
+            poisoned_imports.append(name)
+            raise AssertionError(f"sealed campaign tried to import a performance suite: {name}")
+        return original_import(name, *args, **kwargs)
+
+    def guarded_open(path, *args, **kwargs):
+        resolved = path.resolve()
+        if (
+            resolved.is_relative_to(forbidden_directory)
+            or (
+                resolved.is_relative_to(tools_directory)
+                and resolved.name.startswith("perf_")
+            )
+        ):
+            poisoned_opens.append(str(resolved))
+            raise AssertionError(f"sealed campaign tried to open performance evidence: {resolved}")
+        return original_open(path, *args, **kwargs)
+
+    directory = Path("/tmp/rebar-rust-sealed-campaign-poison-controls")
+    with (
+        mock.patch.object(builtins, "__import__", guarded_import),
+        mock.patch.object(Path, "open", guarded_open),
+        mock.patch.object(
+            subprocess,
+            "run",
+            side_effect=AssertionError("sealed campaign self-test must not execute a child"),
+        ) as child,
+    ):
+        complete = suite_steps(directory)
+        retained = suite_steps(directory, sealed_practice_only=True)
+        excluded = tuple(step for step in complete if performance_suite_step(step))
+        if tuple(step.name for step in excluded) != SEALED_EXCLUDED_STEP_NAMES:
+            raise RuntimeError("sealed self-test changed the excluded performance suites")
+        if tuple(step for step in complete if not performance_suite_step(step)) != retained:
+            raise RuntimeError("sealed self-test changed default campaign ordering")
+        if {step.name for step in retained} != SEALED_REQUIRED_STEP_NAMES:
+            raise RuntimeError("sealed self-test lost a required correctness or safety step")
+
+        rejected = 0
+        poisoned = (*excluded, Step(
+            "unclassified-hidden-performance-step",
+            "tools/perf_v8.py",
+            ("verify",),
+            None,
+            1,
+        ))
+        for step in poisoned:
+            try:
+                execute_selected_step(step, 256, sealed_practice_only=True)
+            except RuntimeError:
+                rejected += 1
+            else:
+                raise RuntimeError("sealed campaign accepted a poisoned performance step")
+        if rejected != len(poisoned):
+            raise RuntimeError("sealed campaign did not reject every poisoned performance step")
+        if child.call_count or poisoned_opens or poisoned_imports:
+            raise RuntimeError("a sealed performance step was executed, opened, or imported")
+
+    return {
+        "schema": "rebar-rust-campaign-gate-sealed-practice-self-test-v1",
+        "mode": "sealed-practice-only",
+        "default_step_count": len(complete),
+        "retained_step_count": len(retained),
+        "retained_step_names": [step.name for step in retained],
+        "excluded_step_names": [step.name for step in excluded],
+        "excluded_step_count": len(excluded),
+        "rejected_poisoned_steps": rejected,
+        "performance_processes_started": child.call_count,
+        "performance_files_opened": len(poisoned_opens),
+        "performance_modules_imported": len(poisoned_imports),
+        "holdout_accessed": False,
+        "performance": "NOT MEASURED",
+        "timing_performed": False,
+        "failed": 0,
+    }
+
+
 def persist(path, report):
     path.parent.mkdir(parents=True, exist_ok=True)
     temporary = path.with_name(path.name + ".tmp")
@@ -460,15 +620,37 @@ def persist(path, report):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--output", required=True)
+    parser.add_argument("--output")
     parser.add_argument("--artifact-dir")
     parser.add_argument("--memory-mib", type=int, default=2048)
     parser.add_argument("--continue-on-failure", action="store_true")
+    parser.add_argument(
+        "--sealed-practice-only",
+        action="store_true",
+        help="exclude every performance suite and preserve all compatibility and safety gates",
+    )
+    parser.add_argument(
+        "--sealed-practice-self-test",
+        action="store_true",
+        help="prove excluded performance steps cannot be executed, imported, or opened",
+    )
     args = parser.parse_args()
     if args.memory_mib < 256:
         parser.error("--memory-mib must be at least 256")
+    if args.sealed_practice_self_test:
+        if args.output is not None or args.artifact_dir is not None:
+            parser.error("the sealed-practice self-test never creates output or artifacts")
+        print(json.dumps(sealed_practice_self_test(), sort_keys=True))
+        return
+    if args.output is None:
+        parser.error("the following arguments are required: --output")
     destination = Path(args.output).resolve()
     directory = Path(args.artifact_dir).resolve() if args.artifact_dir else destination.parent / (destination.stem + "-steps")
+    selected_steps = (
+        suite_steps(directory, sealed_practice_only=True)
+        if args.sealed_practice_only
+        else None
+    )
     directory.mkdir(parents=True, exist_ok=True)
 
     report = {
@@ -484,6 +666,21 @@ def main():
         "steps": [],
         "passed": False,
     }
+    if args.sealed_practice_only:
+        complete = suite_steps(directory)
+        excluded = [
+            {"name": step.name, "script": step.script, "reason": "performance fixture or held-out workload"}
+            for step in complete
+            if performance_suite_step(step)
+        ]
+        report.update({
+            "mode": "sealed-practice-only",
+            "holdout_accessed": False,
+            "performance": "NOT MEASURED",
+            "timing_performed": False,
+            "excluded_steps": excluded,
+            "required_correctness_step_count": len(selected_steps),
+        })
 
     if tuple(sys.version_info[:3]) != PINNED_CPYTHON:
         report["failure"] = "campaign must run under pinned CPython 3.14.6"
@@ -503,9 +700,11 @@ def main():
     if not audit["passed"] and not args.continue_on_failure:
         raise SystemExit(1)
 
-    for step in suite_steps(directory):
+    for step in (
+        selected_steps if selected_steps is not None else suite_steps(directory)
+    ):
         print(json.dumps({"starting": step.name, "expected_checks": step.expected_checks}, sort_keys=True), flush=True)
-        outcome = execute(step, args.memory_mib)
+        outcome = execute_selected_step(step, args.memory_mib, args.sealed_practice_only)
         after = goal_state()
         if not after["passed"]:
             outcome["passed"] = False
@@ -520,9 +719,21 @@ def main():
     report["goal"] = goal_state()
     report["passed"] = report["goal"]["passed"] and all(step.get("passed") for step in report["steps"])
     persist(destination, report)
-    print(json.dumps({"schema": report["schema"], "passed": report["passed"], "steps": len(report["steps"]),
-                      "goal_sha256": report["goal"].get("actual_sha256"),
-                      "output": str(destination)}, sort_keys=True))
+    result = {
+        "schema": report["schema"],
+        "passed": report["passed"],
+        "steps": len(report["steps"]),
+        "goal_sha256": report["goal"].get("actual_sha256"),
+        "output": str(destination),
+    }
+    if args.sealed_practice_only:
+        result.update({
+            "mode": "sealed-practice-only",
+            "holdout_accessed": False,
+            "performance": "NOT MEASURED",
+            "excluded_step_names": [step["name"] for step in report["excluded_steps"]],
+        })
+    print(json.dumps(result, sort_keys=True))
     if not report["passed"]:
         raise SystemExit(1)
 

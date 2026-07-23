@@ -33,6 +33,8 @@ extern intptr_t rebar_collect_wide(const void *, const uint8_t *, size_t, uint8_
 #define RUST_LOCAL_CAPTURE_WORDS 64
 #define RUST_ITERATOR_CAPTURE_WORDS 16
 #define RUST_LOCAL_BOUND_ARGS 24
+#define RUST_FINDALL_BATCH_CAPACITY 128
+#define RUST_FINDALL_INLINE_STRIDE 4
 
 typedef struct {
     PyObject_VAR_HEAD
@@ -137,7 +139,15 @@ static PyObject *rust_match_piece(RustMatch *match, Py_ssize_t group, PyObject *
     intptr_t end = match->spans[stride + (size_t)group];
     if (begin < 0) return Py_NewRef(missing);
     if (PyUnicode_Check(match->string)) return PyUnicode_Substring(match->string, (Py_ssize_t)begin, (Py_ssize_t)end);
-    if (PyBytes_CheckExact(match->string)) return PyBytes_FromStringAndSize(PyBytes_AS_STRING(match->string) + begin, (Py_ssize_t)(end - begin));
+    if (PyBytes_CheckExact(match->string)) {
+        if (begin == 0 && end == (intptr_t)PyBytes_GET_SIZE(match->string)) {
+            return Py_NewRef(match->string);
+        }
+        return PyBytes_FromStringAndSize(
+            PyBytes_AS_STRING(match->string) + begin,
+            (Py_ssize_t)(end - begin)
+        );
+    }
     Py_buffer view = {0};
     if (PyObject_GetBuffer(match->string, &view, PyBUF_SIMPLE) != 0) return NULL;
     Py_ssize_t first = begin < 0 ? 0 : (Py_ssize_t)begin;
@@ -486,12 +496,18 @@ static PyObject *rust_match_new(PyTypeObject *type, PyObject *args, PyObject *kw
 
 static PyMethodDef rust_match_methods[] = {
     {"group", (PyCFunction)(void (*)(void))rust_match_group, METH_FASTCALL, "Return one or more captured groups."},
-    {"groups", (PyCFunction)(void (*)(void))rust_match_groups, METH_FASTCALL | METH_KEYWORDS, "Return all captured groups."},
-    {"groupdict", (PyCFunction)(void (*)(void))rust_match_groupdict, METH_FASTCALL | METH_KEYWORDS, "Return named captured groups."},
-    {"start", (PyCFunction)(void (*)(void))rust_match_start, METH_FASTCALL, "Return the beginning of a captured group."},
-    {"end", (PyCFunction)(void (*)(void))rust_match_end, METH_FASTCALL, "Return the end of a captured group."},
-    {"span", (PyCFunction)(void (*)(void))rust_match_span_method, METH_FASTCALL, "Return a captured group's offsets."},
-    {"expand", (PyCFunction)rust_match_expand, METH_O, "Expand a replacement template."},
+    {"groups", (PyCFunction)(void (*)(void))rust_match_groups, METH_FASTCALL | METH_KEYWORDS,
+     "groups($self, /, default=None)\n--\n\nReturn all captured groups."},
+    {"groupdict", (PyCFunction)(void (*)(void))rust_match_groupdict, METH_FASTCALL | METH_KEYWORDS,
+     "groupdict($self, /, default=None)\n--\n\nReturn named captured groups."},
+    {"start", (PyCFunction)(void (*)(void))rust_match_start, METH_FASTCALL,
+     "start($self, group=0, /)\n--\n\nReturn the beginning of a captured group."},
+    {"end", (PyCFunction)(void (*)(void))rust_match_end, METH_FASTCALL,
+     "end($self, group=0, /)\n--\n\nReturn the end of a captured group."},
+    {"span", (PyCFunction)(void (*)(void))rust_match_span_method, METH_FASTCALL,
+     "span($self, group=0, /)\n--\n\nReturn a captured group's offsets."},
+    {"expand", (PyCFunction)rust_match_expand, METH_O,
+     "expand($self, /, template)\n--\n\nExpand a replacement template."},
     {"__copy__", (PyCFunction)rust_match_copy, METH_NOARGS, "Return this immutable match."},
     {"__deepcopy__", (PyCFunction)rust_match_deepcopy, METH_O, "Return this immutable match."},
     {"__reduce__", (PyCFunction)rust_match_reduce, METH_NOARGS, "Matches cannot be pickled."},
@@ -500,11 +516,21 @@ static PyMethodDef rust_match_methods[] = {
     {NULL, NULL, 0, NULL},
 };
 
+static int rust_match_set_readonly(
+    PyObject *match, PyObject *value, void *closure
+) {
+    (void)match;
+    (void)value;
+    (void)closure;
+    PyErr_SetString(PyExc_AttributeError, "readonly attribute");
+    return -1;
+}
+
 static PyGetSetDef rust_match_getsets[] = {
-    {"re", (getter)rust_match_get_pattern, NULL, "Compiled regular expression.", NULL},
-    {"string", (getter)rust_match_get_string, NULL, "Original search subject.", NULL},
-    {"pos", (getter)rust_match_get_pos, NULL, "Original search start.", NULL},
-    {"endpos", (getter)rust_match_get_endpos, NULL, "Clipped search end.", NULL},
+    {"re", (getter)rust_match_get_pattern, rust_match_set_readonly, "Compiled regular expression.", NULL},
+    {"string", (getter)rust_match_get_string, rust_match_set_readonly, "Original search subject.", NULL},
+    {"pos", (getter)rust_match_get_pos, rust_match_set_readonly, "Original search start.", NULL},
+    {"endpos", (getter)rust_match_get_endpos, rust_match_set_readonly, "Clipped search end.", NULL},
     {"lastindex", (getter)rust_match_get_lastindex, NULL, "Last captured group index.", NULL},
     {"lastgroup", (getter)rust_match_get_lastgroup, NULL, "Last captured group name.", NULL},
     {"regs", (getter)rust_match_get_regs, NULL, "All captured offsets.", NULL},
@@ -835,6 +861,16 @@ static int rust_subject_open(RustSubject *subject, PyObject *pattern_value, PyOb
         }
         return 1;
     }
+    if (PyBytes_CheckExact(value)) {
+        if (pattern_value != NULL && PyUnicode_Check(pattern_value)) {
+            PyErr_SetString(PyExc_TypeError, "cannot use a string pattern on a bytes-like object");
+            return 0;
+        }
+        subject->kind = 1;
+        subject->data = (const uint8_t *)PyBytes_AS_STRING(value);
+        subject->length = (size_t)PyBytes_GET_SIZE(value);
+        return 1;
+    }
     if (PyObject_GetBuffer(value, &subject->view, PyBUF_SIMPLE) != 0) {
         PyErr_Clear();
         PyErr_Format(PyExc_TypeError, "expected string or bytes-like object, got '%.200s'", Py_TYPE(value)->tp_name);
@@ -868,6 +904,13 @@ static PyObject *rust_findall_item(const RustSubject *subject, intptr_t begin, i
         return PyBytes_FromStringAndSize("", 0);
     }
     if (subject->text) return PyUnicode_Substring(subject->object, (Py_ssize_t)begin, (Py_ssize_t)end);
+    if (
+        begin == 0
+        && (size_t)end == subject->length
+        && PyBytes_CheckExact(subject->object)
+    ) {
+        return Py_NewRef(subject->object);
+    }
     return PyBytes_FromStringAndSize((const char *)subject->data + begin, (Py_ssize_t)(end - begin));
 }
 
@@ -970,6 +1013,118 @@ static PyObject *rust_stream_collection(const void *handle, const RustSubject *s
 
 stream_error:
     if (begins != local_begins) PyMem_Free(begins);
+    Py_DECREF(result);
+    return NULL;
+}
+
+static int rust_append_batched_findall(PyObject *result, const RustSubject *subject, size_t groups, const intptr_t *begins, const intptr_t *ends) {
+    size_t first = groups == 0 ? 0 : 1;
+    size_t values = groups <= 1 ? 1 : groups;
+    if (values == 1) {
+        return rust_list_append_owned(result, rust_findall_item(subject, begins[first], ends[first]));
+    }
+    if (values > (size_t)PY_SSIZE_T_MAX) {
+        PyErr_NoMemory();
+        return -1;
+    }
+    PyObject *row = PyTuple_New((Py_ssize_t)values);
+    if (row == NULL) return -1;
+    for (size_t index = 0; index < values; index++) {
+        size_t group = first + index;
+        PyObject *piece = rust_findall_item(subject, begins[group], ends[group]);
+        if (piece == NULL) {
+            Py_DECREF(row);
+            return -1;
+        }
+        PyTuple_SET_ITEM(row, (Py_ssize_t)index, piece);
+    }
+    return rust_list_append_owned(result, row);
+}
+
+static PyObject *rust_batched_findall(const void *handle, const RustSubject *subject, size_t groups, size_t start, size_t end) {
+    size_t stride = groups + 1;
+    if (stride == 0 || stride > (SIZE_MAX / RUST_FINDALL_BATCH_CAPACITY - 1) / 2) {
+        return PyErr_NoMemory();
+    }
+    size_t words = RUST_FINDALL_BATCH_CAPACITY * (stride * 2 + 1);
+    if (words > SIZE_MAX / sizeof(intptr_t)) return PyErr_NoMemory();
+    intptr_t local[RUST_FINDALL_BATCH_CAPACITY * (RUST_FINDALL_INLINE_STRIDE * 2 + 1)];
+    intptr_t *storage = words <= sizeof(local) / sizeof(local[0])
+        ? local
+        : PyMem_Malloc(words * sizeof(intptr_t));
+    if (storage == NULL) return PyErr_NoMemory();
+    intptr_t *begins = storage;
+    intptr_t *ends = begins + RUST_FINDALL_BATCH_CAPACITY * stride;
+    intptr_t *lasts = ends + RUST_FINDALL_BATCH_CAPACITY * stride;
+    PyObject *result = PyList_New(0);
+    if (result == NULL) {
+        if (storage != local) PyMem_Free(storage);
+        return NULL;
+    }
+
+    size_t current = start;
+    uint8_t pending_nonempty = 0;
+    while (current <= end) {
+        if (pending_nonempty) {
+            intptr_t last = -1;
+            int found = rust_subject_match(handle, subject, current, end, 1, 1, begins, ends, &last);
+            if (found < 0) {
+                PyErr_SetString(PyExc_RuntimeError, "Rust batched collector rejected a nonempty continuation");
+                goto batch_error;
+            }
+            if (found > 0) {
+                if (begins[0] == ends[0]) {
+                    PyErr_SetString(PyExc_RuntimeError, "Rust nonempty continuation produced an empty match");
+                    goto batch_error;
+                }
+                if (rust_append_batched_findall(result, subject, groups, begins, ends) < 0) goto batch_error;
+                current = (size_t)ends[0];
+            } else {
+                if (current == end) break;
+                current++;
+            }
+            pending_nonempty = 0;
+            continue;
+        }
+
+        intptr_t count;
+        if (subject->text) {
+            if (rebar_collect_wide == NULL) {
+                PyErr_SetString(PyExc_RuntimeError, "Rust batched collector requires the native wide-character entry point");
+                goto batch_error;
+            }
+            count = rebar_collect_wide(
+                handle, subject->data, subject->length, subject->kind,
+                current, end, RUST_FINDALL_BATCH_CAPACITY, begins, ends, lasts
+            );
+        } else {
+            count = rebar_collect_ascii(
+                handle, subject->data, subject->length,
+                current, end, RUST_FINDALL_BATCH_CAPACITY, begins, ends, lasts
+            );
+        }
+        if (count < 0 || count > RUST_FINDALL_BATCH_CAPACITY) {
+            PyErr_SetString(PyExc_RuntimeError, "Rust batched collector returned an invalid result count");
+            goto batch_error;
+        }
+        if (count == 0) break;
+        for (intptr_t match = 0; match < count; match++) {
+            size_t offset = (size_t)match * stride;
+            if (rust_append_batched_findall(result, subject, groups, begins + offset, ends + offset) < 0) {
+                goto batch_error;
+            }
+        }
+        size_t last_offset = (size_t)(count - 1) * stride;
+        current = (size_t)ends[last_offset];
+        pending_nonempty = begins[last_offset] == ends[last_offset];
+        if (count < RUST_FINDALL_BATCH_CAPACITY) break;
+    }
+
+    if (storage != local) PyMem_Free(storage);
+    return result;
+
+batch_error:
+    if (storage != local) PyMem_Free(storage);
     Py_DECREF(result);
     return NULL;
 }
@@ -1281,6 +1436,12 @@ static PyObject *bridge_findall(PyObject *module, PyObject *const *args, Py_ssiz
                 item = text_mode ? PyUnicode_New(0, 127) : PyBytes_FromStringAndSize("", 0);
             } else if (text_mode) {
                 item = PyUnicode_Substring(subject, (Py_ssize_t)begin, (Py_ssize_t)finish);
+            } else if (
+                begin == 0
+                && (size_t)finish == length
+                && PyBytes_CheckExact(subject)
+            ) {
+                item = Py_NewRef(subject);
             } else {
                 item = PyBytes_FromStringAndSize((const char *)data + begin, (Py_ssize_t)(finish - begin));
             }
@@ -1524,25 +1685,9 @@ static PyObject *bridge_bound_findall(PyObject *module, PyObject *const *args, P
         rust_subject_release(&subject);
         return NULL;
     }
-    PyObject *result;
-    if (start > end) {
-        result = PyList_New(0);
-    } else if (subject.storage == NULL) {
-        PyObject *start_value = PyLong_FromSize_t(start);
-        PyObject *end_value = PyLong_FromSize_t(end);
-        if (start_value == NULL || end_value == NULL) {
-            Py_XDECREF(start_value);
-            Py_XDECREF(end_value);
-            rust_subject_release(&subject);
-            return NULL;
-        }
-        PyObject *call[5] = {args[0], value, args[2], start_value, end_value};
-        result = bridge_findall(module, call, 5);
-        Py_DECREF(start_value);
-        Py_DECREF(end_value);
-    } else {
-        result = rust_stream_collection(handle, &subject, groups, start, end, 1);
-    }
+    PyObject *result = start > end
+        ? PyList_New(0)
+        : rust_batched_findall(handle, &subject, groups, start, end);
     rust_subject_release(&subject);
     return result;
 }

@@ -444,7 +444,7 @@ class _PatternType(type):
 
 class Pattern(metaclass=_PatternType):
     __slots__ = (
-        "pattern", "flags", "groups", "groupindex", "_groupindex", "_handle",
+        "pattern", "flags", "groups", "_groupindex", "_handle",
         "_literal", "_bound_methods", "_templates", "__weakref__",
     )
 
@@ -453,13 +453,17 @@ class Pattern(metaclass=_PatternType):
         object.__setattr__(self, "pattern", value)
         object.__setattr__(self, "flags", flags)
         object.__setattr__(self, "groups", groups)
-        object.__setattr__(self, "groupindex", types.MappingProxyType(names))
         self._groupindex = names
         self._handle = handle
         self._bound_methods = None
         self._templates = None
         metacharacters = b".^$*+?{}[]\\|()" if isinstance(value, bytes) else ".^$*+?{}[]\\|()"
         self._literal = value if value and not flags & int(IGNORECASE | VERBOSE) and not any(char in metacharacters for char in value) else None
+
+    @property
+    def groupindex(self):
+        names = self._groupindex
+        return types.MappingProxyType(names) if names else {}
 
     def __setattr__(self, name, value):
         if name in ("pattern", "flags", "groups"):
@@ -669,20 +673,22 @@ def _cache_pattern(key, pattern):
 def compile(pattern, flags=0):
     if isinstance(flags, RegexFlag):
         flags = flags.value
+    try:
+        return _CACHE2[type(pattern), pattern, flags]
+    except KeyError:
+        pass
+
+    key = (type(pattern), pattern, flags)
+    cached = _CACHE.pop(key, None)
+    if cached is not None:
+        return _cache_pattern(key, cached)
+
     if isinstance(pattern, Pattern):
         if flags:
             raise ValueError("cannot process flags argument with a compiled pattern")
         return pattern
     if not isinstance(pattern, (str, bytes)):
         raise TypeError("first argument must be string or compiled pattern")
-
-    key = (type(pattern), pattern, flags)
-    cached = _CACHE2.get(key)
-    if cached is not None:
-        return cached
-    cached = _CACHE.pop(key, None)
-    if cached is not None:
-        return _cache_pattern(key, cached)
 
     if isinstance(pattern, str) and flags & int(LOCALE):
         raise ValueError("cannot use LOCALE flag with a str pattern")
@@ -788,6 +794,11 @@ def subn(pattern, repl, string, *args, count=_MISSING, flags=_MISSING):
         warnings.warn("'count' is passed as positional argument", DeprecationWarning, skip_file_prefixes=_WARNING_PREFIX)
         count, flags = (args + (flags,))[:2]
     return compile(pattern, flags).subn(repl, string, count)
+
+
+split.__text_signature__ = "(pattern, string, maxsplit=0, flags=0)"
+sub.__text_signature__ = "(pattern, repl, string, count=0, flags=0)"
+subn.__text_signature__ = "(pattern, repl, string, count=0, flags=0)"
 
 
 def escape(pattern):

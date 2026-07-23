@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1220" height="472" viewBox="0 0 1220 472" role="img" aria-label="How closely do the from-scratch replacements match Python?">
+<rect width="100%" height="100%" fill="#fff"/>
+<style>text{font-family:system-ui,-apple-system,Segoe UI,sans-serif;fill:#172033}.title{font-size:24px;font-weight:700}.sub{font-size:13px;fill:#52627a}.label{font-size:15px;font-weight:650}.value{font-size:14px;font-weight:650}.note{font-size:12px;fill:#52627a}.tick{font-size:11px;fill:#64748b}.grid{stroke:#e2e8f0;stroke-width:1}</style>
+<text x="24" y="38" class="title">Which engines really behave like Python re?</text>
+<text x="24" y="61" class="sub">All 223,198 independently frozen checks. A full bar means zero differences; red shows every mismatch.</text>
+<line x1="268.0" y1="100" x2="268.0" y2="421" class="grid"/>
+<text x="268.0" y="94" class="tick" text-anchor="middle">0%</text>
+<line x1="406.75" y1="100" x2="406.75" y2="421" class="grid"/>
+<text x="406.75" y="94" class="tick" text-anchor="middle">25%</text>
+<line x1="545.5" y1="100" x2="545.5" y2="421" class="grid"/>
+<text x="545.5" y="94" class="tick" text-anchor="middle">50%</text>
+<line x1="684.25" y1="100" x2="684.25" y2="421" class="grid"/>
+<text x="684.25" y="94" class="tick" text-anchor="middle">75%</text>
+<line x1="823.0" y1="100" x2="823.0" y2="421" class="grid"/>
+<text x="823.0" y="94" class="tick" text-anchor="middle">100%</text>
+<text x="24" y="144" class="label">Python re (reference)</text>
+<rect x="268" y="129" width="555" height="19" rx="5" fill="#f1f5f9"/>
+<rect x="268" y="129" width="555.0" height="19" rx="5" fill="#64748b"/>
+<text x="850" y="144" class="value">223,198 / 223,198 correct · zero mismatches</text>
+<rect x="12" y="166" width="1196" height="47" rx="8" fill="#ecfdf5"/>
+<text x="24" y="196" class="label">Corrected Rust</text>
+<rect x="268" y="181" width="555" height="19" rx="5" fill="#f1f5f9"/>
+<rect x="268" y="181" width="555.0" height="19" rx="5" fill="#059669"/>
+<text x="850" y="196" class="value">223,198 / 223,198 correct · zero mismatches</text>
+<text x="24" y="248" class="label">Original Zig</text>
+<rect x="268" y="233" width="555" height="19" rx="5" fill="#f1f5f9"/>
+<rect x="268" y="233" width="541.87" height="19" rx="5" fill="#7c3aed"/>
+<rect x="809.87" y="233" width="13.13" height="19" fill="#ef4444"/>
+<text x="850" y="248" class="value">217,917 / 223,198 correct · 5,281 mismatches</text>
+<text x="24" y="300" class="label">Original Rust</text>
+<rect x="268" y="285" width="555" height="19" rx="5" fill="#f1f5f9"/>
+<rect x="268" y="285" width="494.17" height="19" rx="5" fill="#2563eb"/>
+<rect x="762.1700000000001" y="285" width="60.83" height="19" fill="#ef4444"/>
+<text x="850" y="300" class="value">198,736 / 223,198 correct · 24,462 mismatches</text>
+<text x="24" y="352" class="label">Original C</text>
+<rect x="268" y="337" width="555" height="19" rx="5" fill="#f1f5f9"/>
+<rect x="268" y="337" width="424.07" height="19" rx="5" fill="#d97706"/>
+<rect x="692.0699999999999" y="337" width="130.93" height="19" fill="#ef4444"/>
+<text x="850" y="352" class="value">170,543 / 223,198 correct · 52,655 mismatches</text>
+<text x="24" y="404" class="label">Original Python engine</text>
+<rect x="268" y="389" width="555" height="19" rx="5" fill="#f1f5f9"/>
+<rect x="268" y="389" width="425.32" height="19" rx="5" fill="#db2777"/>
+<rect x="693.3199999999999" y="389" width="129.68" height="19" fill="#ef4444"/>
+<text x="850" y="404" class="value">171,047 / 223,198 correct · 52,151 mismatches</text>
+<text x="24" y="450" class="note">Speed is measured separately; the corrected Rust engine has not seen the final performance test.</text>
+</svg>
