@@ -1,0 +1,470 @@
+{
+  "schema": "rebar-stage16-sealed-campaign-actual-failure-v1",
+  "status": "FAIL",
+  "evidence_kind": "one_actual_frozen_sealed_campaign_failure",
+  "candidate": {
+    "family": "C",
+    "module": "candidates.vm_candidate",
+    "qualification": "NOT QUALIFIED"
+  },
+  "pinned_cpython": "3.14.6",
+  "campaign": {
+    "schema": "rebar-rust-campaign-gate-v1",
+    "invocations": 1,
+    "exit_code": 1,
+    "memory_limit_mib": 2048,
+    "expected_stage_count": 22,
+    "completed_stages_before_failure": 21,
+    "failed_stage": "full-unicode-plane",
+    "failed_stage_child_exit_code": 1,
+    "failed_stage_expected_correctness_checks": 4494555,
+    "failed_stage_observed_completed_correctness_checks": null,
+    "failed_stage_total_mismatch_count": null,
+    "child_stdout_tail_limit_characters": 3000,
+    "child_stderr": "",
+    "child_stdout_tail_starts_mid_record": true,
+    "initial_partial_child_mismatch_fragment": ": \"U+0345\"}",
+    "complete_mismatch_rows_preserved_from_child_tail": [
+      {
+        "actual": {
+          "value": null
+        },
+        "expected": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "flags": 2,
+        "kind": "case-equivalence",
+        "left": "U+1FBE",
+        "pattern": "[\\u1fbe-\\u1fbe]",
+        "right": "U+0399"
+      },
+      {
+        "actual": {
+          "value": null
+        },
+        "expected": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "flags": 2,
+        "kind": "case-equivalence",
+        "left": "U+1FBE",
+        "pattern": "[\\u1fbe-\\u1fbe]",
+        "right": "U+03B9"
+      },
+      {
+        "actual": {
+          "value": null
+        },
+        "expected": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "flags": 2,
+        "kind": "case-equivalence",
+        "left": "U+0390",
+        "pattern": "[\\u0390-\\u0390]",
+        "right": "U+1FD3"
+      },
+      {
+        "actual": {
+          "value": null
+        },
+        "expected": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "flags": 2,
+        "kind": "case-equivalence",
+        "left": "U+1FD3",
+        "pattern": "[\\u1fd3-\\u1fd3]",
+        "right": "U+0390"
+      },
+      {
+        "actual": {
+          "value": null
+        },
+        "expected": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "flags": 2,
+        "kind": "case-equivalence",
+        "left": "U+03B0",
+        "pattern": "[\\u03b0-\\u03b0]",
+        "right": "U+1FE3"
+      },
+      {
+        "actual": {
+          "value": null
+        },
+        "expected": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "flags": 2,
+        "kind": "case-equivalence",
+        "left": "U+1FE3",
+        "pattern": "[\\u1fe3-\\u1fe3]",
+        "right": "U+03B0"
+      },
+      {
+        "actual": {
+          "value": null
+        },
+        "expected": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "flags": 2,
+        "kind": "case-equivalence",
+        "left": "U+03B2",
+        "pattern": "[\\u03b2-\\u03b2]",
+        "right": "U+03D0"
+      },
+      {
+        "actual": {
+          "value": null
+        },
+        "expected": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "flags": 2,
+        "kind": "case-equivalence",
+        "left": "U+03D0",
+        "pattern": "[\\u03d0-\\u03d0]",
+        "right": "U+0392"
+      },
+      {
+        "actual": {
+          "value": null
+        },
+        "expected": {
+          "value": {
+            "endpos": 1,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    1
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                1
+              ]
+            }
+          }
+        },
+        "flags": 2,
+        "kind": "case-equivalence",
+        "left": "U+03D0",
+        "pattern": "[\\u03d0-\\u03d0]",
+        "right": "U+03B2"
+      }
+    ],
+    "command": [
+      "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+      "-B",
+      "tools/rust_v8_multi_candidate_campaign.py",
+      "--module",
+      "candidates.vm_candidate",
+      "--edge-oracle",
+      "candidates/evidence/rust-v8-edge-oracle-vm-deep-stage-16.json.gz",
+      "--deep-proof",
+      "candidates/audits/RUST-V8-DEEP-CONTRACT-C-STAGE-16.json.gz",
+      "--output",
+      "candidates/evidence/rust-v8-vm-stage-16-sealed-campaign.json",
+      "--memory-mib",
+      "2048"
+    ],
+    "environment": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONPATH": "."
+    }
+  },
+  "observed_temporary_child_evidence": [
+    "v3.json",
+    "replacement-adversarial.json",
+    "rust-v8-observability-vm-qualified.json.gz",
+    "v2.json",
+    "extended-paths.json",
+    "replacement-adversarial-deep.json",
+    "group-name-errors.json",
+    "official-surface.json",
+    "rust-surface.json",
+    "cpython.json",
+    "safety.json",
+    "depth-safety.json"
+  ],
+  "observed_temporary_evidence_root": "/tmp/rebar-v8-vm-sealed-campaign-6lxcjcm_",
+  "observed_temporary_evidence_cleanup": "removed by the unchanged failing campaign TemporaryDirectory",
+  "authoritative_process_combined_output": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1439, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1427, in main\n    result = run_campaign(\n        args.module,\n    ...<3 lines>...\n        args.memory_mib,\n    )\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1054, in run_campaign\n    report[\"steps\"].append(child_step(step, module, memory_mib))\n                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 679, in child_step\n    raise AssertionError(\n    ...<2 lines>...\n    )\nAssertionError: isolated suite failed: full-unicode-plane; exit=1; stderr=; stdout=: \"U+0345\"}\n{\"actual\": {\"value\": null}, \"expected\": {\"value\": {\"endpos\": 1, \"groupdict\": {}, \"groups\": {\"tuple\": []}, \"lastgroup\": null, \"lastindex\": null, \"pos\": 0, \"regs\": {\"tuple\": [{\"tuple\": [0, 1]}]}, \"span\": {\"tuple\": [0, 1]}}}, \"flags\": 2, \"kind\": \"case-equivalence\", \"left\": \"U+1FBE\", \"pattern\": \"[\\\\u1fbe-\\\\u1fbe]\", \"right\": \"U+0399\"}\n{\"actual\": {\"value\": null}, \"expected\": {\"value\": {\"endpos\": 1, \"groupdict\": {}, \"groups\": {\"tuple\": []}, \"lastgroup\": null, \"lastindex\": null, \"pos\": 0, \"regs\": {\"tuple\": [{\"tuple\": [0, 1]}]}, \"span\": {\"tuple\": [0, 1]}}}, \"flags\": 2, \"kind\": \"case-equivalence\", \"left\": \"U+1FBE\", \"pattern\": \"[\\\\u1fbe-\\\\u1fbe]\", \"right\": \"U+03B9\"}\n{\"actual\": {\"value\": null}, \"expected\": {\"value\": {\"endpos\": 1, \"groupdict\": {}, \"groups\": {\"tuple\": []}, \"lastgroup\": null, \"lastindex\": null, \"pos\": 0, \"regs\": {\"tuple\": [{\"tuple\": [0, 1]}]}, \"span\": {\"tuple\": [0, 1]}}}, \"flags\": 2, \"kind\": \"case-equivalence\", \"left\": \"U+0390\", \"pattern\": \"[\\\\u0390-\\\\u0390]\", \"right\": \"U+1FD3\"}\n{\"actual\": {\"value\": null}, \"expected\": {\"value\": {\"endpos\": 1, \"groupdict\": {}, \"groups\": {\"tuple\": []}, \"lastgroup\": null, \"lastindex\": null, \"pos\": 0, \"regs\": {\"tuple\": [{\"tuple\": [0, 1]}]}, \"span\": {\"tuple\": [0, 1]}}}, \"flags\": 2, \"kind\": \"case-equivalence\", \"left\": \"U+1FD3\", \"pattern\": \"[\\\\u1fd3-\\\\u1fd3]\", \"right\": \"U+0390\"}\n{\"actual\": {\"value\": null}, \"expected\": {\"value\": {\"endpos\": 1, \"groupdict\": {}, \"groups\": {\"tuple\": []}, \"lastgroup\": null, \"lastindex\": null, \"pos\": 0, \"regs\": {\"tuple\": [{\"tuple\": [0, 1]}]}, \"span\": {\"tuple\": [0, 1]}}}, \"flags\": 2, \"kind\": \"case-equivalence\", \"left\": \"U+03B0\", \"pattern\": \"[\\\\u03b0-\\\\u03b0]\", \"right\": \"U+1FE3\"}\n{\"actual\": {\"value\": null}, \"expected\": {\"value\": {\"endpos\": 1, \"groupdict\": {}, \"groups\": {\"tuple\": []}, \"lastgroup\": null, \"lastindex\": null, \"pos\": 0, \"regs\": {\"tuple\": [{\"tuple\": [0, 1]}]}, \"span\": {\"tuple\": [0, 1]}}}, \"flags\": 2, \"kind\": \"case-equivalence\", \"left\": \"U+1FE3\", \"pattern\": \"[\\\\u1fe3-\\\\u1fe3]\", \"right\": \"U+03B0\"}\n{\"actual\": {\"value\": null}, \"expected\": {\"value\": {\"endpos\": 1, \"groupdict\": {}, \"groups\": {\"tuple\": []}, \"lastgroup\": null, \"lastindex\": null, \"pos\": 0, \"regs\": {\"tuple\": [{\"tuple\": [0, 1]}]}, \"span\": {\"tuple\": [0, 1]}}}, \"flags\": 2, \"kind\": \"case-equivalence\", \"left\": \"U+03B2\", \"pattern\": \"[\\\\u03b2-\\\\u03b2]\", \"right\": \"U+03D0\"}\n{\"actual\": {\"value\": null}, \"expected\": {\"value\": {\"endpos\": 1, \"groupdict\": {}, \"groups\": {\"tuple\": []}, \"lastgroup\": null, \"lastindex\": null, \"pos\": 0, \"regs\": {\"tuple\": [{\"tuple\": [0, 1]}]}, \"span\": {\"tuple\": [0, 1]}}}, \"flags\": 2, \"kind\": \"case-equivalence\", \"left\": \"U+03D0\", \"pattern\": \"[\\\\u03d0-\\\\u03d0]\", \"right\": \"U+0392\"}\n{\"actual\": {\"value\": null}, \"expected\": {\"value\": {\"endpos\": 1, \"groupdict\": {}, \"groups\": {\"tuple\": []}, \"lastgroup\": null, \"lastindex\": null, \"pos\": 0, \"regs\": {\"tuple\": [{\"tuple\": [0, 1]}]}, \"span\": {\"tuple\": [0, 1]}}}, \"flags\": 2, \"kind\": \"case-equivalence\", \"left\": \"U+03D0\", \"pattern\": \"[\\\\u03d0-\\\\u03d0]\", \"right\": \"U+03B2\"}\n",
+  "frozen_artifacts": [
+    {
+      "path": "tools/rust_v8_multi_candidate_campaign.py",
+      "sha256": "46e53abac0d2347d5fc505aa792a5ee5f55489a6e73b1f57edf37a93a0a6d45d"
+    },
+    {
+      "path": "candidates/vm_candidate.py",
+      "sha256": "0c49f88e9643f946caf4a46fd5a84d82ba1321790d7b46e5901acea8b0150c75"
+    },
+    {
+      "path": "candidates/_vm_native.c",
+      "sha256": "b210f45a81454c1e8cc342f14fafeb5ebc8c3ebed66a70d590445842f7d3d00f"
+    },
+    {
+      "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "fb609951744c926a2ea0845bb4492fb5e2eaa39b1d1f3ecf9fd81c0692eeaf8e"
+    },
+    {
+      "path": "candidates/audits/FROM-SCRATCH-AUDIT.json",
+      "sha256": "6ed1679f3bfb1cbb2bbc0fe39df8dd639f112a3555c813f7d1ab658046af6875"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-vm-stage-16-depth-safety.json",
+      "sha256": "d598fd1a010cb93a2afa47ec48c0341ce4a5a86ba60d440e3f9241646e7c3031"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-vm-stage-16-isolated-safety.json",
+      "sha256": "15f51f704c555a3252e184f83b0ba89512039a55acab07f1e464cfb90c5c3654"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-vm-stage-16-extended-path-failures.json.gz",
+      "sha256": "cadbc70dd77f9a60755cb6c33350bb7e6e4d28422a90accec2c20f4a0bf7ce53"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-replacement-vm-stage-16.json.gz",
+      "sha256": "2ee973770786bbb712e5d5b5e03843f9f550315aabb13c8f958e3c38131dde9d"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-replacement-vm-deep-stage-16.json.gz",
+      "sha256": "b83db146ea1f21d16e94a2bf46e40769a7fe8c9740206e6032c50b343bf8e1c6"
+    },
+    {
+      "path": "candidates/evidence/rust-v7-grammar-vm-v8-deep-stage-16.json.gz",
+      "sha256": "6040971a04f534d6a126cab8e7897da16f028f4a1186befba649df89256f40b1"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-edge-oracle-vm-deep-stage-16.json.gz",
+      "sha256": "2b9c457e0c7a5c5292339f9ba2742180a6f726cc75d239f5be78ae83dc5617ea"
+    },
+    {
+      "path": "candidates/audits/RUST-V8-DEEP-CONTRACT-C-STAGE-16.json.gz",
+      "sha256": "643961d1f4689e0c8469d29a19d015344c67290eee7616f687f0d230c47f3f61"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-observability-vm-qualified-stage-16.json.gz",
+      "sha256": "f750a25dcbedb915a353931a03930df9b8f183fc5e3431ba5e26a6c1d5f65233"
+    }
+  ],
+  "success_campaign_output_written": false,
+  "holdout": "NOT ACCESSED",
+  "performance": "NOT MEASURED",
+  "campaign_retries": 0
+}

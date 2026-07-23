@@ -1,0 +1,31 @@
+{
+  "categories": {
+    "allocation-boundary": 8,
+    "buffer-boundary": 20,
+    "malformed-pattern": 27,
+    "nesting-depth": 16,
+    "repetition-boundary": 24,
+    "seeded-malformed": 48,
+    "surrogate-pattern": 44,
+    "surrogate-reversed-range": 20,
+    "unicode-group-name": 12,
+    "window-boundary": 35
+  },
+  "core_dumps": "disabled in every child process",
+  "correctness_checks": 254,
+  "cpu_limit_seconds": 5,
+  "crashes": 0,
+  "failed": 0,
+  "failed_categories": {},
+  "failures": [],
+  "isolation": "one independent subprocess per engine and case",
+  "memory_limit_mib": 768,
+  "module": "candidates.vm_candidate",
+  "oracle": "CPython stdlib re",
+  "oracle_failures": 0,
+  "python_version": "3.14.6",
+  "schema": "rebar-rust-subprocess-safety-v1",
+  "seed": 2026072319,
+  "timeout_seconds": 4.0,
+  "timeouts": 0
+}

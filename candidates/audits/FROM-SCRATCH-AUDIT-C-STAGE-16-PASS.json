@@ -1,0 +1,1829 @@
+{
+  "all_public_source_families": [
+    "ast",
+    "vm",
+    "rust",
+    "zig"
+  ],
+  "audit": "bounded-from-scratch-engine-provenance",
+  "audit_history": [
+    {
+      "attempt": "initial_live_audit",
+      "exit_code": 1,
+      "findings_suppressed": 0,
+      "manifest_passed": true,
+      "regression_self_test": "preserve_rust_lifetimes_and_owned_pipeline",
+      "resolution": "correctly tokenize Rust lifetimes and retain both owned-component requirements",
+      "result": "FAIL",
+      "root_cause": "the native lexical scanner initially treated Rust lifetime apostrophes as character literals",
+      "rust_findings": [
+        "missing_owned_rust_component: owned parser",
+        "missing_owned_rust_component: owned executor"
+      ],
+      "rust_native_elf_passed": true,
+      "verified_core_family_count": 2
+    },
+    {
+      "attempt": "initial_five_elf_live_audit",
+      "exit_code": 137,
+      "findings_suppressed": 0,
+      "resolution": "execute and strictly validate every pinned malicious control in a fresh isolated subprocess; retain all fail-closed source, ELF, maps, hash, and worker-output bounds",
+      "result": "FAIL",
+      "root_cause": "running all 73 malicious controls and the complete production-source audit in the same process caused cumulative SIGKILL; independent source, five-ELF, and actual-mapping gates all passed",
+      "verified_before_interruption": "all five authorized native ELF files were read and parsed; bounded AST and mapping stages were isolated"
+    }
+  ],
+  "core_families": [
+    "ast",
+    "vm",
+    "rust"
+  ],
+  "families": {
+    "ast": {
+      "isolated_runtime": {
+        "fixed_smoke_checks": 3,
+        "forbidden_candidate_import_attempts": [],
+        "forbidden_loaded_modules": [],
+        "loaded_candidate_modules": [
+          "candidates.ast_candidate"
+        ],
+        "module": "candidates.ast_candidate",
+        "native_mapping_provenance": {
+          "expected_owned_mapping_count": 0,
+          "issues": [],
+          "observed_owned_mapping_count": 0,
+          "observed_owned_mappings": [],
+          "passed": true,
+          "source": "/proc/self/maps",
+          "unrelated_system_libraries_ignored": true
+        },
+        "owned_native_loads": [],
+        "passed": true,
+        "prohibited_import_and_loader_probes": {
+          "cpython_sre": true,
+          "foreign_native_loader": true,
+          "other_candidate": true,
+          "stdlib_re": true,
+          "third_party_regex": true
+        },
+        "unexpected_candidate_modules": []
+      },
+      "native_binary_provenance": "not_applicable_pure_python; no candidate native mapping observed",
+      "native_sources": [],
+      "owned_pipeline": {
+        "compiler": "owned AST construction",
+        "executor": "_Engine.run",
+        "issues": [],
+        "parser": "_Parser",
+        "passed": true
+      },
+      "passed": true,
+      "python_source": {
+        "file": "candidates/ast_candidate.py",
+        "imports": [
+          "enum",
+          "operator",
+          "os",
+          "struct",
+          "types",
+          "unicodedata",
+          "warnings"
+        ],
+        "issues": [],
+        "native_loads": [],
+        "passed": true,
+        "sha256": "c6ba785af59eca36826176c6ff264bcc54b45ad8f2b6a4ae342bbcd98d41da84"
+      }
+    },
+    "rust": {
+      "isolated_runtime": {
+        "fixed_smoke_checks": 3,
+        "forbidden_candidate_import_attempts": [],
+        "forbidden_loaded_modules": [],
+        "loaded_candidate_modules": [
+          "candidates._rust_bridge",
+          "candidates.rust_candidate"
+        ],
+        "module": "candidates.rust_candidate",
+        "native_mapping_provenance": {
+          "expected_owned_mapping_count": 2,
+          "issues": [],
+          "observed_owned_mapping_count": 2,
+          "observed_owned_mappings": [
+            {
+              "file": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+              "mapping_count": 5,
+              "matches_static_elf": true,
+              "role": "bridge",
+              "sha256": "bacce4e941dfa83a03eb87131c0ee8fe91feaa31ad02d97119a5c6bdce956e71"
+            },
+            {
+              "file": "candidates/_rust_engine.so",
+              "mapping_count": 4,
+              "matches_static_elf": true,
+              "role": "engine",
+              "sha256": "d1a0983b09ec3fe848b91f0df82be6b5d65cda77c37d2870b4dba0bb37527b5e"
+            }
+          ],
+          "passed": true,
+          "source": "/proc/self/maps",
+          "unrelated_system_libraries_ignored": true
+        },
+        "owned_native_loads": [],
+        "passed": true,
+        "prohibited_import_and_loader_probes": {
+          "cpython_sre": true,
+          "foreign_native_loader": true,
+          "other_candidate": true,
+          "stdlib_re": true,
+          "third_party_regex": true
+        },
+        "unexpected_candidate_modules": []
+      },
+      "native_binary_provenance": "verified_exact_owned_elf_and_actual_hashed_memory_mappings",
+      "native_sources": [
+        {
+          "allowed_native_python_imports": [
+            "copyreg",
+            "functools",
+            "inspect"
+          ],
+          "family": "rust",
+          "file": "candidates/rust/py_bridge.c",
+          "issues": [],
+          "passed": true,
+          "sha256": "cfe81e9dc80bfbfadc34907918fe00fdbb2e3c4c6d8f3fd4efdff0e8783aa291"
+        },
+        {
+          "allowed_native_python_imports": [],
+          "family": "rust",
+          "file": "candidates/rust/src/lib.rs",
+          "issues": [],
+          "passed": true,
+          "sha256": "ef845cf6bbe3897224dbc4809ffeaea98f671f01b6d7c5d17eaf43c65f0ae54f"
+        },
+        {
+          "allowed_native_python_imports": [],
+          "family": "rust",
+          "file": "candidates/rust/src/search.rs",
+          "issues": [],
+          "passed": true,
+          "sha256": "4612c86424b9cbcb193d7ace521f359d7e3507281e83d3bf7e7ef7d189dd68fe"
+        },
+        {
+          "allowed_native_python_imports": [],
+          "family": "rust",
+          "file": "candidates/rust/src/newline.rs",
+          "issues": [],
+          "passed": true,
+          "sha256": "13216ffbea967af121c77d57abe14906030e7f3a6906c554399511154a3d6d8b"
+        },
+        {
+          "allowed_native_python_imports": [],
+          "family": "rust",
+          "file": "candidates/rust/src/stack.rs",
+          "issues": [],
+          "passed": true,
+          "sha256": "5198a056e99bde5632169cfc5b07ad913910cdb1b30785dad4744ccb9a30809e"
+        },
+        {
+          "allowed_native_python_imports": [],
+          "family": "rust",
+          "file": "candidates/rust/src/unicode_tables.rs",
+          "issues": [],
+          "passed": true,
+          "sha256": "f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af"
+        }
+      ],
+      "owned_pipeline": {
+        "compiler": "rust::Compiler",
+        "executor": "rust::run_program",
+        "issues": [],
+        "parser": "rust::Parser",
+        "passed": true
+      },
+      "passed": true,
+      "python_source": {
+        "file": "candidates/rust_candidate.py",
+        "imports": [
+          "candidates._rust_bridge",
+          "enum",
+          "operator",
+          "os",
+          "types",
+          "unicodedata",
+          "warnings"
+        ],
+        "issues": [],
+        "native_loads": [],
+        "passed": true,
+        "sha256": "80812459261edb9585bdf703f137af3e0e788638af2ad7183d00b6d357e8a926"
+      }
+    },
+    "vm": {
+      "isolated_runtime": {
+        "fixed_smoke_checks": 3,
+        "forbidden_candidate_import_attempts": [],
+        "forbidden_loaded_modules": [],
+        "loaded_candidate_modules": [
+          "candidates._vm_native",
+          "candidates.vm_candidate"
+        ],
+        "module": "candidates.vm_candidate",
+        "native_mapping_provenance": {
+          "expected_owned_mapping_count": 1,
+          "issues": [],
+          "observed_owned_mapping_count": 1,
+          "observed_owned_mappings": [
+            {
+              "file": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+              "mapping_count": 5,
+              "matches_static_elf": true,
+              "role": "native",
+              "sha256": "fb609951744c926a2ea0845bb4492fb5e2eaa39b1d1f3ecf9fd81c0692eeaf8e"
+            }
+          ],
+          "passed": true,
+          "source": "/proc/self/maps",
+          "unrelated_system_libraries_ignored": true
+        },
+        "owned_native_loads": [],
+        "passed": true,
+        "prohibited_import_and_loader_probes": {
+          "cpython_sre": true,
+          "foreign_native_loader": true,
+          "other_candidate": true,
+          "stdlib_re": true,
+          "third_party_regex": true
+        },
+        "unexpected_candidate_modules": []
+      },
+      "native_binary_provenance": "verified_exact_owned_elf_and_actual_hashed_memory_mappings",
+      "native_sources": [
+        {
+          "allowed_native_python_imports": [],
+          "family": "vm",
+          "file": "candidates/_vm_native.c",
+          "issues": [],
+          "passed": true,
+          "sha256": "b210f45a81454c1e8cc342f14fafeb5ebc8c3ebed66a70d590445842f7d3d00f"
+        }
+      ],
+      "owned_pipeline": {
+        "compiler": "_BytecodeCompiler",
+        "executor": "candidates/_vm_native.c:execute",
+        "issues": [],
+        "parser": "_BytecodeParser",
+        "passed": true
+      },
+      "passed": true,
+      "python_source": {
+        "file": "candidates/vm_candidate.py",
+        "imports": [
+          "candidates._vm_native",
+          "copyreg",
+          "enum",
+          "os",
+          "struct",
+          "unicodedata",
+          "warnings"
+        ],
+        "issues": [],
+        "native_loads": [],
+        "passed": true,
+        "sha256": "0c49f88e9643f946caf4a46fd5a84d82ba1321790d7b46e5901acea8b0150c75"
+      }
+    },
+    "zig": {
+      "isolated_runtime": {
+        "fixed_smoke_checks": 3,
+        "forbidden_candidate_import_attempts": [],
+        "forbidden_loaded_modules": [],
+        "loaded_candidate_modules": [
+          "candidates._zig_bridge",
+          "candidates.zig_candidate"
+        ],
+        "module": "candidates.zig_candidate",
+        "native_mapping_provenance": {
+          "expected_owned_mapping_count": 2,
+          "issues": [],
+          "observed_owned_mapping_count": 2,
+          "observed_owned_mappings": [
+            {
+              "file": "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so",
+              "mapping_count": 5,
+              "matches_static_elf": true,
+              "role": "bridge",
+              "sha256": "7d7ae8bef50e4bce06786dd20248b41b0ac74651ff4fae2d229d8b032b8dee1d"
+            },
+            {
+              "file": "candidates/_zig_probe.so",
+              "mapping_count": 3,
+              "matches_static_elf": true,
+              "role": "engine",
+              "sha256": "d35fb09dce43fcea2bb70f0ca9dd8e95cc05380fe983539dcee810d64aa9393e"
+            }
+          ],
+          "passed": true,
+          "source": "/proc/self/maps",
+          "unrelated_system_libraries_ignored": true
+        },
+        "owned_native_loads": [
+          "/home/dev-user/src/rebar/candidates/_zig_probe.so"
+        ],
+        "passed": true,
+        "prohibited_import_and_loader_probes": {
+          "cpython_sre": true,
+          "foreign_native_loader": true,
+          "other_candidate": true,
+          "stdlib_re": true,
+          "third_party_regex": true
+        },
+        "unexpected_candidate_modules": []
+      },
+      "native_binary_provenance": "verified_exact_owned_elf_and_actual_hashed_memory_mappings",
+      "native_sources": [
+        {
+          "allowed_native_python_imports": [],
+          "family": "zig",
+          "file": "candidates/zig/py_bridge.c",
+          "issues": [],
+          "passed": true,
+          "sha256": "45ba87678defde5a23fa385622b727758c92dc78275ed2e855d5a0a883251676"
+        },
+        {
+          "allowed_native_python_imports": [],
+          "family": "zig",
+          "file": "candidates/zig/mini_regex.zig",
+          "issues": [],
+          "passed": true,
+          "sha256": "b0e26337eb007793639b678d967ef55eb24b060a64f736185eb2745afd0b6d2f"
+        }
+      ],
+      "owned_pipeline": {
+        "compiler": "zig::Compiler",
+        "executor": "zig::runBytecode/runCapturedAt",
+        "issues": [],
+        "parser": "zig::Parser",
+        "passed": true
+      },
+      "passed": true,
+      "python_source": {
+        "file": "candidates/zig_candidate.py",
+        "imports": [
+          "candidates._zig_bridge",
+          "ctypes",
+          "enum",
+          "os",
+          "types",
+          "unicodedata",
+          "warnings"
+        ],
+        "issues": [],
+        "native_loads": [
+          {
+            "expected_basename": "_zig_probe.so",
+            "line": 85,
+            "loader": "ctypes.CDLL"
+          }
+        ],
+        "passed": true,
+        "sha256": "d3a7e35711f402db85f42e96470caf8a9393f1171e5bc7f26a55e0a138638ac5"
+      }
+    }
+  },
+  "input_issues": [],
+  "limitations": [
+    "Static and guarded-runtime auditing is evidence about the enumerated source graph and exercised entry points; it is not a mathematical proof of all future execution paths.",
+    "Native provenance covers exactly the five authorized VM, Rust, and Zig ELF files and their actual per-worker mapped-file hashes; it does not attest to later file changes or unexercised future code paths.",
+    "No implicit Cargo build script, unlisted repository source, holdout, benchmark, external package registry, or build environment was inspected.",
+    "The Zig source retains an owned tree-evaluator diagnostic export; the audited public C bridge does not call that export."
+  ],
+  "manifest_provenance": {
+    "issues": [],
+    "passed": true,
+    "python_dependencies": [],
+    "rust_lock_packages": [
+      "rebar-rust-continuation"
+    ],
+    "rust_third_party_dependency_count": 0
+  },
+  "minimum_required_independent_families": 3,
+  "native_elf_provenance": {
+    "audited_binary_count": 5,
+    "expected_binary_count": 5,
+    "families": {
+      "rust": {
+        "files": {
+          "bridge": {
+            "cross_candidate_symbols": [],
+            "elf_class": 64,
+            "file": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+            "forbidden_regex_symbols": [],
+            "needed": [
+              "_rust_engine.so",
+              "libc.so.6"
+            ],
+            "owned_exports": [
+              "PyInit__rust_bridge"
+            ],
+            "owned_undefined": [
+              "rebar_collect_ascii",
+              "rebar_collect_wide",
+              "rebar_compile",
+              "rebar_error_copy",
+              "rebar_error_include",
+              "rebar_error_len",
+              "rebar_error_pos",
+              "rebar_flags",
+              "rebar_free",
+              "rebar_groups",
+              "rebar_match",
+              "rebar_match_ascii",
+              "rebar_match_wide",
+              "rebar_name_copy",
+              "rebar_name_count",
+              "rebar_name_group",
+              "rebar_name_len"
+            ],
+            "python_api_undefined_count": 111,
+            "python_api_undefined_symbols": [
+              "PyArg_ParseTuple",
+              "PyBaseObject_Type",
+              "PyBool_FromLong",
+              "PyBool_Type",
+              "PyBuffer_Release",
+              "PyByteArray_Type",
+              "PyBytes_FromObject",
+              "PyBytes_FromStringAndSize",
+              "PyBytes_Join",
+              "PyBytes_Type",
+              "PyCMethod_New",
+              "PyCallIter_New",
+              "PyCallable_Check",
+              "PyDescr_NewMethod",
+              "PyDict_GetItemWithError",
+              "PyDict_New",
+              "PyDict_Next",
+              "PyDict_SetItem",
+              "PyDict_Type",
+              "PyErr_Clear",
+              "PyErr_ExceptionMatches",
+              "PyErr_Format",
+              "PyErr_GetRaisedException",
+              "PyErr_NoMemory",
+              "PyErr_Occurred",
+              "PyErr_SetRaisedException",
+              "PyErr_SetString",
+              "PyExc_AttributeError",
+              "PyExc_IndexError",
+              "PyExc_KeyError",
+              "PyExc_OverflowError",
+              "PyExc_RuntimeError",
+              "PyExc_TypeError",
+              "PyExc_ValueError",
+              "PyImport_ImportModule",
+              "PyIndex_Check",
+              "PyList_Append",
+              "PyList_New",
+              "PyLong_AsSize_t",
+              "PyLong_AsSsize_t",
+              "PyLong_AsUnsignedLong",
+              "PyLong_AsVoidPtr",
+              "PyLong_FromSize_t",
+              "PyLong_FromSsize_t",
+              "PyLong_FromUnsignedLong",
+              "PyLong_FromVoidPtr",
+              "PyLong_Type",
+              "PyMapping_Items",
+              "PyMapping_Size",
+              "PyMem_Free",
+              "PyMem_Malloc",
+              "PyMemberDescr_Type",
+              "PyModule_AddObjectRef",
+              "PyModule_Create2",
+              "PyNumber_Index",
+              "PyObject_CallFunctionObjArgs",
+              "PyObject_CallMethod",
+              "PyObject_CallObject",
+              "PyObject_CallOneArg",
+              "PyObject_GC_UnTrack",
+              "PyObject_GenericGetAttr",
+              "PyObject_GetAttr",
+              "PyObject_GetAttrString",
+              "PyObject_GetBuffer",
+              "PyObject_GetItem",
+              "PyObject_HasAttrString",
+              "PyObject_Hash",
+              "PyObject_HashNotImplemented",
+              "PyObject_IsTrue",
+              "PyObject_SelfIter",
+              "PyObject_SetAttr",
+              "PyObject_SetAttrString",
+              "PyObject_Vectorcall",
+              "PySequence_Fast",
+              "PyTuple_New",
+              "PyTuple_Pack",
+              "PyTuple_Type",
+              "PyType_FromSpecWithBases",
+              "PyType_GenericAlloc",
+              "PyType_Ready",
+              "PyUnicodeWriter_Create",
+              "PyUnicodeWriter_Discard",
+              "PyUnicodeWriter_Finish",
+              "PyUnicodeWriter_WriteStr",
+              "PyUnicodeWriter_WriteSubstring",
+              "PyUnicode_CompareWithASCIIString",
+              "PyUnicode_Count",
+              "PyUnicode_DecodeUTF8",
+              "PyUnicode_Find",
+              "PyUnicode_FindChar",
+              "PyUnicode_FromFormat",
+              "PyUnicode_FromObject",
+              "PyUnicode_InternFromString",
+              "PyUnicode_Join",
+              "PyUnicode_New",
+              "PyUnicode_Substring",
+              "PyUnicode_Tailmatch",
+              "PyUnicode_Type",
+              "PyVectorcall_Call",
+              "Py_GenericAlias",
+              "Py_GetConstant",
+              "_PyBytes_Resize",
+              "_PyUnicode_IsAlpha",
+              "_PyUnicode_IsDecimalDigit",
+              "_PyUnicode_IsDigit",
+              "_PyUnicode_IsNumeric",
+              "_PyUnicode_IsWhitespace",
+              "_PyUnicode_ToLowercase",
+              "_Py_Dealloc",
+              "_Py_NoneStruct",
+              "_Py_ascii_whitespace"
+            ],
+            "runpaths": [
+              "$ORIGIN"
+            ],
+            "sha256": "bacce4e941dfa83a03eb87131c0ee8fe91feaa31ad02d97119a5c6bdce956e71",
+            "undefined_symbol_count": 138
+          },
+          "engine": {
+            "cross_candidate_symbols": [],
+            "elf_class": 64,
+            "file": "candidates/_rust_engine.so",
+            "forbidden_regex_symbols": [],
+            "needed": [
+              "ld-linux-x86-64.so.2",
+              "libc.so.6",
+              "libgcc_s.so.1"
+            ],
+            "owned_exports": [
+              "rebar_collect_ascii",
+              "rebar_collect_wide",
+              "rebar_compile",
+              "rebar_error_copy",
+              "rebar_error_include",
+              "rebar_error_len",
+              "rebar_error_pos",
+              "rebar_flags",
+              "rebar_free",
+              "rebar_groups",
+              "rebar_match",
+              "rebar_match_ascii",
+              "rebar_match_wide",
+              "rebar_name_copy",
+              "rebar_name_count",
+              "rebar_name_group",
+              "rebar_name_len"
+            ],
+            "owned_undefined": [],
+            "python_api_undefined_count": 1,
+            "python_api_undefined_symbols": [
+              "Py_GetRecursionLimit"
+            ],
+            "runpaths": [],
+            "sha256": "d1a0983b09ec3fe848b91f0df82be6b5d65cda77c37d2870b4dba0bb37527b5e",
+            "undefined_symbol_count": 51
+          }
+        },
+        "issues": [],
+        "passed": true
+      },
+      "vm": {
+        "files": {
+          "native": {
+            "cross_candidate_symbols": [],
+            "elf_class": 64,
+            "file": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+            "forbidden_regex_symbols": [],
+            "needed": [
+              "libc.so.6"
+            ],
+            "owned_exports": [
+              "PyInit__vm_native"
+            ],
+            "owned_undefined": [],
+            "python_api_undefined_count": 114,
+            "python_api_undefined_symbols": [
+              "PyArg_ParseTuple",
+              "PyArg_ParseTupleAndKeywords",
+              "PyArg_UnpackTuple",
+              "PyBaseObject_Type",
+              "PyBool_Type",
+              "PyBuffer_IsContiguous",
+              "PyBuffer_Release",
+              "PyByteArray_Type",
+              "PyBytes_FromObject",
+              "PyBytes_FromStringAndSize",
+              "PyBytes_Join",
+              "PyBytes_Type",
+              "PyCMethod_New",
+              "PyCallIter_New",
+              "PyCallable_Check",
+              "PyCapsule_GetPointer",
+              "PyCapsule_New",
+              "PyDictProxy_New",
+              "PyDict_GetItemString",
+              "PyDict_GetItemWithError",
+              "PyDict_New",
+              "PyDict_Next",
+              "PyDict_SetItem",
+              "PyDict_Size",
+              "PyDict_Type",
+              "PyErr_Clear",
+              "PyErr_ExceptionMatches",
+              "PyErr_Format",
+              "PyErr_NoMemory",
+              "PyErr_Occurred",
+              "PyErr_SetString",
+              "PyExc_AttributeError",
+              "PyExc_IndexError",
+              "PyExc_RecursionError",
+              "PyExc_RuntimeError",
+              "PyExc_TypeError",
+              "PyExc_ValueError",
+              "PyFrame_GetBack",
+              "PyFunction_GetGlobals",
+              "PyFunction_Type",
+              "PyIndex_Check",
+              "PyList_Append",
+              "PyList_New",
+              "PyLong_AsSsize_t",
+              "PyLong_FromSsize_t",
+              "PyLong_FromUnsignedLong",
+              "PyLong_Type",
+              "PyMem_Calloc",
+              "PyMem_Free",
+              "PyMem_Malloc",
+              "PyMem_Realloc",
+              "PyMemoryView_Type",
+              "PyModule_AddObjectRef",
+              "PyModule_Create2",
+              "PyNumber_Index",
+              "PyObject_CallFunctionObjArgs",
+              "PyObject_CallMethod",
+              "PyObject_CallOneArg",
+              "PyObject_CheckBuffer",
+              "PyObject_ClearWeakRefs",
+              "PyObject_GC_Track",
+              "PyObject_GC_UnTrack",
+              "PyObject_GenericGetAttr",
+              "PyObject_GenericSetAttr",
+              "PyObject_GetAttrString",
+              "PyObject_GetBuffer",
+              "PyObject_Hash",
+              "PyObject_Repr",
+              "PyObject_RichCompare",
+              "PyObject_RichCompareBool",
+              "PySequence_Fast",
+              "PyThreadState_Get",
+              "PyThreadState_GetFrame",
+              "PyTuple_New",
+              "PyTuple_Pack",
+              "PyTuple_Type",
+              "PyType_FromSpecWithBases",
+              "PyType_GenericAlloc",
+              "PyType_GenericNew",
+              "PyType_IsSubtype",
+              "PyType_Ready",
+              "PyUnicodeWriter_Create",
+              "PyUnicodeWriter_Discard",
+              "PyUnicodeWriter_Finish",
+              "PyUnicodeWriter_WriteStr",
+              "PyUnicodeWriter_WriteSubstring",
+              "PyUnicode_CompareWithASCIIString",
+              "PyUnicode_Find",
+              "PyUnicode_FindChar",
+              "PyUnicode_FromFormat",
+              "PyUnicode_FromOrdinal",
+              "PyUnicode_Join",
+              "PyUnicode_New",
+              "PyUnicode_Replace",
+              "PyUnicode_Substring",
+              "PyUnicode_Type",
+              "Py_BuildValue",
+              "Py_GenericAlias",
+              "Py_GetRecursionLimit",
+              "_PyByteArray_empty_string",
+              "_PyObject_GC_New",
+              "_PyUnicode_IsAlpha",
+              "_PyUnicode_IsDecimalDigit",
+              "_PyUnicode_IsDigit",
+              "_PyUnicode_IsNumeric",
+              "_PyUnicode_IsWhitespace",
+              "_PyUnicode_ToLowercase",
+              "_PyUnicode_ToUppercase",
+              "_Py_Dealloc",
+              "_Py_FalseStruct",
+              "_Py_NoneStruct",
+              "_Py_NotImplementedStruct",
+              "_Py_TrueStruct",
+              "_Py_ascii_whitespace"
+            ],
+            "runpaths": [],
+            "sha256": "fb609951744c926a2ea0845bb4492fb5e2eaa39b1d1f3ecf9fd81c0692eeaf8e",
+            "undefined_symbol_count": 124
+          }
+        },
+        "issues": [],
+        "passed": true
+      },
+      "zig": {
+        "files": {
+          "bridge": {
+            "cross_candidate_symbols": [],
+            "elf_class": 64,
+            "file": "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so",
+            "forbidden_regex_symbols": [],
+            "needed": [
+              "_zig_probe.so",
+              "libc.so.6"
+            ],
+            "owned_exports": [
+              "PyInit__zig_bridge"
+            ],
+            "owned_undefined": [
+              "rebar_zig_collect_records_wide",
+              "rebar_zig_compile",
+              "rebar_zig_flags",
+              "rebar_zig_free",
+              "rebar_zig_groups",
+              "rebar_zig_match_captures_wide",
+              "rebar_zig_match_inverted_wide",
+              "rebar_zig_match_nonempty_wide",
+              "rebar_zig_match_wide",
+              "rebar_zig_name_copy",
+              "rebar_zig_name_count",
+              "rebar_zig_name_group",
+              "rebar_zig_name_length"
+            ],
+            "python_api_undefined_count": 89,
+            "python_api_undefined_symbols": [
+              "PyBool_Type",
+              "PyBuffer_Release",
+              "PyByteArray_Type",
+              "PyBytes_FromObject",
+              "PyBytes_FromStringAndSize",
+              "PyBytes_Join",
+              "PyBytes_Type",
+              "PyCallIter_New",
+              "PyCallable_Check",
+              "PyDescr_NewMethod",
+              "PyDict_Clear",
+              "PyDict_GetItemWithError",
+              "PyDict_New",
+              "PyDict_Next",
+              "PyDict_SetItem",
+              "PyDict_Size",
+              "PyErr_Clear",
+              "PyErr_ExceptionMatches",
+              "PyErr_Format",
+              "PyErr_NoMemory",
+              "PyErr_Occurred",
+              "PyErr_SetString",
+              "PyExc_AttributeError",
+              "PyExc_IndexError",
+              "PyExc_KeyError",
+              "PyExc_OverflowError",
+              "PyExc_RuntimeError",
+              "PyExc_TypeError",
+              "PyExc_ValueError",
+              "PyList_Append",
+              "PyList_New",
+              "PyLong_AsSize_t",
+              "PyLong_AsSsize_t",
+              "PyLong_AsUnsignedLong",
+              "PyLong_AsVoidPtr",
+              "PyLong_FromSize_t",
+              "PyLong_FromSsize_t",
+              "PyLong_FromUnsignedLong",
+              "PyLong_FromVoidPtr",
+              "PyLong_Type",
+              "PyMapping_Items",
+              "PyMem_Free",
+              "PyMem_Malloc",
+              "PyMem_Realloc",
+              "PyMemoryView_Type",
+              "PyModule_AddObjectRef",
+              "PyModule_Create2",
+              "PyNumber_Index",
+              "PyObject_CallMethod",
+              "PyObject_CallOneArg",
+              "PyObject_GC_UnTrack",
+              "PyObject_GenericSetAttr",
+              "PyObject_GetAttrString",
+              "PyObject_GetBuffer",
+              "PyObject_GetItem",
+              "PyObject_IsTrue",
+              "PyObject_SetAttrString",
+              "PyTuple_New",
+              "PyTuple_Pack",
+              "PyType_FromSpec",
+              "PyType_GenericAlloc",
+              "PyType_IsSubtype",
+              "PyType_Modified",
+              "PyType_Ready",
+              "PyUnicodeWriter_Create",
+              "PyUnicodeWriter_Discard",
+              "PyUnicodeWriter_Finish",
+              "PyUnicodeWriter_WriteStr",
+              "PyUnicodeWriter_WriteSubstring",
+              "PyUnicode_CompareWithASCIIString",
+              "PyUnicode_DecodeASCII",
+              "PyUnicode_DecodeUTF8",
+              "PyUnicode_Find",
+              "PyUnicode_FindChar",
+              "PyUnicode_FromFormat",
+              "PyUnicode_FromStringAndSize",
+              "PyUnicode_InternFromString",
+              "PyUnicode_Join",
+              "PyUnicode_New",
+              "PyUnicode_Substring",
+              "PyUnicode_Tailmatch",
+              "PyUnicode_Type",
+              "Py_BuildValue",
+              "Py_GenericAlias",
+              "Py_GetConstantBorrowed",
+              "_Py_Dealloc",
+              "_Py_FalseStruct",
+              "_Py_NoneStruct",
+              "_Py_TrueStruct"
+            ],
+            "runpaths": [
+              "$ORIGIN"
+            ],
+            "sha256": "7d7ae8bef50e4bce06786dd20248b41b0ac74651ff4fae2d229d8b032b8dee1d",
+            "undefined_symbol_count": 113
+          },
+          "engine": {
+            "cross_candidate_symbols": [],
+            "elf_class": 64,
+            "file": "candidates/_zig_probe.so",
+            "forbidden_regex_symbols": [],
+            "needed": [
+              "libc.so.6"
+            ],
+            "owned_exports": [
+              "rebar_zig_batch",
+              "rebar_zig_collect_captures",
+              "rebar_zig_collect_records",
+              "rebar_zig_collect_records_wide",
+              "rebar_zig_compile",
+              "rebar_zig_flags",
+              "rebar_zig_free",
+              "rebar_zig_groups",
+              "rebar_zig_match",
+              "rebar_zig_match_captures",
+              "rebar_zig_match_captures_wide",
+              "rebar_zig_match_inverted_wide",
+              "rebar_zig_match_nonempty_wide",
+              "rebar_zig_match_tree",
+              "rebar_zig_match_wide",
+              "rebar_zig_name_copy",
+              "rebar_zig_name_count",
+              "rebar_zig_name_group",
+              "rebar_zig_name_length",
+              "rebar_zig_program_memory",
+              "rebar_zig_program_size"
+            ],
+            "owned_undefined": [],
+            "python_api_undefined_count": 7,
+            "python_api_undefined_symbols": [
+              "_PyUnicode_IsAlpha",
+              "_PyUnicode_IsDecimalDigit",
+              "_PyUnicode_IsDigit",
+              "_PyUnicode_IsNumeric",
+              "_PyUnicode_IsWhitespace",
+              "_PyUnicode_ToLowercase",
+              "_PyUnicode_ToUppercase"
+            ],
+            "runpaths": [],
+            "sha256": "d35fb09dce43fcea2bb70f0ca9dd8e95cc05380fe983539dcee810d64aa9393e",
+            "undefined_symbol_count": 15
+          }
+        },
+        "issues": [],
+        "passed": true
+      }
+    },
+    "issues": [],
+    "passed": true
+  },
+  "passed": true,
+  "result": "PASS",
+  "runtime_native_mapping_provenance": {
+    "families": {
+      "ast": {
+        "expected_owned_mapping_count": 0,
+        "observed_owned_mapping_count": 0,
+        "passed": true
+      },
+      "rust": {
+        "expected_owned_mapping_count": 2,
+        "observed_owned_mapping_count": 2,
+        "passed": true
+      },
+      "vm": {
+        "expected_owned_mapping_count": 1,
+        "observed_owned_mapping_count": 1,
+        "passed": true
+      },
+      "zig": {
+        "expected_owned_mapping_count": 2,
+        "observed_owned_mapping_count": 2,
+        "passed": true
+      }
+    },
+    "passed": true,
+    "source": "/proc/self/maps in each isolated candidate worker"
+  },
+  "rust_native_elf_provenance": {
+    "files": {
+      "bridge": {
+        "cross_candidate_symbols": [],
+        "elf_class": 64,
+        "file": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+        "forbidden_regex_symbols": [],
+        "needed": [
+          "_rust_engine.so",
+          "libc.so.6"
+        ],
+        "owned_exports": [
+          "PyInit__rust_bridge"
+        ],
+        "owned_undefined": [
+          "rebar_collect_ascii",
+          "rebar_collect_wide",
+          "rebar_compile",
+          "rebar_error_copy",
+          "rebar_error_include",
+          "rebar_error_len",
+          "rebar_error_pos",
+          "rebar_flags",
+          "rebar_free",
+          "rebar_groups",
+          "rebar_match",
+          "rebar_match_ascii",
+          "rebar_match_wide",
+          "rebar_name_copy",
+          "rebar_name_count",
+          "rebar_name_group",
+          "rebar_name_len"
+        ],
+        "python_api_undefined_count": 111,
+        "python_api_undefined_symbols": [
+          "PyArg_ParseTuple",
+          "PyBaseObject_Type",
+          "PyBool_FromLong",
+          "PyBool_Type",
+          "PyBuffer_Release",
+          "PyByteArray_Type",
+          "PyBytes_FromObject",
+          "PyBytes_FromStringAndSize",
+          "PyBytes_Join",
+          "PyBytes_Type",
+          "PyCMethod_New",
+          "PyCallIter_New",
+          "PyCallable_Check",
+          "PyDescr_NewMethod",
+          "PyDict_GetItemWithError",
+          "PyDict_New",
+          "PyDict_Next",
+          "PyDict_SetItem",
+          "PyDict_Type",
+          "PyErr_Clear",
+          "PyErr_ExceptionMatches",
+          "PyErr_Format",
+          "PyErr_GetRaisedException",
+          "PyErr_NoMemory",
+          "PyErr_Occurred",
+          "PyErr_SetRaisedException",
+          "PyErr_SetString",
+          "PyExc_AttributeError",
+          "PyExc_IndexError",
+          "PyExc_KeyError",
+          "PyExc_OverflowError",
+          "PyExc_RuntimeError",
+          "PyExc_TypeError",
+          "PyExc_ValueError",
+          "PyImport_ImportModule",
+          "PyIndex_Check",
+          "PyList_Append",
+          "PyList_New",
+          "PyLong_AsSize_t",
+          "PyLong_AsSsize_t",
+          "PyLong_AsUnsignedLong",
+          "PyLong_AsVoidPtr",
+          "PyLong_FromSize_t",
+          "PyLong_FromSsize_t",
+          "PyLong_FromUnsignedLong",
+          "PyLong_FromVoidPtr",
+          "PyLong_Type",
+          "PyMapping_Items",
+          "PyMapping_Size",
+          "PyMem_Free",
+          "PyMem_Malloc",
+          "PyMemberDescr_Type",
+          "PyModule_AddObjectRef",
+          "PyModule_Create2",
+          "PyNumber_Index",
+          "PyObject_CallFunctionObjArgs",
+          "PyObject_CallMethod",
+          "PyObject_CallObject",
+          "PyObject_CallOneArg",
+          "PyObject_GC_UnTrack",
+          "PyObject_GenericGetAttr",
+          "PyObject_GetAttr",
+          "PyObject_GetAttrString",
+          "PyObject_GetBuffer",
+          "PyObject_GetItem",
+          "PyObject_HasAttrString",
+          "PyObject_Hash",
+          "PyObject_HashNotImplemented",
+          "PyObject_IsTrue",
+          "PyObject_SelfIter",
+          "PyObject_SetAttr",
+          "PyObject_SetAttrString",
+          "PyObject_Vectorcall",
+          "PySequence_Fast",
+          "PyTuple_New",
+          "PyTuple_Pack",
+          "PyTuple_Type",
+          "PyType_FromSpecWithBases",
+          "PyType_GenericAlloc",
+          "PyType_Ready",
+          "PyUnicodeWriter_Create",
+          "PyUnicodeWriter_Discard",
+          "PyUnicodeWriter_Finish",
+          "PyUnicodeWriter_WriteStr",
+          "PyUnicodeWriter_WriteSubstring",
+          "PyUnicode_CompareWithASCIIString",
+          "PyUnicode_Count",
+          "PyUnicode_DecodeUTF8",
+          "PyUnicode_Find",
+          "PyUnicode_FindChar",
+          "PyUnicode_FromFormat",
+          "PyUnicode_FromObject",
+          "PyUnicode_InternFromString",
+          "PyUnicode_Join",
+          "PyUnicode_New",
+          "PyUnicode_Substring",
+          "PyUnicode_Tailmatch",
+          "PyUnicode_Type",
+          "PyVectorcall_Call",
+          "Py_GenericAlias",
+          "Py_GetConstant",
+          "_PyBytes_Resize",
+          "_PyUnicode_IsAlpha",
+          "_PyUnicode_IsDecimalDigit",
+          "_PyUnicode_IsDigit",
+          "_PyUnicode_IsNumeric",
+          "_PyUnicode_IsWhitespace",
+          "_PyUnicode_ToLowercase",
+          "_Py_Dealloc",
+          "_Py_NoneStruct",
+          "_Py_ascii_whitespace"
+        ],
+        "runpaths": [
+          "$ORIGIN"
+        ],
+        "sha256": "bacce4e941dfa83a03eb87131c0ee8fe91feaa31ad02d97119a5c6bdce956e71",
+        "undefined_symbol_count": 138
+      },
+      "engine": {
+        "cross_candidate_symbols": [],
+        "elf_class": 64,
+        "file": "candidates/_rust_engine.so",
+        "forbidden_regex_symbols": [],
+        "needed": [
+          "ld-linux-x86-64.so.2",
+          "libc.so.6",
+          "libgcc_s.so.1"
+        ],
+        "owned_exports": [
+          "rebar_collect_ascii",
+          "rebar_collect_wide",
+          "rebar_compile",
+          "rebar_error_copy",
+          "rebar_error_include",
+          "rebar_error_len",
+          "rebar_error_pos",
+          "rebar_flags",
+          "rebar_free",
+          "rebar_groups",
+          "rebar_match",
+          "rebar_match_ascii",
+          "rebar_match_wide",
+          "rebar_name_copy",
+          "rebar_name_count",
+          "rebar_name_group",
+          "rebar_name_len"
+        ],
+        "owned_undefined": [],
+        "python_api_undefined_count": 1,
+        "python_api_undefined_symbols": [
+          "Py_GetRecursionLimit"
+        ],
+        "runpaths": [],
+        "sha256": "d1a0983b09ec3fe848b91f0df82be6b5d65cda77c37d2870b4dba0bb37527b5e",
+        "undefined_symbol_count": 51
+      }
+    },
+    "issues": [],
+    "passed": true
+  },
+  "schema_version": 1,
+  "scope": {
+    "benchmark_or_timing_executed": false,
+    "candidate_imports": "isolated subprocess only, with prohibited import and native-loader probes",
+    "explicit_source_paths_only": true,
+    "holdout_or_case_fixture_access": false,
+    "malicious_self_tests": "all 76 exact named controls validated in a fresh pinned isolated subprocess",
+    "mapped_binaries_hashed_against_static_elf": true,
+    "native_elf_paths": [
+      "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+      "candidates/_rust_engine.so",
+      "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+      "candidates/_zig_probe.so",
+      "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so"
+    ],
+    "repository_enumeration": false,
+    "resource_limits": {
+      "hash_chunk_bytes": 1048576,
+      "maximum_elf_bytes": 67108864,
+      "maximum_elf_dynamic_entries": 8192,
+      "maximum_elf_dynamic_symbols": 131072,
+      "maximum_elf_sections": 4096,
+      "maximum_elf_string_bytes": 4096,
+      "maximum_elf_string_table_bytes": 16777216,
+      "maximum_native_source_bytes": 16777216,
+      "maximum_proc_maps_bytes": 4194304,
+      "maximum_proc_maps_line_bytes": 16384,
+      "maximum_proc_maps_rows": 16384,
+      "maximum_python_ast_nodes": 200000,
+      "maximum_python_source_bytes": 8388608,
+      "maximum_worker_response_bytes": 262144
+    },
+    "runtime_native_mapping_source": "/proc/self/maps inside isolated candidate workers only",
+    "synthetic_malicious_fixtures": "in-memory only"
+  },
+  "self_test": {
+    "check_count": 76,
+    "checks": [
+      {
+        "name": "direct_stdlib_re",
+        "passed": true
+      },
+      {
+        "name": "direct_cpython_sre",
+        "passed": true
+      },
+      {
+        "name": "third_party_regex",
+        "passed": true
+      },
+      {
+        "name": "aliased_regex",
+        "passed": true
+      },
+      {
+        "name": "cross_candidate",
+        "passed": true
+      },
+      {
+        "name": "cross_candidate_dotted",
+        "passed": true
+      },
+      {
+        "name": "dynamic_import",
+        "passed": true
+      },
+      {
+        "name": "chr_obfuscated_import",
+        "passed": true
+      },
+      {
+        "name": "join_obfuscated_import",
+        "passed": true
+      },
+      {
+        "name": "importlib_indirection",
+        "passed": true
+      },
+      {
+        "name": "builtins_subscript",
+        "passed": true
+      },
+      {
+        "name": "getattr_indirection",
+        "passed": true
+      },
+      {
+        "name": "foreign_ctypes",
+        "passed": true
+      },
+      {
+        "name": "unowned_zig_library",
+        "passed": true
+      },
+      {
+        "name": "zig_owned_path_reassignment",
+        "passed": true
+      },
+      {
+        "name": "environment_dispatch",
+        "passed": true
+      },
+      {
+        "name": "environment_mapping",
+        "passed": true
+      },
+      {
+        "name": "external_process",
+        "passed": true
+      },
+      {
+        "name": "dynamic_eval",
+        "passed": true
+      },
+      {
+        "name": "dynamic_exec",
+        "passed": true
+      },
+      {
+        "name": "benchmark_clock",
+        "passed": true
+      },
+      {
+        "name": "holdout_path",
+        "passed": true
+      },
+      {
+        "name": "benchmark_file",
+        "passed": true
+      },
+      {
+        "name": "unowned_vm_configuration",
+        "passed": true
+      },
+      {
+        "name": "native_posix_regex",
+        "passed": true
+      },
+      {
+        "name": "native_pcre",
+        "passed": true
+      },
+      {
+        "name": "native_cpython_import",
+        "passed": true
+      },
+      {
+        "name": "native_copyreg_unowned_family",
+        "passed": true
+      },
+      {
+        "name": "native_copyreg_near_miss",
+        "passed": true
+      },
+      {
+        "name": "native_dynamic_loader",
+        "passed": true
+      },
+      {
+        "name": "native_hidden_header",
+        "passed": true
+      },
+      {
+        "name": "native_hidden_extern",
+        "passed": true
+      },
+      {
+        "name": "rust_external_crate",
+        "passed": true
+      },
+      {
+        "name": "rust_environment",
+        "passed": true
+      },
+      {
+        "name": "rust_hidden_extern",
+        "passed": true
+      },
+      {
+        "name": "zig_external_package",
+        "passed": true
+      },
+      {
+        "name": "zig_hidden_extern",
+        "passed": true
+      },
+      {
+        "name": "zig_c_import",
+        "passed": true
+      },
+      {
+        "name": "native_benchmark_clock",
+        "passed": true
+      },
+      {
+        "name": "ignore_native_comments_and_display_literals",
+        "passed": true
+      },
+      {
+        "name": "allow_owned_rust_generic_object_copy_protocol_only",
+        "passed": true
+      },
+      {
+        "name": "preserve_rust_lifetimes_and_owned_pipeline",
+        "passed": true
+      },
+      {
+        "name": "parse_in_memory_owned_elf",
+        "passed": true
+      },
+      {
+        "name": "reject_excessive_elf_section_count",
+        "passed": true
+      },
+      {
+        "name": "reject_excessive_elf_symbol_string",
+        "passed": true
+      },
+      {
+        "name": "reject_in_memory_external_elf_dependency",
+        "passed": true
+      },
+      {
+        "name": "reject_bridge_without_owned_elf_link",
+        "passed": true
+      },
+      {
+        "name": "reject_disguised_third_party_elf_dependency",
+        "passed": true
+      },
+      {
+        "name": "accept_five_owned_synthetic_elf_binaries_and_python_api_symbols",
+        "passed": true
+      },
+      {
+        "name": "reject_vm_disguised_external_engine",
+        "passed": true
+      },
+      {
+        "name": "reject_vm_external_regex_symbol",
+        "passed": true
+      },
+      {
+        "name": "reject_vm_cross_candidate_engine_symbol",
+        "passed": true
+      },
+      {
+        "name": "reject_vm_untrusted_runpath",
+        "passed": true
+      },
+      {
+        "name": "reject_vm_wrong_module_initializer",
+        "passed": true
+      },
+      {
+        "name": "reject_zig_engine_disguised_external_dependency",
+        "passed": true
+      },
+      {
+        "name": "reject_zig_bridge_disguised_external_dependency",
+        "passed": true
+      },
+      {
+        "name": "reject_zig_bridge_wrong_linked_rust_engine",
+        "passed": true
+      },
+      {
+        "name": "reject_zig_bridge_wrong_engine_cross_candidate",
+        "passed": true
+      },
+      {
+        "name": "reject_zig_bridge_compiler_bypass",
+        "passed": true
+      },
+      {
+        "name": "reject_zig_bridge_executor_bypass",
+        "passed": true
+      },
+      {
+        "name": "reject_zig_bridge_unresolved_owned_symbols",
+        "passed": true
+      },
+      {
+        "name": "reject_zig_engine_untrusted_runpath",
+        "passed": true
+      },
+      {
+        "name": "reject_zig_bridge_untrusted_runpath",
+        "passed": true
+      },
+      {
+        "name": "reject_zig_rust_cross_candidate_symbol",
+        "passed": true
+      },
+      {
+        "name": "reject_rust_zig_cross_candidate_symbol",
+        "passed": true
+      },
+      {
+        "name": "reject_rust_bridge_untrusted_runpath",
+        "passed": true
+      },
+      {
+        "name": "accept_exact_ast_owned_memory_mappings",
+        "passed": true
+      },
+      {
+        "name": "accept_exact_vm_owned_memory_mappings",
+        "passed": true
+      },
+      {
+        "name": "accept_exact_rust_owned_memory_mappings",
+        "passed": true
+      },
+      {
+        "name": "accept_exact_zig_owned_memory_mappings",
+        "passed": true
+      },
+      {
+        "name": "reject_cross_candidate_actual_memory_mapping",
+        "passed": true
+      },
+      {
+        "name": "reject_external_regex_actual_memory_mapping",
+        "passed": true
+      },
+      {
+        "name": "reject_unapproved_candidate_actual_memory_mapping",
+        "passed": true
+      },
+      {
+        "name": "reject_deleted_owned_native_memory_mapping",
+        "passed": true
+      },
+      {
+        "name": "reject_invalid_elf",
+        "passed": true
+      },
+      {
+        "name": "reject_renamed_and_transitive_cargo_dependency",
+        "passed": true
+      }
+    ],
+    "execution": {
+      "exit_code": 0,
+      "expected_check_count": 76,
+      "interpreter": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+      "isolated_subprocess": true,
+      "maximum_response_bytes": 262144,
+      "response_bytes": 4529,
+      "validated": true,
+      "validated_check_count": 76
+    },
+    "failed": [],
+    "fixture_storage": "in-memory only",
+    "passed": true
+  },
+  "verified_core_family_count": 3,
+  "verified_distinct_pipeline_count": 4,
+  "vm_native_elf_provenance": {
+    "files": {
+      "native": {
+        "cross_candidate_symbols": [],
+        "elf_class": 64,
+        "file": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+        "forbidden_regex_symbols": [],
+        "needed": [
+          "libc.so.6"
+        ],
+        "owned_exports": [
+          "PyInit__vm_native"
+        ],
+        "owned_undefined": [],
+        "python_api_undefined_count": 114,
+        "python_api_undefined_symbols": [
+          "PyArg_ParseTuple",
+          "PyArg_ParseTupleAndKeywords",
+          "PyArg_UnpackTuple",
+          "PyBaseObject_Type",
+          "PyBool_Type",
+          "PyBuffer_IsContiguous",
+          "PyBuffer_Release",
+          "PyByteArray_Type",
+          "PyBytes_FromObject",
+          "PyBytes_FromStringAndSize",
+          "PyBytes_Join",
+          "PyBytes_Type",
+          "PyCMethod_New",
+          "PyCallIter_New",
+          "PyCallable_Check",
+          "PyCapsule_GetPointer",
+          "PyCapsule_New",
+          "PyDictProxy_New",
+          "PyDict_GetItemString",
+          "PyDict_GetItemWithError",
+          "PyDict_New",
+          "PyDict_Next",
+          "PyDict_SetItem",
+          "PyDict_Size",
+          "PyDict_Type",
+          "PyErr_Clear",
+          "PyErr_ExceptionMatches",
+          "PyErr_Format",
+          "PyErr_NoMemory",
+          "PyErr_Occurred",
+          "PyErr_SetString",
+          "PyExc_AttributeError",
+          "PyExc_IndexError",
+          "PyExc_RecursionError",
+          "PyExc_RuntimeError",
+          "PyExc_TypeError",
+          "PyExc_ValueError",
+          "PyFrame_GetBack",
+          "PyFunction_GetGlobals",
+          "PyFunction_Type",
+          "PyIndex_Check",
+          "PyList_Append",
+          "PyList_New",
+          "PyLong_AsSsize_t",
+          "PyLong_FromSsize_t",
+          "PyLong_FromUnsignedLong",
+          "PyLong_Type",
+          "PyMem_Calloc",
+          "PyMem_Free",
+          "PyMem_Malloc",
+          "PyMem_Realloc",
+          "PyMemoryView_Type",
+          "PyModule_AddObjectRef",
+          "PyModule_Create2",
+          "PyNumber_Index",
+          "PyObject_CallFunctionObjArgs",
+          "PyObject_CallMethod",
+          "PyObject_CallOneArg",
+          "PyObject_CheckBuffer",
+          "PyObject_ClearWeakRefs",
+          "PyObject_GC_Track",
+          "PyObject_GC_UnTrack",
+          "PyObject_GenericGetAttr",
+          "PyObject_GenericSetAttr",
+          "PyObject_GetAttrString",
+          "PyObject_GetBuffer",
+          "PyObject_Hash",
+          "PyObject_Repr",
+          "PyObject_RichCompare",
+          "PyObject_RichCompareBool",
+          "PySequence_Fast",
+          "PyThreadState_Get",
+          "PyThreadState_GetFrame",
+          "PyTuple_New",
+          "PyTuple_Pack",
+          "PyTuple_Type",
+          "PyType_FromSpecWithBases",
+          "PyType_GenericAlloc",
+          "PyType_GenericNew",
+          "PyType_IsSubtype",
+          "PyType_Ready",
+          "PyUnicodeWriter_Create",
+          "PyUnicodeWriter_Discard",
+          "PyUnicodeWriter_Finish",
+          "PyUnicodeWriter_WriteStr",
+          "PyUnicodeWriter_WriteSubstring",
+          "PyUnicode_CompareWithASCIIString",
+          "PyUnicode_Find",
+          "PyUnicode_FindChar",
+          "PyUnicode_FromFormat",
+          "PyUnicode_FromOrdinal",
+          "PyUnicode_Join",
+          "PyUnicode_New",
+          "PyUnicode_Replace",
+          "PyUnicode_Substring",
+          "PyUnicode_Type",
+          "Py_BuildValue",
+          "Py_GenericAlias",
+          "Py_GetRecursionLimit",
+          "_PyByteArray_empty_string",
+          "_PyObject_GC_New",
+          "_PyUnicode_IsAlpha",
+          "_PyUnicode_IsDecimalDigit",
+          "_PyUnicode_IsDigit",
+          "_PyUnicode_IsNumeric",
+          "_PyUnicode_IsWhitespace",
+          "_PyUnicode_ToLowercase",
+          "_PyUnicode_ToUppercase",
+          "_Py_Dealloc",
+          "_Py_FalseStruct",
+          "_Py_NoneStruct",
+          "_Py_NotImplementedStruct",
+          "_Py_TrueStruct",
+          "_Py_ascii_whitespace"
+        ],
+        "runpaths": [],
+        "sha256": "fb609951744c926a2ea0845bb4492fb5e2eaa39b1d1f3ecf9fd81c0692eeaf8e",
+        "undefined_symbol_count": 124
+      }
+    },
+    "issues": [],
+    "passed": true
+  },
+  "zig_native_elf_provenance": {
+    "files": {
+      "bridge": {
+        "cross_candidate_symbols": [],
+        "elf_class": 64,
+        "file": "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so",
+        "forbidden_regex_symbols": [],
+        "needed": [
+          "_zig_probe.so",
+          "libc.so.6"
+        ],
+        "owned_exports": [
+          "PyInit__zig_bridge"
+        ],
+        "owned_undefined": [
+          "rebar_zig_collect_records_wide",
+          "rebar_zig_compile",
+          "rebar_zig_flags",
+          "rebar_zig_free",
+          "rebar_zig_groups",
+          "rebar_zig_match_captures_wide",
+          "rebar_zig_match_inverted_wide",
+          "rebar_zig_match_nonempty_wide",
+          "rebar_zig_match_wide",
+          "rebar_zig_name_copy",
+          "rebar_zig_name_count",
+          "rebar_zig_name_group",
+          "rebar_zig_name_length"
+        ],
+        "python_api_undefined_count": 89,
+        "python_api_undefined_symbols": [
+          "PyBool_Type",
+          "PyBuffer_Release",
+          "PyByteArray_Type",
+          "PyBytes_FromObject",
+          "PyBytes_FromStringAndSize",
+          "PyBytes_Join",
+          "PyBytes_Type",
+          "PyCallIter_New",
+          "PyCallable_Check",
+          "PyDescr_NewMethod",
+          "PyDict_Clear",
+          "PyDict_GetItemWithError",
+          "PyDict_New",
+          "PyDict_Next",
+          "PyDict_SetItem",
+          "PyDict_Size",
+          "PyErr_Clear",
+          "PyErr_ExceptionMatches",
+          "PyErr_Format",
+          "PyErr_NoMemory",
+          "PyErr_Occurred",
+          "PyErr_SetString",
+          "PyExc_AttributeError",
+          "PyExc_IndexError",
+          "PyExc_KeyError",
+          "PyExc_OverflowError",
+          "PyExc_RuntimeError",
+          "PyExc_TypeError",
+          "PyExc_ValueError",
+          "PyList_Append",
+          "PyList_New",
+          "PyLong_AsSize_t",
+          "PyLong_AsSsize_t",
+          "PyLong_AsUnsignedLong",
+          "PyLong_AsVoidPtr",
+          "PyLong_FromSize_t",
+          "PyLong_FromSsize_t",
+          "PyLong_FromUnsignedLong",
+          "PyLong_FromVoidPtr",
+          "PyLong_Type",
+          "PyMapping_Items",
+          "PyMem_Free",
+          "PyMem_Malloc",
+          "PyMem_Realloc",
+          "PyMemoryView_Type",
+          "PyModule_AddObjectRef",
+          "PyModule_Create2",
+          "PyNumber_Index",
+          "PyObject_CallMethod",
+          "PyObject_CallOneArg",
+          "PyObject_GC_UnTrack",
+          "PyObject_GenericSetAttr",
+          "PyObject_GetAttrString",
+          "PyObject_GetBuffer",
+          "PyObject_GetItem",
+          "PyObject_IsTrue",
+          "PyObject_SetAttrString",
+          "PyTuple_New",
+          "PyTuple_Pack",
+          "PyType_FromSpec",
+          "PyType_GenericAlloc",
+          "PyType_IsSubtype",
+          "PyType_Modified",
+          "PyType_Ready",
+          "PyUnicodeWriter_Create",
+          "PyUnicodeWriter_Discard",
+          "PyUnicodeWriter_Finish",
+          "PyUnicodeWriter_WriteStr",
+          "PyUnicodeWriter_WriteSubstring",
+          "PyUnicode_CompareWithASCIIString",
+          "PyUnicode_DecodeASCII",
+          "PyUnicode_DecodeUTF8",
+          "PyUnicode_Find",
+          "PyUnicode_FindChar",
+          "PyUnicode_FromFormat",
+          "PyUnicode_FromStringAndSize",
+          "PyUnicode_InternFromString",
+          "PyUnicode_Join",
+          "PyUnicode_New",
+          "PyUnicode_Substring",
+          "PyUnicode_Tailmatch",
+          "PyUnicode_Type",
+          "Py_BuildValue",
+          "Py_GenericAlias",
+          "Py_GetConstantBorrowed",
+          "_Py_Dealloc",
+          "_Py_FalseStruct",
+          "_Py_NoneStruct",
+          "_Py_TrueStruct"
+        ],
+        "runpaths": [
+          "$ORIGIN"
+        ],
+        "sha256": "7d7ae8bef50e4bce06786dd20248b41b0ac74651ff4fae2d229d8b032b8dee1d",
+        "undefined_symbol_count": 113
+      },
+      "engine": {
+        "cross_candidate_symbols": [],
+        "elf_class": 64,
+        "file": "candidates/_zig_probe.so",
+        "forbidden_regex_symbols": [],
+        "needed": [
+          "libc.so.6"
+        ],
+        "owned_exports": [
+          "rebar_zig_batch",
+          "rebar_zig_collect_captures",
+          "rebar_zig_collect_records",
+          "rebar_zig_collect_records_wide",
+          "rebar_zig_compile",
+          "rebar_zig_flags",
+          "rebar_zig_free",
+          "rebar_zig_groups",
+          "rebar_zig_match",
+          "rebar_zig_match_captures",
+          "rebar_zig_match_captures_wide",
+          "rebar_zig_match_inverted_wide",
+          "rebar_zig_match_nonempty_wide",
+          "rebar_zig_match_tree",
+          "rebar_zig_match_wide",
+          "rebar_zig_name_copy",
+          "rebar_zig_name_count",
+          "rebar_zig_name_group",
+          "rebar_zig_name_length",
+          "rebar_zig_program_memory",
+          "rebar_zig_program_size"
+        ],
+        "owned_undefined": [],
+        "python_api_undefined_count": 7,
+        "python_api_undefined_symbols": [
+          "_PyUnicode_IsAlpha",
+          "_PyUnicode_IsDecimalDigit",
+          "_PyUnicode_IsDigit",
+          "_PyUnicode_IsNumeric",
+          "_PyUnicode_IsWhitespace",
+          "_PyUnicode_ToLowercase",
+          "_PyUnicode_ToUppercase"
+        ],
+        "runpaths": [],
+        "sha256": "d35fb09dce43fcea2bb70f0ca9dd8e95cc05380fe983539dcee810d64aa9393e",
+        "undefined_symbol_count": 15
+      }
+    },
+    "issues": [],
+    "passed": true
+  }
+}
