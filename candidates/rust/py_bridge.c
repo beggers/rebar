@@ -2977,6 +2977,30 @@ static PyObject *rust_pattern_dispatch(
             RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_GROUPINDEX);
             RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_PATTERN);
             RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_LITERAL);
+            if (kwnames == NULL && nargs >= 1 && nargs <= 3) {
+                void *handle = PyLong_AsVoidPtr(prefix[1]);
+                if (PyErr_Occurred()) goto cleanup;
+
+                PyObject *pos = nargs >= 2 ? args[1] : NULL;
+                PyObject *endpos = nargs >= 3 ? args[2] : NULL;
+                uint8_t mode = operation == RUST_PATTERN_SEARCH
+                    ? 0
+                    : operation == RUST_PATTERN_MATCH
+                        ? 1
+                        : 2;
+                result = rust_pattern_direct(
+                    pattern,
+                    handle,
+                    prefix[2],
+                    prefix[3],
+                    prefix[4],
+                    args[0],
+                    pos,
+                    endpos,
+                    mode
+                );
+                goto cleanup;
+            }
             function = operation == RUST_PATTERN_SEARCH
                 ? bridge_bound_search
                 : operation == RUST_PATTERN_MATCH
