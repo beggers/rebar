@@ -31,6 +31,8 @@ The [independent 20,480-pattern grammar audit](candidates/evidence/RUST-V7-GRAMM
 
 The [14,783-check object and API audit](candidates/evidence/RUST-V7-OBJECT-ORACLE.md) separately verifies Python's match objects, exact byte identity, search windows, buffer lifetimes, signatures, hashing, warnings, and errors.
 
+The [independent tracing and callback audit](candidates/evidence/RUST-V7-OBSERVABILITY-ORACLE.md) adds **479** Python-visible checks, **34** malformed-native-call controls, and **13** tests preventing fallback to Python's regex engine.
+
 Rust improvements are compared using a [sealed practice-only test](candidates/evidence/RUST-V7-CALIBRATION-ISOLATION.md). It keeps all **10,312** unseen final cases inaccessible while testing **624** representative practice cases; improved Rust speed remains **NOT MEASURED**.
 
 ![Overall rankings on the practice cases, independently unseen cases, and all cases](performance/v7/evidence/initial-rankings.svg)
@@ -95,6 +97,8 @@ gzip -dc candidates/evidence/rust-v7-corrected-v4/rust-v7-object-rust.json.gz \
 PYTHONPATH=. "$PY" tools/rust_campaign_gate.py --sealed-practice-self-test
 PYTHONPATH=. "$PY" tools/rust_campaign_gate.py --sealed-practice-only \
   --output /tmp/rebar-rust-sealed-correctness.json
+PYTHONPATH=. "$PY" tools/rust_v7_observability_oracle.py --self-test
+PYTHONPATH=. "$PY" tools/rust_v7_observability_oracle.py verify
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_pilot.py self-test
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_pilot.py plan --verify
 PYTHONPATH=. "$PY" tools/rust_v7_calibration_priorities.py --self-test
