@@ -4,20 +4,20 @@
 
 ## Current results
 
-On **6,216 separate, unseen tasks**, Zig / `rebar` is **1.733× as fast overall** (95% range **1.732–1.735×**) and clearly faster on **5,691/6,216 tasks (91.6%)**. There are **two** tasks more than 20% slower: very short version strings that return four captures, where call and result-building cost outweigh matching. **1× means the same speed as Python `re`; higher is faster.**
+On **6,216 separate, unseen tasks**, Zig / `rebar` is **1.733× as fast overall** (95% range **1.732–1.735×**) and clearly faster on **5,691/6,216 tasks (91.6%)**. There are **seven** tasks more than 20% slower: six very short version-string searches and one short character-exclusion search. **1× means the same speed as Python `re`; higher is faster.**
 
-![Overall speed compared with Python re](candidates/evidence/zig-v6-final-overall.svg)
+![Overall speed compared with Python re](candidates/evidence/zig-v6-threshold-corrected-overall.svg)
 
 | Engine | Overall speed | Clearly faster | Large slowdowns |
 | --- | ---: | ---: | ---: |
-| Zig / `rebar` | **1.733×** | **5,691/6,216** | **2/6,216** |
-| Native C | 1.283× | 4,577/6,216 | 653/6,216 |
+| Zig / `rebar` | **1.733×** | **5,691/6,216** | **7/6,216** |
+| Native C | 1.283× | 4,577/6,216 | 742/6,216 |
 | Rust | 0.134× | 229/6,216 | 5,892/6,216 |
-| Python | 0.021× | 195/6,216 | 5,918/6,216 |
+| Python | 0.021× | 195/6,216 | 5,919/6,216 |
 
-![Zig speed across the broader holdout](candidates/evidence/zig-v6-final-zig-speed.svg)
+![Zig speed across every unseen workload](candidates/evidence/zig-v6-threshold-corrected-zig-speed.svg)
 
-The holdout covers everyday text and bytes, common calls, compilation, Unicode, captures, replacements, scanners, input slices, structured data, hits, misses, and short and long inputs. The initial five-engine comparison and the final paired Zig rerun retain **1,131,312** timing rows, memory observations, confidence ranges, individual results, and every slowdown. The [current Zig report](candidates/evidence/ZIG-V6-OPTIMIZED.md) explains the result and links the raw evidence.
+The test covers everyday text and bytes, common calls, compilation, Unicode, captures, replacements, scanners, input slices, structured data, hits, misses, and short and long inputs. The initial five-engine comparison and final Zig rerun retain **1,131,312** timing rows, memory observations, confidence ranges, individual results, and every slowdown. The [slowdown audit](performance/v6/evidence/REGRESSION-THRESHOLD-AUDIT.md) explains all seven Zig losses and corrects an earlier reporting rule that missed tasks taking 20–25% longer; none of the original measurements have been changed or discarded.
 
 The [Rust starting-point audit](candidates/evidence/RUST-V6-BASELINE.md) records the separate from-scratch Rust engine's complete frozen baseline, newly exposed Unicode compatibility gaps, and the ongoing work to improve its matching, memory use, and Python boundary.
 
@@ -34,22 +34,22 @@ The [Rust starting-point audit](candidates/evidence/RUST-V6-BASELINE.md) records
 | Frozen correctness | **PASS** — stdlib and all four engines pass all 44,084 cases |
 | Official CPython tests | **PASS** — 144/144 runnable methods; zero failures, crashes, or timeouts |
 | Focused Zig/API/safety | **PASS** — Unicode, large patterns, groups, repeats, flags, errors, spans, captures, buffers, and public calls |
-| Performance holdout | **PASS** — 1.733× overall, 91.6% clearly faster; both large slowdowns are listed and explained |
+| Performance holdout | **PASS** — 1.733× overall, 91.6% clearly faster; all seven large slowdowns are listed and explained |
 | Public import | **AVAILABLE** — `import rebar as re` selects the independent Zig engine |
 
 ## Detailed current graphs
 
 The following views keep the **48 new kinds of workload** separate so it is easy to see where each engine helps or hurts. Temporary Python memory for Zig is at or below Python `re` on **5,722/6,216** holdout tasks, with a **0.54×** median ratio. The raw data also retains process-memory observations.
 
-![Speed by workload and engine](candidates/evidence/zig-v6-final-family-speed.svg)
+![Speed by workload and engine](candidates/evidence/zig-v6-threshold-corrected-family-speed.svg)
 
-![Temporary Python memory by workload and engine](candidates/evidence/zig-v6-final-memory.svg)
+![Temporary Python memory by workload and engine](candidates/evidence/zig-v6-threshold-corrected-memory.svg)
 
-![Wins and large slowdowns by workload and engine](candidates/evidence/zig-v6-final-win-loss.svg)
+![Wins and large slowdowns by workload and engine](candidates/evidence/zig-v6-threshold-corrected-win-loss.svg)
 
-![Overall rankings on practice, holdout, and all tasks](candidates/evidence/zig-v6-final-rankings.svg)
+![Overall rankings on practice, unseen, and all tasks](candidates/evidence/zig-v6-threshold-corrected-rankings.svg)
 
-The [complete workload and slowdown report](candidates/evidence/zig-v6-final-report.md) keeps every family and engine visible.
+The [complete slowdown audit](performance/v6/evidence/REGRESSION-THRESHOLD-AUDIT.md) keeps every family, engine, original measurement, and corrected result visible.
 
 ## Reproduce
 
