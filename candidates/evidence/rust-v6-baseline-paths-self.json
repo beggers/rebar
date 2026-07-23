@@ -1,0 +1,16 @@
+{
+  "case_index": null,
+  "casefix_components": 24,
+  "casefix_directed_edges": 56,
+  "casefix_keys": 50,
+  "correctness_checks": 44659,
+  "failed": 0,
+  "failures": [],
+  "manual_cases": 895,
+  "manual_index": null,
+  "module": "re",
+  "multi_upper_codepoints": 102,
+  "schema": "rebar-rust-v6-paths-probe-v1",
+  "seed": 2026072307,
+  "seeded_cases": 16
+}

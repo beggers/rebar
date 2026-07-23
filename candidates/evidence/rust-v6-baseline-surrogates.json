@@ -1,0 +1,3203 @@
+{
+  "correctness_checks": 380,
+  "failed": 100,
+  "failures": [
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "search",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "match",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "fullmatch",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\ud800"
+        ]
+      },
+      "flags": 0,
+      "operation": "findall",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  1
+                ]
+              },
+              {
+                "tuple": []
+              },
+              null
+            ]
+          }
+        ]
+      },
+      "flags": 0,
+      "operation": "finditer",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "search",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "match",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "fullmatch",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\ud800"
+        ]
+      },
+      "flags": 2,
+      "operation": "findall",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  1
+                ]
+              },
+              {
+                "tuple": []
+              },
+              null
+            ]
+          }
+        ]
+      },
+      "flags": 2,
+      "operation": "finditer",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "search",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "match",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "fullmatch",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\ud800"
+        ]
+      },
+      "flags": 256,
+      "operation": "findall",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  1
+                ]
+              },
+              {
+                "tuple": []
+              },
+              null
+            ]
+          }
+        ]
+      },
+      "flags": 256,
+      "operation": "finditer",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "search",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "match",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "fullmatch",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\ud800"
+        ]
+      },
+      "flags": 258,
+      "operation": "findall",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\ud800",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  1
+                ]
+              },
+              {
+                "tuple": []
+              },
+              null
+            ]
+          }
+        ]
+      },
+      "flags": 258,
+      "operation": "finditer",
+      "pattern": "\ud800",
+      "subject": "\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "search",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "match",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "fullmatch",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\udfff"
+        ]
+      },
+      "flags": 0,
+      "operation": "findall",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  1
+                ]
+              },
+              {
+                "tuple": []
+              },
+              null
+            ]
+          }
+        ]
+      },
+      "flags": 0,
+      "operation": "finditer",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "search",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "match",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "fullmatch",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\udfff"
+        ]
+      },
+      "flags": 2,
+      "operation": "findall",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  1
+                ]
+              },
+              {
+                "tuple": []
+              },
+              null
+            ]
+          }
+        ]
+      },
+      "flags": 2,
+      "operation": "finditer",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "search",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "match",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "fullmatch",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\udfff"
+        ]
+      },
+      "flags": 256,
+      "operation": "findall",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  1
+                ]
+              },
+              {
+                "tuple": []
+              },
+              null
+            ]
+          }
+        ]
+      },
+      "flags": 256,
+      "operation": "finditer",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "search",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "match",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                1
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "fullmatch",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\udfff"
+        ]
+      },
+      "flags": 258,
+      "operation": "findall",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "\udfff",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  1
+                ]
+              },
+              {
+                "tuple": []
+              },
+              null
+            ]
+          }
+        ]
+      },
+      "flags": 258,
+      "operation": "finditer",
+      "pattern": "\udfff",
+      "subject": "\udfff"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "search",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "match",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "fullmatch",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\ud800"
+        ]
+      },
+      "flags": 0,
+      "operation": "findall",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  2
+                ]
+              },
+              {
+                "tuple": [
+                  "\ud800"
+                ]
+              },
+              1
+            ]
+          }
+        ]
+      },
+      "flags": 0,
+      "operation": "finditer",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "search",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "match",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "fullmatch",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\ud800"
+        ]
+      },
+      "flags": 2,
+      "operation": "findall",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  2
+                ]
+              },
+              {
+                "tuple": [
+                  "\ud800"
+                ]
+              },
+              1
+            ]
+          }
+        ]
+      },
+      "flags": 2,
+      "operation": "finditer",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "search",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "match",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "fullmatch",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\ud800"
+        ]
+      },
+      "flags": 256,
+      "operation": "findall",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  2
+                ]
+              },
+              {
+                "tuple": [
+                  "\ud800"
+                ]
+              },
+              1
+            ]
+          }
+        ]
+      },
+      "flags": 256,
+      "operation": "finditer",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "search",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "match",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "fullmatch",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\ud800"
+        ]
+      },
+      "flags": 258,
+      "operation": "findall",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(?P<x>\ud800)(?P=x)",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  2
+                ]
+              },
+              {
+                "tuple": [
+                  "\ud800"
+                ]
+              },
+              1
+            ]
+          }
+        ]
+      },
+      "flags": 258,
+      "operation": "finditer",
+      "pattern": "(?P<x>\ud800)(?P=x)",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "search",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "match",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "fullmatch",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\ud800"
+        ]
+      },
+      "flags": 0,
+      "operation": "findall",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  2
+                ]
+              },
+              {
+                "tuple": [
+                  "\ud800"
+                ]
+              },
+              1
+            ]
+          }
+        ]
+      },
+      "flags": 0,
+      "operation": "finditer",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "search",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "match",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "fullmatch",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\ud800"
+        ]
+      },
+      "flags": 2,
+      "operation": "findall",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  2
+                ]
+              },
+              {
+                "tuple": [
+                  "\ud800"
+                ]
+              },
+              1
+            ]
+          }
+        ]
+      },
+      "flags": 2,
+      "operation": "finditer",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "search",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "match",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "fullmatch",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\ud800"
+        ]
+      },
+      "flags": 256,
+      "operation": "findall",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  2
+                ]
+              },
+              {
+                "tuple": [
+                  "\ud800"
+                ]
+              },
+              1
+            ]
+          }
+        ]
+      },
+      "flags": 256,
+      "operation": "finditer",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "search",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "match",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                2
+              ]
+            },
+            {
+              "tuple": [
+                "\ud800"
+              ]
+            },
+            1
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "fullmatch",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          "\ud800"
+        ]
+      },
+      "flags": 258,
+      "operation": "findall",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "missing ), unterminated subpattern at position 0",
+        "pattern_error": {
+          "colno": 1,
+          "lineno": 1,
+          "msg": "missing ), unterminated subpattern",
+          "pattern": "(\ud800)\\1",
+          "pos": 0
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  2
+                ]
+              },
+              {
+                "tuple": [
+                  "\ud800"
+                ]
+              },
+              1
+            ]
+          }
+        ]
+      },
+      "flags": 258,
+      "operation": "finditer",
+      "pattern": "(\ud800)\\1",
+      "subject": "\ud800\ud800"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                3
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "search",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                3
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "match",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                3
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 0,
+      "operation": "fullmatch",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": [
+          "x\ud800y"
+        ]
+      },
+      "flags": 0,
+      "operation": "findall",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  3
+                ]
+              },
+              {
+                "tuple": []
+              },
+              null
+            ]
+          }
+        ]
+      },
+      "flags": 0,
+      "operation": "finditer",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                3
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "search",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                3
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "match",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                3
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 2,
+      "operation": "fullmatch",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": [
+          "x\ud800y"
+        ]
+      },
+      "flags": 2,
+      "operation": "findall",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  3
+                ]
+              },
+              {
+                "tuple": []
+              },
+              null
+            ]
+          }
+        ]
+      },
+      "flags": 2,
+      "operation": "finditer",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                3
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "search",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                3
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "match",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                3
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 256,
+      "operation": "fullmatch",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": [
+          "x\ud800y"
+        ]
+      },
+      "flags": 256,
+      "operation": "findall",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  3
+                ]
+              },
+              {
+                "tuple": []
+              },
+              null
+            ]
+          }
+        ]
+      },
+      "flags": 256,
+      "operation": "finditer",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                3
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "search",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                3
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "match",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": {
+          "tuple": [
+            {
+              "tuple": [
+                0,
+                3
+              ]
+            },
+            {
+              "tuple": []
+            },
+            null
+          ]
+        }
+      },
+      "flags": 258,
+      "operation": "fullmatch",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": [
+          "x\ud800y"
+        ]
+      },
+      "flags": 258,
+      "operation": "findall",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    },
+    {
+      "actual": {
+        "error": "PatternError",
+        "message": "unbalanced parenthesis at position 1",
+        "pattern_error": {
+          "colno": 2,
+          "lineno": 1,
+          "msg": "unbalanced parenthesis",
+          "pattern": "x\ud800y",
+          "pos": 1
+        }
+      },
+      "expected": {
+        "value": [
+          {
+            "tuple": [
+              {
+                "tuple": [
+                  0,
+                  3
+                ]
+              },
+              {
+                "tuple": []
+              },
+              null
+            ]
+          }
+        ]
+      },
+      "flags": 258,
+      "operation": "finditer",
+      "pattern": "x\ud800y",
+      "subject": "x\ud800y"
+    }
+  ],
+  "flag_variants": 4,
+  "module": "candidates.rust_candidate",
+  "operations": [
+    "search",
+    "match",
+    "fullmatch",
+    "findall",
+    "finditer"
+  ],
+  "oracle": "CPython stdlib re",
+  "pattern_cases": 19,
+  "python_version": "3.14.6",
+  "schema": "rebar-rust-surrogate-pattern-baseline-v1"
+}

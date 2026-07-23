@@ -19,6 +19,8 @@ On **6,216 separate, unseen tasks**, Zig / `rebar` is **1.733× as fast overall*
 
 The holdout covers everyday text and bytes, common calls, compilation, Unicode, captures, replacements, scanners, input slices, structured data, hits, misses, and short and long inputs. The initial five-engine comparison and the final paired Zig rerun retain **1,131,312** timing rows, memory observations, confidence ranges, individual results, and every slowdown. The [current Zig report](candidates/evidence/ZIG-V6-OPTIMIZED.md) explains the result and links the raw evidence.
 
+The [Rust starting-point audit](candidates/evidence/RUST-V6-BASELINE.md) records the separate from-scratch Rust engine's complete frozen baseline, newly exposed Unicode compatibility gaps, and the ongoing work to improve its matching, memory use, and Python boundary.
+
 ## Compatibility
 
 `rebar` passes the frozen **44,084-case** correctness suite, including **35,840** unseen text, bytes, Unicode, buffer, scanner, property, and invalid-input cases, all **144** runnable official CPython `re` tests, **109,848** established focused checks, **163,960** alternative/run/delimiter/API checks, **156,484** direct-scan checks, and **230,337** new literal, alternative, Unicode, line, buffer, and call-surface checks. Debug, address, and undefined-behavior checks and the zero-delegation audit are clean.

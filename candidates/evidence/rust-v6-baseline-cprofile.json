@@ -1,0 +1,127 @@
+{
+  "artifact_drift": false,
+  "artifacts_after": {
+    "bridge": {
+      "inode": 419055,
+      "mtime_ns": 1784763568714518817,
+      "path": "/home/dev-user/src/rebar/candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "a8fe7ffc6b2d21670b543b224d65a52286c5ea30d344e2ac44793ab1cd35fe47",
+      "size": 26544
+    },
+    "engine": {
+      "inode": 428099,
+      "mtime_ns": 1784763568410511764,
+      "path": "/home/dev-user/src/rebar/candidates/_rust_engine.so",
+      "sha256": "7094a640bfc37ce10953f59d5278990fd47fb8d722cdd1e0093013ad7fd7c2e9",
+      "size": 436200
+    }
+  },
+  "artifacts_before": {
+    "bridge": {
+      "inode": 419055,
+      "mtime_ns": 1784763568714518817,
+      "path": "/home/dev-user/src/rebar/candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "a8fe7ffc6b2d21670b543b224d65a52286c5ea30d344e2ac44793ab1cd35fe47",
+      "size": 26544
+    },
+    "engine": {
+      "inode": 428099,
+      "mtime_ns": 1784763568410511764,
+      "path": "/home/dev-user/src/rebar/candidates/_rust_engine.so",
+      "sha256": "7094a640bfc37ce10953f59d5278990fd47fb8d722cdd1e0093013ad7fd7c2e9",
+      "size": 436200
+    }
+  },
+  "expected_sha256": "c8e32e879cc7a134748f8f3f29fed49678895745fdecebe63ceec46b6a3b5335",
+  "rows": [
+    {
+      "api": "findall",
+      "case": "hold.deeper.quote-captures.07",
+      "category": "deeper-quote-captures",
+      "loops": 2,
+      "primitive_calls": 29,
+      "profile": "         29 function calls in 0.068 seconds\n\n   Ordered by: cumulative time\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        2    0.000    0.000    0.068    0.034 perf_v5.py:154(<lambda>)\n        2    0.000    0.000    0.068    0.034 rust_candidate.py:701(findall)\n        2    0.068    0.034    0.068    0.034 {built-in method candidates._rust_bridge.findall}\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n        2    0.000    0.000    0.000    0.000 rust_candidate.py:581(_validate_string)\n        2    0.000    0.000    0.000    0.000 rust_candidate.py:380(_subject_length)\n       10    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}\n        2    0.000    0.000    0.000    0.000 {built-in method builtins.len}\n        4    0.000    0.000    0.000    0.000 {built-in method builtins.max}\n        2    0.000    0.000    0.000    0.000 {built-in method builtins.min}\n\n\n",
+      "subject_length": 3144,
+      "total_calls": 29,
+      "total_seconds": 0.068336695
+    },
+    {
+      "api": "findall",
+      "case": "hold.deeper.config-lines.07",
+      "category": "deeper-config-lines",
+      "loops": 2,
+      "primitive_calls": 29,
+      "profile": "         29 function calls in 0.004 seconds\n\n   Ordered by: cumulative time\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        2    0.000    0.000    0.004    0.002 perf_v5.py:154(<lambda>)\n        2    0.000    0.000    0.004    0.002 rust_candidate.py:701(findall)\n        2    0.004    0.002    0.004    0.002 {built-in method candidates._rust_bridge.findall}\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n        2    0.000    0.000    0.000    0.000 rust_candidate.py:581(_validate_string)\n        2    0.000    0.000    0.000    0.000 rust_candidate.py:380(_subject_length)\n       10    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}\n        4    0.000    0.000    0.000    0.000 {built-in method builtins.max}\n        2    0.000    0.000    0.000    0.000 {built-in method builtins.min}\n        2    0.000    0.000    0.000    0.000 {built-in method builtins.len}\n\n\n",
+      "subject_length": 3985,
+      "total_calls": 29,
+      "total_seconds": 0.004203854
+    },
+    {
+      "api": "findall",
+      "case": "hold.expanded.html-tags.07",
+      "category": "expanded-html-tags",
+      "loops": 8,
+      "primitive_calls": 113,
+      "profile": "         113 function calls in 0.000 seconds\n\n   Ordered by: cumulative time\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        8    0.000    0.000    0.000    0.000 perf_v5.py:154(<lambda>)\n        8    0.000    0.000    0.000    0.000 rust_candidate.py:701(findall)\n        8    0.000    0.000    0.000    0.000 {built-in method candidates._rust_bridge.findall}\n        8    0.000    0.000    0.000    0.000 rust_candidate.py:581(_validate_string)\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n        8    0.000    0.000    0.000    0.000 rust_candidate.py:380(_subject_length)\n       40    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}\n       16    0.000    0.000    0.000    0.000 {built-in method builtins.max}\n        8    0.000    0.000    0.000    0.000 {built-in method builtins.len}\n        8    0.000    0.000    0.000    0.000 {built-in method builtins.min}\n\n\n",
+      "subject_length": 77,
+      "total_calls": 113,
+      "total_seconds": 0.00041056
+    },
+    {
+      "api": "findall",
+      "case": "hold.deeper.unicode-casefold.07",
+      "category": "deeper-unicode-casefold",
+      "loops": 2,
+      "primitive_calls": 15409,
+      "profile": "         15409 function calls in 0.134 seconds\n\n   Ordered by: cumulative time\n   List reduced from 20 to 14 due to restriction <14>\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        2    0.000    0.000    0.134    0.067 perf_v5.py:154(<lambda>)\n        2    0.001    0.001    0.134    0.067 rust_candidate.py:701(findall)\n     1538    0.000    0.000    0.132    0.000 rust_candidate.py:693(_collected)\n     1538    0.001    0.000    0.132    0.000 rust_candidate.py:663(_finditer)\n     1538    0.001    0.000    0.131    0.000 rust_candidate.py:609(_search)\n     1538    0.000    0.000    0.129    0.000 rust_candidate.py:156(run)\n     1538    0.129    0.000    0.129    0.000 {built-in method candidates._rust_bridge.run}\n     1536    0.001    0.000    0.001    0.000 rust_candidate.py:372(_slice)\n     1536    0.000    0.000    0.000    0.000 {method 'append' of 'list' objects}\n     1536    0.000    0.000    0.000    0.000 rust_candidate.py:390(__init__)\n     1548    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}\n     1544    0.000    0.000    0.000    0.000 {built-in method builtins.max}\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n        2    0.000    0.000    0.000    0.000 rust_candidate.py:581(_validate_string)\n\n\n",
+      "subject_length": 5631,
+      "total_calls": 15409,
+      "total_seconds": 0.13444815699999998
+    },
+    {
+      "api": "finditer",
+      "case": "hold.deeper.combining-wide.07",
+      "category": "deeper-combining-wide",
+      "loops": 2,
+      "primitive_calls": 7719,
+      "profile": "         7719 function calls in 0.077 seconds\n\n   Ordered by: cumulative time\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        2    0.000    0.000    0.077    0.039 perf_v5.py:153(<lambda>)\n     1282    0.001    0.000    0.077    0.000 rust_candidate.py:663(_finditer)\n     1282    0.001    0.000    0.076    0.000 rust_candidate.py:609(_search)\n     1282    0.000    0.000    0.075    0.000 rust_candidate.py:156(run)\n     1282    0.074    0.000    0.074    0.000 {built-in method candidates._rust_bridge.run}\n     1280    0.000    0.000    0.000    0.000 rust_candidate.py:390(__init__)\n     1286    0.000    0.000    0.000    0.000 {built-in method builtins.max}\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n        2    0.000    0.000    0.000    0.000 rust_candidate.py:656(finditer)\n        2    0.000    0.000    0.000    0.000 rust_candidate.py:581(_validate_string)\n        2    0.000    0.000    0.000    0.000 rust_candidate.py:380(_subject_length)\n       12    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}\n        2    0.000    0.000    0.000    0.000 {built-in method builtins.len}\n        2    0.000    0.000    0.000    0.000 {built-in method builtins.min}\n\n\n",
+      "subject_length": 3199,
+      "total_calls": 7719,
+      "total_seconds": 0.077100388
+    },
+    {
+      "api": "search",
+      "case": "hold.deeper.search-long-hit.07",
+      "category": "deeper-search-long-hit",
+      "loops": 8,
+      "primitive_calls": 161,
+      "profile": "         161 function calls in 0.000 seconds\n\n   Ordered by: cumulative time\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        8    0.000    0.000    0.000    0.000 perf_v5.py:154(<lambda>)\n        8    0.000    0.000    0.000    0.000 rust_candidate.py:627(search)\n        8    0.000    0.000    0.000    0.000 rust_candidate.py:609(_search)\n        8    0.000    0.000    0.000    0.000 rust_candidate.py:581(_validate_string)\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n       64    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}\n        8    0.000    0.000    0.000    0.000 rust_candidate.py:380(_subject_length)\n        8    0.000    0.000    0.000    0.000 {method 'find' of 'str' objects}\n       16    0.000    0.000    0.000    0.000 {built-in method builtins.len}\n       16    0.000    0.000    0.000    0.000 {built-in method builtins.max}\n        8    0.000    0.000    0.000    0.000 rust_candidate.py:390(__init__)\n        8    0.000    0.000    0.000    0.000 {built-in method builtins.min}\n\n\n",
+      "subject_length": 84,
+      "total_calls": 161,
+      "total_seconds": 8.745999999999999e-05
+    },
+    {
+      "api": "search",
+      "case": "hold.deeper.search-long-miss.07",
+      "category": "deeper-search-long-miss",
+      "loops": 8,
+      "primitive_calls": 145,
+      "profile": "         145 function calls in 0.000 seconds\n\n   Ordered by: cumulative time\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        8    0.000    0.000    0.000    0.000 perf_v5.py:154(<lambda>)\n        8    0.000    0.000    0.000    0.000 rust_candidate.py:627(search)\n        8    0.000    0.000    0.000    0.000 rust_candidate.py:609(_search)\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n        8    0.000    0.000    0.000    0.000 rust_candidate.py:581(_validate_string)\n       64    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}\n        8    0.000    0.000    0.000    0.000 rust_candidate.py:380(_subject_length)\n       16    0.000    0.000    0.000    0.000 {built-in method builtins.max}\n        8    0.000    0.000    0.000    0.000 {method 'find' of 'str' objects}\n        8    0.000    0.000    0.000    0.000 {built-in method builtins.len}\n        8    0.000    0.000    0.000    0.000 {built-in method builtins.min}\n\n\n",
+      "subject_length": 77,
+      "total_calls": 145,
+      "total_seconds": 7.016299999999999e-05
+    },
+    {
+      "api": "compile",
+      "case": "hold.deeper.cold-compile.07",
+      "category": "deeper-cold-compile",
+      "loops": 6,
+      "primitive_calls": 691,
+      "profile": "         691 function calls in 0.001 seconds\n\n   Ordered by: cumulative time\n   List reduced from 25 to 14 due to restriction <14>\n\n   ncalls  tottime  percall  cumtime  percall filename:lineno(function)\n        6    0.000    0.000    0.001    0.000 perf_v5.py:108(cold_compile)\n        6    0.000    0.000    0.000    0.000 rust_candidate.py:835(compile)\n        6    0.000    0.000    0.000    0.000 rust_candidate.py:130(compile)\n        6    0.000    0.000    0.000    0.000 rust_candidate.py:528(__init__)\n        6    0.000    0.000    0.000    0.000 rust_candidate.py:203(_warn_ambiguous)\n      366    0.000    0.000    0.000    0.000 {built-in method builtins.ord}\n        6    0.000    0.000    0.000    0.000 enum.py:1584(__or__)\n        6    0.000    0.000    0.000    0.000 rust_candidate.py:546(__del__)\n        6    0.000    0.000    0.000    0.000 rust_candidate.py:872(purge)\n      108    0.000    0.000    0.000    0.000 {built-in method builtins.isinstance}\n        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}\n        6    0.000    0.000    0.000    0.000 {method 'clear' of 'dict' objects}\n       18    0.000    0.000    0.000    0.000 rust_candidate.py:537(__setattr__)\n        6    0.000    0.000    0.000    0.000 rust_candidate.py:162(free)\n\n\n",
+      "subject_length": 0,
+      "total_calls": 691,
+      "total_seconds": 0.000545641
+    }
+  ],
+  "schema": "rebar-rust-readonly-python-cprofile-v6"
+}

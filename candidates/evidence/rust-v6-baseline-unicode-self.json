@@ -1,0 +1,55 @@
+{
+  "case_equivalence_checks": 1455,
+  "case_equivalence_groups": 26,
+  "correctness_checks": 3495,
+  "cpython_extra_case_checks": 280,
+  "cpython_extra_case_keys": 50,
+  "cpython_extra_case_links": 56,
+  "failed": 0,
+  "failures": [],
+  "manual_cases": 54,
+  "manual_checks": 1836,
+  "membership_partitions": [
+    {
+      "actual_sha256": "32005221573546ac6d222fecdad52ab8c93694cbe24c6b3a169c807e15d6218b",
+      "codepoints_checked": 17,
+      "expected_sha256": "32005221573546ac6d222fecdad52ab8c93694cbe24c6b3a169c807e15d6218b",
+      "failed": 0,
+      "flags": 0,
+      "name": "unicode-categories"
+    },
+    {
+      "actual_sha256": "4dfdb14cde6d2443006d45f769e0260b7ba0a8a39f8d69887a9bf97a10ae2a45",
+      "codepoints_checked": 17,
+      "expected_sha256": "4dfdb14cde6d2443006d45f769e0260b7ba0a8a39f8d69887a9bf97a10ae2a45",
+      "failed": 0,
+      "flags": 256,
+      "name": "ascii-categories"
+    },
+    {
+      "actual_sha256": "c2b94131a3c488bea2e2c9c35428209f7a49dabf17f037e590e437daba48806e",
+      "codepoints_checked": 17,
+      "expected_sha256": "c2b94131a3c488bea2e2c9c35428209f7a49dabf17f037e590e437daba48806e",
+      "failed": 0,
+      "flags": 2,
+      "name": "unicode-ignorecase-ranges"
+    },
+    {
+      "actual_sha256": "c2b94131a3c488bea2e2c9c35428209f7a49dabf17f037e590e437daba48806e",
+      "codepoints_checked": 17,
+      "expected_sha256": "c2b94131a3c488bea2e2c9c35428209f7a49dabf17f037e590e437daba48806e",
+      "failed": 0,
+      "flags": 258,
+      "name": "ascii-ignorecase-ranges"
+    }
+  ],
+  "membership_stride": 65537,
+  "module": "re",
+  "oracle": "CPython stdlib re",
+  "python_unicode_version": "16.0.0",
+  "schema": "rebar-rust-unicode-probe-v1",
+  "seed": 2026072302,
+  "seeded_cases": 4,
+  "seeded_checks": 136,
+  "unicode_codepoints": 1114112
+}
