@@ -130,6 +130,52 @@ struct MandatoryRunDelimiter {
     delimiter: u8,
 }
 
+const MANDATORY_LITERAL_PREFIX_CAPACITY: usize = 16;
+const MANDATORY_LITERAL_PREFIX_DEPTH: usize = 64;
+
+/// A necessary byte prefix and whether it describes the entire expression.
+///
+/// `exact` is true only when every successful path consumes exactly `bytes`.
+/// In particular, a shared prefix of different alternatives is necessary but
+/// not exact, so a parent sequence must not append its following expression.
+#[derive(Clone, Copy)]
+struct MandatoryLiteralPrefix {
+    bytes: [u8; MANDATORY_LITERAL_PREFIX_CAPACITY],
+    length: u8,
+    exact: bool,
+}
+
+impl MandatoryLiteralPrefix {
+    #[inline]
+    const fn empty(exact: bool) -> Self {
+        Self {
+            bytes: [0; MANDATORY_LITERAL_PREFIX_CAPACITY],
+            length: 0,
+            exact,
+        }
+    }
+
+    #[inline]
+    fn as_slice(&self) -> &[u8] {
+        &self.bytes[..usize::from(self.length)]
+    }
+
+    /// Append a child's necessary prefix; continue only if its whole width is known.
+    #[inline]
+    fn append(&mut self, child: &Self) -> bool {
+        let start = usize::from(self.length);
+        let available = MANDATORY_LITERAL_PREFIX_CAPACITY - start;
+        let count = available.min(usize::from(child.length));
+        self.bytes[start..start + count].copy_from_slice(&child.bytes[..count]);
+        self.length = (start + count) as u8;
+        if count != usize::from(child.length) || !child.exact {
+            self.exact = false;
+            return false;
+        }
+        true
+    }
+}
+
 #[derive(Clone, Copy, Default)]
 struct Choice {
     pc: usize,
@@ -184,6 +230,7 @@ pub struct Engine {
     flags: u32,
     starts: Option<[u8; 256]>,
     start_set: Option<search::StartSet>,
+    mandatory_literal_prefix: Option<MandatoryLiteralPrefix>,
     mandatory_run_delimiter: Option<MandatoryRunDelimiter>,
     leading_lookbehind: Option<usize>,
     start_anchor: SearchAnchor,
@@ -1617,6 +1664,99 @@ fn contains_group_capture(node: &Expr) -> bool {
     }
 }
 
+/// Derive only byte prefixes that every original, ordered AST path requires.
+///
+/// Assertions and captures are still executed by the original VM. An uncertain
+/// expression, scoped case-folding, a nullable alternative, or the bounded
+/// traversal depth can only shorten or disable the filter.
+fn mandatory_literal_prefix(node: &Expr, depth: usize) -> MandatoryLiteralPrefix {
+    if depth >= MANDATORY_LITERAL_PREFIX_DEPTH {
+        return MandatoryLiteralPrefix::empty(false);
+    }
+
+    match node {
+        Expr::Lit(value, flags) if flags & I == 0 => {
+            let Ok(byte) = u8::try_from(*value) else {
+                return MandatoryLiteralPrefix::empty(false);
+            };
+            let mut prefix = MandatoryLiteralPrefix::empty(true);
+            prefix.bytes[0] = byte;
+            prefix.length = 1;
+            prefix
+        }
+        Expr::Anchor(_, _) | Expr::Boundary(_, _) => MandatoryLiteralPrefix::empty(true),
+        Expr::Group(_, child) | Expr::Atomic(child) => {
+            mandatory_literal_prefix(child, depth + 1)
+        }
+        Expr::Seq(values) => {
+            let mut prefix = MandatoryLiteralPrefix::empty(true);
+            for value in values {
+                let child = mandatory_literal_prefix(value, depth + 1);
+                if !prefix.append(&child) {
+                    break;
+                }
+            }
+            prefix
+        }
+        Expr::Alt(values) => {
+            let mut branches = values.iter();
+            let Some(first) = branches.next() else {
+                return MandatoryLiteralPrefix::empty(true);
+            };
+            let mut common = mandatory_literal_prefix(first, depth + 1);
+            for branch in branches {
+                let other = mandatory_literal_prefix(branch, depth + 1);
+                let previous_length = usize::from(common.length);
+                let other_length = usize::from(other.length);
+                let shared = common
+                    .as_slice()
+                    .iter()
+                    .zip(other.as_slice())
+                    .take_while(|(left, right)| left == right)
+                    .count();
+                common.exact = common.exact
+                    && other.exact
+                    && shared == previous_length
+                    && shared == other_length;
+                common.length = shared as u8;
+            }
+            common
+        }
+        Expr::Repeat(child, minimum, Some(maximum), _) if minimum == maximum => {
+            if *minimum == 0 {
+                return MandatoryLiteralPrefix::empty(true);
+            }
+
+            let child = mandatory_literal_prefix(child, depth + 1);
+            if !child.exact || child.length == 0 {
+                return child;
+            }
+
+            let child_length = usize::from(child.length);
+            let bounded_repetitions =
+                (*minimum).min(MANDATORY_LITERAL_PREFIX_CAPACITY / child_length + 1);
+            let mut prefix = MandatoryLiteralPrefix::empty(true);
+            for _ in 0..bounded_repetitions {
+                if !prefix.append(&child) {
+                    return prefix;
+                }
+            }
+            if bounded_repetitions != *minimum {
+                prefix.exact = false;
+            }
+            prefix
+        }
+        Expr::Lit(_, _)
+        | Expr::Dot(_)
+        | Expr::Cat(_, _)
+        | Expr::Class(_, _, _)
+        | Expr::Backref(_, _)
+        | Expr::Repeat(_, _, _, _)
+        | Expr::Look(_, _, _, _)
+        | Expr::Cond(_, _, _) => MandatoryLiteralPrefix::empty(false),
+    }
+}
+
 fn required_start_anchor(node: &Expr) -> SearchAnchor {
     match node {
         Expr::Anchor('A', _) => SearchAnchor::Absolute,
@@ -2309,6 +2449,8 @@ pub unsafe extern "C" fn rebar_compile(
             let start_anchor = required_start_anchor(&root);
             let starts = start_table(&root, parser.flags);
             let start_set = starts.as_ref().map(search::StartSet::new);
+            let prefix = mandatory_literal_prefix(&root, 0);
+            let mandatory_literal_prefix = (prefix.length >= 2).then_some(prefix);
             let Some(program) = Compiler::compile(&root) else {
                 set_error(
                     "regular expression could not be compiled".into(),
@@ -2326,6 +2468,7 @@ pub unsafe extern "C" fn rebar_compile(
                 flags: parser.flags & !BYTE,
                 starts,
                 start_set,
+                mandatory_literal_prefix,
                 mandatory_run_delimiter,
                 leading_lookbehind: lookbehind,
                 start_anchor,
@@ -3162,6 +3305,31 @@ fn run_match(
                     start += 1;
                     continue;
                 }
+            }
+        }
+        if mode == 0
+            && engine.start_anchor == SearchAnchor::Unrestricted
+            && engine.leading_lookbehind.is_none()
+            && let Some(prefix) = engine.mandatory_literal_prefix.as_ref()
+            && let Some(values) = context.bytes.or_else(|| {
+                context
+                    .wide
+                    .filter(|subject| subject.kind == 1)
+                    .map(|subject| subject.data)
+            })
+        {
+            let Some(finish) = start.checked_add(usize::from(prefix.length)) else {
+                return 0;
+            };
+            if finish > context.end {
+                return 0;
+            }
+            if values.get(start..finish) != Some(prefix.as_slice()) {
+                let Some(next) = start.checked_add(1) else {
+                    return 0;
+                };
+                start = next;
+                continue;
             }
         }
         begins.fill(-1);
