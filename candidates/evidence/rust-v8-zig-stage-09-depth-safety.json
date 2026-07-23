@@ -1,0 +1,88 @@
+{
+  "categories": {
+    "allocation-width": 20,
+    "bounded-backtracking": 15,
+    "dynamic-recursion-limit": 112,
+    "malformed-nesting": 4,
+    "nested-matching": 16,
+    "numeric-condition-overflow": 20,
+    "parser-nesting": 105,
+    "repetition-overflow": 24,
+    "seeded-nesting": 32
+  },
+  "core_dumps": "disabled in every child process",
+  "correctness_checks": 348,
+  "cpu_limit_seconds": 6,
+  "crashes": 2,
+  "failed": 2,
+  "failed_categories": {
+    "dynamic-recursion-limit": 2
+  },
+  "failures": [
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "groups",
+        "category": "dynamic-recursion-limit",
+        "depth": 2040,
+        "id": "limit.4096.groups.-8",
+        "recursion_limit": 4096
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 2040,
+            "pattern_length": 4081,
+            "pattern_sha256": "717c3e8dac5e201c250e158fd09cd3803ca1bc783a9da18a9b1a68c349d7cf00"
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "returncode": -11,
+        "signal": 11,
+        "status": "crash",
+        "stderr": ""
+      },
+      "case": {
+        "builder": "lookahead",
+        "category": "dynamic-recursion-limit",
+        "depth": 2040,
+        "id": "limit.4096.lookahead.-8",
+        "recursion_limit": 4096
+      },
+      "expected": {
+        "result": {
+          "value": {
+            "flags": 32,
+            "groupindex": {},
+            "groups": 0,
+            "pattern_length": 8161,
+            "pattern_sha256": "56aded50adf2e00f16abef4ffd52297b4418207d5f8ca0d95aca92086556d433"
+          }
+        },
+        "status": "completed"
+      }
+    }
+  ],
+  "isolation": "one independent subprocess per engine and case",
+  "memory_limit_mib": 768,
+  "module": "candidates.zig_candidate",
+  "oracle": "CPython stdlib re",
+  "oracle_failures": 0,
+  "pattern_transport": "compact generator descriptor over subprocess standard input",
+  "python_version": "3.14.6",
+  "schema": "rebar-rust-depth-safety-v1",
+  "seed": 2026072323,
+  "timeout_seconds": 5.0,
+  "timeouts": 0
+}
