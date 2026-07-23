@@ -15,7 +15,7 @@ typedef struct { int op; Py_ssize_t a, b, c; } Ins;
 typedef struct { Py_ssize_t count, atomic_capacity, suffix_width; int linear, compact, has_suffix, has_loop, split_disjoint; Ins *ins; PyObject *literal; } Code;
 typedef struct { int kind; Py_UCS4 a, b; } ClassItem;
 typedef struct { Py_ssize_t count; ClassItem *items; unsigned char ascii[256], scoped_ascii[256], ignore_ascii[256], ignore_unicode[256]; int ready; } CharClass;
-typedef struct { Py_ssize_t code_count, class_count, groups, root_flags; Code *codes; CharClass *classes; PyObject *literal; unsigned char starts[256]; uint64_t *start_pairs; uint32_t start_triples[128]; int starts_ready, cache_classes, triple_count; } VM;
+typedef struct { Py_ssize_t code_count, class_count, groups, root_flags; Code *codes; CharClass *classes; PyObject *literal; unsigned char starts[256]; uint64_t *start_pairs; uint32_t start_triples[128]; int starts_ready, start_singleton, cache_classes, triple_count; } VM;
 typedef struct { PyObject *obj; int byte_mode, unicode_kind; Py_ssize_t length; const char *bytes; const void *unicode_data; } Subject;
 typedef struct { Py_ssize_t pc, pos, last, repeat_step, repeat_limit, repeat_body_count; Py_ssize_t *caps, *seen, *barrier; int atomic_depth; } State;
 typedef struct { State **items; Py_ssize_t length, capacity; } Stack;
@@ -467,7 +467,15 @@ static int start_accepts(const VM *vm, Py_UCS4 value) {
     if (value>=256 || !vm->code_count || !vm->codes[0].count) return 1;
     VM *mutable=(VM *)vm;
     if (!mutable->starts_ready) {
-        for (Py_UCS4 item=0; item<256; item++) mutable->starts[item]=(unsigned char)leading_accepts(vm,&vm->codes[0],0,item,0);
+        Py_ssize_t accepted=0;
+        for (Py_UCS4 item=0; item<256; item++) {
+            mutable->starts[item]=(unsigned char)leading_accepts(vm,&vm->codes[0],0,item,0);
+            if (mutable->starts[item]) {
+                accepted++;
+                mutable->start_singleton=(int)item+1;
+            }
+        }
+        if (accepted!=1) mutable->start_singleton=0;
         Py_ssize_t pc=0;
         while (pc<vm->codes[0].count && (vm->codes[0].ins[pc].op==OP_SAVE_START || vm->codes[0].ins[pc].op==OP_ANCHOR || vm->codes[0].ins[pc].op==OP_BOUNDARY)) pc++;
         if (pc<vm->codes[0].count && vm->codes[0].ins[pc].op==OP_SPLIT) {
@@ -1750,7 +1758,27 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
                 }
             }
             else {
-                if (!start_accepts(vm,value)) { PROFILE_ADD(PROFILE_START_REJECT,1); continue; }
+                if (!start_accepts(vm,value)) {
+                    PROFILE_ADD(PROFILE_START_REJECT,1);
+                    if (first.op!=OP_SPLIT || !vm->start_singleton ||
+                        !(subject->byte_mode ||
+                          subject->unicode_kind==PyUnicode_1BYTE_KIND)) continue;
+                    const unsigned char *data=subject->byte_mode
+                        ? (const unsigned char *)subject->bytes
+                        : (const unsigned char *)subject->unicode_data;
+                    Py_ssize_t scan_end=last_start<endpos
+                        ? last_start+1 : endpos;
+                    const unsigned char *pivot=memchr(
+                        data+start,
+                        (unsigned char)(vm->start_singleton-1),
+                        (size_t)(scan_end-start));
+                    if (!pivot) {
+                        start=scan_end-1;
+                        continue;
+                    }
+                    start=(Py_ssize_t)(pivot-data);
+                    value=(Py_UCS4)(vm->start_singleton-1);
+                }
                 if (vm->start_pairs && value<256 && start+1<endpos) {
                     Py_UCS4 next=subject_char(subject,start+1);
                     if (next<256) {
