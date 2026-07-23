@@ -115,7 +115,7 @@
               "mapping_count": 5,
               "matches_static_elf": true,
               "role": "bridge",
-              "sha256": "bacce4e941dfa83a03eb87131c0ee8fe91feaa31ad02d97119a5c6bdce956e71"
+              "sha256": "59da375e0e1e47274be58fc8a88440ee09f641b0ec05c34611f5d96bb3aaa716"
             },
             {
               "file": "candidates/_rust_engine.so",
@@ -152,7 +152,7 @@
           "file": "candidates/rust/py_bridge.c",
           "issues": [],
           "passed": true,
-          "sha256": "cfe81e9dc80bfbfadc34907918fe00fdbb2e3c4c6d8f3fd4efdff0e8783aa291"
+          "sha256": "c5e01dd02ab4ac1bd530c3244eec146ffceb24a25db7901ed855d66b0665be03"
         },
         {
           "allowed_native_python_imports": [],
@@ -240,7 +240,7 @@
               "mapping_count": 5,
               "matches_static_elf": true,
               "role": "native",
-              "sha256": "ba4a49afb0e45618e6ccc90033775645da7b274984a71f0bd1623c40fc449a08"
+              "sha256": "842ba350f0b3148e580aed9f0227ced271d1163858e7a3aa2e4d5d51fcb0dcf5"
             }
           ],
           "passed": true,
@@ -266,7 +266,7 @@
           "file": "candidates/_vm_native.c",
           "issues": [],
           "passed": true,
-          "sha256": "7af879d6601603b7700e1447c47e227a565df9b64e4c78992b88c79e8521f7c7"
+          "sha256": "9781c3bff7c28e31f98eabcd37ab77349c44bfb747a75a50945c3a5eb806273e"
         }
       ],
       "owned_pipeline": {
@@ -290,7 +290,7 @@
         "issues": [],
         "native_loads": [],
         "passed": true,
-        "sha256": "4cf7b654925c1ed20e571f4f87e8cd4e459f0136dbf9d738b50f92e0c2ac77bb"
+        "sha256": "d3174b462924c9c17aea713797e74b42f29a0f7584191b8dffc67610000bde94"
       }
     },
     "zig": {
@@ -320,7 +320,7 @@
               "mapping_count": 3,
               "matches_static_elf": true,
               "role": "engine",
-              "sha256": "8303d0b0fed831b7da8b3fd233051e8c15aaead3654731e616103b25bff9b76a"
+              "sha256": "c99f0660393cfdfdfa06478216ccc37e2daff3925933ae0c383b32d92fefe6f8"
             }
           ],
           "passed": true,
@@ -356,7 +356,7 @@
           "file": "candidates/zig/mini_regex.zig",
           "issues": [],
           "passed": true,
-          "sha256": "b6a63e12b1405dfd2d2553465b88290909ea24bd3063687cc2ff92f64ccec366"
+          "sha256": "2b54f9c244dae29a71cee088077fe5abc420f5b2dca070cbe9774eab75ebb2f4"
         }
       ],
       "owned_pipeline": {
@@ -445,14 +445,13 @@
               "rebar_name_group",
               "rebar_name_len"
             ],
-            "python_api_undefined_count": 111,
+            "python_api_undefined_count": 106,
             "python_api_undefined_symbols": [
               "PyArg_ParseTuple",
               "PyBaseObject_Type",
               "PyBool_FromLong",
               "PyBool_Type",
               "PyBuffer_Release",
-              "PyByteArray_Type",
               "PyBytes_FromObject",
               "PyBytes_FromStringAndSize",
               "PyBytes_Join",
@@ -465,7 +464,6 @@
               "PyDict_New",
               "PyDict_Next",
               "PyDict_SetItem",
-              "PyDict_Type",
               "PyErr_Clear",
               "PyErr_ExceptionMatches",
               "PyErr_Format",
@@ -498,7 +496,6 @@
               "PyMapping_Size",
               "PyMem_Free",
               "PyMem_Malloc",
-              "PyMemberDescr_Type",
               "PyModule_AddObjectRef",
               "PyModule_Create2",
               "PyNumber_Index",
@@ -507,7 +504,6 @@
               "PyObject_CallObject",
               "PyObject_CallOneArg",
               "PyObject_GC_UnTrack",
-              "PyObject_GenericGetAttr",
               "PyObject_GetAttr",
               "PyObject_GetAttrString",
               "PyObject_GetBuffer",
@@ -523,7 +519,6 @@
               "PySequence_Fast",
               "PyTuple_New",
               "PyTuple_Pack",
-              "PyTuple_Type",
               "PyType_FromSpecWithBases",
               "PyType_GenericAlloc",
               "PyType_Ready",
@@ -562,8 +557,8 @@
             "runpaths": [
               "$ORIGIN"
             ],
-            "sha256": "bacce4e941dfa83a03eb87131c0ee8fe91feaa31ad02d97119a5c6bdce956e71",
-            "undefined_symbol_count": 138
+            "sha256": "59da375e0e1e47274be58fc8a88440ee09f641b0ec05c34611f5d96bb3aaa716",
+            "undefined_symbol_count": 133
           },
           "engine": {
             "cross_candidate_symbols": [],
@@ -621,11 +616,10 @@
               "PyInit__vm_native"
             ],
             "owned_undefined": [],
-            "python_api_undefined_count": 108,
+            "python_api_undefined_count": 107,
             "python_api_undefined_symbols": [
               "PyArg_ParseTuple",
               "PyArg_ParseTupleAndKeywords",
-              "PyArg_UnpackTuple",
               "PyBaseObject_Type",
               "PyBool_Type",
               "PyBuffer_IsContiguous",
@@ -733,8 +727,8 @@
               "_Py_ascii_whitespace"
             ],
             "runpaths": [],
-            "sha256": "ba4a49afb0e45618e6ccc90033775645da7b274984a71f0bd1623c40fc449a08",
-            "undefined_symbol_count": 118
+            "sha256": "842ba350f0b3148e580aed9f0227ced271d1163858e7a3aa2e4d5d51fcb0dcf5",
+            "undefined_symbol_count": 117
           }
         },
         "issues": [],
@@ -910,7 +904,7 @@
               "_PyUnicode_ToUppercase"
             ],
             "runpaths": [],
-            "sha256": "8303d0b0fed831b7da8b3fd233051e8c15aaead3654731e616103b25bff9b76a",
+            "sha256": "c99f0660393cfdfdfa06478216ccc37e2daff3925933ae0c383b32d92fefe6f8",
             "undefined_symbol_count": 15
           }
         },
@@ -982,14 +976,13 @@
           "rebar_name_group",
           "rebar_name_len"
         ],
-        "python_api_undefined_count": 111,
+        "python_api_undefined_count": 106,
         "python_api_undefined_symbols": [
           "PyArg_ParseTuple",
           "PyBaseObject_Type",
           "PyBool_FromLong",
           "PyBool_Type",
           "PyBuffer_Release",
-          "PyByteArray_Type",
           "PyBytes_FromObject",
           "PyBytes_FromStringAndSize",
           "PyBytes_Join",
@@ -1002,7 +995,6 @@
           "PyDict_New",
           "PyDict_Next",
           "PyDict_SetItem",
-          "PyDict_Type",
           "PyErr_Clear",
           "PyErr_ExceptionMatches",
           "PyErr_Format",
@@ -1035,7 +1027,6 @@
           "PyMapping_Size",
           "PyMem_Free",
           "PyMem_Malloc",
-          "PyMemberDescr_Type",
           "PyModule_AddObjectRef",
           "PyModule_Create2",
           "PyNumber_Index",
@@ -1044,7 +1035,6 @@
           "PyObject_CallObject",
           "PyObject_CallOneArg",
           "PyObject_GC_UnTrack",
-          "PyObject_GenericGetAttr",
           "PyObject_GetAttr",
           "PyObject_GetAttrString",
           "PyObject_GetBuffer",
@@ -1060,7 +1050,6 @@
           "PySequence_Fast",
           "PyTuple_New",
           "PyTuple_Pack",
-          "PyTuple_Type",
           "PyType_FromSpecWithBases",
           "PyType_GenericAlloc",
           "PyType_Ready",
@@ -1099,8 +1088,8 @@
         "runpaths": [
           "$ORIGIN"
         ],
-        "sha256": "bacce4e941dfa83a03eb87131c0ee8fe91feaa31ad02d97119a5c6bdce956e71",
-        "undefined_symbol_count": 138
+        "sha256": "59da375e0e1e47274be58fc8a88440ee09f641b0ec05c34611f5d96bb3aaa716",
+        "undefined_symbol_count": 133
       },
       "engine": {
         "cross_candidate_symbols": [],
@@ -1517,11 +1506,10 @@
           "PyInit__vm_native"
         ],
         "owned_undefined": [],
-        "python_api_undefined_count": 108,
+        "python_api_undefined_count": 107,
         "python_api_undefined_symbols": [
           "PyArg_ParseTuple",
           "PyArg_ParseTupleAndKeywords",
-          "PyArg_UnpackTuple",
           "PyBaseObject_Type",
           "PyBool_Type",
           "PyBuffer_IsContiguous",
@@ -1629,8 +1617,8 @@
           "_Py_ascii_whitespace"
         ],
         "runpaths": [],
-        "sha256": "ba4a49afb0e45618e6ccc90033775645da7b274984a71f0bd1623c40fc449a08",
-        "undefined_symbol_count": 118
+        "sha256": "842ba350f0b3148e580aed9f0227ced271d1163858e7a3aa2e4d5d51fcb0dcf5",
+        "undefined_symbol_count": 117
       }
     },
     "issues": [],
@@ -1806,7 +1794,7 @@
           "_PyUnicode_ToUppercase"
         ],
         "runpaths": [],
-        "sha256": "8303d0b0fed831b7da8b3fd233051e8c15aaead3654731e616103b25bff9b76a",
+        "sha256": "c99f0660393cfdfdfa06478216ccc37e2daff3925933ae0c383b32d92fefe6f8",
         "undefined_symbol_count": 15
       }
     },

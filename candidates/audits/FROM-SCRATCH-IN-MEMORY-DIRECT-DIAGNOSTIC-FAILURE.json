@@ -1,0 +1,22 @@
+{
+  "schema": "rebar-from-scratch-in-memory-diagnostic-failure-v1",
+  "status": "INCONCLUSIVE",
+  "attempt": 1,
+  "command_kind": "existing-from-scratch-audit-read-only-diagnostic",
+  "python_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "audit_function": "tools.audit_from_scratch.run_audit",
+  "failure_type": "NameError",
+  "failure_message": "name 'families' is not defined",
+  "cause": "Shell quoting removed the compact diagnostic formatter's string quotes after the existing audit returned.",
+  "audit_verdict": "NOT CAPTURED",
+  "reported_passing_families": null,
+  "reported_malicious_self_tests": null,
+  "audit_report_created": false,
+  "existing_audit_report_overwritten": false,
+  "candidate_sources_changed": false,
+  "candidate_native_libraries_changed": false,
+  "holdout_accessed": false,
+  "timing_performed": false,
+  "performance": "NOT MEASURED",
+  "exit_code": 1
+}
