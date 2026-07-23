@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="526" viewBox="0 0 1320 526" role="img" aria-label="How fast are the replacements compared with Python?">
+<title>How fast are the replacements compared with Python?</title>
+<desc>PRACTICE ONLY. Every replacement and standard Python ran the same 624 public practice tasks in the same 7 paired trials. The unseen final test remains sealed. The same 624 practice tasks · 7 paired runs · lines show each measured 95% confidence range</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:25px;font-weight:750}.sub{font-size:13px;fill:#52627a}.head{font-size:15px;font-weight:700}.label{font-size:12px}.small{font-size:11px;fill:#52627a}.value{font-size:12px;font-weight:700}.tick{font-size:10.5px;fill:#64748b}.banner{font-size:12px;font-weight:700;fill:#92400e}.grid{stroke:#e2e8f0;stroke-width:1}.base{stroke:#475569;stroke-width:1.7}.panel{fill:#f8fafc;stroke:#e2e8f0;stroke-width:1}</style>
+<text x="26" y="39" class="title">How fast are the replacements compared with Python?</text>
+<text x="26" y="63" class="sub">The same 624 practice tasks · 7 paired runs · lines show each measured 95% confidence range</text>
+<rect x="20" y="78" width="1280" height="34" rx="7" fill="#fffbeb" stroke="#fcd34d"/>
+<text x="33" y="100" class="banner">PRACTICE ONLY — the unseen final test remains sealed; final speed NOT MEASURED</text>
+<line x1="298.00" y1="152" x2="298.00" y2="424" class="grid"/>
+<text x="298.00" y="144" text-anchor="middle" class="tick">0.75×</text>
+<line x1="498.05" y1="152" x2="498.05" y2="424" class="base"/>
+<text x="498.05" y="144" text-anchor="middle" class="tick">1× Python</text>
+<line x1="780.00" y1="152" x2="780.00" y2="424" class="grid"/>
+<text x="780.00" y="144" text-anchor="middle" class="tick">1.5×</text>
+<text x="28" y="187" class="head">Standard Python</text>
+<circle cx="498.05" cy="182" r="6" fill="#64748b" stroke="#ffffff" stroke-width="1.5"/>
+<text x="800" y="186" class="value">Baseline: exactly 1.000× · the same 624 tasks</text>
+<text x="28" y="257" class="head">C</text>
+<line x1="668.84" y1="252" x2="721.49" y2="252" stroke="#2563eb" stroke-width="7" stroke-linecap="round"/>
+<circle cx="693.89" cy="252" r="6" fill="#2563eb" stroke="#ffffff" stroke-width="1.5"/>
+<text x="800" y="240" class="value">1.325× as fast · 95% range 1.278×–1.379×</text>
+<text x="800" y="259" class="small">Clearly faster overall in practice</text>
+<text x="800" y="276" class="small">451/624 clearly faster · 46/624 more than 20% slower</text>
+<text x="28" y="333" class="head">Rust</text>
+<line x1="568.35" y1="328" x2="623.01" y2="328" stroke="#c2410c" stroke-width="7" stroke-linecap="round"/>
+<circle cx="595.99" cy="328" r="6" fill="#c2410c" stroke="#ffffff" stroke-width="1.5"/>
+<text x="800" y="316" class="value">1.151× as fast · 95% range 1.106×–1.197×</text>
+<text x="800" y="335" class="small">Clearly faster overall in practice</text>
+<text x="800" y="352" class="small">272/624 clearly faster · 109/624 more than 20% slower</text>
+<text x="28" y="409" class="head">Zig</text>
+<line x1="473.28" y1="404" x2="536.38" y2="404" stroke="#7c3aed" stroke-width="7" stroke-linecap="round"/>
+<circle cx="505.59" cy="404" r="6" fill="#7c3aed" stroke="#ffffff" stroke-width="1.5"/>
+<text x="800" y="392" class="value">1.011× as fast · 95% range 0.965×–1.057×</text>
+<text x="800" y="411" class="small">No clear overall speed difference; range crosses 1×</text>
+<text x="800" y="428" class="small">229/624 clearly faster · 232/624 more than 20% slower</text>
+<text x="26" y="486" class="small">Each range compares one replacement with standard Python; it does not establish a confidence range between replacements.</text>
+<text x="26" y="505" class="small">All 52,416 timing correctness checks passed. Public practice is not the unseen final benchmark.</text>
+</svg>

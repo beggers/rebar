@@ -33,7 +33,7 @@ extern intptr_t rebar_collect_wide(const void *, const uint8_t *, size_t, uint8_
 #define RUST_LOCAL_CAPTURE_WORDS 64
 #define RUST_ITERATOR_CAPTURE_WORDS 16
 #define RUST_LOCAL_BOUND_ARGS 24
-#define RUST_FINDALL_BATCH_CAPACITY 128
+#define RUST_FINDALL_BATCH_CAPACITY 16
 #define RUST_FINDALL_INLINE_STRIDE 4
 
 typedef struct {
