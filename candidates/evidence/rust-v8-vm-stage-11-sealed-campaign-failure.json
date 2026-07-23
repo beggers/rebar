@@ -1,0 +1,151 @@
+{
+  "schema": "rebar-vm-stage-11-sealed-campaign-failure-v1",
+  "status": "FAIL",
+  "candidate_family": "C",
+  "candidate_module": "candidates.vm_candidate",
+  "python": "3.14.6",
+  "sealed_campaign_attempts": 1,
+  "sealed_campaign_reruns": 0,
+  "runner": "tools/rust_v8_multi_candidate_campaign.py",
+  "runner_exit_code": 1,
+  "failed_step": "extended-cpython-paths",
+  "failed_step_runner": "tools/rust_v6_paths_probe.py",
+  "failed_step_exit_code": 1,
+  "failed_step_stdout": "",
+  "failed_step_stderr": "Traceback (most recent call last):\n  File \"<string>\", line 42, in <module>\n    runpy.run_path(str(SCRIPT), run_name=\"__main__\")\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen runpy>\", line 294, in run_path\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/dev-user/src/rebar/tools/rust_v6_paths_probe.py\", line 532, in <module>\n    main()\n    ~~~~^^\n  File \"/home/dev-user/src/rebar/tools/rust_v6_paths_probe.py\", line 525, in main\n    Path(args.output).write_text(json.dumps(report, ensure_ascii=True, indent=2, sort_keys=True) + \"\\n\", encoding=\"utf-8\")\n                                 ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/json/__init__.py\", line 242, in dumps\n    **kw).encode(obj)\n          ~~~~~~^^^^^\n  File \"/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/json/encoder.py\", line 202, in encode\n    chunks = self.iterencode(o, _one_shot=True)\n  File \"/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/json/encoder.py\", line 263, in iterencode\n    return _iterencode(o, 0)\n  File \"/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/json/encoder.py\", line 182, in default\n    raise TypeError(f'Object of type {o.__class__.__name__} '\n                    f'is not JSON serializable')\nTypeError: Object of type Pattern is not JSON serializable\nwhen serializing dict item 'value'\nwhen serializing dict item 'expected'\nwhen serializing list item 0\nwhen serializing dict item 'failures'\n",
+  "serialization_failure": {
+    "type": "TypeError",
+    "message": "Object of type Pattern is not JSON serializable",
+    "json_path": ["failures", 0, "expected", "value"]
+  },
+  "failed_step_checks": "NOT REPORTED BY THE FROZEN RUNNER",
+  "failed_step_mismatches": "NOT REPORTED BY THE FROZEN RUNNER",
+  "failing_test_ids": "NOT REPORTED BY THE FROZEN RUNNER",
+  "actual_full_plane_checks": "NOT REPORTED BY THE FAILED CAMPAIGN",
+  "runner_traceback": "Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1439, in <module>\n    raise SystemExit(main())\n                     ~~~~^^\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1427, in main\n    result = run_campaign(\n        args.module,\n    ...<3 lines>...\n        args.memory_mib,\n    )\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 1054, in run_campaign\n    report[\"steps\"].append(child_step(step, module, memory_mib))\n                           ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/tools/rust_v8_multi_candidate_campaign.py\", line 679, in child_step\n    raise AssertionError(\n    ...<2 lines>...\n    )\nAssertionError: isolated suite failed: extended-cpython-paths; exit=1; stderr=Traceback (most recent call last):\n  File \"<string>\", line 42, in <module>\n    runpy.run_path(str(SCRIPT), run_name=\"__main__\")\n    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"<frozen runpy>\", line 294, in run_path\n  File \"<frozen runpy>\", line 98, in _run_module_code\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"/home/dev-user/src/rebar/tools/rust_v6_paths_probe.py\", line 532, in <module>\n    main()\n    ~~~~^^\n  File \"/home/dev-user/src/rebar/tools/rust_v6_paths_probe.py\", line 525, in main\n    Path(args.output).write_text(json.dumps(report, ensure_ascii=True, indent=2, sort_keys=True) + \"\\n\", encoding=\"utf-8\")\n                                 ~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/json/__init__.py\", line 242, in dumps\n    **kw).encode(obj)\n          ~~~~~~^^^^^\n  File \"/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/json/encoder.py\", line 202, in encode\n    chunks = self.iterencode(o, _one_shot=True)\n  File \"/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/json/encoder.py\", line 263, in iterencode\n    return _iterencode(o, 0)\n  File \"/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/json/encoder.py\", line 182, in default\n    raise TypeError(f'Object of type {o.__class__.__name__} '\n                    f'is not JSON serializable')\nTypeError: Object of type Pattern is not JSON serializable\nwhen serializing dict item 'value'\nwhen serializing dict item 'expected'\nwhen serializing list item 0\nwhen serializing dict item 'failures'\n; stdout=\n",
+  "successful_final_campaign": {
+    "path": "candidates/evidence/rust-v8-vm-stage-11-sealed-campaign.json",
+    "exists": false
+  },
+  "production_artifacts": [
+    {
+      "path": "candidates/vm_candidate.py",
+      "role": "public-python",
+      "sha256": "4cf7b654925c1ed20e571f4f87e8cd4e459f0136dbf9d738b50f92e0c2ac77bb"
+    },
+    {
+      "path": "candidates/_vm_native.c",
+      "role": "native-source",
+      "sha256": "7af879d6601603b7700e1447c47e227a565df9b64e4c78992b88c79e8521f7c7"
+    },
+    {
+      "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+      "role": "native-bridge",
+      "sha256": "ba4a49afb0e45618e6ccc90033775645da7b274984a71f0bd1623c40fc449a08"
+    }
+  ],
+  "independent_stage_11_proofs": [
+    {
+      "name": "unicode-group-name-errors",
+      "path": "candidates/evidence/rust-v8-vm-stage-11-unicode-group-name.json",
+      "sha256": "9666cff52df2727aa359bd98a462cddf203fdacb3d9289b42ff23b2970ade95e",
+      "checks": 420,
+      "failed": 0,
+      "self_oracle_failures": 0
+    },
+    {
+      "name": "upstream-public-surface",
+      "path": "candidates/evidence/rust-v8-vm-stage-11-upstream-public-surface.json",
+      "sha256": "68b4803de4a15a5bdce5f4ad710e86d85b3fd5a956a052f64b79df849342d2d0",
+      "checks": 190,
+      "failed": 0
+    },
+    {
+      "name": "official-cpython-test-re",
+      "path": "candidates/evidence/rust-v8-vm-stage-11-official-cpython-tests.json",
+      "sha256": "88995be84b22182c372d6369098d602f32a5a87189a26f7342bea53454504207",
+      "checks": 146,
+      "passed": 144,
+      "skipped": 2,
+      "failed": 0,
+      "crashes": 0,
+      "timeouts": 0
+    },
+    {
+      "name": "frozen-correctness-v2",
+      "path": "candidates/evidence/rust-v8-vm-stage-11-frozen-correctness-v2.json",
+      "sha256": "bf4dab41a58e46a6a6559a598fbaac10af19ac3b0e84a14539cccb3be91e21f6",
+      "checks": 8244,
+      "passed": 8244,
+      "failed": 0,
+      "mapped_obligations": 45,
+      "obligations": 45
+    },
+    {
+      "name": "independent-edge",
+      "path": "candidates/evidence/rust-v8-edge-oracle-vm-deep-stage-11.json.gz",
+      "sha256": "50fd5f0707ece383fd46eb7758f359c294d6ed473fe2c89ea510569144fab1e6",
+      "checks": 223198,
+      "failed": 0
+    },
+    {
+      "name": "independent-parser-grammar",
+      "path": "candidates/evidence/rust-v7-grammar-vm-v8-deep-stage-11.json.gz",
+      "sha256": "6040971a04f534d6a126cab8e7897da16f028f4a1186befba649df89256f40b1",
+      "checks": 20480,
+      "failed": 0,
+      "crashes": 0,
+      "timeouts": 0,
+      "external_regex_packages": 0,
+      "holdout_cases_read": 0,
+      "performance_fixtures_read": 0
+    },
+    {
+      "name": "deep-public-contract",
+      "path": "candidates/audits/RUST-V8-DEEP-CONTRACT-C-STAGE-11.json.gz",
+      "sha256": "8da40fa987dc9892a9d38352761e42757f702825580924e7043bd44f1eba54ca",
+      "checks": 393,
+      "failed": 0,
+      "stdlib_vs_stdlib_mismatches": 0,
+      "forbidden_regex_guards": 13,
+      "cross_engine_guards": 10
+    },
+    {
+      "name": "public-observability",
+      "path": "candidates/evidence/rust-v8-observability-vm-qualified-stage-11.json.gz",
+      "sha256": "589633e11474002da92180879f1d33796978f04d4a5a214c97726126f90bcb54",
+      "checks": 479,
+      "failed": 0,
+      "self_oracle_failures": 0,
+      "private_binder_checks": 34,
+      "private_binder_failures": 0,
+      "forbidden_regex_guards": 13,
+      "cross_engine_guards": 10
+    },
+    {
+      "name": "standard-replacement",
+      "path": "candidates/evidence/rust-v8-replacement-vm-stage-11.json.gz",
+      "sha256": "a54a19293baa3083f2f5ba2cddfdd8060d6fd14cee63b8fe4de386acd4097504",
+      "checks": 8862,
+      "failed": 0,
+      "self_oracle_failures": 0
+    },
+    {
+      "name": "deep-replacement",
+      "path": "candidates/evidence/rust-v8-replacement-vm-deep-stage-11.json.gz",
+      "sha256": "07c6e21f897d29460fe060046dc2efb562910eb8ba19b2774aeb7d2511e66d8e",
+      "checks": 11266,
+      "failed": 0,
+      "self_oracle_failures": 0
+    }
+  ],
+  "preserved_stage_10_failure_diagnostic": {
+    "path": "candidates/evidence/rust-v8-vm-stage-10-unicode-group-name-failure.json",
+    "sha256": "57db952b6d7a4874be58a90f85921d5d0a72866674107278d128f3c5cfc044de",
+    "checks": 420,
+    "failed": 144,
+    "self_oracle_failures": 0
+  },
+  "holdout": "NOT ACCESSED",
+  "performance": "NOT MEASURED"
+}

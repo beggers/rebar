@@ -1,0 +1,7 @@
+{
+  "correctness_checks": 190,
+  "failed": 0,
+  "failures": [],
+  "module": "candidates.vm_candidate",
+  "schema": "rebar-zig-public-surface-v1"
+}

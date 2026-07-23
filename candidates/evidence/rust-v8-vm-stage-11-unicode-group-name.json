@@ -1,0 +1,21 @@
+{
+  "bridge_path": null,
+  "bridge_sha256": null,
+  "checks": 420,
+  "codepoints": 35,
+  "engine_path": null,
+  "engine_sha256": null,
+  "failed": 0,
+  "failures": [],
+  "formatter": "production",
+  "module": "candidates.vm_candidate",
+  "module_sha256": "4cf7b654925c1ed20e571f4f87e8cd4e459f0136dbf9d738b50f92e0c2ac77bb",
+  "oracle": "stdlib re",
+  "python_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "python_version": "3.14.6 (main, Jun 23 2026, 15:18:23) [Clang 22.1.3 ]",
+  "runner_sha256": "858b7369a99b6330173419981aa75e652aa4b116ed07d36d8865f6f024e7a234",
+  "schema": "rebar-rust-unicode-group-name-adversarial-v1",
+  "seed": 5139257352621277517,
+  "self_oracle_failures": [],
+  "self_oracle_passes": 2
+}

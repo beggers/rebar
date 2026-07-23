@@ -1,0 +1,68 @@
+{
+  "schema": "rebar-vm-stage-11-extended-path-first-mismatch-interrupted-v1",
+  "status": "INCONCLUSIVE",
+  "diagnostic_status": "INTERRUPTED",
+  "candidate_family": "C",
+  "candidate_module": "candidates.vm_candidate",
+  "python_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "python": "3.14.6",
+  "suite": {
+    "path": "tools/rust_v6_paths_probe.py",
+    "sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+    "seed": 2026072307,
+    "planned_seeded_cases": 512,
+    "planned_full_suite_correctness_checks": 72248
+  },
+  "diagnostic_attempts": 1,
+  "diagnostic_reruns": 0,
+  "process_session_id": 60155,
+  "interruption": {
+    "requested_by": "root",
+    "reason": "Release the exclusive resource slot before correctness-qualified Rust practice timing.",
+    "method": "Ctrl-C sent only to the owned diagnostic session",
+    "signal": "SIGINT",
+    "process_exit_code": 130
+  },
+  "diagnostic_stdout": "",
+  "diagnostic_stderr": "",
+  "candidate_correctness_checks": null,
+  "self_oracle_correctness_checks": null,
+  "self_oracle_failures": null,
+  "self_oracle_status": "NOT REPORTED BEFORE INTERRUPTION",
+  "completed_manual_cases": null,
+  "completed_seeded_cases": null,
+  "discovered_mismatch_count": 0,
+  "first_mismatch": null,
+  "mismatch_status": "NOT OBSERVED BEFORE INTERRUPTION",
+  "candidate_qualification": "NOT QUALIFIED",
+  "full_campaign_rerun": false,
+  "production_artifacts": [
+    {
+      "path": "candidates/vm_candidate.py",
+      "role": "public-python",
+      "sha256": "4cf7b654925c1ed20e571f4f87e8cd4e459f0136dbf9d738b50f92e0c2ac77bb"
+    },
+    {
+      "path": "candidates/_vm_native.c",
+      "role": "native-source",
+      "sha256": "7af879d6601603b7700e1447c47e227a565df9b64e4c78992b88c79e8521f7c7"
+    },
+    {
+      "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+      "role": "native-bridge",
+      "sha256": "ba4a49afb0e45618e6ccc90033775645da7b274984a71f0bd1623c40fc449a08"
+    }
+  ],
+  "preserved_sealed_campaign_failure": {
+    "path": "candidates/evidence/rust-v8-vm-stage-11-sealed-campaign-failure.json",
+    "sha256": "56b2e2516571f894c7dc6791ce815c7e8a6d24dc0f020fb8dfde29db410a4055",
+    "failed_step": "extended-cpython-paths",
+    "status": "FAIL"
+  },
+  "preserved_first_mismatch_mechanism": {
+    "path": "candidates/evidence/rust-v8-zig-stage-06-extended-path-first-mismatch.json",
+    "sha256": "605d5c1b8b1959858c6d2fab7c987ed592e2fd4a3f4c3307e1e644fc0d20f5ff"
+  },
+  "holdout": "NOT ACCESSED",
+  "performance": "NOT MEASURED"
+}

@@ -63,7 +63,7 @@ class PatternError(Exception):
             self.lineno = scan.count("\n", 0, pos) + 1
             self.colno = pos - scan.rfind("\n", 0, pos)
             text = f"{msg} at position {pos}"
-            if self.lineno > 1:
+            if "\n" in scan:
                 text += f" (line {self.lineno}, column {self.colno})"
         super().__init__(text)
 
@@ -504,7 +504,12 @@ class _BytecodeParser:
                     else:
                         if not reference.isidentifier() or (self.byte_mode and not reference.isascii()):
                             shown = "".join(item if item.isascii() else f"\\x{ord(item):02x}" for item in reference) if self.byte_mode else reference
-                            self.error(f"bad character in group name '{shown}'", reference_start)
+                            self.error(
+                                f"bad character in group name '{shown}'"
+                                if self.byte_mode
+                                else f"bad character in group name {shown!r}",
+                                reference_start,
+                            )
                         if reference not in self.groupindex:
                             self.error(f"unknown group name {reference!r}", reference_start)
                         number = self.groupindex[reference]

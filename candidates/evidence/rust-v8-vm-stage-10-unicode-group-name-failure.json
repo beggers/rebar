@@ -1,0 +1,5062 @@
+{
+  "bridge_path": null,
+  "bridge_sha256": null,
+  "checks": 420,
+  "codepoints": 35,
+  "engine_path": null,
+  "engine_sha256": null,
+  "failed": 144,
+  "failures": [
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u0000' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u0000' at position 11",
+        "msg": "bad character in group name '\u0000'",
+        "pattern": "(?P<x>x)(?(\u0000)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0000",
+        "form": "single",
+        "id": "group-name.conditional.u000000.single",
+        "pattern": "(?P<x>x)(?(\u0000)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x00' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x00' at position 11",
+        "msg": "bad character in group name '\\x00'",
+        "pattern": "(?P<x>x)(?(\u0000)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u0000' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u0000' at position 11",
+        "msg": "bad character in group name 'x\u0000'",
+        "pattern": "(?P<x>x)(?(x\u0000)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0000",
+        "form": "suffix",
+        "id": "group-name.conditional.u000000.suffix",
+        "pattern": "(?P<x>x)(?(x\u0000)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x00' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x00' at position 11",
+        "msg": "bad character in group name 'x\\x00'",
+        "pattern": "(?P<x>x)(?(x\u0000)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u0000x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u0000x' at position 11",
+        "msg": "bad character in group name '\u0000x'",
+        "pattern": "(?P<x>x)(?(\u0000x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0000",
+        "form": "prefix",
+        "id": "group-name.conditional.u000000.prefix",
+        "pattern": "(?P<x>x)(?(\u0000x)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x00x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x00x' at position 11",
+        "msg": "bad character in group name '\\x00x'",
+        "pattern": "(?P<x>x)(?(\u0000x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u0000y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u0000y' at position 11",
+        "msg": "bad character in group name 'x\u0000y'",
+        "pattern": "(?P<x>x)(?(x\u0000y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0000",
+        "form": "interior",
+        "id": "group-name.conditional.u000000.interior",
+        "pattern": "(?P<x>x)(?(x\u0000y)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x00y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x00y' at position 11",
+        "msg": "bad character in group name 'x\\x00y'",
+        "pattern": "(?P<x>x)(?(x\u0000y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u0001' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u0001' at position 11",
+        "msg": "bad character in group name '\u0001'",
+        "pattern": "(?P<x>x)(?(\u0001)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0001",
+        "form": "single",
+        "id": "group-name.conditional.u000001.single",
+        "pattern": "(?P<x>x)(?(\u0001)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x01' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x01' at position 11",
+        "msg": "bad character in group name '\\x01'",
+        "pattern": "(?P<x>x)(?(\u0001)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u0001' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u0001' at position 11",
+        "msg": "bad character in group name 'x\u0001'",
+        "pattern": "(?P<x>x)(?(x\u0001)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0001",
+        "form": "suffix",
+        "id": "group-name.conditional.u000001.suffix",
+        "pattern": "(?P<x>x)(?(x\u0001)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x01' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x01' at position 11",
+        "msg": "bad character in group name 'x\\x01'",
+        "pattern": "(?P<x>x)(?(x\u0001)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u0001x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u0001x' at position 11",
+        "msg": "bad character in group name '\u0001x'",
+        "pattern": "(?P<x>x)(?(\u0001x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0001",
+        "form": "prefix",
+        "id": "group-name.conditional.u000001.prefix",
+        "pattern": "(?P<x>x)(?(\u0001x)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x01x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x01x' at position 11",
+        "msg": "bad character in group name '\\x01x'",
+        "pattern": "(?P<x>x)(?(\u0001x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u0001y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u0001y' at position 11",
+        "msg": "bad character in group name 'x\u0001y'",
+        "pattern": "(?P<x>x)(?(x\u0001y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0001",
+        "form": "interior",
+        "id": "group-name.conditional.u000001.interior",
+        "pattern": "(?P<x>x)(?(x\u0001y)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x01y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x01y' at position 11",
+        "msg": "bad character in group name 'x\\x01y'",
+        "pattern": "(?P<x>x)(?(x\u0001y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u0007' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u0007' at position 11",
+        "msg": "bad character in group name '\u0007'",
+        "pattern": "(?P<x>x)(?(\u0007)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0007",
+        "form": "single",
+        "id": "group-name.conditional.u000007.single",
+        "pattern": "(?P<x>x)(?(\u0007)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x07' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x07' at position 11",
+        "msg": "bad character in group name '\\x07'",
+        "pattern": "(?P<x>x)(?(\u0007)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u0007' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u0007' at position 11",
+        "msg": "bad character in group name 'x\u0007'",
+        "pattern": "(?P<x>x)(?(x\u0007)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0007",
+        "form": "suffix",
+        "id": "group-name.conditional.u000007.suffix",
+        "pattern": "(?P<x>x)(?(x\u0007)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x07' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x07' at position 11",
+        "msg": "bad character in group name 'x\\x07'",
+        "pattern": "(?P<x>x)(?(x\u0007)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u0007x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u0007x' at position 11",
+        "msg": "bad character in group name '\u0007x'",
+        "pattern": "(?P<x>x)(?(\u0007x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0007",
+        "form": "prefix",
+        "id": "group-name.conditional.u000007.prefix",
+        "pattern": "(?P<x>x)(?(\u0007x)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x07x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x07x' at position 11",
+        "msg": "bad character in group name '\\x07x'",
+        "pattern": "(?P<x>x)(?(\u0007x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u0007y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u0007y' at position 11",
+        "msg": "bad character in group name 'x\u0007y'",
+        "pattern": "(?P<x>x)(?(x\u0007y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0007",
+        "form": "interior",
+        "id": "group-name.conditional.u000007.interior",
+        "pattern": "(?P<x>x)(?(x\u0007y)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x07y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x07y' at position 11",
+        "msg": "bad character in group name 'x\\x07y'",
+        "pattern": "(?P<x>x)(?(x\u0007y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\b' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\b' at position 11",
+        "msg": "bad character in group name '\b'",
+        "pattern": "(?P<x>x)(?(\b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0008",
+        "form": "single",
+        "id": "group-name.conditional.u000008.single",
+        "pattern": "(?P<x>x)(?(\b)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x08' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x08' at position 11",
+        "msg": "bad character in group name '\\x08'",
+        "pattern": "(?P<x>x)(?(\b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\b' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\b' at position 11",
+        "msg": "bad character in group name 'x\b'",
+        "pattern": "(?P<x>x)(?(x\b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0008",
+        "form": "suffix",
+        "id": "group-name.conditional.u000008.suffix",
+        "pattern": "(?P<x>x)(?(x\b)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x08' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x08' at position 11",
+        "msg": "bad character in group name 'x\\x08'",
+        "pattern": "(?P<x>x)(?(x\b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\bx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\bx' at position 11",
+        "msg": "bad character in group name '\bx'",
+        "pattern": "(?P<x>x)(?(\bx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0008",
+        "form": "prefix",
+        "id": "group-name.conditional.u000008.prefix",
+        "pattern": "(?P<x>x)(?(\bx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x08x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x08x' at position 11",
+        "msg": "bad character in group name '\\x08x'",
+        "pattern": "(?P<x>x)(?(\bx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\by' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\by' at position 11",
+        "msg": "bad character in group name 'x\by'",
+        "pattern": "(?P<x>x)(?(x\by)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0008",
+        "form": "interior",
+        "id": "group-name.conditional.u000008.interior",
+        "pattern": "(?P<x>x)(?(x\by)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x08y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x08y' at position 11",
+        "msg": "bad character in group name 'x\\x08y'",
+        "pattern": "(?P<x>x)(?(x\by)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\t' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\t' at position 11",
+        "msg": "bad character in group name '\t'",
+        "pattern": "(?P<x>x)(?(\t)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0009",
+        "form": "single",
+        "id": "group-name.conditional.u000009.single",
+        "pattern": "(?P<x>x)(?(\t)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\t' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\t' at position 11",
+        "msg": "bad character in group name '\\t'",
+        "pattern": "(?P<x>x)(?(\t)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\t' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\t' at position 11",
+        "msg": "bad character in group name 'x\t'",
+        "pattern": "(?P<x>x)(?(x\t)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0009",
+        "form": "suffix",
+        "id": "group-name.conditional.u000009.suffix",
+        "pattern": "(?P<x>x)(?(x\t)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\t' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\t' at position 11",
+        "msg": "bad character in group name 'x\\t'",
+        "pattern": "(?P<x>x)(?(x\t)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\tx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\tx' at position 11",
+        "msg": "bad character in group name '\tx'",
+        "pattern": "(?P<x>x)(?(\tx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0009",
+        "form": "prefix",
+        "id": "group-name.conditional.u000009.prefix",
+        "pattern": "(?P<x>x)(?(\tx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\tx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\tx' at position 11",
+        "msg": "bad character in group name '\\tx'",
+        "pattern": "(?P<x>x)(?(\tx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\ty' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\ty' at position 11",
+        "msg": "bad character in group name 'x\ty'",
+        "pattern": "(?P<x>x)(?(x\ty)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0009",
+        "form": "interior",
+        "id": "group-name.conditional.u000009.interior",
+        "pattern": "(?P<x>x)(?(x\ty)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\ty' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ty' at position 11",
+        "msg": "bad character in group name 'x\\ty'",
+        "pattern": "(?P<x>x)(?(x\ty)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\\n' at position 4"
+        ],
+        "colno": 5,
+        "lineno": 1,
+        "message": "bad character in group name '\\n' at position 4",
+        "msg": "bad character in group name '\\n'",
+        "pattern": "(?P<\n>x)",
+        "pos": 4,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000A",
+        "form": "single",
+        "id": "group-name.definition.u00000a.single",
+        "pattern": "(?P<\n>x)",
+        "syntax": "definition"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\n' at position 4 (line 1, column 5)"
+        ],
+        "colno": 5,
+        "lineno": 1,
+        "message": "bad character in group name '\\n' at position 4 (line 1, column 5)",
+        "msg": "bad character in group name '\\n'",
+        "pattern": "(?P<\n>x)",
+        "pos": 4,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\\n' at position 12"
+        ],
+        "colno": 13,
+        "lineno": 1,
+        "message": "bad character in group name '\\n' at position 12",
+        "msg": "bad character in group name '\\n'",
+        "pattern": "(?P<x>x)(?P=\n)",
+        "pos": 12,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000A",
+        "form": "single",
+        "id": "group-name.reference.u00000a.single",
+        "pattern": "(?P<x>x)(?P=\n)",
+        "syntax": "reference"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\n' at position 12 (line 1, column 13)"
+        ],
+        "colno": 13,
+        "lineno": 1,
+        "message": "bad character in group name '\\n' at position 12 (line 1, column 13)",
+        "msg": "bad character in group name '\\n'",
+        "pattern": "(?P<x>x)(?P=\n)",
+        "pos": 12,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\n' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\n' at position 11",
+        "msg": "bad character in group name '\n'",
+        "pattern": "(?P<x>x)(?(\n)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000A",
+        "form": "single",
+        "id": "group-name.conditional.u00000a.single",
+        "pattern": "(?P<x>x)(?(\n)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\n' at position 11 (line 1, column 12)"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\n' at position 11 (line 1, column 12)",
+        "msg": "bad character in group name '\\n'",
+        "pattern": "(?P<x>x)(?(\n)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\\n' at position 4"
+        ],
+        "colno": 5,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\n' at position 4",
+        "msg": "bad character in group name 'x\\n'",
+        "pattern": "(?P<x\n>x)",
+        "pos": 4,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000A",
+        "form": "suffix",
+        "id": "group-name.definition.u00000a.suffix",
+        "pattern": "(?P<x\n>x)",
+        "syntax": "definition"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\n' at position 4 (line 1, column 5)"
+        ],
+        "colno": 5,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\n' at position 4 (line 1, column 5)",
+        "msg": "bad character in group name 'x\\n'",
+        "pattern": "(?P<x\n>x)",
+        "pos": 4,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\\n' at position 12"
+        ],
+        "colno": 13,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\n' at position 12",
+        "msg": "bad character in group name 'x\\n'",
+        "pattern": "(?P<x>x)(?P=x\n)",
+        "pos": 12,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000A",
+        "form": "suffix",
+        "id": "group-name.reference.u00000a.suffix",
+        "pattern": "(?P<x>x)(?P=x\n)",
+        "syntax": "reference"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\n' at position 12 (line 1, column 13)"
+        ],
+        "colno": 13,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\n' at position 12 (line 1, column 13)",
+        "msg": "bad character in group name 'x\\n'",
+        "pattern": "(?P<x>x)(?P=x\n)",
+        "pos": 12,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\n' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\n' at position 11",
+        "msg": "bad character in group name 'x\n'",
+        "pattern": "(?P<x>x)(?(x\n)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000A",
+        "form": "suffix",
+        "id": "group-name.conditional.u00000a.suffix",
+        "pattern": "(?P<x>x)(?(x\n)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\n' at position 11 (line 1, column 12)"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\n' at position 11 (line 1, column 12)",
+        "msg": "bad character in group name 'x\\n'",
+        "pattern": "(?P<x>x)(?(x\n)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\\nx' at position 4"
+        ],
+        "colno": 5,
+        "lineno": 1,
+        "message": "bad character in group name '\\nx' at position 4",
+        "msg": "bad character in group name '\\nx'",
+        "pattern": "(?P<\nx>x)",
+        "pos": 4,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000A",
+        "form": "prefix",
+        "id": "group-name.definition.u00000a.prefix",
+        "pattern": "(?P<\nx>x)",
+        "syntax": "definition"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\nx' at position 4 (line 1, column 5)"
+        ],
+        "colno": 5,
+        "lineno": 1,
+        "message": "bad character in group name '\\nx' at position 4 (line 1, column 5)",
+        "msg": "bad character in group name '\\nx'",
+        "pattern": "(?P<\nx>x)",
+        "pos": 4,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\\nx' at position 12"
+        ],
+        "colno": 13,
+        "lineno": 1,
+        "message": "bad character in group name '\\nx' at position 12",
+        "msg": "bad character in group name '\\nx'",
+        "pattern": "(?P<x>x)(?P=\nx)",
+        "pos": 12,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000A",
+        "form": "prefix",
+        "id": "group-name.reference.u00000a.prefix",
+        "pattern": "(?P<x>x)(?P=\nx)",
+        "syntax": "reference"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\nx' at position 12 (line 1, column 13)"
+        ],
+        "colno": 13,
+        "lineno": 1,
+        "message": "bad character in group name '\\nx' at position 12 (line 1, column 13)",
+        "msg": "bad character in group name '\\nx'",
+        "pattern": "(?P<x>x)(?P=\nx)",
+        "pos": 12,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\nx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\nx' at position 11",
+        "msg": "bad character in group name '\nx'",
+        "pattern": "(?P<x>x)(?(\nx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000A",
+        "form": "prefix",
+        "id": "group-name.conditional.u00000a.prefix",
+        "pattern": "(?P<x>x)(?(\nx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\nx' at position 11 (line 1, column 12)"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\nx' at position 11 (line 1, column 12)",
+        "msg": "bad character in group name '\\nx'",
+        "pattern": "(?P<x>x)(?(\nx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\\ny' at position 4"
+        ],
+        "colno": 5,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ny' at position 4",
+        "msg": "bad character in group name 'x\\ny'",
+        "pattern": "(?P<x\ny>x)",
+        "pos": 4,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000A",
+        "form": "interior",
+        "id": "group-name.definition.u00000a.interior",
+        "pattern": "(?P<x\ny>x)",
+        "syntax": "definition"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\ny' at position 4 (line 1, column 5)"
+        ],
+        "colno": 5,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ny' at position 4 (line 1, column 5)",
+        "msg": "bad character in group name 'x\\ny'",
+        "pattern": "(?P<x\ny>x)",
+        "pos": 4,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\\ny' at position 12"
+        ],
+        "colno": 13,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ny' at position 12",
+        "msg": "bad character in group name 'x\\ny'",
+        "pattern": "(?P<x>x)(?P=x\ny)",
+        "pos": 12,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000A",
+        "form": "interior",
+        "id": "group-name.reference.u00000a.interior",
+        "pattern": "(?P<x>x)(?P=x\ny)",
+        "syntax": "reference"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\ny' at position 12 (line 1, column 13)"
+        ],
+        "colno": 13,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ny' at position 12 (line 1, column 13)",
+        "msg": "bad character in group name 'x\\ny'",
+        "pattern": "(?P<x>x)(?P=x\ny)",
+        "pos": 12,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\ny' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\ny' at position 11",
+        "msg": "bad character in group name 'x\ny'",
+        "pattern": "(?P<x>x)(?(x\ny)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000A",
+        "form": "interior",
+        "id": "group-name.conditional.u00000a.interior",
+        "pattern": "(?P<x>x)(?(x\ny)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\ny' at position 11 (line 1, column 12)"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ny' at position 11 (line 1, column 12)",
+        "msg": "bad character in group name 'x\\ny'",
+        "pattern": "(?P<x>x)(?(x\ny)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u000b' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u000b' at position 11",
+        "msg": "bad character in group name '\u000b'",
+        "pattern": "(?P<x>x)(?(\u000b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000B",
+        "form": "single",
+        "id": "group-name.conditional.u00000b.single",
+        "pattern": "(?P<x>x)(?(\u000b)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x0b' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x0b' at position 11",
+        "msg": "bad character in group name '\\x0b'",
+        "pattern": "(?P<x>x)(?(\u000b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u000b' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u000b' at position 11",
+        "msg": "bad character in group name 'x\u000b'",
+        "pattern": "(?P<x>x)(?(x\u000b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000B",
+        "form": "suffix",
+        "id": "group-name.conditional.u00000b.suffix",
+        "pattern": "(?P<x>x)(?(x\u000b)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x0b' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x0b' at position 11",
+        "msg": "bad character in group name 'x\\x0b'",
+        "pattern": "(?P<x>x)(?(x\u000b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u000bx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u000bx' at position 11",
+        "msg": "bad character in group name '\u000bx'",
+        "pattern": "(?P<x>x)(?(\u000bx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000B",
+        "form": "prefix",
+        "id": "group-name.conditional.u00000b.prefix",
+        "pattern": "(?P<x>x)(?(\u000bx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x0bx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x0bx' at position 11",
+        "msg": "bad character in group name '\\x0bx'",
+        "pattern": "(?P<x>x)(?(\u000bx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u000by' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u000by' at position 11",
+        "msg": "bad character in group name 'x\u000by'",
+        "pattern": "(?P<x>x)(?(x\u000by)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000B",
+        "form": "interior",
+        "id": "group-name.conditional.u00000b.interior",
+        "pattern": "(?P<x>x)(?(x\u000by)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x0by' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x0by' at position 11",
+        "msg": "bad character in group name 'x\\x0by'",
+        "pattern": "(?P<x>x)(?(x\u000by)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\f' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\f' at position 11",
+        "msg": "bad character in group name '\f'",
+        "pattern": "(?P<x>x)(?(\f)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000C",
+        "form": "single",
+        "id": "group-name.conditional.u00000c.single",
+        "pattern": "(?P<x>x)(?(\f)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x0c' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x0c' at position 11",
+        "msg": "bad character in group name '\\x0c'",
+        "pattern": "(?P<x>x)(?(\f)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\f' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\f' at position 11",
+        "msg": "bad character in group name 'x\f'",
+        "pattern": "(?P<x>x)(?(x\f)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000C",
+        "form": "suffix",
+        "id": "group-name.conditional.u00000c.suffix",
+        "pattern": "(?P<x>x)(?(x\f)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x0c' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x0c' at position 11",
+        "msg": "bad character in group name 'x\\x0c'",
+        "pattern": "(?P<x>x)(?(x\f)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\fx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\fx' at position 11",
+        "msg": "bad character in group name '\fx'",
+        "pattern": "(?P<x>x)(?(\fx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000C",
+        "form": "prefix",
+        "id": "group-name.conditional.u00000c.prefix",
+        "pattern": "(?P<x>x)(?(\fx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x0cx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x0cx' at position 11",
+        "msg": "bad character in group name '\\x0cx'",
+        "pattern": "(?P<x>x)(?(\fx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\fy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\fy' at position 11",
+        "msg": "bad character in group name 'x\fy'",
+        "pattern": "(?P<x>x)(?(x\fy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000C",
+        "form": "interior",
+        "id": "group-name.conditional.u00000c.interior",
+        "pattern": "(?P<x>x)(?(x\fy)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x0cy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x0cy' at position 11",
+        "msg": "bad character in group name 'x\\x0cy'",
+        "pattern": "(?P<x>x)(?(x\fy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\r' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\r' at position 11",
+        "msg": "bad character in group name '\r'",
+        "pattern": "(?P<x>x)(?(\r)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000D",
+        "form": "single",
+        "id": "group-name.conditional.u00000d.single",
+        "pattern": "(?P<x>x)(?(\r)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\r' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\r' at position 11",
+        "msg": "bad character in group name '\\r'",
+        "pattern": "(?P<x>x)(?(\r)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\r' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\r' at position 11",
+        "msg": "bad character in group name 'x\r'",
+        "pattern": "(?P<x>x)(?(x\r)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000D",
+        "form": "suffix",
+        "id": "group-name.conditional.u00000d.suffix",
+        "pattern": "(?P<x>x)(?(x\r)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\r' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\r' at position 11",
+        "msg": "bad character in group name 'x\\r'",
+        "pattern": "(?P<x>x)(?(x\r)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\rx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\rx' at position 11",
+        "msg": "bad character in group name '\rx'",
+        "pattern": "(?P<x>x)(?(\rx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000D",
+        "form": "prefix",
+        "id": "group-name.conditional.u00000d.prefix",
+        "pattern": "(?P<x>x)(?(\rx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\rx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\rx' at position 11",
+        "msg": "bad character in group name '\\rx'",
+        "pattern": "(?P<x>x)(?(\rx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\ry' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\ry' at position 11",
+        "msg": "bad character in group name 'x\ry'",
+        "pattern": "(?P<x>x)(?(x\ry)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+000D",
+        "form": "interior",
+        "id": "group-name.conditional.u00000d.interior",
+        "pattern": "(?P<x>x)(?(x\ry)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\ry' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ry' at position 11",
+        "msg": "bad character in group name 'x\\ry'",
+        "pattern": "(?P<x>x)(?(x\ry)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u001b' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u001b' at position 11",
+        "msg": "bad character in group name '\u001b'",
+        "pattern": "(?P<x>x)(?(\u001b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001B",
+        "form": "single",
+        "id": "group-name.conditional.u00001b.single",
+        "pattern": "(?P<x>x)(?(\u001b)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x1b' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x1b' at position 11",
+        "msg": "bad character in group name '\\x1b'",
+        "pattern": "(?P<x>x)(?(\u001b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u001b' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u001b' at position 11",
+        "msg": "bad character in group name 'x\u001b'",
+        "pattern": "(?P<x>x)(?(x\u001b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001B",
+        "form": "suffix",
+        "id": "group-name.conditional.u00001b.suffix",
+        "pattern": "(?P<x>x)(?(x\u001b)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x1b' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x1b' at position 11",
+        "msg": "bad character in group name 'x\\x1b'",
+        "pattern": "(?P<x>x)(?(x\u001b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u001bx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u001bx' at position 11",
+        "msg": "bad character in group name '\u001bx'",
+        "pattern": "(?P<x>x)(?(\u001bx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001B",
+        "form": "prefix",
+        "id": "group-name.conditional.u00001b.prefix",
+        "pattern": "(?P<x>x)(?(\u001bx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x1bx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x1bx' at position 11",
+        "msg": "bad character in group name '\\x1bx'",
+        "pattern": "(?P<x>x)(?(\u001bx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u001by' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u001by' at position 11",
+        "msg": "bad character in group name 'x\u001by'",
+        "pattern": "(?P<x>x)(?(x\u001by)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001B",
+        "form": "interior",
+        "id": "group-name.conditional.u00001b.interior",
+        "pattern": "(?P<x>x)(?(x\u001by)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x1by' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x1by' at position 11",
+        "msg": "bad character in group name 'x\\x1by'",
+        "pattern": "(?P<x>x)(?(x\u001by)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u001c' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u001c' at position 11",
+        "msg": "bad character in group name '\u001c'",
+        "pattern": "(?P<x>x)(?(\u001c)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001C",
+        "form": "single",
+        "id": "group-name.conditional.u00001c.single",
+        "pattern": "(?P<x>x)(?(\u001c)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x1c' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x1c' at position 11",
+        "msg": "bad character in group name '\\x1c'",
+        "pattern": "(?P<x>x)(?(\u001c)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u001c' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u001c' at position 11",
+        "msg": "bad character in group name 'x\u001c'",
+        "pattern": "(?P<x>x)(?(x\u001c)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001C",
+        "form": "suffix",
+        "id": "group-name.conditional.u00001c.suffix",
+        "pattern": "(?P<x>x)(?(x\u001c)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x1c' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x1c' at position 11",
+        "msg": "bad character in group name 'x\\x1c'",
+        "pattern": "(?P<x>x)(?(x\u001c)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u001cx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u001cx' at position 11",
+        "msg": "bad character in group name '\u001cx'",
+        "pattern": "(?P<x>x)(?(\u001cx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001C",
+        "form": "prefix",
+        "id": "group-name.conditional.u00001c.prefix",
+        "pattern": "(?P<x>x)(?(\u001cx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x1cx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x1cx' at position 11",
+        "msg": "bad character in group name '\\x1cx'",
+        "pattern": "(?P<x>x)(?(\u001cx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u001cy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u001cy' at position 11",
+        "msg": "bad character in group name 'x\u001cy'",
+        "pattern": "(?P<x>x)(?(x\u001cy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001C",
+        "form": "interior",
+        "id": "group-name.conditional.u00001c.interior",
+        "pattern": "(?P<x>x)(?(x\u001cy)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x1cy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x1cy' at position 11",
+        "msg": "bad character in group name 'x\\x1cy'",
+        "pattern": "(?P<x>x)(?(x\u001cy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u001d' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u001d' at position 11",
+        "msg": "bad character in group name '\u001d'",
+        "pattern": "(?P<x>x)(?(\u001d)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001D",
+        "form": "single",
+        "id": "group-name.conditional.u00001d.single",
+        "pattern": "(?P<x>x)(?(\u001d)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x1d' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x1d' at position 11",
+        "msg": "bad character in group name '\\x1d'",
+        "pattern": "(?P<x>x)(?(\u001d)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u001d' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u001d' at position 11",
+        "msg": "bad character in group name 'x\u001d'",
+        "pattern": "(?P<x>x)(?(x\u001d)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001D",
+        "form": "suffix",
+        "id": "group-name.conditional.u00001d.suffix",
+        "pattern": "(?P<x>x)(?(x\u001d)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x1d' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x1d' at position 11",
+        "msg": "bad character in group name 'x\\x1d'",
+        "pattern": "(?P<x>x)(?(x\u001d)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u001dx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u001dx' at position 11",
+        "msg": "bad character in group name '\u001dx'",
+        "pattern": "(?P<x>x)(?(\u001dx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001D",
+        "form": "prefix",
+        "id": "group-name.conditional.u00001d.prefix",
+        "pattern": "(?P<x>x)(?(\u001dx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x1dx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x1dx' at position 11",
+        "msg": "bad character in group name '\\x1dx'",
+        "pattern": "(?P<x>x)(?(\u001dx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u001dy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u001dy' at position 11",
+        "msg": "bad character in group name 'x\u001dy'",
+        "pattern": "(?P<x>x)(?(x\u001dy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001D",
+        "form": "interior",
+        "id": "group-name.conditional.u00001d.interior",
+        "pattern": "(?P<x>x)(?(x\u001dy)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x1dy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x1dy' at position 11",
+        "msg": "bad character in group name 'x\\x1dy'",
+        "pattern": "(?P<x>x)(?(x\u001dy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u001e' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u001e' at position 11",
+        "msg": "bad character in group name '\u001e'",
+        "pattern": "(?P<x>x)(?(\u001e)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001E",
+        "form": "single",
+        "id": "group-name.conditional.u00001e.single",
+        "pattern": "(?P<x>x)(?(\u001e)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x1e' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x1e' at position 11",
+        "msg": "bad character in group name '\\x1e'",
+        "pattern": "(?P<x>x)(?(\u001e)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u001e' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u001e' at position 11",
+        "msg": "bad character in group name 'x\u001e'",
+        "pattern": "(?P<x>x)(?(x\u001e)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001E",
+        "form": "suffix",
+        "id": "group-name.conditional.u00001e.suffix",
+        "pattern": "(?P<x>x)(?(x\u001e)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x1e' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x1e' at position 11",
+        "msg": "bad character in group name 'x\\x1e'",
+        "pattern": "(?P<x>x)(?(x\u001e)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u001ex' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u001ex' at position 11",
+        "msg": "bad character in group name '\u001ex'",
+        "pattern": "(?P<x>x)(?(\u001ex)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001E",
+        "form": "prefix",
+        "id": "group-name.conditional.u00001e.prefix",
+        "pattern": "(?P<x>x)(?(\u001ex)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x1ex' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x1ex' at position 11",
+        "msg": "bad character in group name '\\x1ex'",
+        "pattern": "(?P<x>x)(?(\u001ex)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u001ey' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u001ey' at position 11",
+        "msg": "bad character in group name 'x\u001ey'",
+        "pattern": "(?P<x>x)(?(x\u001ey)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001E",
+        "form": "interior",
+        "id": "group-name.conditional.u00001e.interior",
+        "pattern": "(?P<x>x)(?(x\u001ey)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x1ey' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x1ey' at position 11",
+        "msg": "bad character in group name 'x\\x1ey'",
+        "pattern": "(?P<x>x)(?(x\u001ey)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u001f' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u001f' at position 11",
+        "msg": "bad character in group name '\u001f'",
+        "pattern": "(?P<x>x)(?(\u001f)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001F",
+        "form": "single",
+        "id": "group-name.conditional.u00001f.single",
+        "pattern": "(?P<x>x)(?(\u001f)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x1f' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x1f' at position 11",
+        "msg": "bad character in group name '\\x1f'",
+        "pattern": "(?P<x>x)(?(\u001f)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u001f' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u001f' at position 11",
+        "msg": "bad character in group name 'x\u001f'",
+        "pattern": "(?P<x>x)(?(x\u001f)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001F",
+        "form": "suffix",
+        "id": "group-name.conditional.u00001f.suffix",
+        "pattern": "(?P<x>x)(?(x\u001f)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x1f' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x1f' at position 11",
+        "msg": "bad character in group name 'x\\x1f'",
+        "pattern": "(?P<x>x)(?(x\u001f)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u001fx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u001fx' at position 11",
+        "msg": "bad character in group name '\u001fx'",
+        "pattern": "(?P<x>x)(?(\u001fx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001F",
+        "form": "prefix",
+        "id": "group-name.conditional.u00001f.prefix",
+        "pattern": "(?P<x>x)(?(\u001fx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x1fx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x1fx' at position 11",
+        "msg": "bad character in group name '\\x1fx'",
+        "pattern": "(?P<x>x)(?(\u001fx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u001fy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u001fy' at position 11",
+        "msg": "bad character in group name 'x\u001fy'",
+        "pattern": "(?P<x>x)(?(x\u001fy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+001F",
+        "form": "interior",
+        "id": "group-name.conditional.u00001f.interior",
+        "pattern": "(?P<x>x)(?(x\u001fy)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x1fy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x1fy' at position 11",
+        "msg": "bad character in group name 'x\\x1fy'",
+        "pattern": "(?P<x>x)(?(x\u001fy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u007f' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u007f' at position 11",
+        "msg": "bad character in group name '\u007f'",
+        "pattern": "(?P<x>x)(?(\u007f)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+007F",
+        "form": "single",
+        "id": "group-name.conditional.u00007f.single",
+        "pattern": "(?P<x>x)(?(\u007f)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x7f' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x7f' at position 11",
+        "msg": "bad character in group name '\\x7f'",
+        "pattern": "(?P<x>x)(?(\u007f)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u007f' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u007f' at position 11",
+        "msg": "bad character in group name 'x\u007f'",
+        "pattern": "(?P<x>x)(?(x\u007f)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+007F",
+        "form": "suffix",
+        "id": "group-name.conditional.u00007f.suffix",
+        "pattern": "(?P<x>x)(?(x\u007f)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x7f' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x7f' at position 11",
+        "msg": "bad character in group name 'x\\x7f'",
+        "pattern": "(?P<x>x)(?(x\u007f)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u007fx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u007fx' at position 11",
+        "msg": "bad character in group name '\u007fx'",
+        "pattern": "(?P<x>x)(?(\u007fx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+007F",
+        "form": "prefix",
+        "id": "group-name.conditional.u00007f.prefix",
+        "pattern": "(?P<x>x)(?(\u007fx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x7fx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x7fx' at position 11",
+        "msg": "bad character in group name '\\x7fx'",
+        "pattern": "(?P<x>x)(?(\u007fx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u007fy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u007fy' at position 11",
+        "msg": "bad character in group name 'x\u007fy'",
+        "pattern": "(?P<x>x)(?(x\u007fy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+007F",
+        "form": "interior",
+        "id": "group-name.conditional.u00007f.interior",
+        "pattern": "(?P<x>x)(?(x\u007fy)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x7fy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x7fy' at position 11",
+        "msg": "bad character in group name 'x\\x7fy'",
+        "pattern": "(?P<x>x)(?(x\u007fy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u0080' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u0080' at position 11",
+        "msg": "bad character in group name '\u0080'",
+        "pattern": "(?P<x>x)(?(\u0080)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0080",
+        "form": "single",
+        "id": "group-name.conditional.u000080.single",
+        "pattern": "(?P<x>x)(?(\u0080)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x80' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x80' at position 11",
+        "msg": "bad character in group name '\\x80'",
+        "pattern": "(?P<x>x)(?(\u0080)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u0080' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u0080' at position 11",
+        "msg": "bad character in group name 'x\u0080'",
+        "pattern": "(?P<x>x)(?(x\u0080)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0080",
+        "form": "suffix",
+        "id": "group-name.conditional.u000080.suffix",
+        "pattern": "(?P<x>x)(?(x\u0080)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x80' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x80' at position 11",
+        "msg": "bad character in group name 'x\\x80'",
+        "pattern": "(?P<x>x)(?(x\u0080)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u0080x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u0080x' at position 11",
+        "msg": "bad character in group name '\u0080x'",
+        "pattern": "(?P<x>x)(?(\u0080x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0080",
+        "form": "prefix",
+        "id": "group-name.conditional.u000080.prefix",
+        "pattern": "(?P<x>x)(?(\u0080x)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\x80x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\x80x' at position 11",
+        "msg": "bad character in group name '\\x80x'",
+        "pattern": "(?P<x>x)(?(\u0080x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u0080y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u0080y' at position 11",
+        "msg": "bad character in group name 'x\u0080y'",
+        "pattern": "(?P<x>x)(?(x\u0080y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0080",
+        "form": "interior",
+        "id": "group-name.conditional.u000080.interior",
+        "pattern": "(?P<x>x)(?(x\u0080y)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\x80y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\x80y' at position 11",
+        "msg": "bad character in group name 'x\\x80y'",
+        "pattern": "(?P<x>x)(?(x\u0080y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u00ad' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u00ad' at position 11",
+        "msg": "bad character in group name '\u00ad'",
+        "pattern": "(?P<x>x)(?(\u00ad)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+00AD",
+        "form": "single",
+        "id": "group-name.conditional.u0000ad.single",
+        "pattern": "(?P<x>x)(?(\u00ad)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\xad' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\xad' at position 11",
+        "msg": "bad character in group name '\\xad'",
+        "pattern": "(?P<x>x)(?(\u00ad)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u00ad' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u00ad' at position 11",
+        "msg": "bad character in group name 'x\u00ad'",
+        "pattern": "(?P<x>x)(?(x\u00ad)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+00AD",
+        "form": "suffix",
+        "id": "group-name.conditional.u0000ad.suffix",
+        "pattern": "(?P<x>x)(?(x\u00ad)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\xad' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\xad' at position 11",
+        "msg": "bad character in group name 'x\\xad'",
+        "pattern": "(?P<x>x)(?(x\u00ad)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u00adx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u00adx' at position 11",
+        "msg": "bad character in group name '\u00adx'",
+        "pattern": "(?P<x>x)(?(\u00adx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+00AD",
+        "form": "prefix",
+        "id": "group-name.conditional.u0000ad.prefix",
+        "pattern": "(?P<x>x)(?(\u00adx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\xadx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\xadx' at position 11",
+        "msg": "bad character in group name '\\xadx'",
+        "pattern": "(?P<x>x)(?(\u00adx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u00ady' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u00ady' at position 11",
+        "msg": "bad character in group name 'x\u00ady'",
+        "pattern": "(?P<x>x)(?(x\u00ady)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+00AD",
+        "form": "interior",
+        "id": "group-name.conditional.u0000ad.interior",
+        "pattern": "(?P<x>x)(?(x\u00ady)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\xady' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\xady' at position 11",
+        "msg": "bad character in group name 'x\\xady'",
+        "pattern": "(?P<x>x)(?(x\u00ady)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u0378' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u0378' at position 11",
+        "msg": "bad character in group name '\u0378'",
+        "pattern": "(?P<x>x)(?(\u0378)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0378",
+        "form": "single",
+        "id": "group-name.conditional.u000378.single",
+        "pattern": "(?P<x>x)(?(\u0378)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u0378' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u0378' at position 11",
+        "msg": "bad character in group name '\\u0378'",
+        "pattern": "(?P<x>x)(?(\u0378)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u0378' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u0378' at position 11",
+        "msg": "bad character in group name 'x\u0378'",
+        "pattern": "(?P<x>x)(?(x\u0378)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0378",
+        "form": "suffix",
+        "id": "group-name.conditional.u000378.suffix",
+        "pattern": "(?P<x>x)(?(x\u0378)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\u0378' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\u0378' at position 11",
+        "msg": "bad character in group name 'x\\u0378'",
+        "pattern": "(?P<x>x)(?(x\u0378)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u0378x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u0378x' at position 11",
+        "msg": "bad character in group name '\u0378x'",
+        "pattern": "(?P<x>x)(?(\u0378x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0378",
+        "form": "prefix",
+        "id": "group-name.conditional.u000378.prefix",
+        "pattern": "(?P<x>x)(?(\u0378x)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u0378x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u0378x' at position 11",
+        "msg": "bad character in group name '\\u0378x'",
+        "pattern": "(?P<x>x)(?(\u0378x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u0378y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u0378y' at position 11",
+        "msg": "bad character in group name 'x\u0378y'",
+        "pattern": "(?P<x>x)(?(x\u0378y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0378",
+        "form": "interior",
+        "id": "group-name.conditional.u000378.interior",
+        "pattern": "(?P<x>x)(?(x\u0378y)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\u0378y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\u0378y' at position 11",
+        "msg": "bad character in group name 'x\\u0378y'",
+        "pattern": "(?P<x>x)(?(x\u0378y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u0379' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u0379' at position 11",
+        "msg": "bad character in group name '\u0379'",
+        "pattern": "(?P<x>x)(?(\u0379)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0379",
+        "form": "single",
+        "id": "group-name.conditional.u000379.single",
+        "pattern": "(?P<x>x)(?(\u0379)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u0379' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u0379' at position 11",
+        "msg": "bad character in group name '\\u0379'",
+        "pattern": "(?P<x>x)(?(\u0379)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u0379' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u0379' at position 11",
+        "msg": "bad character in group name 'x\u0379'",
+        "pattern": "(?P<x>x)(?(x\u0379)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0379",
+        "form": "suffix",
+        "id": "group-name.conditional.u000379.suffix",
+        "pattern": "(?P<x>x)(?(x\u0379)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\u0379' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\u0379' at position 11",
+        "msg": "bad character in group name 'x\\u0379'",
+        "pattern": "(?P<x>x)(?(x\u0379)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u0379x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u0379x' at position 11",
+        "msg": "bad character in group name '\u0379x'",
+        "pattern": "(?P<x>x)(?(\u0379x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0379",
+        "form": "prefix",
+        "id": "group-name.conditional.u000379.prefix",
+        "pattern": "(?P<x>x)(?(\u0379x)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u0379x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u0379x' at position 11",
+        "msg": "bad character in group name '\\u0379x'",
+        "pattern": "(?P<x>x)(?(\u0379x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u0379y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u0379y' at position 11",
+        "msg": "bad character in group name 'x\u0379y'",
+        "pattern": "(?P<x>x)(?(x\u0379y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+0379",
+        "form": "interior",
+        "id": "group-name.conditional.u000379.interior",
+        "pattern": "(?P<x>x)(?(x\u0379y)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\u0379y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\u0379y' at position 11",
+        "msg": "bad character in group name 'x\\u0379y'",
+        "pattern": "(?P<x>x)(?(x\u0379y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u061c' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u061c' at position 11",
+        "msg": "bad character in group name '\u061c'",
+        "pattern": "(?P<x>x)(?(\u061c)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+061C",
+        "form": "single",
+        "id": "group-name.conditional.u00061c.single",
+        "pattern": "(?P<x>x)(?(\u061c)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u061c' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u061c' at position 11",
+        "msg": "bad character in group name '\\u061c'",
+        "pattern": "(?P<x>x)(?(\u061c)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u061c' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u061c' at position 11",
+        "msg": "bad character in group name 'x\u061c'",
+        "pattern": "(?P<x>x)(?(x\u061c)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+061C",
+        "form": "suffix",
+        "id": "group-name.conditional.u00061c.suffix",
+        "pattern": "(?P<x>x)(?(x\u061c)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\u061c' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\u061c' at position 11",
+        "msg": "bad character in group name 'x\\u061c'",
+        "pattern": "(?P<x>x)(?(x\u061c)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u061cx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u061cx' at position 11",
+        "msg": "bad character in group name '\u061cx'",
+        "pattern": "(?P<x>x)(?(\u061cx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+061C",
+        "form": "prefix",
+        "id": "group-name.conditional.u00061c.prefix",
+        "pattern": "(?P<x>x)(?(\u061cx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u061cx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u061cx' at position 11",
+        "msg": "bad character in group name '\\u061cx'",
+        "pattern": "(?P<x>x)(?(\u061cx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u061cy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u061cy' at position 11",
+        "msg": "bad character in group name 'x\u061cy'",
+        "pattern": "(?P<x>x)(?(x\u061cy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+061C",
+        "form": "interior",
+        "id": "group-name.conditional.u00061c.interior",
+        "pattern": "(?P<x>x)(?(x\u061cy)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\u061cy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\u061cy' at position 11",
+        "msg": "bad character in group name 'x\\u061cy'",
+        "pattern": "(?P<x>x)(?(x\u061cy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u200b' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u200b' at position 11",
+        "msg": "bad character in group name '\u200b'",
+        "pattern": "(?P<x>x)(?(\u200b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+200B",
+        "form": "single",
+        "id": "group-name.conditional.u00200b.single",
+        "pattern": "(?P<x>x)(?(\u200b)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u200b' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u200b' at position 11",
+        "msg": "bad character in group name '\\u200b'",
+        "pattern": "(?P<x>x)(?(\u200b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u200b' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u200b' at position 11",
+        "msg": "bad character in group name 'x\u200b'",
+        "pattern": "(?P<x>x)(?(x\u200b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+200B",
+        "form": "suffix",
+        "id": "group-name.conditional.u00200b.suffix",
+        "pattern": "(?P<x>x)(?(x\u200b)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\u200b' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\u200b' at position 11",
+        "msg": "bad character in group name 'x\\u200b'",
+        "pattern": "(?P<x>x)(?(x\u200b)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u200bx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u200bx' at position 11",
+        "msg": "bad character in group name '\u200bx'",
+        "pattern": "(?P<x>x)(?(\u200bx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+200B",
+        "form": "prefix",
+        "id": "group-name.conditional.u00200b.prefix",
+        "pattern": "(?P<x>x)(?(\u200bx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u200bx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u200bx' at position 11",
+        "msg": "bad character in group name '\\u200bx'",
+        "pattern": "(?P<x>x)(?(\u200bx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u200by' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u200by' at position 11",
+        "msg": "bad character in group name 'x\u200by'",
+        "pattern": "(?P<x>x)(?(x\u200by)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+200B",
+        "form": "interior",
+        "id": "group-name.conditional.u00200b.interior",
+        "pattern": "(?P<x>x)(?(x\u200by)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\u200by' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\u200by' at position 11",
+        "msg": "bad character in group name 'x\\u200by'",
+        "pattern": "(?P<x>x)(?(x\u200by)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u200c' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u200c' at position 11",
+        "msg": "bad character in group name '\u200c'",
+        "pattern": "(?P<x>x)(?(\u200c)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+200C",
+        "form": "single",
+        "id": "group-name.conditional.u00200c.single",
+        "pattern": "(?P<x>x)(?(\u200c)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u200c' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u200c' at position 11",
+        "msg": "bad character in group name '\\u200c'",
+        "pattern": "(?P<x>x)(?(\u200c)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u200cx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u200cx' at position 11",
+        "msg": "bad character in group name '\u200cx'",
+        "pattern": "(?P<x>x)(?(\u200cx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+200C",
+        "form": "prefix",
+        "id": "group-name.conditional.u00200c.prefix",
+        "pattern": "(?P<x>x)(?(\u200cx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u200cx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u200cx' at position 11",
+        "msg": "bad character in group name '\\u200cx'",
+        "pattern": "(?P<x>x)(?(\u200cx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u200d' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u200d' at position 11",
+        "msg": "bad character in group name '\u200d'",
+        "pattern": "(?P<x>x)(?(\u200d)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+200D",
+        "form": "single",
+        "id": "group-name.conditional.u00200d.single",
+        "pattern": "(?P<x>x)(?(\u200d)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u200d' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u200d' at position 11",
+        "msg": "bad character in group name '\\u200d'",
+        "pattern": "(?P<x>x)(?(\u200d)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u200dx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u200dx' at position 11",
+        "msg": "bad character in group name '\u200dx'",
+        "pattern": "(?P<x>x)(?(\u200dx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+200D",
+        "form": "prefix",
+        "id": "group-name.conditional.u00200d.prefix",
+        "pattern": "(?P<x>x)(?(\u200dx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u200dx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u200dx' at position 11",
+        "msg": "bad character in group name '\\u200dx'",
+        "pattern": "(?P<x>x)(?(\u200dx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u2028' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u2028' at position 11",
+        "msg": "bad character in group name '\u2028'",
+        "pattern": "(?P<x>x)(?(\u2028)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+2028",
+        "form": "single",
+        "id": "group-name.conditional.u002028.single",
+        "pattern": "(?P<x>x)(?(\u2028)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u2028' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u2028' at position 11",
+        "msg": "bad character in group name '\\u2028'",
+        "pattern": "(?P<x>x)(?(\u2028)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u2028' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u2028' at position 11",
+        "msg": "bad character in group name 'x\u2028'",
+        "pattern": "(?P<x>x)(?(x\u2028)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+2028",
+        "form": "suffix",
+        "id": "group-name.conditional.u002028.suffix",
+        "pattern": "(?P<x>x)(?(x\u2028)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\u2028' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\u2028' at position 11",
+        "msg": "bad character in group name 'x\\u2028'",
+        "pattern": "(?P<x>x)(?(x\u2028)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u2028x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u2028x' at position 11",
+        "msg": "bad character in group name '\u2028x'",
+        "pattern": "(?P<x>x)(?(\u2028x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+2028",
+        "form": "prefix",
+        "id": "group-name.conditional.u002028.prefix",
+        "pattern": "(?P<x>x)(?(\u2028x)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u2028x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u2028x' at position 11",
+        "msg": "bad character in group name '\\u2028x'",
+        "pattern": "(?P<x>x)(?(\u2028x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u2028y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u2028y' at position 11",
+        "msg": "bad character in group name 'x\u2028y'",
+        "pattern": "(?P<x>x)(?(x\u2028y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+2028",
+        "form": "interior",
+        "id": "group-name.conditional.u002028.interior",
+        "pattern": "(?P<x>x)(?(x\u2028y)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\u2028y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\u2028y' at position 11",
+        "msg": "bad character in group name 'x\\u2028y'",
+        "pattern": "(?P<x>x)(?(x\u2028y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u2029' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u2029' at position 11",
+        "msg": "bad character in group name '\u2029'",
+        "pattern": "(?P<x>x)(?(\u2029)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+2029",
+        "form": "single",
+        "id": "group-name.conditional.u002029.single",
+        "pattern": "(?P<x>x)(?(\u2029)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u2029' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u2029' at position 11",
+        "msg": "bad character in group name '\\u2029'",
+        "pattern": "(?P<x>x)(?(\u2029)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u2029' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u2029' at position 11",
+        "msg": "bad character in group name 'x\u2029'",
+        "pattern": "(?P<x>x)(?(x\u2029)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+2029",
+        "form": "suffix",
+        "id": "group-name.conditional.u002029.suffix",
+        "pattern": "(?P<x>x)(?(x\u2029)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\u2029' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\u2029' at position 11",
+        "msg": "bad character in group name 'x\\u2029'",
+        "pattern": "(?P<x>x)(?(x\u2029)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u2029x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u2029x' at position 11",
+        "msg": "bad character in group name '\u2029x'",
+        "pattern": "(?P<x>x)(?(\u2029x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+2029",
+        "form": "prefix",
+        "id": "group-name.conditional.u002029.prefix",
+        "pattern": "(?P<x>x)(?(\u2029x)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u2029x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u2029x' at position 11",
+        "msg": "bad character in group name '\\u2029x'",
+        "pattern": "(?P<x>x)(?(\u2029x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u2029y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u2029y' at position 11",
+        "msg": "bad character in group name 'x\u2029y'",
+        "pattern": "(?P<x>x)(?(x\u2029y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+2029",
+        "form": "interior",
+        "id": "group-name.conditional.u002029.interior",
+        "pattern": "(?P<x>x)(?(x\u2029y)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\u2029y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\u2029y' at position 11",
+        "msg": "bad character in group name 'x\\u2029y'",
+        "pattern": "(?P<x>x)(?(x\u2029y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u2060' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u2060' at position 11",
+        "msg": "bad character in group name '\u2060'",
+        "pattern": "(?P<x>x)(?(\u2060)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+2060",
+        "form": "single",
+        "id": "group-name.conditional.u002060.single",
+        "pattern": "(?P<x>x)(?(\u2060)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u2060' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u2060' at position 11",
+        "msg": "bad character in group name '\\u2060'",
+        "pattern": "(?P<x>x)(?(\u2060)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u2060' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u2060' at position 11",
+        "msg": "bad character in group name 'x\u2060'",
+        "pattern": "(?P<x>x)(?(x\u2060)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+2060",
+        "form": "suffix",
+        "id": "group-name.conditional.u002060.suffix",
+        "pattern": "(?P<x>x)(?(x\u2060)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\u2060' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\u2060' at position 11",
+        "msg": "bad character in group name 'x\\u2060'",
+        "pattern": "(?P<x>x)(?(x\u2060)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\u2060x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\u2060x' at position 11",
+        "msg": "bad character in group name '\u2060x'",
+        "pattern": "(?P<x>x)(?(\u2060x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+2060",
+        "form": "prefix",
+        "id": "group-name.conditional.u002060.prefix",
+        "pattern": "(?P<x>x)(?(\u2060x)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\u2060x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\u2060x' at position 11",
+        "msg": "bad character in group name '\\u2060x'",
+        "pattern": "(?P<x>x)(?(\u2060x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\u2060y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\u2060y' at position 11",
+        "msg": "bad character in group name 'x\u2060y'",
+        "pattern": "(?P<x>x)(?(x\u2060y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+2060",
+        "form": "interior",
+        "id": "group-name.conditional.u002060.interior",
+        "pattern": "(?P<x>x)(?(x\u2060y)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\u2060y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\u2060y' at position 11",
+        "msg": "bad character in group name 'x\\u2060y'",
+        "pattern": "(?P<x>x)(?(x\u2060y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\ua7cf' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\ua7cf' at position 11",
+        "msg": "bad character in group name '\ua7cf'",
+        "pattern": "(?P<x>x)(?(\ua7cf)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+A7CF",
+        "form": "single",
+        "id": "group-name.conditional.u00a7cf.single",
+        "pattern": "(?P<x>x)(?(\ua7cf)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\ua7cf' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\ua7cf' at position 11",
+        "msg": "bad character in group name '\\ua7cf'",
+        "pattern": "(?P<x>x)(?(\ua7cf)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\ua7cf' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\ua7cf' at position 11",
+        "msg": "bad character in group name 'x\ua7cf'",
+        "pattern": "(?P<x>x)(?(x\ua7cf)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+A7CF",
+        "form": "suffix",
+        "id": "group-name.conditional.u00a7cf.suffix",
+        "pattern": "(?P<x>x)(?(x\ua7cf)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\ua7cf' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ua7cf' at position 11",
+        "msg": "bad character in group name 'x\\ua7cf'",
+        "pattern": "(?P<x>x)(?(x\ua7cf)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\ua7cfx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\ua7cfx' at position 11",
+        "msg": "bad character in group name '\ua7cfx'",
+        "pattern": "(?P<x>x)(?(\ua7cfx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+A7CF",
+        "form": "prefix",
+        "id": "group-name.conditional.u00a7cf.prefix",
+        "pattern": "(?P<x>x)(?(\ua7cfx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\ua7cfx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\ua7cfx' at position 11",
+        "msg": "bad character in group name '\\ua7cfx'",
+        "pattern": "(?P<x>x)(?(\ua7cfx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\ua7cfy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\ua7cfy' at position 11",
+        "msg": "bad character in group name 'x\ua7cfy'",
+        "pattern": "(?P<x>x)(?(x\ua7cfy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+A7CF",
+        "form": "interior",
+        "id": "group-name.conditional.u00a7cf.interior",
+        "pattern": "(?P<x>x)(?(x\ua7cfy)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\ua7cfy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ua7cfy' at position 11",
+        "msg": "bad character in group name 'x\\ua7cfy'",
+        "pattern": "(?P<x>x)(?(x\ua7cfy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\ud800' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\ud800' at position 11",
+        "msg": "bad character in group name '\ud800'",
+        "pattern": "(?P<x>x)(?(\ud800)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+D800",
+        "form": "single",
+        "id": "group-name.conditional.u00d800.single",
+        "pattern": "(?P<x>x)(?(\ud800)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\ud800' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\ud800' at position 11",
+        "msg": "bad character in group name '\\ud800'",
+        "pattern": "(?P<x>x)(?(\ud800)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\ud800' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\ud800' at position 11",
+        "msg": "bad character in group name 'x\ud800'",
+        "pattern": "(?P<x>x)(?(x\ud800)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+D800",
+        "form": "suffix",
+        "id": "group-name.conditional.u00d800.suffix",
+        "pattern": "(?P<x>x)(?(x\ud800)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\ud800' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ud800' at position 11",
+        "msg": "bad character in group name 'x\\ud800'",
+        "pattern": "(?P<x>x)(?(x\ud800)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\ud800x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\ud800x' at position 11",
+        "msg": "bad character in group name '\ud800x'",
+        "pattern": "(?P<x>x)(?(\ud800x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+D800",
+        "form": "prefix",
+        "id": "group-name.conditional.u00d800.prefix",
+        "pattern": "(?P<x>x)(?(\ud800x)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\ud800x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\ud800x' at position 11",
+        "msg": "bad character in group name '\\ud800x'",
+        "pattern": "(?P<x>x)(?(\ud800x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\ud800y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\ud800y' at position 11",
+        "msg": "bad character in group name 'x\ud800y'",
+        "pattern": "(?P<x>x)(?(x\ud800y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+D800",
+        "form": "interior",
+        "id": "group-name.conditional.u00d800.interior",
+        "pattern": "(?P<x>x)(?(x\ud800y)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\ud800y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ud800y' at position 11",
+        "msg": "bad character in group name 'x\\ud800y'",
+        "pattern": "(?P<x>x)(?(x\ud800y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\udbff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\udbff' at position 11",
+        "msg": "bad character in group name '\udbff'",
+        "pattern": "(?P<x>x)(?(\udbff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+DBFF",
+        "form": "single",
+        "id": "group-name.conditional.u00dbff.single",
+        "pattern": "(?P<x>x)(?(\udbff)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\udbff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\udbff' at position 11",
+        "msg": "bad character in group name '\\udbff'",
+        "pattern": "(?P<x>x)(?(\udbff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\udbff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\udbff' at position 11",
+        "msg": "bad character in group name 'x\udbff'",
+        "pattern": "(?P<x>x)(?(x\udbff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+DBFF",
+        "form": "suffix",
+        "id": "group-name.conditional.u00dbff.suffix",
+        "pattern": "(?P<x>x)(?(x\udbff)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\udbff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\udbff' at position 11",
+        "msg": "bad character in group name 'x\\udbff'",
+        "pattern": "(?P<x>x)(?(x\udbff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\udbffx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\udbffx' at position 11",
+        "msg": "bad character in group name '\udbffx'",
+        "pattern": "(?P<x>x)(?(\udbffx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+DBFF",
+        "form": "prefix",
+        "id": "group-name.conditional.u00dbff.prefix",
+        "pattern": "(?P<x>x)(?(\udbffx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\udbffx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\udbffx' at position 11",
+        "msg": "bad character in group name '\\udbffx'",
+        "pattern": "(?P<x>x)(?(\udbffx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\udbffy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\udbffy' at position 11",
+        "msg": "bad character in group name 'x\udbffy'",
+        "pattern": "(?P<x>x)(?(x\udbffy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+DBFF",
+        "form": "interior",
+        "id": "group-name.conditional.u00dbff.interior",
+        "pattern": "(?P<x>x)(?(x\udbffy)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\udbffy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\udbffy' at position 11",
+        "msg": "bad character in group name 'x\\udbffy'",
+        "pattern": "(?P<x>x)(?(x\udbffy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\udc00' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\udc00' at position 11",
+        "msg": "bad character in group name '\udc00'",
+        "pattern": "(?P<x>x)(?(\udc00)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+DC00",
+        "form": "single",
+        "id": "group-name.conditional.u00dc00.single",
+        "pattern": "(?P<x>x)(?(\udc00)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\udc00' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\udc00' at position 11",
+        "msg": "bad character in group name '\\udc00'",
+        "pattern": "(?P<x>x)(?(\udc00)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\udc00' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\udc00' at position 11",
+        "msg": "bad character in group name 'x\udc00'",
+        "pattern": "(?P<x>x)(?(x\udc00)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+DC00",
+        "form": "suffix",
+        "id": "group-name.conditional.u00dc00.suffix",
+        "pattern": "(?P<x>x)(?(x\udc00)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\udc00' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\udc00' at position 11",
+        "msg": "bad character in group name 'x\\udc00'",
+        "pattern": "(?P<x>x)(?(x\udc00)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\udc00x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\udc00x' at position 11",
+        "msg": "bad character in group name '\udc00x'",
+        "pattern": "(?P<x>x)(?(\udc00x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+DC00",
+        "form": "prefix",
+        "id": "group-name.conditional.u00dc00.prefix",
+        "pattern": "(?P<x>x)(?(\udc00x)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\udc00x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\udc00x' at position 11",
+        "msg": "bad character in group name '\\udc00x'",
+        "pattern": "(?P<x>x)(?(\udc00x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\udc00y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\udc00y' at position 11",
+        "msg": "bad character in group name 'x\udc00y'",
+        "pattern": "(?P<x>x)(?(x\udc00y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+DC00",
+        "form": "interior",
+        "id": "group-name.conditional.u00dc00.interior",
+        "pattern": "(?P<x>x)(?(x\udc00y)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\udc00y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\udc00y' at position 11",
+        "msg": "bad character in group name 'x\\udc00y'",
+        "pattern": "(?P<x>x)(?(x\udc00y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\udfff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\udfff' at position 11",
+        "msg": "bad character in group name '\udfff'",
+        "pattern": "(?P<x>x)(?(\udfff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+DFFF",
+        "form": "single",
+        "id": "group-name.conditional.u00dfff.single",
+        "pattern": "(?P<x>x)(?(\udfff)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\udfff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\udfff' at position 11",
+        "msg": "bad character in group name '\\udfff'",
+        "pattern": "(?P<x>x)(?(\udfff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\udfff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\udfff' at position 11",
+        "msg": "bad character in group name 'x\udfff'",
+        "pattern": "(?P<x>x)(?(x\udfff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+DFFF",
+        "form": "suffix",
+        "id": "group-name.conditional.u00dfff.suffix",
+        "pattern": "(?P<x>x)(?(x\udfff)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\udfff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\udfff' at position 11",
+        "msg": "bad character in group name 'x\\udfff'",
+        "pattern": "(?P<x>x)(?(x\udfff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\udfffx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\udfffx' at position 11",
+        "msg": "bad character in group name '\udfffx'",
+        "pattern": "(?P<x>x)(?(\udfffx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+DFFF",
+        "form": "prefix",
+        "id": "group-name.conditional.u00dfff.prefix",
+        "pattern": "(?P<x>x)(?(\udfffx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\udfffx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\udfffx' at position 11",
+        "msg": "bad character in group name '\\udfffx'",
+        "pattern": "(?P<x>x)(?(\udfffx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\udfffy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\udfffy' at position 11",
+        "msg": "bad character in group name 'x\udfffy'",
+        "pattern": "(?P<x>x)(?(x\udfffy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+DFFF",
+        "form": "interior",
+        "id": "group-name.conditional.u00dfff.interior",
+        "pattern": "(?P<x>x)(?(x\udfffy)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\udfffy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\udfffy' at position 11",
+        "msg": "bad character in group name 'x\\udfffy'",
+        "pattern": "(?P<x>x)(?(x\udfffy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\ufdd0' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\ufdd0' at position 11",
+        "msg": "bad character in group name '\ufdd0'",
+        "pattern": "(?P<x>x)(?(\ufdd0)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+FDD0",
+        "form": "single",
+        "id": "group-name.conditional.u00fdd0.single",
+        "pattern": "(?P<x>x)(?(\ufdd0)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\ufdd0' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\ufdd0' at position 11",
+        "msg": "bad character in group name '\\ufdd0'",
+        "pattern": "(?P<x>x)(?(\ufdd0)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\ufdd0' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\ufdd0' at position 11",
+        "msg": "bad character in group name 'x\ufdd0'",
+        "pattern": "(?P<x>x)(?(x\ufdd0)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+FDD0",
+        "form": "suffix",
+        "id": "group-name.conditional.u00fdd0.suffix",
+        "pattern": "(?P<x>x)(?(x\ufdd0)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\ufdd0' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ufdd0' at position 11",
+        "msg": "bad character in group name 'x\\ufdd0'",
+        "pattern": "(?P<x>x)(?(x\ufdd0)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\ufdd0x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\ufdd0x' at position 11",
+        "msg": "bad character in group name '\ufdd0x'",
+        "pattern": "(?P<x>x)(?(\ufdd0x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+FDD0",
+        "form": "prefix",
+        "id": "group-name.conditional.u00fdd0.prefix",
+        "pattern": "(?P<x>x)(?(\ufdd0x)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\ufdd0x' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\ufdd0x' at position 11",
+        "msg": "bad character in group name '\\ufdd0x'",
+        "pattern": "(?P<x>x)(?(\ufdd0x)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\ufdd0y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\ufdd0y' at position 11",
+        "msg": "bad character in group name 'x\ufdd0y'",
+        "pattern": "(?P<x>x)(?(x\ufdd0y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+FDD0",
+        "form": "interior",
+        "id": "group-name.conditional.u00fdd0.interior",
+        "pattern": "(?P<x>x)(?(x\ufdd0y)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\ufdd0y' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ufdd0y' at position 11",
+        "msg": "bad character in group name 'x\\ufdd0y'",
+        "pattern": "(?P<x>x)(?(x\ufdd0y)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\ufffe' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\ufffe' at position 11",
+        "msg": "bad character in group name '\ufffe'",
+        "pattern": "(?P<x>x)(?(\ufffe)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+FFFE",
+        "form": "single",
+        "id": "group-name.conditional.u00fffe.single",
+        "pattern": "(?P<x>x)(?(\ufffe)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\ufffe' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\ufffe' at position 11",
+        "msg": "bad character in group name '\\ufffe'",
+        "pattern": "(?P<x>x)(?(\ufffe)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\ufffe' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\ufffe' at position 11",
+        "msg": "bad character in group name 'x\ufffe'",
+        "pattern": "(?P<x>x)(?(x\ufffe)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+FFFE",
+        "form": "suffix",
+        "id": "group-name.conditional.u00fffe.suffix",
+        "pattern": "(?P<x>x)(?(x\ufffe)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\ufffe' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ufffe' at position 11",
+        "msg": "bad character in group name 'x\\ufffe'",
+        "pattern": "(?P<x>x)(?(x\ufffe)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\ufffex' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\ufffex' at position 11",
+        "msg": "bad character in group name '\ufffex'",
+        "pattern": "(?P<x>x)(?(\ufffex)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+FFFE",
+        "form": "prefix",
+        "id": "group-name.conditional.u00fffe.prefix",
+        "pattern": "(?P<x>x)(?(\ufffex)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\ufffex' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\ufffex' at position 11",
+        "msg": "bad character in group name '\\ufffex'",
+        "pattern": "(?P<x>x)(?(\ufffex)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\ufffey' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\ufffey' at position 11",
+        "msg": "bad character in group name 'x\ufffey'",
+        "pattern": "(?P<x>x)(?(x\ufffey)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+FFFE",
+        "form": "interior",
+        "id": "group-name.conditional.u00fffe.interior",
+        "pattern": "(?P<x>x)(?(x\ufffey)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\ufffey' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\ufffey' at position 11",
+        "msg": "bad character in group name 'x\\ufffey'",
+        "pattern": "(?P<x>x)(?(x\ufffey)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\uffff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\uffff' at position 11",
+        "msg": "bad character in group name '\uffff'",
+        "pattern": "(?P<x>x)(?(\uffff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+FFFF",
+        "form": "single",
+        "id": "group-name.conditional.u00ffff.single",
+        "pattern": "(?P<x>x)(?(\uffff)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\uffff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\uffff' at position 11",
+        "msg": "bad character in group name '\\uffff'",
+        "pattern": "(?P<x>x)(?(\uffff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\uffff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\uffff' at position 11",
+        "msg": "bad character in group name 'x\uffff'",
+        "pattern": "(?P<x>x)(?(x\uffff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+FFFF",
+        "form": "suffix",
+        "id": "group-name.conditional.u00ffff.suffix",
+        "pattern": "(?P<x>x)(?(x\uffff)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\uffff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\uffff' at position 11",
+        "msg": "bad character in group name 'x\\uffff'",
+        "pattern": "(?P<x>x)(?(x\uffff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\uffffx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\uffffx' at position 11",
+        "msg": "bad character in group name '\uffffx'",
+        "pattern": "(?P<x>x)(?(\uffffx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+FFFF",
+        "form": "prefix",
+        "id": "group-name.conditional.u00ffff.prefix",
+        "pattern": "(?P<x>x)(?(\uffffx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\uffffx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\uffffx' at position 11",
+        "msg": "bad character in group name '\\uffffx'",
+        "pattern": "(?P<x>x)(?(\uffffx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\uffffy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\uffffy' at position 11",
+        "msg": "bad character in group name 'x\uffffy'",
+        "pattern": "(?P<x>x)(?(x\uffffy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+FFFF",
+        "form": "interior",
+        "id": "group-name.conditional.u00ffff.interior",
+        "pattern": "(?P<x>x)(?(x\uffffy)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\uffffy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\uffffy' at position 11",
+        "msg": "bad character in group name 'x\\uffffy'",
+        "pattern": "(?P<x>x)(?(x\uffffy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\udbff\udfff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\udbff\udfff' at position 11",
+        "msg": "bad character in group name '\udbff\udfff'",
+        "pattern": "(?P<x>x)(?(\udbff\udfff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+10FFFF",
+        "form": "single",
+        "id": "group-name.conditional.u10ffff.single",
+        "pattern": "(?P<x>x)(?(\udbff\udfff)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\U0010ffff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\U0010ffff' at position 11",
+        "msg": "bad character in group name '\\U0010ffff'",
+        "pattern": "(?P<x>x)(?(\udbff\udfff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\udbff\udfff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\udbff\udfff' at position 11",
+        "msg": "bad character in group name 'x\udbff\udfff'",
+        "pattern": "(?P<x>x)(?(x\udbff\udfff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+10FFFF",
+        "form": "suffix",
+        "id": "group-name.conditional.u10ffff.suffix",
+        "pattern": "(?P<x>x)(?(x\udbff\udfff)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\U0010ffff' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\U0010ffff' at position 11",
+        "msg": "bad character in group name 'x\\U0010ffff'",
+        "pattern": "(?P<x>x)(?(x\udbff\udfff)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name '\udbff\udfffx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\udbff\udfffx' at position 11",
+        "msg": "bad character in group name '\udbff\udfffx'",
+        "pattern": "(?P<x>x)(?(\udbff\udfffx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+10FFFF",
+        "form": "prefix",
+        "id": "group-name.conditional.u10ffff.prefix",
+        "pattern": "(?P<x>x)(?(\udbff\udfffx)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name '\\U0010ffffx' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name '\\U0010ffffx' at position 11",
+        "msg": "bad character in group name '\\U0010ffffx'",
+        "pattern": "(?P<x>x)(?(\udbff\udfffx)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    },
+    {
+      "actual": {
+        "args": [
+          "bad character in group name 'x\udbff\udfffy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\udbff\udfffy' at position 11",
+        "msg": "bad character in group name 'x\udbff\udfffy'",
+        "pattern": "(?P<x>x)(?(x\udbff\udfffy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      },
+      "case": {
+        "codepoint": "U+10FFFF",
+        "form": "interior",
+        "id": "group-name.conditional.u10ffff.interior",
+        "pattern": "(?P<x>x)(?(x\udbff\udfffy)x|y)",
+        "syntax": "conditional"
+      },
+      "expected": {
+        "args": [
+          "bad character in group name 'x\\U0010ffffy' at position 11"
+        ],
+        "colno": 12,
+        "lineno": 1,
+        "message": "bad character in group name 'x\\U0010ffffy' at position 11",
+        "msg": "bad character in group name 'x\\U0010ffffy'",
+        "pattern": "(?P<x>x)(?(x\udbff\udfffy)x|y)",
+        "pos": 11,
+        "status": "error",
+        "type": "PatternError"
+      }
+    }
+  ],
+  "formatter": "production",
+  "module": "candidates.vm_candidate",
+  "module_sha256": "d3174b462924c9c17aea713797e74b42f29a0f7584191b8dffc67610000bde94",
+  "oracle": "stdlib re",
+  "python_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "python_version": "3.14.6 (main, Jun 23 2026, 15:18:23) [Clang 22.1.3 ]",
+  "runner_sha256": "858b7369a99b6330173419981aa75e652aa4b116ed07d36d8865f6f024e7a234",
+  "schema": "rebar-rust-unicode-group-name-adversarial-v1",
+  "seed": 5139257352621277517,
+  "self_oracle_failures": [],
+  "self_oracle_passes": 2
+}
