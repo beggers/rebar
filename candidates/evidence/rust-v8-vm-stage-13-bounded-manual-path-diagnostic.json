@@ -1,0 +1,863 @@
+{
+  "candidate_correctness_checks": 784,
+  "case_timeout_seconds": 3,
+  "completed_candidate_mismatches": 0,
+  "completed_cases": [
+    {
+      "actual_observations_sha256": "74898712368e702c2611643859a58fdc7c7a3c2c6531b1245ae3fcd5b073c618",
+      "case_index": 0,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "74898712368e702c2611643859a58fdc7c7a3c2c6531b1245ae3fcd5b073c618",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 0, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'((a)?)*'\", \"subject\": \"''\"}\n{\"case_index\": 0, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 0, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-0",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'((a)?)*'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "''",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "e9c882440679fc9e34bde515be1f100619fe383c91e91ec49099558b6fa2b56c",
+      "case_index": 1,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "e9c882440679fc9e34bde515be1f100619fe383c91e91ec49099558b6fa2b56c",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 1, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'((a)?)*'\", \"subject\": \"'a'\"}\n{\"case_index\": 1, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 1, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-1",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'((a)?)*'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "'a'",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "ed39c3094d01ee6e8140106231d1b0caa08018e793705efbea6759bb1603bd5b",
+      "case_index": 2,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "ed39c3094d01ee6e8140106231d1b0caa08018e793705efbea6759bb1603bd5b",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 2, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'(a(b)?)+'\", \"subject\": \"'aba'\"}\n{\"case_index\": 2, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 2, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-2",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'(a(b)?)+'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "'aba'",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "223722546a6148201b0e6996d5d86da3152f6d4d8aac3345ac2377fa20064f82",
+      "case_index": 3,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "223722546a6148201b0e6996d5d86da3152f6d4d8aac3345ac2377fa20064f82",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 3, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'(a?){2}'\", \"subject\": \"''\"}\n{\"case_index\": 3, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 3, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-3",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'(a?){2}'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "''",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "cf71118d19680b9c125cae072b32ba7f0c12060ad8983eaa6cb5728cab8b7bb1",
+      "case_index": 4,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "cf71118d19680b9c125cae072b32ba7f0c12060ad8983eaa6cb5728cab8b7bb1",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 4, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'(a?){0}'\", \"subject\": \"''\"}\n{\"case_index\": 4, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 4, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-4",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'(a?){0}'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "''",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "56146e7c1ebf51116f40cc96de84fc3e77304b73882ca7985725e80fbc21df2c",
+      "case_index": 5,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "56146e7c1ebf51116f40cc96de84fc3e77304b73882ca7985725e80fbc21df2c",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 5, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'(?=(a|ab))\\\\\\\\1$'\", \"subject\": \"'ab'\"}\n{\"case_index\": 5, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 5, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-5",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'(?=(a|ab))\\\\1$'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "'ab'",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "fbb4e2f00eaed1c053fda9580c5651251d23b35ac6a072cf70c2db3cd38712d3",
+      "case_index": 6,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "fbb4e2f00eaed1c053fda9580c5651251d23b35ac6a072cf70c2db3cd38712d3",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 6, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'(?:(a)|a)(?(1)b|c)'\", \"subject\": \"'ac'\"}\n{\"case_index\": 6, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 6, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-6",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'(?:(a)|a)(?(1)b|c)'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "'ac'",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "774a39cb0aed1bc6b4ce1b2015ae902058c0e12430532c138c5154a532bbcde0",
+      "case_index": 7,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "774a39cb0aed1bc6b4ce1b2015ae902058c0e12430532c138c5154a532bbcde0",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 7, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'(a|ab)'\", \"subject\": \"'ab'\"}\n{\"case_index\": 7, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 7, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-7",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'(a|ab)'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "'ab'",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "cb8bd0b265c952e1f19d96c38c3d2771b03f36bc2c8a2a2d53e51b6b86b753a0",
+      "case_index": 8,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "cb8bd0b265c952e1f19d96c38c3d2771b03f36bc2c8a2a2d53e51b6b86b753a0",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 8, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'a{4294967294}'\", \"subject\": \"'aaa'\"}\n{\"case_index\": 8, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 8, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-8",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'a{4294967294}'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "'aaa'",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "9838cf511868c41526a6a3deec94511e0d8e0011349f9d921009271f190e11e5",
+      "case_index": 9,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "9838cf511868c41526a6a3deec94511e0d8e0011349f9d921009271f190e11e5",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 9, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'(?:ab){4294967294}'\", \"subject\": \"'abab'\"}\n{\"case_index\": 9, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 9, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-9",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'(?:ab){4294967294}'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "'abab'",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "477905123138267d4a8c2c65e0d3eeb3a6443401f6a7b9398e61d1814a7a10ae",
+      "case_index": 10,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "477905123138267d4a8c2c65e0d3eeb3a6443401f6a7b9398e61d1814a7a10ae",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 10, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'(?:(a)|(b))+'\", \"subject\": \"'abba'\"}\n{\"case_index\": 10, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 10, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-10",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'(?:(a)|(b))+'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "'abba'",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "8e46efbcc73227887d2d84b8cd3aac7787dda0ccc8e2d0bcc8591d87e0af0b0b",
+      "case_index": 11,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "8e46efbcc73227887d2d84b8cd3aac7787dda0ccc8e2d0bcc8591d87e0af0b0b",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 11, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'((ab)?)*'\", \"subject\": \"'abab'\"}\n{\"case_index\": 11, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 11, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-11",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'((ab)?)*'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "'abab'",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "15836ccbf1ccb56587532b0d94f5a3db441d8f8b060d0c5ef306338c77f15d32",
+      "case_index": 12,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "15836ccbf1ccb56587532b0d94f5a3db441d8f8b060d0c5ef306338c77f15d32",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 12, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'(?=(a))a'\", \"subject\": \"'a'\"}\n{\"case_index\": 12, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 12, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-12",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'(?=(a))a'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "'a'",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "e452f348927ee0148ee00be3a5310bee6992454c214a0565dd3691a008f3888c",
+      "case_index": 13,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "e452f348927ee0148ee00be3a5310bee6992454c214a0565dd3691a008f3888c",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 13, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'(?!(a)b)a'\", \"subject\": \"'a'\"}\n{\"case_index\": 13, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 13, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-13",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'(?!(a)b)a'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "'a'",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "2807fd834e0f9af35f910b15e1c1fc52fd03441d1136d49a2afc2ee27aed465b",
+      "case_index": 14,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "2807fd834e0f9af35f910b15e1c1fc52fd03441d1136d49a2afc2ee27aed465b",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 14, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'(?<=(a))b'\", \"subject\": \"'ab'\"}\n{\"case_index\": 14, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 14, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-14",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'(?<=(a))b'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "'ab'",
+      "timing_performed": false
+    },
+    {
+      "actual_observations_sha256": "efbc94dee1bc054c24b23635ad0a0612c7149477f7aae2c9716c7c8726a69d86",
+      "case_index": 15,
+      "correctness_checks": 49,
+      "expected_observations_sha256": "efbc94dee1bc054c24b23635ad0a0612c7149477f7aae2c9716c7c8726a69d86",
+      "failed": 0,
+      "failures": [],
+      "flags": 0,
+      "frozen_source_sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3",
+      "full_suite_performed": false,
+      "holdout_cases_read": 0,
+      "isolated_process": {
+        "process_exit_code": 0,
+        "stderr": "",
+        "stdout": "{\"case_index\": 15, \"event\": \"bounded-frozen-manual-case-start\", \"flags\": 0, \"module\": \"candidates.vm_candidate\", \"pattern\": \"'(?<!ab)c'\", \"subject\": \"'abc ac c'\"}\n{\"case_index\": 15, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-complete\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n{\"case_index\": 15, \"correctness_checks\": 49, \"event\": \"bounded-frozen-manual-case-report-written\", \"mismatches\": 0, \"module\": \"candidates.vm_candidate\"}\n",
+        "timeout_seconds": 3.0
+      },
+      "label": "manual-15",
+      "module": "candidates.vm_candidate",
+      "observation_pairs": 49,
+      "pattern": "'(?<!ab)c'",
+      "performance": "NOT MEASURED",
+      "performance_fixtures_read": 0,
+      "poison_controls": {
+        "compiler_failure_cannot_be_concealed": true,
+        "compiler_failure_retains_pattern_error": true,
+        "different_compiled_flags_rejected": true,
+        "different_compiled_patterns_rejected": true,
+        "identical_compiled_patterns": true,
+        "original_frozen_equivalence_used": true,
+        "uniform_candidate_pattern_metadata": true
+      },
+      "production_artifacts": [
+        {
+          "path": "candidates/vm_candidate.py",
+          "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+        },
+        {
+          "path": "candidates/_vm_native.c",
+          "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+        },
+        {
+          "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+          "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+        }
+      ],
+      "schema": "rebar-v8-bounded-frozen-manual-case-v1",
+      "status": "PASS",
+      "subject": "'abc ac c'",
+      "timing_performed": false
+    }
+  ],
+  "completed_manual_cases": 16,
+  "failure": null,
+  "frozen_suite": {
+    "equivalence": "unchanged tools.rust_v6_paths_probe.equivalent",
+    "path": "tools/rust_v6_paths_probe.py",
+    "seed": 2026072307,
+    "sha256": "40e773053c348420a34f9ab3594035d11faeabc7b48c74df96594e3dca690dd3"
+  },
+  "full_suite_performed": false,
+  "global_timeout_seconds": 60,
+  "holdout_cases_read": 0,
+  "independent_self_reference": {
+    "completed_manual_cases": 16,
+    "isolated_processes_per_case": 2,
+    "path": "candidates/evidence/rust-v8-extended-path-diagnostic-bounded-self-test.json",
+    "self_oracle_failures": 0,
+    "sha256": "f976f49734317e03a6c2041eca6eda65966f4f68404fd4039cd63e69a145bf14"
+  },
+  "manual_case_limit": 16,
+  "module": "candidates.vm_candidate",
+  "performance": "NOT MEASURED",
+  "performance_fixtures_read": 0,
+  "production_artifacts": [
+    {
+      "path": "candidates/vm_candidate.py",
+      "sha256": "ad9b1d6868a9ca695f38f68be3e096548e73d8c1f6f55d9eec84ffc8c7dfc27a"
+    },
+    {
+      "path": "candidates/_vm_native.c",
+      "sha256": "892696cbf35a146c4da3e9e677058c3873199a4d9053b7ba9e7b4a34d5908ee5"
+    },
+    {
+      "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "6520023f79cc69afed8e0fd8a95d3822e458774eb79a65ded262f76014302e47"
+    }
+  ],
+  "schema": "rebar-v8-bounded-frozen-manual-path-diagnostic-v1",
+  "scope": "only the first frozen manual cases; not the full extended-path suite",
+  "status": "PASS",
+  "timing_performed": false
+}

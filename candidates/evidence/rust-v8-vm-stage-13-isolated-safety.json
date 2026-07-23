@@ -1,0 +1,423 @@
+{
+  "categories": {
+    "allocation-boundary": 8,
+    "buffer-boundary": 20,
+    "malformed-pattern": 27,
+    "nesting-depth": 16,
+    "repetition-boundary": 24,
+    "seeded-malformed": 48,
+    "surrogate-pattern": 44,
+    "surrogate-reversed-range": 20,
+    "unicode-group-name": 12,
+    "window-boundary": 35
+  },
+  "core_dumps": "disabled in every child process",
+  "correctness_checks": 254,
+  "cpu_limit_seconds": 5,
+  "crashes": 0,
+  "failed": 10,
+  "failed_categories": {
+    "repetition-boundary": 2,
+    "surrogate-reversed-range": 8
+  },
+  "failures": [
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \udfff-\ud800 at position 6",
+          "pattern_error": {
+            "colno": 7,
+            "lineno": 1,
+            "msg": "bad character range \udfff-\ud800",
+            "pattern": "[\\udfff-\\ud800]",
+            "pos": 6
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 0,
+        "id": "surrogate-reversed.escaped-pair.0",
+        "operation": "compile",
+        "pattern": "[\\udfff-\\ud800]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-\\u at position 9",
+          "pattern_error": {
+            "colno": 10,
+            "lineno": 1,
+            "msg": "bad character range \\u-\\u",
+            "pattern": "[\\udfff-\\ud800]",
+            "pos": 9
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \udfff-\ud800 at position 6",
+          "pattern_error": {
+            "colno": 7,
+            "lineno": 1,
+            "msg": "bad character range \udfff-\ud800",
+            "pattern": "[\\udfff-\\ud800]",
+            "pos": 6
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 2,
+        "id": "surrogate-reversed.escaped-pair.2",
+        "operation": "compile",
+        "pattern": "[\\udfff-\\ud800]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-\\u at position 9",
+          "pattern_error": {
+            "colno": 10,
+            "lineno": 1,
+            "msg": "bad character range \\u-\\u",
+            "pattern": "[\\udfff-\\ud800]",
+            "pos": 9
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \udfff-\ud800 at position 6",
+          "pattern_error": {
+            "colno": 7,
+            "lineno": 1,
+            "msg": "bad character range \udfff-\ud800",
+            "pattern": "[\\udfff-\\ud800]",
+            "pos": 6
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 256,
+        "id": "surrogate-reversed.escaped-pair.256",
+        "operation": "compile",
+        "pattern": "[\\udfff-\\ud800]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-\\u at position 9",
+          "pattern_error": {
+            "colno": 10,
+            "lineno": 1,
+            "msg": "bad character range \\u-\\u",
+            "pattern": "[\\udfff-\\ud800]",
+            "pos": 9
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \udfff-\ud800 at position 6",
+          "pattern_error": {
+            "colno": 7,
+            "lineno": 1,
+            "msg": "bad character range \udfff-\ud800",
+            "pattern": "[\\udfff-\\ud800]",
+            "pos": 6
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 258,
+        "id": "surrogate-reversed.escaped-pair.258",
+        "operation": "compile",
+        "pattern": "[\\udfff-\\ud800]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-\\u at position 9",
+          "pattern_error": {
+            "colno": 10,
+            "lineno": 1,
+            "msg": "bad character range \\u-\\u",
+            "pattern": "[\\udfff-\\ud800]",
+            "pos": 9
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \ud800-a at position 6",
+          "pattern_error": {
+            "colno": 7,
+            "lineno": 1,
+            "msg": "bad character range \ud800-a",
+            "pattern": "[\\ud800-a]",
+            "pos": 6
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 0,
+        "id": "surrogate-reversed.escaped-low-ascii.0",
+        "operation": "compile",
+        "pattern": "[\\ud800-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-a at position 5",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "bad character range \\u-a",
+            "pattern": "[\\ud800-a]",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \ud800-a at position 6",
+          "pattern_error": {
+            "colno": 7,
+            "lineno": 1,
+            "msg": "bad character range \ud800-a",
+            "pattern": "[\\ud800-a]",
+            "pos": 6
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 2,
+        "id": "surrogate-reversed.escaped-low-ascii.2",
+        "operation": "compile",
+        "pattern": "[\\ud800-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-a at position 5",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "bad character range \\u-a",
+            "pattern": "[\\ud800-a]",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \ud800-a at position 6",
+          "pattern_error": {
+            "colno": 7,
+            "lineno": 1,
+            "msg": "bad character range \ud800-a",
+            "pattern": "[\\ud800-a]",
+            "pos": 6
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 256,
+        "id": "surrogate-reversed.escaped-low-ascii.256",
+        "operation": "compile",
+        "pattern": "[\\ud800-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-a at position 5",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "bad character range \\u-a",
+            "pattern": "[\\ud800-a]",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \ud800-a at position 6",
+          "pattern_error": {
+            "colno": 7,
+            "lineno": 1,
+            "msg": "bad character range \ud800-a",
+            "pattern": "[\\ud800-a]",
+            "pos": 6
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "surrogate-reversed-range",
+        "flags": 258,
+        "id": "surrogate-reversed.escaped-low-ascii.258",
+        "operation": "compile",
+        "pattern": "[\\ud800-a]"
+      },
+      "expected": {
+        "result": {
+          "error": "PatternError",
+          "message": "bad character range \\u-a at position 5",
+          "pattern_error": {
+            "colno": 6,
+            "lineno": 1,
+            "msg": "bad character range \\u-a",
+            "pattern": "[\\ud800-a]",
+            "pos": 5
+          }
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "endpos": 2,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    2
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                2
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "repetition-boundary",
+        "id": "repetition.large-possessive.fullmatch",
+        "operation": "fullmatch",
+        "pattern": "(?:a{1,2}){2,4}+",
+        "subject": "aa"
+      },
+      "expected": {
+        "result": {
+          "value": null
+        },
+        "status": "completed"
+      }
+    },
+    {
+      "actual": {
+        "result": {
+          "value": {
+            "endpos": 2,
+            "groupdict": {},
+            "groups": {
+              "tuple": []
+            },
+            "lastgroup": null,
+            "lastindex": null,
+            "pos": 0,
+            "regs": {
+              "tuple": [
+                {
+                  "tuple": [
+                    0,
+                    2
+                  ]
+                }
+              ]
+            },
+            "span": {
+              "tuple": [
+                0,
+                2
+              ]
+            }
+          }
+        },
+        "status": "completed"
+      },
+      "case": {
+        "category": "repetition-boundary",
+        "id": "repetition.large-choice-possessive.fullmatch",
+        "operation": "fullmatch",
+        "pattern": "(?:(?:a|b){1,2}){2,4}+",
+        "subject": "ab"
+      },
+      "expected": {
+        "result": {
+          "value": null
+        },
+        "status": "completed"
+      }
+    }
+  ],
+  "isolation": "one independent subprocess per engine and case",
+  "memory_limit_mib": 768,
+  "module": "candidates.vm_candidate",
+  "oracle": "CPython stdlib re",
+  "oracle_failures": 0,
+  "python_version": "3.14.6",
+  "schema": "rebar-rust-subprocess-safety-v1",
+  "seed": 2026072319,
+  "timeout_seconds": 4.0,
+  "timeouts": 0
+}

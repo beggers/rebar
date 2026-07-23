@@ -18,3 +18,5 @@ The [one actual C run](rust-v8-vm-stage-11-bounded-manual-path-diagnostic.json) 
 This is a diagnosis, not a passing C campaign or performance benchmark. The complete **72,248-case** extended C result remains **NOT MEASURED**. The hidden final benchmark is **NOT ACCESSED**. C remains **NOT QUALIFIED**.
 
 A [first attempted compact-repeat repair](C-STAGE-12-REJECTED-COMPACT-REPEAT.md) was independently checked, found to change optional-capture behavior, and rejected. Its exact failed implementation and both genuine differences remain preserved.
+
+A [second compact-repeat repair](C-STAGE-13-REJECTED-SAFETY.md) subsequently passes all **784** original bounded comparisons and all **72,248** extended tests. Its separate isolated safety check reveals **10** remaining error and possessive-repeat differences, so it is also preserved rather than accepted.

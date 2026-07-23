@@ -2,6 +2,12 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## C compact repeats pass the extended tests but fail isolated safety
+
+The [second proposed compact C implementation](../candidates/evidence/C-STAGE-13-REJECTED-SAFETY.patch) fixes the first rejected capture regression, compiles enormous multi-character patterns only once, preserves the existing small-repeat path, and resumes lazy matches incrementally. Its [complete 16-pattern bounded test](../candidates/evidence/rust-v8-vm-stage-13-bounded-manual-path-diagnostic.json) passes all **784/784** frozen comparisons. The exact same candidate also passes the entire unchanged [**72,248-case extended Python suite**](../candidates/evidence/rust-v8-vm-stage-13-extended-path-failures.json.gz); both independent Python references agree, and there are no timeout, missing-phase, or answer differences.
+
+A subsequent single [full 254-case isolated safety check](../candidates/evidence/rust-v8-vm-stage-13-isolated-safety.json) exposes **10** remaining differences: **8** inaccurate escaped-surrogate error messages or positions and **2** incorrect possessive-repeat matches. It records **zero** crashes, **zero** timeouts, and **zero** Python-reference failures. The proposed source remains archived as an exact patch rather than being merged into the production C engine. Its [complete rejection report](../candidates/evidence/C-STAGE-13-REJECTED-SAFETY.md) preserves every actual expected and observed result. No final test or performance was accessed.
+
 ## Rejected first C compact-repeat implementation
 
 The [first proposed compact C repeat](../candidates/evidence/C-STAGE-12-REJECTED-COMPACT-REPEAT.patch) adds a real native instruction and avoids expanding large multi-character patterns, but its first genuine [bounded frozen verification](../candidates/evidence/rust-v8-vm-stage-12-bounded-manual-path-diagnostic.json) exposes **two** capture differences in **98** checks. For frozen `((a)?)*` with an inverted matching window, standard Python preserves an empty first capture; the proposed C implementation incorrectly returns an unmatched capture in both `match` and `scanner.match`.
