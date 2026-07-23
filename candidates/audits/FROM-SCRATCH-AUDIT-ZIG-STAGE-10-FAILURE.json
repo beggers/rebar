@@ -1,0 +1,201 @@
+{
+  "schema": "rebar-stage10-audit-actual-process-failure-v1",
+  "evidence_kind": "ORIGINAL_PROCESS_OUTPUT_NOT_CANONICAL_REPORT",
+  "stage": "zig-stage-10",
+  "status": "FAIL",
+  "pinned_cpython": "3.14.6",
+  "original_process": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 -B -m tools.audit_from_scratch",
+    "invocation_count": 1,
+    "rerun_count": 0,
+    "exit_code": 1,
+    "stdout": "{\"family_results\": {\"ast\": true, \"rust\": true, \"vm\": true, \"zig\": false}, \"manifest_passed\": true, \"native_elf_binary_count\": 5, \"native_elf_passed\": true, \"native_mapping_passed\": false, \"passed\": false, \"report\": \"candidates/audits/FROM-SCRATCH-AUDIT.json\", \"result\": \"FAIL\", \"rust_native_elf_passed\": true, \"self_test_checks\": 76, \"verified_core_family_count\": 3, \"verified_distinct_pipeline_count\": 4, \"vm_native_elf_passed\": true, \"zig_native_elf_passed\": true}\n",
+    "stdout_summary": {
+      "family_results": {
+        "ast": true,
+        "rust": true,
+        "vm": true,
+        "zig": false
+      },
+      "manifest_passed": true,
+      "native_elf_binary_count": 5,
+      "native_elf_passed": true,
+      "native_mapping_passed": false,
+      "passed": false,
+      "report": "candidates/audits/FROM-SCRATCH-AUDIT.json",
+      "result": "FAIL",
+      "rust_native_elf_passed": true,
+      "self_test_checks": 76,
+      "verified_core_family_count": 3,
+      "verified_distinct_pipeline_count": 4,
+      "vm_native_elf_passed": true,
+      "zig_native_elf_passed": true
+    }
+  },
+  "self_test": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 -B -m tools.audit_from_scratch --self-test",
+    "invocation_count": 1,
+    "rerun_count": 0,
+    "exit_code": 0,
+    "check_count": 76,
+    "failed": [],
+    "passed": true,
+    "fixture_storage": "in-memory only",
+    "evidence_kind": "ORIGINAL_PROCESS_OUTPUT"
+  },
+  "failure": {
+    "family": "zig",
+    "gate": "runtime_native_mapping_provenance",
+    "native_mapping_passed": false,
+    "details": "The original failing process reported that Zig failed actual native-mapping provenance. Its original summary does not disclose the failed mapped path, mapped digest, or detailed mapping findings.",
+    "actual_mapped_paths": "NOT RECORDED IN ORIGINAL PROCESS OUTPUT",
+    "actual_mapped_sha256": "NOT RECORDED IN ORIGINAL PROCESS OUTPUT"
+  },
+  "canonical_report": {
+    "path": "candidates/audits/FROM-SCRATCH-AUDIT.json",
+    "sha256": "6867580e7634163bd009d1f4e699d3fe4fb9ddc89b183ef60200363d1a8ab24e",
+    "passed": true,
+    "result": "PASS",
+    "status_for_stage10": "STALE_FOR_STAGE_10",
+    "stage10_failure_json_written_by_frozen_auditor": false,
+    "write_policy": "The unchanged original auditor writes the canonical JSON only when report.passed is true; the failed Stage 10 invocation left the previous canonical report byte-for-byte unchanged.",
+    "previous_zig_source_artifacts": [
+      {
+        "path": "candidates/zig_candidate.py",
+        "sha256": "d3a7e35711f402db85f42e96470caf8a9393f1171e5bc7f26a55e0a138638ac5",
+        "role": "previous-public-python"
+      },
+      {
+        "path": "candidates/zig/mini_regex.zig",
+        "sha256": "b0e26337eb007793639b678d967ef55eb24b060a64f736185eb2745afd0b6d2f",
+        "role": "previous-zig-engine-source"
+      },
+      {
+        "path": "candidates/zig/py_bridge.c",
+        "sha256": "45ba87678defde5a23fa385622b727758c92dc78275ed2e855d5a0a883251676",
+        "role": "previous-native-bridge-source"
+      }
+    ]
+  },
+  "frozen_auditor": {
+    "path": "tools/audit_from_scratch.py",
+    "sha256": "4c47a77cf096df354e59d03096447c56bff890389869c6a75667a36c8471d024",
+    "role": "unchanged-original-independence-auditor"
+  },
+  "immutable_goal": {
+    "path": "GOAL.md",
+    "sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+    "role": "immutable-project-objective"
+  },
+  "stage10_zig_production_artifacts": [
+    {
+      "path": "candidates/zig/mini_regex.zig",
+      "sha256": "666d9431b5151383eefd78db3fdffc5626685260db474fbecd1d7277da605dc5",
+      "role": "zig-engine-source"
+    },
+    {
+      "path": "candidates/zig/py_bridge.c",
+      "sha256": "dfc791360c116fabca4b782fc506ea02b67ca77f84bb500d134b4cd1154300cb",
+      "role": "zig-bridge-source"
+    },
+    {
+      "path": "candidates/zig_candidate.py",
+      "sha256": "95a2010152099f2db61595927542b2f25a675eb72bd33125659969d804360239",
+      "role": "zig-public-python"
+    },
+    {
+      "path": "candidates/_zig_probe.so",
+      "sha256": "1a692ca2cabcb30f9605676adac83a43685b8ef3e8aa2d3d9f4e93dd97b0e32e",
+      "role": "zig-native-engine"
+    },
+    {
+      "path": "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "411a337fef2c6a524bf58043923fb26470031e1ede5da5b8dfc67b08d06cf8bb",
+      "role": "zig-native-bridge"
+    }
+  ],
+  "all_five_current_owned_native_artifacts": [
+    {
+      "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "d3ec19d66161f789056f2146c3abadccb98fa7bfd979fd66e1fb68540ad0f078",
+      "role": "c-native-engine-and-bridge"
+    },
+    {
+      "path": "candidates/_rust_engine.so",
+      "sha256": "d1a0983b09ec3fe848b91f0df82be6b5d65cda77c37d2870b4dba0bb37527b5e",
+      "role": "rust-native-engine"
+    },
+    {
+      "path": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "bacce4e941dfa83a03eb87131c0ee8fe91feaa31ad02d97119a5c6bdce956e71",
+      "role": "rust-native-bridge"
+    },
+    {
+      "path": "candidates/_zig_probe.so",
+      "sha256": "1a692ca2cabcb30f9605676adac83a43685b8ef3e8aa2d3d9f4e93dd97b0e32e",
+      "role": "zig-native-engine"
+    },
+    {
+      "path": "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "411a337fef2c6a524bf58043923fb26470031e1ede5da5b8dfc67b08d06cf8bb",
+      "role": "zig-native-bridge"
+    }
+  ],
+  "preserved_stage10_correctness_evidence": [
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-10-depth-safety.json",
+      "sha256": "1874c3f1802482a946fde8838620024ff399943388bd02dbe8ce207aed687032",
+      "role": "original-348-case-depth-pass"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-zig-stage-10-isolated-safety.json",
+      "sha256": "e7b6cd5c90a3539f767c622d640d6f38cfd7b088938a5acb2b3054a14e7e5e58",
+      "role": "original-254-case-isolated-safety-pass"
+    }
+  ],
+  "preserved_qualified_campaigns": [
+    {
+      "path": "candidates/evidence/rust-v8-rust-inline-singleton-sealed-campaign.json",
+      "sha256": "b2487d29a909db087a3f4bc8808db0c1b7af20cfb49b4ee043d136108989b39b",
+      "role": "qualified-rust-campaign"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-rust-interned-attributes-sealed-campaign.json",
+      "sha256": "2ad97c7b1e5a04f95694598dee8fb97e4a754e6440b1d917f632c6526984dcaf",
+      "role": "qualified-rust-campaign"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-rust-native-direct-dispatch-sealed-campaign.json",
+      "sha256": "e8360a0f540cd6f369ed96de65d68359864eab2e91bb7940c3342ef585888f83",
+      "role": "qualified-rust-campaign"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-rust-native-heap-final-sealed-campaign.json",
+      "sha256": "525491b04db483fb7cc94a5508b3885b74c529328c49dd238afc5cf2c686fd96",
+      "role": "qualified-rust-campaign"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-rust-native-expand-cache-sealed-campaign.json",
+      "sha256": "646363b65a0842d4504ab8e8f1924335de6d34a329a133212bec0c808df4cc16",
+      "role": "qualified-rust-campaign"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-rust-native-slot-fastpath-sealed-campaign.json",
+      "sha256": "1b4bab2c258f3ad3ebc203c1184496a8c0b140441f3953fee3e29a2bf389e415",
+      "role": "qualified-rust-campaign"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-rust-mandatory-prefix-filter-sealed-campaign.json",
+      "sha256": "69691b700f7b0ae7d4174fa18f8d7f58284170a7a5a641e40f7a209646d7d353",
+      "role": "qualified-rust-campaign"
+    },
+    {
+      "path": "candidates/evidence/rust-v8-vm-stage-19-sealed-campaign.json",
+      "sha256": "d16a046cd00996291be449f9304d401917c8db16c178e8d4f003f81c688b2677",
+      "role": "qualified-c-campaign"
+    }
+  ],
+  "holdout": "NOT ACCESSED",
+  "performance": "NOT MEASURED",
+  "timing_performed": false
+}
