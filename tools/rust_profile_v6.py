@@ -113,7 +113,7 @@ BRIDGE_FIELDS = (
 
 
 def native_counters():
-    engine = rust._NATIVE.library
+    engine = ctypes.CDLL(str(Path(rust.__file__).with_name("_rust_engine.so").resolve()))
     bridge = ctypes.CDLL(str(Path(_rust_bridge.__file__).resolve()))
     for library, prefix in (
         (engine, "rebar_rust_profile"),

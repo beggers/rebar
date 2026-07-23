@@ -1,10 +1,745 @@
+#define _GNU_SOURCE
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
+#include <stddef.h>
 #include <stdint.h>
+#include <string.h>
 
+extern void *rebar_compile(const uint32_t *, size_t, uint32_t, uint8_t, const size_t *, const uint32_t *, size_t);
+extern void rebar_free(void *);
+extern size_t rebar_groups(const void *);
+extern uint32_t rebar_flags(const void *);
+extern size_t rebar_name_count(const void *);
+extern size_t rebar_name_len(const void *, size_t);
+extern size_t rebar_name_group(const void *, size_t);
+extern size_t rebar_name_copy(const void *, size_t, uint8_t *, size_t);
+extern size_t rebar_error_len(void);
+extern intptr_t rebar_error_pos(void);
+extern uint8_t rebar_error_include(void);
+extern size_t rebar_error_copy(uint8_t *, size_t);
 extern int rebar_match(const void *, const uint32_t *, const uint32_t *, const uint8_t *, size_t, size_t, size_t, uint8_t, uint8_t, intptr_t *, intptr_t *, intptr_t *);
 extern int rebar_match_ascii(const void *, const uint8_t *, size_t, size_t, size_t, uint8_t, uint8_t, intptr_t *, intptr_t *, intptr_t *);
 extern intptr_t rebar_collect_ascii(const void *, const uint8_t *, size_t, size_t, size_t, size_t, intptr_t *, intptr_t *, intptr_t *);
+#if defined(__GNUC__) || defined(__clang__)
+#define RUST_OPTIONAL_SYMBOL __attribute__((weak))
+#else
+#define RUST_OPTIONAL_SYMBOL
+#endif
+extern int rebar_match_wide(const void *, const uint8_t *, size_t, uint8_t, size_t, size_t, uint8_t, uint8_t, intptr_t *, intptr_t *, intptr_t *) RUST_OPTIONAL_SYMBOL;
+extern intptr_t rebar_collect_wide(const void *, const uint8_t *, size_t, uint8_t, size_t, size_t, size_t, intptr_t *, intptr_t *, intptr_t *) RUST_OPTIONAL_SYMBOL;
+
+#define RUST_LOCAL_PATTERN_WORDS 256
+#define RUST_LOCAL_NAME_WORDS 16
+#define RUST_LOCAL_CAPTURE_WORDS 64
+#define RUST_ITERATOR_CAPTURE_WORDS 16
+#define RUST_LOCAL_BOUND_ARGS 24
+
+typedef struct {
+    PyObject_VAR_HEAD
+    PyObject *pattern;
+    PyObject *string;
+    PyObject *groupindex;
+    PyObject *regs;
+    Py_ssize_t groups;
+    Py_ssize_t pos;
+    Py_ssize_t endpos;
+    intptr_t lastindex;
+    intptr_t spans[];
+} RustMatch;
+
+typedef struct {
+    PyObject_VAR_HEAD
+    PyObject *function;
+    PyObject *pattern;
+    PyObject *signature;
+    vectorcallfunc vectorcall;
+    PyObject *prefix[];
+} RustBoundMethod;
+
+static PyTypeObject RustMatchType;
+static PyTypeObject RustIteratorType;
+static PyTypeObject RustScannerType;
+static PyTypeObject RustBoundMethodType;
+static PyObject *rust_template_helper;
+
+static PyObject *rust_span(intptr_t begin, intptr_t end) {
+    PyObject *pair = PyTuple_New(2);
+    if (pair == NULL) return NULL;
+    PyObject *first = PyLong_FromSsize_t((Py_ssize_t)begin);
+    PyObject *second = PyLong_FromSsize_t((Py_ssize_t)end);
+    if (first == NULL || second == NULL) {
+        Py_XDECREF(first);
+        Py_XDECREF(second);
+        Py_DECREF(pair);
+        return NULL;
+    }
+    PyTuple_SET_ITEM(pair, 0, first);
+    PyTuple_SET_ITEM(pair, 1, second);
+    return pair;
+}
+
+static RustMatch *rust_match_allocate(PyObject *pattern, PyObject *string, PyObject *groupindex, size_t groups, Py_ssize_t pos, Py_ssize_t endpos) {
+    if (groups > (size_t)PY_SSIZE_T_MAX / 2 - 1) {
+        PyErr_NoMemory();
+        return NULL;
+    }
+    size_t stride = groups + 1;
+    RustMatch *match = (RustMatch *)PyType_GenericAlloc(&RustMatchType, (Py_ssize_t)(stride * 2));
+    if (match == NULL) return NULL;
+    match->pattern = Py_NewRef(pattern);
+    match->string = Py_NewRef(string);
+    match->groupindex = Py_NewRef(groupindex);
+    match->regs = NULL;
+    match->groups = (Py_ssize_t)groups;
+    match->pos = pos;
+    match->endpos = endpos;
+    match->lastindex = -1;
+    return match;
+}
+
+static int rust_match_group_number(RustMatch *match, PyObject *value, Py_ssize_t *number) {
+    if (PyLong_CheckExact(value)) {
+        *number = PyLong_AsSsize_t(value);
+    } else if (PyIndex_Check(value)) {
+        PyObject *index = PyNumber_Index(value);
+        if (index == NULL) return 0;
+        *number = PyLong_AsSsize_t(index);
+        Py_DECREF(index);
+    } else {
+        int borrowed = PyDict_Check(match->groupindex);
+        Py_ssize_t names = borrowed ? PyDict_GET_SIZE(match->groupindex) : PyMapping_Size(match->groupindex);
+        if (names < 0) return 0;
+        if (names == 0) {
+            PyErr_SetString(PyExc_IndexError, "no such group");
+            return 0;
+        }
+        PyObject *item = borrowed ? PyDict_GetItemWithError(match->groupindex, value) : PyObject_GetItem(match->groupindex, value);
+        if (item == NULL) {
+            if (PyErr_Occurred() && !PyErr_ExceptionMatches(PyExc_KeyError)) return 0;
+            PyErr_Clear();
+            PyErr_SetString(PyExc_IndexError, "no such group");
+            return 0;
+        }
+        *number = PyLong_AsSsize_t(item);
+        if (!borrowed) Py_DECREF(item);
+    }
+    if (PyErr_Occurred() || *number < 0 || *number > match->groups) {
+        PyErr_Clear();
+        PyErr_SetString(PyExc_IndexError, "no such group");
+        return 0;
+    }
+    return 1;
+}
+
+static PyObject *rust_match_piece(RustMatch *match, Py_ssize_t group, PyObject *missing) {
+    size_t stride = (size_t)match->groups + 1;
+    intptr_t begin = match->spans[group];
+    intptr_t end = match->spans[stride + (size_t)group];
+    if (begin < 0) return Py_NewRef(missing);
+    if (PyUnicode_Check(match->string)) return PyUnicode_Substring(match->string, (Py_ssize_t)begin, (Py_ssize_t)end);
+    if (PyBytes_CheckExact(match->string)) return PyBytes_FromStringAndSize(PyBytes_AS_STRING(match->string) + begin, (Py_ssize_t)(end - begin));
+    Py_buffer view = {0};
+    if (PyObject_GetBuffer(match->string, &view, PyBUF_SIMPLE) != 0) return NULL;
+    Py_ssize_t first = begin < 0 ? 0 : (Py_ssize_t)begin;
+    Py_ssize_t finish = end < 0 ? 0 : (Py_ssize_t)end;
+    if (first > view.len) first = view.len;
+    if (finish > view.len) finish = view.len;
+    if (finish < first) finish = first;
+    PyObject *piece = PyBytes_FromStringAndSize((const char *)view.buf + first, finish - first);
+    PyBuffer_Release(&view);
+    return piece;
+}
+
+static PyObject *rust_match_group(RustMatch *match, PyObject *const *args, Py_ssize_t nargs) {
+    if (nargs == 0) return rust_match_piece(match, 0, Py_None);
+    if (nargs == 1) {
+        Py_ssize_t group;
+        return rust_match_group_number(match, args[0], &group) ? rust_match_piece(match, group, Py_None) : NULL;
+    }
+    PyObject *result = PyTuple_New(nargs);
+    if (result == NULL) return NULL;
+    for (Py_ssize_t index = 0; index < nargs; index++) {
+        Py_ssize_t group;
+        if (!rust_match_group_number(match, args[index], &group)) {
+            Py_DECREF(result);
+            return NULL;
+        }
+        PyObject *piece = rust_match_piece(match, group, Py_None);
+        if (piece == NULL) {
+            Py_DECREF(result);
+            return NULL;
+        }
+        PyTuple_SET_ITEM(result, index, piece);
+    }
+    return result;
+}
+
+static int rust_default_arg(PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames, PyObject **missing, const char *method) {
+    Py_ssize_t count = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    *missing = Py_None;
+    if (count > 1) {
+        PyErr_Format(PyExc_TypeError, "%s() takes at most 1 keyword argument (%zd given)", method, count);
+        return 0;
+    }
+    if (nargs + count > 1) {
+        PyErr_Format(PyExc_TypeError, "%s() takes at most 1 argument (%zd given)", method, nargs + count);
+        return 0;
+    }
+    if (count != 0) {
+        PyObject *name = PyTuple_GET_ITEM(kwnames, 0);
+        if (PyUnicode_CompareWithASCIIString(name, "default") != 0) {
+            if (!PyErr_Occurred()) PyErr_Format(PyExc_TypeError, "%s() got an unexpected keyword argument '%U'", method, name);
+            return 0;
+        }
+        *missing = args[nargs];
+    } else if (nargs != 0) {
+        *missing = args[0];
+    }
+    return 1;
+}
+
+static PyObject *rust_match_groups(RustMatch *match, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    PyObject *missing;
+    if (!rust_default_arg(args, nargs, kwnames, &missing, "groups")) return NULL;
+    PyObject *result = PyTuple_New(match->groups);
+    if (result == NULL) return NULL;
+    for (Py_ssize_t group = 1; group <= match->groups; group++) {
+        PyObject *piece = rust_match_piece(match, group, missing);
+        if (piece == NULL) {
+            Py_DECREF(result);
+            return NULL;
+        }
+        PyTuple_SET_ITEM(result, group - 1, piece);
+    }
+    return result;
+}
+
+static PyObject *rust_match_groupdict(RustMatch *match, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    PyObject *missing;
+    if (!rust_default_arg(args, nargs, kwnames, &missing, "groupdict")) return NULL;
+    PyObject *result = PyDict_New();
+    if (result == NULL) return NULL;
+    if (PyDict_Check(match->groupindex)) {
+        PyObject *name;
+        PyObject *number;
+        Py_ssize_t cursor = 0;
+        while (PyDict_Next(match->groupindex, &cursor, &name, &number)) {
+            Py_ssize_t group = PyLong_AsSsize_t(number);
+            PyObject *piece = PyErr_Occurred() ? NULL : rust_match_piece(match, group, missing);
+            if (piece == NULL || PyDict_SetItem(result, name, piece) != 0) {
+                Py_XDECREF(piece);
+                Py_DECREF(result);
+                return NULL;
+            }
+            Py_DECREF(piece);
+        }
+        return result;
+    }
+    PyObject *items = PyMapping_Items(match->groupindex);
+    if (items == NULL) {
+        Py_DECREF(result);
+        return NULL;
+    }
+    for (Py_ssize_t index = 0; index < PyList_GET_SIZE(items); index++) {
+        PyObject *pair = PyList_GET_ITEM(items, index);
+        PyObject *name = PyTuple_GET_ITEM(pair, 0);
+        Py_ssize_t group = PyLong_AsSsize_t(PyTuple_GET_ITEM(pair, 1));
+        PyObject *piece = PyErr_Occurred() ? NULL : rust_match_piece(match, group, missing);
+        if (piece == NULL || PyDict_SetItem(result, name, piece) != 0) {
+            Py_XDECREF(piece);
+            Py_DECREF(items);
+            Py_DECREF(result);
+            return NULL;
+        }
+        Py_DECREF(piece);
+    }
+    Py_DECREF(items);
+    return result;
+}
+
+static PyObject *rust_match_bound(RustMatch *match, PyObject *const *args, Py_ssize_t nargs, int mode, const char *method) {
+    Py_ssize_t group = 0;
+    if (nargs > 1) {
+        PyErr_Format(PyExc_TypeError, "%s expected at most 1 argument, got %zd", method, nargs);
+        return NULL;
+    }
+    if (nargs == 1 && !rust_match_group_number(match, args[0], &group)) return NULL;
+    size_t stride = (size_t)match->groups + 1;
+    intptr_t begin = match->spans[group];
+    intptr_t end = match->spans[stride + (size_t)group];
+    if (begin < 0) begin = end = -1;
+    if (mode == 0) return PyLong_FromSsize_t((Py_ssize_t)begin);
+    if (mode == 1) return PyLong_FromSsize_t((Py_ssize_t)end);
+    return rust_span(begin, end);
+}
+
+static PyObject *rust_match_start(RustMatch *match, PyObject *const *args, Py_ssize_t nargs) { return rust_match_bound(match, args, nargs, 0, "start"); }
+static PyObject *rust_match_end(RustMatch *match, PyObject *const *args, Py_ssize_t nargs) { return rust_match_bound(match, args, nargs, 1, "end"); }
+static PyObject *rust_match_span_method(RustMatch *match, PyObject *const *args, Py_ssize_t nargs) { return rust_match_bound(match, args, nargs, 2, "span"); }
+
+static PyObject *rust_match_expand(RustMatch *match, PyObject *template) {
+    if (rust_template_helper == NULL) {
+        PyErr_SetString(PyExc_RuntimeError, "Rust match template helper is not configured");
+        return NULL;
+    }
+    PyObject *args[2] = {template, (PyObject *)match};
+    return PyObject_Vectorcall(rust_template_helper, args, 2, NULL);
+}
+
+static PyObject *rust_match_copy(RustMatch *match, PyObject *ignored) {
+    (void)ignored;
+    return Py_NewRef(match);
+}
+
+static PyObject *rust_match_deepcopy(RustMatch *match, PyObject *memo) {
+    (void)memo;
+    return Py_NewRef(match);
+}
+
+static PyObject *rust_match_reduce(RustMatch *match, PyObject *ignored) {
+    (void)match;
+    (void)ignored;
+    PyErr_SetString(PyExc_TypeError, "cannot pickle 're.Match' object");
+    return NULL;
+}
+
+static PyObject *rust_match_class_getitem(PyObject *type, PyObject *item) {
+    return Py_GenericAlias(type, item);
+}
+
+static PyObject *rust_match_repr(RustMatch *match) {
+    PyObject *piece = rust_match_piece(match, 0, Py_None);
+    if (piece == NULL) return NULL;
+    size_t stride = (size_t)match->groups + 1;
+    PyObject *result = PyUnicode_FromFormat("<re.Match object; span=(%zd, %zd), match=%.50R>", (Py_ssize_t)match->spans[0], (Py_ssize_t)match->spans[stride], piece);
+    Py_DECREF(piece);
+    return result;
+}
+
+static PyObject *rust_match_subscript(PyObject *value, PyObject *key) {
+    RustMatch *match = (RustMatch *)value;
+    Py_ssize_t group;
+    return rust_match_group_number(match, key, &group) ? rust_match_piece(match, group, Py_None) : NULL;
+}
+
+static PyObject *rust_match_get_pattern(RustMatch *match, void *closure) { (void)closure; return Py_NewRef(match->pattern); }
+static PyObject *rust_match_get_string(RustMatch *match, void *closure) { (void)closure; return Py_NewRef(match->string); }
+static PyObject *rust_match_get_pos(RustMatch *match, void *closure) { (void)closure; return PyLong_FromSsize_t(match->pos); }
+static PyObject *rust_match_get_endpos(RustMatch *match, void *closure) { (void)closure; return PyLong_FromSsize_t(match->endpos); }
+static PyObject *rust_match_get_lastindex(RustMatch *match, void *closure) { (void)closure; return match->lastindex < 0 ? Py_NewRef(Py_None) : PyLong_FromSsize_t((Py_ssize_t)match->lastindex); }
+
+static PyObject *rust_match_get_lastgroup(RustMatch *match, void *closure) {
+    (void)closure;
+    if (match->lastindex < 0) Py_RETURN_NONE;
+    if (PyDict_Check(match->groupindex)) {
+        PyObject *name;
+        PyObject *number;
+        Py_ssize_t cursor = 0;
+        while (PyDict_Next(match->groupindex, &cursor, &name, &number)) {
+            Py_ssize_t value = PyLong_AsSsize_t(number);
+            if (PyErr_Occurred()) return NULL;
+            if (value == match->lastindex) return Py_NewRef(name);
+        }
+        Py_RETURN_NONE;
+    }
+    PyObject *items = PyMapping_Items(match->groupindex);
+    if (items == NULL) return NULL;
+    for (Py_ssize_t index = 0; index < PyList_GET_SIZE(items); index++) {
+        PyObject *pair = PyList_GET_ITEM(items, index);
+        Py_ssize_t value = PyLong_AsSsize_t(PyTuple_GET_ITEM(pair, 1));
+        if (PyErr_Occurred()) {
+            Py_DECREF(items);
+            return NULL;
+        }
+        if (value == match->lastindex) {
+            PyObject *result = Py_NewRef(PyTuple_GET_ITEM(pair, 0));
+            Py_DECREF(items);
+            return result;
+        }
+    }
+    Py_DECREF(items);
+    Py_RETURN_NONE;
+}
+
+static PyObject *rust_match_build_spans(RustMatch *match, int missing_none) {
+    size_t stride = (size_t)match->groups + 1;
+    PyObject *result = PyTuple_New((Py_ssize_t)stride);
+    if (result == NULL) return NULL;
+    for (size_t index = 0; index < stride; index++) {
+        intptr_t begin = match->spans[index];
+        intptr_t end = match->spans[stride + index];
+        PyObject *item = begin < 0 && missing_none ? Py_NewRef(Py_None) : rust_span(begin < 0 ? -1 : begin, begin < 0 ? -1 : end);
+        if (item == NULL) {
+            Py_DECREF(result);
+            return NULL;
+        }
+        PyTuple_SET_ITEM(result, (Py_ssize_t)index, item);
+    }
+    return result;
+}
+
+static PyObject *rust_match_get_regs(RustMatch *match, void *closure) {
+    (void)closure;
+    if (match->regs == NULL) {
+        match->regs = rust_match_build_spans(match, 0);
+        if (match->regs == NULL) return NULL;
+    }
+    return Py_NewRef(match->regs);
+}
+
+static PyObject *rust_match_get_private_spans(RustMatch *match, void *closure) {
+    (void)closure;
+    return rust_match_build_spans(match, 1);
+}
+
+static int rust_match_traverse(RustMatch *match, visitproc visit, void *arg) {
+    Py_VISIT(match->pattern);
+    Py_VISIT(match->string);
+    Py_VISIT(match->groupindex);
+    Py_VISIT(match->regs);
+    return 0;
+}
+
+static int rust_match_clear(RustMatch *match) {
+    Py_CLEAR(match->pattern);
+    Py_CLEAR(match->string);
+    Py_CLEAR(match->groupindex);
+    Py_CLEAR(match->regs);
+    return 0;
+}
+
+static void rust_match_dealloc(RustMatch *match) {
+    PyObject_GC_UnTrack(match);
+    rust_match_clear(match);
+    Py_TYPE(match)->tp_free((PyObject *)match);
+}
+
+static PyObject *rust_match_new(PyTypeObject *type, PyObject *args, PyObject *kwargs) {
+    (void)type;
+    if (kwargs != NULL && PyDict_GET_SIZE(kwargs) != 0) {
+        PyErr_SetString(PyExc_TypeError, "re.Match() does not accept keyword arguments");
+        return NULL;
+    }
+    PyObject *pattern;
+    PyObject *string;
+    PyObject *spans_value;
+    PyObject *last_value;
+    Py_ssize_t pos;
+    Py_ssize_t endpos;
+    if (!PyArg_ParseTuple(args, "OOOOnn:Match", &pattern, &string, &spans_value, &last_value, &pos, &endpos)) return NULL;
+    PyObject *spans = PySequence_Fast(spans_value, "Rust match spans must be a sequence");
+    if (spans == NULL) return NULL;
+    Py_ssize_t stride = PySequence_Fast_GET_SIZE(spans);
+    if (stride <= 0) {
+        Py_DECREF(spans);
+        PyErr_SetString(PyExc_ValueError, "Rust match requires a complete-match span");
+        return NULL;
+    }
+    PyObject *groupindex = PyObject_GetAttrString(pattern, "groupindex");
+    if (groupindex == NULL) {
+        Py_DECREF(spans);
+        return NULL;
+    }
+    RustMatch *match = rust_match_allocate(pattern, string, groupindex, (size_t)(stride - 1), pos, endpos);
+    Py_DECREF(groupindex);
+    if (match == NULL) {
+        Py_DECREF(spans);
+        return NULL;
+    }
+    for (Py_ssize_t index = 0; index < stride; index++) {
+        PyObject *value = PySequence_Fast_GET_ITEM(spans, index);
+        if (value == Py_None) {
+            match->spans[index] = -1;
+            match->spans[stride + index] = -1;
+            continue;
+        }
+        PyObject *pair = PySequence_Fast(value, "Rust match span must be a pair");
+        if (pair == NULL || PySequence_Fast_GET_SIZE(pair) != 2) {
+            if (pair != NULL) {
+                Py_DECREF(pair);
+                PyErr_SetString(PyExc_ValueError, "Rust match span must have exactly two offsets");
+            }
+            Py_DECREF(spans);
+            Py_DECREF(match);
+            return NULL;
+        }
+        match->spans[index] = PyLong_AsSsize_t(PySequence_Fast_GET_ITEM(pair, 0));
+        match->spans[stride + index] = PyLong_AsSsize_t(PySequence_Fast_GET_ITEM(pair, 1));
+        Py_DECREF(pair);
+        if (PyErr_Occurred()) {
+            Py_DECREF(spans);
+            Py_DECREF(match);
+            return NULL;
+        }
+    }
+    if (last_value != Py_None) {
+        match->lastindex = PyLong_AsSsize_t(last_value);
+        if (PyErr_Occurred()) {
+            Py_DECREF(spans);
+            Py_DECREF(match);
+            return NULL;
+        }
+    }
+    Py_DECREF(spans);
+    return (PyObject *)match;
+}
+
+static PyMethodDef rust_match_methods[] = {
+    {"group", (PyCFunction)(void (*)(void))rust_match_group, METH_FASTCALL, "Return one or more captured groups."},
+    {"groups", (PyCFunction)(void (*)(void))rust_match_groups, METH_FASTCALL | METH_KEYWORDS, "Return all captured groups."},
+    {"groupdict", (PyCFunction)(void (*)(void))rust_match_groupdict, METH_FASTCALL | METH_KEYWORDS, "Return named captured groups."},
+    {"start", (PyCFunction)(void (*)(void))rust_match_start, METH_FASTCALL, "Return the beginning of a captured group."},
+    {"end", (PyCFunction)(void (*)(void))rust_match_end, METH_FASTCALL, "Return the end of a captured group."},
+    {"span", (PyCFunction)(void (*)(void))rust_match_span_method, METH_FASTCALL, "Return a captured group's offsets."},
+    {"expand", (PyCFunction)rust_match_expand, METH_O, "Expand a replacement template."},
+    {"__copy__", (PyCFunction)rust_match_copy, METH_NOARGS, "Return this immutable match."},
+    {"__deepcopy__", (PyCFunction)rust_match_deepcopy, METH_O, "Return this immutable match."},
+    {"__reduce__", (PyCFunction)rust_match_reduce, METH_NOARGS, "Matches cannot be pickled."},
+    {"__reduce_ex__", (PyCFunction)rust_match_reduce, METH_O, "Matches cannot be pickled."},
+    {"__class_getitem__", (PyCFunction)rust_match_class_getitem, METH_O | METH_CLASS, "Return a generic match alias."},
+    {NULL, NULL, 0, NULL},
+};
+
+static PyGetSetDef rust_match_getsets[] = {
+    {"re", (getter)rust_match_get_pattern, NULL, "Compiled regular expression.", NULL},
+    {"string", (getter)rust_match_get_string, NULL, "Original search subject.", NULL},
+    {"pos", (getter)rust_match_get_pos, NULL, "Original search start.", NULL},
+    {"endpos", (getter)rust_match_get_endpos, NULL, "Clipped search end.", NULL},
+    {"lastindex", (getter)rust_match_get_lastindex, NULL, "Last captured group index.", NULL},
+    {"lastgroup", (getter)rust_match_get_lastgroup, NULL, "Last captured group name.", NULL},
+    {"regs", (getter)rust_match_get_regs, NULL, "All captured offsets.", NULL},
+    {"_spans", (getter)rust_match_get_private_spans, NULL, "Internal capture offsets.", NULL},
+    {"_lastindex", (getter)rust_match_get_lastindex, NULL, "Internal last group index.", NULL},
+    {"_pattern", (getter)rust_match_get_pattern, NULL, "Internal compiled pattern.", NULL},
+    {"_string", (getter)rust_match_get_string, NULL, "Internal search subject.", NULL},
+    {NULL, NULL, NULL, NULL, NULL},
+};
+
+static PyMappingMethods rust_match_mapping = {0, rust_match_subscript, 0};
+
+static PyTypeObject RustMatchType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "re.Match",
+    .tp_basicsize = offsetof(RustMatch, spans),
+    .tp_itemsize = sizeof(intptr_t),
+    .tp_dealloc = (destructor)rust_match_dealloc,
+    .tp_repr = (reprfunc)rust_match_repr,
+    .tp_as_mapping = &rust_match_mapping,
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
+    .tp_doc = "Native match from the from-scratch Rust regular-expression engine.",
+    .tp_methods = rust_match_methods,
+    .tp_getset = rust_match_getsets,
+    .tp_traverse = (traverseproc)rust_match_traverse,
+    .tp_clear = (inquiry)rust_match_clear,
+    .tp_new = rust_match_new,
+};
+
+static PyObject *bridge_set_template(PyObject *module, PyObject *value) {
+    (void)module;
+    if (!PyCallable_Check(value)) {
+        PyErr_SetString(PyExc_TypeError, "Rust match template helper must be callable");
+        return NULL;
+    }
+    Py_XSETREF(rust_template_helper, Py_NewRef(value));
+    Py_RETURN_NONE;
+}
+
+static PyObject *rust_owned_tuple4(PyObject *first, PyObject *second, PyObject *third, PyObject *fourth) {
+    if (first == NULL || second == NULL || third == NULL || fourth == NULL) {
+        Py_XDECREF(first);
+        Py_XDECREF(second);
+        Py_XDECREF(third);
+        Py_XDECREF(fourth);
+        return NULL;
+    }
+    PyObject *result = PyTuple_New(4);
+    if (result == NULL) {
+        Py_DECREF(first);
+        Py_DECREF(second);
+        Py_DECREF(third);
+        Py_DECREF(fourth);
+        return NULL;
+    }
+    PyTuple_SET_ITEM(result, 0, first);
+    PyTuple_SET_ITEM(result, 1, second);
+    PyTuple_SET_ITEM(result, 2, third);
+    PyTuple_SET_ITEM(result, 3, fourth);
+    return result;
+}
+
+static PyObject *bridge_compile(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
+    (void)module;
+    if (nargs != 4) {
+        PyErr_Format(PyExc_TypeError, "compile() takes exactly 4 arguments (%zd given)", nargs);
+        return NULL;
+    }
+    PyObject *pattern = args[0];
+    int byte_mode = PyBytes_Check(pattern);
+    if (!byte_mode && !PyUnicode_Check(pattern)) {
+        PyErr_SetString(PyExc_TypeError, "Rust compiler expects a string or bytes pattern");
+        return NULL;
+    }
+    unsigned long flags = PyLong_AsUnsignedLong(args[1]);
+    if (PyErr_Occurred() || flags > UINT32_MAX) {
+        if (!PyErr_Occurred()) PyErr_SetString(PyExc_OverflowError, "Rust regex flags exceed 32 bits");
+        return NULL;
+    }
+    if (!PyTuple_Check(args[2]) || !PyTuple_Check(args[3])) {
+        PyErr_SetString(PyExc_TypeError, "Rust named escapes must be tuples");
+        return NULL;
+    }
+    Py_ssize_t count = PyTuple_GET_SIZE(args[2]);
+    if (count != PyTuple_GET_SIZE(args[3])) {
+        PyErr_SetString(PyExc_ValueError, "Rust named-escape positions and values differ in length");
+        return NULL;
+    }
+    uint32_t local_pattern[RUST_LOCAL_PATTERN_WORDS];
+    uint32_t *owned_pattern = NULL;
+    const uint32_t *source = local_pattern;
+    Py_ssize_t length = byte_mode ? PyBytes_GET_SIZE(pattern) : PyUnicode_GET_LENGTH(pattern);
+    if (!byte_mode && PyUnicode_KIND(pattern) == PyUnicode_4BYTE_KIND && length != 0) {
+        source = (const uint32_t *)PyUnicode_4BYTE_DATA(pattern);
+    } else {
+        if ((size_t)length > SIZE_MAX / sizeof(uint32_t)) return PyErr_NoMemory();
+        if (length > RUST_LOCAL_PATTERN_WORDS) {
+            owned_pattern = PyMem_Malloc((size_t)length * sizeof(uint32_t));
+            if (owned_pattern == NULL) return PyErr_NoMemory();
+            source = owned_pattern;
+        }
+        if (byte_mode) {
+            const uint8_t *data = (const uint8_t *)PyBytes_AS_STRING(pattern);
+            for (Py_ssize_t index = 0; index < length; index++) ((uint32_t *)source)[index] = data[index];
+        } else {
+            int kind = PyUnicode_KIND(pattern);
+            const void *data = PyUnicode_DATA(pattern);
+            for (Py_ssize_t index = 0; index < length; index++) ((uint32_t *)source)[index] = PyUnicode_READ(kind, data, index);
+        }
+    }
+    size_t local_positions[RUST_LOCAL_NAME_WORDS];
+    uint32_t local_values[RUST_LOCAL_NAME_WORDS];
+    size_t *positions = local_positions;
+    uint32_t *values = local_values;
+    void *owned_names = NULL;
+    if (count > RUST_LOCAL_NAME_WORDS) {
+        if ((size_t)count > SIZE_MAX / (sizeof(size_t) + sizeof(uint32_t))) {
+            PyMem_Free(owned_pattern);
+            return PyErr_NoMemory();
+        }
+        owned_names = PyMem_Malloc((size_t)count * (sizeof(size_t) + sizeof(uint32_t)));
+        if (owned_names == NULL) {
+            PyMem_Free(owned_pattern);
+            return PyErr_NoMemory();
+        }
+        positions = owned_names;
+        values = (uint32_t *)(positions + count);
+    }
+    for (Py_ssize_t index = 0; index < count; index++) {
+        positions[index] = PyLong_AsSize_t(PyTuple_GET_ITEM(args[2], index));
+        unsigned long value = PyLong_AsUnsignedLong(PyTuple_GET_ITEM(args[3], index));
+        if (PyErr_Occurred() || value > UINT32_MAX) {
+            if (!PyErr_Occurred()) PyErr_SetString(PyExc_OverflowError, "Rust named escape exceeds 32 bits");
+            PyMem_Free(owned_names);
+            PyMem_Free(owned_pattern);
+            return NULL;
+        }
+        values[index] = (uint32_t)value;
+    }
+    void *handle = rebar_compile(source, (size_t)length, (uint32_t)flags, (uint8_t)byte_mode, positions, values, (size_t)count);
+    PyMem_Free(owned_names);
+    PyMem_Free(owned_pattern);
+    if (handle == NULL) Py_RETURN_NONE;
+
+    PyObject *names = PyDict_New();
+    if (names == NULL) {
+        rebar_free(handle);
+        return NULL;
+    }
+    size_t name_count = rebar_name_count(handle);
+    for (size_t index = 0; index < name_count; index++) {
+        size_t width = rebar_name_len(handle, index);
+        if (width > (size_t)PY_SSIZE_T_MAX) {
+            PyErr_SetString(PyExc_OverflowError, "Rust regex group name is too large");
+            Py_DECREF(names);
+            rebar_free(handle);
+            return NULL;
+        }
+        uint8_t local_name[256];
+        uint8_t *name = local_name;
+        if (width > sizeof(local_name)) {
+            name = PyMem_Malloc(width);
+            if (name == NULL) {
+                Py_DECREF(names);
+                rebar_free(handle);
+                return PyErr_NoMemory();
+            }
+        }
+        size_t copied = rebar_name_copy(handle, index, name, width);
+        PyObject *key = copied == width ? PyUnicode_DecodeUTF8((const char *)name, (Py_ssize_t)width, "strict") : NULL;
+        if (copied != width && !PyErr_Occurred()) PyErr_SetString(PyExc_RuntimeError, "Rust regex group-name copy failed");
+        if (name != local_name) PyMem_Free(name);
+        PyObject *number = key == NULL ? NULL : PyLong_FromSize_t(rebar_name_group(handle, index));
+        if (key == NULL || number == NULL || PyDict_SetItem(names, key, number) < 0) {
+            Py_XDECREF(key);
+            Py_XDECREF(number);
+            Py_DECREF(names);
+            rebar_free(handle);
+            return NULL;
+        }
+        Py_DECREF(key);
+        Py_DECREF(number);
+    }
+    PyObject *result = rust_owned_tuple4(PyLong_FromVoidPtr(handle), PyLong_FromSize_t(rebar_groups(handle)), PyLong_FromUnsignedLong(rebar_flags(handle)), names);
+    if (result == NULL) rebar_free(handle);
+    return result;
+}
+
+static PyObject *bridge_free(PyObject *module, PyObject *value) {
+    (void)module;
+    void *handle = PyLong_AsVoidPtr(value);
+    if (PyErr_Occurred()) return NULL;
+    rebar_free(handle);
+    Py_RETURN_NONE;
+}
+
+static PyObject *bridge_error(PyObject *module, PyObject *ignored) {
+    (void)module;
+    (void)ignored;
+    size_t width = rebar_error_len();
+    if (width > (size_t)PY_SSIZE_T_MAX) {
+        PyErr_SetString(PyExc_OverflowError, "Rust regex error is too large");
+        return NULL;
+    }
+    uint8_t local_message[256];
+    uint8_t *message = local_message;
+    if (width > sizeof(local_message)) {
+        message = PyMem_Malloc(width);
+        if (message == NULL) return PyErr_NoMemory();
+    }
+    size_t copied = rebar_error_copy(message, width);
+    PyObject *text = copied == width ? PyUnicode_DecodeUTF8((const char *)message, (Py_ssize_t)width, "strict") : NULL;
+    if (message != local_message) PyMem_Free(message);
+    if (copied != width && !PyErr_Occurred()) PyErr_SetString(PyExc_RuntimeError, "Rust regex error copy failed");
+    if (text == NULL) return NULL;
+    intptr_t position = rebar_error_pos();
+    PyObject *result = PyTuple_New(3);
+    if (result == NULL) {
+        Py_DECREF(text);
+        return NULL;
+    }
+    PyObject *position_value = position < 0 ? Py_NewRef(Py_None) : PyLong_FromSsize_t((Py_ssize_t)position);
+    PyObject *include = PyBool_FromLong(rebar_error_include() != 0);
+    if (position_value == NULL || include == NULL) {
+        Py_DECREF(text);
+        Py_XDECREF(position_value);
+        Py_XDECREF(include);
+        Py_DECREF(result);
+        return NULL;
+    }
+    PyTuple_SET_ITEM(result, 0, text);
+    PyTuple_SET_ITEM(result, 1, position_value);
+    PyTuple_SET_ITEM(result, 2, include);
+    return result;
+}
 
 static uint32_t simple_fold(Py_UCS4 value) {
     switch (value) {
@@ -16,6 +751,227 @@ static uint32_t simple_fold(Py_UCS4 value) {
         case 0x00df: case 0x1e9e: return 0x00df;
         default: return Py_UNICODE_TOLOWER(value);
     }
+}
+
+typedef struct {
+    PyObject *object;
+    Py_buffer view;
+    const uint8_t *data;
+    uint32_t *storage;
+    const uint32_t *chars;
+    const uint32_t *folds;
+    const uint8_t *masks;
+    size_t length;
+    uint8_t kind;
+    uint8_t text;
+} RustSubject;
+
+typedef struct {
+    PyObject_HEAD
+    PyObject *pattern;
+    PyObject *string;
+    PyObject *groupindex;
+    const void *handle;
+    RustSubject subject;
+    size_t groups;
+    size_t cursor;
+    size_t end;
+    size_t original;
+    intptr_t local_begins[RUST_ITERATOR_CAPTURE_WORDS];
+    intptr_t local_ends[RUST_ITERATOR_CAPTURE_WORDS];
+    intptr_t *heap;
+    uint8_t nonempty;
+    uint8_t done;
+} RustIterator;
+
+static void rust_subject_release(RustSubject *subject) {
+    if (subject->view.obj != NULL) PyBuffer_Release(&subject->view);
+    PyMem_Free(subject->storage);
+    subject->storage = NULL;
+}
+
+static int rust_index_arg(PyObject *value, Py_ssize_t *result) {
+    if (PyLong_CheckExact(value)) {
+        *result = PyLong_AsSsize_t(value);
+        return !PyErr_Occurred();
+    }
+    PyObject *number = PyNumber_Index(value);
+    if (number == NULL) return 0;
+    *result = PyLong_AsSsize_t(number);
+    Py_DECREF(number);
+    return !PyErr_Occurred();
+}
+
+static int rust_subject_open(RustSubject *subject, PyObject *pattern_value, PyObject *value, int prepare) {
+    memset(subject, 0, sizeof(*subject));
+    subject->object = value;
+    if (PyUnicode_Check(value)) {
+        if (pattern_value != NULL && PyBytes_Check(pattern_value)) {
+            PyErr_SetString(PyExc_TypeError, "cannot use a bytes pattern on a string-like object");
+            return 0;
+        }
+        subject->text = 1;
+        subject->kind = (uint8_t)PyUnicode_KIND(value);
+        subject->length = (size_t)PyUnicode_GET_LENGTH(value);
+        subject->data = (const uint8_t *)PyUnicode_DATA(value);
+        if (PyUnicode_IS_ASCII(value) || !prepare || rebar_match_wide != NULL) return 1;
+        if (subject->length > SIZE_MAX / (sizeof(uint32_t) * 2 + sizeof(uint8_t))) {
+            PyErr_NoMemory();
+            return 0;
+        }
+        subject->storage = PyMem_Malloc(subject->length * (sizeof(uint32_t) * 2 + sizeof(uint8_t)));
+        if (subject->storage == NULL && subject->length != 0) {
+            PyErr_NoMemory();
+            return 0;
+        }
+        subject->chars = subject->storage;
+        subject->folds = subject->storage + subject->length;
+        subject->masks = (const uint8_t *)(subject->storage + subject->length * 2);
+        for (size_t index = 0; index < subject->length; index++) {
+            Py_UCS4 value_at = PyUnicode_READ(subject->kind, subject->data, (Py_ssize_t)index);
+            subject->storage[index] = value_at;
+            subject->storage[subject->length + index] = simple_fold(value_at);
+            ((uint8_t *)subject->masks)[index] = (uint8_t)(Py_UNICODE_ISDECIMAL(value_at) | (Py_UNICODE_ISSPACE(value_at) << 1) | (Py_UNICODE_ISALNUM(value_at) << 2));
+        }
+        return 1;
+    }
+    if (PyObject_GetBuffer(value, &subject->view, PyBUF_SIMPLE) != 0) {
+        PyErr_Clear();
+        PyErr_Format(PyExc_TypeError, "expected string or bytes-like object, got '%.200s'", Py_TYPE(value)->tp_name);
+        return 0;
+    }
+    if (pattern_value != NULL && PyUnicode_Check(pattern_value)) {
+        PyBuffer_Release(&subject->view);
+        memset(&subject->view, 0, sizeof(subject->view));
+        PyErr_SetString(PyExc_TypeError, "cannot use a string pattern on a bytes-like object");
+        return 0;
+    }
+    subject->kind = 1;
+    subject->data = subject->view.buf;
+    subject->length = (size_t)subject->view.len;
+    return 1;
+}
+
+static int rust_subject_match(const void *handle, const RustSubject *subject, size_t pos, size_t endpos, uint8_t mode, uint8_t nonempty, intptr_t *begins, intptr_t *ends, intptr_t *last) {
+    if (rebar_match_wide != NULL) {
+        return rebar_match_wide(handle, subject->data, subject->length, subject->kind, pos, endpos, mode, nonempty, begins, ends, last);
+    }
+    if (subject->storage != NULL) {
+        return rebar_match(handle, subject->chars, subject->folds, subject->masks, subject->length, pos, endpos, mode, nonempty, begins, ends, last);
+    }
+    return rebar_match_ascii(handle, subject->data, subject->length, pos, endpos, mode, nonempty, begins, ends, last);
+}
+
+static PyObject *rust_findall_item(const RustSubject *subject, intptr_t begin, intptr_t end) {
+    if (begin < 0) {
+        if (subject->text) return PyUnicode_New(0, 127);
+        return PyBytes_FromStringAndSize("", 0);
+    }
+    if (subject->text) return PyUnicode_Substring(subject->object, (Py_ssize_t)begin, (Py_ssize_t)end);
+    return PyBytes_FromStringAndSize((const char *)subject->data + begin, (Py_ssize_t)(end - begin));
+}
+
+static int rust_list_append_owned(PyObject *list, PyObject *value) {
+    if (value == NULL) return -1;
+    PyListObject *items = (PyListObject *)list;
+    Py_ssize_t used = PyList_GET_SIZE(list);
+    if (used < items->allocated) {
+        PyList_SET_ITEM(list, used, value);
+        Py_SET_SIZE(list, used + 1);
+        return 0;
+    }
+    int result = PyList_Append(list, value);
+    Py_DECREF(value);
+    return result;
+}
+
+static PyObject *rust_stream_collection(const void *handle, const RustSubject *subject, size_t groups, size_t pos, size_t end, int findall) {
+    size_t stride = groups + 1;
+    if (stride == 0 || stride > SIZE_MAX / (sizeof(intptr_t) * 2)) return PyErr_NoMemory();
+    intptr_t local_begins[RUST_LOCAL_CAPTURE_WORDS];
+    intptr_t local_ends[RUST_LOCAL_CAPTURE_WORDS];
+    intptr_t *begins = local_begins;
+    intptr_t *ends = local_ends;
+    if (stride > RUST_LOCAL_CAPTURE_WORDS) {
+        begins = PyMem_Malloc(stride * sizeof(intptr_t) * 2);
+        if (begins == NULL) return PyErr_NoMemory();
+        ends = begins + stride;
+    }
+    PyObject *result = PyList_New(0);
+    if (result == NULL) {
+        if (begins != local_begins) PyMem_Free(begins);
+        return NULL;
+    }
+    size_t current = pos;
+    uint8_t nonempty = 0;
+    while (current <= end) {
+        intptr_t last = -1;
+        int found = rust_subject_match(handle, subject, current, end, 0, nonempty, begins, ends, &last);
+        if (found < 0) {
+            PyErr_SetString(PyExc_RuntimeError, "Rust continuation engine rejected the collection bridge call");
+            goto stream_error;
+        }
+        if (found == 0) break;
+        PyObject *item;
+        if (findall) {
+            size_t first = groups == 0 ? 0 : 1;
+            size_t count = groups <= 1 ? 1 : groups;
+            if (count == 1) {
+                item = rust_findall_item(subject, begins[first], ends[first]);
+            } else {
+                item = PyTuple_New((Py_ssize_t)count);
+                if (item != NULL) {
+                    for (size_t index = 0; index < count; index++) {
+                        PyObject *piece = rust_findall_item(subject, begins[first + index], ends[first + index]);
+                        if (piece == NULL) {
+                            Py_CLEAR(item);
+                            break;
+                        }
+                        PyTuple_SET_ITEM(item, (Py_ssize_t)index, piece);
+                    }
+                }
+            }
+        } else {
+            PyObject *spans = PyTuple_New((Py_ssize_t)stride);
+            if (spans == NULL) goto stream_error;
+            for (size_t group = 0; group < stride; group++) {
+                PyObject *span = begins[group] < 0 ? Py_NewRef(Py_None) : rust_span(begins[group], ends[group]);
+                if (span == NULL) {
+                    Py_DECREF(spans);
+                    goto stream_error;
+                }
+                PyTuple_SET_ITEM(spans, (Py_ssize_t)group, span);
+            }
+            PyObject *last_value = last < 0 ? Py_NewRef(Py_None) : PyLong_FromSsize_t((Py_ssize_t)last);
+            if (last_value == NULL) {
+                Py_DECREF(spans);
+                goto stream_error;
+            }
+            item = PyTuple_New(2);
+            if (item == NULL) {
+                Py_DECREF(spans);
+                Py_DECREF(last_value);
+                goto stream_error;
+            }
+            PyTuple_SET_ITEM(item, 0, spans);
+            PyTuple_SET_ITEM(item, 1, last_value);
+        }
+        if (rust_list_append_owned(result, item) != 0) goto stream_error;
+        if (begins[0] == ends[0]) {
+            current = (size_t)begins[0];
+            nonempty = 1;
+        } else {
+            current = (size_t)ends[0];
+            nonempty = 0;
+        }
+    }
+    if (begins != local_begins) PyMem_Free(begins);
+    return result;
+
+stream_error:
+    if (begins != local_begins) PyMem_Free(begins);
+    Py_DECREF(result);
+    return NULL;
 }
 
 static PyObject *bridge_run(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
@@ -54,7 +1010,9 @@ static PyObject *bridge_run(PyObject *module, PyObject *const *args, Py_ssize_t 
     if (PyUnicode_Check(subject)) {
         Py_ssize_t count = PyUnicode_GET_LENGTH(subject);
         if (count < 0) goto done;
-        if (PyUnicode_IS_ASCII(subject)) {
+        if (rebar_match_wide != NULL) {
+            matched = rebar_match_wide(handle, (const uint8_t *)PyUnicode_DATA(subject), (size_t)count, (uint8_t)PyUnicode_KIND(subject), pos, endpos, (uint8_t)mode, (uint8_t)nonempty, begins, ends, &last);
+        } else if (PyUnicode_IS_ASCII(subject)) {
             matched = rebar_match_ascii(handle, PyUnicode_1BYTE_DATA(subject), (size_t)count, pos, endpos, (uint8_t)mode, (uint8_t)nonempty, begins, ends, &last);
         } else {
             if ((size_t)count > SIZE_MAX / (sizeof(uint32_t) * 2 + sizeof(uint8_t))) {
@@ -82,7 +1040,8 @@ static PyObject *bridge_run(PyObject *module, PyObject *const *args, Py_ssize_t 
         }
     } else {
         if (PyObject_GetBuffer(subject, &view, PyBUF_SIMPLE) != 0) goto done;
-        matched = rebar_match_ascii(handle, view.buf, (size_t)view.len, pos, endpos, (uint8_t)mode, (uint8_t)nonempty, begins, ends, &last);
+        if (rebar_match_wide != NULL) matched = rebar_match_wide(handle, view.buf, (size_t)view.len, 1, pos, endpos, (uint8_t)mode, (uint8_t)nonempty, begins, ends, &last);
+        else matched = rebar_match_ascii(handle, view.buf, (size_t)view.len, pos, endpos, (uint8_t)mode, (uint8_t)nonempty, begins, ends, &last);
     }
 
 done:
@@ -107,7 +1066,7 @@ done:
         if (begins[index] < 0) {
             item = Py_NewRef(Py_None);
         } else {
-            item = Py_BuildValue("(nn)", (Py_ssize_t)begins[index], (Py_ssize_t)ends[index]);
+            item = rust_span(begins[index], ends[index]);
             if (item == NULL) {
                 Py_DECREF(spans);
                 if (begins != local_begins) PyMem_Free(begins);
@@ -122,9 +1081,14 @@ done:
         Py_DECREF(spans);
         return NULL;
     }
-    PyObject *result = PyTuple_Pack(2, spans, last_value);
-    Py_DECREF(spans);
-    Py_DECREF(last_value);
+    PyObject *result = PyTuple_New(2);
+    if (result == NULL) {
+        Py_DECREF(spans);
+        Py_DECREF(last_value);
+        return NULL;
+    }
+    PyTuple_SET_ITEM(result, 0, spans);
+    PyTuple_SET_ITEM(result, 1, last_value);
     return result;
 }
 
@@ -144,6 +1108,14 @@ static PyObject *bridge_collect(PyObject *module, PyObject *const *args, Py_ssiz
         return NULL;
     }
     PyObject *subject = args[1];
+    if (PyUnicode_Check(subject) && !PyUnicode_IS_ASCII(subject)) {
+        RustSubject prepared;
+        if (!rust_subject_open(&prepared, NULL, subject, 1)) return NULL;
+        size_t end = endpos < prepared.length ? endpos : prepared.length;
+        PyObject *records = pos > end ? PyList_New(0) : rust_stream_collection(handle, &prepared, groups, pos, end, 0);
+        rust_subject_release(&prepared);
+        return records;
+    }
     Py_buffer view = {0};
     const uint8_t *data;
     size_t length;
@@ -196,7 +1168,7 @@ static PyObject *bridge_collect(PyObject *module, PyObject *const *args, Py_ssiz
         for (size_t group = 0; group < stride; group++) {
             PyObject *item;
             if (begins[base + group] < 0) item = Py_NewRef(Py_None);
-            else item = Py_BuildValue("(nn)", (Py_ssize_t)begins[base + group], (Py_ssize_t)ends[base + group]);
+            else item = rust_span(begins[base + group], ends[base + group]);
             if (item == NULL) {
                 Py_DECREF(spans);
                 goto collect_error;
@@ -208,10 +1180,14 @@ static PyObject *bridge_collect(PyObject *module, PyObject *const *args, Py_ssiz
             Py_DECREF(spans);
             goto collect_error;
         }
-        PyObject *record = PyTuple_Pack(2, spans, last);
-        Py_DECREF(spans);
-        Py_DECREF(last);
-        if (record == NULL) goto collect_error;
+        PyObject *record = PyTuple_New(2);
+        if (record == NULL) {
+            Py_DECREF(spans);
+            Py_DECREF(last);
+            goto collect_error;
+        }
+        PyTuple_SET_ITEM(record, 0, spans);
+        PyTuple_SET_ITEM(record, 1, last);
         PyList_SET_ITEM(records, (Py_ssize_t)match, record);
     }
     PyMem_Free(storage);
@@ -239,6 +1215,14 @@ static PyObject *bridge_findall(PyObject *module, PyObject *const *args, Py_ssiz
         return NULL;
     }
     PyObject *subject = args[1];
+    if (PyUnicode_Check(subject) && !PyUnicode_IS_ASCII(subject)) {
+        RustSubject prepared;
+        if (!rust_subject_open(&prepared, NULL, subject, 1)) return NULL;
+        size_t end = endpos < prepared.length ? endpos : prepared.length;
+        PyObject *result = pos > end ? PyList_New(0) : rust_stream_collection(handle, &prepared, groups, pos, end, 1);
+        rust_subject_release(&prepared);
+        return result;
+    }
     Py_buffer view = {0};
     const uint8_t *data;
     size_t length;
@@ -323,7 +1307,1304 @@ findall_error:
     return NULL;
 }
 
+static int rust_subject_window(const RustSubject *subject, PyObject *pos_value, PyObject *end_value, size_t *start, size_t *end) {
+    Py_ssize_t requested_pos = 0;
+    Py_ssize_t requested_end = (Py_ssize_t)subject->length;
+    if (pos_value != NULL && !rust_index_arg(pos_value, &requested_pos)) return 0;
+    if (end_value != NULL && !rust_index_arg(end_value, &requested_end)) return 0;
+    if (requested_pos < 0) requested_pos = 0;
+    if ((size_t)requested_pos > subject->length) requested_pos = (Py_ssize_t)subject->length;
+    if (requested_end < 0) requested_end = 0;
+    if ((size_t)requested_end > subject->length) requested_end = (Py_ssize_t)subject->length;
+    *start = (size_t)requested_pos;
+    *end = (size_t)requested_end;
+    return 1;
+}
+
+static PyObject *rust_pattern_direct(PyObject *pattern, void *handle, PyObject *groupindex, PyObject *pattern_value, PyObject *literal, PyObject *value, PyObject *pos_value, PyObject *end_value, uint8_t mode) {
+    RustSubject subject;
+    if (!rust_subject_open(&subject, pattern_value, value, literal == NULL || literal == Py_None)) return NULL;
+    size_t start;
+    size_t end;
+    if (!rust_subject_window(&subject, pos_value, end_value, &start, &end)) {
+        rust_subject_release(&subject);
+        return NULL;
+    }
+    if (start > end && mode != 1) {
+        rust_subject_release(&subject);
+        Py_RETURN_NONE;
+    }
+    size_t groups = rebar_groups(handle);
+    size_t stride = groups + 1;
+    if (stride == 0 || stride > SIZE_MAX / (sizeof(intptr_t) * 2)) {
+        rust_subject_release(&subject);
+        return PyErr_NoMemory();
+    }
+    intptr_t local_begins[RUST_LOCAL_CAPTURE_WORDS];
+    intptr_t local_ends[RUST_LOCAL_CAPTURE_WORDS];
+    intptr_t *begins = local_begins;
+    intptr_t *ends = local_ends;
+    if (stride > RUST_LOCAL_CAPTURE_WORDS) {
+        begins = PyMem_Malloc(stride * sizeof(intptr_t) * 2);
+        if (begins == NULL) {
+            rust_subject_release(&subject);
+            return PyErr_NoMemory();
+        }
+        ends = begins + stride;
+    }
+    intptr_t last = -1;
+    int found = 0;
+    if (literal != NULL && literal != Py_None && groups == 0) {
+        Py_ssize_t width = subject.text ? PyUnicode_GET_LENGTH(literal) : PyBytes_GET_SIZE(literal);
+        Py_ssize_t at = -1;
+        if (start <= end && width <= (Py_ssize_t)(end - start)) {
+            if (mode == 0) {
+                if (subject.text) {
+                    at = PyUnicode_Find(value, literal, (Py_ssize_t)start, (Py_ssize_t)end, 1);
+                    if (at == -2) found = -1;
+                } else {
+                    const uint8_t *needle = (const uint8_t *)PyBytes_AS_STRING(literal);
+                    const uint8_t *hit = memmem(subject.data + start, end - start, needle, (size_t)width);
+                    if (hit != NULL) at = (Py_ssize_t)(hit - subject.data);
+                }
+            } else if (mode != 2 || (size_t)width == end - start) {
+                if (subject.text) {
+                    int equal = PyUnicode_Tailmatch(value, literal, (Py_ssize_t)start, (Py_ssize_t)end, -1);
+                    if (equal < 0) found = -1;
+                    else if (equal) at = (Py_ssize_t)start;
+                } else if (memcmp(subject.data + start, PyBytes_AS_STRING(literal), (size_t)width) == 0) {
+                    at = (Py_ssize_t)start;
+                }
+            }
+        }
+        if (found >= 0 && at >= 0) {
+            begins[0] = at;
+            ends[0] = at + width;
+            found = 1;
+        }
+    } else {
+        found = rust_subject_match(handle, &subject, start, end, mode, 0, begins, ends, &last);
+    }
+    if (found < 0) {
+        if (!PyErr_Occurred()) PyErr_SetString(PyExc_RuntimeError, "Rust continuation engine rejected the native pattern call");
+        if (begins != local_begins) PyMem_Free(begins);
+        rust_subject_release(&subject);
+        return NULL;
+    }
+    if (found == 0) {
+        if (begins != local_begins) PyMem_Free(begins);
+        rust_subject_release(&subject);
+        Py_RETURN_NONE;
+    }
+    RustMatch *result = rust_match_allocate(pattern, value, groupindex, groups, (Py_ssize_t)start, (Py_ssize_t)end);
+    if (result != NULL) {
+        memcpy(result->spans, begins, stride * sizeof(intptr_t));
+        memcpy(result->spans + stride, ends, stride * sizeof(intptr_t));
+        result->lastindex = last;
+    }
+    if (begins != local_begins) PyMem_Free(begins);
+    rust_subject_release(&subject);
+    return (PyObject *)result;
+}
+
+static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
+    (void)module;
+    if (nargs != 9) {
+        PyErr_Format(PyExc_TypeError, "pattern_match() takes exactly 9 arguments (%zd given)", nargs);
+        return NULL;
+    }
+    void *handle = PyLong_AsVoidPtr(args[1]);
+    unsigned long mode = PyLong_AsUnsignedLong(args[8]);
+    if (PyErr_Occurred() || mode > 2) {
+        if (!PyErr_Occurred()) PyErr_SetString(PyExc_ValueError, "Rust regex match mode must be search, match, or fullmatch");
+        return NULL;
+    }
+    return rust_pattern_direct(args[0], handle, args[2], args[3], args[4], args[5], args[6], args[7], (uint8_t)mode);
+}
+
+static int rust_bound_window(PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames, Py_ssize_t prefix, const char *method, PyObject **subject, PyObject **pos, PyObject **endpos) {
+    Py_ssize_t count = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    if (nargs < prefix || nargs - prefix + count > 3) {
+        PyErr_Format(PyExc_TypeError, "%s() takes at most 3 arguments (%zd given)", method, nargs < prefix ? 0 : nargs - prefix + count);
+        return 0;
+    }
+    *subject = nargs > prefix ? args[prefix] : NULL;
+    *pos = nargs > prefix + 1 ? args[prefix + 1] : NULL;
+    *endpos = nargs > prefix + 2 ? args[prefix + 2] : NULL;
+    if (*subject == NULL) {
+        int supplied = 0;
+        for (Py_ssize_t index = 0; index < count; index++) {
+            int equal = PyUnicode_CompareWithASCIIString(PyTuple_GET_ITEM(kwnames, index), "string");
+            if (equal == 0) {
+                supplied = 1;
+                break;
+            }
+            if (equal == -1 && PyErr_Occurred()) return 0;
+        }
+        if (!supplied) {
+            PyErr_Format(PyExc_TypeError, "%s() missing required argument 'string' (pos 1)", method);
+            return 0;
+        }
+    }
+    for (Py_ssize_t index = 0; index < count; index++) {
+        PyObject *name = PyTuple_GET_ITEM(kwnames, index);
+        if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
+            if (*subject != NULL) {
+                PyErr_Format(PyExc_TypeError, "argument for %s() given by name ('string') and position (1)", method);
+                return 0;
+            }
+            *subject = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "pos") == 0) {
+            if (*pos != NULL) {
+                PyErr_Format(PyExc_TypeError, "argument for %s() given by name ('pos') and position (2)", method);
+                return 0;
+            }
+            *pos = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "endpos") == 0) {
+            if (*endpos != NULL) {
+                PyErr_Format(PyExc_TypeError, "argument for %s() given by name ('endpos') and position (3)", method);
+                return 0;
+            }
+            *endpos = args[nargs + index];
+        } else {
+            if (!PyErr_Occurred()) PyErr_Format(PyExc_TypeError, "%s() got an unexpected keyword argument '%U'", method, name);
+            return 0;
+        }
+    }
+    if (*subject == NULL) {
+        PyErr_Format(PyExc_TypeError, "%s() missing required argument 'string' (pos 1)", method);
+        return 0;
+    }
+    return 1;
+}
+
+static PyObject *rust_bound_pattern(PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames, const char *method, uint8_t mode) {
+    PyObject *subject;
+    PyObject *pos;
+    PyObject *endpos;
+    if (!rust_bound_window(args, nargs, kwnames, 5, method, &subject, &pos, &endpos)) return NULL;
+    void *handle = PyLong_AsVoidPtr(args[1]);
+    if (PyErr_Occurred()) return NULL;
+    return rust_pattern_direct(args[0], handle, args[2], args[3], args[4], subject, pos, endpos, mode);
+}
+
+static PyObject *bridge_bound_search(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    (void)module;
+    return rust_bound_pattern(args, nargs, kwnames, "search", 0);
+}
+
+static PyObject *bridge_bound_match(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    (void)module;
+    return rust_bound_pattern(args, nargs, kwnames, "match", 1);
+}
+
+static PyObject *bridge_bound_fullmatch(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    (void)module;
+    return rust_bound_pattern(args, nargs, kwnames, "fullmatch", 2);
+}
+
+static PyObject *bridge_bound_findall(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    (void)module;
+    PyObject *value;
+    PyObject *pos;
+    PyObject *endpos;
+    if (!rust_bound_window(args, nargs, kwnames, 3, "findall", &value, &pos, &endpos)) return NULL;
+    void *handle = PyLong_AsVoidPtr(args[0]);
+    size_t groups = PyLong_AsSize_t(args[2]);
+    if (PyErr_Occurred()) return NULL;
+    if (groups != rebar_groups(handle)) {
+        PyErr_SetString(PyExc_ValueError, "Rust regex group count does not match the compiled program");
+        return NULL;
+    }
+    RustSubject subject;
+    if (!rust_subject_open(&subject, args[1], value, 1)) return NULL;
+    size_t start;
+    size_t end;
+    if (!rust_subject_window(&subject, pos, endpos, &start, &end)) {
+        rust_subject_release(&subject);
+        return NULL;
+    }
+    PyObject *result;
+    if (start > end) {
+        result = PyList_New(0);
+    } else if (subject.storage == NULL) {
+        PyObject *start_value = PyLong_FromSize_t(start);
+        PyObject *end_value = PyLong_FromSize_t(end);
+        if (start_value == NULL || end_value == NULL) {
+            Py_XDECREF(start_value);
+            Py_XDECREF(end_value);
+            rust_subject_release(&subject);
+            return NULL;
+        }
+        PyObject *call[5] = {args[0], value, args[2], start_value, end_value};
+        result = bridge_findall(module, call, 5);
+        Py_DECREF(start_value);
+        Py_DECREF(end_value);
+    } else {
+        result = rust_stream_collection(handle, &subject, groups, start, end, 1);
+    }
+    rust_subject_release(&subject);
+    return result;
+}
+
+static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    (void)module;
+    PyObject *value;
+    PyObject *pos;
+    PyObject *endpos;
+    if (!rust_bound_window(args, nargs, kwnames, 1, "findall", &value, &pos, &endpos)) return NULL;
+    PyObject *literal = args[0];
+    RustSubject subject;
+    if (!rust_subject_open(&subject, literal, value, 0)) return NULL;
+    size_t start;
+    size_t end;
+    if (!rust_subject_window(&subject, pos, endpos, &start, &end)) {
+        rust_subject_release(&subject);
+        return NULL;
+    }
+    if (start > end) {
+        rust_subject_release(&subject);
+        return PyList_New(0);
+    }
+    size_t width = subject.text ? (size_t)PyUnicode_GET_LENGTH(literal) : (size_t)PyBytes_GET_SIZE(literal);
+    if (width == 0) {
+        rust_subject_release(&subject);
+        return PyList_New(0);
+    }
+    Py_ssize_t count = 0;
+    if (subject.text) {
+        count = PyUnicode_Count(value, literal, (Py_ssize_t)start, (Py_ssize_t)end);
+        if (count < 0) {
+            rust_subject_release(&subject);
+            return NULL;
+        }
+    } else {
+        const void *needle = PyBytes_AS_STRING(literal);
+        size_t cursor = start;
+        while (cursor <= end && width <= end - cursor) {
+            const uint8_t *hit = memmem(subject.data + cursor, end - cursor, needle, width);
+            if (hit == NULL) break;
+            count++;
+            cursor = (size_t)(hit - subject.data) + width;
+        }
+    }
+    PyObject *result = PyList_New(count);
+    if (result == NULL || count == 0) {
+        rust_subject_release(&subject);
+        return result;
+    }
+    size_t cursor = start;
+    for (Py_ssize_t index = 0; index < count; index++) {
+        size_t begin;
+        if (subject.text) {
+            Py_ssize_t hit = width == 1
+                ? PyUnicode_FindChar(value, PyUnicode_READ_CHAR(literal, 0), (Py_ssize_t)cursor, (Py_ssize_t)end, 1)
+                : PyUnicode_Find(value, literal, (Py_ssize_t)cursor, (Py_ssize_t)end, 1);
+            if (hit < 0) {
+                if (!PyErr_Occurred()) PyErr_SetString(PyExc_RuntimeError, "Rust literal search returned fewer matches than its count");
+                Py_DECREF(result);
+                rust_subject_release(&subject);
+                return NULL;
+            }
+            begin = (size_t)hit;
+        } else {
+            const uint8_t *hit = memmem(subject.data + cursor, end - cursor, PyBytes_AS_STRING(literal), width);
+            if (hit == NULL) {
+                PyErr_SetString(PyExc_RuntimeError, "Rust literal search returned fewer matches than its count");
+                Py_DECREF(result);
+                rust_subject_release(&subject);
+                return NULL;
+            }
+            begin = (size_t)(hit - subject.data);
+        }
+
+        size_t finish = begin + width;
+        PyObject *piece;
+        if (subject.text) {
+            piece = PyUnicode_Substring(value, (Py_ssize_t)begin, (Py_ssize_t)finish);
+        } else if (begin == 0 && finish == subject.length && PyBytes_CheckExact(value)) {
+            piece = Py_NewRef(value);
+        } else {
+            piece = PyBytes_FromStringAndSize((const char *)subject.data + begin, (Py_ssize_t)width);
+        }
+        if (piece == NULL) {
+            Py_DECREF(result);
+            rust_subject_release(&subject);
+            return NULL;
+        }
+        PyList_SET_ITEM(result, index, piece);
+        cursor = finish;
+    }
+    rust_subject_release(&subject);
+    return result;
+}
+
+static int rust_iterator_traverse(RustIterator *iterator, visitproc visit, void *arg) {
+    Py_VISIT(iterator->pattern);
+    Py_VISIT(iterator->groupindex);
+    return 0;
+}
+
+static int rust_iterator_clear(RustIterator *iterator) {
+    rust_subject_release(&iterator->subject);
+    PyMem_Free(iterator->heap);
+    iterator->heap = NULL;
+    iterator->done = 1;
+    iterator->subject.object = NULL;
+    Py_CLEAR(iterator->pattern);
+    Py_CLEAR(iterator->string);
+    Py_CLEAR(iterator->groupindex);
+    return 0;
+}
+
+static void rust_iterator_dealloc(RustIterator *iterator) {
+    PyObject_GC_UnTrack(iterator);
+    rust_iterator_clear(iterator);
+    Py_TYPE(iterator)->tp_free((PyObject *)iterator);
+}
+
+static PyObject *rust_iterator_get_pattern(RustIterator *iterator, void *closure) {
+    (void)closure;
+    return Py_NewRef(iterator->pattern);
+}
+
+static PyObject *rust_iterator_take(RustIterator *iterator, uint8_t mode) {
+    if (iterator->done || (iterator->cursor > iterator->end && mode != 1)) {
+        iterator->done = 1;
+        return NULL;
+    }
+    size_t stride = iterator->groups + 1;
+    intptr_t *begins = iterator->heap == NULL ? iterator->local_begins : iterator->heap;
+    intptr_t *ends = iterator->heap == NULL ? iterator->local_ends : iterator->heap + stride;
+    intptr_t last = -1;
+    int found = rust_subject_match(iterator->handle, &iterator->subject, iterator->cursor, iterator->end, mode, iterator->nonempty, begins, ends, &last);
+    if (found < 0) {
+        iterator->done = 1;
+        PyErr_SetString(PyExc_RuntimeError, "Rust continuation engine rejected the native iterator call");
+        return NULL;
+    }
+    if (found == 0) {
+        iterator->done = 1;
+        return NULL;
+    }
+    RustMatch *result = rust_match_allocate(iterator->pattern, iterator->string, iterator->groupindex, iterator->groups, (Py_ssize_t)iterator->original, (Py_ssize_t)iterator->end);
+    if (result == NULL) return NULL;
+    memcpy(result->spans, begins, stride * sizeof(intptr_t));
+    memcpy(result->spans + stride, ends, stride * sizeof(intptr_t));
+    result->lastindex = last;
+    if (begins[0] == ends[0]) {
+        iterator->cursor = (size_t)begins[0];
+        iterator->nonempty = 1;
+    } else {
+        iterator->cursor = (size_t)ends[0];
+        iterator->nonempty = 0;
+    }
+    return (PyObject *)result;
+}
+
+static PyObject *rust_iterator_next(PyObject *value) {
+    return rust_iterator_take((RustIterator *)value, 0);
+}
+
+static PyObject *rust_scanner_search(RustIterator *iterator, PyObject *ignored) {
+    (void)ignored;
+    PyObject *match = rust_iterator_take(iterator, 0);
+    if (match == NULL && !PyErr_Occurred()) Py_RETURN_NONE;
+    return match;
+}
+
+static PyObject *rust_scanner_match(RustIterator *iterator, PyObject *ignored) {
+    (void)ignored;
+    PyObject *match = rust_iterator_take(iterator, 1);
+    if (match == NULL && !PyErr_Occurred()) Py_RETURN_NONE;
+    return match;
+}
+
+static PyMethodDef rust_scanner_methods[] = {
+    {"search", (PyCFunction)rust_scanner_search, METH_NOARGS, "Search for the next regular-expression match."},
+    {"match", (PyCFunction)rust_scanner_match, METH_NOARGS, "Match at the scanner's current position."},
+    {NULL, NULL, 0, NULL},
+};
+
+static PyGetSetDef rust_iterator_getsets[] = {
+    {"pattern", (getter)rust_iterator_get_pattern, NULL, "Compiled Rust regular expression.", NULL},
+    {NULL, NULL, NULL, NULL, NULL},
+};
+
+static PyTypeObject RustIteratorType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "re._RustMatchIterator",
+    .tp_basicsize = sizeof(RustIterator),
+    .tp_dealloc = (destructor)rust_iterator_dealloc,
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
+    .tp_doc = "Lazy, borrowed-subject Rust regular-expression match iterator.",
+    .tp_iter = PyObject_SelfIter,
+    .tp_iternext = rust_iterator_next,
+    .tp_getset = rust_iterator_getsets,
+    .tp_traverse = (traverseproc)rust_iterator_traverse,
+    .tp_clear = (inquiry)rust_iterator_clear,
+};
+
+static PyTypeObject RustScannerType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "re.SRE_Scanner",
+    .tp_basicsize = sizeof(RustIterator),
+    .tp_dealloc = (destructor)rust_iterator_dealloc,
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
+    .tp_doc = "Borrowed-subject Rust regular-expression scanner.",
+    .tp_methods = rust_scanner_methods,
+    .tp_getset = rust_iterator_getsets,
+    .tp_traverse = (traverseproc)rust_iterator_traverse,
+    .tp_clear = (inquiry)rust_iterator_clear,
+};
+
+static PyObject *rust_iterator_create(PyTypeObject *type, PyObject *pattern, void *handle, PyObject *groupindex, PyObject *pattern_value, size_t groups, PyObject *value, PyObject *pos, PyObject *endpos) {
+    if (groups != rebar_groups(handle)) {
+        PyErr_SetString(PyExc_ValueError, "Rust regex group count does not match the compiled program");
+        return NULL;
+    }
+    RustIterator *iterator = (RustIterator *)PyType_GenericAlloc(type, 0);
+    if (iterator == NULL) return NULL;
+    iterator->pattern = Py_NewRef(pattern);
+    iterator->string = Py_NewRef(value);
+    iterator->groupindex = Py_NewRef(groupindex);
+    iterator->handle = handle;
+    iterator->groups = groups;
+    if (!rust_subject_open(&iterator->subject, pattern_value, value, 1)) {
+        Py_DECREF(iterator);
+        return NULL;
+    }
+    if (!rust_subject_window(&iterator->subject, pos, endpos, &iterator->cursor, &iterator->end)) {
+        Py_DECREF(iterator);
+        return NULL;
+    }
+    iterator->original = iterator->cursor;
+    if (groups + 1 > RUST_ITERATOR_CAPTURE_WORDS) {
+        size_t stride = groups + 1;
+        if (stride == 0 || stride > SIZE_MAX / (sizeof(intptr_t) * 2)) {
+            Py_DECREF(iterator);
+            return PyErr_NoMemory();
+        }
+        iterator->heap = PyMem_Malloc(stride * sizeof(intptr_t) * 2);
+        if (iterator->heap == NULL) {
+            Py_DECREF(iterator);
+            return PyErr_NoMemory();
+        }
+    }
+    return (PyObject *)iterator;
+}
+
+static PyObject *rust_bound_iterator(PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames, const char *method, PyTypeObject *type) {
+    PyObject *subject;
+    PyObject *pos;
+    PyObject *endpos;
+    if (!rust_bound_window(args, nargs, kwnames, 5, method, &subject, &pos, &endpos)) return NULL;
+    void *handle = PyLong_AsVoidPtr(args[1]);
+    size_t groups = PyLong_AsSize_t(args[4]);
+    if (PyErr_Occurred()) return NULL;
+    return rust_iterator_create(type, args[0], handle, args[2], args[3], groups, subject, pos, endpos);
+}
+
+static PyObject *bridge_bound_finditer(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    (void)module;
+    return rust_bound_iterator(args, nargs, kwnames, "finditer", &RustIteratorType);
+}
+
+static PyObject *bridge_bound_scanner(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    (void)module;
+    return rust_bound_iterator(args, nargs, kwnames, "scanner", &RustScannerType);
+}
+
+static PyObject *bridge_bound_split(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    (void)module;
+    Py_ssize_t keywords = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    if (nargs < 3 || nargs - 3 + keywords > 2) {
+        PyErr_Format(PyExc_TypeError, "split() takes at most 2 arguments (%zd given)", nargs < 3 ? 0 : nargs - 3 + keywords);
+        return NULL;
+    }
+    PyObject *value = nargs >= 4 ? args[3] : NULL;
+    PyObject *limit_value = nargs >= 5 ? args[4] : NULL;
+    for (Py_ssize_t index = 0; index < keywords; index++) {
+        PyObject *name = PyTuple_GET_ITEM(kwnames, index);
+        if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
+            if (value != NULL) {
+                PyErr_SetString(PyExc_TypeError, "argument for split() given by name ('string') and position (1)");
+                return NULL;
+            }
+            value = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "maxsplit") == 0) {
+            if (limit_value != NULL) {
+                PyErr_SetString(PyExc_TypeError, "argument for split() given by name ('maxsplit') and position (2)");
+                return NULL;
+            }
+            limit_value = args[nargs + index];
+        } else {
+            if (!PyErr_Occurred()) PyErr_Format(PyExc_TypeError, "split() got an unexpected keyword argument '%U'", name);
+            return NULL;
+        }
+    }
+    if (value == NULL) {
+        PyErr_SetString(PyExc_TypeError, "split() missing required argument 'string' (pos 1)");
+        return NULL;
+    }
+    void *handle = PyLong_AsVoidPtr(args[0]);
+    size_t groups = PyLong_AsSize_t(args[2]);
+    if (PyErr_Occurred()) return NULL;
+    if (groups != rebar_groups(handle)) {
+        PyErr_SetString(PyExc_ValueError, "Rust regex group count does not match the compiled program");
+        return NULL;
+    }
+    Py_ssize_t limit = 0;
+    if (limit_value != NULL && !rust_index_arg(limit_value, &limit)) return NULL;
+    RustSubject subject;
+    if (!rust_subject_open(&subject, args[1], value, 1)) return NULL;
+    PyObject *result = PyList_New(0);
+    if (result == NULL) {
+        rust_subject_release(&subject);
+        return NULL;
+    }
+    size_t stride = groups + 1;
+    if (stride == 0 || stride > SIZE_MAX / (sizeof(intptr_t) * 2)) {
+        rust_subject_release(&subject);
+        Py_DECREF(result);
+        return PyErr_NoMemory();
+    }
+    intptr_t local_begins[RUST_LOCAL_CAPTURE_WORDS];
+    intptr_t local_ends[RUST_LOCAL_CAPTURE_WORDS];
+    intptr_t *begins = local_begins;
+    intptr_t *ends = local_ends;
+    if (stride > RUST_LOCAL_CAPTURE_WORDS) {
+        begins = PyMem_Malloc(stride * sizeof(intptr_t) * 2);
+        if (begins == NULL) {
+            rust_subject_release(&subject);
+            Py_DECREF(result);
+            return PyErr_NoMemory();
+        }
+        ends = begins + stride;
+    }
+    size_t current = 0;
+    size_t previous = 0;
+    size_t produced = 0;
+    uint8_t nonempty = 0;
+    while (limit >= 0 && current <= subject.length && (limit == 0 || produced < (size_t)limit)) {
+        intptr_t last = -1;
+        int found = rust_subject_match(handle, &subject, current, subject.length, 0, nonempty, begins, ends, &last);
+        if (found < 0) {
+            PyErr_SetString(PyExc_RuntimeError, "Rust continuation engine rejected the split bridge call");
+            goto split_error;
+        }
+        if (found == 0) break;
+        PyObject *prefix = rust_findall_item(&subject, (intptr_t)previous, begins[0]);
+        if (rust_list_append_owned(result, prefix) != 0) goto split_error;
+        for (size_t group = 1; group < stride; group++) {
+            PyObject *piece = begins[group] < 0 ? Py_NewRef(Py_None) : rust_findall_item(&subject, begins[group], ends[group]);
+            if (rust_list_append_owned(result, piece) != 0) goto split_error;
+        }
+        previous = (size_t)ends[0];
+        produced++;
+        if (begins[0] == ends[0]) {
+            current = (size_t)begins[0];
+            nonempty = 1;
+        } else {
+            current = (size_t)ends[0];
+            nonempty = 0;
+        }
+    }
+    PyObject *tail = rust_findall_item(&subject, (intptr_t)previous, (intptr_t)subject.length);
+    if (rust_list_append_owned(result, tail) != 0) goto split_error;
+    if (begins != local_begins) PyMem_Free(begins);
+    rust_subject_release(&subject);
+    return result;
+
+split_error:
+    if (begins != local_begins) PyMem_Free(begins);
+    rust_subject_release(&subject);
+    Py_DECREF(result);
+    return NULL;
+}
+
+typedef struct {
+    PyUnicodeWriter *unicode;
+    PyObject *bytes;
+    Py_ssize_t capacity;
+    Py_ssize_t used;
+    Py_ssize_t pieces;
+    uint8_t text;
+} RustOutputWriter;
+
+static int rust_output_init(RustOutputWriter *writer, int text, Py_ssize_t estimate) {
+    memset(writer, 0, sizeof(*writer));
+    writer->text = (uint8_t)text;
+    if (text) {
+        writer->unicode = PyUnicodeWriter_Create(estimate);
+        return writer->unicode == NULL ? -1 : 0;
+    }
+    writer->capacity = estimate < 16 ? 16 : estimate;
+    writer->bytes = PyBytes_FromStringAndSize(NULL, writer->capacity);
+    return writer->bytes == NULL ? -1 : 0;
+}
+
+static void rust_output_discard(RustOutputWriter *writer) {
+    if (writer->unicode != NULL) {
+        PyUnicodeWriter_Discard(writer->unicode);
+        writer->unicode = NULL;
+    }
+    Py_CLEAR(writer->bytes);
+}
+
+static int rust_output_bytes(RustOutputWriter *writer, const uint8_t *data, Py_ssize_t count) {
+    if (count == 0) return 0;
+    if (count < 0 || writer->used > PY_SSIZE_T_MAX - count) {
+        PyErr_NoMemory();
+        return -1;
+    }
+    Py_ssize_t required = writer->used + count;
+    if (required > writer->capacity) {
+        Py_ssize_t grown = writer->capacity;
+        while (grown < required) {
+            if (grown > PY_SSIZE_T_MAX / 2) {
+                grown = required;
+                break;
+            }
+            grown *= 2;
+        }
+        if (_PyBytes_Resize(&writer->bytes, grown) < 0) return -1;
+        writer->capacity = grown;
+    }
+    memcpy(PyBytes_AS_STRING(writer->bytes) + writer->used, data, (size_t)count);
+    writer->used = required;
+    return 0;
+}
+
+static int rust_output_subject(RustOutputWriter *writer, const RustSubject *subject, size_t start, size_t end) {
+    if (end <= start) return 0;
+    int result;
+    if (writer->text) result = PyUnicodeWriter_WriteSubstring(writer->unicode, subject->object, (Py_ssize_t)start, (Py_ssize_t)end);
+    else result = rust_output_bytes(writer, subject->data + start, (Py_ssize_t)(end - start));
+    if (result == 0) writer->pieces++;
+    return result;
+}
+
+static int rust_output_value(RustOutputWriter *writer, PyObject *value) {
+    if (value == Py_None) return 0;
+    if (writer->text) {
+        if (!PyUnicode_Check(value)) {
+            PyErr_Format(PyExc_TypeError, "sequence item %zd: expected str instance, %.200s found", writer->pieces, Py_TYPE(value)->tp_name);
+            return -1;
+        }
+        if (PyUnicodeWriter_WriteStr(writer->unicode, value) < 0) return -1;
+        writer->pieces++;
+        return 0;
+    }
+    if (PyBytes_Check(value)) {
+        if (rust_output_bytes(writer, (const uint8_t *)PyBytes_AS_STRING(value), PyBytes_GET_SIZE(value)) < 0) return -1;
+        writer->pieces++;
+        return 0;
+    }
+    Py_buffer view = {0};
+    if (PyObject_GetBuffer(value, &view, PyBUF_SIMPLE) != 0) {
+        PyErr_Clear();
+        PyErr_Format(PyExc_TypeError, "sequence item %zd: expected a bytes-like object, %.200s found", writer->pieces, Py_TYPE(value)->tp_name);
+        return -1;
+    }
+    int result = rust_output_bytes(writer, view.buf, view.len);
+    PyBuffer_Release(&view);
+    if (result == 0) writer->pieces++;
+    return result;
+}
+
+static PyObject *rust_output_finish(RustOutputWriter *writer) {
+    if (writer->text) {
+        PyUnicodeWriter *unicode = writer->unicode;
+        writer->unicode = NULL;
+        return PyUnicodeWriter_Finish(unicode);
+    }
+    if (writer->used != writer->capacity && _PyBytes_Resize(&writer->bytes, writer->used) < 0) return NULL;
+    PyObject *result = writer->bytes;
+    writer->bytes = NULL;
+    return result;
+}
+
+static PyObject *rust_sub_result(PyObject *value, size_t count, int want_count) {
+    if (value == NULL) return NULL;
+    if (!want_count) return value;
+    if (count > (size_t)PY_SSIZE_T_MAX) {
+        Py_DECREF(value);
+        return PyErr_NoMemory();
+    }
+    PyObject *number = PyLong_FromSize_t(count);
+    if (number == NULL) {
+        Py_DECREF(value);
+        return NULL;
+    }
+    PyObject *result = PyTuple_New(2);
+    if (result == NULL) {
+        Py_DECREF(value);
+        Py_DECREF(number);
+        return NULL;
+    }
+    PyTuple_SET_ITEM(result, 0, value);
+    PyTuple_SET_ITEM(result, 1, number);
+    return result;
+}
+
+static PyObject *rust_sub_unchanged(const RustSubject *subject) {
+    if (subject->text) return PyUnicode_Substring(subject->object, 0, (Py_ssize_t)subject->length);
+    if (PyBytes_CheckExact(subject->object)) return Py_NewRef(subject->object);
+    return PyBytes_FromStringAndSize((const char *)subject->data, (Py_ssize_t)subject->length);
+}
+
+static int rust_output_template(RustOutputWriter *writer, const RustSubject *subject, PyObject *tokens, PyObject *raw, const intptr_t *begins, const intptr_t *ends, size_t groups) {
+    if (tokens == Py_None) return rust_output_value(writer, raw);
+    if (!PyTuple_Check(tokens)) {
+        PyErr_SetString(PyExc_TypeError, "Rust replacement tokens must be a tuple");
+        return -1;
+    }
+    Py_ssize_t count = PyTuple_GET_SIZE(tokens);
+    for (Py_ssize_t index = 0; index < count; index++) {
+        PyObject *token = PyTuple_GET_ITEM(tokens, index);
+        if (PyLong_Check(token)) {
+            size_t group = PyLong_AsSize_t(token);
+            if (PyErr_Occurred() || group > groups) {
+                if (!PyErr_Occurred()) PyErr_SetString(PyExc_IndexError, "invalid Rust regex replacement group");
+                return -1;
+            }
+            if (begins[group] >= 0 && rust_output_subject(writer, subject, (size_t)begins[group], (size_t)ends[group]) < 0) return -1;
+        } else if (rust_output_value(writer, token) < 0) {
+            return -1;
+        }
+    }
+    return 0;
+}
+
+static int rust_replacement_cache(PyObject *pattern, PyObject *templates, PyObject *replacement, PyObject *subject, Py_ssize_t length, PyObject **raw, PyObject **tokens) {
+    PyObject *normalized = NULL;
+    int escaped = 0;
+
+    if (PyUnicode_Check(replacement)) {
+        Py_ssize_t found = PyUnicode_FindChar(replacement, '\\', 0, PyUnicode_GET_LENGTH(replacement), 1);
+        if (found < 0 && PyErr_Occurred()) return -1;
+        escaped = found >= 0;
+        if (escaped) {
+            normalized = PyUnicode_FromObject(replacement);
+            if (normalized == NULL) return -1;
+        }
+    } else if (PyBytes_Check(replacement)) {
+        Py_ssize_t size = PyBytes_GET_SIZE(replacement);
+        escaped = size != 0 && memchr(PyBytes_AS_STRING(replacement), '\\', (size_t)size) != NULL;
+        if (escaped) {
+            normalized = PyBytes_CheckExact(replacement) ? Py_NewRef(replacement) : PyBytes_FromObject(replacement);
+            if (normalized == NULL) return -1;
+        }
+    } else {
+        Py_buffer buffer = {0};
+        if (PyObject_GetBuffer(replacement, &buffer, PyBUF_SIMPLE) == 0) {
+            escaped = buffer.len != 0 && memchr(buffer.buf, '\\', (size_t)buffer.len) != NULL;
+            PyBuffer_Release(&buffer);
+            if (escaped) {
+                if (PyObject_GetBuffer(replacement, &buffer, PyBUF_SIMPLE) != 0) return -1;
+                normalized = PyBytes_FromStringAndSize(buffer.buf, buffer.len);
+                PyBuffer_Release(&buffer);
+                if (normalized == NULL) return -1;
+            }
+        } else {
+            PyErr_Clear();
+            normalized = PyBytes_FromObject(replacement);
+            if (normalized == NULL) {
+                PyErr_Clear();
+                PyErr_Format(PyExc_TypeError, "decoding to str: need a bytes-like object, %.200s found", Py_TYPE(replacement)->tp_name);
+                return -1;
+            }
+            Py_ssize_t size = PyBytes_GET_SIZE(normalized);
+            escaped = size != 0 && memchr(PyBytes_AS_STRING(normalized), '\\', (size_t)size) != NULL;
+            if (!escaped) {
+                *raw = normalized;
+                *tokens = Py_NewRef(Py_None);
+                return 0;
+            }
+        }
+    }
+
+    if (!escaped) {
+        *raw = Py_NewRef(replacement);
+        *tokens = Py_NewRef(Py_None);
+        return 0;
+    }
+
+    if (!PyUnicode_CheckExact(replacement) && !PyBytes_CheckExact(replacement)) {
+        Py_hash_t fingerprint = PyObject_Hash(replacement);
+        if (fingerprint == -1) {
+            if (!PyErr_ExceptionMatches(PyExc_TypeError)) {
+                Py_DECREF(normalized);
+                return -1;
+            }
+            PyErr_Clear();
+        }
+    }
+
+    if (PyDict_Check(templates)) {
+        PyObject *value = PyDict_GetItemWithError(templates, normalized);
+        if (value != NULL) {
+            *raw = normalized;
+            *tokens = Py_NewRef(value);
+            return 0;
+        }
+        if (PyErr_Occurred()) {
+            Py_DECREF(normalized);
+            return -1;
+        }
+    }
+
+    PyObject *loaded = PyObject_CallMethod(pattern, "_cached_template", "OOn", normalized, subject, length);
+    Py_DECREF(normalized);
+    if (loaded == NULL) {
+        if (((PyUnicode_Check(replacement) && !PyUnicode_CheckExact(replacement))
+             || (PyBytes_Check(replacement) && !PyBytes_CheckExact(replacement)))
+            && Py_TYPE(replacement)->tp_hash != PyObject_HashNotImplemented) {
+            PyObject *raised = PyErr_GetRaisedException();
+            if (raised != NULL && PyObject_HasAttrString(raised, "pattern")) {
+                if (PyObject_SetAttrString(raised, "pattern", replacement) < 0) {
+                    Py_DECREF(raised);
+                    return -1;
+                }
+            }
+            if (raised != NULL) PyErr_SetRaisedException(raised);
+        }
+        return -1;
+    }
+    if (!PyTuple_Check(loaded) || PyTuple_GET_SIZE(loaded) != 2) {
+        Py_DECREF(loaded);
+        PyErr_SetString(PyExc_RuntimeError, "Rust replacement-template cache returned invalid metadata");
+        return -1;
+    }
+    *raw = Py_NewRef(PyTuple_GET_ITEM(loaded, 0));
+    *tokens = Py_NewRef(PyTuple_GET_ITEM(loaded, 1));
+    Py_DECREF(loaded);
+    return 0;
+}
+
+static PyObject *rust_substitute_core(PyObject *pattern, void *handle, PyObject *groupindex, PyObject *pattern_value, PyObject *templates, size_t groups, PyObject *replacement, PyObject *value, Py_ssize_t limit, int want_count) {
+    if (groups != rebar_groups(handle)) {
+        PyErr_SetString(PyExc_ValueError, "Rust regex group count does not match the compiled program");
+        return NULL;
+    }
+    RustSubject subject;
+    if (!rust_subject_open(&subject, pattern_value, value, 1)) return NULL;
+    int callback = PyCallable_Check(replacement);
+    PyObject *raw = NULL;
+    PyObject *tokens = NULL;
+    if (!callback) {
+        if (rust_replacement_cache(pattern, templates, replacement, value, (Py_ssize_t)subject.length, &raw, &tokens) < 0) {
+            rust_subject_release(&subject);
+            return NULL;
+        }
+    }
+    int deferred = callback || (tokens == Py_None && !PyUnicode_Check(raw) && !PyBytes_Check(raw));
+    if (limit < 0) {
+        PyObject *unchanged = rust_sub_unchanged(&subject);
+        Py_XDECREF(raw);
+        Py_XDECREF(tokens);
+        rust_subject_release(&subject);
+        return rust_sub_result(unchanged, 0, want_count);
+    }
+    size_t stride = groups + 1;
+    if (stride == 0 || stride > SIZE_MAX / (sizeof(intptr_t) * 2)) {
+        Py_XDECREF(raw);
+        Py_XDECREF(tokens);
+        rust_subject_release(&subject);
+        return PyErr_NoMemory();
+    }
+    intptr_t local_begins[RUST_LOCAL_CAPTURE_WORDS];
+    intptr_t local_ends[RUST_LOCAL_CAPTURE_WORDS];
+    intptr_t *begins = local_begins;
+    intptr_t *ends = local_ends;
+    if (stride > RUST_LOCAL_CAPTURE_WORDS) {
+        begins = PyMem_Malloc(stride * sizeof(intptr_t) * 2);
+        if (begins == NULL) {
+            Py_XDECREF(raw);
+            Py_XDECREF(tokens);
+            rust_subject_release(&subject);
+            return PyErr_NoMemory();
+        }
+        ends = begins + stride;
+    }
+    RustOutputWriter writer = {0};
+    PyObject *pieces = NULL;
+    if (deferred) {
+        pieces = PyList_New(0);
+        if (pieces == NULL) {
+            if (begins != local_begins) PyMem_Free(begins);
+            Py_XDECREF(raw);
+            Py_XDECREF(tokens);
+            rust_subject_release(&subject);
+            return NULL;
+        }
+    }
+    size_t previous = 0;
+    size_t current = 0;
+    size_t replaced = 0;
+    uint8_t nonempty = 0;
+    while (current <= subject.length && (limit == 0 || replaced < (size_t)limit)) {
+        intptr_t last = -1;
+        int found = rust_subject_match(handle, &subject, current, subject.length, 0, nonempty, begins, ends, &last);
+        if (found < 0) {
+            PyErr_SetString(PyExc_RuntimeError, "Rust continuation engine rejected the replacement bridge call");
+            goto substitute_error;
+        }
+        if (found == 0) break;
+        if (deferred) {
+            if (previous < (size_t)begins[0]) {
+                PyObject *prefix = rust_findall_item(&subject, (intptr_t)previous, begins[0]);
+                if (rust_list_append_owned(pieces, prefix) != 0) goto substitute_error;
+            }
+            PyObject *piece;
+            if (callback) {
+                RustMatch *match = rust_match_allocate(pattern, value, groupindex, groups, 0, (Py_ssize_t)subject.length);
+                if (match == NULL) goto substitute_error;
+                memcpy(match->spans, begins, stride * sizeof(intptr_t));
+                memcpy(match->spans + stride, ends, stride * sizeof(intptr_t));
+                match->lastindex = last;
+                piece = PyObject_CallOneArg(replacement, (PyObject *)match);
+                Py_DECREF(match);
+                if (piece == NULL) goto substitute_error;
+            } else {
+                piece = Py_NewRef(raw);
+            }
+            if (piece == Py_None) {
+                Py_DECREF(piece);
+            } else if (rust_list_append_owned(pieces, piece) != 0) {
+                goto substitute_error;
+            }
+        } else {
+            if (replaced == 0 && rust_output_init(&writer, subject.text, (Py_ssize_t)subject.length) < 0) goto substitute_error;
+            if (rust_output_subject(&writer, &subject, previous, (size_t)begins[0]) < 0) goto substitute_error;
+            if (tokens != Py_None && subject.text != (uint8_t)PyUnicode_Check(raw)) {
+                if (rust_template_helper == NULL) {
+                    PyErr_SetString(PyExc_RuntimeError, "Rust replacement template helper has not been configured");
+                    goto substitute_error;
+                }
+                RustMatch *match = rust_match_allocate(pattern, value, groupindex, groups, 0, (Py_ssize_t)subject.length);
+                if (match == NULL) goto substitute_error;
+                memcpy(match->spans, begins, stride * sizeof(intptr_t));
+                memcpy(match->spans + stride, ends, stride * sizeof(intptr_t));
+                match->lastindex = last;
+                PyObject *piece = PyObject_CallFunctionObjArgs(rust_template_helper, raw, (PyObject *)match, NULL);
+                Py_DECREF(match);
+                if (piece == NULL) goto substitute_error;
+                int written = rust_output_value(&writer, piece);
+                Py_DECREF(piece);
+                if (written < 0) goto substitute_error;
+            } else if (rust_output_template(&writer, &subject, tokens, raw, begins, ends, groups) < 0) {
+                goto substitute_error;
+            }
+        }
+        previous = (size_t)ends[0];
+        replaced++;
+        if (begins[0] == ends[0]) {
+            current = (size_t)begins[0];
+            nonempty = 1;
+        } else {
+            current = (size_t)ends[0];
+            nonempty = 0;
+        }
+    }
+    PyObject *joined;
+    if (replaced == 0) {
+        joined = rust_sub_unchanged(&subject);
+    } else if (deferred) {
+        if (previous < subject.length) {
+            PyObject *tail = rust_findall_item(&subject, (intptr_t)previous, (intptr_t)subject.length);
+            if (rust_list_append_owned(pieces, tail) != 0) goto substitute_error;
+        }
+        PyObject *separator = Py_GetConstant(subject.text ? Py_CONSTANT_EMPTY_STR : Py_CONSTANT_EMPTY_BYTES);
+        if (separator == NULL) goto substitute_error;
+        joined = subject.text ? PyUnicode_Join(separator, pieces) : PyBytes_Join(separator, pieces);
+        Py_DECREF(separator);
+    } else {
+        if (rust_output_subject(&writer, &subject, previous, subject.length) < 0) goto substitute_error;
+        joined = rust_output_finish(&writer);
+    }
+    if (begins != local_begins) PyMem_Free(begins);
+    Py_XDECREF(pieces);
+    Py_XDECREF(raw);
+    Py_XDECREF(tokens);
+    rust_subject_release(&subject);
+    return rust_sub_result(joined, replaced, want_count);
+
+substitute_error:
+    rust_output_discard(&writer);
+    if (begins != local_begins) PyMem_Free(begins);
+    Py_XDECREF(pieces);
+    Py_XDECREF(raw);
+    Py_XDECREF(tokens);
+    rust_subject_release(&subject);
+    return NULL;
+}
+
+static PyObject *rust_bound_substitute(PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames, int want_count) {
+    const char *method = want_count ? "subn" : "sub";
+    Py_ssize_t keywords = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
+    if (nargs < 7 || nargs - 7 + keywords > 3) {
+        PyErr_Format(PyExc_TypeError, "%s() takes at most 3 arguments (%zd given)", method, nargs < 7 ? 0 : nargs - 7 + keywords);
+        return NULL;
+    }
+    PyObject *replacement = nargs >= 8 ? args[7] : NULL;
+    PyObject *subject = nargs >= 9 ? args[8] : NULL;
+    PyObject *limit_value = nargs >= 10 ? args[9] : NULL;
+    for (Py_ssize_t index = 0; index < keywords; index++) {
+        PyObject *name = PyTuple_GET_ITEM(kwnames, index);
+        if (PyUnicode_CompareWithASCIIString(name, "repl") == 0) {
+            if (replacement != NULL) {
+                PyErr_Format(PyExc_TypeError, "argument for %s() given by name ('repl') and position (1)", method);
+                return NULL;
+            }
+            replacement = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
+            if (subject != NULL) {
+                PyErr_Format(PyExc_TypeError, "argument for %s() given by name ('string') and position (2)", method);
+                return NULL;
+            }
+            subject = args[nargs + index];
+        } else if (PyUnicode_CompareWithASCIIString(name, "count") == 0) {
+            if (limit_value != NULL) {
+                PyErr_Format(PyExc_TypeError, "argument for %s() given by name ('count') and position (3)", method);
+                return NULL;
+            }
+            limit_value = args[nargs + index];
+        } else {
+            if (!PyErr_Occurred()) PyErr_Format(PyExc_TypeError, "%s() got an unexpected keyword argument '%U'", method, name);
+            return NULL;
+        }
+    }
+    if (replacement == NULL || subject == NULL) {
+        const char *missing = replacement == NULL ? "repl" : "string";
+        int position = replacement == NULL ? 1 : 2;
+        PyErr_Format(PyExc_TypeError, "%s() missing required argument '%s' (pos %d)", method, missing, position);
+        return NULL;
+    }
+    void *handle = PyLong_AsVoidPtr(args[1]);
+    size_t groups = PyLong_AsSize_t(args[6]);
+    if (PyErr_Occurred()) return NULL;
+    Py_ssize_t limit = 0;
+    if (limit_value != NULL && !rust_index_arg(limit_value, &limit)) return NULL;
+    return rust_substitute_core(args[0], handle, args[2], args[3], args[5], groups, replacement, subject, limit, want_count);
+}
+
+static PyObject *bridge_bound_sub(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    (void)module;
+    return rust_bound_substitute(args, nargs, kwnames, 0);
+}
+
+static PyObject *bridge_bound_subn(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
+    (void)module;
+    return rust_bound_substitute(args, nargs, kwnames, 1);
+}
+
+static PyObject *rust_bound_call(PyObject *value, PyObject *const *args, size_t nargsf, PyObject *kwnames) {
+    RustBoundMethod *method = (RustBoundMethod *)value;
+    size_t prefix = (size_t)Py_SIZE(method);
+    size_t positional = PyVectorcall_NARGS(nargsf);
+    size_t keywords = kwnames == NULL ? 0 : (size_t)PyTuple_GET_SIZE(kwnames);
+    if (prefix > SIZE_MAX - positional || prefix + positional > SIZE_MAX - keywords) return PyErr_NoMemory();
+    size_t total = prefix + positional + keywords;
+    PyObject *local[RUST_LOCAL_BOUND_ARGS];
+    PyObject **call = local;
+    if (total > RUST_LOCAL_BOUND_ARGS) {
+        if (total > SIZE_MAX / sizeof(PyObject *)) return PyErr_NoMemory();
+        call = PyMem_Malloc(total * sizeof(PyObject *));
+        if (call == NULL) return PyErr_NoMemory();
+    }
+    for (size_t index = 0; index < prefix; index++) call[index] = method->prefix[index];
+    for (size_t index = 0; index < positional + keywords; index++) call[prefix + index] = args[index];
+    PyObject *result = PyObject_Vectorcall(method->function, call, prefix + positional, kwnames);
+    if (call != local) PyMem_Free(call);
+    return result;
+}
+
+static void rust_bound_dealloc(RustBoundMethod *method) {
+    PyObject_GC_UnTrack(method);
+    Py_CLEAR(method->function);
+    Py_CLEAR(method->pattern);
+    Py_CLEAR(method->signature);
+    Py_ssize_t prefix = Py_SIZE(method);
+    for (Py_ssize_t index = 0; index < prefix; index++) Py_CLEAR(method->prefix[index]);
+    Py_TYPE(method)->tp_free((PyObject *)method);
+}
+
+static int rust_bound_traverse(RustBoundMethod *method, visitproc visit, void *arg) {
+    Py_VISIT(method->function);
+    Py_VISIT(method->pattern);
+    Py_VISIT(method->signature);
+    Py_ssize_t count = Py_SIZE(method);
+    for (Py_ssize_t index = 0; index < count; index++) Py_VISIT(method->prefix[index]);
+    return 0;
+}
+
+static int rust_bound_clear(RustBoundMethod *method) {
+    Py_CLEAR(method->function);
+    Py_CLEAR(method->pattern);
+    Py_CLEAR(method->signature);
+    Py_ssize_t count = Py_SIZE(method);
+    for (Py_ssize_t index = 0; index < count; index++) Py_CLEAR(method->prefix[index]);
+    return 0;
+}
+
+static PyObject *rust_bound_get_self(RustBoundMethod *method, void *closure) {
+    (void)closure;
+    return Py_NewRef(method->pattern);
+}
+
+static PyObject *rust_bound_get_name(RustBoundMethod *method, void *closure) {
+    (void)closure;
+    PyObject *name = PyObject_GetAttrString(method->function, "__name__");
+    if (name == NULL) return NULL;
+    if (!PyUnicode_Check(name)) return name;
+    Py_ssize_t length = PyUnicode_GET_LENGTH(name);
+    if (PyUnicode_CompareWithASCIIString(name, "bound_literal_findall") == 0 || PyUnicode_CompareWithASCIIString(name, "_literal_findall") == 0) {
+        Py_DECREF(name);
+        return PyUnicode_InternFromString("findall");
+    }
+    if (length > 6
+        && PyUnicode_READ_CHAR(name, 0) == 'b'
+        && PyUnicode_READ_CHAR(name, 1) == 'o'
+        && PyUnicode_READ_CHAR(name, 2) == 'u'
+        && PyUnicode_READ_CHAR(name, 3) == 'n'
+        && PyUnicode_READ_CHAR(name, 4) == 'd'
+        && PyUnicode_READ_CHAR(name, 5) == '_') {
+        PyObject *result = PyUnicode_Substring(name, 6, length);
+        Py_DECREF(name);
+        return result;
+    }
+    return name;
+}
+
+static PyObject *rust_bound_get_qualname(RustBoundMethod *method, void *closure) {
+    (void)closure;
+    PyObject *name = rust_bound_get_name(method, NULL);
+    if (name == NULL) return NULL;
+    PyObject *result = PyUnicode_FromFormat("Pattern.%U", name);
+    Py_DECREF(name);
+    return result;
+}
+
+static PyObject *rust_bound_get_doc(RustBoundMethod *method, void *closure) {
+    (void)closure;
+    return PyObject_GetAttrString(method->function, "__doc__");
+}
+
+static PyObject *rust_bound_get_signature(RustBoundMethod *method, void *closure) {
+    (void)closure;
+    if (method->signature != NULL) return Py_NewRef(method->signature);
+    PyObject *functools = PyImport_ImportModule("functools");
+    if (functools == NULL) return NULL;
+    PyObject *partial_type = PyObject_GetAttrString(functools, "partial");
+    Py_DECREF(functools);
+    if (partial_type == NULL) return NULL;
+    Py_ssize_t count = Py_SIZE(method);
+    PyObject *arguments = PyTuple_New(count + 1);
+    if (arguments == NULL) {
+        Py_DECREF(partial_type);
+        return NULL;
+    }
+    PyTuple_SET_ITEM(arguments, 0, Py_NewRef(method->function));
+    for (Py_ssize_t index = 0; index < count; index++) PyTuple_SET_ITEM(arguments, index + 1, Py_NewRef(method->prefix[index]));
+    PyObject *partial = PyObject_CallObject(partial_type, arguments);
+    Py_DECREF(arguments);
+    Py_DECREF(partial_type);
+    if (partial == NULL) return NULL;
+    PyObject *inspect = PyImport_ImportModule("inspect");
+    if (inspect == NULL) {
+        Py_DECREF(partial);
+        return NULL;
+    }
+    PyObject *signature_function = PyObject_GetAttrString(inspect, "signature");
+    Py_DECREF(inspect);
+    if (signature_function == NULL) {
+        Py_DECREF(partial);
+        return NULL;
+    }
+    PyObject *signature = PyObject_CallOneArg(signature_function, partial);
+    Py_DECREF(signature_function);
+    Py_DECREF(partial);
+    if (signature == NULL) return NULL;
+    method->signature = signature;
+    return Py_NewRef(signature);
+}
+
+static PyObject *rust_bound_repr(RustBoundMethod *method) {
+    PyObject *name = rust_bound_get_name(method, NULL);
+    if (name == NULL) return NULL;
+    PyObject *result = PyUnicode_FromFormat("<built-in method %U of re.Pattern object at %p>", name, (void *)method->pattern);
+    Py_DECREF(name);
+    return result;
+}
+
+static PyGetSetDef rust_bound_getsets[] = {
+    {"__self__", (getter)rust_bound_get_self, NULL, "The bound regular-expression pattern.", NULL},
+    {"__name__", (getter)rust_bound_get_name, NULL, "The public pattern method name.", NULL},
+    {"__qualname__", (getter)rust_bound_get_qualname, NULL, "The qualified pattern method name.", NULL},
+    {"__doc__", (getter)rust_bound_get_doc, NULL, "The bound pattern method documentation.", NULL},
+    {"__signature__", (getter)rust_bound_get_signature, NULL, "The Python-compatible bound method signature.", NULL},
+    {NULL, NULL, NULL, NULL, NULL},
+};
+
+static PyTypeObject RustBoundMethodType = {
+    PyVarObject_HEAD_INIT(NULL, 0)
+    .tp_name = "re.builtin_method",
+    .tp_basicsize = offsetof(RustBoundMethod, prefix),
+    .tp_itemsize = sizeof(PyObject *),
+    .tp_dealloc = (destructor)rust_bound_dealloc,
+    .tp_repr = (reprfunc)rust_bound_repr,
+    .tp_call = PyVectorcall_Call,
+    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_HAVE_GC,
+    .tp_doc = "Fresh, native-vectorcall bound Rust regular-expression method.",
+    .tp_getset = rust_bound_getsets,
+    .tp_vectorcall_offset = offsetof(RustBoundMethod, vectorcall),
+    .tp_traverse = (traverseproc)rust_bound_traverse,
+    .tp_clear = (inquiry)rust_bound_clear,
+};
+
+static PyObject *bridge_bind(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
+    (void)module;
+    if (nargs < 2) {
+        PyErr_Format(PyExc_TypeError, "bind() requires a function and pattern (%zd arguments given)", nargs);
+        return NULL;
+    }
+    if (!PyCallable_Check(args[0])) {
+        PyErr_SetString(PyExc_TypeError, "Rust bound method requires a callable");
+        return NULL;
+    }
+    PyObject *cached_prefix = nargs == 3 && PyTuple_Check(args[2]) ? args[2] : NULL;
+    Py_ssize_t prefix = cached_prefix == NULL ? nargs - 2 : PyTuple_GET_SIZE(cached_prefix);
+    RustBoundMethod *result = (RustBoundMethod *)PyType_GenericAlloc(&RustBoundMethodType, prefix);
+    if (result == NULL) return NULL;
+    result->function = Py_NewRef(args[0]);
+    result->pattern = Py_NewRef(args[1]);
+    result->vectorcall = rust_bound_call;
+    for (Py_ssize_t index = 0; index < prefix; index++) {
+        PyObject *value = cached_prefix == NULL ? args[index + 2] : PyTuple_GET_ITEM(cached_prefix, index);
+        result->prefix[index] = Py_NewRef(value);
+    }
+    return (PyObject *)result;
+}
+
 static PyMethodDef bridge_methods[] = {
+    {"compile", (PyCFunction)(void (*)(void))bridge_compile, METH_FASTCALL, "Compile a from-scratch Rust regular expression in one native call."},
+    {"free", (PyCFunction)bridge_free, METH_O, "Free a compiled Rust regular expression."},
+    {"error", (PyCFunction)bridge_error, METH_NOARGS, "Return the most recent Rust compilation error."},
+    {"set_template", (PyCFunction)bridge_set_template, METH_O, "Configure the compatible Rust match-template expander."},
+    {"bind", (PyCFunction)(void (*)(void))bridge_bind, METH_FASTCALL, "bind($module, function, pattern, /, *prefix)\n--\n\nCreate a fresh native-vectorcall bound regular-expression method."},
+    {"pattern_match", (PyCFunction)(void (*)(void))bridge_pattern_match, METH_FASTCALL, "Run Rust and create a native match in one call."},
+    {"bound_search", (PyCFunction)(void (*)(void))bridge_bound_search, METH_FASTCALL | METH_KEYWORDS, "bound_search($module, pattern, handle, groupindex, pattern_value, literal, string, pos=0, endpos=9223372036854775807)\n--\n\nSearch with a compiled Rust pattern."},
+    {"bound_match", (PyCFunction)(void (*)(void))bridge_bound_match, METH_FASTCALL | METH_KEYWORDS, "bound_match($module, pattern, handle, groupindex, pattern_value, literal, string, pos=0, endpos=9223372036854775807)\n--\n\nMatch at the start with a compiled Rust pattern."},
+    {"bound_fullmatch", (PyCFunction)(void (*)(void))bridge_bound_fullmatch, METH_FASTCALL | METH_KEYWORDS, "bound_fullmatch($module, pattern, handle, groupindex, pattern_value, literal, string, pos=0, endpos=9223372036854775807)\n--\n\nMatch a complete window with a compiled Rust pattern."},
+    {"bound_findall", (PyCFunction)(void (*)(void))bridge_bound_findall, METH_FASTCALL | METH_KEYWORDS, "bound_findall($module, handle, pattern_value, groups, string, pos=0, endpos=9223372036854775807)\n--\n\nCollect all compiled Rust pattern matches."},
+    {"bound_literal_findall", (PyCFunction)(void (*)(void))bridge_bound_literal_findall, METH_FASTCALL | METH_KEYWORDS, "bound_literal_findall($module, literal, string, pos=0, endpos=9223372036854775807)\n--\n\nCollect all exact literal matches in one native call."},
+    {"bound_finditer", (PyCFunction)(void (*)(void))bridge_bound_finditer, METH_FASTCALL | METH_KEYWORDS, "bound_finditer($module, pattern, handle, groupindex, pattern_value, groups, string, pos=0, endpos=9223372036854775807)\n--\n\nCreate a lazy Rust regex match iterator."},
+    {"bound_scanner", (PyCFunction)(void (*)(void))bridge_bound_scanner, METH_FASTCALL | METH_KEYWORDS, "bound_scanner($module, pattern, handle, groupindex, pattern_value, groups, string, pos=0, endpos=9223372036854775807)\n--\n\nCreate a Rust regex scanner."},
+    {"bound_split", (PyCFunction)(void (*)(void))bridge_bound_split, METH_FASTCALL | METH_KEYWORDS, "bound_split($module, handle, pattern_value, groups, string, maxsplit=0)\n--\n\nSplit around Rust regex matches in one native call."},
+    {"bound_sub", (PyCFunction)(void (*)(void))bridge_bound_sub, METH_FASTCALL | METH_KEYWORDS, "bound_sub($module, pattern, handle, groupindex, pattern_value, literal, templates, groups, repl, string, count=0)\n--\n\nSubstitute Rust regex matches in one native call."},
+    {"bound_subn", (PyCFunction)(void (*)(void))bridge_bound_subn, METH_FASTCALL | METH_KEYWORDS, "bound_subn($module, pattern, handle, groupindex, pattern_value, literal, templates, groups, repl, string, count=0)\n--\n\nSubstitute Rust regex matches and return the replacement count."},
     {"run", (PyCFunction)(void (*)(void))bridge_run, METH_FASTCALL, "Run one Rust regular-expression match."},
     {"collect", (PyCFunction)(void (*)(void))bridge_collect, METH_FASTCALL, "Collect non-overlapping Rust regular-expression matches."},
     {"findall", (PyCFunction)(void (*)(void))bridge_findall, METH_FASTCALL, "Return all Rust regular-expression matches as Python values."},
@@ -342,4 +2623,13 @@ static struct PyModuleDef bridge_module = {
     NULL,
 };
 
-PyMODINIT_FUNC PyInit__rust_bridge(void) { return PyModule_Create(&bridge_module); }
+PyMODINIT_FUNC PyInit__rust_bridge(void) {
+    if (PyType_Ready(&RustMatchType) < 0 || PyType_Ready(&RustIteratorType) < 0 || PyType_Ready(&RustScannerType) < 0 || PyType_Ready(&RustBoundMethodType) < 0) return NULL;
+    PyObject *module = PyModule_Create(&bridge_module);
+    if (module == NULL) return NULL;
+    if (PyModule_AddObjectRef(module, "Match", (PyObject *)&RustMatchType) < 0) {
+        Py_DECREF(module);
+        return NULL;
+    }
+    return module;
+}

@@ -1,6 +1,17 @@
 use std::cell::RefCell;
 use std::slice;
 
+mod newline;
+mod search;
+mod stack;
+mod unicode_tables;
+
+use stack::InlineStack;
+
+unsafe extern "C" {
+    fn Py_GetRecursionLimit() -> i32;
+}
+
 const I: u32 = 2;
 const L: u32 = 4;
 const M: u32 = 8;
@@ -35,53 +46,200 @@ enum Expr {
     Cond(usize, Box<Expr>, Box<Expr>),
 }
 
+#[derive(Clone, Copy, PartialEq, Eq)]
+#[repr(u8)]
+enum Op {
+    Literal,
+    Dot,
+    Category,
+    Class,
+    Anchor,
+    Boundary,
+    Split,
+    Jump,
+    SaveBegin,
+    SaveEnd,
+    Backref,
+    Conditional,
+    AtomicBegin,
+    AtomicEnd,
+    Look,
+    Run,
+    RepeatStart,
+    RepeatCheck,
+    RepeatEnd,
+    Accept,
+}
+
+#[derive(Clone, Copy)]
+struct Instruction {
+    op: Op,
+    left: usize,
+    right: usize,
+    value: usize,
+    flags: u32,
+}
+
+impl Instruction {
+    #[inline]
+    const fn new(op: Op) -> Self {
+        Self {
+            op,
+            left: 0,
+            right: 0,
+            value: 0,
+            flags: 0,
+        }
+    }
+}
+
+struct CompiledClass {
+    members: Vec<Member>,
+    negative: bool,
+    flags: u32,
+}
+
+struct CompiledRun {
+    atom: Expr,
+    width: usize,
+    minimum: usize,
+    maximum: Option<usize>,
+    mode: u8,
+    captures: Vec<(usize, usize, usize)>,
+}
+
+#[derive(Clone, Copy)]
+struct CompiledRepeat {
+    minimum: usize,
+    maximum: Option<usize>,
+    minimum_width: usize,
+    mode: u8,
+}
+
+struct Program {
+    code: Vec<Instruction>,
+    classes: Vec<CompiledClass>,
+    runs: Vec<CompiledRun>,
+    repeats: Vec<CompiledRepeat>,
+    guards: usize,
+}
+
+#[derive(Clone, Copy, Default)]
+struct Choice {
+    pc: usize,
+    pos: usize,
+    undo: usize,
+    guard_undo: usize,
+    repeat_undo: usize,
+    atomic_depth: usize,
+    run_chosen: usize,
+    run_available: usize,
+    run_resume: bool,
+    enter_guard: usize,
+}
+
+#[derive(Clone, Copy, Default)]
+struct CaptureUndo {
+    group: usize,
+    begin: isize,
+    end: isize,
+    last: isize,
+}
+
+#[derive(Clone, Copy, Default)]
+struct GuardUndo {
+    slot: usize,
+    previous: usize,
+}
+
+#[derive(Clone, Copy, Default)]
+struct RepeatState {
+    count: usize,
+    iteration_start: usize,
+}
+
+#[derive(Clone, Copy, Default)]
+struct RepeatUndo {
+    slot: usize,
+    previous: RepeatState,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq)]
+enum SearchAnchor {
+    Unrestricted,
+    Line,
+    Absolute,
+}
+
 pub struct Engine {
-    root: Expr,
+    program: Program,
     groups: usize,
     names: Vec<(String, usize)>,
     flags: u32,
     starts: Option<[u8; 256]>,
+    start_set: Option<search::StartSet>,
+    leading_lookbehind: Option<usize>,
+    start_anchor: SearchAnchor,
+    byte_mode: bool,
 }
-#[derive(Clone)]
-struct State {
-    pos: usize,
-    caps: Vec<Option<(usize, usize)>>,
-    last: Option<usize>,
+#[derive(Clone, Copy)]
+struct BorrowedText<'a> {
+    data: &'a [u8],
+    kind: u8,
 }
+
 struct Context<'a> {
     chars: &'a [u32],
     folds: &'a [u32],
     masks: &'a [u8],
     bytes: Option<&'a [u8]>,
+    wide: Option<BorrowedText<'a>>,
     end: usize,
 }
 
 impl Context<'_> {
-    #[inline]
+    #[inline(always)]
     fn character(&self, pos: usize) -> u32 {
-        self.bytes
-            .map_or_else(|| self.chars[pos], |values| u32::from(values[pos]))
+        if let Some(values) = self.bytes {
+            return u32::from(values[pos]);
+        }
+        if let Some(wide) = self.wide {
+            return match wide.kind {
+                1 => u32::from(wide.data[pos]),
+                2 => {
+                    let offset = pos * 2;
+                    u32::from(u16::from_ne_bytes([
+                        wide.data[offset],
+                        wide.data[offset + 1],
+                    ]))
+                }
+                4 => {
+                    let offset = pos * 4;
+                    u32::from_ne_bytes([
+                        wide.data[offset],
+                        wide.data[offset + 1],
+                        wide.data[offset + 2],
+                        wide.data[offset + 3],
+                    ])
+                }
+                _ => unreachable!("validated CPython Unicode kind"),
+            };
+        }
+        self.chars[pos]
     }
 
-    #[inline]
-    fn fold(&self, pos: usize) -> u32 {
-        self.bytes.map_or_else(
-            || self.folds[pos],
-            |values| u32::from(values[pos].to_ascii_lowercase()),
-        )
-    }
-
-    #[inline]
+    #[inline(always)]
     fn mask(&self, pos: usize) -> u8 {
-        self.bytes.map_or_else(
-            || self.masks[pos],
-            |values| {
-                let value = values[pos];
-                u8::from(value.is_ascii_digit())
-                    | (u8::from(matches!(value, 9 | 10 | 11 | 12 | 13 | 32)) << 1)
-                    | (u8::from(value.is_ascii_alphanumeric()) << 2)
-            },
-        )
+        if let Some(values) = self.bytes {
+            let value = values[pos];
+            return u8::from(value.is_ascii_digit())
+                | (u8::from(matches!(value, 9 | 10 | 11 | 12 | 13 | 32)) << 1)
+                | (u8::from(value.is_ascii_alphanumeric()) << 2);
+        }
+        if self.wide.is_some() {
+            return unicode_category_mask(self.character(pos));
+        }
+        self.masks[pos]
     }
 }
 
@@ -101,6 +259,7 @@ struct Parser {
     widths: Vec<(usize, (usize, usize))>,
     named: Vec<(usize, u32)>,
     global_allowed: bool,
+    recursion_limit: usize,
     group_depth: usize,
     open_groups: Vec<usize>,
     lookbehind_bases: Vec<usize>,
@@ -110,7 +269,9 @@ type PResult<T> = Result<T, (String, Option<usize>, bool)>;
 
 impl Parser {
     fn now(&self) -> Option<char> {
-        self.source.get(self.at).and_then(|v| char::from_u32(*v))
+        self.source
+            .get(self.at)
+            .map(|&value| char::from_u32(value).unwrap_or('\u{fffd}'))
     }
     fn take(&mut self) -> Option<char> {
         let value = self.now();
@@ -186,7 +347,7 @@ impl Parser {
             branches.push(self.seq(branch_flags)?);
         }
         Ok(if branches.len() == 1 {
-            branches.pop().unwrap()
+            branches.swap_remove(0)
         } else {
             Expr::Alt(branches)
         })
@@ -307,7 +468,9 @@ impl Parser {
                 }
                 pair
             }
-            _ => unreachable!(),
+            _ => {
+                return self.fail("nothing to repeat".into(), Some(start), true);
+            }
         };
         let mode = match self.now() {
             Some('?') => {
@@ -344,7 +507,12 @@ impl Parser {
     }
     fn atom(&mut self, flags: u32) -> PResult<Expr> {
         let start = self.at;
-        let value = self.take().unwrap();
+        let Some(raw) = self.source.get(self.at).copied() else {
+            return self.fail("unexpected end of pattern".into(), Some(start), true);
+        };
+        let Some(value) = self.take() else {
+            return self.fail("unexpected end of pattern".into(), Some(start), true);
+        };
         match value {
             '.' => Ok(Expr::Dot(flags)),
             '^' | '$' => Ok(Expr::Anchor(value, flags)),
@@ -355,10 +523,11 @@ impl Parser {
             '{' if self.brace_repeat(start) => {
                 self.fail("nothing to repeat".into(), Some(start), true)
             }
-            _ => Ok(Expr::Lit(value as u32, flags)),
+            _ => Ok(Expr::Lit(raw, flags)),
         }
     }
     fn escape(&mut self, flags: u32, in_class: bool, slash: usize) -> PResult<Expr> {
+        let raw = self.source.get(self.at).copied();
         let Some(ch) = self.take() else {
             return self.fail("bad escape (end of pattern)".into(), Some(slash), true);
         };
@@ -463,9 +632,14 @@ impl Parser {
                     return self.fail(format!("bad escape \\{}", ch), Some(slash), true);
                 }
                 while digits.len() < 3 && self.now().is_some_and(|v| matches!(v, '0'..='7')) {
-                    digits.push(self.take().unwrap());
+                    let Some(digit) = self.take() else {
+                        break;
+                    };
+                    digits.push(digit);
                 }
-                let value = u32::from_str_radix(&digits, 8).unwrap();
+                let Ok(value) = u32::from_str_radix(&digits, 8) else {
+                    return self.fail(format!("bad escape \\{}", digits), Some(slash), true);
+                };
                 if value > 0o377 {
                     return self.fail(
                         format!("octal escape value \\{} outside of range 0-0o377", digits),
@@ -476,16 +650,24 @@ impl Parser {
                 return Ok(Expr::Lit(value, flags));
             }
             if self.now().is_some_and(|v| v.is_ascii_digit()) {
-                digits.push(self.take().unwrap());
+                if let Some(digit) = self.take() {
+                    digits.push(digit);
+                }
             }
-            let number: usize = digits.parse().unwrap();
+            let Ok(number) = digits.parse::<usize>() else {
+                return self.fail(
+                    format!("invalid group reference {}", digits),
+                    Some(slash + 1),
+                    true,
+                );
+            };
             self.check_reference(number, slash, Some(slash + 1), false)?;
             return Ok(Expr::Backref(number, flags));
         }
         if ch.is_ascii_alphabetic() {
             return self.fail(format!("bad escape \\{}", ch), Some(slash), true);
         }
-        Ok(Expr::Lit(ch as u32, flags))
+        Ok(Expr::Lit(raw.unwrap_or(ch as u32), flags))
     }
     fn class(&mut self, flags: u32, start: usize) -> PResult<Expr> {
         let negate = self.now() == Some('^');
@@ -542,8 +724,12 @@ impl Parser {
                     return self.fail(
                         format!(
                             "bad character range {}-{}",
-                            char::from_u32(a).unwrap(),
-                            char::from_u32(b).unwrap()
+                            char::from_u32(a)
+                                .map(|value| value.to_string())
+                                .unwrap_or_else(|| format!("\\u{a:04x}")),
+                            char::from_u32(b)
+                                .map(|value| value.to_string())
+                                .unwrap_or_else(|| format!("\\u{b:04x}"))
                         ),
                         Some(dash - 1),
                         true,
@@ -554,7 +740,13 @@ impl Parser {
                 match left {
                     Expr::Lit(a, _) => values.push(Member::Lit(a)),
                     Expr::Cat(c, _) => values.push(Member::Cat(c)),
-                    _ => unreachable!(),
+                    _ => {
+                        return self.fail(
+                            "bad character in character set".into(),
+                            Some(left_start),
+                            true,
+                        );
+                    }
                 }
             }
         }
@@ -580,11 +772,11 @@ impl Parser {
             return self.fail("missing group name".into(), Some(position), true);
         }
         let value: String = raw.iter().filter_map(|v| char::from_u32(*v)).collect();
-        let valid = value.chars().enumerate().all(|(i, ch)| {
-            if i == 0 {
-                ch == '_' || ch.is_alphabetic()
+        let valid = raw.iter().enumerate().all(|(index, &character)| {
+            if index == 0 {
+                unicode_tables::xid_start(character)
             } else {
-                ch == '_' || ch.is_alphanumeric()
+                unicode_tables::xid_continue(character)
             }
         });
         if !valid || (self.byte_mode && raw.iter().any(|v| *v > 127)) {
@@ -592,7 +784,7 @@ impl Parser {
                 raw.iter()
                     .map(|v| {
                         if *v < 128 {
-                            char::from_u32(*v).unwrap().to_string()
+                            char::from(*v as u8).to_string()
                         } else {
                             format!("\\x{:02x}", v)
                         }
@@ -653,6 +845,9 @@ impl Parser {
         Ok(())
     }
     fn group(&mut self, flags: u32, start: usize) -> PResult<Expr> {
+        if self.group_depth >= self.recursion_limit {
+            return self.fail("maximum recursion depth exceeded".into(), None, false);
+        }
         self.group_depth += 1;
         let result = self.group_inner(flags, start);
         self.group_depth -= 1;
@@ -814,29 +1009,36 @@ impl Parser {
                     }
                     return self.fail("missing ), unterminated name".into(), Some(position), true);
                 }
-                let reference: String = self.source[self.at..close]
-                    .iter()
-                    .filter_map(|v| char::from_u32(*v))
-                    .collect();
+                let raw = &self.source[self.at..close];
+                let reference: String = raw.iter().filter_map(|v| char::from_u32(*v)).collect();
                 self.at = close + 1;
-                if reference.is_empty() {
+                if raw.is_empty() {
                     return self.fail("missing group name".into(), Some(position), true);
                 }
                 let number = if reference.chars().all(|v| v.is_ascii_digit()) {
-                    let value: usize = reference.parse().unwrap();
+                    let Ok(value) = reference.parse::<usize>() else {
+                        return self.fail(
+                            format!(
+                                "invalid group reference {}",
+                                reference.trim_start_matches('0')
+                            ),
+                            Some(position),
+                            true,
+                        );
+                    };
                     if value == 0 {
                         return self.fail("bad group number".into(), Some(position), true);
                     }
                     self.check_reference(value, position, None, true)?;
                     value
                 } else {
-                    let valid = reference.chars().enumerate().all(|(index, value)| {
+                    let valid = raw.iter().enumerate().all(|(index, &value)| {
                         if index == 0 {
-                            value == '_' || value.is_alphabetic()
+                            unicode_tables::xid_start(value)
                         } else {
-                            value == '_' || value.is_alphanumeric()
+                            unicode_tables::xid_continue(value)
                         }
-                    }) && (!self.byte_mode || reference.is_ascii());
+                    }) && (!self.byte_mode || raw.iter().all(|value| *value < 128));
                     if !valid {
                         let shown = if self.byte_mode {
                             reference
@@ -899,7 +1101,9 @@ impl Parser {
                 let mut off = 0;
                 let mut removing = false;
                 while self.now().is_some() && !matches!(self.now(), Some(':' | ')')) {
-                    let value = self.take().unwrap();
+                    let Some(value) = self.take() else {
+                        break;
+                    };
                     if value == '-' {
                         removing = true;
                         continue;
@@ -1061,17 +1265,6 @@ fn width(node: &Expr, groups: &[(usize, (usize, usize))]) -> (usize, usize) {
     }
 }
 
-fn folded(value: u32, flags: u32, ctx: &Context<'_>, pos: usize) -> u32 {
-    if flags & (A | L | BYTE) != 0 {
-        if value < 128 {
-            value.to_ascii_lowercase()
-        } else {
-            value
-        }
-    } else {
-        ctx.fold(pos)
-    }
-}
 trait LowerAscii {
     fn to_ascii_lowercase(self) -> Self;
 }
@@ -1084,35 +1277,94 @@ impl LowerAscii for u32 {
         }
     }
 }
+
+#[inline(always)]
+fn unicode_simple_lower(value: u32, ascii_only: bool) -> u32 {
+    if value < 128 {
+        value.to_ascii_lowercase()
+    } else if ascii_only {
+        value
+    } else {
+        unicode_tables::simple_lower(value)
+    }
+}
+
+#[inline(always)]
+fn unicode_literal_fold(value: u32, ascii_only: bool) -> u32 {
+    if ascii_only {
+        return unicode_simple_lower(value, true);
+    }
+    unicode_tables::literal_fold(value)
+}
+
+#[inline(always)]
+fn unicode_category_mask(value: u32) -> u8 {
+    let mask = unicode_tables::category_mask(value);
+    debug_assert!(
+        mask & unicode_tables::CATEGORY_WORD == 0
+            || mask
+                & (unicode_tables::CATEGORY_ALPHA
+                    | unicode_tables::CATEGORY_DECIMAL
+                    | unicode_tables::CATEGORY_DIGIT
+                    | unicode_tables::CATEGORY_NUMERIC)
+                != 0
+            || value == u32::from(b'_')
+    );
+    mask
+}
+
+#[inline(always)]
+fn folded(value: u32, flags: u32, _ctx: &Context<'_>, _pos: usize) -> u32 {
+    unicode_simple_lower(value, flags & (A | L | BYTE) != 0)
+}
+
 fn eq(a: u32, b: u32, flags: u32, ctx: &Context<'_>, apos: usize, bpos: usize) -> bool {
-    if flags & I == 0 {
+    if a == b || flags & I == 0 {
         a == b
     } else {
         folded(a, flags, ctx, apos) == folded(b, flags, ctx, bpos)
     }
 }
 fn eq_lit(lit: u32, value: u32, flags: u32, ctx: &Context<'_>, pos: usize) -> bool {
-    if flags & I == 0 {
+    if lit == value || flags & I == 0 {
         lit == value
     } else {
-        let left = if flags & (A | L | BYTE) != 0 {
-            lit.to_ascii_lowercase()
-        } else {
-            match lit {
-                0x130 | 0x131 => b'i' as u32,
-                0x17f => b's' as u32,
-                0x212a => b'k' as u32,
-                0x1c80 => 0x432,
-                0xfb05 | 0xfb06 => 0xfb05,
-                0xdf | 0x1e9e => 0xdf,
-                _ => char::from_u32(lit)
-                    .and_then(|c| c.to_lowercase().next())
-                    .map_or(lit, |c| c as u32),
-            }
-        };
-        left == folded(value, flags, ctx, pos)
+        let _ = (ctx, pos);
+        let ascii_only = flags & (A | L | BYTE) != 0;
+        unicode_literal_fold(lit, ascii_only) == unicode_literal_fold(value, ascii_only)
     }
 }
+
+const CASE_VARIANTS: [[u32; 4]; 28] = [
+    [0x0049, 0x0069, 0x0130, 0x0131],
+    [0x0053, 0x0073, 0x017f, 0x017f],
+    [0x004b, 0x006b, 0x212a, 0x212a],
+    [0x0412, 0x0432, 0x1c80, 0x1c80],
+    [0xfb05, 0xfb06, 0xfb05, 0xfb06],
+    [0x00df, 0x1e9e, 0x00df, 0x1e9e],
+    [0x00b5, 0x03bc, 0x00b5, 0x03bc],
+    [0x0345, 0x03b9, 0x1fbe, 0x0345],
+    [0x0390, 0x1fd3, 0x0390, 0x1fd3],
+    [0x03b0, 0x1fe3, 0x03b0, 0x1fe3],
+    [0x03b2, 0x03d0, 0x03b2, 0x03d0],
+    [0x03b5, 0x03f5, 0x03b5, 0x03f5],
+    [0x0398, 0x03b8, 0x03d1, 0x03f4],
+    [0x03ba, 0x03f0, 0x03ba, 0x03f0],
+    [0x03c0, 0x03d6, 0x03c0, 0x03d6],
+    [0x03c1, 0x03f1, 0x03c1, 0x03f1],
+    [0x03c2, 0x03c3, 0x03c2, 0x03c3],
+    [0x03c6, 0x03d5, 0x03c6, 0x03d5],
+    [0x0434, 0x1c81, 0x0434, 0x1c81],
+    [0x043e, 0x1c82, 0x043e, 0x1c82],
+    [0x0441, 0x1c83, 0x0441, 0x1c83],
+    [0x0442, 0x1c84, 0x1c85, 0x0442],
+    [0x044a, 0x1c86, 0x044a, 0x1c86],
+    [0x0463, 0x1c87, 0x0463, 0x1c87],
+    [0xa64b, 0x1c88, 0xa64b, 0x1c88],
+    [0x1e61, 0x1e9b, 0x1e61, 0x1e9b],
+    [0x03a9, 0x03c9, 0x2126, 0x03a9],
+    [0x00c5, 0x00e5, 0x212b, 0x00c5],
+];
 
 fn range_case_match(
     left: u32,
@@ -1135,29 +1387,24 @@ fn range_case_match(
         };
         return (left <= lower && lower <= right) || (left <= upper && upper <= right);
     }
-    let lower = char::from_u32(value)
-        .and_then(|c| c.to_lowercase().next())
-        .map_or(value, |c| c as u32);
-    let upper = char::from_u32(value)
-        .and_then(|c| c.to_uppercase().next())
-        .map_or(value, |c| c as u32);
-    let fold = folded(value, flags, ctx, pos);
+    let lower = unicode_simple_lower(value, false);
+    let upper = if unicode_tables::multi_upper(value) {
+        value
+    } else {
+        unicode_tables::simple_upper(value)
+    };
+    let _ = (ctx, pos);
+    let fold = unicode_literal_fold(value, false);
     if (left <= lower && lower <= right)
         || (left <= upper && upper <= right)
         || (left <= fold && fold <= right)
     {
         return true;
     }
-    let closures: &[&[u32]] = &[
-        &[b'I' as u32, b'i' as u32, 0x130, 0x131],
-        &[b'S' as u32, b's' as u32, 0x17f],
-        &[b'K' as u32, b'k' as u32, 0x212a],
-        &[0x412, 0x432, 0x1c80],
-        &[0xfb05, 0xfb06],
-        &[0xdf, 0x1e9e],
-    ];
-    closures.iter().any(|closure| {
-        closure.contains(&value) && closure.iter().any(|item| left <= *item && *item <= right)
+    CASE_VARIANTS.iter().any(|closure| {
+        closure
+            .iter()
+            .any(|&item| left <= item && item <= right && unicode_literal_fold(item, false) == fold)
     })
 }
 fn category(code: char, flags: u32, ctx: &Context<'_>, pos: usize) -> bool {
@@ -1168,14 +1415,14 @@ fn category(code: char, flags: u32, ctx: &Context<'_>, pos: usize) -> bool {
             if ascii {
                 value >= b'0' as u32 && value <= b'9' as u32
             } else {
-                ctx.mask(pos) & 1 != 0
+                ctx.mask(pos) & unicode_tables::CATEGORY_DECIMAL != 0
             }
         }
         's' => {
             if ascii {
                 matches!(value, 9 | 10 | 11 | 12 | 13 | 32)
             } else {
-                ctx.mask(pos) & 2 != 0
+                ctx.mask(pos) & unicode_tables::CATEGORY_WHITESPACE != 0
             }
         }
         _ => {
@@ -1186,7 +1433,7 @@ fn category(code: char, flags: u32, ctx: &Context<'_>, pos: usize) -> bool {
                         || (value >= b'a' as u32 && value <= b'z' as u32)
                         || value == b'_' as u32)
             } else {
-                ctx.mask(pos) & 4 != 0 || value == b'_' as u32
+                ctx.mask(pos) & unicode_tables::CATEGORY_WORD != 0 || value == b'_' as u32
             }
         }
     };
@@ -1314,66 +1561,6 @@ fn repeat_layout(node: &Expr) -> Option<(&Expr, usize, Vec<(usize, usize, usize)
     }
 }
 
-fn advance_atom(node: &Expr, state: &mut State, ctx: &Context<'_>) -> bool {
-    match node {
-        Expr::Lit(value, flags) => {
-            if state.pos < ctx.end
-                && eq_lit(*value, ctx.character(state.pos), *flags, ctx, state.pos)
-            {
-                state.pos += 1;
-                true
-            } else {
-                false
-            }
-        }
-        Expr::Dot(flags) => {
-            if state.pos < ctx.end && (*flags & S != 0 || ctx.character(state.pos) != 10) {
-                state.pos += 1;
-                true
-            } else {
-                false
-            }
-        }
-        Expr::Cat(code, flags) => {
-            if state.pos < ctx.end && category(*code, *flags, ctx, state.pos) {
-                state.pos += 1;
-                true
-            } else {
-                false
-            }
-        }
-        Expr::Class(values, negative, flags) => {
-            if state.pos < ctx.end && class_match(values, *negative, *flags, ctx, state.pos) {
-                state.pos += 1;
-                true
-            } else {
-                false
-            }
-        }
-        Expr::Anchor(code, flags) => match *code {
-            '^' => {
-                state.pos == 0
-                    || (*flags & M != 0 && state.pos > 0 && ctx.character(state.pos - 1) == 10)
-            }
-            '$' => {
-                state.pos == ctx.end
-                    || (state.pos + 1 == ctx.end
-                        && state.pos < ctx.end
-                        && ctx.character(state.pos) == 10)
-                    || (*flags & M != 0 && state.pos < ctx.end && ctx.character(state.pos) == 10)
-            }
-            'A' => state.pos == 0,
-            _ => state.pos == ctx.end,
-        },
-        Expr::Boundary(want, flags) => {
-            let left = state.pos > 0 && category('w', *flags, ctx, state.pos - 1);
-            let right = state.pos < ctx.end && category('w', *flags, ctx, state.pos);
-            (left != right) == *want
-        }
-        _ => false,
-    }
-}
-
 fn repeat_atom_match(node: &Expr, ctx: &Context<'_>, pos: usize) -> bool {
     match node {
         Expr::Lit(value, flags) => eq_lit(*value, ctx.character(pos), *flags, ctx, pos),
@@ -1390,6 +1577,84 @@ fn repeat_atom_match(node: &Expr, ctx: &Context<'_>, pos: usize) -> bool {
         }
         _ => false,
     }
+}
+
+fn contains_group_capture(node: &Expr) -> bool {
+    match node {
+        Expr::Group(_, _) => true,
+        Expr::Seq(values) | Expr::Alt(values) => values.iter().any(contains_group_capture),
+        Expr::Repeat(child, _, _, _) | Expr::Look(_, _, child, _) | Expr::Atomic(child) => {
+            contains_group_capture(child)
+        }
+        Expr::Cond(_, yes, no) => contains_group_capture(yes) || contains_group_capture(no),
+        _ => false,
+    }
+}
+
+fn required_start_anchor(node: &Expr) -> SearchAnchor {
+    match node {
+        Expr::Anchor('A', _) => SearchAnchor::Absolute,
+        Expr::Anchor('^', flags) => {
+            if flags & M == 0 {
+                SearchAnchor::Absolute
+            } else {
+                SearchAnchor::Line
+            }
+        }
+        Expr::Group(_, child) | Expr::Atomic(child) => required_start_anchor(child),
+        Expr::Repeat(child, minimum, _, _) if *minimum != 0 => required_start_anchor(child),
+        Expr::Seq(values) => {
+            for child in values {
+                let anchor = required_start_anchor(child);
+                if anchor != SearchAnchor::Unrestricted {
+                    return anchor;
+                }
+                if width(child, &[]).1 != 0 {
+                    return SearchAnchor::Unrestricted;
+                }
+            }
+            SearchAnchor::Unrestricted
+        }
+        Expr::Alt(values) => {
+            let mut anchor = SearchAnchor::Absolute;
+            for child in values {
+                match required_start_anchor(child) {
+                    SearchAnchor::Unrestricted => {
+                        return SearchAnchor::Unrestricted;
+                    }
+                    SearchAnchor::Line => anchor = SearchAnchor::Line,
+                    SearchAnchor::Absolute => {}
+                }
+            }
+            anchor
+        }
+        Expr::Cond(_, yes, no) => match (required_start_anchor(yes), required_start_anchor(no)) {
+            (SearchAnchor::Absolute, SearchAnchor::Absolute) => SearchAnchor::Absolute,
+            (SearchAnchor::Unrestricted, _) | (_, SearchAnchor::Unrestricted) => {
+                SearchAnchor::Unrestricted
+            }
+            _ => SearchAnchor::Line,
+        },
+        _ => SearchAnchor::Unrestricted,
+    }
+}
+
+#[inline]
+fn next_line_start(context: &Context<'_>, start: usize) -> Option<usize> {
+    if start > context.end {
+        return None;
+    }
+    if start == 0 || context.character(start - 1) == u32::from(b'\n') {
+        return Some(start);
+    }
+    let next = if let Some(bytes) = context.bytes {
+        newline::next_newline(bytes, 1, start, context.end)
+    } else if let Some(subject) = context.wide {
+        newline::next_newline(subject.data, subject.kind, start, context.end)
+    } else {
+        newline::next_newline_chars(context.chars, start, context.end)
+    };
+    next.and_then(|position| position.checked_add(1))
 }
 
 fn leading_lookbehind(node: &Expr) -> Option<usize> {
@@ -1485,20 +1750,13 @@ fn start_table(root: &Expr) -> Option<[u8; 256]> {
             }
         })
         .collect();
-    let masks: Vec<u8> = chars
-        .iter()
-        .map(|value| {
-            let byte = *value as u8;
-            u8::from(byte.is_ascii_digit())
-                | (u8::from(matches!(byte, 9 | 10 | 11 | 12 | 13 | 32)) << 1)
-                | (u8::from(byte.is_ascii_alphanumeric()) << 2)
-        })
-        .collect();
+    let masks: Vec<u8> = chars.iter().copied().map(unicode_category_mask).collect();
     let context = Context {
         chars: &chars,
         folds: &folds,
         masks: &masks,
         bytes: None,
+        wide: None,
         end: 256,
     };
     let mut starts = [0; 256];
@@ -1511,259 +1769,308 @@ fn start_table(root: &Expr) -> Option<[u8; 256]> {
     }
 }
 
-fn eval(node: &Expr, state: &State, ctx: &Context<'_>) -> Vec<State> {
-    match node {
-        Expr::Lit(value, flags) => {
-            if state.pos < ctx.end
-                && eq_lit(*value, ctx.character(state.pos), *flags, ctx, state.pos)
-            {
-                let mut next = state.clone();
-                next.pos += 1;
-                vec![next]
-            } else {
-                vec![]
+struct Compiler {
+    program: Program,
+}
+
+impl Compiler {
+    #[inline]
+    fn emit(&mut self, instruction: Instruction) -> usize {
+        let index = self.program.code.len();
+        self.program.code.push(instruction);
+        index
+    }
+
+    fn nullable(node: &Expr) -> bool {
+        match node {
+            Expr::Lit(_, _) | Expr::Dot(_) | Expr::Cat(_, _) | Expr::Class(_, _, _) => false,
+            Expr::Anchor(_, _)
+            | Expr::Boundary(_, _)
+            | Expr::Look(_, _, _, _)
+            | Expr::Backref(_, _) => true,
+            Expr::Seq(values) => values.iter().all(Self::nullable),
+            Expr::Alt(values) => values.iter().any(Self::nullable),
+            Expr::Group(_, child) | Expr::Atomic(child) => Self::nullable(child),
+            Expr::Repeat(child, minimum, _, _) => *minimum == 0 || Self::nullable(child),
+            Expr::Cond(_, yes, no) => Self::nullable(yes) || Self::nullable(no),
+        }
+    }
+
+    #[inline]
+    fn repeat_body(&mut self, child: &Expr, possessive: bool) -> bool {
+        if possessive {
+            self.emit(Instruction::new(Op::AtomicBegin));
+        }
+        if !self.node(child) {
+            return false;
+        }
+        if possessive {
+            self.emit(Instruction::new(Op::AtomicEnd));
+        }
+        true
+    }
+
+    fn node(&mut self, node: &Expr) -> bool {
+        match node {
+            Expr::Lit(value, flags) => {
+                let mut instruction = Instruction::new(Op::Literal);
+                instruction.value = *value as usize;
+                instruction.flags = *flags;
+                self.emit(instruction);
             }
-        }
-        Expr::Dot(flags) => {
-            if state.pos < ctx.end && (*flags & S != 0 || ctx.character(state.pos) != 10) {
-                let mut next = state.clone();
-                next.pos += 1;
-                vec![next]
-            } else {
-                vec![]
+            Expr::Dot(flags) => {
+                let mut instruction = Instruction::new(Op::Dot);
+                instruction.flags = *flags;
+                self.emit(instruction);
             }
-        }
-        Expr::Cat(code, flags) => {
-            if state.pos < ctx.end && category(*code, *flags, ctx, state.pos) {
-                let mut next = state.clone();
-                next.pos += 1;
-                vec![next]
-            } else {
-                vec![]
+            Expr::Cat(value, flags) => {
+                let mut instruction = Instruction::new(Op::Category);
+                instruction.value = *value as usize;
+                instruction.flags = *flags;
+                self.emit(instruction);
             }
-        }
-        Expr::Class(values, negative, flags) => {
-            if state.pos < ctx.end && class_match(values, *negative, *flags, ctx, state.pos) {
-                let mut next = state.clone();
-                next.pos += 1;
-                vec![next]
-            } else {
-                vec![]
+            Expr::Class(members, negative, flags) => {
+                let index = self.program.classes.len();
+                self.program.classes.push(CompiledClass {
+                    members: members.clone(),
+                    negative: *negative,
+                    flags: *flags,
+                });
+                let mut instruction = Instruction::new(Op::Class);
+                instruction.left = index;
+                self.emit(instruction);
             }
-        }
-        Expr::Anchor(code, flags) => {
-            let okay = match *code {
-                '^' => {
-                    state.pos == 0
-                        || (*flags & M != 0 && state.pos > 0 && ctx.character(state.pos - 1) == 10)
-                }
-                '$' => {
-                    state.pos == ctx.end
-                        || (state.pos + 1 == ctx.end
-                            && state.pos < ctx.end
-                            && ctx.character(state.pos) == 10)
-                        || (*flags & M != 0
-                            && state.pos < ctx.end
-                            && ctx.character(state.pos) == 10)
-                }
-                'A' => state.pos == 0,
-                _ => state.pos == ctx.end,
-            };
-            if okay { vec![state.clone()] } else { vec![] }
-        }
-        Expr::Boundary(want, flags) => {
-            let left = state.pos > 0 && category('w', *flags, ctx, state.pos - 1);
-            let right = state.pos < ctx.end && category('w', *flags, ctx, state.pos);
-            if (left != right) == *want {
-                vec![state.clone()]
-            } else {
-                vec![]
+            Expr::Anchor(value, flags) => {
+                let mut instruction = Instruction::new(Op::Anchor);
+                instruction.value = *value as usize;
+                instruction.flags = *flags;
+                self.emit(instruction);
             }
-        }
-        Expr::Seq(values) => {
-            let mut current = vec![state.clone()];
-            for item in values {
-                if matches!(
-                    item,
-                    Expr::Lit(_, _)
-                        | Expr::Dot(_)
-                        | Expr::Cat(_, _)
-                        | Expr::Class(_, _, _)
-                        | Expr::Anchor(_, _)
-                        | Expr::Boundary(_, _)
-                ) {
-                    current.retain_mut(|value| advance_atom(item, value, ctx));
-                } else {
-                    current = current
-                        .iter()
-                        .flat_map(|value| eval(item, value, ctx))
-                        .collect();
-                }
-                if current.is_empty() {
-                    break;
-                }
+            Expr::Boundary(value, flags) => {
+                let mut instruction = Instruction::new(Op::Boundary);
+                instruction.value = usize::from(*value);
+                instruction.flags = *flags;
+                self.emit(instruction);
             }
-            current
-        }
-        Expr::Alt(values) => values
-            .iter()
-            .flat_map(|value| eval(value, state, ctx))
-            .collect(),
-        Expr::Group(number, child) => eval(child, state, ctx)
-            .into_iter()
-            .map(|mut value| {
-                value.caps[*number] = Some((state.pos, value.pos));
-                value.last = Some(*number);
-                value
-            })
-            .collect(),
-        Expr::Backref(number, flags) => {
-            let Some((begin, end)) = state.caps[*number] else {
-                return vec![];
-            };
-            let count = end - begin;
-            if state.pos + count > ctx.end {
-                return vec![];
-            };
-            if (0..count).all(|off| {
-                eq(
-                    ctx.character(begin + off),
-                    ctx.character(state.pos + off),
-                    *flags,
-                    ctx,
-                    begin + off,
-                    state.pos + off,
-                )
-            }) {
-                let mut next = state.clone();
-                next.pos += count;
-                vec![next]
-            } else {
-                vec![]
-            }
-        }
-        Expr::Repeat(child, min, max, mode) => {
-            if let Some((leaf, width, captures)) = repeat_layout(child)
-                && width > 0
-            {
-                let available = (ctx.end - state.pos) / width;
-                let limit = max.map_or(available, |value| value.min(available));
-                let mut matched = 0;
-                while matched < limit {
-                    let begin = state.pos + matched * width;
-                    if !(begin..begin + width).all(|pos| repeat_atom_match(&leaf, ctx, pos)) {
-                        break;
+            Expr::Seq(values) => {
+                for value in values {
+                    if !self.node(value) {
+                        return false;
                     }
-                    matched += 1;
                 }
-                if matched < *min {
-                    return vec![];
+            }
+            Expr::Alt(values) => {
+                if values.is_empty() {
+                    return true;
                 }
-                let mut result =
-                    Vec::with_capacity(if *mode == 2 { 1 } else { matched - *min + 1 });
-                let mut add = |count| {
-                    let mut value = state.clone();
-                    value.pos += count * width;
-                    if count > 0 {
-                        let base = state.pos + (count - 1) * width;
-                        for (number, begin, end) in &captures {
-                            value.caps[*number] = Some((base + begin, base + end));
-                            value.last = Some(*number);
+                let mut jumps = Vec::with_capacity(values.len().saturating_sub(1));
+                for (index, value) in values.iter().enumerate() {
+                    if index + 1 == values.len() {
+                        if !self.node(value) {
+                            return false;
                         }
-                    }
-                    result.push(value);
-                };
-                if *mode == 1 {
-                    for count in *min..=matched {
-                        add(count);
-                    }
-                } else if *mode == 2 {
-                    add(matched);
-                } else {
-                    for count in (*min..=matched).rev() {
-                        add(count);
-                    }
-                }
-                return result;
-            }
-            fn walk(
-                child: &Expr,
-                state: &State,
-                count: usize,
-                min: usize,
-                max: usize,
-                mode: u8,
-                ctx: &Context<'_>,
-                out: &mut Vec<State>,
-            ) {
-                if mode == 1 && count >= min {
-                    out.push(state.clone());
-                }
-                if count < max {
-                    for next in eval(child, state, ctx) {
-                        if next.pos == state.pos {
-                            if count + 1 < min {
-                                walk(child, &next, count + 1, min, max, mode, ctx, out);
-                            } else {
-                                out.push(next);
-                            }
-                            continue;
-                        }
-                        walk(child, &next, count + 1, min, max, mode, ctx, out);
-                    }
-                }
-                if mode != 1 && count >= min {
-                    out.push(state.clone());
-                }
-            }
-            let limit = max.unwrap_or_else(|| ctx.end - state.pos + min + 1);
-            let mut result = Vec::new();
-            walk(child, state, 0, *min, limit, *mode, ctx, &mut result);
-            if *mode == 2 {
-                result.into_iter().take(1).collect()
-            } else {
-                result
-            }
-        }
-        Expr::Look(behind, positive, child, width) => {
-            let mut seed = state.clone();
-            if *behind {
-                if state.pos < *width {
-                    return if *positive {
-                        vec![]
                     } else {
-                        vec![state.clone()]
-                    };
-                };
-                seed.pos = state.pos - *width;
-            }
-            let mut found = eval(child, &seed, ctx)
-                .into_iter()
-                .filter(|value| !*behind || value.pos == state.pos);
-            let first = found.next();
-            if *positive {
-                if let Some(mut value) = first {
-                    value.pos = state.pos;
-                    vec![value]
-                } else {
-                    vec![]
+                        let split = self.emit(Instruction::new(Op::Split));
+                        let first = self.program.code.len();
+                        if !self.node(value) {
+                            return false;
+                        }
+                        let jump = self.emit(Instruction::new(Op::Jump));
+                        let second = self.program.code.len();
+                        self.program.code[split].left = first;
+                        self.program.code[split].right = second;
+                        jumps.push(jump);
+                    }
                 }
-            } else if first.is_none() {
-                vec![state.clone()]
-            } else {
-                vec![]
+                let finish = self.program.code.len();
+                for jump in jumps {
+                    self.program.code[jump].left = finish;
+                }
+            }
+            Expr::Group(number, child) => {
+                let mut begin = Instruction::new(Op::SaveBegin);
+                begin.left = *number;
+                self.emit(begin);
+                if !self.node(child) {
+                    return false;
+                }
+                let mut end = Instruction::new(Op::SaveEnd);
+                end.left = *number;
+                self.emit(end);
+            }
+            Expr::Backref(number, flags) => {
+                let mut instruction = Instruction::new(Op::Backref);
+                instruction.left = *number;
+                instruction.flags = *flags;
+                self.emit(instruction);
+            }
+            Expr::Repeat(child, minimum, maximum, mode) => {
+                if let Some((atom, width, captures)) = repeat_layout(child)
+                    && width != 0
+                {
+                    let index = self.program.runs.len();
+                    self.program.runs.push(CompiledRun {
+                        atom: atom.clone(),
+                        width,
+                        minimum: *minimum,
+                        maximum: *maximum,
+                        mode: *mode,
+                        captures,
+                    });
+                    let mut instruction = Instruction::new(Op::Run);
+                    instruction.left = index;
+                    self.emit(instruction);
+                    return true;
+                }
+
+                let possessive = *mode == 2;
+                if possessive {
+                    self.emit(Instruction::new(Op::AtomicBegin));
+                }
+
+                let counted = *minimum > 128
+                    || maximum.is_some_and(|limit| limit.saturating_sub(*minimum) > 128);
+                if counted {
+                    let index = self.program.repeats.len();
+                    self.program.repeats.push(CompiledRepeat {
+                        minimum: *minimum,
+                        maximum: *maximum,
+                        minimum_width: width(child, &[]).0,
+                        mode: *mode,
+                    });
+
+                    let mut start = Instruction::new(Op::RepeatStart);
+                    start.left = index;
+                    self.emit(start);
+
+                    let mut check = Instruction::new(Op::RepeatCheck);
+                    check.left = index;
+                    let check_pc = self.emit(check);
+                    let body = self.program.code.len();
+                    if !self.repeat_body(child, possessive) {
+                        return false;
+                    }
+
+                    let mut end = Instruction::new(Op::RepeatEnd);
+                    end.left = index;
+                    end.right = check_pc;
+                    let end_pc = self.emit(end);
+                    let finish = self.program.code.len();
+                    self.program.code[check_pc].right = body;
+                    self.program.code[check_pc].value = finish;
+                    self.program.code[end_pc].value = finish;
+                } else {
+                    for _ in 0..*minimum {
+                        if !self.repeat_body(child, possessive) {
+                            return false;
+                        }
+                    }
+                    match maximum {
+                        Some(limit) => {
+                            for _ in *minimum..*limit {
+                                let split = self.emit(Instruction::new(Op::Split));
+                                let body = self.program.code.len();
+                                if !self.repeat_body(child, possessive) {
+                                    return false;
+                                }
+                                let finish = self.program.code.len();
+                                if *mode == 1 {
+                                    self.program.code[split].left = finish;
+                                    self.program.code[split].right = body;
+                                } else {
+                                    self.program.code[split].left = body;
+                                    self.program.code[split].right = finish;
+                                }
+                            }
+                        }
+                        None => {
+                            let split = self.emit(Instruction::new(Op::Split));
+                            let body = self.program.code.len();
+                            if !self.repeat_body(child, possessive) {
+                                return false;
+                            }
+                            let mut jump = Instruction::new(Op::Jump);
+                            jump.left = split;
+                            self.emit(jump);
+                            let finish = self.program.code.len();
+                            if *mode == 1 {
+                                self.program.code[split].left = finish;
+                                self.program.code[split].right = body;
+                            } else {
+                                self.program.code[split].left = body;
+                                self.program.code[split].right = finish;
+                            }
+                            if Self::nullable(child) {
+                                let guard = self.program.guards;
+                                self.program.guards += 1;
+                                self.program.code[split].value = guard + 1;
+                                self.program.code[split].flags = u32::from(*mode == 1);
+                            }
+                        }
+                    }
+                }
+                if possessive {
+                    self.emit(Instruction::new(Op::AtomicEnd));
+                }
+            }
+            Expr::Look(behind, positive, child, width) => {
+                let look = self.emit(Instruction::new(Op::Look));
+                let entry = self.program.code.len();
+                if !self.node(child) {
+                    return false;
+                }
+                self.emit(Instruction::new(Op::Accept));
+                let finish = self.program.code.len();
+                self.program.code[look].left = entry;
+                self.program.code[look].right = finish;
+                self.program.code[look].value = *width;
+                self.program.code[look].flags = u32::from(*positive)
+                    | (u32::from(*behind) << 1)
+                    | (u32::from(contains_group_capture(child)) << 2);
+            }
+            Expr::Atomic(child) => {
+                self.emit(Instruction::new(Op::AtomicBegin));
+                if !self.node(child) {
+                    return false;
+                }
+                self.emit(Instruction::new(Op::AtomicEnd));
+            }
+            Expr::Cond(number, yes, no) => {
+                let conditional = self.emit(Instruction::new(Op::Conditional));
+                let yes_start = self.program.code.len();
+                if !self.node(yes) {
+                    return false;
+                }
+                let jump = self.emit(Instruction::new(Op::Jump));
+                let no_start = self.program.code.len();
+                if !self.node(no) {
+                    return false;
+                }
+                let finish = self.program.code.len();
+                self.program.code[conditional].left = yes_start;
+                self.program.code[conditional].right = no_start;
+                self.program.code[conditional].value = *number;
+                self.program.code[jump].left = finish;
             }
         }
-        Expr::Atomic(child) => eval(child, state, ctx).into_iter().take(1).collect(),
-        Expr::Cond(number, yes, no) => eval(
-            if state.caps[*number].is_some() {
-                yes
-            } else {
-                no
+        true
+    }
+
+    fn compile(root: &Expr) -> Option<Program> {
+        let mut compiler = Self {
+            program: Program {
+                code: Vec::with_capacity(24),
+                classes: Vec::new(),
+                runs: Vec::new(),
+                repeats: Vec::new(),
+                guards: 0,
             },
-            state,
-            ctx,
-        ),
+        };
+        if !compiler.node(root) {
+            return None;
+        }
+        compiler.emit(Instruction::new(Op::Accept));
+        Some(compiler.program)
     }
 }
 
@@ -1808,6 +2115,10 @@ pub unsafe extern "C" fn rebar_compile(
         widths: vec![],
         named,
         global_allowed: true,
+        recursion_limit: usize::try_from(unsafe { Py_GetRecursionLimit() })
+            .unwrap_or(1_000)
+            .saturating_sub(9)
+            / 2,
         group_depth: 0,
         open_groups: vec![],
         lookbehind_bases: vec![],
@@ -1826,31 +2137,39 @@ pub unsafe extern "C" fn rebar_compile(
                     }
                 })
                 .collect();
-            let masks: Vec<u8> = chars
-                .iter()
-                .map(|value| {
-                    let byte = *value as u8;
-                    u8::from(byte.is_ascii_digit())
-                        | (u8::from(matches!(byte, 9 | 10 | 11 | 12 | 13 | 32)) << 1)
-                        | (u8::from(byte.is_ascii_alphanumeric()) << 2)
-                })
-                .collect();
+            let masks: Vec<u8> = chars.iter().copied().map(unicode_category_mask).collect();
             let context = Context {
                 chars: &chars,
                 folds: &folds,
                 masks: &masks,
                 bytes: None,
+                wide: None,
                 end: 128,
             };
             prepare_classes(&mut root, &context);
+            let lookbehind = leading_lookbehind(&root);
+            let start_anchor = required_start_anchor(&root);
             let starts = start_table(&root);
+            let start_set = starts.as_ref().map(search::StartSet::new);
+            let Some(program) = Compiler::compile(&root) else {
+                set_error(
+                    "regular expression could not be compiled".into(),
+                    None,
+                    false,
+                );
+                return std::ptr::null_mut();
+            };
             set_error(String::new(), None, false);
             Box::into_raw(Box::new(Engine {
-                root,
+                program,
                 groups: parser.groups,
                 names: parser.names,
                 flags: parser.flags & !BYTE,
                 starts,
+                start_set,
+                leading_lookbehind: lookbehind,
+                start_anchor,
+                byte_mode: byte_mode != 0,
             }))
         }
         Err((msg, pos, include)) => {
@@ -1951,6 +2270,595 @@ pub unsafe extern "C" fn rebar_error_copy(out: *mut u8, length: usize) -> usize 
     })
 }
 
+#[inline]
+fn undo_captures(
+    undo: &mut InlineStack<CaptureUndo, 48>,
+    wanted: usize,
+    begins: &mut [isize],
+    ends: &mut [isize],
+    last: &mut isize,
+) {
+    while undo.len() > wanted {
+        let Some(saved) = undo.pop() else {
+            break;
+        };
+        begins[saved.group] = saved.begin;
+        ends[saved.group] = saved.end;
+        *last = saved.last;
+    }
+}
+
+#[inline]
+fn mark_capture(
+    undo: &mut InlineStack<CaptureUndo, 48>,
+    begins: &[isize],
+    ends: &[isize],
+    group: usize,
+    last: isize,
+) {
+    undo.push(CaptureUndo {
+        group,
+        begin: begins[group],
+        end: ends[group],
+        last,
+    });
+}
+
+#[inline]
+fn undo_guards(undo: &mut InlineStack<GuardUndo, 16>, wanted: usize, guards: &mut [usize]) {
+    while undo.len() > wanted {
+        let Some(saved) = undo.pop() else {
+            break;
+        };
+        guards[saved.slot] = saved.previous;
+    }
+}
+
+#[inline]
+fn enter_guard(
+    undo: &mut InlineStack<GuardUndo, 16>,
+    guards: &mut [usize],
+    slot: usize,
+    pos: usize,
+) {
+    undo.push(GuardUndo {
+        slot,
+        previous: guards[slot],
+    });
+    guards[slot] = pos;
+}
+
+#[inline]
+fn undo_repeats(
+    undo: &mut InlineStack<RepeatUndo, 16>,
+    wanted: usize,
+    repeats: &mut [RepeatState],
+) {
+    while undo.len() > wanted {
+        let Some(saved) = undo.pop() else {
+            break;
+        };
+        repeats[saved.slot] = saved.previous;
+    }
+}
+
+#[inline]
+fn mark_repeat(undo: &mut InlineStack<RepeatUndo, 16>, repeats: &[RepeatState], slot: usize) {
+    undo.push(RepeatUndo {
+        slot,
+        previous: repeats[slot],
+    });
+}
+
+#[inline]
+fn run_look(
+    program: &Program,
+    context: &Context<'_>,
+    pos: usize,
+    instruction: Instruction,
+    begins: &mut [isize],
+    ends: &mut [isize],
+    last: &mut isize,
+) -> Option<usize> {
+    if instruction.flags & 2 != 0 {
+        let begin = pos.checked_sub(instruction.value)?;
+        let behind_context = Context {
+            chars: context.chars,
+            folds: context.folds,
+            masks: context.masks,
+            bytes: context.bytes,
+            wide: context.wide,
+            end: pos,
+        };
+        run_program(
+            program,
+            &behind_context,
+            begin,
+            instruction.left,
+            true,
+            false,
+            begins,
+            ends,
+            last,
+        )
+    } else {
+        run_program(
+            program,
+            context,
+            pos,
+            instruction.left,
+            false,
+            false,
+            begins,
+            ends,
+            last,
+        )
+    }
+}
+
+fn run_program(
+    program: &Program,
+    context: &Context<'_>,
+    start: usize,
+    entry: usize,
+    full: bool,
+    nonempty: bool,
+    begins: &mut [isize],
+    ends: &mut [isize],
+    last: &mut isize,
+) -> Option<usize> {
+    let mut choices = InlineStack::<Choice, 24>::new();
+    let mut undo = InlineStack::<CaptureUndo, 48>::new();
+    let mut guard_undo = InlineStack::<GuardUndo, 16>::new();
+    let mut repeat_undo = InlineStack::<RepeatUndo, 16>::new();
+    let mut atomic = InlineStack::<usize, 12>::new();
+    let mut guards = if program.guards == 0 {
+        Vec::new()
+    } else {
+        vec![usize::MAX; program.guards]
+    };
+    let mut repeats = if program.repeats.is_empty() {
+        Vec::new()
+    } else {
+        vec![RepeatState::default(); program.repeats.len()]
+    };
+    let mut pc = entry;
+    let mut pos = start;
+    let mut resumed_run: Option<(usize, usize, usize)> = None;
+
+    loop {
+        let instruction = program.code[pc];
+        let mut succeeded = false;
+        match instruction.op {
+            Op::Literal => {
+                if pos < context.end
+                    && eq_lit(
+                        instruction.value as u32,
+                        context.character(pos),
+                        instruction.flags,
+                        context,
+                        pos,
+                    )
+                {
+                    pos += 1;
+                    pc += 1;
+                    continue;
+                }
+            }
+            Op::Dot => {
+                if pos < context.end && (instruction.flags & S != 0 || context.character(pos) != 10)
+                {
+                    pos += 1;
+                    pc += 1;
+                    continue;
+                }
+            }
+            Op::Category => {
+                if pos < context.end
+                    && char::from_u32(instruction.value as u32)
+                        .is_some_and(|code| category(code, instruction.flags, context, pos))
+                {
+                    pos += 1;
+                    pc += 1;
+                    continue;
+                }
+            }
+            Op::Class => {
+                let class = &program.classes[instruction.left];
+                if pos < context.end
+                    && class_match(&class.members, class.negative, class.flags, context, pos)
+                {
+                    pos += 1;
+                    pc += 1;
+                    continue;
+                }
+            }
+            Op::Anchor => {
+                succeeded = match instruction.value as u8 {
+                    b'^' => {
+                        pos == 0
+                            || (instruction.flags & M != 0
+                                && pos > 0
+                                && context.character(pos - 1) == 10)
+                    }
+                    b'$' => {
+                        pos == context.end
+                            || (pos.checked_add(1) == Some(context.end)
+                                && pos < context.end
+                                && context.character(pos) == 10)
+                            || (instruction.flags & M != 0
+                                && pos < context.end
+                                && context.character(pos) == 10)
+                    }
+                    b'A' => pos == 0,
+                    _ => pos == context.end,
+                };
+            }
+            Op::Boundary => {
+                let left = pos > 0 && category('w', instruction.flags, context, pos - 1);
+                let right = pos < context.end && category('w', instruction.flags, context, pos);
+                succeeded = (left != right) == (instruction.value != 0);
+            }
+            Op::Split => {
+                let guard = instruction.value.checked_sub(1);
+                let alternate_enters_guard = guard.filter(|_| instruction.flags & 1 != 0);
+                choices.push(Choice {
+                    pc: instruction.right,
+                    pos,
+                    undo: undo.len(),
+                    guard_undo: guard_undo.len(),
+                    repeat_undo: repeat_undo.len(),
+                    atomic_depth: atomic.len(),
+                    run_chosen: 0,
+                    run_available: 0,
+                    run_resume: false,
+                    enter_guard: alternate_enters_guard.unwrap_or(usize::MAX),
+                });
+                if instruction.flags & 1 == 0
+                    && let Some(slot) = guard
+                {
+                    enter_guard(&mut guard_undo, &mut guards, slot, pos);
+                }
+                pc = instruction.left;
+                continue;
+            }
+            Op::Jump => {
+                let target = program.code[instruction.left];
+                if target.op == Op::Split && target.value != 0 && guards[target.value - 1] == pos {
+                    pc = if target.flags & 1 != 0 {
+                        target.left
+                    } else {
+                        target.right
+                    };
+                } else {
+                    pc = instruction.left;
+                }
+                continue;
+            }
+            Op::SaveBegin => {
+                let number = instruction.left;
+                mark_capture(&mut undo, begins, ends, number, *last);
+                begins[number] = pos as isize;
+                pc += 1;
+                continue;
+            }
+            Op::SaveEnd => {
+                let number = instruction.left;
+                mark_capture(&mut undo, begins, ends, number, *last);
+                ends[number] = pos as isize;
+                *last = number as isize;
+                pc += 1;
+                continue;
+            }
+            Op::Backref => {
+                let number = instruction.left;
+                let begin = begins[number];
+                let end = ends[number];
+                if begin >= 0 && end >= begin {
+                    let begin = begin as usize;
+                    let count = end as usize - begin;
+                    if count <= context.end.saturating_sub(pos)
+                        && (0..count).all(|offset| {
+                            eq(
+                                context.character(begin + offset),
+                                context.character(pos + offset),
+                                instruction.flags,
+                                context,
+                                begin + offset,
+                                pos + offset,
+                            )
+                        })
+                    {
+                        pos += count;
+                        pc += 1;
+                        continue;
+                    }
+                }
+            }
+            Op::Conditional => {
+                let number = instruction.value;
+                pc = if begins[number] >= 0 && ends[number] >= begins[number] {
+                    instruction.left
+                } else {
+                    instruction.right
+                };
+                continue;
+            }
+            Op::AtomicBegin => {
+                atomic.push(choices.len());
+                pc += 1;
+                continue;
+            }
+            Op::AtomicEnd => {
+                let Some(mark) = atomic.pop() else {
+                    return None;
+                };
+                choices.truncate(mark);
+                pc += 1;
+                continue;
+            }
+            Op::Look => {
+                let positive = instruction.flags & 1 != 0;
+                if instruction.flags & 4 == 0 {
+                    let result = run_look(program, context, pos, instruction, begins, ends, last);
+                    if result.is_some() == positive {
+                        pc = instruction.right;
+                        continue;
+                    }
+                } else {
+                    let old_begins = begins.to_vec();
+                    let old_ends = ends.to_vec();
+                    let old_last = *last;
+                    let result = run_look(program, context, pos, instruction, begins, ends, last);
+                    if result.is_some() == positive {
+                        if positive {
+                            let look_last = *last;
+                            *last = old_last;
+                            for number in 1..begins.len() {
+                                if begins[number] != old_begins[number]
+                                    || ends[number] != old_ends[number]
+                                {
+                                    let new_begin = begins[number];
+                                    let new_end = ends[number];
+                                    begins[number] = old_begins[number];
+                                    ends[number] = old_ends[number];
+                                    mark_capture(&mut undo, begins, ends, number, *last);
+                                    begins[number] = new_begin;
+                                    ends[number] = new_end;
+                                }
+                            }
+                            if look_last != old_last && undo.len() == 0 {
+                                mark_capture(&mut undo, begins, ends, 0, old_last);
+                            }
+                            *last = look_last;
+                        } else {
+                            begins.copy_from_slice(&old_begins);
+                            ends.copy_from_slice(&old_ends);
+                            *last = old_last;
+                        }
+                        pc = instruction.right;
+                        continue;
+                    }
+                    begins.copy_from_slice(&old_begins);
+                    ends.copy_from_slice(&old_ends);
+                    *last = old_last;
+                }
+            }
+            Op::RepeatStart => {
+                let slot = instruction.left;
+                let repeat = program.repeats[slot];
+                let room = context.end.saturating_sub(pos);
+                if repeat.minimum_width == 0 || repeat.minimum <= room / repeat.minimum_width {
+                    mark_repeat(&mut repeat_undo, &repeats, slot);
+                    repeats[slot] = RepeatState {
+                        count: 0,
+                        iteration_start: pos,
+                    };
+                    pc += 1;
+                    continue;
+                }
+            }
+            Op::RepeatCheck => {
+                let slot = instruction.left;
+                let repeat = program.repeats[slot];
+                let count = repeats[slot].count;
+                let can_repeat = repeat.maximum.is_none_or(|limit| count < limit);
+                let can_exit = count >= repeat.minimum;
+
+                if can_repeat {
+                    mark_repeat(&mut repeat_undo, &repeats, slot);
+                    repeats[slot].iteration_start = pos;
+                    if can_exit {
+                        let lazy = repeat.mode == 1;
+                        let preferred = if lazy {
+                            instruction.value
+                        } else {
+                            instruction.right
+                        };
+                        let alternate = if lazy {
+                            instruction.right
+                        } else {
+                            instruction.value
+                        };
+                        choices.push(Choice {
+                            pc: alternate,
+                            pos,
+                            undo: undo.len(),
+                            guard_undo: guard_undo.len(),
+                            repeat_undo: repeat_undo.len(),
+                            atomic_depth: atomic.len(),
+                            run_chosen: 0,
+                            run_available: 0,
+                            run_resume: false,
+                            enter_guard: usize::MAX,
+                        });
+                        pc = preferred;
+                    } else {
+                        pc = instruction.right;
+                    }
+                    continue;
+                }
+                if can_exit {
+                    pc = instruction.value;
+                    continue;
+                }
+            }
+            Op::RepeatEnd => {
+                let slot = instruction.left;
+                let previous = repeats[slot];
+                if let Some(count) = previous.count.checked_add(1) {
+                    mark_repeat(&mut repeat_undo, &repeats, slot);
+                    repeats[slot].count = count;
+                    pc = if pos == previous.iteration_start
+                        && count >= program.repeats[slot].minimum
+                    {
+                        instruction.value
+                    } else {
+                        instruction.right
+                    };
+                    continue;
+                }
+            }
+            Op::Run => {
+                let run = &program.runs[instruction.left];
+                if pos > context.end && run.captures.is_empty() {
+                    // CPython's repeat-one instruction rejects an inverted
+                    // window, even when its minimum is zero. A repeated
+                    // capturing child instead uses the general repeat path
+                    // and may still contribute its final empty capture.
+                    // Preserve that distinction for match and scanners.
+                } else {
+                    let (chosen, available) = if let Some((resume_pc, count, maximum)) = resumed_run
+                        && resume_pc == pc
+                    {
+                        resumed_run = None;
+                        if run.mode == 1 {
+                            let begin = pos + (count - 1) * run.width;
+                            if (begin..begin + run.width)
+                                .all(|at| repeat_atom_match(&run.atom, context, at))
+                            {
+                                (count, maximum)
+                            } else {
+                                (usize::MAX, maximum)
+                            }
+                        } else {
+                            (count, maximum)
+                        }
+                    } else {
+                        let room = context.end.saturating_sub(pos);
+                        let possible = room / run.width;
+                        let limit = run.maximum.map_or(possible, |bound| bound.min(possible));
+                        if run.mode == 1 {
+                            if run.minimum > limit {
+                                (usize::MAX, limit)
+                            } else {
+                                let mut matched = 0;
+                                while matched < run.minimum {
+                                    let begin = pos + matched * run.width;
+                                    if !(begin..begin + run.width)
+                                        .all(|at| repeat_atom_match(&run.atom, context, at))
+                                    {
+                                        break;
+                                    }
+                                    matched += 1;
+                                }
+                                if matched == run.minimum {
+                                    (matched, limit)
+                                } else {
+                                    (usize::MAX, limit)
+                                }
+                            }
+                        } else {
+                            let mut available = 0;
+                            while available < limit {
+                                let begin = pos + available * run.width;
+                                if !(begin..begin + run.width)
+                                    .all(|at| repeat_atom_match(&run.atom, context, at))
+                                {
+                                    break;
+                                }
+                                available += 1;
+                            }
+                            if available < run.minimum {
+                                (usize::MAX, available)
+                            } else {
+                                (available, available)
+                            }
+                        }
+                    };
+
+                    if chosen != usize::MAX {
+                        if run.mode != 2 {
+                            let next = if run.mode == 1 {
+                                (chosen < available).then_some(chosen + 1)
+                            } else {
+                                (chosen > run.minimum).then_some(chosen - 1)
+                            };
+                            if let Some(next) = next {
+                                choices.push(Choice {
+                                    pc,
+                                    pos,
+                                    undo: undo.len(),
+                                    guard_undo: guard_undo.len(),
+                                    repeat_undo: repeat_undo.len(),
+                                    atomic_depth: atomic.len(),
+                                    run_chosen: next,
+                                    run_available: available,
+                                    run_resume: true,
+                                    enter_guard: usize::MAX,
+                                });
+                            }
+                        }
+                        if chosen != 0 {
+                            let base = pos + (chosen - 1) * run.width;
+                            for &(number, begin, end) in &run.captures {
+                                mark_capture(&mut undo, begins, ends, number, *last);
+                                begins[number] = (base + begin) as isize;
+                                ends[number] = (base + end) as isize;
+                                *last = number as isize;
+                            }
+                        }
+                        pos += chosen * run.width;
+                        pc += 1;
+                        continue;
+                    }
+                }
+            }
+            Op::Accept => {
+                if (!full || pos == context.end) && !(nonempty && pos == start) {
+                    return Some(pos);
+                }
+            }
+        }
+
+        if succeeded {
+            pc += 1;
+            continue;
+        }
+
+        let Some(choice) = choices.pop() else {
+            undo_captures(&mut undo, 0, begins, ends, last);
+            undo_guards(&mut guard_undo, 0, &mut guards);
+            undo_repeats(&mut repeat_undo, 0, &mut repeats);
+            return None;
+        };
+        undo_captures(&mut undo, choice.undo, begins, ends, last);
+        undo_guards(&mut guard_undo, choice.guard_undo, &mut guards);
+        undo_repeats(&mut repeat_undo, choice.repeat_undo, &mut repeats);
+        atomic.truncate(choice.atomic_depth);
+        pc = choice.pc;
+        pos = choice.pos;
+        resumed_run = if choice.run_resume {
+            Some((choice.pc, choice.run_chosen, choice.run_available))
+        } else {
+            None
+        };
+        if choice.enter_guard != usize::MAX {
+            enter_guard(&mut guard_undo, &mut guards, choice.enter_guard, pos);
+        }
+    }
+}
+
 fn run_match(
     engine: &Engine,
     context: &Context<'_>,
@@ -1961,49 +2869,77 @@ fn run_match(
     ends: &mut [isize],
     last: &mut isize,
 ) -> i32 {
-    if pos > context.end {
+    let program = &engine.program;
+    if pos > context.end && mode != 1 {
         return 0;
     }
-    let last_start = if mode == 0 { context.end } else { pos };
-    let first_start = if mode == 0 {
-        leading_lookbehind(&engine.root).map_or(pos, |width| pos.max(width))
+
+    let last_start = if mode == 0 && engine.start_anchor == SearchAnchor::Absolute {
+        0
+    } else if mode == 0 {
+        context.end
     } else {
         pos
     };
-    for start in first_start..=last_start {
+    let first_start = if mode == 0 {
+        engine
+            .leading_lookbehind
+            .map_or(pos, |width| pos.max(width))
+    } else {
+        pos
+    };
+    let mut start = first_start;
+    while start <= last_start {
+        if mode == 0 && engine.start_anchor == SearchAnchor::Line {
+            let Some(next) = next_line_start(context, start) else {
+                return 0;
+            };
+            start = next;
+        }
         if mode == 0
             && start < context.end
             && let Some(starts) = &engine.starts
-            && context.character(start) < 256
-            && starts[context.character(start) as usize] == 0
         {
-            continue;
-        }
-        let state = State {
-            pos: start,
-            caps: vec![None; engine.groups + 1],
-            last: None,
-        };
-        for value in eval(&engine.root, &state, context) {
-            if mode == 2 && value.pos != context.end {
-                continue;
-            }
-            if nonempty != 0 && start == pos && value.pos == start {
-                continue;
-            }
-            begins.fill(-1);
-            ends.fill(-1);
-            begins[0] = start as isize;
-            ends[0] = value.pos as isize;
-            for (number, span) in value.caps.iter().enumerate().skip(1) {
-                if let Some((a, b)) = span {
-                    begins[number] = *a as isize;
-                    ends[number] = *b as isize;
+            let contiguous = context.bytes.or_else(|| {
+                context
+                    .wide
+                    .filter(|subject| subject.kind == 1)
+                    .map(|subject| subject.data)
+            });
+            if let (Some(set), Some(values)) = (&engine.start_set, contiguous)
+                && engine.start_anchor == SearchAnchor::Unrestricted
+            {
+                let Some(next) = set.next(values, start, context.end) else {
+                    return 0;
+                };
+                start = next;
+            } else {
+                let first = context.character(start);
+                if first < 256 && starts[first as usize] == 0 {
+                    start += 1;
+                    continue;
                 }
             }
-            *last = value.last.map_or(-1, |v| v as isize);
+        }
+        begins.fill(-1);
+        ends.fill(-1);
+        *last = -1;
+        if let Some(finish) = run_program(
+            program,
+            context,
+            start,
+            0,
+            mode == 2,
+            nonempty != 0 && start == pos,
+            begins,
+            ends,
+            last,
+        ) {
+            begins[0] = start as isize;
+            ends[0] = finish as isize;
             return 1;
         }
+        start += 1;
     }
     0
 }
@@ -2039,6 +2975,7 @@ pub unsafe extern "C" fn rebar_match(
         folds: unsafe { slice::from_raw_parts(folds, length) },
         masks: unsafe { slice::from_raw_parts(masks, length) },
         bytes: None,
+        wide: None,
         end: endpos.min(length),
     };
     let begins = unsafe { slice::from_raw_parts_mut(begins, engine.groups + 1) };
@@ -2077,6 +3014,7 @@ pub unsafe extern "C" fn rebar_match_ascii(
         folds: &[],
         masks: &[],
         bytes: Some(unsafe { slice::from_raw_parts(data, length) }),
+        wide: None,
         end: endpos.min(length),
     };
     let begins = unsafe { slice::from_raw_parts_mut(begins, engine.groups + 1) };
@@ -2094,44 +3032,88 @@ pub unsafe extern "C" fn rebar_match_ascii(
 }
 
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn rebar_collect_ascii(
+pub unsafe extern "C" fn rebar_match_wide(
     handle: *const Engine,
     data: *const u8,
     length: usize,
+    kind: u8,
     pos: usize,
     endpos: usize,
-    capacity: usize,
+    mode: u8,
+    nonempty: u8,
     begins: *mut isize,
     ends: *mut isize,
-    lasts: *mut isize,
-) -> isize {
-    if handle.is_null() || data.is_null() || begins.is_null() || ends.is_null() || lasts.is_null() {
+    last: *mut isize,
+) -> i32 {
+    if handle.is_null()
+        || data.is_null()
+        || !matches!(kind, 1 | 2 | 4)
+        || begins.is_null()
+        || ends.is_null()
+        || last.is_null()
+    {
         return -1;
     }
-    let engine = unsafe { &*handle };
-    let Some(total) = capacity.checked_mul(engine.groups + 1) else {
+    let Some(size) = length.checked_mul(usize::from(kind)) else {
         return -1;
     };
-    let starts = unsafe { slice::from_raw_parts_mut(begins, total) };
-    let finishes = unsafe { slice::from_raw_parts_mut(ends, total) };
-    let last_values = unsafe { slice::from_raw_parts_mut(lasts, capacity) };
-    let stride = engine.groups + 1;
-    let end = endpos.min(length);
+    let engine = unsafe { &*handle };
+    let storage = unsafe { slice::from_raw_parts(data, size) };
+    let (bytes, wide) = if engine.byte_mode {
+        if kind != 1 {
+            return -1;
+        }
+        (Some(storage), None)
+    } else {
+        (
+            None,
+            Some(BorrowedText {
+                data: storage,
+                kind,
+            }),
+        )
+    };
     let context = Context {
         chars: &[],
         folds: &[],
         masks: &[],
-        bytes: Some(unsafe { slice::from_raw_parts(data, length) }),
-        end,
+        bytes,
+        wide,
+        end: endpos.min(length),
     };
+    let begins = unsafe { slice::from_raw_parts_mut(begins, engine.groups + 1) };
+    let ends = unsafe { slice::from_raw_parts_mut(ends, engine.groups + 1) };
+    run_match(
+        engine,
+        &context,
+        pos.min(length),
+        mode,
+        nonempty,
+        begins,
+        ends,
+        unsafe { &mut *last },
+    )
+}
+
+#[inline]
+fn collect_matches(
+    engine: &Engine,
+    context: &Context<'_>,
+    pos: usize,
+    capacity: usize,
+    starts: &mut [isize],
+    finishes: &mut [isize],
+    last_values: &mut [isize],
+) -> isize {
+    let stride = engine.groups + 1;
     let mut current = pos;
     let mut nonempty = 0;
     let mut count = 0;
-    while current <= end && count < capacity {
+    while current <= context.end && count < capacity {
         let offset = count * stride;
         let result = run_match(
             engine,
-            &context,
+            context,
             current,
             0,
             nonempty,
@@ -2157,4 +3139,112 @@ pub unsafe extern "C" fn rebar_collect_ascii(
         }
     }
     count as isize
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rebar_collect_ascii(
+    handle: *const Engine,
+    data: *const u8,
+    length: usize,
+    pos: usize,
+    endpos: usize,
+    capacity: usize,
+    begins: *mut isize,
+    ends: *mut isize,
+    lasts: *mut isize,
+) -> isize {
+    if handle.is_null() || data.is_null() || begins.is_null() || ends.is_null() || lasts.is_null() {
+        return -1;
+    }
+    let engine = unsafe { &*handle };
+    let Some(total) = capacity.checked_mul(engine.groups + 1) else {
+        return -1;
+    };
+    let starts = unsafe { slice::from_raw_parts_mut(begins, total) };
+    let finishes = unsafe { slice::from_raw_parts_mut(ends, total) };
+    let last_values = unsafe { slice::from_raw_parts_mut(lasts, capacity) };
+    let end = endpos.min(length);
+    let context = Context {
+        chars: &[],
+        folds: &[],
+        masks: &[],
+        bytes: Some(unsafe { slice::from_raw_parts(data, length) }),
+        wide: None,
+        end,
+    };
+    collect_matches(
+        engine,
+        &context,
+        pos.min(length),
+        capacity,
+        starts,
+        finishes,
+        last_values,
+    )
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rebar_collect_wide(
+    handle: *const Engine,
+    data: *const u8,
+    length: usize,
+    kind: u8,
+    pos: usize,
+    endpos: usize,
+    capacity: usize,
+    begins: *mut isize,
+    ends: *mut isize,
+    lasts: *mut isize,
+) -> isize {
+    if handle.is_null()
+        || data.is_null()
+        || !matches!(kind, 1 | 2 | 4)
+        || begins.is_null()
+        || ends.is_null()
+        || lasts.is_null()
+    {
+        return -1;
+    }
+    let Some(size) = length.checked_mul(usize::from(kind)) else {
+        return -1;
+    };
+    let engine = unsafe { &*handle };
+    let Some(total) = capacity.checked_mul(engine.groups + 1) else {
+        return -1;
+    };
+    let storage = unsafe { slice::from_raw_parts(data, size) };
+    let (bytes, wide) = if engine.byte_mode {
+        if kind != 1 {
+            return -1;
+        }
+        (Some(storage), None)
+    } else {
+        (
+            None,
+            Some(BorrowedText {
+                data: storage,
+                kind,
+            }),
+        )
+    };
+    let context = Context {
+        chars: &[],
+        folds: &[],
+        masks: &[],
+        bytes,
+        wide,
+        end: endpos.min(length),
+    };
+    let starts = unsafe { slice::from_raw_parts_mut(begins, total) };
+    let finishes = unsafe { slice::from_raw_parts_mut(ends, total) };
+    let last_values = unsafe { slice::from_raw_parts_mut(lasts, capacity) };
+    collect_matches(
+        engine,
+        &context,
+        pos.min(length),
+        capacity,
+        starts,
+        finishes,
+        last_values,
+    )
 }

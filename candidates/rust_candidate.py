@@ -1,6 +1,5 @@
-"""From-scratch Rust continuation-arena candidate with a dependency-free ctypes FFI."""
+"""From-scratch Rust regular expressions with a mandatory native bridge."""
 
-import ctypes
 import enum
 import operator
 import os
@@ -49,6 +48,9 @@ _BYTE = 1 << 31
 _ESCAPE_MAP = {ord(char): "\\" + char for char in "()[]{}?*+-|^$\\.&~# \t\n\r\v\f"}
 _MISSING = object()
 _WARNING_PREFIX = (os.path.dirname(__file__),)
+_MAX_ENDPOS = (1 << 63) - 1
+_MIN_ENDPOS = -_MAX_ENDPOS - 1
+_PATTERN_METHODS = ("search", "match", "fullmatch", "findall", "finditer", "split", "sub", "subn", "scanner")
 _SIMPLE_TEMPLATE_ESCAPES = {"a": "\a", "b": "\b", "f": "\f", "n": "\n", "r": "\r", "t": "\t", "v": "\v", "\\": "\\"}
 
 
@@ -65,7 +67,7 @@ class PatternError(Exception):
             self.lineno = scan.count("\n", 0, pos) + 1
             self.colno = pos - scan.rfind("\n", 0, pos)
             text = f"{msg} at position {pos}"
-            if self.lineno > 1:
+            if "\n" in scan:
                 text += f" (line {self.lineno}, column {self.colno})"
         super().__init__(text)
 
@@ -79,70 +81,116 @@ def _name_text(value):
     return value
 
 
+def _character_range_error(pattern, message, position):
+    if (
+        not isinstance(pattern, str)
+        or not message.startswith("bad character range ")
+        or position is None
+        or position < 0
+        or position + 2 >= len(pattern)
+        or pattern[position + 1] != "-"
+    ):
+        return message, position
+
+    dash = position + 1
+
+    def escape_end(start):
+        if start + 1 >= len(pattern) or pattern[start] != "\\":
+            return start + 1
+        marker = pattern[start + 1]
+        if marker == "x":
+            return start + 4
+        if marker == "u":
+            return start + 6
+        if marker == "U":
+            return start + 10
+        if marker == "N" and pattern[start + 2:start + 3] == "{":
+            close = pattern.find("}", start + 3)
+            return len(pattern) if close < 0 else close + 1
+        return start + 2
+
+    escaped_left = pattern.rfind("\\", 0, dash)
+    if escaped_left >= 0 and escape_end(escaped_left) == dash:
+        left = pattern[escaped_left:escaped_left + 2]
+    else:
+        left = pattern[dash - 1]
+    right_start = dash + 1
+    if pattern[right_start] == "\\":
+        right = pattern[right_start:right_start + 2]
+        right_end = escape_end(right_start)
+    else:
+        right = pattern[right_start]
+        right_end = right_start + 1
+    return f"bad character range {left}-{right}", right_end - len(left) - len(right) - 1
+
+
+def _group_name_error(pattern, message, position):
+    if (
+        not isinstance(pattern, str)
+        or position is None
+        or not 0 <= position < len(pattern)
+    ):
+        return message
+    if message.startswith("bad character in group name "):
+        prefix = "bad character in group name"
+    elif message.startswith("unknown group name "):
+        prefix = "unknown group name"
+    elif message == "invalid group reference ":
+        prefix = "bad character in group name"
+    else:
+        return message
+    end = min(
+        (
+            index
+            for index in (pattern.find(">", position), pattern.find(")", position))
+            if index >= 0
+        ),
+        default=len(pattern),
+    )
+    name = pattern[position:end]
+    if name and not name.isprintable():
+        return f"{prefix} {name!r}"
+    return message
+
+
 class _Native:
+    __slots__ = ("native_compile", "native_error", "native_free")
+
     def __init__(self):
-        path = os.path.join(os.path.dirname(__file__), "_rust_engine.so")
-        self.library = ctypes.CDLL(path)
-        u32p = ctypes.POINTER(ctypes.c_uint32)
-        u8p = ctypes.POINTER(ctypes.c_uint8)
-        lib = self.library
-        sizep = ctypes.POINTER(ctypes.c_size_t)
-        lib.rebar_compile.argtypes = [u32p, ctypes.c_size_t, ctypes.c_uint32, ctypes.c_uint8, sizep, u32p, ctypes.c_size_t]
-        lib.rebar_compile.restype = ctypes.c_void_p
-        lib.rebar_free.argtypes = [ctypes.c_void_p]
-        lib.rebar_groups.argtypes = [ctypes.c_void_p]
-        lib.rebar_groups.restype = ctypes.c_size_t
-        lib.rebar_flags.argtypes = [ctypes.c_void_p]
-        lib.rebar_flags.restype = ctypes.c_uint32
-        lib.rebar_name_count.argtypes = [ctypes.c_void_p]
-        lib.rebar_name_count.restype = ctypes.c_size_t
-        lib.rebar_name_len.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
-        lib.rebar_name_len.restype = ctypes.c_size_t
-        lib.rebar_name_group.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
-        lib.rebar_name_group.restype = ctypes.c_size_t
-        lib.rebar_name_copy.argtypes = [ctypes.c_void_p, ctypes.c_size_t, u8p, ctypes.c_size_t]
-        lib.rebar_name_copy.restype = ctypes.c_size_t
-        lib.rebar_error_len.restype = ctypes.c_size_t
-        lib.rebar_error_pos.restype = ctypes.c_ssize_t
-        lib.rebar_error_include.restype = ctypes.c_uint8
-        lib.rebar_error_copy.argtypes = [u8p, ctypes.c_size_t]
-        lib.rebar_error_copy.restype = ctypes.c_size_t
+        self.native_compile = _rust_bridge.compile
+        self.native_error = _rust_bridge.error
+        self.native_free = _rust_bridge.free
 
     def error(self, pattern):
-        size = self.library.rebar_error_len()
-        output = (ctypes.c_uint8 * max(size, 1))()
-        self.library.rebar_error_copy(output, size)
-        message = bytes(output[:size]).decode("utf-8")
+        message, position, include = self.native_error()
+        message, position = _character_range_error(pattern, message, position)
+        message = _group_name_error(pattern, message, position)
         if message == "the repetition number is too large":
             raise OverflowError(message)
-        position = self.library.rebar_error_pos()
-        include = bool(self.library.rebar_error_include())
-        raise PatternError(message, pattern if include else None, position if position >= 0 else None)
+        if message == "maximum recursion depth exceeded":
+            raise RecursionError(message)
+        raise PatternError(message, pattern if include else None, position if position is not None and position >= 0 else None)
 
     def compile(self, pattern, flags):
-        values = list(pattern) if isinstance(pattern, bytes) else [ord(char) for char in pattern]
-        encoded = (ctypes.c_uint32 * max(len(values), 1))(*values)
-        named = _named_escapes(pattern)
-        positions = (ctypes.c_size_t * max(len(named), 1))(*(item[0] for item in named))
-        resolved = (ctypes.c_uint32 * max(len(named), 1))(*(item[1] for item in named))
-        handle = self.library.rebar_compile(encoded, len(values), flags, int(isinstance(pattern, bytes)), positions, resolved, len(named))
-        if not handle:
+        named = _named_escapes(pattern) if isinstance(pattern, str) and "\\N" in pattern else ()
+        if named:
+            positions = tuple(item[0] for item in named)
+            values = tuple(item[1] for item in named)
+        else:
+            positions = values = ()
+        compiled = self.native_compile(pattern, flags, positions, values)
+        if compiled is None:
             self.error(pattern)
-        groups = self.library.rebar_groups(handle)
-        effective_flags = self.library.rebar_flags(handle)
-        names = {}
-        for index in range(self.library.rebar_name_count(handle)):
-            size = self.library.rebar_name_len(handle, index)
-            output = (ctypes.c_uint8 * max(size, 1))()
-            self.library.rebar_name_copy(handle, index, output, size)
-            names[bytes(output[:size]).decode("utf-8")] = self.library.rebar_name_group(handle, index)
-        return handle, groups, effective_flags, names
+        return compiled
 
     def run(self, handle, string, groups, pos, endpos, mode, nonempty):
         return _rust_bridge.run(handle, string, groups, pos, endpos, mode, nonempty)
 
     def collect(self, handle, string, groups, pos, endpos):
         return _rust_bridge.collect(handle, string, groups, pos, endpos)
+
+    def free(self, handle):
+        self.native_free(handle)
 
 
 _NATIVE = _Native()
@@ -192,13 +240,17 @@ def _warn_ambiguous(pattern):
         elif char == "[" and opening < 0:
             opening = index
         elif char == "]":
-            opening = -1
+            first = opening + 1 + (text[opening + 1:opening + 2] == "^")
+            if opening < 0 or index != first:
+                opening = -1
         elif opening >= 0:
             if char == "[" and index == opening + 1:
                 warnings.warn(f"Possible nested set at position {index}", FutureWarning, skip_file_prefixes=_WARNING_PREFIX)
-            for marker, label in (("&&", "intersection"), ("||", "union"), ("~~", "symmetric difference"), ("--", "difference")):
-                if text[index:index + 2] == marker:
-                    warnings.warn(f"Possible set {label} at position {index}", FutureWarning, skip_file_prefixes=_WARNING_PREFIX)
+            first = opening + 1 + (text[opening + 1:opening + 2] == "^")
+            if index > first:
+                for marker, label in (("&&", "intersection"), ("||", "union"), ("~~", "symmetric difference"), ("--", "difference")):
+                    if text[index:index + 2] == marker:
+                        warnings.warn(f"Possible set {label} at position {index}", FutureWarning, skip_file_prefixes=_WARNING_PREFIX)
 
 
 def _template(value, match, validate_only=False):
@@ -351,158 +403,77 @@ def _expand_tokens(tokens, match, byte_mode):
 def _slice(value, start, end):
     if isinstance(value, str):
         return str(value)[start:end]
+    if isinstance(value, bytes):
+        return bytes(value)[start:end]
     return memoryview(value).cast("B")[start:end].tobytes()
 
 
 def _subject_length(value):
-    if isinstance(value, str):
+    if isinstance(value, (str, bytes, bytearray)):
         return len(value)
     return memoryview(value).nbytes
 
 
-class Match:
-    __module__ = "re"
-    __slots__ = ("_pattern", "_string", "_spans", "_lastindex", "pos", "endpos")
-
-    def __init__(self, pattern, string, spans, lastindex, pos, endpos):
-        self._pattern = pattern
-        self._string = string
-        self._spans = spans
-        self._lastindex = lastindex
-        self.pos = pos
-        self.endpos = endpos
-
-    @classmethod
-    def __class_getitem__(cls, item):
-        return types.GenericAlias(cls, item)
-
-    def __copy__(self):
-        return self
-
-    def __deepcopy__(self, memo):
-        return self
-
-    def __reduce__(self):
-        raise TypeError("cannot pickle 're.Match' object")
-
-    def __repr__(self):
-        return f"<re.Match object; span={self.span()}, match={repr(self.group(0))[:50]}>"
-
-    @property
-    def re(self):
-        return self._pattern
-
-    @property
-    def string(self):
-        return self._string
-
-    @property
-    def regs(self):
-        return tuple((-1, -1) if value is None else value for value in self._spans)
-
-    @property
-    def lastindex(self):
-        return self._lastindex
-
-    @property
-    def lastgroup(self):
-        return next((name for name, index in self._pattern.groupindex.items() if index == self._lastindex), None)
-
-    def _number(self, group):
-        if isinstance(group, str):
-            if group not in self._pattern.groupindex:
-                raise IndexError("no such group")
-            return self._pattern.groupindex[group]
-        try:
-            group = operator.index(group)
-        except TypeError:
-            raise IndexError("no such group") from None
-        if group < 0 or group > self._pattern.groups:
-            raise IndexError("no such group")
-        return group
-
-    def group(self, *groups):
-        if not groups:
-            groups = (0,)
-        values = []
-        for group in groups:
-            span = self._spans[self._number(group)]
-            values.append(None if span is None else _slice(self._string, span[0], span[1]))
-        return values[0] if len(values) == 1 else tuple(values)
-
-    def __getitem__(self, group):
-        return self.group(group)
-
-    def groups(self, default=None):
-        return tuple(default if item is None else _slice(self._string, item[0], item[1]) for item in self._spans[1:])
-
-    def groupdict(self, default=None):
-        return {name: default if self._spans[number] is None else _slice(self._string, self._spans[number][0], self._spans[number][1]) for name, number in self._pattern.groupindex.items()}
-
-    def start(self, group=0):
-        span = self._spans[self._number(group)]
-        return -1 if span is None else span[0]
-
-    def end(self, group=0):
-        span = self._spans[self._number(group)]
-        return -1 if span is None else span[1]
-
-    def span(self, group=0):
-        value = self._spans[self._number(group)]
-        return (-1, -1) if value is None else value
-
-    def expand(self, template):
-        return _template(template, self)
+def _normalize_window(string, pos, endpos):
+    length = _subject_length(string)
+    start = pos if type(pos) is int else operator.index(pos)
+    end = endpos if type(endpos) is int else operator.index(endpos)
+    if start > _MAX_ENDPOS or start < _MIN_ENDPOS or end > _MAX_ENDPOS or end < _MIN_ENDPOS:
+        raise OverflowError("Python int too large to convert to C ssize_t")
+    return min(max(start, 0), length), min(max(end, 0), length), length
 
 
-class _Scanner:
-    __slots__ = ("pattern", "_string", "_pos", "_start", "_end", "_empty")
-
-    def __init__(self, pattern, string, pos=0, endpos=None):
-        self.pattern = pattern
-        self._string = string
-        self._start = self._pos = max(pos, 0)
-        length = _subject_length(string)
-        self._end = length if endpos is None else min(max(endpos, 0), length)
-        self._empty = False
-
-    def search(self):
-        result = self.pattern._search(self._string, self._pos, self._end, self._empty, self._start)
-        if result is None:
-            self._pos = self._end + 1
-            return None
-        self._empty = result.end() == result.start()
-        self._pos = result.end() if not self._empty else result.start()
-        return result
-
-    def match(self):
-        if self._pos > self._end:
-            return None
-        result = self.pattern._at(self._string, self._pos, self._end, self._start, self._empty)
-        if result is None:
-            self._pos = self._end + 1
-            return None
-        self._empty = result.end() == result.start()
-        self._pos = result.end()
-        return result
+def _normalize_count(value):
+    count = value if type(value) is int else operator.index(value)
+    if count > _MAX_ENDPOS or count < _MIN_ENDPOS:
+        raise OverflowError("Python int too large to convert to C ssize_t")
+    return count
 
 
-class Pattern:
-    __slots__ = ("pattern", "flags", "groups", "groupindex", "_handle", "_literal", "__weakref__")
+Match = _rust_bridge.Match
+_rust_bridge.set_template(_template)
+_NATIVE_BIND = _rust_bridge.bind
+
+
+class _PatternType(type):
+    def __getattribute__(cls, name):
+        if name in _PATTERN_METHODS:
+            return _PATTERN_UNBOUND[name]
+        return super().__getattribute__(name)
+
+
+class Pattern(metaclass=_PatternType):
+    __slots__ = (
+        "pattern", "flags", "groups", "groupindex", "_groupindex", "_handle",
+        "_literal", "_bound_methods", "_templates", "__weakref__",
+    )
 
     def __init__(self, value, flags, handle, groups, groupindex):
-        self.pattern = value
-        self.flags = flags
-        self.groups = groups
-        self.groupindex = types.MappingProxyType(dict(groupindex))
+        names = dict(groupindex)
+        object.__setattr__(self, "pattern", value)
+        object.__setattr__(self, "flags", flags)
+        object.__setattr__(self, "groups", groups)
+        object.__setattr__(self, "groupindex", types.MappingProxyType(names))
+        self._groupindex = names
         self._handle = handle
+        self._bound_methods = None
+        self._templates = None
         metacharacters = b".^$*+?{}[]\\|()" if isinstance(value, bytes) else ".^$*+?{}[]\\|()"
-        self._literal = value if value and not flags & int(IGNORECASE) and not any(char in metacharacters for char in value) else None
+        self._literal = value if value and not flags & int(IGNORECASE | VERBOSE) and not any(char in metacharacters for char in value) else None
+
+    def __setattr__(self, name, value):
+        if name in ("pattern", "flags", "groups"):
+            raise AttributeError("readonly attribute")
+        if name == "groupindex":
+            raise AttributeError("attribute 'groupindex' of 're.Pattern' objects is not writable")
+        if name in _PATTERN_METHODS:
+            raise AttributeError(f"'re.Pattern' object attribute '{name}' is read-only")
+        object.__setattr__(self, name, value)
 
     def __del__(self):
         handle = getattr(self, "_handle", None)
         if handle:
-            _NATIVE.library.rebar_free(handle)
+            _NATIVE.free(handle)
             self._handle = None
 
     def __copy__(self):
@@ -534,176 +505,110 @@ class Pattern:
     def __hash__(self):
         return hash((type(self.pattern), self.pattern, self.flags))
 
-    def _validate_string(self, string):
-        if not isinstance(string, str):
-            try:
-                contiguous = memoryview(string).c_contiguous
-            except TypeError:
-                contiguous = False
-            if not contiguous:
-                raise TypeError(f"expected string or bytes-like object, got '{type(string).__name__}'")
-        if isinstance(self.pattern, str) and not isinstance(string, str):
-            raise TypeError("cannot use a string pattern on a bytes-like object")
-        if isinstance(self.pattern, bytes) and isinstance(string, str):
-            raise TypeError("cannot use a bytes pattern on a string-like object")
+    def _cached_template(self, repl, string, length):
+        raw = bytes(repl) if isinstance(repl, (bytearray, memoryview)) else repl
+        templates = self._templates
+        if templates is not None:
+            cached = templates.get(raw, _MISSING)
+            if cached is not _MISSING:
+                return raw, cached
 
-    def _at(self, string, start, endpos, original_pos, require_nonempty=False):
-        self._validate_string(string)
-        result = _NATIVE.run(self._handle, string, self.groups, start, endpos, 1, require_nonempty)
-        if result is None:
-            return None
-        spans, last = result
-        return Match(self, string, spans, last, original_pos, endpos)
+        _template(
+            repl,
+            Match(self, string, ((0, 0),) + (None,) * self.groups, None, 0, length),
+            True,
+        )
+        escaped = b"\\" in raw if isinstance(raw, bytes) else "\\" in raw
+        tokens = _template_tokens(raw, self) if escaped else None
+        if templates is None:
+            templates = {}
+            self._templates = templates
+        elif len(templates) >= 32:
+            templates.clear()
+        templates[raw] = tokens
+        return raw, tokens
 
-    def _search(self, string, pos, endpos, require_nonempty=False, original_pos=None):
-        self._validate_string(string)
-        if pos > endpos:
-            return None
-        result = _NATIVE.run(self._handle, string, self.groups, pos, endpos, 0, require_nonempty)
-        if result is None:
-            return None
-        spans, last = result
-        return Match(self, string, spans, last, pos if original_pos is None else original_pos, endpos)
+def _unbound_pattern_method(name):
+    def call(self, *args, **kwargs):
+        if not isinstance(self, Pattern):
+            raise TypeError(
+                f"descriptor '{name}' for 're.Pattern' objects "
+                f"doesn't apply to a '{type(self).__name__}' object"
+            )
+        return getattr(self, name)(*args, **kwargs)
 
-    def search(self, string, pos=0, endpos=None):
-        self._validate_string(string)
-        length = _subject_length(string)
-        end = length if endpos is None else min(max(endpos, 0), length)
-        return self._search(string, max(pos, 0), end)
+    call.__name__ = name
+    call.__qualname__ = f"Pattern.{name}"
+    if name in ("search", "match", "fullmatch", "findall", "finditer", "scanner"):
+        call.__text_signature__ = "(self, /, string, pos=0, endpos=9223372036854775807)"
+    elif name == "split":
+        call.__text_signature__ = "(self, /, string, maxsplit=0)"
+    else:
+        call.__text_signature__ = "(self, /, repl, string, count=0)"
+    return call
 
-    def match(self, string, pos=0, endpos=None):
-        self._validate_string(string)
-        length = _subject_length(string)
-        end = length if endpos is None else min(max(endpos, 0), length)
-        return self._at(string, max(pos, 0), end, max(pos, 0)) if pos <= end else None
 
-    def fullmatch(self, string, pos=0, endpos=None):
-        self._validate_string(string)
-        length = _subject_length(string)
-        end = length if endpos is None else min(max(endpos, 0), length)
-        start = max(pos, 0)
-        result = _NATIVE.run(self._handle, string, self.groups, start, end, 2, False)
-        if result is None:
-            return None
-        spans, last = result
-        return Match(self, string, spans, last, start, end)
+_PATTERN_UNBOUND = {name: _unbound_pattern_method(name) for name in _PATTERN_METHODS}
 
-    def finditer(self, string, pos=0, endpos=None):
-        self._validate_string(string)
-        length = _subject_length(string)
-        end = length if endpos is None else min(max(endpos, 0), length)
-        view = None if isinstance(string, str) else memoryview(string)
-        return self._finditer(string, pos, end, view)
 
-    def _finditer(self, string, pos, end, view):
-        current = max(pos, 0)
-        empty = False
-        while current <= end:
-            result = self._search(string, current, end, empty, max(pos, 0))
-            if result is None:
-                break
-            yield result
-            begin, finish = result._spans[0]
-            if begin == finish:
-                empty = True
-                current = begin
-            else:
-                current = finish
-                empty = False
+class _NativePatternMethod:
+    __slots__ = ("name", "function")
 
-    def _collected(self, string, pos, end):
-        result = _NATIVE.collect(self._handle, string, self.groups, pos, end)
-        if result is None:
-            yield from self._finditer(string, pos, end, None)
-            return
-        for spans, last in result:
-            yield Match(self, string, spans, last, pos, end)
+    def __init__(self, name, function):
+        self.name = name
+        self.function = function
 
-    def findall(self, string, pos=0, endpos=None):
-        self._validate_string(string)
-        length = _subject_length(string)
-        end = length if endpos is None else min(max(endpos, 0), length)
-        native = _rust_bridge.findall(self._handle, string, self.groups, max(pos, 0), end)
-        if native is not None:
-            return native
-        empty = b"" if not isinstance(string, str) else ""
-        output = []
-        for item in self._collected(string, max(pos, 0), end):
-            if self.groups == 0:
-                begin, finish = item._spans[0]
-                output.append(_slice(string, begin, finish))
-            elif self.groups == 1:
-                span = item._spans[1]
-                output.append(empty if span is None else _slice(string, span[0], span[1]))
-            else:
-                output.append(tuple(empty if span is None else _slice(string, span[0], span[1]) for span in item._spans[1:]))
-        return output
+    def __get__(self, pattern, owner=None):
+        if pattern is None:
+            return _PATTERN_UNBOUND[self.name]
+        methods = pattern._bound_methods
+        if methods is not None:
+            cached = methods.get(self.name)
+            if cached is not None:
+                function, prefix = cached
+                return _NATIVE_BIND(function, pattern, prefix)
+        else:
+            methods = {}
+            object.__setattr__(pattern, "_bound_methods", methods)
 
-    def split(self, string, maxsplit=0):
-        self._validate_string(string)
-        length = _subject_length(string)
-        result = []
-        previous = 0
-        count = 0
-        for item in self._collected(string, 0, length):
-            if maxsplit and count >= maxsplit:
-                break
-            begin, finish = item._spans[0]
-            result.append(_slice(string, previous, begin))
-            result.extend(None if span is None else _slice(string, span[0], span[1]) for span in item._spans[1:])
-            previous = finish
-            count += 1
-        result.append(_slice(string, previous, length))
-        return result
+        if self.name in ("search", "match", "fullmatch"):
+            function = self.function
+            prefix = (
+                pattern, pattern._handle, pattern._groupindex,
+                pattern.pattern, pattern._literal,
+            )
+        elif self.name in ("finditer", "scanner"):
+            function = self.function
+            prefix = (
+                pattern, pattern._handle, pattern._groupindex,
+                pattern.pattern, pattern.groups,
+            )
+        elif self.name in ("sub", "subn"):
+            templates = pattern._templates
+            if templates is None:
+                templates = {}
+                object.__setattr__(pattern, "_templates", templates)
+            function = self.function
+            prefix = (
+                pattern, pattern._handle, pattern._groupindex,
+                pattern.pattern, pattern._literal, templates, pattern.groups,
+            )
+        elif self.name == "findall" and pattern._literal is not None:
+            function = _rust_bridge.bound_literal_findall
+            prefix = (pattern._literal,)
+        else:
+            function = self.function
+            prefix = (pattern._handle, pattern.pattern, pattern.groups)
+        methods[self.name] = (function, prefix)
+        return _NATIVE_BIND(function, pattern, prefix)
 
-    def subn(self, repl, string, count=0):
-        self._validate_string(string)
-        length = _subject_length(string)
-        is_callable = callable(repl)
-        raw = None
-        template = None
-        if not is_callable:
-            _template(repl, Match(self, string, [(0, 0)] + [None] * self.groups, None, 0, length), True)
-            raw = bytes(repl) if isinstance(repl, (bytearray, memoryview)) else repl
-            escaped = b"\\" in raw if isinstance(raw, bytes) else "\\" in raw
-            if escaped:
-                template = _template_tokens(raw, self)
-            elif self._literal is not None and isinstance(string, str) == isinstance(raw, str):
-                if count < 0:
-                    return _slice(string, 0, length), 0
-                source = str(string) if isinstance(string, str) else bytes(string)
-                occurrences = source.count(self._literal)
-                replacements = occurrences if count == 0 else min(occurrences, count)
-                return source.replace(self._literal, raw, -1 if count == 0 else count), replacements
-        parts = []
-        previous = 0
-        replacements = 0
-        matches = self.finditer(string) if is_callable else self._collected(string, 0, length)
-        for item in matches:
-            if count and replacements >= count:
-                break
-            begin, finish = item._spans[0]
-            prefix = _slice(string, previous, begin)
-            if prefix:
-                parts.append(prefix)
-            if is_callable:
-                value = repl(item)
-            else:
-                value = _expand_tokens(template, item, isinstance(raw, bytes)) if template is not None else repl
-            parts.append(value)
-            previous = finish
-            replacements += 1
-        tail = _slice(string, previous, length)
-        if tail:
-            parts.append(tail)
-        return (b"" if not isinstance(string, str) else "").join(parts), replacements
 
-    def sub(self, repl, string, count=0):
-        return self.subn(repl, string, count)[0]
-
-    def scanner(self, string, pos=0, endpos=None):
-        self._validate_string(string)
-        return _Scanner(self, string, pos, endpos)
+for _method_name in ("search", "match", "fullmatch", "findall", "finditer", "scanner", "split", "sub", "subn"):
+    _native_bound_method = getattr(_rust_bridge, "bound_" + _method_name)
+    type.__setattr__(
+        Pattern, _method_name,
+        _NativePatternMethod(_method_name, _native_bound_method),
+    )
 
 
 class Scanner:
@@ -746,16 +651,39 @@ class Scanner:
 
 
 _CACHE = {}
+_CACHE2 = {}
+_MAX_CACHE = 512
+_MAX_CACHE2 = 256
+
+
+def _cache_pattern(key, pattern):
+    if len(_CACHE) >= _MAX_CACHE:
+        _CACHE.pop(next(iter(_CACHE)))
+    _CACHE[key] = pattern
+    if len(_CACHE2) >= _MAX_CACHE2:
+        _CACHE2.pop(next(iter(_CACHE2)))
+    _CACHE2[key] = pattern
+    return pattern
 
 
 def compile(pattern, flags=0):
-    flags = int(flags)
+    if isinstance(flags, RegexFlag):
+        flags = flags.value
     if isinstance(pattern, Pattern):
         if flags:
             raise ValueError("cannot process flags argument with a compiled pattern")
         return pattern
     if not isinstance(pattern, (str, bytes)):
         raise TypeError("first argument must be string or compiled pattern")
+
+    key = (type(pattern), pattern, flags)
+    cached = _CACHE2.get(key)
+    if cached is not None:
+        return cached
+    cached = _CACHE.pop(key, None)
+    if cached is not None:
+        return _cache_pattern(key, cached)
+
     if isinstance(pattern, str) and flags & int(LOCALE):
         raise ValueError("cannot use LOCALE flag with a str pattern")
     if isinstance(pattern, bytes) and flags & int(UNICODE):
@@ -764,27 +692,31 @@ def compile(pattern, flags=0):
         raise ValueError("ASCII and UNICODE flags are incompatible")
     if isinstance(pattern, bytes) and flags & int(ASCII) and flags & int(LOCALE):
         raise ValueError("ASCII and LOCALE flags are incompatible")
-    key = (type(pattern), pattern, flags)
-    if key in _CACHE:
-        return _CACHE[key]
+    if flags > (1 << 31) - 1 or flags < -(1 << 31):
+        raise OverflowError("Python int too large to convert to C int")
     implicit_unicode = int(UNICODE) if isinstance(pattern, str) and not flags & int(ASCII) else 0
-    _warn_ambiguous(pattern)
-    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, flags | implicit_unicode)
+    if (b"[" if isinstance(pattern, bytes) else "[") in pattern:
+        _warn_ambiguous(pattern)
+    native_flags = int(flags | implicit_unicode) & ((1 << 32) - 1)
+    handle, groups, effective_flags, groupindex = _NATIVE.compile(pattern, native_flags)
+    if flags < 0:
+        effective_flags |= flags
     if isinstance(pattern, str) and ((flags & int(ASCII) and effective_flags & int(UNICODE)) or (flags & int(UNICODE) and effective_flags & int(ASCII))):
-        _NATIVE.library.rebar_free(handle)
+        _NATIVE.free(handle)
         raise ValueError("ASCII and UNICODE flags are incompatible")
     if isinstance(pattern, bytes) and ((flags & int(ASCII) and effective_flags & int(LOCALE)) or (flags & int(LOCALE) and effective_flags & int(ASCII))):
-        _NATIVE.library.rebar_free(handle)
+        _NATIVE.free(handle)
         raise ValueError("ASCII and LOCALE flags are incompatible")
     result = Pattern(pattern, effective_flags, handle, groups, groupindex)
-    _CACHE[key] = result
     if flags & int(DEBUG):
         print(f"RUST-CONTINUATION groups={groups} flags={effective_flags}")
-    return result
+        return result
+    return _cache_pattern(key, result)
 
 
 def purge():
     _CACHE.clear()
+    _CACHE2.clear()
 
 
 def search(pattern, string, flags=0):

@@ -1,0 +1,109 @@
+{
+  "schema": "rebar-rust-v6-unicode-c0-f33-baseline-v1",
+  "description": "Frozen pre-fix Rust result: four complete Unicode partitions agree with CPython, while 277 seeded wide-text operations expose an incorrect compiled ASCII whitespace table.",
+  "python": "CPython 3.14.6",
+  "unicode_version": "16.0.0",
+  "oracle": "unmodified CPython stdlib re",
+  "seed": 2026072302,
+  "membership_stride": 1,
+  "seeded_cases": 1024,
+  "correctness_checks": 4494555,
+  "failed": 277,
+  "all_failures_have_non_ascii_text": true,
+  "all_failures_include_unicode_c0_whitespace": true,
+  "c0_whitespace_codepoints": [28, 29, 30, 31],
+  "failure_kinds": {
+    "unicode-api": 277
+  },
+  "failure_patterns": {
+    "[^a-z\\s]{1,8}": 179,
+    "\\s+": 98
+  },
+  "failure_flags": {
+    "0": 15,
+    "2": 211,
+    "8": 18,
+    "10": 33
+  },
+  "failure_operations": {
+    "findall": 60,
+    "finditer": 60,
+    "match": 4,
+    "scanner-match": 4,
+    "scanner-search": 60,
+    "search": 17,
+    "split": 15,
+    "split-limited": 9,
+    "sub": 15,
+    "sub-limited": 9,
+    "subn": 15,
+    "subn-limited": 9
+  },
+  "full_plane_partitions": [
+    {
+      "name": "unicode-categories",
+      "codepoints_checked": 1114112,
+      "failed": 0,
+      "expected_sha256": "c6bb3b50278d370bd288a040d07976730f92fe4475c947a7ac8e4158cdda6ec5",
+      "actual_sha256": "c6bb3b50278d370bd288a040d07976730f92fe4475c947a7ac8e4158cdda6ec5"
+    },
+    {
+      "name": "ascii-categories",
+      "codepoints_checked": 1114112,
+      "failed": 0,
+      "expected_sha256": "9888738c9f6e04a0b5e86300a648cf042531945a2761e7a666c2a407b5d6a339",
+      "actual_sha256": "9888738c9f6e04a0b5e86300a648cf042531945a2761e7a666c2a407b5d6a339"
+    },
+    {
+      "name": "unicode-ignorecase-ranges",
+      "codepoints_checked": 1114112,
+      "failed": 0,
+      "expected_sha256": "b9394ae400bc6c32867be06a02363c740cc670bbcfd89668949a422ad93d8f1a",
+      "actual_sha256": "b9394ae400bc6c32867be06a02363c740cc670bbcfd89668949a422ad93d8f1a"
+    },
+    {
+      "name": "ascii-ignorecase-ranges",
+      "codepoints_checked": 1114112,
+      "failed": 0,
+      "expected_sha256": "5084555e7d9ccfbbc9db1ea1e85b1d28820120a085739322159fe3bf79a7a554",
+      "actual_sha256": "5084555e7d9ccfbbc9db1ea1e85b1d28820120a085739322159fe3bf79a7a554"
+    }
+  ],
+  "frozen_probe": {
+    "path": "tools/rust_unicode_probe.py",
+    "sha256": "8d37556df43f3390e0ae42b5aae88f13c86de184daa2d6ada76487cb320752c5"
+  },
+  "original_rust_source": {
+    "sha256": "b866e315669a0daf7a1f2cd4b50c3c88ddfc4c090e784804363821c2c331bd14",
+    "archive": "rust-v6-unicode-c0-f33-core-before.rs.gz",
+    "archive_sha256": "20b7b96f34cb6a4ab1e7e0cd22bf7a2ec9776527d36aa8ec2125d6f2be4f18ce",
+    "compression": "gzip -n"
+  },
+  "f33_unicode_table": {
+    "path": "candidates/rust/src/unicode_tables.rs",
+    "sha256": "f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af"
+  },
+  "original_rust_binary": {
+    "path": "candidates/_rust_engine.so",
+    "sha256": "9f63a35f9d4622d78f3bcc9670c20163d851d0d8f3f53bc1555faf8a19a8a9f9"
+  },
+  "original_python_bridge": {
+    "source": "candidates/rust/py_bridge.c",
+    "source_sha256": "948a7dcd59e884e3b1df372137953d9bf12148a85a1855dca80fe6f631a79643",
+    "binary": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+    "binary_sha256": "c4a4d7cb4d606da46acd42c65e6e9ad9233788cbe6eebb7900cca62456ff8c32"
+  },
+  "full_failure_evidence": {
+    "archive": "rust-v6-unicode-c0-f33-baseline.json.gz",
+    "archive_sha256": "6787dee97e647d6506644a7f94715d3b10666f7eb709e934d7fe935cc48d6c70",
+    "expanded_sha256": "b2ad2575376373355caedf2d6d4edfcebfdb85c1dca6bade37a4ea52b1c8ddcd",
+    "compression": "gzip -n",
+    "failures": 277
+  },
+  "python_self_control": {
+    "correctness_checks": 4494555,
+    "failed": 0,
+    "sha256": "020800656a4ff02655f301ee82fe7665eefdba51e157c2c3fa2d9fcc66cf0896"
+  },
+  "reproduction": "PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 tools/rust_unicode_probe.py --module candidates.rust_candidate --membership-stride 1 --seeded-cases 1024 --output /tmp/rebar-rust-unicode-c0-f33-reproduction.json"
+}

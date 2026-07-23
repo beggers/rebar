@@ -1,0 +1,93 @@
+{
+  "schema": "rebar-rust-v6-unicode-c0-f33-fixed-v1",
+  "description": "The coherent Rust release fixes every archived Unicode C0 whitespace mismatch while exactly matching pinned CPython for four complete Unicode partitions and seeded public APIs.",
+  "python": "CPython 3.14.6",
+  "unicode_version": "16.0.0",
+  "oracle": "unmodified CPython stdlib re",
+  "seed": 2026072302,
+  "membership_stride": 1,
+  "seeded_cases": 1024,
+  "correctness_checks": 4494555,
+  "failed": 0,
+  "previously_archived_failures": 277,
+  "baseline_manifest": "rust-v6-unicode-c0-f33-baseline-manifest.json",
+  "manual_cases": 54,
+  "manual_checks": 1836,
+  "seeded_checks": 34816,
+  "case_equivalence_groups": 26,
+  "case_equivalence_checks": 1455,
+  "cpython_extra_case_keys": 50,
+  "cpython_extra_case_links": 56,
+  "cpython_extra_case_checks": 280,
+  "full_plane_partitions": [
+    {
+      "name": "unicode-categories",
+      "codepoints_checked": 1114112,
+      "failed": 0,
+      "expected_sha256": "c6bb3b50278d370bd288a040d07976730f92fe4475c947a7ac8e4158cdda6ec5",
+      "actual_sha256": "c6bb3b50278d370bd288a040d07976730f92fe4475c947a7ac8e4158cdda6ec5"
+    },
+    {
+      "name": "ascii-categories",
+      "codepoints_checked": 1114112,
+      "failed": 0,
+      "expected_sha256": "9888738c9f6e04a0b5e86300a648cf042531945a2761e7a666c2a407b5d6a339",
+      "actual_sha256": "9888738c9f6e04a0b5e86300a648cf042531945a2761e7a666c2a407b5d6a339"
+    },
+    {
+      "name": "unicode-ignorecase-ranges",
+      "codepoints_checked": 1114112,
+      "failed": 0,
+      "expected_sha256": "b9394ae400bc6c32867be06a02363c740cc670bbcfd89668949a422ad93d8f1a",
+      "actual_sha256": "b9394ae400bc6c32867be06a02363c740cc670bbcfd89668949a422ad93d8f1a"
+    },
+    {
+      "name": "ascii-ignorecase-ranges",
+      "codepoints_checked": 1114112,
+      "failed": 0,
+      "expected_sha256": "5084555e7d9ccfbbc9db1ea1e85b1d28820120a085739322159fe3bf79a7a554",
+      "actual_sha256": "5084555e7d9ccfbbc9db1ea1e85b1d28820120a085739322159fe3bf79a7a554"
+    }
+  ],
+  "frozen_probe": {
+    "path": "tools/rust_unicode_probe.py",
+    "sha256": "8d37556df43f3390e0ae42b5aae88f13c86de184daa2d6ada76487cb320752c5"
+  },
+  "rust_source": {
+    "path": "candidates/rust/src/lib.rs",
+    "sha256": "f529040ab9082eedf80ba9c39b407def3edf9520a9a1fc8d70cb6e8399f7723f"
+  },
+  "f33_unicode_table": {
+    "path": "candidates/rust/src/unicode_tables.rs",
+    "sha256": "f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af"
+  },
+  "python_bridge": {
+    "path": "candidates/rust/py_bridge.c",
+    "sha256": "36f91d6e6970b508ad6a9fe4299055b0538917b1c2a751840e9b3accc24dbc9e"
+  },
+  "python_candidate": {
+    "path": "candidates/rust_candidate.py",
+    "sha256": "a6394022bf647f8992f01f73e9fc1a02dd7178734948cc2dc4e5ed9dcf7b6a35"
+  },
+  "rust_binary": {
+    "path": "candidates/_rust_engine.so",
+    "sha256": "6a0716543ebe49dad44f9d1fa0cd7a8ee3de8e8cf4e2f6e4ad077211a655c161"
+  },
+  "python_bridge_binary": {
+    "path": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+    "sha256": "a86f2b6e917edd97136cb72a158ff8130c839ecebcaf19ef4b455442db9b66d2"
+  },
+  "full_correctness_evidence": {
+    "archive": "rust-v6-unicode-c0-f33-fixed.json.gz",
+    "archive_sha256": "d8f6407c63cf5b9bf3fb635f04c156652e47e42d729eea6fdd32a633441ffec6",
+    "expanded_sha256": "11b275f03bc85a4c34ec83bba4b81ec519ac9b5c9fba15763d8ce5961772708a",
+    "compression": "gzip -n",
+    "failures": 0
+  },
+  "python_self_control": {
+    "correctness_checks": 4494555,
+    "failed": 0,
+    "sha256": "020800656a4ff02655f301ee82fe7665eefdba51e157c2c3fa2d9fcc66cf0896"
+  },
+  "reproduction": "PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 tools/rust_unicode_probe.py --module candidates.rust_candidate --membership-stride 1 --seeded-cases 1024 --output /tmp/rebar-rust-unicode-c0-f33-fixed-reproduction.json"
+}
