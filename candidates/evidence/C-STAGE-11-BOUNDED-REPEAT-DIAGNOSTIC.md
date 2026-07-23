@@ -20,3 +20,5 @@ This is a diagnosis, not a passing C campaign or performance benchmark. The comp
 A [first attempted compact-repeat repair](C-STAGE-12-REJECTED-COMPACT-REPEAT.md) was independently checked, found to change optional-capture behavior, and rejected. Its exact failed implementation and both genuine differences remain preserved.
 
 A [second compact-repeat repair](C-STAGE-13-REJECTED-SAFETY.md) subsequently passes all **784** original bounded comparisons and all **72,248** extended tests. Its separate isolated safety check reveals **10** remaining error and possessive-repeat differences, so it is also preserved rather than accepted.
+
+A [third proposed repair](C-STAGE-14-REJECTED-INDEPENDENCE.md) fixes those safety differences and passes all frozen standalone compatibility categories. The unchanged no-delegation audit still rejects its `sys` import, so its source is preserved separately and not promoted.
