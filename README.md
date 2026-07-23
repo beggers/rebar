@@ -14,7 +14,7 @@ The second graph compares each measured Rust design directly with Python on the 
 
 ![Overall practice speed of each recorded Rust design compared with Python, including every case and confidence interval](performance/v7/evidence/rust-v7-calibration-overall.svg)
 
-The existing **12,288-case** final comparison remains unopened. An independently reviewed, larger final protocol is being prepared before any final measurement. Final results for Rust, Zig, and C are **NOT MEASURED**.
+The independently reviewed [**24,576-case final benchmark**](performance/v9/HOLDOUT-PROTOCOL.md) has passed its synthetic-only checks. Its secret test cases have not been created or opened. Final results for Rust, Zig, and C are **NOT MEASURED**.
 
 ## Compatibility at a glance
 
@@ -45,7 +45,7 @@ The [current four-engine from-scratch audit](candidates/audits/FROM-SCRATCH-AUDI
 
 **Final, unseen speed: NOT MEASURED.** On the separate practice data, the fully compatibility-qualified Rust implementation currently measures **0.929×** Python's speed, up from **0.754×** before the first native-call optimization. Neither practice result is a final-test score or a speed claim about Zig or C.
 
-The existing [12,288-case final protocol](performance/v8/HOLDOUT-PROTOCOL.md) and its opening remain unused. Before any final run, an independently reviewed successor must establish that its test inputs are genuinely unpredictable, that timing measures real Python operations, and that each approved engine is the exact version that passed every compatibility and from-scratch check. No final speed, ranking, or confidence interval is invented.
+The prospective [24,576-case final benchmark](performance/v9/HOLDOUT-PROTOCOL.md) specifies **31** paired rounds, **9,999** confidence draws, secret-dependent real patterns and inputs, genuinely precompiled patterns, and **16** real calls per timed sample. Its [75-check synthetic-only validation](performance/v9/evidence/HOLDOUT-PUBLIC-SYNTHETIC-SELF-TEST.json) passes without importing a candidate, opening a secret, creating final cases, or recording speed. The [earlier 12,288-case protocol](performance/v8/HOLDOUT-PROTOCOL.md) remains preserved and unopened. No final speed, ranking, or confidence interval is invented.
 
 ![Historical overall speed of the original Rust, Zig, C, and Python engines relative to Python; these older engines did not pass the full compatibility checks](performance/v7/evidence/initial-overall.svg)
 
@@ -62,7 +62,7 @@ These measurements cannot establish the speed of any corrected engine or select 
 
 ## Detailed practice results
 
-Rust improvements use a separate, frozen **624-case practice test**; the final 12,288 cases are never opened to choose an optimization. The [first native-call optimization](performance/v7/evidence/RUST-NATIVE-INTERNED-ATTRIBUTES.md) measures **0.929×** Python's speed, with a **0.893–0.967×** confidence interval and **243/624** substantial slowdowns. The [fully compatible starting point](performance/v7/evidence/RUST-NATIVE-HEAP-BASELINE.md) measured **0.754×**, with **347/624** slowdowns. The [previous, less completely qualified baseline](performance/v7/evidence/RUST-CALIBRATION-BASELINE.md) measured **0.994×**, with **175/624** slowdowns. All three complete results appear in the regenerated graphs; no result demonstrates that the current Rust engine is faster than Python.
+Rust improvements use a separate, frozen **624-case practice test**; no case from the **24,576-case** final benchmark is created or opened to choose an optimization. The [first native-call optimization](performance/v7/evidence/RUST-NATIVE-INTERNED-ATTRIBUTES.md) measures **0.929×** Python's speed, with a **0.893–0.967×** confidence interval and **243/624** substantial slowdowns. The [fully compatible starting point](performance/v7/evidence/RUST-NATIVE-HEAP-BASELINE.md) measured **0.754×**, with **347/624** slowdowns. The [previous, less completely qualified baseline](performance/v7/evidence/RUST-CALIBRATION-BASELINE.md) measured **0.994×**, with **175/624** slowdowns. All three complete results appear in the regenerated graphs; no result demonstrates that the current Rust engine is faster than Python.
 
 ![Rust practice speed for all 12 regular-expression operations](performance/v7/evidence/rust-v7-calibration-api.svg)
 
@@ -92,7 +92,7 @@ The following graphs retain every original workload and loss. They describe the 
 
 ## Reproduce and inspect the experiment
 
-The [experiment log](docs/EXPERIMENT-LOG.md) contains intermediate designs, complete failed tests, rejected optimizations, previous measurements, and isolation incidents. The [expanded benchmark](performance/v8/HOLDOUT-PROTOCOL.md) fixes its cases, paired repetitions, memory checks, confidence calculation, and passing rules before any final measurement.
+The [experiment log](docs/EXPERIMENT-LOG.md) contains intermediate designs, complete failed tests, rejected optimizations, previous measurements, and isolation incidents. The [expanded 24,576-case benchmark](performance/v9/HOLDOUT-PROTOCOL.md) prospectively fixes its genuinely hidden test inputs, real-operation timing, memory checks, confidence calculation, and passing rules before any final measurement.
 
 The objective in [GOAL.md](GOAL.md) is immutable. Its SHA-256 is `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; later clarifications are kept in [AMENDMENTS.md](AMENDMENTS.md).
 
@@ -109,6 +109,8 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/rust_v8_multi_candidate_observability.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/rust_v8_multi_candidate_campaign.py --self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  -m tools.rust_v9_holdout_protocol self-test --public-synthetic-only
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.rust_v8_holdout_protocol verify --evidence
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
