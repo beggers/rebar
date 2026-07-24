@@ -7,6 +7,32 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Independently pass the corrected two-Python baseline
+
+Only after committing and pushing the corrected compatibility design,
+run its **3,584** unchanged obligations against two separately
+isolated pinned CPython 3.14.6 processes. All **7,168** observations
+agree: **zero** mismatches, crashes, or skipped cases.
+
+The [complete new Python-baseline evidence](../oracle/cpython-3.14.6/evidence/public-contract-v8-self-oracle.json)
+has SHA-256
+`efcf0f661363e9032ce8c0afe7ea06a4762b783eec4c4ee6ec7c7059c14994df`.
+It binds the frozen controller
+`10464ca347e6eab248a2887a6fd0625cff63497173024616ca8338af0801b0aa`,
+protocol
+`502f300e8ffbd33cf3cbbf6fde7e9cb5e81ed3f87f83634f47068015cdd9dbdd`,
+matrix
+`0233ca9bc1229b2f905192f9b8ae0c0268b7d23ba3621124192993c6d486f3db`,
+and seed `2026072437`. The original stage-seven **32**-mismatch
+failure and its `765e635745a7e332a1bd22426065c43fd52036d013add0d88d840d8fde1121e0`
+report remain unchanged.
+
+Exactly **zero** candidates were imported or started. Rust, C, and
+Zig are each **NOT RUN** against the corrected contract. Commit and
+push the complete passing baseline before starting any candidate.
+New performance remains **NOT MEASURED** and the independent final
+test remains **NOT OPENED**.
+
 ## Freeze portable compatibility checks without erasing the real failure
 
 Keep the [actual stage-seven Python-versus-Python failure](../oracle/cpython-3.14.6/evidence/public-contract-v7-self-oracle-failures.json)

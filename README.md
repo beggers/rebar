@@ -114,10 +114,11 @@ The [new frozen portable compatibility design](oracle/cpython-3.14.6/PUBLIC-CONT
 retains all **3,584** checks across the same **8** groups. It compares
 genuine pattern-hash behavior without treating process-specific hash
 numbers as portable and safely preserves Unicode surrogates. Its
-candidate-free safety test passes **597/597** checks. This checkpoint
-freezes the corrected design only: its Python self-comparison is
-**NOT RUN**, and its Rust, C, and Zig candidate checks are all
-**NOT RUN**.
+candidate-free safety test passes **597/597** checks. The
+[actual two-Python self-comparison](oracle/cpython-3.14.6/evidence/public-contract-v8-self-oracle.json)
+now passes all **3,584** cases and preserves **7,168** independent
+observations with **zero** mismatches. Rust, C, and Zig have
+**NOT RUN** against this new suite.
 
 A fair **8,192**-case speed comparison and a separate expanded
 **33,280**-case public suite remain **BLOCKED**, **NOT FROZEN**, and
@@ -183,6 +184,11 @@ jq '{status, result, python,
      roles: (.roles | with_entries(.value |=
        {methods, passed, failed, skipped}))}' \
   oracle/cpython-3.14.6/evidence/postfinal-locale-v1-all.json
+
+jq '{status, cases, stdlib_checks, mismatches,
+     candidate_imports, candidate_processes,
+     benchmark_or_timing_executed, holdout_cases_read}' \
+  oracle/cpython-3.14.6/evidence/public-contract-v8-self-oracle.json
 
 jq '{result, cases_per_candidate, raw_rows, correctness_checks,
      confidence_intervals_recomputed, strict_regressions, rankings}' \
