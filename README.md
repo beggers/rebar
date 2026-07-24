@@ -16,6 +16,8 @@ QUALIFIED**.
 
 A [source-only C++ compatibility review](experiments/cpp_from_scratch_v1/STATIC-GAPS-V1.md)
 records what the independent engine still has to implement.
+A [source-only Go compatibility review](experiments/go_from_scratch_v1/STATIC-GAPS-V1.md)
+does the same for the separately written Go engine.
 
 **Current status: no engine is yet proved to be a complete replacement. New
 speed and memory results are NOT MEASURED. There is no winner.** The

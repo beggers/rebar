@@ -7,6 +7,33 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Inspect the independently implemented Go engine
+
+Independently inspect the frozen Go lexer, parser, expression
+compiler, continuation-based matcher, versioned foreign-function
+interface, and direct CPython bridge without compiling, importing,
+or running a candidate. Preserve the exact owned source hashes and
+original Python test locations in the
+[Go source-only compatibility review](../experiments/go_from_scratch_v1/STATIC-GAPS-V1.md).
+
+The Go module has **zero** external dependencies and owns its whole
+matching pipeline. Its ordinary `copyreg` object-reconstruction
+import and native scanner's Python-compatible display name do not
+invoke Python's regular-expression engine. These static properties
+do not establish candidate correctness.
+
+Record the actual source-visible gaps: complete public flags and
+scanner, a real cache, Unicode character-name escapes, replacement
+templates, locale, debug output, genuine warnings, equality,
+hashing, owned public reconstruction, forward group references,
+large-input behavior, and post-fork verification. Preserve the
+existing native mutable-buffer lifetime safeguards.
+
+No Go toolchain, matching function, original upstream case,
+evidence file, candidate, benchmark, or holdout was run. Go
+remains **NOT BUILT, NOT RUN, and NOT QUALIFIED**. Performance and
+memory remain **NOT MEASURED**.
+
 ## Inspect the independently implemented C++ engine
 
 Independently inspect the frozen C++ parser, instruction compiler,
