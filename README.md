@@ -87,6 +87,9 @@ confirm that the current engines do not use Python's regex engine, another
 candidate, or an external regex package. Their exact control counts,
 limitations, and source fingerprints are documented in the
 [current requalification record](candidates/audits/POSTFINAL-REQUALIFICATION-V2.md).
+A separately documented [next-engine safety plan](candidates/audits/POSTFINAL-REQUALIFICATION-V3.md)
+requires fresh checks before any further Rust change; it does not claim
+new measurements or final-test results.
 The original source and isolation audits remain historical evidence.
 The [five original benchmarked native libraries](performance/postfinal-public-v5/NATIVE-ARCHIVE-V1.md)
 are independently preserved and verified. The

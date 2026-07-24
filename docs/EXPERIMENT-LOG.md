@@ -7,6 +7,26 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Prepare fresh proof slots before the next Rust architecture
+
+Preserve the complete, independently replayed **8,192**-case public
+comparison and the rejected first Rust engine before preparing another
+architecture. The current source, native binary, **5,940** slowdowns,
+both independence reports, all Python comparisons, all **12** graphs,
+and every previous archive remain unchanged.
+
+Prepare separate, exclusively created version-three source and isolation
+audits and an independently versioned Python-comparison report. Preserve
+all **76** original independence checks, all **32** isolation checks,
+all **five** genuine native roles, all three independent engines, and the
+unchanged **8,192 × 48 × 3** public comparison. The
+[new requalification record](../candidates/audits/POSTFINAL-REQUALIFICATION-V3.md)
+does not claim that a new engine, production report, timing, or holdout
+already exists.
+
+No future architecture or speed is guessed. The final **65,536**-case test
+remains **NOT OPENED**.
+
 ## Measure and reject the first Rust matching-state architecture
 
 Run the current Python, Rust, C, and Zig engines only after pushing their
