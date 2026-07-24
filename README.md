@@ -54,8 +54,9 @@ The frozen
 stopped after **5,975** cases because its text transport could not encode a
 Unicode surrogate; Python and all three engines failed identically. All
 **310,700** completed timing rows are preserved, but the comparison has no
-complete ranking or winner. A separately versioned Unicode-safe comparison
-is **NOT MEASURED**. The separate
+complete ranking or winner. The separately frozen
+[Unicode-safe 8,192-case comparison](performance/postfinal-public-v5/PROTOCOL.md)
+keeps all original workloads and is **NOT MEASURED**. The separate
 [65,536-case one-time final](performance/postfinal-fresh-holdout-v1/PROTOCOL.md)
 remains unopened; its full isolated executor is **NOT IMPLEMENTED**. The
 older hidden failure remains final, and the new correctness result does not

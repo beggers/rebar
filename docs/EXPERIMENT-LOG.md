@@ -7,6 +7,31 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the Unicode-safe public comparison before measuring
+
+Freeze the corrected **8,192-case** public comparison separately from its
+failed predecessor. Preserve the same **260** workload categories,
+**12** operations, **13** paired trials, random seeds, equally weighted
+cases, Python baseline, and three independently written Rust, C, and Zig
+engines. Change only the private JSON communication so that Python strings
+containing lone Unicode surrogates cross the worker pipe without corruption.
+
+Authenticate all **310,700** preserved failed-run rows, both candidate
+isolation audits, five actual native libraries, all **12** current-source
+compatibility proofs, and **1,179,648** zero-difference Python comparisons.
+The candidate-free runner passes **13** Unicode and framing controls; the
+six-chart renderer passes **94** integrity and evidence-poisoning controls.
+Freeze **425,984** paired observations, **1,277,952** correctness checks,
+**24,579** confidence intervals, and **65,544** runtime integrity checks
+before timing begins.
+
+Record the exact manifest, source hashes, operation counts, unchanged
+seeds, preserved predecessor, memory limitations, and slowdown policy in
+the [Unicode-safe public speed protocol](../performance/postfinal-public-v5/PROTOCOL.md).
+The final **65,536-case** holdout remains unopened and its isolated
+executor remains **NOT IMPLEMENTED**. No speed or winner is inferred from
+this freeze.
+
 ## Preserve a failed public run and its Unicode transport defect
 
 The fully frozen **8,192-case** public speed comparison writes exactly
