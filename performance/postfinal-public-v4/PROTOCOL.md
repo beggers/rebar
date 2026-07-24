@@ -1,7 +1,9 @@
 # Expanded public Python regex speed comparison
 
-Status: **frozen and NOT MEASURED**. This is a public development benchmark,
-not the fresh one-use holdout and not a final winner.
+Status: **measurement failed after 5,975 of 8,192 cases**. Its frozen
+protocol is preserved and all **310,700** completed timing rows are recorded
+in [RESULTS.md](RESULTS.md). This is a public development benchmark, not
+the fresh one-use holdout and not a final winner.
 
 ## What is compared
 
@@ -101,5 +103,6 @@ sha256sum performance/postfinal-public-v4/manifest.json \
 
 The **65,536-case** one-use holdout is separate and remains unopened. Its
 required four-channel isolated execution adapter is **NOT IMPLEMENTED**.
-No speed, confidence interval, regression, memory measurement, generated
-chart, holdout case, or replacement winner is implied by this freeze.
+The partial raw timings must not be presented as a complete speed,
+confidence interval, ranking, chart, memory result, holdout case, or
+replacement winner.

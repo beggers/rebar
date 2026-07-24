@@ -7,6 +7,25 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve a failed public run and its Unicode transport defect
+
+The fully frozen **8,192-case** public speed comparison writes exactly
+**310,700** complete, source-bound timing rows for **5,975** cases before
+stopping. The next case contains a lone Unicode surrogate. Its strict UTF-8
+worker pipe rejects the runner's `ensure_ascii=False` request before Python,
+Rust, C, or Zig can execute matching. Independently reproduce the identical
+`UnicodeEncodeError` in all four isolated workers without taking another
+timing or importing an engine into the controller.
+
+Preserve the valid, incomplete gzip stream, frozen manifest and source,
+prepare-only diagnostic, exact failure position, and original trial and case
+denominators in the
+[complete interrupted public result](../performance/postfinal-public-v4/RESULTS.md).
+There is no final summary, confidence interval, overall speed, memory
+conclusion, chart, or winner. Fix the transport only in a separately frozen
+benchmark version; never overwrite the existing slot. The fresh holdout
+remains unopened.
+
 ## Freeze a larger, fully qualified public speed comparison
 
 Freeze **8,192** unique public cases, all **260** workload categories, all

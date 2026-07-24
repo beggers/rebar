@@ -49,9 +49,13 @@ pass **393,216/393,216** comparisons each. The
 [complete correctness history and final passing evidence](candidates/evidence/PYTHON-RE-UNIVERSAL-PUBLIC-ORACLE-STAGE03.md)
 include the exact sources, seeds, failures, and reports.
 
-The expanded
-[8,192-case public speed comparison](performance/postfinal-public-v4/PROTOCOL.md)
-is frozen and **NOT MEASURED**. The separate
+The frozen
+[8,192-case public speed comparison](performance/postfinal-public-v4/RESULTS.md)
+stopped after **5,975** cases because its text transport could not encode a
+Unicode surrogate; Python and all three engines failed identically. All
+**310,700** completed timing rows are preserved, but the comparison has no
+complete ranking or winner. A separately versioned Unicode-safe comparison
+is **NOT MEASURED**. The separate
 [65,536-case one-time final](performance/postfinal-fresh-holdout-v1/PROTOCOL.md)
 remains unopened; its full isolated executor is **NOT IMPLEMENTED**. The
 older hidden failure remains final, and the new correctness result does not
