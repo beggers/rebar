@@ -1,6 +1,6 @@
 # First from-scratch Rust matching-state optimization
 
-Status: **Correctness PASS. Performance NOT MEASURED.**
+Status: **Correctness PASS. Performance hypothesis rejected.**
 
 The Rust engine owns its parser, compiler, matching executor, and Python
 bridge. This experiment changes only the owned executor in
@@ -14,9 +14,13 @@ heap-backed behavior. Every nested matching call receives separate local
 state. The Rust compiler, public Python contract, C interface, Python
 bridge, third-party dependencies, and C and Zig engines are unchanged.
 
-Avoiding small heap allocations is a hypothesis, not a measured result.
-The modified Rust engine's speed and memory remain **NOT MEASURED**. The
-65,536-case final test is **NOT OPENED**. There is no winner.
+Avoiding small heap allocations was a falsifiable hypothesis. The
+[frozen and independently verified 8,192-case public benchmark](../../performance/postfinal-public-v6/RESULTS.md)
+measures this exact Rust engine at **0.957154×** Python, with a 95%
+confidence interval of **0.947638–0.967306×**. It is clearly faster on
+**2,444/8,192** cases and more than **20%** slower on **3,106/8,192**.
+The hypothesis is rejected. Exact native memory is **NOT MEASURED**,
+the **65,536**-case final test is **NOT OPENED**, and there is no winner.
 
 ## Build the owned engine
 
@@ -94,4 +98,5 @@ creating a report. Rerunning the unchanged test with the required prefix
 produced the passing **479**-check evidence linked above.
 
 Neither incident changes a frozen test or justifies a compatibility
-waiver. New performance is **NOT MEASURED**.
+waiver. The complete public performance result is preserved even though
+it rejects this architecture; final performance remains **NOT MEASURED**.

@@ -7,6 +7,34 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Measure and reject the first Rust matching-state architecture
+
+Run the current Python, Rust, C, and Zig engines only after pushing their
+exact, source-bound **8,192**-case protocol. Preserve all **425,984**
+observations, **1,277,952** exact-answer checks, **24,579** independently
+recomputed confidence intervals, and **65,544** native-isolation checks.
+The replay confirms all **12** original operations and **260** workload
+categories without importing a candidate or opening the final test.
+
+The current Zig engine reaches **1.213742×** Python and **4,680** clearly
+faster cases; C reaches **1.124233×** and **4,511**; the rebuilt Rust
+engine reaches **0.957154×** and **2,444**. None meets the **1.5×** or
+**4,916/8,192** targets. Retain all **5,940** slowdowns: **1,401** Zig,
+**1,433** C, and **3,106** Rust.
+
+Reject the Rust inline-state hypothesis without hiding its passing
+correctness proofs or its negative result. Its confidence interval,
+**0.947638–0.967306×**, is below Python's baseline. The archived prior
+Rust engine was measured in a separate run; do not claim a paired
+before-and-after significance that was never measured.
+
+Generate and validate all six clear current-result graphs plus six standard
+graphs directly from the independently verified replay. The
+[complete current results](../performance/postfinal-public-v6/RESULTS.md)
+preserve every case, source fingerprint, confidence interval, slowdown,
+and memory limitation. The **65,536**-case final test is **NOT OPENED**;
+there is no winner.
+
 ## Correct the inherited current-result chart audit
 
 The first standard-graph production run rejects the real, independently
@@ -19,10 +47,17 @@ Preserve the failure and both independence checks. Rebind only the
 inherited, source-verified chart context to the exact passing version-two
 audit; restore the original context afterward. Add an explicit test that
 rejects the historical audit path. The corrected renderer passes all
-**164** synthetic adverse-input checks and separately validates the real
+**168** synthetic adverse-input checks and separately validates the real
 frozen manifest, measured summary, and independent replay without timing
 an engine or generating a standard graph. The separate clear presentation
 already passes all **84** of its own checks.
+
+The inherited detailed memory graph initially also describes whole-process
+memory as unmeasured. Preserve the reviewed discrepancy and correct only
+the source-bound memory graph: worker RSS and high-water observations
+are measured, while per-allocation native attribution and final memory
+remain **NOT MEASURED**. Four independent synthetic checks reject the
+old wording and any false claim that native memory was measured.
 
 No correctness test, candidate, benchmark observation, historical result,
 or hidden final test is changed.

@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1110" viewBox="0 0 1120 1110" role="img" aria-labelledby="clear-v6-api-title clear-v6-api-description">
+<title id="clear-v6-api-title">Which Python operations are faster?</title>
+<desc id="clear-v6-api-description">All 12 frozen Python operations are shown separately for every current engine using every independently replayed case. Public benchmark only; fresh final test unopened; no final winner.</desc>
+<style>text{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#17263b}.eyebrow{font-size:12px;font-weight:720;letter-spacing:1.7px;fill:#58718c}.title{font-size:32px;font-weight:760;letter-spacing:-.8px}.subtitle{font-size:14px;fill:#607087}.heading{font-size:17px;font-weight:720}.body{font-size:13px;fill:#46586d}.label{font-size:15px;font-weight:690}.value{font-size:15px;font-weight:730}.big{font-size:32px;font-weight:760;letter-spacing:-.6px}.small{font-size:11.5px;fill:#65768a}.tick{font-size:11px;fill:#718299}.footer{font-size:12px;font-weight:620;fill:#58718c}</style>
+<rect x="0.00" y="0.00" width="1120.00" height="1110.00" rx="0.00" fill="#f5f7fb"/>
+<rect x="24.00" y="20.00" width="1072.00" height="1070.00" rx="20.00" fill="#ffffff"/>
+<text x="56.00" y="57.00" class="eyebrow">INDEPENDENTLY VERIFIED · CURRENT PUBLIC BENCHMARK</text>
+<text x="54.00" y="101.00" class="title">Which Python operations are faster?</text>
+<text x="56.00" y="126.00" class="subtitle">Dots show measured per-operation means. Per-operation confidence intervals were not measured or invented.</text>
+<line x1="294.28" y1="174.00" x2="294.28" y2="1008.00" stroke="#e9edf3" stroke-width="1.00" stroke-dasharray="0"/>
+<text x="294.28" y="1025.00" class="tick" text-anchor="middle">0.75×</text>
+<line x1="387.85" y1="174.00" x2="387.85" y2="1008.00" stroke="#7d8fa3" stroke-width="1.60" stroke-dasharray="0"/>
+<text x="387.85" y="1025.00" class="tick" text-anchor="middle">1×</text>
+<line x1="460.44" y1="174.00" x2="460.44" y2="1008.00" stroke="#e9edf3" stroke-width="1.00" stroke-dasharray="0"/>
+<text x="460.44" y="1025.00" class="tick" text-anchor="middle">1.25×</text>
+<line x1="519.74" y1="174.00" x2="519.74" y2="1008.00" stroke="#8a72bb" stroke-width="1.60" stroke-dasharray="5 5"/>
+<text x="519.74" y="1025.00" class="tick" text-anchor="middle">1.5×</text>
+<line x1="613.32" y1="174.00" x2="613.32" y2="1008.00" stroke="#e9edf3" stroke-width="1.00" stroke-dasharray="0"/>
+<text x="613.32" y="1025.00" class="tick" text-anchor="middle">2×</text>
+<line x1="745.21" y1="174.00" x2="745.21" y2="1008.00" stroke="#e9edf3" stroke-width="1.00" stroke-dasharray="0"/>
+<text x="745.21" y="1025.00" class="tick" text-anchor="middle">3×</text>
+<text x="387.85" y="164.00" class="small" text-anchor="middle">Python · 1×</text>
+<text x="519.74" y="164.00" class="small" text-anchor="middle">1.5× target</text>
+<text x="63.00" y="206.00" class="label">compile</text>
+<text x="63.00" y="224.00" class="small">210 cases per engine</text>
+<circle cx="782.40" cy="195.00" r="4.5" fill="#7766c9"><title>Zig: compile, 3.363418×, 210 public cases</title></circle>
+<text x="849.00" y="199.00" class="small">Zig · 3.36×</text>
+<circle cx="433.95" cy="212.00" r="4.5" fill="#238b86"><title>C: compile, 1.152252×, 210 public cases</title></circle>
+<text x="849.00" y="216.00" class="small">C · 1.15×</text>
+<circle cx="684.13" cy="229.00" r="4.5" fill="#d17852"><title>Rust: compile, 2.486399×, 210 public cases</title></circle>
+<text x="849.00" y="233.00" class="small">Rust · 2.49×</text>
+<line x1="57.00" y1="250.00" x2="1059.00" y2="250.00" stroke="#edf0f5" stroke-width="1.00"/>
+<text x="63.00" y="273.00" class="label">escape</text>
+<text x="63.00" y="291.00" class="small">161 cases per engine</text>
+<circle cx="392.76" cy="262.00" r="4.5" fill="#7766c9"><title>Zig: escape, 1.015202×, 161 public cases</title></circle>
+<text x="849.00" y="266.00" class="small">Zig · 1.02×</text>
+<circle cx="811.05" cy="279.00" r="4.5" fill="#238b86"><title>C: escape, 3.673049×, 161 public cases</title></circle>
+<text x="849.00" y="283.00" class="small">C · 3.67×</text>
+<circle cx="392.69" cy="296.00" r="4.5" fill="#d17852"><title>Rust: escape, 1.014982×, 161 public cases</title></circle>
+<text x="849.00" y="300.00" class="small">Rust · 1.01×</text>
+<line x1="57.00" y1="317.00" x2="1059.00" y2="317.00" stroke="#edf0f5" stroke-width="1.00"/>
+<text x="63.00" y="340.00" class="label">findall</text>
+<text x="63.00" y="358.00" class="small">2,040 cases per engine</text>
+<circle cx="461.39" cy="329.00" r="4.5" fill="#7766c9"><title>Zig: findall, 1.253648×, 2,040 public cases</title></circle>
+<text x="849.00" y="333.00" class="small">Zig · 1.25×</text>
+<circle cx="378.33" cy="346.00" r="4.5" fill="#238b86"><title>C: findall, 0.971154×, 2,040 public cases</title></circle>
+<text x="849.00" y="350.00" class="small">C · 0.97×</text>
+<circle cx="314.64" cy="363.00" r="4.5" fill="#d17852"><title>Rust: findall, 0.798461×, 2,040 public cases</title></circle>
+<text x="849.00" y="367.00" class="small">Rust · 0.80×</text>
+<line x1="57.00" y1="384.00" x2="1059.00" y2="384.00" stroke="#edf0f5" stroke-width="1.00"/>
+<text x="63.00" y="407.00" class="label">finditer</text>
+<text x="63.00" y="425.00" class="small">2,041 cases per engine</text>
+<circle cx="426.46" cy="396.00" r="4.5" fill="#7766c9"><title>Zig: finditer, 1.126021×, 2,041 public cases</title></circle>
+<text x="849.00" y="400.00" class="small">Zig · 1.13×</text>
+<circle cx="396.20" cy="413.00" r="4.5" fill="#238b86"><title>C: finditer, 1.025979×, 2,041 public cases</title></circle>
+<text x="849.00" y="417.00" class="small">C · 1.03×</text>
+<circle cx="336.49" cy="430.00" r="4.5" fill="#d17852"><title>Rust: finditer, 0.853933×, 2,041 public cases</title></circle>
+<text x="849.00" y="434.00" class="small">Rust · 0.85×</text>
+<line x1="57.00" y1="451.00" x2="1059.00" y2="451.00" stroke="#edf0f5" stroke-width="1.00"/>
+<text x="63.00" y="474.00" class="label">fullmatch</text>
+<text x="63.00" y="492.00" class="small">358 cases per engine</text>
+<circle cx="383.12" cy="463.00" r="4.5" fill="#7766c9"><title>Zig: fullmatch, 0.985564×, 358 public cases</title></circle>
+<text x="849.00" y="467.00" class="small">Zig · 0.99×</text>
+<circle cx="464.49" cy="480.00" r="4.5" fill="#238b86"><title>C: fullmatch, 1.265673×, 358 public cases</title></circle>
+<text x="849.00" y="484.00" class="small">C · 1.27×</text>
+<circle cx="340.51" cy="497.00" r="4.5" fill="#d17852"><title>Rust: fullmatch, 0.864542×, 358 public cases</title></circle>
+<text x="849.00" y="501.00" class="small">Rust · 0.86×</text>
+<line x1="57.00" y1="518.00" x2="1059.00" y2="518.00" stroke="#edf0f5" stroke-width="1.00"/>
+<text x="63.00" y="541.00" class="label">match</text>
+<text x="63.00" y="559.00" class="small">229 cases per engine</text>
+<circle cx="321.67" cy="530.00" r="4.5" fill="#7766c9"><title>Zig: match, 0.815886×, 229 public cases</title></circle>
+<text x="849.00" y="534.00" class="small">Zig · 0.82×</text>
+<circle cx="458.88" cy="547.00" r="4.5" fill="#238b86"><title>C: match, 1.244016×, 229 public cases</title></circle>
+<text x="849.00" y="551.00" class="small">C · 1.24×</text>
+<circle cx="321.89" cy="564.00" r="4.5" fill="#d17852"><title>Rust: match, 0.816437×, 229 public cases</title></circle>
+<text x="849.00" y="568.00" class="small">Rust · 0.82×</text>
+<line x1="57.00" y1="585.00" x2="1059.00" y2="585.00" stroke="#edf0f5" stroke-width="1.00"/>
+<text x="63.00" y="608.00" class="label">match-surface</text>
+<text x="63.00" y="626.00" class="small">241 cases per engine</text>
+<circle cx="382.31" cy="597.00" r="4.5" fill="#7766c9"><title>Zig: match-surface, 0.983088×, 241 public cases</title></circle>
+<text x="849.00" y="601.00" class="small">Zig · 0.98×</text>
+<circle cx="352.70" cy="614.00" r="4.5" fill="#238b86"><title>C: match-surface, 0.897547×, 241 public cases</title></circle>
+<text x="849.00" y="618.00" class="small">C · 0.90×</text>
+<circle cx="636.36" cy="631.00" r="4.5" fill="#d17852"><title>Rust: match-surface, 2.146809×, 241 public cases</title></circle>
+<text x="849.00" y="635.00" class="small">Rust · 2.15×</text>
+<line x1="57.00" y1="652.00" x2="1059.00" y2="652.00" stroke="#edf0f5" stroke-width="1.00"/>
+<text x="63.00" y="675.00" class="label">scanner</text>
+<text x="63.00" y="693.00" class="small">427 cases per engine</text>
+<circle cx="391.31" cy="664.00" r="4.5" fill="#7766c9"><title>Zig: scanner, 1.010682×, 427 public cases</title></circle>
+<text x="849.00" y="668.00" class="small">Zig · 1.01×</text>
+<circle cx="375.71" cy="681.00" r="4.5" fill="#238b86"><title>C: scanner, 0.963346×, 427 public cases</title></circle>
+<text x="849.00" y="685.00" class="small">C · 0.96×</text>
+<circle cx="320.14" cy="698.00" r="4.5" fill="#d17852"><title>Rust: scanner, 0.812062×, 427 public cases</title></circle>
+<text x="849.00" y="702.00" class="small">Rust · 0.81×</text>
+<line x1="57.00" y1="719.00" x2="1059.00" y2="719.00" stroke="#edf0f5" stroke-width="1.00"/>
+<text x="63.00" y="742.00" class="label">search</text>
+<text x="63.00" y="760.00" class="small">1,057 cases per engine</text>
+<circle cx="414.19" cy="731.00" r="4.5" fill="#7766c9"><title>Zig: search, 1.084323×, 1,057 public cases</title></circle>
+<text x="849.00" y="735.00" class="small">Zig · 1.08×</text>
+<circle cx="422.32" cy="748.00" r="4.5" fill="#238b86"><title>C: search, 1.111758×, 1,057 public cases</title></circle>
+<text x="849.00" y="752.00" class="small">C · 1.11×</text>
+<circle cx="353.50" cy="765.00" r="4.5" fill="#d17852"><title>Rust: search, 0.899762×, 1,057 public cases</title></circle>
+<text x="849.00" y="769.00" class="small">Rust · 0.90×</text>
+<line x1="57.00" y1="786.00" x2="1059.00" y2="786.00" stroke="#edf0f5" stroke-width="1.00"/>
+<text x="63.00" y="809.00" class="label">split</text>
+<text x="63.00" y="827.00" class="small">451 cases per engine</text>
+<circle cx="582.31" cy="798.00" r="4.5" fill="#7766c9"><title>Zig: split, 1.818162×, 451 public cases</title></circle>
+<text x="849.00" y="802.00" class="small">Zig · 1.82×</text>
+<circle cx="557.72" cy="815.00" r="4.5" fill="#238b86"><title>C: split, 1.685748×, 451 public cases</title></circle>
+<text x="849.00" y="819.00" class="small">C · 1.69×</text>
+<circle cx="552.11" cy="832.00" r="4.5" fill="#d17852"><title>Rust: split, 1.656927×, 451 public cases</title></circle>
+<text x="849.00" y="836.00" class="small">Rust · 1.66×</text>
+<line x1="57.00" y1="853.00" x2="1059.00" y2="853.00" stroke="#edf0f5" stroke-width="1.00"/>
+<text x="63.00" y="876.00" class="label">sub</text>
+<text x="63.00" y="894.00" class="small">447 cases per engine</text>
+<circle cx="520.69" cy="865.00" r="4.5" fill="#7766c9"><title>Zig: sub, 1.504372×, 447 public cases</title></circle>
+<text x="849.00" y="869.00" class="small">Zig · 1.50×</text>
+<circle cx="504.51" cy="882.00" r="4.5" fill="#238b86"><title>C: sub, 1.431394×, 447 public cases</title></circle>
+<text x="849.00" y="886.00" class="small">C · 1.43×</text>
+<circle cx="425.27" cy="899.00" r="4.5" fill="#d17852"><title>Rust: sub, 1.121887×, 447 public cases</title></circle>
+<text x="849.00" y="903.00" class="small">Rust · 1.12×</text>
+<line x1="57.00" y1="920.00" x2="1059.00" y2="920.00" stroke="#edf0f5" stroke-width="1.00"/>
+<text x="63.00" y="943.00" class="label">subn</text>
+<text x="63.00" y="961.00" class="small">530 cases per engine</text>
+<circle cx="473.75" cy="932.00" r="4.5" fill="#7766c9"><title>Zig: subn, 1.302198×, 530 public cases</title></circle>
+<text x="849.00" y="936.00" class="small">Zig · 1.30×</text>
+<circle cx="465.96" cy="949.00" r="4.5" fill="#238b86"><title>C: subn, 1.271407×, 530 public cases</title></circle>
+<text x="849.00" y="953.00" class="small">C · 1.27×</text>
+<circle cx="427.64" cy="966.00" r="4.5" fill="#d17852"><title>Rust: subn, 1.130123×, 530 public cases</title></circle>
+<text x="849.00" y="970.00" class="small">Rust · 1.13×</text>
+<line x1="56.00" y1="1044.00" x2="1064.00" y2="1044.00" stroke="#e6ebf2" stroke-width="1.00"/>
+<text x="56.00" y="1071.00" class="footer">Public benchmark only; fresh final test unopened; no final winner.</text>
+<text x="1064.00" y="1071.00" class="small" text-anchor="end">8,192 public cases · 13 paired trials</text>
+</svg>

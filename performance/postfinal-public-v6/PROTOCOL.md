@@ -1,8 +1,8 @@
 # Fair public speed comparison for the updated Rust engine
 
-Status: **FROZEN. Performance NOT MEASURED.**
+Status: **FROZEN and independently verified. No final winner.**
 
-This comparison will run the unchanged Python **3.14.6** baseline against
+This comparison runs the unchanged Python **3.14.6** baseline against
 three independently written engines: the newly optimized Rust engine and
 the previously qualified C and Zig engines. It is a public development
 comparison, not the **65,536**-case hidden final test. The final test
@@ -115,8 +115,10 @@ controller communication or answer verification to the timed operation.
 | Unchanged Rust Python bridge | `81fc4c4a92005f0588dd9b811988587d4d421dd8e1102eebcab53f4deb27cd36` |
 | Immutable guarded-worker bootstrap | `e505e17f4849242d990ee8e184794962327335d807000d1a8a0e65a0cb10c0ed` |
 
-The one-time public freeze must not be repeated. The new speed, memory,
-confidence intervals, regressions, and a winner remain **NOT MEASURED**.
+The one-time public freeze must not be repeated. The
+[independently verified public results](RESULTS.md) record all measured
+speed, public confidence intervals, and regressions. Exact native-engine
+memory, final holdout speed, and a final winner remain **NOT MEASURED**.
 
 Repeat only the candidate-free safety test and the frozen fingerprints:
 

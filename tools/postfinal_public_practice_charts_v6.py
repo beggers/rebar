@@ -57,6 +57,68 @@ _INHERITED_REQUIRE_UNIVERSAL = v4.require_universal_oracle
 _INHERITED_REQUIRE_ARTIFACTS = v4.require_stage05_artifacts
 _INHERITED_REQUIRE_WORKERS = v4.require_worker_topology
 _INHERITED_CHECK_MANIFEST = v4.check_v4_manifest
+_INHERITED_MEMORY_CHART = v4.base.memory_chart
+
+_INHERITED_FALSE_MEMORY_SCOPE = (
+    "Python-traced temporary allocations only; final, native, "
+    "and whole-process memory are NOT MEASURED"
+)
+_INHERITED_FALSE_MEMORY_NOTE = (
+    "Python-traced allocations do not measure isolated native, "
+    "whole-process, or final-benchmark memory: NOT MEASURED."
+)
+V6_MEASURED_MEMORY_SCOPE = (
+    "Python-traced allocations and whole-process worker RSS/high-water "
+    "are measured; exact native allocation attribution and final memory: "
+    "NOT MEASURED"
+)
+V6_MEASURED_MEMORY_NOTE = (
+    "Whole-process worker RSS/high-water was measured; exact per-case "
+    "native attribution and final memory: NOT MEASURED."
+)
+
+
+def require_v6_memory_wording(svg: object) -> None:
+    """Reject concealing process observations or inventing native memory."""
+
+    require(isinstance(svg, str), "the public V6 memory graph is invalid")
+    require(
+        V6_MEASURED_MEMORY_SCOPE in svg
+        and V6_MEASURED_MEMORY_NOTE in svg,
+        "the public V6 memory graph omits its actual measured RSS scope",
+    )
+    for forbidden in (
+        _INHERITED_FALSE_MEMORY_SCOPE,
+        _INHERITED_FALSE_MEMORY_NOTE,
+        "whole-process memory are NOT MEASURED",
+        "whole-process worker RSS/high-water are NOT MEASURED",
+        "whole-process worker RSS/high-water was NOT MEASURED",
+    ):
+        require(
+            forbidden not in svg,
+            "the public V6 memory graph falsely hides measured worker RSS",
+        )
+
+
+def build_v6_memory_chart(results: Any) -> str:
+    """Preserve real allocation rows and accurately qualify worker RSS."""
+
+    svg = _INHERITED_MEMORY_CHART(results)
+    require(
+        svg.count(_INHERITED_FALSE_MEMORY_SCOPE) == 2
+        and svg.count(_INHERITED_FALSE_MEMORY_NOTE) == 1,
+        "the pinned inherited public memory wording changed unexpectedly",
+    )
+    updated = svg.replace(
+        _INHERITED_FALSE_MEMORY_SCOPE,
+        V6_MEASURED_MEMORY_SCOPE,
+    ).replace(
+        _INHERITED_FALSE_MEMORY_NOTE,
+        V6_MEASURED_MEMORY_NOTE,
+    )
+    require_v6_memory_wording(updated)
+    v4.base.validate_svg(updated, suffix="memory", results=results)
+    return updated
 
 
 def _relative(path: Path) -> str:
@@ -463,17 +525,27 @@ def v6_renderer(*, strict_bindings: bool = True) -> Iterator[None]:
     saved_original = {
         name: getattr(v4.original, name) for name in original_updates
     }
+    base_updates: dict[str, Any] = (
+        {"memory_chart": build_v6_memory_chart}
+        if strict_bindings
+        else {}
+    )
+    saved_base = {name: getattr(v4.base, name) for name in base_updates}
     try:
         for name, value in original_updates.items():
             setattr(v4.original, name, value)
         for name, value in core_updates.items():
             setattr(v4, name, value)
+        for name, value in base_updates.items():
+            setattr(v4.base, name, value)
         for name, value in wrapper_updates.items():
             setattr(inherited, name, value)
         yield
     finally:
         for name, value in saved_wrapper.items():
             setattr(inherited, name, value)
+        for name, value in saved_base.items():
+            setattr(v4.base, name, value)
         for name, value in saved_core.items():
             setattr(v4, name, value)
         for name, value in saved_original.items():
@@ -642,11 +714,51 @@ def self_test() -> dict[str, Any]:
                 manifest=manifest,
                 integrity_sha256=v4.base.canonical_sha256(integrity),
             )
+            charts = v4.build_v4_charts(results)
             require(
-                tuple(v4.build_v4_charts(results)) == v4.SUFFIXES
+                tuple(charts) == v4.SUFFIXES
                 and len(v4.SUFFIXES) == 6,
                 "a required public V6 regression, memory, or ranking graph changed",
             )
+            require_v6_memory_wording(charts["memory"])
+            memory_poisons = (
+                (
+                    "falsely unmeasured whole-process worker memory",
+                    charts["memory"].replace(
+                        V6_MEASURED_MEMORY_SCOPE,
+                        _INHERITED_FALSE_MEMORY_SCOPE,
+                    ),
+                ),
+                (
+                    "falsely unmeasured isolated-worker RSS footer",
+                    charts["memory"].replace(
+                        V6_MEASURED_MEMORY_NOTE,
+                        _INHERITED_FALSE_MEMORY_NOTE,
+                    ),
+                ),
+                (
+                    "invented exact native allocation attribution",
+                    charts["memory"].replace(
+                        V6_MEASURED_MEMORY_SCOPE,
+                        "Whole-process worker RSS/high-water, exact per-case "
+                        "native allocations, and final memory are measured",
+                    ),
+                ),
+                (
+                    "invented measured final memory",
+                    charts["memory"].replace(
+                        V6_MEASURED_MEMORY_NOTE,
+                        "Whole-process worker RSS/high-water, exact native "
+                        "attribution, and final memory were measured.",
+                    ),
+                ),
+            )
+            for label, changed in memory_poisons:
+                reject_synthetic(
+                    label,
+                    lambda changed=changed: require_v6_memory_wording(changed),
+                )
+                additional_rejections += 1
 
             stale_rust = _relative(
                 protocol._FROZEN_V5_STAGE_PATHS["rust-edge"]
@@ -864,6 +976,9 @@ def self_test() -> dict[str, Any]:
         "actual_v2_strict_audit_bound": True,
         "immutable_v1_guarded_worker_bound": True,
         "stage04_universal_oracle_bound": True,
+        "process_level_worker_rss_high_water": "MEASURED",
+        "exact_per_case_native_allocation_attribution": "NOT MEASURED",
+        "final_memory": "NOT MEASURED",
         "candidate_imported": False,
         "worker_processes_started": 0,
         "holdout_accessed": False,

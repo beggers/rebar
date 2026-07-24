@@ -1,10 +1,11 @@
 # Fresh checks for the modified Rust engine
 
 Status: **PASS. All three current engines have fresh independence and
-Python-compatibility evidence. New Rust performance is NOT MEASURED.**
+Python-compatibility evidence. The measured Rust optimization is rejected.**
 
-The published 8,192-case performance comparison belongs only to its exact
-original, archived Rust, C, and Zig engines. The newly optimized Rust
+The earlier version-five 8,192-case performance comparison belongs only
+to its exact original, archived Rust, C, and Zig engines. The newly
+optimized Rust
 engine is a different native binary. The historical performance evidence
 remains unchanged and does not measure the new version.
 
@@ -46,8 +47,10 @@ candidate-free safety controls.
 
 The complete [new Rust correctness report](../evidence/RUST-POSTFINAL-INLINE-STATE-V1.md)
 also records its original matching, Python-object, callback, scanner, and
-22-stage Unicode proofs. The modified engine has not been benchmarked or
-declared faster. The **65,536**-case final test is **NOT OPENED**.
+22-stage Unicode proofs. The separate
+[independently replayed public speed comparison](../../performance/postfinal-public-v6/RESULTS.md)
+measures the changed Rust engine at **0.957154×** standard Python and
+rejects the optimization. The **65,536**-case final test is **NOT OPENED**.
 
 ## Original evidence that must stay unchanged
 
@@ -58,7 +61,7 @@ declared faster. The **65,536**-case final test is **NOT OPENED**.
 | Original 32-check audit source | `e505e17f4849242d990ee8e184794962327335d807000d1a8a0e65a0cb10c0ed` |
 | Original 32-check audit result | `c4605c8af5da805c099b1efb7f15e8390781768bb3014276b465a7712b4ed06b` |
 | Immutable Python comparison | `744876e5b8409b8d49982ccfb61d93a99f3e2d4fd64d0543b29b831bd26796a0` |
-| Passing 8,192-case public result | `a7b6aea6e612de511990d446c8572aa4e1d3094f28ddd2b9f012b1083e73f208` |
+| Original all-candidate Python correctness report | `a7b6aea6e612de511990d446c8572aa4e1d3094f28ddd2b9f012b1083e73f208` |
 | Frozen public benchmark | `c9950c87079ccc1909ba4470ed573b08afe1f275b85a8932cbfe83b547b24f96` |
 | Original independently checked measurements | `ff86c9421747373df9f5cf640f8a081331661c7d79e8b12969cb0952c86d9246` |
 
@@ -77,5 +80,5 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
 
 These repeatable commands create no audit, compatibility result, benchmark,
 or final test. The existing production evidence is exclusively created and
-must not be overwritten. A new public benchmark protocol must be frozen,
-committed, and pushed before the modified engine is timed.
+must not be overwritten. The new public benchmark was separately frozen,
+committed, and pushed before the modified engine was timed.

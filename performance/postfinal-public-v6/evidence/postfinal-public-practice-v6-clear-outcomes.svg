@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="650" viewBox="0 0 1120 650" role="img" aria-labelledby="clear-v6-outcomes-title clear-v6-outcomes-description">
+<title id="clear-v6-outcomes-title">What happened across all 8,192 cases?</title>
+<desc id="clear-v6-outcomes-description">Every current measured candidate case is shown as clearly faster, more than 20 percent slower, or remaining uncertain. Public benchmark only; fresh final test unopened; no final winner.</desc>
+<style>text{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;fill:#17263b}.eyebrow{font-size:12px;font-weight:720;letter-spacing:1.7px;fill:#58718c}.title{font-size:32px;font-weight:760;letter-spacing:-.8px}.subtitle{font-size:14px;fill:#607087}.heading{font-size:17px;font-weight:720}.body{font-size:13px;fill:#46586d}.label{font-size:15px;font-weight:690}.value{font-size:15px;font-weight:730}.big{font-size:32px;font-weight:760;letter-spacing:-.6px}.small{font-size:11.5px;fill:#65768a}.tick{font-size:11px;fill:#718299}.footer{font-size:12px;font-weight:620;fill:#58718c}</style>
+<rect x="0.00" y="0.00" width="1120.00" height="650.00" rx="0.00" fill="#f5f7fb"/>
+<rect x="24.00" y="20.00" width="1072.00" height="610.00" rx="20.00" fill="#ffffff"/>
+<text x="56.00" y="57.00" class="eyebrow">INDEPENDENTLY VERIFIED · CURRENT PUBLIC BENCHMARK</text>
+<text x="54.00" y="101.00" class="title">What happened across all 8,192 cases?</text>
+<text x="56.00" y="126.00" class="subtitle">Each bar includes every case. Clearly faster means its confidence interval supports the result.</text>
+<rect x="64.00" y="167.00" width="12.00" height="12.00" rx="3.00" fill="#238b75"/>
+<text x="84.00" y="178.00" class="body">Clearly faster</text>
+<rect x="225.00" y="167.00" width="12.00" height="12.00" rx="3.00" fill="#e4eaf2"/>
+<text x="245.00" y="178.00" class="body">Remaining / uncertain</text>
+<rect x="445.00" y="167.00" width="12.00" height="12.00" rx="3.00" fill="#d59a60"/>
+<text x="465.00" y="178.00" class="body">More than 20% slower</text>
+<text x="65.00" y="258.00" class="label">Zig</text>
+<rect x="222.00" y="237.00" width="380.48" height="29.00" rx="3.00" fill="#238b75"/>
+<rect x="602.48" y="237.00" width="171.62" height="29.00" rx="3.00" fill="#e4eaf2"/>
+<rect x="774.10" y="237.00" width="113.90" height="29.00" rx="3.00" fill="#d59a60"/>
+<text x="901.00" y="256.00" class="value">8,192/8,192</text>
+<text x="222.00" y="288.00" class="small">4,680 clearly faster · 2,111 remaining · 1,401 over 20% slower</text>
+<text x="65.00" y="359.00" class="label">C</text>
+<rect x="222.00" y="338.00" width="366.74" height="29.00" rx="3.00" fill="#238b75"/>
+<rect x="588.74" y="338.00" width="182.76" height="29.00" rx="3.00" fill="#e4eaf2"/>
+<rect x="771.50" y="338.00" width="116.50" height="29.00" rx="3.00" fill="#d59a60"/>
+<text x="901.00" y="357.00" class="value">8,192/8,192</text>
+<text x="222.00" y="389.00" class="small">4,511 clearly faster · 2,248 remaining · 1,433 over 20% slower</text>
+<text x="65.00" y="460.00" class="label">Rust</text>
+<rect x="222.00" y="439.00" width="198.69" height="29.00" rx="3.00" fill="#238b75"/>
+<rect x="420.69" y="439.00" width="214.79" height="29.00" rx="3.00" fill="#e4eaf2"/>
+<rect x="635.49" y="439.00" width="252.51" height="29.00" rx="3.00" fill="#d59a60"/>
+<text x="901.00" y="458.00" class="value">8,192/8,192</text>
+<text x="222.00" y="490.00" class="small">2,444 clearly faster · 2,642 remaining · 3,106 over 20% slower</text>
+<line x1="621.60" y1="222.00" x2="621.60" y2="473.00" stroke="#8a72bb" stroke-width="1.50" stroke-dasharray="5 5"/>
+<text x="628.60" y="222.00" class="small">60% clearly-faster target</text>
+<text x="59.00" y="531.00" class="body">No engine reaches the 4,916/8,192 clearly-faster target.</text>
+<line x1="56.00" y1="584.00" x2="1064.00" y2="584.00" stroke="#e6ebf2" stroke-width="1.00"/>
+<text x="56.00" y="611.00" class="footer">Public benchmark only; fresh final test unopened; no final winner.</text>
+<text x="1064.00" y="611.00" class="small" text-anchor="end">8,192 public cases · 13 paired trials</text>
+</svg>
