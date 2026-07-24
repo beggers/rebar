@@ -7,6 +7,51 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Independently prove no current engine delegates regular-expression matching
+
+First publish and push the genuine all-engine source-ownership report
+and independently authenticate its complete SHA-256. Verify both
+strict-audit output paths are unused. Run the frozen, independently
+written stricter audit exactly once against the explicitly published
+ownership report:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_no_delegation_audit_v10.py \
+  --audit \
+  --base-report-sha256 \
+  589321a768e10c52f039a68acb211574ec884598771ede2152f91994cc69f353
+```
+
+The strict audit first authenticates the actual earlier report, every
+original source and native binary, and its three passing independent
+ownership workers. It then separately launches **three new** guarded
+C, Rust, and Zig workers. All three genuinely execute their own
+matching and pass all **39** Python-matcher guards, all **15**
+native-loader guards, and all **48** serialization cases. Before and
+after matching, Python's cached matcher, external packages, and both
+other candidate engines remain blocked.
+
+Exclusively preserve the complete
+[strict three-engine anti-delegation report](../candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V10.json),
+SHA-256
+`d8f31dd480bdba530a454b38428a23ef347c6e3cce7796f8992d6e7767381f4b`.
+It is inseparably bound to the independently published
+[three-engine ownership report](../candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V10.json),
+SHA-256
+`589321a768e10c52f039a68acb211574ec884598771ede2152f91994cc69f353`.
+Both reports preserve all original failures rather than turning them
+into passing results.
+
+Two independent reviewers and the project lead separately verify the
+complete actual strict report, the separately authenticated original
+report, all **six** genuinely observed worker records, and every
+current source and native-binary fingerprint without rerunning an
+engine. The result proves from-scratch ownership and no delegation;
+it does not replace Python's complete upstream tests or constitute a
+speed comparison. Current speed and memory remain **NOT MEASURED**;
+the expanded final holdout remains **NOT OPENED**.
+
 ## Prove all three current engines genuinely do their own matching
 
 First separately freeze, independently review, commit, and push the

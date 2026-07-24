@@ -75,8 +75,8 @@ The separate [Rust ownership proof](candidates/evidence/rust-v7-edge-oracle-rust
 [C ownership proof](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-diagnostic-pass-proof.json),
 and [Zig ownership proof](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-diagnostic-pass-proof.json)
 verify that each engine performed its own matching. These passing
-individual checks are not a complete three-engine inspection or a
-substitute for Python's full upstream tests.
+individual checks are not a substitute for Python's full upstream
+tests. The separate inspections of all three engines are below.
 
 The [complete upstream-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V5.md)
 requires all **152** original public Python tests, the genuine Python
@@ -94,14 +94,15 @@ unusual flags, all serialization protocols, live byte buffers,
 Unicode, genuine locale changes, callbacks, warnings, and complete
 public Python objects. Its reference and candidate runs are **NOT RUN**.
 
-The [current three-engine ownership inspection](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V10.json)
-checks all **12** original source files and all **five** native
-binaries. Every engine performed its own matching with Python's
-internal matcher, external regular-expression packages, and the other
-candidates blocked. All **48** genuine serialization checks passed.
-This proves independent implementation, not complete compatibility.
-The separate, stricter whole-project anti-delegation inspection and
-the complete upstream candidate tests are **NOT RUN**.
+The [three-engine ownership inspection](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V10.json)
+and [separate strict anti-delegation inspection](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V10.json)
+each independently check all **12** original source files and all
+**five** native binaries. Every engine performed its own matching
+with Python's internal matcher, external regular-expression packages,
+and the other candidates blocked. Each inspection passed all **48**
+genuine serialization checks. These inspections prove independent
+implementation, not complete compatibility. The complete upstream
+candidate tests remain **NOT RUN**.
 
 The [first rebuilt Rust safety check](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v8-diagnostic-native-owner-failure.json.gz)
 found a genuine bug in the safety checker itself: a deliberately
@@ -119,7 +120,7 @@ closes both safety gaps. It requires each C, Rust, and Zig engine to do
 its own matching, blocks Python's cached internal matchers, checks
 genuine Python pattern and match objects, and repeats all protections
 after matching. The first actual three-engine ownership inspection
-passes; its separate stricter audit is **NOT RUN**.
+and the separate stricter anti-delegation inspection both pass.
 
 The [durable fresh-build correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V11.md)
 saves both the complete original Python behavior results and a
