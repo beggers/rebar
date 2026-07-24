@@ -127,8 +127,11 @@ results separately. The
 found **16 Python-visible differences in 223,198 checks**. Its deeper
 checks are **NOT RUN**. The
 [first complete C edge run](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-locale-v7-first-failure.json.gz)
-found **33 differences in the same 223,198 checks**. Its deeper checks
-and the Zig run are **NOT RUN**.
+found **33 differences in the same 223,198 checks**. The
+[first complete Zig edge run](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-locale-v7-first-failure.json.gz)
+found **16 differences in the same 223,198 checks**. All three engines'
+deeper checks are **NOT RUN**. None of these current builds is a
+qualified Python replacement.
 
 ## Larger fair speed comparison
 

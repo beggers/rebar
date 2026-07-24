@@ -7,6 +7,43 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve all 16 genuine current-build Zig edge failures
+
+First freeze, independently verify, commit, and push the complete
+authentic **152-method** original Python test protocol in `a3a920bb`.
+Then run the identical unchanged **223,198-case**, **49-category**
+edge oracle against the independently owned Zig engine:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v7.py \
+  --edge --module candidates.zig_candidate
+```
+
+The real Zig result is **FAIL**, with all **16** actual
+Python-visible mismatches preserved in the exclusively created
+[complete first Zig failure archive](../candidates/evidence/rust-v7-edge-oracle-zig-postfinal-locale-v7-first-failure.json.gz).
+Its SHA-256 is
+`5fa7283942994139d531593cc1bdf25f5da48f6de424d7604ce2ce569100788a`.
+Independently verify the original unchanged oracle, seed
+`2026072329`, every category, the complete case denominator, every
+failure, and the exact current public module and native engine files.
+
+The actual failure classes are **four** public match-type names,
+**two** inspectable native signature errors, and **ten** native
+match representations, weak-reference errors, and read-only
+attribute errors. They follow the same real native type-name
+mismatch as Rust; they are not an external-engine delegation or an
+allowable test waiver.
+
+Rust, C, and Zig have now each actually completed the original
+**223,198** checks, with **16**, **33**, and **16** preserved
+failures respectively. None is correctness-qualified. No passing
+Zig proof, deep Zig result, repaired native build, benchmark, or
+holdout was created. Current speed, memory, and rankings remain
+**NOT MEASURED**.
+
 ## Freeze the authentic complete Python correctness oracle
 
 Freeze the [complete original upstream-test protocol](../oracle/cpython-3.14.6/POSTFINAL-LOCALE-V4.md)
