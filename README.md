@@ -101,8 +101,11 @@ now actually passes for all **12** corrected source files and
 **five** native binaries. It verifies **48** real serialization
 checks and all **six** exact official text-and-byte representation
 reproductions; its candidate-free design passes **468** controls.
-The new independent-execution audit and complete official rerun are
-**NOT RUN**. The earlier genuine Rust failure remains preserved.
+The [new independent-execution audit design](oracle/cpython-3.14.6/POSTFINAL-NO-DELEGATION-V7.md)
+passes **131** further controls and retains **676** inherited
+anti-delegation checks. Its actual audit and the complete official
+rerun are **NOT RUN**. The earlier genuine Rust failure remains
+preserved.
 
 ## Larger fair speed comparison
 
@@ -136,6 +139,8 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_from_scratch_audit_v7.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_no_delegation_audit_v7.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_from_scratch_audit_v6.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \

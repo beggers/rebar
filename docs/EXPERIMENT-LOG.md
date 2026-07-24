@@ -7,6 +7,36 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the repaired engines' fresh anti-delegation audit
+
+First push the genuinely passing version-seven source proof in
+`b2aab15d`. Independently verify its actual SHA-256
+`efae1f94fb06a1eabbab352794410c4d8e20a78202dcbf769b08ff9c7cee130a`
+and producer SHA-256
+`defa306e47a0d325af7d4c7fabb54324f6cb6d4653a494c46846838f5e2cf487`.
+
+Freeze the new
+[native anti-delegation protocol](../oracle/cpython-3.14.6/POSTFINAL-NO-DELEGATION-V7.md)
+and [controller](../tools/postfinal_no_delegation_audit_v7.py),
+with respective SHA-256 values
+`fda259f88d01fd686d3ff74249dda5e5f22c0bdce6419ca5ec451172a0fa1c4d`
+and `9283457064f32658747b449c4ee6ebd20ca7cc7dc442ce03ece6b02896cff4e4`.
+The independently reviewed candidate-free self-test passes
+**131/131** controls and preserves all **75** and **676** previous
+malicious-input checks.
+
+Independently authenticate the real source proof, all **12** repaired
+source files, all **five** actual native binaries, the **48** original
+pickle cases, all **six** official match representations, and the
+genuinely preserved **145/146** official failure. Require each
+separate native worker to block standard-library matching, external
+packages, cross-family engines, all five foreign native loaders,
+and the cached JSON import route.
+
+The actual strict audit, repaired official tests, and performance
+remain **NOT RUN** at this source checkpoint. Commit and push this
+source and protocol before generating its one-use audit report.
+
 ## Verify the repaired native source and exact official reproduction
 
 Commit and push all three corrected native bridges and the complete
