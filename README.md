@@ -62,15 +62,19 @@ retain the complete results, uncertainty ranges, and all regressions.
 
 ## Are the current engines compatible with Python?
 
-Not yet. The last complete comparison checked earlier builds against the
-same **223,198** actual Python behavior checks. Each row is a preserved
-historical result; rebuilt engines must pass the complete suite again.
+Not yet. Every row below uses the same **223,198** original Python
+behavior checks. Rust is the current single-engine run; C and Zig show
+their most recent preserved complete runs.
 
 | Engine built from scratch | Checks completed | Differences from Python | Complete upstream tests |
 | --- | ---: | ---: | --- |
-| [Rust](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-locale-v7-first-failure.json.gz) | 223,198 | 16 | NOT RUN |
+| [Rust](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v10-diagnostic-pass.json.gz) | 223,198 | 0 | NOT RUN |
 | [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-locale-v7-first-failure.json.gz) | 223,198 | 33 | NOT RUN |
 | [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-locale-v7-first-failure.json.gz) | 223,198 | 16 | NOT RUN |
+
+Rust's original test results are complete, but the runner did not save
+its separate before-and-after engine-ownership proof. Rust therefore
+remains **NOT QUALIFIED** until both records are preserved together.
 
 The [complete upstream-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V5.md)
 requires all **152** original public Python tests, the genuine Python

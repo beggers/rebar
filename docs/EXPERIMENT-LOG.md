@@ -7,6 +7,46 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve Rust's complete original checks and expose missing proof evidence
+
+First independently freeze, review, commit, and push the
+cached-matcher-safe version-ten ownership and correctness protocols.
+Verify all five possible Rust diagnostic output paths are fresh. Run
+exactly one original, pinned, guarded Rust behavior comparison:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v10.py \
+  --diagnostic-edge --module candidates.rust_candidate
+```
+
+The original producer actually completed all **223,198** checks in all
+**49** frozen categories. It produced **zero** mismatches, and both
+its original and Rust result digests are
+`b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526`.
+Preserve the complete, unmodified
+[actual original Rust result](../candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v10-diagnostic-pass.json.gz),
+compressed SHA-256
+`37de9f254dc3edb72bfe04f51cea8c528449064fba62df273032bb5d7b58b419`
+and exact **7,409**-byte original payload SHA-256
+`d175561b7794dab1461e30bee6868f98fabf49b650a2520a52dbfb0eeecc57f1`.
+
+Both independent reviewers verified the entire original archive and
+the exact frozen upstream producer without running a candidate again.
+They also found a real evidence defect: the runner saved only the
+original producer output. Its actual before-and-after native-ownership
+records, complete seven-source and two-binary provenance, cached
+matcher protection, and explicit unqualified-diagnostic status were
+printed instead of being permanently archived.
+
+Therefore **do not qualify Rust** or claim durable proof that the
+matching engine did its own work. Keep the genuine **223,198/223,198**
+original behavior pass, the actual unchanged archive, and the
+complete evidence gap. The upstream candidate suite remains **NOT
+RUN**; full three-engine qualification remains **NOT RUN**. Current
+performance and memory remain **NOT MEASURED**; the larger holdout
+remains **NOT OPENED**.
+
 ## Freeze the cached-matcher-safe original-behavior runner
 
 First push the independently reviewed ownership and no-delegation
