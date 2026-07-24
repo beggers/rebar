@@ -7,6 +7,50 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze an append-only recovery for the real deep-test environment failure
+
+Preserve the exact original failed Rust deep-test invocation, its
+complete invalidated **393-case** output, and the real parent-side
+`PYTHONDONTWRITEBYTECODE=1 is mandatory` error. Do not alter,
+overwrite, rename, or qualify either original failure archive.
+
+Independently freeze the additive recovery implementation:
+
+- [Append-only guarded deep-test recovery](../tools/postfinal_current_build_proofs_v12.py),
+  SHA-256 `81a519fa4890d5a7f6901d58c9154711be116fd7de4b081c0c052d64db481b3f`.
+- [Original-failure preservation and retry protocol](../oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V12.md),
+  SHA-256 `f74ccaf19f836f801de34aaf3228f9bcd14aabe88032ebee4dbe886247ec6b40`.
+
+Before any history, engine, or original deep test is accessed, a
+future actual retry must prove the real parent environment contains
+`PYTHONDONTWRITEBYTECODE=1`, `PYTHONHASHSEED=0`, and the exact
+project-root `PYTHONPATH`. It must then authenticate both passing
+three-engine audits, the complete original qualified edge archive
+and ownership proof, and both immutable original Rust failure
+records. The actual retry preserves its own separately identified
+runner, producer output, native ownership before and after the
+unchanged **393-case** suite, and new append-only retry provenance.
+It cannot present the failed original invocation as a success.
+
+Two independent reviewers and the project lead separately verify
+both isolated source-only safety runs:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v12.py --self-test
+
+env -i PATH=/usr/bin:/bin \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v12.py --self-test
+```
+
+Both checks pass all **340** new protections and all **763**
+inherited immutable checks without importing a candidate, reading
+production evidence, starting a worker, measuring time, or
+accessing the holdout. Actual corrected deep-test comparisons
+remain **NOT RUN**. Current speed and memory remain
+**NOT MEASURED**.
+
 ## Run the complete original Python reference twice without a candidate
 
 First separately freeze, independently review, commit, and push

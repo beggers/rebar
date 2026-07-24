@@ -145,6 +145,11 @@ after-run verification therefore failed. Both the
 and [exact setup-failure evidence](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-PRODUCER-CRASH.json.gz)
 are preserved. The deeper result is **FAIL**, not a certified pass.
 
+The [append-only deep-test recovery protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V12.md)
+preserves that original failure and verifies the required Python
+environment before any engine is started. Corrected deep-test runs
+are **NOT RUN**.
+
 The expanded public-API reference fails at case `surface16.00.14`:
 its observation recorder mistakes a valid, deeply nested Python
 export for a recursive object. The actual failed reference is
@@ -187,6 +192,8 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_cpython_locale_oracle_v6.py --self-test
 "$PY" -I -B \
   tools/postfinal_current_build_proofs_v11.py --self-test
+"$PY" -I -B \
+  tools/postfinal_current_build_proofs_v12.py --self-test
 "$PY" -I -B \
   tools/python_re_public_surface_oracle_stage17.py --self-test
 "$PY" -I -B \
