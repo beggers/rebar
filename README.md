@@ -140,6 +140,12 @@ independently passes **3,584/3,584** cases for Rust, C, and Zig:
 prevented from importing Python's matcher, another candidate, or
 an external matching package.
 
+A [predeclared 128-case public compatibility test](oracle/cpython-3.14.6/PUBLIC-GENERIC-ALIASES-V11.md)
+covers Python's documented `re.Pattern[str]`, `re.Pattern[bytes]`,
+`re.Match[str]`, and `re.Match[bytes]` behavior. Its two-Python
+reference and all three replacement-engine comparisons are **NOT RUN**;
+passing earlier tests does not establish this additional behavior.
+
 The [published public benchmark](performance/postfinal-public-v7/PROTOCOL.md)
 has a [frozen one-time manifest](performance/postfinal-public-v7/manifest.json)
 covering **8,192** examples, **260** workload categories, **12** Python
@@ -201,6 +207,8 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage08.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage10.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/python_re_generic_alias_public_oracle_stage11.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_public_practice_v7.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \

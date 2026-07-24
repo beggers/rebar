@@ -7,6 +7,58 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Predeclare the missing public generic-alias compatibility check
+
+Python **3.14.6** documents actual runtime `re.Pattern[str]`,
+`re.Pattern[bytes]`, `re.Match[str]`, and `re.Match[bytes]` generic
+aliases. The **146** selected official regular-expression tests and
+existing **3,584**-case public suite do not establish that the three
+independently written Rust, C, and Zig engines implement this public
+behavior. Preserve their existing proven results without inventing an
+additional compatibility pass.
+
+The [predeclared generic-alias correctness source](../tools/python_re_generic_alias_public_oracle_stage11.py)
+has SHA-256
+`2d8b0417e837d830c3b01495657305536a9d14e289aeb61d503278f5944b16f3`.
+Its [complete prospective public contract](../oracle/cpython-3.14.6/PUBLIC-GENERIC-ALIASES-V11.md)
+has SHA-256
+`b9d93b2ee18d33ad3e474c7e7d9bf7f94cd612526e39982fec0c2a0d0a4d096e`.
+The exact **128**-obligation case matrix has SHA-256
+`7e5adbf2ca9c0f752a0c9dddaabe812a780cf58ca9b60efc178bafbaceee7e65`:
+**40** normal aliases, **48** unusual arguments, **16** actual
+`isinstance` and `issubclass` checks, and **24** copying and pickling
+observations.
+
+The first real, candidate-free source-provenance check genuinely
+failed with
+`the passed three-engine report is not bound to both real Python references`.
+The authentic earlier stage-ten report stores its passing baseline
+bindings in each candidate's actual record, not in an invented
+top-level baseline hash. Correct the source to verify all **41**
+genuine stage-ten fields and the actual per-role Python-reference
+bindings. The corrected source-only provenance check reports **PASS**
+without starting either Python reference worker, importing a candidate,
+recording evidence, or sampling a clock.
+
+Preserve the real rejected development failures. An early synthetic
+draft imported the Rust candidate in an isolated child; it performed
+no matching, measurement, or evidence recording but was unsafe and
+rejected. A fake-`re` synthetic pickle also inherited a metadata
+inspector; a later lazy `argparse` route still loaded `inspect`.
+Neither draft is a passing independence check. The final strictly
+passive, candidate-free source self-test passes **74/74** without
+`argparse`, `inspect`, `tokenize`, real candidate imports, workers,
+clocks, evidence files, or performance measurements.
+
+The required independently isolated, two-Python reference is
+**NOT RUN**. All three independent candidate comparisons are
+**NOT RUN**. The candidate-free synthetic source pass is not an
+official-test pass, a Python-reference result, or proof of candidate
+compatibility. The genuinely falsified expanded public benchmarks
+remain preserved; current speed remains **NOT MEASURED**, the
+independent final test remains **NOT OPENED**, and no winner has been
+established.
+
 ## Record all genuine original-case collisions without benchmarking
 
 The [complete recorded V10 public freeze failure](../performance/postfinal-public-v10/evidence/postfinal-public-freeze-failure-v10.json)
