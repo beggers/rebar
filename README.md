@@ -101,6 +101,12 @@ native binaries without starting a candidate. Its
 after the three native workers return. Their observations were not
 saved, so no passing ownership result exists.
 
+The [worker-preserving rebuild inspection](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V19.md)
+checks all three real past failures and the full current native
+source graph. It retains genuine worker output before checking the
+source files again. Its actual ownership and strict inspections
+are **NOT RUN**.
+
 The [fresh original correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V14.md)
 then requires all **223,198** original cases and all **393** deeper
 cases to be repeated against each independently inspected engine.

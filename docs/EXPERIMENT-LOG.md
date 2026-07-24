@@ -7,6 +7,49 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the worker-preserving current-engine ownership inspection
+
+Preserve the genuine V13, V15, and V17 failures before freezing
+the corrected append-only current-engine source:
+
+- [Worker-preserving three-engine inspection source](../tools/postfinal_independent_engine_audit_v19.py),
+  SHA-256 `f8f76365749d6893779756844424d1b3f5390bd37c3507f3b6655cce1390b1d6`.
+- [Worker-preserving inspection protocol](../oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V19.md),
+  SHA-256 `78cd73d751caccb3458c709b2953e6c9cfc6c7a0edd8406b99d5aee36a9034e5`.
+
+Before freezing, test the exact final source against the complete
+real history and all current native files:
+
+```sh
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_independent_engine_audit_v19.py \
+  --history-preflight
+```
+
+The project lead and both independent reviewers each run the actual
+read-only preflight. It passes on the exact original V13, V15,
+and V17 failure records; all genuine **393** historical Zig cases
+and **26** mismatches; the distinct actual historical and rebuilt
+native binaries; all **12** current sources; and all **five** current
+native binaries. No candidate is imported, no owner or subprocess
+is started, no file is written, and no timing or holdout is used.
+
+Source-only validation passes **514** independent malicious-case
+controls in normal and completely empty environments. The frozen
+producer retains every actual owner's complete output immediately,
+before verifying current source and native fingerprints. It never
+reruns the mutable historical probe after a matching worker. Any
+later failure must preserve all completed real worker records and
+true partial report-creation receipts.
+
+At this source-freeze commit the actual ownership and independent
+strict audits remain **NOT RUN**. Compatibility is **NOT QUALIFIED**,
+performance is **NOT MEASURED**, and the holdout is **NOT OPENED**.
+
 ## Preserve the actual ownership run's final integrity failure
 
 Freeze, independently review, smoke-test against the genuine
