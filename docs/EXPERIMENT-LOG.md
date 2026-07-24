@@ -7,6 +7,40 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Pass all three engines under independently guarded signature checks
+
+First commit and push the actual passing two-Python baseline in
+`931f8b01`. Then run the separately frozen stage-ten comparison
+against each current, independently written Rust, C, and Zig engine.
+Each passes all **3,584** cases across all **8** test groups, for
+**10,752** new comparisons and **zero** mismatches. The total
+verified public comparison count becomes **1,190,400**.
+
+The [complete three-engine result](../candidates/evidence/python-re-universal-public-oracle-v10-all.json)
+has SHA-256
+`0af512f940ce7c28e50c1977794e3fbb8a2c33206e77dd2379d4fa12b391fec7`.
+It independently authenticates the frozen controller
+`a24cfa72f44931c76b425ea3eb6568ff67dc87236c8d5fe930837a14c2f58f08`,
+protocol
+`c0194ee2ef1e32bd64dc646e2f395bee6036b9c053e31d95ebb3cfbc52b0a543`,
+and previously pushed baseline
+`5207ca3829216b9482f0b5a2928b339261e2c51d673cce7d80da0f4f4622a8f9`.
+Every engine independently produces the same exact observation
+digest,
+`0d6a74b1f923436c14569bfdd84431e4251f3bb8dd3129fbbcaf82a47f906b94`.
+
+Each actual matching worker blocks Python's regex engine, all
+external matching packages, both other candidates, and all **5**
+native-loader aliases. Real public signatures are observed in a
+separate isolated process. Preserve the actual earlier **32**
+Python-versus-Python failures and **256** Rust harness failures; do
+not attribute either to this new result or weaken the guard.
+
+This is correctness evidence, not a benchmark. The planned
+**8,192**- and **33,280**-case speed comparisons remain
+**NOT FROZEN** and **NOT MEASURED**. The independent final test
+remains **NOT OPENED**; no winner has been established.
+
 ## Independently pass the frozen isolated-signature Python baseline
 
 First freeze and push the exact stage-ten controller and protocol in

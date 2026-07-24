@@ -9,7 +9,7 @@ Python's matching engine, or delegates to another candidate.
 Python and all three currently installed candidates each pass all
 **146/146** selected official regular-expression tests, with no failures
 or skips. Each engine also passes all **22** required compatibility
-stages. Together, they match Python in **1,179,648** fresh public
+stages. Together, they match Python in **1,190,400** fresh public
 correctness checks. Their speed is **NOT MEASURED**. The independent
 final test is **NOT OPENED**. **There is no proven winner.**
 
@@ -122,8 +122,9 @@ observations with **zero** mismatches. The first
 then exposes **256** test-harness failures: public-surface
 introspection attempts an import that Rust's independence guard
 correctly blocks. This is not evidence that Rust delegated matching
-or returned an incorrect regular-expression result. C and Zig are
-**NOT RUN**; the expanded candidate comparison remains **BLOCKED**.
+or returned an incorrect regular-expression result. C and Zig did
+not run that earlier stage. All three now run independently against
+the corrected stage-ten suite.
 
 The [new frozen, isolated-signature compatibility design](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V10.md)
 preserves all **3,584** original cases across **8** groups and all
@@ -132,11 +133,15 @@ separate process, without weakening any engine's independence guard.
 Its candidate-free safety test passes **793/793** checks. The
 [actual isolated two-Python baseline](oracle/cpython-3.14.6/evidence/public-contract-v10-self-oracle.json)
 also passes all **3,584** cases and preserves **7,168** observations
-with **zero** mismatches. The new Rust, C, and Zig candidate runs
-remain **NOT RUN**.
+with **zero** mismatches. The
+[completed three-engine comparison](candidates/evidence/python-re-universal-public-oracle-v10-all.json)
+independently passes **3,584/3,584** cases for Rust, C, and Zig:
+**10,752** new checks and **zero** mismatches. Every engine is
+prevented from importing Python's matcher, another candidate, or
+an external matching package.
 
 A fair **8,192**-case speed comparison and a separate expanded
-**33,280**-case public suite remain **BLOCKED**, **NOT FROZEN**, and
+**33,280**-case public suite remain **NOT FROZEN** and
 **NOT MEASURED**. The expanded public suite is not a hidden final test.
 New speed and exact native memory remain **NOT MEASURED**.
 
