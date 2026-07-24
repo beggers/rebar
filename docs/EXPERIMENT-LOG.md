@@ -7,6 +7,38 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Prepare the public speed comparison without freezing or running it
+
+Preserve the previously pushed **1,190,400** successful three-engine
+public correctness comparisons, all **146/146** genuine official tests,
+and all **22/22** independently verified compatibility stages. The
+earlier **32** Python self-oracle failures and **256** harness-side Rust
+failures remain visible below; neither is concealed or reclassified as
+a matching regression.
+
+The standalone [prospective public benchmark](../tools/postfinal_public_practice_v7.py)
+has SHA-256
+`cc5b79daf3a0d018d15c76d01665cf94a30d3838c5a5c21389cba51444e96e7e`.
+Its [prospective protocol](../performance/postfinal-public-v7/PROTOCOL.md)
+has SHA-256
+`c8fed02bde3d2b096905a44db99405b47801743749053e8dc402cb70cc1f51c0`.
+A direct, isolated synthetic safety test passes **346/346** checks
+without starting an engine, touching benchmark evidence, measuring
+speed, or opening the final test.
+
+The prospective design specifies **8,192** preserved public examples,
+**260** categories, **12** operations, and **13** paired trials. The
+**425,984** timing rows, **1,277,952** correctness checks, **24,579**
+confidence intervals, and **65,544** process and native-library guards
+are planned denominators, **NOT MEASURED** results. Every slowdown must
+be published.
+
+This checkpoint authenticates source and protocol only. The one-time
+benchmark manifest is **NOT CREATED** and **NOT FROZEN**; no engine has
+been benchmarked. The proposed **33,280**-case broader public suite is
+**NOT FROZEN**. The independent **65,536**-case final test remains
+**NOT OPENED**, and no winner has been selected.
+
 ## Pass all three engines under independently guarded signature checks
 
 First commit and push the actual passing two-Python baseline in

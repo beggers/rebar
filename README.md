@@ -140,10 +140,15 @@ independently passes **3,584/3,584** cases for Rust, C, and Zig:
 prevented from importing Python's matcher, another candidate, or
 an external matching package.
 
-A fair **8,192**-case speed comparison and a separate expanded
-**33,280**-case public suite remain **NOT FROZEN** and
-**NOT MEASURED**. The expanded public suite is not a hidden final test.
-New speed and exact native memory remain **NOT MEASURED**.
+The [next fair public speed-comparison protocol](performance/postfinal-public-v7/PROTOCOL.md)
+plans **8,192** existing public examples across **260** workload
+categories, **12** Python operations, and **13** paired trials. Its
+isolated, candidate-free safety test passes **346/346** checks. This is a
+source-and-protocol pre-freeze checkpoint only: the one-time benchmark
+manifest is **NOT CREATED** and **NOT FROZEN**, and no candidate has
+been timed. The separate proposed **33,280**-case public expansion is
+**NOT FROZEN** and is not a hidden final test. New speed, memory,
+confidence intervals, and rankings remain **NOT MEASURED**.
 
 ## Final-test status
 
@@ -183,6 +188,8 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage08.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage10.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_public_practice_v7.py --self-test
 # Historical one-shot baseline; never overwrites the preserved evidence.
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage10.py --self-oracle
