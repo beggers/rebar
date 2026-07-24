@@ -84,7 +84,7 @@ official corpus, and both genuine locale tests. It passes **113**
 candidate-free safety checks. Its first real run is **FALSIFIED**:
 Rust passes **145/146** tests and fails the genuine match-object
 representation test. The run stops before testing C or Zig. The
-[failure-preservation protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V2-FAILURE.md)
+[preserved actual failure](oracle/cpython-3.14.6/evidence/postfinal-locale-v2-rust-failures.json)
 records what was actually observed without inventing missing results.
 
 Earlier [official Python test results](oracle/cpython-3.14.6/evidence/postfinal-locale-v1-all.json),

@@ -7,6 +7,38 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Record the genuine first official compatibility failure
+
+Commit and push the exact failure protocol and recorder in `793ee64f`
+before producing any failure evidence. Then preserve the actual
+previously observed failure exactly once without restarting Python,
+Rust, C, Zig, or the official test suite:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_cpython_locale_v2_failure.py --record
+```
+
+The exclusively created
+[first-run failure](../oracle/cpython-3.14.6/evidence/postfinal-locale-v2-rust-failures.json)
+has SHA-256
+`a77f47cbfb992aa9ae3ced5394bffb75575e6f305f0d2bd0fe2677092517654f`.
+Its actual experiment status is **FAIL**; the preservation operation
+itself passes. Rust genuinely passes **145/146** methods and fails
+`ReTests.test_match_repr`. The Python reference had executed, but its
+per-method records are honestly **NOT RECORDED**. C and Zig remain
+**NOT RUN**. Original raw-output bytes and their hash are also
+**NOT RECORDED**; only the accurately transcribed observed result
+is preserved.
+
+The report independently binds the official source and protocol,
+all four passing V6 audit artifacts, all **12** source files, all
+**five** native binaries, and the genuine **256/384** generic-alias
+references and comparisons. It records **zero** new reference or
+candidate processes, no failure rerun, no fabricated result, and no
+timing. Official compatibility remains **FAILED**, with no winner.
+
 ## Preserve the first genuine full-suite match-representation failure
 
 Push the exact official source and protocol in `8a8a7541`. Run the
