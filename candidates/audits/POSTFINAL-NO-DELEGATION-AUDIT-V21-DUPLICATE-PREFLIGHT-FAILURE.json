@@ -1,0 +1,78 @@
+{
+  "schema": "rebar-postfinal-independent-engine-audit-v21-actual-duplicate-strict-preflight-failure",
+  "status": "FAIL",
+  "synthetic": false,
+  "production_observations_invented": false,
+  "qualifies_current_engine": false,
+  "actual_invocation": {
+    "arguments": [
+      "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+      "-I",
+      "-B",
+      "tools/postfinal_independent_engine_audit_v21.py",
+      "--strict-audit",
+      "--base-report-sha256",
+      "4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4"
+    ],
+    "environment": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONHASHSEED": "0",
+      "PYTHONPATH": "/home/dev-user/src/rebar"
+    },
+    "exit_code": 1,
+    "attempt": "duplicate parent invocation after the successful strict report already existed",
+    "output_capture": "complete combined traceback; stdout and stderr were not separately captured"
+  },
+  "failed_stage": "existing strict destination rejected before starting a native worker",
+  "actual_exception_type": "tools.postfinal_current_build_proofs_v11.ProofV11Error",
+  "actual_exception_message": "refusing to rerun a worker or overwrite an existing V11 result",
+  "actual_combined_traceback_lines": [
+    "Traceback (most recent call last):",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_independent_engine_audit_v21.py\", line 3430, in <module>",
+    "    raise SystemExit(main())",
+    "                     ~~~~^^",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_independent_engine_audit_v21.py\", line 3422, in main",
+    "    report = run_audit(strict=True, base_report_sha256=options.base_report_sha256)",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_independent_engine_audit_v21.py\", line 2124, in run_audit",
+    "    require_fresh_destinations(strict)",
+    "    ~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_independent_engine_audit_v21.py\", line 1554, in require_fresh_destinations",
+    "    v11.fresh_target(target, parent)",
+    "    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_current_build_proofs_v11.py\", line 625, in fresh_target",
+    "    require(not path.exists() and not path.is_symlink(),",
+    "    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "            \"refusing to rerun a worker or overwrite an existing V11 result\")",
+    "            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_current_build_proofs_v11.py\", line 248, in require",
+    "    raise ProofV11Error(message)",
+    "tools.postfinal_current_build_proofs_v11.ProofV11Error: refusing to rerun a worker or overwrite an existing V11 result"
+  ],
+  "actual_combined_traceback_line_count": 20,
+  "native_owner_workers_started": 0,
+  "strict_report_created_by_duplicate": false,
+  "strict_report_overwritten": false,
+  "strict_failure_report_created": false,
+  "existing_passing_base_report": {
+    "path": "candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V21.json",
+    "sha256": "4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4",
+    "bytes": 168118
+  },
+  "existing_passing_strict_report": {
+    "path": "candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V21.json",
+    "sha256": "6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d",
+    "bytes": 201845
+  },
+  "existing_original_strict_receipt": {
+    "path": "candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V21-PUBLICATION-RECEIPT.json",
+    "sha256": "f5d311bfcd368b072539f83f340a2fb4073598689961f799c8b87a06b02034ee"
+  },
+  "frozen_controller": {
+    "source_path": "tools/postfinal_independent_engine_audit_v21.py",
+    "source_sha256": "ded077962416ada3bddd825d77b2e6785fe3b01184fe5d9058ec17a57b08ea4d",
+    "protocol_path": "oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V21.md",
+    "protocol_sha256": "5a78673c6b23e4781070cf5a2290d5f6cecd402fff77ff388d8795370de93a1f"
+  },
+  "performance": "NOT MEASURED",
+  "holdout": "NOT ACCESSED"
+}

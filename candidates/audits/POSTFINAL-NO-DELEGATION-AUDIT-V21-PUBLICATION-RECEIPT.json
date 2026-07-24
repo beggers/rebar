@@ -1,0 +1,46 @@
+{
+  "actual_exclusive_publication_receipt": {
+    "actual_bytes_written": 201845,
+    "actual_write_calls": [
+      {
+        "requested_bytes": 201845,
+        "returned_bytes": 201845
+      }
+    ],
+    "canonical_reread_succeeded": true,
+    "exclusive_create_succeeded": true,
+    "expected_bytes": 201845,
+    "file_fsync_succeeded": true,
+    "parent_directory_fsync_succeeded": true,
+    "production_observations_invented": false,
+    "report_path": "candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V21.json",
+    "report_sha256": "6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d",
+    "schema": "rebar-postfinal-independent-engine-audit-v21-actual-exclusive-publication-receipt",
+    "status": "PASS"
+  },
+  "audit_protocol_path": "oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V21.md",
+  "audit_protocol_sha256": "5a78673c6b23e4781070cf5a2290d5f6cecd402fff77ff388d8795370de93a1f",
+  "audit_source_path": "tools/postfinal_independent_engine_audit_v21.py",
+  "audit_source_sha256": "ded077962416ada3bddd825d77b2e6785fe3b01184fe5d9058ec17a57b08ea4d",
+  "complete_actual_native_owner_streams_preserved": true,
+  "completed_native_owner_worker_count": 3,
+  "holdout": "NOT ACCESSED",
+  "mode": "strict-no-delegation",
+  "passed": true,
+  "performance": "NOT MEASURED",
+  "preserved_v13_failure_sha256": "465820b50be4d544199844d7bde4c5b8e58391828bdb1c716cc33c50ca6c964b",
+  "preserved_v15_failure_sha256": "a3695f1fd847e9ad882783d18c519b551d7791c5327f55964e202a31ade818ff",
+  "preserved_v17_failure_sha256": "8aa1021ba4fc9dcb2456f05c174214c8c7f6c8f4fa2215a13c3373f00e5f557d",
+  "preserved_v19_durable_nonqualifying_report_sha256": "e46484d4a8b389fde66131ac3f8c2db94b1a95ebbf35760f1602117e8c9f23c6",
+  "preserved_v19_failure_sha256": "6d4d73c153bcf1995db78fb4b90ce2851bdece3b13748c75ae045bd1081af390",
+  "preserved_zig_failure_sha256": "5c3e07d9f11d5c8244d3d22fc94f287f4f0573423bf38e70b6abc383c96eca90",
+  "report_path": "candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V21.json",
+  "report_sha256": "6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d",
+  "result": "PASS",
+  "schema": "rebar-postfinal-independent-engine-audit-v21-durable-audit-summary",
+  "status": "PASS",
+  "strict_base_report_sha256": "4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4",
+  "verified_candidate_source_count": 12,
+  "verified_core_family_count": 3,
+  "verified_native_role_count": 5
+}

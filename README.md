@@ -16,10 +16,11 @@ records the three C, Rust, and Zig implementations, separately written
 compilers actually available. C++ and Go are **NOT BUILT, NOT RUN,
 and NOT QUALIFIED**. Bindings are not extra matching engines.
 
-**Current status: no engine is yet proved to be a complete replacement. New
-speed and memory results are NOT MEASURED. There is no winner.** The
-headline graphs below describe earlier, archived builds, not the modified
-engines currently under test.
+**Current status: all three engines pass independent checks that they
+perform their own matching. No engine is yet proved to be a complete
+replacement. New speed and memory results are NOT MEASURED. There is no
+winner.** The headline graphs below describe earlier, archived builds,
+not the modified engines currently under test.
 
 ## Headline results from the last completed comparison
 
@@ -74,53 +75,22 @@ the rebuilt engines pass.
 | [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass.json.gz) | PASS: 223,198 / 223,198 | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json) | NOT RUN | NOT RUN |
 | [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-qualified-pass.json.gz) | PASS: 223,198 / 223,198 | [FAIL: 26 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-POSTFINAL-CURRENT-BUILD-V12-INVALIDATED-AFTER-OWNER-FAILURE.json.gz) | NOT RUN | NOT RUN |
 
-The [independent implementation inspection](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V10.json)
-and [separate no-delegation inspection](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V10.json)
-checked all **12** earlier engine source files and all **five** earlier
-native binaries. They confirmed that those versions performed their own
-matching without using Python's matcher, an external regex package, or
-one another. They do not certify the changed native binary.
-
-The [fresh rebuild-inspection protocol](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V13.md)
-requires both inspections to be repeated against the actual changed source
-files and native binaries. The [first actual inspection failed before any engine was started](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V13-HISTORICAL-GRAPH-PREFLIGHT-FAILURE.json):
-it accidentally compared old Zig failure evidence with the new binary.
-A passing rebuilt-engine inspection does **NOT** exist.
-
-The [corrected rebuild inspection](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V15.md)
-checks the historical and rebuilt binaries separately. Its
-[first actual run fails on the format of the preserved earlier failure](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V15-PRESERVED-FAILURE-CODEC-PREFLIGHT-FAILURE.json)
-before starting any engine. No passing current three-engine
-inspection exists.
-
-The [real-record-verified rebuild inspection](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V17.md)
-successfully checks both preserved failures, the complete historical
-Zig results, and all **12** actual source files and **five** rebuilt
-native binaries without starting a candidate. Its
-[first actual ownership run fails during its final source-integrity check](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V17-POST-OWNER-INTEGRITY-FAILURE.json)
-after the three native workers return. Their observations were not
-saved, so no passing ownership result exists.
-
-The [worker-preserving rebuild inspection](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V19.md)
-checks all three real past failures and the full current native
-source graph. Its
-[first actual run](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V19-PUBLICATION-FAILURE.json)
-preserves the complete outputs from all three native engines, but fails
-when its evidence writer compares decoded JSON with the original
-Python object. The
-[original report](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V19.json)
-is intact, but the inspection exits unsuccessfully and does **not**
-qualify any engine. The independent strict inspection is **NOT RUN**.
-
 The [normalized rebuild inspection](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V21.md)
-preserves all four actual failures and checks reports in their exact
-JSON-normalized form. Its
-[actual three-engine inspection](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V21.json)
-passes: all three own implementations execute, preserve their original
-outputs, and use no outside regex package. The
-[complete publication receipt](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V21-PUBLICATION-RECEIPT.json)
-confirms the report was written, synced, and read back successfully.
-The independent strict inspection is **NOT RUN**.
+checks all **12** current engine source files and all **five** current
+native binaries. Both the
+[actual three-engine ownership check](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V21.json)
+and the separately executed
+[strict no-delegation check](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V21.json)
+pass. Each C, Rust, and Zig engine performs genuine matching without
+using Python's matcher, an external regex package, or another engine.
+The [ownership receipt](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V21-PUBLICATION-RECEIPT.json)
+and [strict receipt](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V21-PUBLICATION-RECEIPT.json)
+preserve the actual successful report writes. These checks establish
+independence, not full Python compatibility or speed. All four earlier
+inspection failures remain documented in the
+[experiment log](docs/EXPERIMENT-LOG.md).
+A [later duplicate invocation](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V21-DUPLICATE-PREFLIGHT-FAILURE.json)
+was safely refused before any engine ran or evidence was changed.
 
 The [fresh original correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V14.md)
 then requires all **223,198** original cases and all **393** deeper

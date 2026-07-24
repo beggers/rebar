@@ -7,6 +7,59 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Run and preserve the independent strict no-delegation inspection
+
+Publish the successful current-engine ownership report and its actual
+receipt before the first separate strict inspection:
+
+```sh
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_independent_engine_audit_v21.py \
+  --strict-audit \
+  --base-report-sha256 \
+  4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4
+```
+
+The actual separate process exits **0** and returns **PASS**.
+All three newly run C, Rust, and Zig workers retain their complete
+original output. Each passes all **13** matching guards, **five**
+native-loader guards, and **16** serialization checks without
+loading an outside regex package or another candidate.
+
+- [Actual strict no-delegation report](../candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V21.json),
+  SHA-256 `6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d`.
+- [Decoded original strict publication receipt](../candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V21-PUBLICATION-RECEIPT.json).
+
+The strict report contains **201,845** canonical bytes. The actual
+receipt records successful exclusive creation, the complete actual
+write, file sync, directory sync, and canonical read-back. It is a
+pretty-printed decoding of the actual process's successful output;
+it is not a claim that the pretty-printed file has the same bytes
+as the original compact output. The strict report binds the
+already-published ownership report to its real SHA-256 and preserves
+all four genuine earlier inspection failures.
+
+A later duplicate parent invocation is incorrectly attempted after
+the successful strict report exists. The fresh-destination guard
+correctly refuses it before any native worker starts; the process
+exits **1**, creates no strict failure output, and does not overwrite
+the original successful report or its receipt. Preserve all **20**
+actual combined traceback lines and the exact original failure:
+
+- [Actual duplicate strict preflight rejection](../candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V21-DUPLICATE-PREFLIGHT-FAILURE.json).
+
+The successful strict run is not claimed to be the only parent
+invocation. The duplicate rejection is a real recorded coordination
+failure, not a second native-owner run.
+
+The complete original edge, deep, full upstream, and expanded public
+compatibility tests are **NOT RUN**. Performance is **NOT MEASURED**
+and the new holdout is **NOT ACCESSED**.
+
 ## Run and preserve the normalized three-engine ownership inspection
 
 Freeze, independently review, commit, and push the V21 source and
