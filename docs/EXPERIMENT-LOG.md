@@ -7,6 +7,51 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Qualify the original C behavior result against both full-engine audits
+
+First publish both separately reviewed full-engine audit reports.
+Verify that all **seven** qualified C result destinations are unused.
+Run the unchanged original Python behavior suite against the actual
+independently written C engine and both explicit audit fingerprints:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v11.py \
+  --qualified-edge \
+  --module candidates.vm_candidate \
+  --base-report-sha256 \
+  589321a768e10c52f039a68acb211574ec884598771ede2152f91994cc69f353 \
+  --strict-report-sha256 \
+  d8f31dd480bdba530a454b38428a23ef347c6e3cce7796f8992d6e7767381f4b
+```
+
+C passes all **223,198** actual original checks across all **49**
+categories, with **zero** differences from Python and the same
+frozen behavior SHA-256
+`b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526`.
+Exclusively preserve both independent complete records:
+
+- [Original audit-qualified C behavior archive](../candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass.json.gz),
+  SHA-256 `a389c79cded04db478c624c5f4335ea73c7f6c1984d252b8170c323e1233f54a`.
+- [Complete audit-qualified C ownership proof](../candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass-proof.json),
+  SHA-256 `64f7508b4d87b88c5ee9917679f1ec15c5f821315a8825fc8049ab22e7584fd0`.
+
+The full proof first verifies both actual passing all-engine audits
+and their complete **12-source, five-binary** graph. It then binds
+both actual C source files and the independently built C binary.
+Genuine native ownership is verified before and after matching,
+including all **13** Python-matcher guards, all **five**
+native-loader guards, and all **16** real serialization cases.
+
+Two independent reviewers and the project lead separately validate
+the actual original C archive, both whole-engine audit reports, the
+entire durable ownership proof, and all source and native binary
+fingerprints without rerunning C. The proof correctly records
+`campaign_qualified: true`. This is an actual full original-edge
+qualification, not a completed upstream Python test, expanded
+public-API result, or speed comparison. Current speed and memory
+remain **NOT MEASURED**; the expanded holdout remains **NOT OPENED**.
+
 ## Qualify the original Rust behavior result against both full-engine audits
 
 First separately commit and push both passing, independently
