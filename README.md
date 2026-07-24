@@ -95,6 +95,11 @@ Unicode-validation hash. Its
 [independently verified failure record](oracle/cpython-3.14.6/evidence/public-contract-v15-reference-failures.json)
 preserves both hashes and confirms no candidate was rerun.
 
+The complete three-engine result is 20 MB because it keeps every
+observation. A [strictly size-limited evidence reader](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V17-EVIDENCE.md)
+verifies the full result without weakening file-safety checks or
+discarding data.
+
 ## Larger fair speed comparison
 
 The previously frozen [8,192-example public comparison](performance/postfinal-public-v7/PROTOCOL.md)

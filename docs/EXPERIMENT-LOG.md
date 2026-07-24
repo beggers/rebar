@@ -7,6 +7,41 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the safe, bounded complete-evidence reader
+
+First commit and push the exact complete **20,220,593-byte**,
+**10,752-observation** three-engine result in `a24ad765`. Preserve the
+original generic reader's **16,777,216-byte** safety bound instead of
+weakening it, reducing test coverage, or dropping any individual row.
+
+Freeze the separate
+[complete-evidence reader protocol](../oracle/cpython-3.14.6/PUBLIC-CONTRACT-V17-EVIDENCE.md)
+and [exact-path safe evidence reader](../tools/python_re_universal_public_oracle_stage17_evidence.py).
+Their respective SHA-256 values are
+`c6b4a3b037ca79f7ccef0c7248ac5d7dbbb1a8f339155b277f8c36ad3c14191d`
+and `fbaebec7bcfad26c94154dce2024ece8349ea54479fda6831d5331f4195fd4cb`.
+Authorize exactly two previously frozen report paths, their original
+SHA-256 fingerprints, and their exact **11,556,111-byte** and
+**20,220,593-byte** lengths. Set a fixed, explicit
+**33,554,432-byte** maximum for those two paths only.
+
+Anchor every open to a real repository-root directory descriptor.
+Reject traversal, symlinks, nonregular files, changed sizes, substituted
+file metadata, oversized content, malformed UTF-8, duplicate JSON keys,
+nonfinite numbers, trailing bytes, and noncanonical Unicode. Stream
+and hash only the exact pinned file contents. Independently revalidate
+all **7,168** Python rows, all **10,752** actual native rows, every
+matching-engine guard, both worker contexts, and the true preserved
+failure.
+
+The candidate-free malicious-input self-test independently passes
+**65/65** checks and retains all **207** durable-oracle safety checks.
+The actual no-worker preflight reads and validates both complete
+published reports, with **zero** candidate imports, candidate runs,
+clocks, or performance cases. The 22-stage fuzz and supplemental
+public-interface campaigns remain **NOT RUN**, and speed and memory
+remain **NOT MEASURED**.
+
 ## Verify all 10,752 durable native public-behavior observations
 
 First freeze, independently validate, commit, and push the complete
