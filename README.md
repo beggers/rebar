@@ -103,9 +103,10 @@ three engines to do their own matching, produce genuine Python pattern
 and match objects, support ordinary serialization, and remain isolated
 before and after matching. Its actual three-engine audits are **NOT RUN**.
 
-The [original fresh-build verification protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V8.md)
-preserves the safety-checker failure and the original correctness
-requirements. The rebuilt-engine comparisons are **NOT RUN**.
+The [fresh-build correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V9.md)
+keeps every original Python behavior check, verifies that the actual
+engine performs its own work, and preserves passing and failing
+results separately. The rebuilt-engine comparisons are **NOT RUN**.
 
 An [immutable-source verification launcher](oracle/cpython-3.14.6/POSTFINAL-PUBLISHED-PINS-V8.md)
 checks real published evidence without changing any frozen audit or
@@ -140,8 +141,8 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
   tools/postfinal_no_delegation_audit_v9.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_cpython_locale_oracle_v5.py --self-test
-PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_current_build_proofs_v8.py --self-test
+"$PY" -I -B \
+  tools/postfinal_current_build_proofs_v9.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_published_pins_v8.py --self-test
 ```

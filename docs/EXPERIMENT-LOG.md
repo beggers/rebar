@@ -7,6 +7,42 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the corrected, original-behavior correctness runner
+
+First push the independently reviewed from-scratch and no-delegation
+checks in `ce30d03c`. Then independently freeze the
+[corrected fresh-build correctness protocol](../oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V9.md)
+and [original-behavior runner](../tools/postfinal_current_build_proofs_v9.py).
+Their respective SHA-256 hashes are
+`986f29f6a31981f8bf5155bd1b04f5d3ba569ba80a49652ed638c99f01e92680`
+and `5604c513efef32a352336506e23b855ee7fb6010722dc3dae2b97c9601ad4c86`.
+
+Preserve the unchanged **223,198** original checks in **49** categories,
+the separate **393** deep checks and **64** original seeded cases, both
+actual Python references, every earlier failure, and all original test
+producers. Before and after an engine runs, authenticate the corrected
+blocking object, actual engine-owned native matching, all **13** Python
+matcher guards, **five** native-loader guards, and all **16** normal
+serialization checks for that engine. Never delegate matching or
+substitute a result.
+
+Require the actual passing three-engine ownership and no-delegation
+reports before a fully qualified run. Authenticate their original bytes,
+all three engine records, all **12** owned source files, and all **five**
+native binaries before reading historical evidence or starting an
+engine. Keep unqualified diagnostics clearly separate. Exclusively
+preserve every pass, failure, crash, or invalidated result.
+
+Both independent reviewers and the project lead each ran the
+source-only controls under direct isolated Python and an empty
+environment: **182/182** checks passed in each. They imported zero
+candidates, started zero workers, read zero reports or evidence, wrote
+zero files, sampled no clocks, and accessed no holdout.
+
+The version-nine candidate diagnostic, actual ownership audits, and
+fully qualified correctness proofs are **NOT RUN**. Current performance
+is **NOT MEASURED**, and the expanded final test is **NOT OPENED**.
+
 ## Freeze the corrected from-scratch and engine-ownership checks
 
 Preserve the complete failed Rust safety check and the unchanged,
