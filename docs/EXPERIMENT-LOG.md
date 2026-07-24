@@ -7,6 +7,56 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Qualify the original Rust behavior result against both full-engine audits
+
+First separately commit and push both passing, independently
+reviewed all-engine ownership and anti-delegation reports. Verify
+all **seven** possible qualified Rust outputs are unused. Run the
+unchanged original behavior suite under both explicitly supplied
+full-engine audit fingerprints:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v11.py \
+  --qualified-edge \
+  --module candidates.rust_candidate \
+  --base-report-sha256 \
+  589321a768e10c52f039a68acb211574ec884598771ede2152f91994cc69f353 \
+  --strict-report-sha256 \
+  d8f31dd480bdba530a454b38428a23ef347c6e3cce7796f8992d6e7767381f4b
+```
+
+The actual Rust engine again passes all **223,198** original checks
+in all **49** frozen categories, with **zero** mismatches. Its
+observed behavior remains exactly
+`b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526`.
+Exclusively preserve both complete, audit-bound results:
+
+- [Original audit-qualified Rust behavior archive](../candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-qualified-pass.json.gz),
+  SHA-256 `37de9f254dc3edb72bfe04f51cea8c528449064fba62df273032bb5d7b58b419`.
+- [Complete audit-qualified Rust ownership proof](../candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-qualified-pass-proof.json),
+  SHA-256 `130a0d0ba4936fdcc1ae21dcdf4f2ef6b8d97735fc3a7d1c5f7e5622518a5770`.
+
+The new proof first authenticates both complete all-engine audits.
+It independently binds all **12** candidate source files and all
+**five** native binaries, then verifies the actual seven Rust source
+files and both owned Rust binaries. Genuine native-ownership checks
+run before and after the original Rust comparison, including all
+**13** Python-matcher guards, all **five** native-loader guards,
+and all **16** genuine serialization checks.
+
+Two independent reviewers and the project lead separately validate
+both audit reports, the unchanged complete original Rust results,
+the entire before-and-after ownership proof, and every exact current
+source and native-binary fingerprint without rerunning Rust. The
+actual durable proof now correctly records
+`campaign_qualified: true`. This qualifies Rust against the
+complete original edge suite and both no-delegation audits; it does
+not claim that Python's full upstream tests, the larger public
+compatibility matrix, or a performance comparison have run. Current
+speed and memory remain **NOT MEASURED**; the expanded final holdout
+remains **NOT OPENED**.
+
 ## Independently prove no current engine delegates regular-expression matching
 
 First publish and push the genuine all-engine source-ownership report
