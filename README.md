@@ -27,7 +27,7 @@ paired observations, **1,277,952** exact-answer checks, and **24,579**
 independently verified uncertainty ranges. **1× means the same speed as
 standard Python; higher is faster. The target is 1.5×.**
 
-![Overall measured speed and uncertainty for three independently written regex engines compared with standard Python](performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-overall.svg)
+![Overall measured speed and uncertainty for three independently written regex engines compared with standard Python](performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-clear-overall.svg)
 
 | Engine | Public speed | 95% uncertainty range | Clearly faster cases | More than 20% slower |
 | --- | ---: | ---: | ---: | ---: |
@@ -44,21 +44,21 @@ be clearly faster on at least 60% of cases. There is no winner.** All
 the original observations, exact comparisons, and independently replayed
 uncertainty ranges.
 
-![Every measured win, uncertain result, and slowdown for all three independent regex engines](performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-outcomes.svg)
+![Every measured win, uncertain result, and slowdown for all three independent regex engines](performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-clear-outcomes.svg)
 
 ## Detailed public results
 
-![Performance across all 12 Python regular-expression operations and 260 public workload categories](performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-api.svg)
+![Performance across all 12 Python regular-expression operations and 260 public workload categories](performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-clear-api.svg)
 
-![All 5,173 individually recorded public cases where an engine is more than 20 percent slower than Python](performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-regressions.svg)
+![All 5,173 individually recorded public cases where an engine is more than 20 percent slower than Python](performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-clear-regressions.svg)
 
-![Python-visible temporary allocations and dedicated worker memory across all 8,192 public cases](performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-memory.svg)
+![Python-visible temporary allocations across all 8,192 public cases](performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-clear-memory.svg)
 
-The memory chart distinguishes Python-visible temporary allocations from
-whole-process measurements in dedicated workers. Exact native allocations
-inside an engine remain **NOT MEASURED**.
+The memory chart reports Python-visible temporary allocations. Separate
+whole-process worker readings cannot identify allocations inside a native
+engine; exact native memory remains **NOT MEASURED**.
 
-![Overall public speed rankings for independently implemented Zig, C, and Rust engines](performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-rankings.svg)
+![Overall public speed rankings for independently implemented Zig, C, and Rust engines](performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-clear-rankings.svg)
 
 ## Final-test status
 
@@ -107,12 +107,23 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.postfinal_public_practice_v5 self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/postfinal_public_practice_charts_v5.py --self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  tools/postfinal_public_practice_presentation_v1.py --self-test
 
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.postfinal_public_practice_v5 verify
 
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/postfinal_public_practice_charts_v5.py \
+  --summary performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-summary.json \
+  --integrity performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-integrity.json \
+  --manifest performance/postfinal-public-v5/manifest.json \
+  --manifest-sha256 c9950c87079ccc1909ba4470ed573b08afe1f275b85a8932cbfe83b547b24f96 \
+  --runner-sha256 f4294a3b5434f43a92970635a958cf3b39db0eb926adef50e242ac0f6b9a1d22 \
+  --output-dir performance/postfinal-public-v5/evidence
+
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  tools/postfinal_public_practice_presentation_v1.py \
   --summary performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-summary.json \
   --integrity performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-integrity.json \
   --manifest performance/postfinal-public-v5/manifest.json \

@@ -92,19 +92,21 @@ mismatches.
 
 All six graphs are generated directly from the independently verified
 original observations, frozen manifest, exact candidate rankings, and every
-recorded slowdown.
+recorded slowdown. The original frozen graphs remain unchanged; this clearer
+presentation independently verifies every input before producing additional
+images.
 
-![Public geometric-mean speed and 95% confidence intervals against CPython](evidence/postfinal-public-practice-v5-overall.svg)
+![Public geometric-mean speed and 95% confidence intervals against CPython](evidence/postfinal-public-practice-v5-clear-overall.svg)
 
-![Every faster, uncertain, and slower public candidate-case outcome](evidence/postfinal-public-practice-v5-outcomes.svg)
+![Every faster, uncertain, and slower public candidate-case outcome](evidence/postfinal-public-practice-v5-clear-outcomes.svg)
 
-![All 12 frozen public Python operations and workload coverage](evidence/postfinal-public-practice-v5-api.svg)
+![All 12 frozen public Python operations and workload coverage](evidence/postfinal-public-practice-v5-clear-api.svg)
 
-![All 5,173 individually recorded public slowdowns exceeding 20 percent](evidence/postfinal-public-practice-v5-regressions.svg)
+![All 5,173 individually recorded public slowdowns exceeding 20 percent](evidence/postfinal-public-practice-v5-clear-regressions.svg)
 
-![Python-visible traced temporary allocations and isolated-worker memory limitations](evidence/postfinal-public-practice-v5-memory.svg)
+![Python-visible traced temporary allocations and isolated-worker memory limitations](evidence/postfinal-public-practice-v5-clear-memory.svg)
 
-![All three public candidate rankings and confidence intervals](evidence/postfinal-public-practice-v5-rankings.svg)
+![All three public candidate rankings and confidence intervals](evidence/postfinal-public-practice-v5-clear-rankings.svg)
 
 `tracemalloc` measures **Python-visible temporary allocations only**.
 Worker RSS and high-water marks are separate process-level observations;
@@ -130,6 +132,7 @@ digests, candidate isolation, and all **5,173** reported slowdowns.
 | Verified compressed raw observation stream | `283f2b33ad476a50fa9d70c7dd841982837a6f1d0fba892eb1b8242955392c40` |
 | Frozen Unicode-safe V5 runner | `f4294a3b5434f43a92970635a958cf3b39db0eb926adef50e242ac0f6b9a1d22` |
 | Source-bound six-chart V5 renderer | `7684cf5d3696ce97699406ae5b6451d47482ad707c1b74261972a1f2bfd39196` |
+| Clear, independently validated presentation source | `53538d3a501388281b1603866f1336cb2ede067f2899a45b6c56c5a12d110842` |
 | Preserved failed V4 public manifest | `15789a8ab6ab35ea97b657fed2ae4be0e944da6300067bc7cb3e8222c7c5ea55` |
 | Preserved failed V4 partial timing stream | `4132e485b605f924fbc4edf09324987f09361f0562a9884fd0ceb06e09544f8a` |
 

@@ -7,6 +7,27 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Make all verified benchmark graphs clear and readable
+
+Create six new, accessible graphs directly from the independently verified
+**8,192-case** results. The headline compares Zig, C, and Rust with Python
+and explicitly marks both the **1×** baseline and **1.5×** goal. The
+outcome chart shows every clearly faster, uncertain, and slower case and the
+**60%** goal. Detailed charts preserve all **12** operations, actual
+Python-visible memory, and the exact ranking.
+
+Replace the impractically tall slowdown view with one compact graph
+containing all **5,173** genuine, individually labeled slowdowns. Verify
+every original case, candidate, frozen weight, native-isolation proof,
+confidence interval, memory limitation, and raw-evidence fingerprint before
+rendering. Reject **37** independently poisoned inputs in a candidate-free
+synthetic self-test. Preserve the original graphs without overwriting them.
+
+The [verified public result](../performance/postfinal-public-v5/RESULTS.md)
+continues to disclose the failed speed target and unopened final test; no
+measurement, held-out case, or new candidate behavior is inferred from a
+presentation change.
+
 ## Measure and independently replay all 8,192 public cases
 
 Complete the prospectively frozen, Unicode-safe public comparison against
