@@ -7,6 +7,30 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a genuinely independent C++ engine experiment
+
+Preserve a fourth, separately authored regular-expression engine under
+[`experiments/cpp_from_scratch_v1`](../experiments/cpp_from_scratch_v1/PROTOCOL.md).
+Its own C++ lexer, parser, syntax tree, bytecode compiler, capture-aware
+matcher, replacement implementation, and direct CPython extension do
+not use `std::regex`, an outside regex package, Python's matcher, or
+one of the existing C, Rust, and Zig engines.
+
+The source-only design includes counted greedy, lazy, and possessive
+repetition; explicit backtracking; atomic groups; lookarounds;
+backreferences; and native Python pattern, match, scanner, iterator,
+and buffer interfaces. These are design claims, not test results.
+The [predeclared independent differential campaign](../experiments/cpp_from_scratch_v1/PROTOCOL.md)
+specifies **48** groups and **6,144** comparisons. Neither it nor
+the original project oracle has run against this engine.
+
+Freeze the exact three source files and protocol before compiling or
+importing them. C++ is **NOT BUILT, NOT RUN, and NOT QUALIFIED**.
+Its actual Python compatibility, memory safety, speed, and memory
+consumption are **NOT MEASURED**. The prior Rust failure, the required
+current-build edge and deep proofs, and the three main 22-stage
+campaigns retain their existing statuses.
+
 ## Preserve the first current-build campaign failure
 
 First freeze, commit, and push the complete version-seven campaign in

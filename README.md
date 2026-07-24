@@ -5,6 +5,10 @@ Can a regular-expression engine built from scratch replace Python 3.14.6's
 three competing engines are independently implemented in C, Rust, and Zig;
 none may use Python's matching engine or wrap another regex package.
 
+A separately written [C++ engine](experiments/cpp_from_scratch_v1/PROTOCOL.md)
+is an additional experiment. It is **NOT BUILT, NOT RUN, and NOT
+QUALIFIED**.
+
 **Current status: no engine is yet proved to be a complete replacement. New
 speed and memory results are NOT MEASURED. There is no winner.** The
 headline graphs below describe earlier, archived builds, not the modified
