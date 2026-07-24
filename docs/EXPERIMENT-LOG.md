@@ -7,6 +7,28 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## All current engines pass the complete Python and Unicode campaign
+
+Run the unchanged **22-stage** resource-limited compatibility campaign
+against the repaired Rust, C, and Zig implementations. All three pass every
+stage, including official Python tests, the complete public module surface,
+callbacks and replacements, independent source and native-library ownership,
+crash and depth controls, and **4,494,555** full-Unicode comparisons per
+engine. Every report verifies the matching, object, tracing, native, and
+immutable-goal fingerprints.
+
+An initial concurrent Zig invocation stops before creating evidence because
+its freshly executed static audit fails under contention. Verify that the
+current independently stored source audit is unchanged and passing, then run
+Zig alone. Its complete solo report genuinely passes **22/22** stages. Do not
+discard the incident, claim the incomplete attempt passed, or weaken any
+audit.
+
+Preserve all three exact campaign hashes in the
+[full matching, object, tracing, and Unicode evidence](../candidates/evidence/POSTFINAL-UNIVERSAL-STAGE05-EDGE.md).
+No expanded performance comparison, hidden case, memory result, or one-use
+holdout is opened or measured.
+
 ## All repaired engines preserve Python's visible behavior
 
 Run all **479** frozen callback, scanner, warning, buffer, error, argument,

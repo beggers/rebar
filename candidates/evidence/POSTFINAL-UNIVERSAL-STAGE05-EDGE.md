@@ -67,7 +67,36 @@ observation digest
 | Zig | 479 | 0 | `4e31f020a3def0f125562af9010bbb54cd299ddf81fde33dff61219fd7d6c0c3` |
 
 Each compressed proof independently verifies the candidate's passing object
-contract, full matching proof, actual source, and native libraries. The
-complete **22-stage** Unicode campaign must still be rerun on current
-source. Expanded public speed, native memory, and the **65,536-case**
-holdout remain **NOT MEASURED**.
+contract, full matching proof, actual source, and native libraries.
+
+## Complete Python compatibility and Unicode campaign
+
+Each current-source engine also completes all **22** frozen stages. These
+include official Python tests, the public module and match surface, all
+replacements and callbacks, source and native-library ownership, resource
+safety, the **479-case** visible-behavior test, and **4,494,555** complete
+Unicode comparisons.
+
+| Engine | Passing stages | Unicode comparisons | Evidence SHA-256 |
+| --- | ---: | ---: | --- |
+| Rust | 22/22 | 4,494,555 | `c88a73f897e400a66b8008de28c4ec160aba1a2ef4ac55403f8cb7e888cef2a2` |
+| C | 22/22 | 4,494,555 | `972ea7b8fb2618b389d7acdc5875bae81b2c0e3e568150dd298694d37ef16dc4` |
+| Zig | 22/22 | 4,494,555 | `ecd9ea26e30ddc728e029ff30e9e849e94f45c94acabc2039c7017a697a99686` |
+
+A first concurrent Zig run stopped before creating a report because its
+independent source audit did not pass under contention. The separate solo
+run completes and records every required stage; no failing candidate result
+or missing report is presented as a pass.
+
+```sh
+for engine in rust vm zig; do
+  jq '{candidate, passed, stages: (.steps | length),
+       failed_stages: [.steps[] | select(.passed != true) | .name],
+       unicode_checks: [.steps[] | select(.name == "full-unicode-plane") |
+         .expected_checks], holdout_accessed, timing_performed, performance}' \
+    "candidates/evidence/rust-v8-${engine}-post-final-stage-05-universal-parity-sealed-campaign.json"
+done
+```
+
+Expanded public speed, native memory, and the **65,536-case** holdout
+remain **NOT MEASURED**.
