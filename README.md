@@ -49,10 +49,13 @@ pass **393,216/393,216** comparisons each. The
 [complete correctness history and final passing evidence](candidates/evidence/PYTHON-RE-UNIVERSAL-PUBLIC-ORACLE-STAGE03.md)
 include the exact sources, seeds, failures, and reports.
 
-A new **8,192-case** public speed comparison and a
+The expanded
+[8,192-case public speed comparison](performance/postfinal-public-v4/PROTOCOL.md)
+is frozen and **NOT MEASURED**. The separate
 [65,536-case one-time final](performance/postfinal-fresh-holdout-v1/PROTOCOL.md)
-are being prepared. Neither has been measured or opened. The older hidden
-failure remains final; the new correctness result does not reverse it.
+remains unopened; its full isolated executor is **NOT IMPLEMENTED**. The
+older hidden failure remains final, and the new correctness result does not
+reverse it.
 
 ![Every measured win, uncertain result, and slowdown for all three independent regex engines](performance/postfinal-public-v3/evidence/postfinal-public-practice-v3-outcomes.svg)
 

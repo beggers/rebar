@@ -7,6 +7,30 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a larger, fully qualified public speed comparison
+
+Freeze **8,192** unique public cases, all **260** workload categories, all
+**12** public regex operations, and exactly **13** paired trials before
+recording any timing. The four isolated engines must eventually produce all
+**425,984** observations, **1,277,952** correctness gates, **24,579**
+confidence intervals, and **65,544** runtime integrity checks. Freeze the
+selection, ordering, bootstrap seeds, five actual native libraries, both
+source-ownership audits, the complete zero-mismatch larger oracle, and all
+**12** current candidate proofs.
+
+The first freeze intentionally fails closed: the strict source allowlist
+omits the project's already audited root `pyproject.toml`. Add only that
+exact resolved, nonsymlinked build file; continue rejecting root traversal,
+absolute paths, alternate names, and unowned sources. The passing freeze
+creates the separately fingerprinted manifest without running a candidate,
+timing an operation, or opening a holdout.
+
+Record the exact manifest, source hashes, all operation counts, memory
+limitations, and future slowdown policy in the
+[expanded public speed protocol](../performance/postfinal-public-v4/PROTOCOL.md).
+The fresh **65,536-case** holdout adapter is not implemented; no final
+performance or winner is inferred.
+
 ## All current engines pass the complete Python and Unicode campaign
 
 Run the unchanged **22-stage** resource-limited compatibility campaign
