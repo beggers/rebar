@@ -84,7 +84,9 @@ The [76-control from-scratch audit](candidates/audits/FROM-SCRATCH-AUDIT.json)
 and [32-control isolated-engine audit](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V1.json)
 confirm that production matching does not use Python's regex engine, another
 candidate, or an external regex package. Neither audit claims reproducible
-compiler builds. The [experiment log](docs/EXPERIMENT-LOG.md) preserves
+compiler builds. [Fresh, append-only checks](candidates/audits/POSTFINAL-REQUALIFICATION-V2.md)
+are required before any changed engine can reuse the same comparison. The
+[experiment log](docs/EXPERIMENT-LOG.md) preserves
 earlier measurements, rejected designs, and the unchanged
 [interrupted Unicode-sensitive comparison](performance/postfinal-public-v4/RESULTS.md).
 
@@ -104,6 +106,12 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -u -B -c \
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/python_re_universal_public_oracle_v1.py --self-test
 "$PY" -I -B tools/python_re_universal_public_oracle_stage03.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/python_re_universal_public_oracle_stage04.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_from_scratch_audit_v2.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_no_delegation_audit_v2.py --self-test
 jq '{status, cases, total_comparisons, mismatches, comparison_complete}' \
   candidates/evidence/python-re-universal-public-oracle-v3-all.json
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \

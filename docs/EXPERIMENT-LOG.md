@@ -7,6 +7,41 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve independent checks before changing any engine
+
+The complete public correctness and performance evidence authenticates
+exact native-library and Rust, C, and Zig source fingerprints. Running the
+original audit after an optimization would overwrite the historical
+76-control proof; the original compatibility runner also exclusively owns
+already published result files. Do not change an engine or reuse those
+certificates.
+
+Prepare separate, exclusively created paths for a fresh **76**-control
+source audit, a fresh **32**-control native-isolation audit, and the
+unchanged **8,192**-case Python comparison. Retain the original Python
+case distribution, **48** documented observations per case, and all
+**1,179,648** candidate comparisons. Require all original source hashes,
+actual native mappings, and candidate-free poison controls before any
+production report. The
+[append-only requalification plan](../candidates/audits/POSTFINAL-REQUALIFICATION-V2.md)
+does not claim a new report, changed engine, measured speed, or opened
+final test.
+
+The source-audit wrapper reruns all **76** original controls and passes
+**52** additional in-memory checks. The independently reviewed isolation
+wrapper passes **56** checks and rejects a substituted historical report.
+The Python comparison passes **66** checks without reading a source file
+during its candidate-free self-test. Production audit records are
+exclusively created and synced through their containing directory; every
+actual audit requires the pinned isolated Python **3.14.6** interpreter.
+All three future production reports remain **NOT CREATED**.
+
+A read-only build-command search also unintentionally matched unrelated
+legacy final-runner source. It did not open final benchmark evidence,
+materialize a case, read a private guard or key, or measure performance.
+Subsequent architecture inspection is restricted to explicitly named,
+currently owned production files and public audit sources.
+
 ## Audit and exercise a real four-engine final-test adapter
 
 Implement a separate four-channel adapter, standalone native statistics
