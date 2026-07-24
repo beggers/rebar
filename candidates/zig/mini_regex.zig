@@ -19,6 +19,8 @@ extern fn _PyUnicode_IsNumeric(u32) c_int;
 extern fn _PyUnicode_IsWhitespace(u32) c_int;
 extern fn _PyUnicode_ToLowercase(u32) u32;
 extern fn _PyUnicode_ToUppercase(u32) u32;
+extern "c" fn tolower(c_int) c_int;
+extern "c" fn isalnum(c_int) c_int;
 
 const Pair = struct { left: u32, right: u32 };
 const Repeat = struct { child: u32, minimum: usize, maximum: usize, lazy: bool, possessive: bool };
@@ -658,6 +660,31 @@ fn asciiMode(flags: u32) bool {
     return flags & 32 == 0 or flags & (4 | 256) != 0;
 }
 
+fn localeByteFlags(flags: u32) bool {
+    return flags & 4 != 0 and flags & text_pattern_flag == 0;
+}
+
+fn localeByteLower(value: u32) u32 {
+    if (value > 255) return value;
+    const lowered = tolower(@as(c_int, @intCast(value)));
+    return if (lowered >= 0 and lowered <= 255) @intCast(lowered) else value;
+}
+
+fn localeByteOther(value: u32) u32 {
+    if (value > 255) return value;
+    const lowered = localeByteLower(value);
+    if (lowered != value) return lowered;
+    for (0..256) |candidate| {
+        const other: u32 = @intCast(candidate);
+        if (other != value and localeByteLower(other) == lowered) return other;
+    }
+    return value;
+}
+
+fn localeByteAlnum(value: u32) bool {
+    return value <= 255 and isalnum(@as(c_int, @intCast(value))) != 0;
+}
+
 fn folded(value: u32, ascii_only: bool) u32 {
     if (ascii_only) return if (value >= 'A' and value <= 'Z') value + 32 else value;
     const lower = _PyUnicode_ToLowercase(value);
@@ -693,6 +720,7 @@ fn folded(value: u32, ascii_only: bool) u32 {
 fn equal(left: u32, right: u32, flags: u32) bool {
     if (left == right) return true;
     if (flags & 2 == 0) return false;
+    if (localeByteFlags(flags)) return localeByteLower(left) == localeByteLower(right);
     if (left < 128 and right < 128) return std.ascii.toLower(@as(u8, @intCast(left))) == std.ascii.toLower(@as(u8, @intCast(right)));
     const ascii_only = asciiMode(flags);
     return folded(left, ascii_only) == folded(right, ascii_only);
@@ -701,6 +729,7 @@ fn equal(left: u32, right: u32, flags: u32) bool {
 fn backrefEqual(left: u32, right: u32, flags: u32) bool {
     if (left == right) return true;
     if (flags & 2 == 0) return false;
+    if (localeByteFlags(flags)) return localeByteLower(left) == localeByteLower(right);
     if (asciiMode(flags)) {
         const lower_left = if (left >= 'A' and left <= 'Z') left + 32 else left;
         const lower_right = if (right >= 'A' and right <= 'Z') right + 32 else right;
@@ -726,7 +755,7 @@ fn category(code: u8, value: u32, flags: u32) bool {
     const found = switch (std.ascii.toLower(code)) {
         'd' => if (ascii_only or value < 128) value >= '0' and value <= '9' else _PyUnicode_IsDecimalDigit(value) != 0,
         's' => if (ascii_only or value < 128) value == ' ' or value == '\t' or value == '\n' or value == '\r' or value == 11 or value == 12 or (!ascii_only and value >= 0x1c and value <= 0x1f) else _PyUnicode_IsWhitespace(value) != 0,
-        'w' => if (ascii_only or value < 128) value < 128 and (std.ascii.isAlphanumeric(@intCast(value)) or value == '_') else value == '_' or _PyUnicode_IsAlpha(value) != 0 or _PyUnicode_IsDecimalDigit(value) != 0 or _PyUnicode_IsDigit(value) != 0 or _PyUnicode_IsNumeric(value) != 0,
+        'w' => if (localeByteFlags(flags)) localeByteAlnum(value) or value == '_' else if (ascii_only or value < 128) value < 128 and (std.ascii.isAlphanumeric(@intCast(value)) or value == '_') else value == '_' or _PyUnicode_IsAlpha(value) != 0 or _PyUnicode_IsDecimalDigit(value) != 0 or _PyUnicode_IsDigit(value) != 0 or _PyUnicode_IsNumeric(value) != 0,
         else => false,
     };
     return if (std.ascii.isUpper(code)) !found else found;
@@ -734,6 +763,15 @@ fn category(code: u8, value: u32, flags: u32) bool {
 
 fn rangeCase(left: u32, right: u32, value: u32, flags: u32) bool {
     if (value >= left and value <= right) return true;
+    if (localeByteFlags(flags)) {
+        if (value > 255 or left > 255) return false;
+        const lowered = localeByteLower(value);
+        const stop = @min(right, 255);
+        for (@as(usize, @intCast(left))..@as(usize, @intCast(stop)) + 1) |candidate| {
+            if (localeByteLower(@intCast(candidate)) == lowered) return true;
+        }
+        return false;
+    }
     const ascii_only = asciiMode(flags);
     if (ascii_only) {
         const lower = if (value >= 'A' and value <= 'Z') value + 32 else value;
@@ -817,20 +855,31 @@ fn classRaw(program: *const Program, class: *const CharClass, value: u32, flags:
 }
 
 fn classMatch(program: *const Program, class: *const CharClass, value: u32, flags: u32) bool {
-    if (value < 256 and class.match_flags == flags & 0xffff) return class.match_bits[@as(usize, @intCast(value)) >> 3] & (@as(u8, 1) << @intCast(value & 7)) != 0;
-    if (class.negative and class.locale_multi and flags & 6 == 6 and flags & text_pattern_flag == 0) {
-        const lower: u32 = if (value >= 'A' and value <= 'Z') value + 32 else value;
-        const upper: u32 = if (value >= 'a' and value <= 'z') value - 32 else value;
-        return !classRaw(program, class, value, flags) or !classRaw(program, class, lower, flags) or !classRaw(program, class, upper, flags);
+    const locale_bytes = localeByteFlags(flags);
+    if (!locale_bytes and value < 256 and class.match_flags == flags & 0xffff) return class.match_bits[@as(usize, @intCast(value)) >> 3] & (@as(u8, 1) << @intCast(value & 7)) != 0;
+    if (class.negative and class.locale_multi and flags & 2 != 0 and locale_bytes) {
+        const other = localeByteOther(value);
+        return !classRaw(program, class, value, flags) or !classRaw(program, class, other, flags);
     }
     var found = classBit(class, value);
     if (found) return !class.negative;
     if (!found and flags & 2 != 0) {
-        const ascii_only = asciiMode(flags);
-        const lower: u32 = if (ascii_only) (if (value >= 'A' and value <= 'Z') value + 32 else value) else _PyUnicode_ToLowercase(value);
-        const upper: u32 = if (ascii_only) (if (value >= 'a' and value <= 'z') value - 32 else value) else if (multiUpper(value)) value else _PyUnicode_ToUppercase(value);
-        const upper_lower: u32 = if (ascii_only or multiUpper(lower)) lower else _PyUnicode_ToUppercase(lower);
-        found = classBit(class, lower) or classBit(class, upper) or classBit(class, upper_lower) or classBit(class, folded(value, ascii_only));
+        if (locale_bytes) {
+            const lowered = localeByteLower(value);
+            for (0..256) |candidate| {
+                const other: u32 = @intCast(candidate);
+                if (classBit(class, other) and localeByteLower(other) == lowered) {
+                    found = true;
+                    break;
+                }
+            }
+        } else {
+            const ascii_only = asciiMode(flags);
+            const lower: u32 = if (ascii_only) (if (value >= 'A' and value <= 'Z') value + 32 else value) else _PyUnicode_ToLowercase(value);
+            const upper: u32 = if (ascii_only) (if (value >= 'a' and value <= 'z') value - 32 else value) else if (multiUpper(value)) value else _PyUnicode_ToUppercase(value);
+            const upper_lower: u32 = if (ascii_only or multiUpper(lower)) lower else _PyUnicode_ToUppercase(lower);
+            found = classBit(class, lower) or classBit(class, upper) or classBit(class, upper_lower) or classBit(class, folded(value, ascii_only));
+        }
     }
     if (!found and flags & 2 != 0 and !asciiMode(flags)) {
         const specials = [_]u32{ 'I', 'i', 0x130, 0x131, 'S', 's', 0x17f, 'K', 'k', 0x212a, 0x412, 0x432, 0x1c80, 0xfb05, 0xfb06, 0xdf, 0x1e9e };
@@ -2797,23 +2846,48 @@ fn compileOwned(pattern: [*]const u8, length: usize, flags: u32, recursion_enter
             }
         }
     }
-    program.nullable = addStarts(program, program.root, &program.starts, program.flags);
-    if (!program.nullable) {
-        var count: usize = 0;
-        for (program.starts, 0..) |value, index| if (value != 0) {
-            count += 1;
-            program.single_start = @intCast(index);
-        };
-        if (count != 1) program.single_start = 256;
-        if (scopedCategoryPrefix(program, program.root, false)) |class| program.scoped_prefix = class;
-    }
-    if (program.groups == 0 and program.nodes.items.len <= 20) {
-        const start_prefix = quickPrefix(program, program.root, program.flags);
-        program.single = start_prefix.single;
-        for (start_prefix.second, 0..) |value, index| {
-            if (value != 0) program.seconds[index >> 3] |= @as(u8, 1) << @intCast(index & 7);
+    var locale_sensitive = localeByteFlags(program.flags);
+    if (!locale_sensitive) {
+        for (program.nodes.items) |node| {
+            switch (node) {
+                .scoped => |scoped| {
+                    if (localeByteFlags(scoped.flags)) locale_sensitive = true;
+                },
+                else => {},
+            }
         }
-    } else program.single = [_]u8{1} ** 256;
+    }
+    program.nullable = addStarts(program, program.root, &program.starts, program.flags);
+    if (locale_sensitive) {
+        @memset(&program.starts, 1);
+        @memset(&program.single, 1);
+        @memset(&program.seconds, 0xff);
+        program.single_start = 256;
+        program.scoped_prefix = std.math.maxInt(u32);
+        program.prefix_run = std.math.maxInt(u32);
+        if (!program.nullable and !localeByteFlags(program.flags)) {
+            if (scopedCategoryPrefix(program, program.root, false)) |class| {
+                program.scoped_prefix = class;
+            }
+        }
+    } else {
+        if (!program.nullable) {
+            var count: usize = 0;
+            for (program.starts, 0..) |value, index| if (value != 0) {
+                count += 1;
+                program.single_start = @intCast(index);
+            };
+            if (count != 1) program.single_start = 256;
+            if (scopedCategoryPrefix(program, program.root, false)) |class| program.scoped_prefix = class;
+        }
+        if (program.groups == 0 and program.nodes.items.len <= 20) {
+            const start_prefix = quickPrefix(program, program.root, program.flags);
+            program.single = start_prefix.single;
+            for (start_prefix.second, 0..) |value, index| {
+                if (value != 0) program.seconds[index >> 3] |= @as(u8, 1) << @intCast(index & 7);
+            }
+        } else program.single = [_]u8{1} ** 256;
+    }
     return program;
 }
 

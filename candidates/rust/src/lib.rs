@@ -1,4 +1,5 @@
 use std::cell::RefCell;
+use std::ffi::c_int;
 use std::slice;
 
 mod newline;
@@ -10,6 +11,8 @@ use stack::InlineStack;
 
 unsafe extern "C" {
     fn Py_GetRecursionLimit() -> i32;
+    fn tolower(value: c_int) -> c_int;
+    fn isalnum(value: c_int) -> c_int;
 }
 
 const I: u32 = 2;
@@ -1360,6 +1363,42 @@ impl LowerAscii for u32 {
 }
 
 #[inline(always)]
+fn locale_byte_flags(flags: u32) -> bool {
+    flags & (L | BYTE) == L | BYTE
+}
+
+#[inline(always)]
+fn locale_byte_lower(value: u32) -> u32 {
+    let Ok(byte) = u8::try_from(value) else {
+        return value;
+    };
+    let lowered = unsafe { tolower(c_int::from(byte)) };
+    u8::try_from(lowered).map_or(value, u32::from)
+}
+
+#[inline]
+fn locale_byte_other(value: u32) -> u32 {
+    let Ok(byte) = u8::try_from(value) else {
+        return value;
+    };
+    let lowered = locale_byte_lower(u32::from(byte));
+    if lowered != value {
+        return lowered;
+    }
+    (0_u32..=u32::from(u8::MAX))
+        .find(|&candidate| candidate != value && locale_byte_lower(candidate) == lowered)
+        .unwrap_or(value)
+}
+
+#[inline(always)]
+fn locale_byte_isalnum(value: u32) -> bool {
+    let Ok(byte) = u8::try_from(value) else {
+        return false;
+    };
+    unsafe { isalnum(c_int::from(byte)) != 0 }
+}
+
+#[inline(always)]
 fn unicode_simple_lower(value: u32, ascii_only: bool) -> u32 {
     if value < 128 {
         value.to_ascii_lowercase()
@@ -1396,7 +1435,11 @@ fn unicode_category_mask(value: u32) -> u8 {
 
 #[inline(always)]
 fn folded(value: u32, flags: u32, _ctx: &Context<'_>, _pos: usize) -> u32 {
-    unicode_simple_lower(value, flags & (A | L | BYTE) != 0)
+    if locale_byte_flags(flags) {
+        locale_byte_lower(value)
+    } else {
+        unicode_simple_lower(value, flags & (A | L | BYTE) != 0)
+    }
 }
 
 fn eq(a: u32, b: u32, flags: u32, ctx: &Context<'_>, apos: usize, bpos: usize) -> bool {
@@ -1409,6 +1452,8 @@ fn eq(a: u32, b: u32, flags: u32, ctx: &Context<'_>, apos: usize, bpos: usize) -
 fn eq_lit(lit: u32, value: u32, flags: u32, ctx: &Context<'_>, pos: usize) -> bool {
     if lit == value || flags & I == 0 {
         lit == value
+    } else if locale_byte_flags(flags) {
+        locale_byte_lower(lit) == locale_byte_lower(value)
     } else {
         let _ = (ctx, pos);
         let ascii_only = flags & (A | L | BYTE) != 0;
@@ -1457,6 +1502,15 @@ fn range_case_match(
 ) -> bool {
     if left <= value && value <= right {
         return true;
+    }
+    if locale_byte_flags(flags) {
+        let Ok(first) = u8::try_from(left) else {
+            return false;
+        };
+        let last = right.min(u32::from(u8::MAX));
+        let folded = locale_byte_lower(value);
+        return (u32::from(first)..=last)
+            .any(|candidate| locale_byte_lower(candidate) == folded);
     }
     let ascii = flags & (A | L | BYTE) != 0;
     if ascii {
@@ -1507,7 +1561,9 @@ fn category(code: char, flags: u32, ctx: &Context<'_>, pos: usize) -> bool {
             }
         }
         _ => {
-            if ascii {
+            if locale_byte_flags(flags) {
+                locale_byte_isalnum(value) || value == u32::from(b'_')
+            } else if ascii {
                 value < 128
                     && ((value >= b'0' as u32 && value <= b'9' as u32)
                         || (value >= b'A' as u32 && value <= b'Z' as u32)
@@ -1532,7 +1588,8 @@ fn class_match(
     pos: usize,
 ) -> bool {
     let value = ctx.character(pos);
-    if value < 128
+    if !locale_byte_flags(flags)
+        && value < 128
         && let Some(Member::Table(table)) = values.first()
     {
         return table[(value / 64) as usize] & (1_u64 << (value % 64)) != 0;
@@ -1541,7 +1598,9 @@ fn class_match(
         && flags & (I | L) == I | L
         && !(values.len() == 1 && matches!(values.first(), Some(Member::Lit(_))))
     {
-        let other = if (b'A' as u32..=b'Z' as u32).contains(&value) {
+        let other = if locale_byte_flags(flags) {
+            locale_byte_other(value)
+        } else if (b'A' as u32..=b'Z' as u32).contains(&value) {
             value + 32
         } else if (b'a' as u32..=b'z' as u32).contains(&value) {
             value - 32
@@ -1576,6 +1635,9 @@ fn class_match(
 fn prepare_classes(node: &mut Expr, ctx: &Context<'_>) {
     match node {
         Expr::Class(values, negative, flags) => {
+            if locale_byte_flags(*flags) {
+                return;
+            }
             let mut table = [0_u64; 2];
             for value in 0..128 {
                 if class_match(values, *negative, *flags, ctx, value) {
@@ -2092,7 +2154,33 @@ fn add_starts(
     }
 }
 
+fn contains_locale_sensitive_expression(node: &Expr) -> bool {
+    match node {
+        Expr::Lit(_, flags)
+        | Expr::Dot(flags)
+        | Expr::Cat(_, flags)
+        | Expr::Class(_, _, flags)
+        | Expr::Anchor(_, flags)
+        | Expr::Boundary(_, flags)
+        | Expr::Backref(_, flags) => locale_byte_flags(*flags),
+        Expr::Seq(values) | Expr::Alt(values) => {
+            values.iter().any(contains_locale_sensitive_expression)
+        }
+        Expr::Group(_, child)
+        | Expr::Repeat(child, _, _, _)
+        | Expr::Look(_, _, child, _)
+        | Expr::Atomic(child) => contains_locale_sensitive_expression(child),
+        Expr::Cond(_, yes, no) => {
+            contains_locale_sensitive_expression(yes)
+                || contains_locale_sensitive_expression(no)
+        }
+    }
+}
+
 fn start_table(root: &Expr, global_flags: u32) -> Option<[u8; 256]> {
+    if locale_byte_flags(global_flags) || contains_locale_sensitive_expression(root) {
+        return None;
+    }
     let chars: [u32; 256] = std::array::from_fn(|index| index as u32);
     let folds: [u32; 256] = std::array::from_fn(|index| unicode_tables::simple_lower(index as u32));
     let masks: [u8; 256] = std::array::from_fn(|index| unicode_category_mask(index as u32));
@@ -4354,5 +4442,231 @@ mod assertion_snapshot_tests {
         assert_eq!(begins, vec![0, -1]);
         assert_eq!(ends, vec![2, -1]);
         assert_eq!(last, -1);
+    }
+}
+
+#[cfg(test)]
+mod locale_ctype_tests {
+    use super::{
+        category, class_match, contains_locale_sensitive_expression, deterministic_program,
+        isalnum, locale_byte_flags, locale_byte_isalnum, locale_byte_lower, locale_byte_other,
+        prepare_classes, run_match, start_table, tolower, Compiler, Context, Engine, Expr, Member,
+        SearchAnchor, A, BYTE, I, L,
+    };
+    use std::ffi::c_int;
+
+    fn byte_context(subject: &[u8]) -> Context<'_> {
+        Context {
+            chars: &[],
+            folds: &[],
+            masks: &[],
+            bytes: Some(subject),
+            wide: None,
+            end: subject.len(),
+        }
+    }
+
+    fn locale_match(mut root: Expr, subject: &[u8], groups: usize) -> bool {
+        let alphabet: [u8; 128] = std::array::from_fn(|index| index as u8);
+        let preparation = byte_context(&alphabet);
+        prepare_classes(&mut root, &preparation);
+        let starts = start_table(&root, BYTE | L | I);
+        let program = Compiler::compile(&root).expect("owned locale expression must compile");
+        let deterministic = deterministic_program(&program, groups);
+        let engine = Engine {
+            program,
+            groups,
+            names: Vec::new(),
+            flags: L | I,
+            starts,
+            start_set: None,
+            mandatory_literal_prefix: None,
+            mandatory_run_delimiter: None,
+            even_suffix_delimiter: None,
+            leading_lookbehind: None,
+            start_anchor: SearchAnchor::Unrestricted,
+            byte_mode: true,
+            deterministic,
+        };
+        let context = byte_context(subject);
+        let mut begins = vec![-1; groups + 1];
+        let mut ends = vec![-1; groups + 1];
+        let mut last = -1;
+        run_match(
+            &engine,
+            &context,
+            0,
+            2,
+            0,
+            &mut begins,
+            &mut ends,
+            &mut last,
+        ) == 1
+    }
+
+    #[test]
+    fn locale_ctype_requires_both_owned_byte_and_locale_flags() {
+        assert!(locale_byte_flags(BYTE | L));
+        assert!(locale_byte_flags(BYTE | L | I));
+        assert!(!locale_byte_flags(0));
+        assert!(!locale_byte_flags(BYTE));
+        assert!(!locale_byte_flags(L));
+        assert!(!locale_byte_flags(BYTE | A | I));
+    }
+
+    #[test]
+    fn locale_lower_matches_libc_for_every_unsigned_byte() {
+        for byte in u8::MIN..=u8::MAX {
+            let raw = unsafe { tolower(c_int::from(byte)) };
+            let expected = u8::try_from(raw).map_or(u32::from(byte), u32::from);
+            assert_eq!(locale_byte_lower(u32::from(byte)), expected);
+        }
+        assert_eq!(locale_byte_lower(256), 256);
+        assert_eq!(locale_byte_lower(u32::MAX), u32::MAX);
+    }
+
+    #[test]
+    fn locale_word_membership_matches_libc_for_every_unsigned_byte() {
+        for byte in u8::MIN..=u8::MAX {
+            let expected = unsafe { isalnum(c_int::from(byte)) != 0 };
+            assert_eq!(locale_byte_isalnum(u32::from(byte)), expected);
+        }
+        assert!(!locale_byte_isalnum(256));
+        assert!(!locale_byte_isalnum(u32::MAX));
+    }
+
+    #[test]
+    fn locale_case_partner_is_a_current_libc_fold_equivalent() {
+        for byte in u8::MIN..=u8::MAX {
+            let value = u32::from(byte);
+            let other = locale_byte_other(value);
+            assert!(u8::try_from(other).is_ok());
+            assert_eq!(locale_byte_lower(other), locale_byte_lower(value));
+            if other == value {
+                assert!(
+                    (0_u32..=u32::from(u8::MAX))
+                        .all(|candidate| candidate == value
+                            || locale_byte_lower(candidate) != locale_byte_lower(value))
+                );
+            }
+        }
+        assert_eq!(locale_byte_other(256), 256);
+        assert_eq!(locale_byte_other(u32::MAX), u32::MAX);
+    }
+
+    #[test]
+    fn locale_classes_do_not_cache_compile_time_ascii_membership() {
+        let alphabet: [u8; 128] = std::array::from_fn(|index| index as u8);
+        let context = byte_context(&alphabet);
+        let mut dynamic = Expr::Class(
+            vec![Member::Lit(u32::from(b'A'))],
+            false,
+            BYTE | L | I,
+        );
+        prepare_classes(&mut dynamic, &context);
+        let Expr::Class(dynamic_members, _, _) = dynamic else {
+            panic!("owned locale expression changed shape");
+        };
+        assert_eq!(dynamic_members.len(), 1);
+        assert!(matches!(dynamic_members[0], Member::Lit(_)));
+
+        let mut ordinary = Expr::Class(vec![Member::Lit(u32::from(b'A'))], false, BYTE | I);
+        prepare_classes(&mut ordinary, &context);
+        let Expr::Class(ordinary_members, _, _) = ordinary else {
+            panic!("owned non-locale expression changed shape");
+        };
+        assert!(matches!(ordinary_members.first(), Some(Member::Table(_))));
+    }
+
+    #[test]
+    fn locale_membership_ignores_a_stale_ascii_class_table() {
+        let subject = [b'A'];
+        let context = byte_context(&subject);
+        let members = [Member::Table([0, 0]), Member::Lit(u32::from(b'A'))];
+        assert!(class_match(
+            &members,
+            false,
+            BYTE | L | I,
+            &context,
+            0,
+        ));
+    }
+
+    #[test]
+    fn scoped_locale_disables_stale_compile_time_start_filters() {
+        let root = Expr::Seq(vec![Expr::Group(
+            1,
+            Box::new(Expr::Alt(vec![
+                Expr::Lit(0xc5, BYTE | L | I),
+                Expr::Lit(u32::from(b'x'), BYTE),
+            ])),
+        )]);
+        assert!(contains_locale_sensitive_expression(&root));
+        assert!(start_table(&root, BYTE).is_none());
+
+        let ordinary = Expr::Lit(u32::from(b'A'), BYTE | I);
+        assert!(!contains_locale_sensitive_expression(&ordinary));
+        assert!(start_table(&ordinary, BYTE | I).is_some());
+    }
+
+    #[test]
+    fn locale_literals_and_backreferences_use_current_byte_folding() {
+        let upper = 0xc5_u32;
+        let lower = 0xe5_u32;
+        let expected = locale_byte_lower(upper) == locale_byte_lower(lower);
+        assert_eq!(
+            locale_match(Expr::Lit(upper, BYTE | L | I), &[lower as u8], 0),
+            expected,
+        );
+        let root = Expr::Seq(vec![
+            Expr::Group(1, Box::new(Expr::Lit(upper, BYTE | L | I))),
+            Expr::Backref(1, BYTE | L | I),
+        ]);
+        assert_eq!(locale_match(root, &[upper as u8, lower as u8], 1), expected);
+    }
+
+    #[test]
+    fn locale_word_categories_use_current_libc_membership() {
+        for byte in [b'_', b'A', b'0', 0xc5, 0xe5, 0xff] {
+            let subject = [byte];
+            let context = byte_context(&subject);
+            let expected = byte == b'_' || locale_byte_isalnum(u32::from(byte));
+            assert_eq!(category('w', BYTE | L, &context, 0), expected);
+            assert_eq!(category('W', BYTE | L, &context, 0), !expected);
+            assert_eq!(
+                locale_match(Expr::Cat('w', BYTE | L), &subject, 0),
+                expected,
+            );
+        }
+    }
+
+    #[test]
+    fn locale_singleton_complements_use_dynamic_folded_membership() {
+        let expected = locale_byte_lower(0xc5) != locale_byte_lower(0xe5);
+        let root = Expr::Class(vec![Member::Lit(0xc5)], true, BYTE | L | I);
+        assert_eq!(locale_match(root, &[0xe5], 0), expected);
+    }
+
+    #[test]
+    fn locale_range_complements_preserve_cpython_case_partner_rule() {
+        let subject = 0xe5_u32;
+        let other = locale_byte_other(subject);
+        let raw = |value| (0xc0..=0xd6).contains(&value);
+        let expected_negative = !raw(subject) || !raw(other);
+        let negative = Expr::Class(
+            vec![Member::Range(0xc0, 0xd6)],
+            true,
+            BYTE | L | I,
+        );
+        assert_eq!(locale_match(negative, &[subject as u8], 0), expected_negative);
+
+        let expected_positive = (0xc0_u32..=0xd6)
+            .any(|value| locale_byte_lower(value) == locale_byte_lower(subject));
+        let positive = Expr::Class(
+            vec![Member::Range(0xc0, 0xd6)],
+            false,
+            BYTE | L | I,
+        );
+        assert_eq!(locale_match(positive, &[subject as u8], 0), expected_positive);
     }
 }

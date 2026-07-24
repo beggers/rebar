@@ -1,5 +1,6 @@
 #define PY_SSIZE_T_CLEAN
 #include <Python.h>
+#include <ctype.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdlib.h>
@@ -15,7 +16,7 @@ typedef struct { int op; Py_ssize_t a, b, c; } Ins;
 typedef struct { Py_ssize_t count, atomic_capacity, suffix_width; int linear, compact, has_suffix, has_loop, split_disjoint; Ins *ins; PyObject *literal; } Code;
 typedef struct { int kind; Py_UCS4 a, b; } ClassItem;
 typedef struct { Py_ssize_t count; ClassItem *items; unsigned char ascii[256], scoped_ascii[256], ignore_ascii[256], ignore_unicode[256]; int ready; } CharClass;
-typedef struct { Py_ssize_t code_count, class_count, groups, root_flags; Code *codes; CharClass *classes; PyObject *literal; unsigned char starts[256]; uint64_t *start_pairs; uint32_t start_triples[128]; int starts_ready, start_singleton, cache_classes, triple_count; } VM;
+typedef struct { Py_ssize_t code_count, class_count, groups, root_flags; Code *codes; CharClass *classes; PyObject *literal; unsigned char starts[256]; uint64_t *start_pairs; uint32_t start_triples[128]; int starts_ready, start_singleton, cache_classes, triple_count, locale_sensitive; } VM;
 typedef struct { PyObject *obj; int byte_mode, unicode_kind; Py_ssize_t length; const char *bytes; const void *unicode_data; } Subject;
 typedef struct { Py_ssize_t pc, pos, last, repeat_step, repeat_limit, repeat_body_count; Py_ssize_t *caps, *seen, *barrier; int atomic_depth; } State;
 typedef struct { State **items; Py_ssize_t length, capacity; } Stack;
@@ -167,6 +168,28 @@ static Py_UCS4 folded(Py_UCS4 c, int ascii_only) {
     return Py_UNICODE_TOLOWER(c);
 }
 
+static int locale_byte_flags(Py_ssize_t flags) {
+    return (flags & (F_BYTE | F_L)) == (F_BYTE | F_L);
+}
+
+static Py_UCS4 locale_byte_lower(Py_UCS4 value) {
+    if (value > UINT8_MAX) return value;
+    int lowered = tolower((int)(unsigned char)value);
+    return lowered >= 0 && lowered <= UINT8_MAX ? (Py_UCS4)lowered : value;
+}
+
+static Py_UCS4 locale_byte_other(Py_UCS4 value) {
+    if (value > UINT8_MAX) return value;
+    Py_UCS4 lowered = locale_byte_lower(value);
+    if (lowered != value) return lowered;
+    for (Py_UCS4 candidate = 0; candidate <= UINT8_MAX; candidate++) {
+        if (candidate != value && locale_byte_lower(candidate) == lowered) {
+            return candidate;
+        }
+    }
+    return value;
+}
+
 typedef struct {
     uint8_t count;
     Py_UCS4 member[3];
@@ -257,8 +280,18 @@ static int unicode_case_closure_in_range(Py_UCS4 left, Py_UCS4 right,
     return 0;
 }
 
-static int range_case_match(Py_UCS4 left, Py_UCS4 right, Py_UCS4 value, int ascii_only) {
+static int range_case_match(Py_UCS4 left, Py_UCS4 right, Py_UCS4 value, Py_ssize_t flags) {
     if (value>=left && value<=right) return 1;
+    if (locale_byte_flags(flags)) {
+        if (left > UINT8_MAX || value > UINT8_MAX) return 0;
+        Py_UCS4 last = right > UINT8_MAX ? UINT8_MAX : right;
+        Py_UCS4 wanted = locale_byte_lower(value);
+        for (Py_UCS4 candidate = left; candidate <= last; candidate++) {
+            if (locale_byte_lower(candidate) == wanted) return 1;
+        }
+        return 0;
+    }
+    int ascii_only = !!(flags & (F_A | F_L | F_BYTE));
     if (ascii_only) {
         Py_UCS4 lower=value<128 && value>='A' && value<='Z' ? value+32 : value;
         Py_UCS4 upper=value<128 && value>='a' && value<='z' ? value-32 : value;
@@ -278,6 +311,9 @@ static int range_case_match(Py_UCS4 left, Py_UCS4 right, Py_UCS4 value, int asci
 
 static int equal_char(Py_UCS4 a, Py_UCS4 b, Py_ssize_t flags) {
     if (!(flags & F_I)) return a == b;
+    if (locale_byte_flags(flags)) {
+        return locale_byte_lower(a) == locale_byte_lower(b);
+    }
     int ascii_only = !!(flags & (F_A|F_L|F_BYTE));
     if (ascii_only) return folded(a, 1)==folded(b, 1);
     if (Py_UNICODE_TOLOWER(a)==Py_UNICODE_TOLOWER(b)) return 1;
@@ -288,6 +324,9 @@ static int equal_char(Py_UCS4 a, Py_UCS4 b, Py_ssize_t flags) {
 
 static int equal_backref(Py_UCS4 a, Py_UCS4 b, Py_ssize_t flags) {
     if (!(flags & F_I)) return a == b;
+    if (locale_byte_flags(flags)) {
+        return locale_byte_lower(a) == locale_byte_lower(b);
+    }
     if (flags & (F_A|F_L|F_BYTE)) {
         return folded(a, 1) == folded(b, 1);
     }
@@ -300,6 +339,7 @@ static int category(Py_UCS4 c, Py_ssize_t code, Py_ssize_t flags) {
     Py_UCS4 lower = (Py_UCS4)(code >= 'A' && code <= 'Z' ? code + 32 : code);
     if (lower == 'd') value = ascii_only ? (c >= '0' && c <= '9') : Py_UNICODE_ISDECIMAL(c);
     else if (lower == 's') value = ascii_only ? (c==' '||c=='\t'||c=='\n'||c=='\r'||c=='\v'||c=='\f') : Py_UNICODE_ISSPACE(c);
+    else if (locale_byte_flags(flags)) value = c <= UINT8_MAX && (isalnum((int)(unsigned char)c) || c=='_');
     else value = ascii_only ? (c < 128 && ((c>='0'&&c<='9')||(c>='A'&&c<='Z')||(c>='a'&&c<='z')||c=='_')) : (Py_UNICODE_ISALNUM(c)||c=='_');
     return code >= 'A' && code <= 'Z' ? !value : value;
 }
@@ -309,17 +349,17 @@ static int class_match_slow(const VM *vm, Py_ssize_t index, Py_UCS4 c, Py_ssize_
     CharClass cls = vm->classes[index];
     if (negate && (flags & (F_I|F_L))==(F_I|F_L) && !(cls.count==1 && cls.items[0].kind==1)) {
         Py_UCS4 other=c;
-        if (c>='A' && c<='Z') other=c+32;
+        if (locale_byte_flags(flags)) other=locale_byte_other(c);
+        else if (c>='A' && c<='Z') other=c+32;
         else if (c>='a' && c<='z') other=c-32;
         return class_match_slow(vm,index,c,flags & ~F_I,1) || class_match_slow(vm,index,other,flags & ~F_I,1);
     }
     int found = 0;
-    int ascii_only = !!(flags & (F_A|F_L|F_BYTE));
     for (Py_ssize_t i=0; i<cls.count && !found; i++) {
         ClassItem item = cls.items[i];
         if (item.kind == 1) found = equal_char(item.a, c, flags);
         else if (item.kind == 2) {
-            found = (flags & F_I) ? range_case_match(item.a,item.b,c,ascii_only) : (c>=item.a && c<=item.b);
+            found = (flags & F_I) ? range_case_match(item.a,item.b,c,flags) : (c>=item.a && c<=item.b);
         } else if (item.kind == 3) found = category(c, item.a, flags);
     }
     return negate ? !found : found;
@@ -328,6 +368,7 @@ static int class_match_slow(const VM *vm, Py_ssize_t index, Py_UCS4 c, Py_ssize_
 static int class_match(const VM *vm, Py_ssize_t index, Py_UCS4 c, Py_ssize_t flags, int negate) {
     PROFILE_ADD(PROFILE_CLASS,1);
     if (index < 0 || index >= vm->class_count) return 0;
+    if (locale_byte_flags(flags)) return class_match_slow(vm,index,c,flags,negate);
     if (negate && (flags & (F_I|F_L))==(F_I|F_L)) return class_match_slow(vm,index,c,flags,negate);
     if (c<256 && vm->cache_classes) {
         CharClass *cls=&vm->classes[index];
@@ -352,13 +393,12 @@ static int info_class_match(const VM *vm, Py_ssize_t index, Py_UCS4 value,
     if (index<0 || index>=vm->class_count) return 0;
     CharClass cls=vm->classes[index];
     int found=0;
-    int scoped_ascii=!!(scoped_flags&(F_A|F_L|F_BYTE));
     for (Py_ssize_t item_index=0; item_index<cls.count && !found; item_index++) {
         ClassItem item=cls.items[item_index];
         if (item.kind==1) found=equal_char(item.a,value,scoped_flags);
         else if (item.kind==2) {
             found=(scoped_flags&F_I)
-                ? range_case_match(item.a,item.b,value,scoped_ascii)
+                ? range_case_match(item.a,item.b,value,scoped_flags)
                 : value>=item.a && value<=item.b;
         } else if (item.kind==3) {
             found=category(value,item.a,scoped_flags);
@@ -400,7 +440,7 @@ static Py_ssize_t atom_run(const VM *vm, const Subject *subject, Py_ssize_t pos,
         while (matched<maximum && subject_char(subject,pos+matched)==wanted) matched++;
         return matched;
     }
-    if (atom.op==OP_CLASS && atom.a>=0 && atom.a<vm->class_count && (subject->byte_mode || subject->unicode_kind==PyUnicode_1BYTE_KIND)) {
+    if (atom.op==OP_CLASS && atom.a>=0 && atom.a<vm->class_count && !locale_byte_flags(atom.b) && (subject->byte_mode || subject->unicode_kind==PyUnicode_1BYTE_KIND)) {
         CharClass *cls=&vm->classes[atom.a];
         int ascii_only=!!(atom.b&(F_A|F_L|F_BYTE));
         int table=!(atom.b&F_I) ? ascii_only : ascii_only ? 2 : 3;
@@ -464,7 +504,7 @@ static int leading_pair_accepts(const VM *vm, const Code *code, Py_ssize_t pc, P
 }
 
 static int start_accepts(const VM *vm, Py_UCS4 value) {
-    if (value>=256 || !vm->code_count || !vm->codes[0].count) return 1;
+    if (vm->locale_sensitive || value>=256 || !vm->code_count || !vm->codes[0].count) return 1;
     VM *mutable=(VM *)vm;
     if (!mutable->starts_ready) {
         Py_ssize_t accepted=0;
@@ -1117,6 +1157,7 @@ static PyObject *native_build(PyObject *self, PyObject *args) {
     VM *vm = PyMem_Calloc(1,sizeof(VM));
     if (!vm) { Py_DECREF(pseq); Py_DECREF(cseq); return PyErr_NoMemory(); }
     vm->groups=groups; vm->root_flags=root_flags;
+    vm->locale_sensitive=locale_byte_flags(root_flags);
     vm->code_count=PySequence_Fast_GET_SIZE(pseq); vm->class_count=PySequence_Fast_GET_SIZE(cseq);
     vm->codes=PyMem_Calloc((size_t)vm->code_count,sizeof(Code)); vm->classes=PyMem_Calloc((size_t)vm->class_count,sizeof(CharClass));
     if (!vm->codes || (!vm->classes && vm->class_count)) { vm_free(vm); Py_DECREF(pseq); Py_DECREF(cseq); return PyErr_NoMemory(); }
@@ -1128,6 +1169,12 @@ static PyObject *native_build(PyObject *self, PyObject *args) {
         for (Py_ssize_t i=0; i<vm->codes[p].count; i++) {
             PyObject *row=PySequence_Fast_GET_ITEM(seq,i);
             if (!PyArg_ParseTuple(row,"innn",&vm->codes[p].ins[i].op,&vm->codes[p].ins[i].a,&vm->codes[p].ins[i].b,&vm->codes[p].ins[i].c)) { Py_DECREF(seq); goto error; }
+            Ins instruction=vm->codes[p].ins[i];
+            if ((instruction.op==OP_CHAR || instruction.op==OP_CAT ||
+                 instruction.op==OP_CLASS || instruction.op==OP_BOUNDARY ||
+                 instruction.op==OP_BACKREF) && locale_byte_flags(instruction.b)) {
+                vm->locale_sensitive=1;
+            }
         }
         vm->codes[p].linear=1;
         Py_ssize_t atomic_depth=0;
@@ -1156,7 +1203,7 @@ static PyObject *native_build(PyObject *self, PyObject *args) {
     for (Py_ssize_t p=vm->code_count; p-->0;) {
         Code *code=&vm->codes[p];
         int deterministic=1;
-        int compact=1;
+        int compact=!vm->locale_sensitive;
         for (Py_ssize_t i=0; i<code->count; i++) {
             Ins in=code->ins[i];
             if (in.op==OP_REPEAT_BODY) {
@@ -1191,7 +1238,7 @@ static PyObject *native_build(PyObject *self, PyObject *args) {
             if (in.op==OP_ATOMIC_START || in.op==OP_ATOMIC_END) compact=0;
             if (in.op==OP_REPEAT1) {
                 if (i+1>=code->count || in.c==1) deterministic=0;
-                else if (repeat_needs_choice(vm,code,i+2,code->ins[i+1])) deterministic=0;
+                else if (vm->locale_sensitive || repeat_needs_choice(vm,code,i+2,code->ins[i+1])) deterministic=0;
                 else if (in.c==0) code->ins[i].c=3;
                 i++;
             }
@@ -1234,7 +1281,7 @@ static PyObject *native_build(PyObject *self, PyObject *args) {
             if (fixed) { code->has_suffix=1; code->suffix_width=width; }
         }
     }
-    if (vm->code_count && vm->codes[0].count) {
+    if (!vm->locale_sensitive && vm->code_count && vm->codes[0].count) {
         Code main=vm->codes[0];
         Py_ssize_t pc=0;
         while (pc<main.count && (main.ins[pc].op==OP_SAVE_START || main.ins[pc].op==OP_ANCHOR || main.ins[pc].op==OP_BOUNDARY)) pc++;
@@ -1259,7 +1306,7 @@ static PyObject *native_build(PyObject *self, PyObject *args) {
             if (!complete) vm->triple_count=0;
         }
     }
-    if (vm->code_count && vm->codes[0].count==6) {
+    if (!vm->locale_sensitive && vm->code_count && vm->codes[0].count==6) {
         Code *main=&vm->codes[0];
         Ins before_repeat=main->ins[0],before=main->ins[1],separator=main->ins[2],after_repeat=main->ins[3],after=main->ins[4];
         if (before_repeat.op==OP_REPEAT1 && before_repeat.a==0 && before_repeat.b<0 && (before.op==OP_CAT || before.op==OP_CLASS) && (separator.op==OP_CHAR || separator.op==OP_CLASS || separator.op==OP_CAT) && after_repeat.op==OP_REPEAT1 && after_repeat.a==0 && after_repeat.b<0 && (after.op==OP_CAT || after.op==OP_CLASS) && main->ins[5].op==OP_MATCH) {

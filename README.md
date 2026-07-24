@@ -6,17 +6,20 @@ is `import rebar as re`. Its C, Rust, and Zig candidates have independent
 matching engines. None wraps an external regular-expression package, calls
 Python's matching engine, or delegates to another candidate.
 
-All three currently installed candidates match Python in **1,179,648**
-public correctness checks. The newly rebuilt Rust engine's speed is
-**NOT MEASURED**. The independent final test is **NOT OPENED**.
-**There is no proven winner.**
+Python and all three currently installed candidates each pass all
+**146/146** selected official regular-expression tests, with no failures
+or skips. Each engine also passes all **22** required compatibility
+stages. Together, they match Python in **1,179,648** fresh public
+correctness checks. Their speed is **NOT MEASURED**. The independent
+final test is **NOT OPENED**. **There is no proven winner.**
 
 ## Latest completed public comparison
 
 All six charts show the same completed comparison of the
 [archived C, Zig, and previous Rust engines](performance/postfinal-public-v6/NATIVE-ARCHIVE-V1.md).
-They do **not** measure the newly rebuilt Rust engine. Those three engines
-and unmodified Python 3.14.6 ran the same **8,192** public workloads. The
+They do **not** measure any of the rebuilt Rust, C, or Zig engines. Those
+archived engines and unmodified Python 3.14.6 ran the same **8,192**
+public workloads. The
 [predeclared comparison](performance/postfinal-public-v6/PROTOCOL.md)
 records **425,984** paired observations, **1,277,952** exact-answer checks,
 and **24,579** independently replayed confidence intervals. **1× means
@@ -57,33 +60,55 @@ retain all **5,173** historical slowdowns. Its
 [five original native libraries](performance/postfinal-public-v5/NATIVE-ARCHIVE-V1.md)
 are preserved separately from the
 [five native libraries used in the latest completed comparison](performance/postfinal-public-v6/NATIVE-ARCHIVE-V1.md).
-Those two historical Rust engines and the newly rebuilt Rust engine are
-different. Separate runs do not prove a paired change in Rust's speed.
+All three current engines have since been rebuilt. Neither archived
+comparison measures their new speed, and separate runs do not prove a
+paired change.
 
-## What the new Rust engine actually passes
+## What the current engines actually pass
 
-The [new comparison against Python](candidates/evidence/python-re-universal-public-oracle-v5-all.json)
-covers all three currently installed engines: **8,192** patterns,
-**48** observations per pattern, and **1,179,648** total comparisons,
-with **zero** mismatches. Fresh
-[from-scratch](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V3.json)
+The [complete official-test result](oracle/cpython-3.14.6/evidence/postfinal-locale-v1-all.json)
+proves that Python, Rust, C, and Zig each pass all **146/146** selected
+official Python `re` tests. There are **zero** failures, crashes, or
+skips. Both previously skipped locale tests now run against real,
+privately generated ISO-8859-1 and UTF-8 locales. The
+[locale test record](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V1.md)
+explains how compiled expressions are checked across an actual locale
+change without modifying Python's tests.
+
+The [fresh all-engine correctness comparison](candidates/evidence/python-re-universal-public-oracle-v6-all.json)
+checks the exact current Rust, C, and Zig engines against Python across
+**8,192** patterns and **48** observations per engine and pattern:
+**1,179,648** comparisons, **zero** mismatches, and no external
+regular-expression package.
+
+Fresh
+[from-scratch](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V5.json)
 and
-[independent-execution](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V3.json)
-audits verify the actual Rust source and binary alongside the unchanged
-C and Zig engines.
+[independent-execution](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V5.json)
+audits verify all **12** current source files and all **5** native
+libraries. Their independent safety checks pass **198** and **676**
+controls. Rust additionally passes **44** native tests. All three
+engines independently pass the same deeper public checks:
 
-The rebuilt Rust engine also passes **33** native tests, an independent
-[223,198-check matching and parser test](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-assertion-snapshot-v1.json.gz),
-a
-[393-check Python-object test](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-ASSERTION-SNAPSHOT-V1.json.gz),
-and a
-[479-check callback, iterator, scanner, and buffer test](candidates/evidence/rust-v8-observability-rust-qualified-postfinal-assertion-snapshot-v1.json.gz).
-The [accepted full compatibility campaign](candidates/evidence/rust-v8-rust-postfinal-assertion-snapshot-v2-sealed-campaign.json)
-passes all **22** stages and **4,494,555** Unicode comparisons. Of
-**146** named official Python `re` tests, **144** pass; the other **2**
-are explicitly recorded locale-dependent skips. Correctness does not
-establish speed: the new Rust engine's performance and exact native
-memory remain **NOT MEASURED**.
+| Engine | Matching and parsing | Python object behavior | Callbacks and scanners |
+| --- | ---: | ---: | ---: |
+| Rust | [223,198/223,198](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-locale-v1.json.gz) | [393/393](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-LOCALE-V1.json.gz) | [479/479](candidates/evidence/rust-v8-observability-rust-qualified-postfinal-locale-v1.json.gz) |
+| C | [223,198/223,198](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-locale-v1.json.gz) | [393/393](candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-LOCALE-V1.json.gz) | [479/479](candidates/evidence/rust-v8-observability-vm-qualified-postfinal-locale-v1.json.gz) |
+| Zig | [223,198/223,198](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-locale-v1.json.gz) | [393/393](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-POSTFINAL-LOCALE-V1.json.gz) | [479/479](candidates/evidence/rust-v8-observability-zig-qualified-postfinal-locale-v1.json.gz) |
+
+The fresh, source-bound full campaigns for
+[Rust](candidates/evidence/rust-v8-rust-postfinal-locale-v5-sealed-campaign.json),
+[C](candidates/evidence/rust-v8-vm-postfinal-locale-v5-sealed-campaign.json),
+and
+[Zig](candidates/evidence/rust-v8-zig-postfinal-locale-v5-sealed-campaign.json)
+each pass **22/22** stages, **146/146** official Python tests, and
+**4,494,555** Unicode comparisons. Each report is independently bound
+to its actual engine; earlier reports never qualify a changed build.
+
+A fair **8,192**-case speed comparison and a separate expanded
+**33,280**-case public suite are planned, **NOT FROZEN**, and
+**NOT MEASURED**. The expanded public suite is not a hidden final test.
+New speed and exact native memory remain **NOT MEASURED**.
 
 ## Final-test status
 
@@ -93,8 +118,8 @@ remains unchanged; that test cannot be rerun. The separate
 [65,536-case final test](performance/postfinal-fresh-holdout-v1/PROTOCOL.md)
 is **NOT OPENED**. Its
 [audited adapter](performance/postfinal-fresh-holdout-v1/ADAPTER-AUDIT.md)
-was checked against the archived original engines, not the newly rebuilt
-Rust engine. The one-use executor is **NOT YET INTEGRATED**. Final speed,
+was checked against the archived original engines, not the current
+rebuilt engines. The one-use executor is **NOT YET INTEGRATED**. Final speed,
 final memory, and a qualified winner remain **NOT MEASURED**.
 
 The [experiment log](docs/EXPERIMENT-LOG.md) preserves earlier results,
@@ -110,13 +135,15 @@ The objective in [GOAL.md](GOAL.md) has immutable SHA-256
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_from_scratch_audit_v3.py --self-test
+  tools/postfinal_from_scratch_audit_v5.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_no_delegation_audit_v3.py --self-test
+  tools/postfinal_no_delegation_audit_v5.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/python_re_universal_public_oracle_stage05.py --self-test
-PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
-  tools/rust_v8_multi_candidate_campaign_postfinal_v2.py --self-test
+  tools/postfinal_cpython_locale_oracle_v1.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/python_re_universal_public_oracle_stage06.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/rust_v8_multi_candidate_campaign_postfinal_v5.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -I -B -c \
   'import sys;sys.path.insert(0,".");from tools.postfinal_public_practice_v6 import main;main(["--self-test"])'
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
@@ -132,7 +159,12 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
 
 jq '{status, cases, observations_per_case, observations_per_candidate,
      total_comparisons, mismatches, completed_candidates}' \
-  candidates/evidence/python-re-universal-public-oracle-v5-all.json
+  candidates/evidence/python-re-universal-public-oracle-v6-all.json
+
+jq '{status, result, python,
+     roles: (.roles | with_entries(.value |=
+       {methods, passed, failed, skipped}))}' \
+  oracle/cpython-3.14.6/evidence/postfinal-locale-v1-all.json
 
 jq '{result, cases_per_candidate, raw_rows, correctness_checks,
      confidence_intervals_recomputed, strict_regressions, rankings}' \
