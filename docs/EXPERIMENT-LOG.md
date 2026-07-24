@@ -7,6 +7,30 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Separate engine processes close the hidden-wrapper loophole
+
+The historical **76-control** independence check is retained and still
+passes. An independent review found that checking a separate short-lived
+process did not prevent a measured engine from discovering Python's already
+loaded regex module through `enum`, `json`, or an aliased module registry.
+
+The new
+[32-control isolation audit](../candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V1.json)
+rejects direct, cached, conditional, reflective, third-party, and
+cross-candidate delegation. All **32** adversarial controls and all **76**
+original controls pass. The four engine families each complete **18**
+callback-safe operations in their own guarded process; all five loaded
+native libraries are individually checked against their exact source-bound
+fingerprints.
+
+The first genuine audit exposed a false positive: a positional replacement
+count triggered Python's deprecation-warning formatter, which itself imports
+`re`. Changing the audit's own smoke call to the equivalent `count=1`
+keyword fixes that legitimate warning path without permitting engine
+imports or weakening any guard. The audit explicitly does **not** claim a
+hermetic compiler build or mathematical proof of future unexecuted paths.
+No performance or held-out input was used.
+
 ## A from-scratch direct Rust matcher passes the complete compatibility gate
 
 Rust now classifies its own compiled bytecode once. Expressions containing

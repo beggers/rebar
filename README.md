@@ -82,7 +82,13 @@ bytes, captures, newlines, scanners, and Unicode. The original
 [from-scratch audit](candidates/audits/FROM-SCRATCH-AUDIT.json) verifies all
 four implementation families, all five loaded native libraries, and **76**
 controls against external packages, Python's regex engine, and hidden engine
-sharing. Public correctness does not repair the historical hidden Zig failure.
+sharing. A stronger
+[32-control isolated-engine audit](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V1.json)
+also checks that Python, another candidate, and third-party engines cannot
+be reached through cached modules or disguised imports. It verifies each
+engine in its own guarded process. Neither audit claims to prove
+reproducible compiler builds. Public correctness does not repair the
+historical hidden Zig failure.
 
 The [complete 4,096-case results](performance/postfinal-public-v3/RESULTS.md)
 preserve every observation, confidence range, slowdown, and independent
@@ -108,6 +114,8 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.audit_from_scratch --self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  tools/postfinal_no_delegation_audit_v1.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/rust_postfinal_quote_parity_stage04_oracle.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
