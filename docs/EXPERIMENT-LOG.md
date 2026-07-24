@@ -7,6 +7,44 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the cached-matcher-safe original-behavior runner
+
+First push the independently reviewed ownership and no-delegation
+controls in `3183f436`. Freeze the
+[version-ten full original-correctness protocol](../oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V10.md),
+SHA-256
+`2eb5b5c0828059b1d02d306e9cf6f05e90d30575e3a386c20f83582456de1ae0`,
+and the
+[independent original-behavior runner](../tools/postfinal_current_build_proofs_v10.py),
+SHA-256
+`74209ed4e59351802c7dae3af3d21a03a23c0e464e340c3bf29eeddf8337d5b9`.
+
+Preserve all **223,198** original behavior checks across **49**
+categories, all **393** original deep checks, all **64** seeded cases,
+the genuine two-worker complete Python reference, and both actual
+safety-check failures. Require actual matching, all cached Python
+matchers and aliases blocked before and after matching, all **13**
+original Python guards, all **five** native guards, and all **16**
+standard serialization cases for each independent engine.
+
+Before a qualified run, authenticate the real externally supplied
+complete three-family ownership and strict audit reports. Check all
+**12** owned source files and all **five** native binaries without
+accepting an unverified, historical, or single-candidate report.
+Preserve every real pass, failure, crash, and invalidated output
+separately and exactly once.
+
+Both independent reviewers and the project lead each ran the frozen
+source-only checks under direct pinned isolated Python and an empty
+environment: **398/398** checks passed in both. Every control started
+zero workers, imported zero candidates, read zero evidence or audit
+reports, wrote zero files, and sampled no clock.
+
+These are correctness-controller checks only. Actual rebuilt-engine
+diagnostics, three-engine ownership reports, upstream candidate tests,
+and qualified correctness proofs remain **NOT RUN**. Performance is
+**NOT MEASURED**; the larger final holdout remains **NOT OPENED**.
+
 ## Freeze the genuine cached-matcher-safe ownership checks
 
 Preserve both real safety-check failures without editing their
