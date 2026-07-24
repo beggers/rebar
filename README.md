@@ -78,6 +78,10 @@ They confirm that the engines perform their own matching without using
 Python's matcher, an external regex package, or one another. They do not
 prove complete Python compatibility.
 
+The [fresh rebuild-inspection protocol](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V13.md)
+requires both inspections to be repeated against the actual changed source
+files and native binaries. These new inspections are **NOT RUN**.
+
 Python itself has [twice passed its original complete reference tests](oracle/cpython-3.14.6/evidence/postfinal-locale-v6-self-oracle.json).
 Each run covers all **152** original public tests, including the genuine
 multi-gigabyte cases. The only skipped test requires Python's own private

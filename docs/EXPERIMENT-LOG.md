@@ -7,6 +7,43 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the fresh three-engine independence inspection
+
+Freeze the new all-engine inspection source and append-only protocol
+before repairing or rebuilding a native engine:
+
+- [Fresh three-engine inspection source](../tools/postfinal_independent_engine_audit_v13.py),
+  SHA-256 `4570798942ab884c1a760b9685ef1a67379febd1c0da81aa18eef221126758fe`.
+- [Fresh three-engine inspection protocol](../oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V13.md),
+  SHA-256 `f325fe84dc4d14363e3dd4a6038866d8bc2aacd59625231f7dffc4c73257c0c3`.
+
+The inspection requires all three independently authored C, Rust, and
+Zig engines, the actual **12** source files and **five** native
+binaries, and fresh, separate native ownership and no-delegation runs.
+Each engine must survive all **13** Python-matcher guards, all **five**
+native-loading guards, and all **16** original public serialization
+checks. An external regular-expression package, Python's own matching
+engine, another candidate, a synthetic passing report, or an old
+native-binary fingerprint cannot satisfy the inspection.
+
+The actual published Zig mismatch remains **FAIL**: all **26** of
+the original **393** checks and all three original failure archives
+are preserved and independently validated. A future inspection must
+recompute the repaired native fingerprints; no future hash is guessed.
+Every new passing or failing report has its own exclusive,
+non-overwriting destination.
+
+The project lead and two independent reviewers check the source in
+both a normal and an empty environment. Each run passes **319** fresh
+controls, **990** inherited ownership controls, and **1,203**
+inherited no-delegation controls. Source validation imports no
+candidate, starts no matching worker, reads no candidate evidence,
+and does not read any benchmark or holdout.
+
+Both actual new three-engine inspections remain **NOT RUN** at this
+source-freeze commit. Correctness is **NOT QUALIFIED**, performance
+is **NOT MEASURED**, and the holdout remains **NOT OPENED**.
+
 ## Freeze the corrected real-world Python compatibility reference
 
 Freeze the corrected Python-only public compatibility source and its
