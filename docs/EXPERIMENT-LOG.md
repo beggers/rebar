@@ -7,6 +7,50 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze source-bound current-build correctness proofs
+
+The actual first Rust campaign proved that previously published edge
+and deep evidence cannot certify changed source or rebuilt native
+bridges. Preserve that complete
+[first failed attempt](../candidates/evidence/rust-v8-rust-postfinal-locale-v7-sealed-campaign-first-failure.json)
+unchanged; its SHA-256 remains
+`62aba93fa8bdd6df7be93199aea6f58be7b24c095750c520179e96b98084b75a`.
+
+Before any new candidate run, freeze the additive
+[current-build proof controller](../tools/postfinal_current_build_proofs_v7.py)
+and [current-build correctness protocol](../oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V7.md).
+Their respective SHA-256 values are
+`9e25e5cbab24220b27ac279e17a5b02f48a5583f2dd27b93eb7d811ae6b827ff`
+and `781cf1e4c85a1de6d5d7d30ea8f451f0fd3417e0a81747ab8e1aa204b6478912`.
+
+The original, already-frozen edge suite must genuinely repeat all
+**223,198** comparisons in its original **49** categories for the
+actual current source and binary. The independently guarded original
+deep suite must then repeat all **393** cases, including all **64**
+seeded cases and both genuine Python reference streams. Never relabel
+old archives, borrow another engine, change a seed, replace a test, or
+run a matching benchmark.
+
+Authenticate all **14** immutable prerequisite files, every one of the
+**12** current implementation sources, and all **five** owned native
+binaries before a candidate can start. Use the original edge producer
+only inside a new private temporary directory. Create the final,
+family-specific passing archive exclusively; preserve the entire
+original failing archive in a distinct, exclusively created failure
+slot. A real mismatch must not disappear when its temporary directory
+is removed. Keep existing failure evidence and all historical archives
+unchanged.
+
+Root and the independent reviewer each ran the exact candidate-free
+command with the Python-related environment cleared. All **141**
+named adversarial checks genuinely pass; zero candidate workers,
+temporary directories, evidence files, clocks, benchmarks, and
+holdouts are created. This self-check does not run or qualify an
+engine. All three new edge proofs, all three new deep proofs, all
+three full campaigns, and the authentic complete public upstream suite
+remain **NOT RUN**. Speed, memory, rankings, and the final holdout
+remain **NOT MEASURED**.
+
 ## Freeze a genuinely independent Go engine experiment
 
 Preserve a fifth, separately authored regular-expression architecture

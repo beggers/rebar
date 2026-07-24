@@ -56,10 +56,12 @@ retain the complete results, uncertainty ranges, and all regressions.
 
 ## What the current engines still need to prove
 
-Python, Rust, C, and Zig have each independently passed
-[all 146 original Python compatibility tests](oracle/cpython-3.14.6/evidence/postfinal-locale-v3-all.json),
-including the official 403-pattern test collection and genuine locale
-tests. The evidence preserves all **584** individual results.
+Python, Rust, C, and Zig have each independently passed the same
+[146 selected upstream Python tests](oracle/cpython-3.14.6/evidence/postfinal-locale-v3-all.json),
+including **403** original patterns and genuine locale tests. These
+are **146 of Python's 152 public test methods**, and the earlier runner
+used simplified Python test support. Its **584** saved results do not
+prove that the complete, authentic upstream suite passes.
 
 Two independent inspections verify that the three engines
 [are built from their own source code](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V7.json)
@@ -110,6 +112,11 @@ includes **4,494,555 Unicode comparisons per engine**. The
 correctly stopped before testing: its old proof belonged to an earlier
 Rust build. Rust is **FAILED BEFORE TESTING**; C and Zig are
 **NOT RUN**. All three need freshly checked, current-build proofs.
+
+The [fresh current-build proof protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V7.md)
+first requires **223,198** edge cases and **393** additional behavior
+checks for each engine. It preserves complete failed and successful
+results separately. All six fresh proofs are **NOT RUN**.
 
 ## Larger fair speed comparison
 
