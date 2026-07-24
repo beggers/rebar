@@ -12,6 +12,12 @@ are a separate, fully disclosed public development experiment.
 
 ## Overall public performance
 
+The next Rust architecture reduces repeated Python-to-Rust metadata work and
+has passed the full correctness campaign. Its
+[new public benchmark](performance/postfinal-public-v3/PROTOCOL.md) is frozen
+but **NOT MEASURED**. The graph and table below are the latest completed,
+independently verified version-2 public comparison.
+
 Python, C, Rust, and Zig ran the same **4,096** public cases and **13** paired
 trials. All **638,976** exact-answer checks passed. **1× means the same speed
 as standard Python; higher is faster. The target is 1.5×.**
@@ -68,7 +74,7 @@ The current from-scratch quote-aware Rust passes **223,198** matching checks,
 **393** public-object checks, **479** tracing and unusual-argument checks,
 and the original complete **22-stage** Python-compatibility campaign,
 including **4,494,555** Unicode comparisons. Its
-[additional 83,968 quote-specific checks](candidates/evidence/rust-postfinal-quote-parity-stage-02-oracle.json)
+[additional 83,968 quote-specific checks](candidates/evidence/rust-postfinal-quote-parity-stage-03-slot-batch-oracle.json)
 also match standard Python exactly, including escaped punctuation, text,
 bytes, captures, newlines, scanners, and Unicode. The original
 [from-scratch audit](candidates/audits/FROM-SCRATCH-AUDIT.json) verifies all
@@ -98,11 +104,11 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.audit_from_scratch --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
-  tools/rust_postfinal_quote_parity_oracle.py --self-test
+  tools/rust_postfinal_quote_parity_stage03_oracle.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
-  -m tools.postfinal_public_practice_v2 self-test
+  -m tools.postfinal_public_practice_v3 self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
-  tools/postfinal_public_practice_charts_v2.py --self-test
+  tools/postfinal_public_practice_charts_v3.py --self-test
 
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/postfinal_public_practice_charts_v2.py \

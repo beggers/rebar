@@ -7,6 +7,37 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## The next Rust bridge removes repeated metadata work
+
+The last complete public result identifies **1,041** substantial Rust
+slowdowns among **3,173** compiled-pattern calls. The next experiment changes
+only Rust's independently written native Python bridge: eligible compiled
+patterns now collect metadata in one strongly referenced, version-guarded
+pass. Splitting and replacement use the same mechanism. Partial slot reads
+roll back safely and use the original descriptor-aware fallback; template
+creation, subclass observations, audit hooks, Python signatures, buffer
+lifetimes, and free-threaded safety remain unchanged.
+
+The precise new source passes the original **76-control**, five-library
+from-scratch audit, its fresh
+[223,198-case matching oracle](../candidates/evidence/rust-v7-edge-oracle-rust-post-final-stage-03-slot-batch.json.gz),
+[393 public-object checks](../candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POST-FINAL-STAGE-03-SLOT-BATCH.json.gz),
+[479 tracing and argument checks](../candidates/evidence/rust-v8-observability-rust-qualified-post-final-stage-03-slot-batch.json.gz),
+and
+[all 22 original correctness stages](../candidates/evidence/rust-v8-rust-post-final-stage-03-slot-batch-sealed-campaign.json).
+A fresh, separately isolated
+[83,968-observation quote oracle](../candidates/evidence/rust-postfinal-quote-parity-stage-03-slot-batch-oracle.json)
+also passes with zero mismatches.
+
+The
+[version-3 prospective protocol](../performance/postfinal-public-v3/PROTOCOL.md)
+fixes the same **4,096** public case IDs, all four engines, **13** paired
+trials, and **2,000** confidence draws. Its manifest SHA-256 is
+`5f49f255271b8f71786e7fa67a61827b53c1330e1ad7afe29c8750991df4b90f`.
+Its actual speed, confidence, memory, rankings, and slowdowns are **NOT
+MEASURED** until the protocol is committed and pushed before the complete
+run. The one-time hidden final remains falsified and unopened.
+
 ## The Rust quote matcher fixes all 54 target cases, not the overall goal
 
 The version-2

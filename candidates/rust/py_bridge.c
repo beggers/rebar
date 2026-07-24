@@ -3142,6 +3142,8 @@ static int rust_pattern_append_attributes(
         }
 
         if (ready) {
+            size_t initial_owned_count = *owned_count;
+            size_t initial_prefix_count = *prefix_count;
             for (size_t index = 0; index < count; index++) {
                 RustPatternAttribute attribute = attributes[index];
                 if (!rust_pattern_slot_cache.eligible[attribute]) {
@@ -3156,24 +3158,21 @@ static int rust_pattern_append_attributes(
                     ready = 0;
                     break;
                 }
-            }
-        }
-
-        if (ready) {
-            for (size_t index = 0; index < count; index++) {
-                RustPatternAttribute attribute = attributes[index];
-                PyObject *value = *(PyObject **)(
-                    (char *)pattern
-                    + rust_pattern_slot_cache.offsets[attribute]
-                );
                 value = Py_NewRef(value);
                 owned[*owned_count] = value;
                 (*owned_count)++;
                 prefix[*prefix_count] = value;
                 (*prefix_count)++;
             }
-            *fast = 1;
-            return 1;
+            if (ready) {
+                *fast = 1;
+                return 1;
+            }
+            while (*owned_count > initial_owned_count) {
+                (*owned_count)--;
+                Py_DECREF(owned[*owned_count]);
+            }
+            *prefix_count = initial_prefix_count;
         }
     }
 #endif
@@ -3215,6 +3214,14 @@ static const RustPatternAttribute rust_pattern_iterator_attributes[] = {
     RUST_PATTERN_ATTRIBUTE_GROUPINDEX,
     RUST_PATTERN_ATTRIBUTE_PATTERN,
     RUST_PATTERN_ATTRIBUTE_GROUPS,
+};
+
+static const RustPatternAttribute rust_pattern_substitution_attributes[] = {
+    RUST_PATTERN_ATTRIBUTE_HANDLE,
+    RUST_PATTERN_ATTRIBUTE_GROUPINDEX,
+    RUST_PATTERN_ATTRIBUTE_PATTERN,
+    RUST_PATTERN_ATTRIBUTE_LITERAL,
+    RUST_PATTERN_ATTRIBUTE_TEMPLATES,
 };
 
 #define RUST_PATTERN_APPEND_ATTRIBUTE(name) \
@@ -3395,19 +3402,17 @@ static PyObject *rust_pattern_dispatch(
                 : bridge_bound_scanner;
             break;
         case RUST_PATTERN_SPLIT:
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_HANDLE);
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_PATTERN);
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_GROUPS);
+            RUST_PATTERN_APPEND_ATTRIBUTES(
+                rust_pattern_findall_attributes
+            );
             function = bridge_bound_split;
             break;
         case RUST_PATTERN_SUB:
         case RUST_PATTERN_SUBN:
             prefix[prefix_count++] = pattern;
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_HANDLE);
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_GROUPINDEX);
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_PATTERN);
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_LITERAL);
-            RUST_PATTERN_APPEND_ATTRIBUTE(RUST_PATTERN_ATTRIBUTE_TEMPLATES);
+            RUST_PATTERN_APPEND_ATTRIBUTES(
+                rust_pattern_substitution_attributes
+            );
             if (prefix[prefix_count - 1] == Py_None) {
                 PyObject *templates = PyDict_New();
                 if (templates == NULL) goto cleanup;
