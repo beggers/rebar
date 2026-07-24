@@ -7,6 +7,45 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Audit and exercise a real four-engine final-test adapter
+
+Implement a separate four-channel adapter, standalone native statistics
+helper, independently written source auditor, and fixed-public-key verifier.
+Keep the **65,536-case** production holdout unopened. The adapter preserves
+the original isolation guard byte for byte while independently comparing
+compiled metadata, results and captures, exception details, and callback,
+converter, warning, and scanner behavior.
+
+The first standalone auditor repeatedly exits `137`; preserve and diagnose
+the failure instead of accepting its JSON as a passing process. Replace its
+benchmark-runner dependency with bounded direct verification of the two
+existing public audits, all **16** owned source files, and all **five**
+native libraries. Verify the complete auditor under a **192 MiB** memory
+limit; it passes all **63** source and anti-delegation controls without a
+worker, holdout, or timing.
+
+Exercise the four actual isolated Python, Rust, C, and Zig workers on
+**2,176** publicly generated fixed-key cases. All **16** expression
+families, **16** input categories, and **nine** applicable regex operations
+pass **26,112** independently reconstructed behavior checks and **17,416**
+native-mapping checks with zero mismatches. Preserve the original audits,
+the independently generated new source proof, all exact smoke-test counts,
+and the from-scratch C statistics helper in the
+[four-channel adapter audit](../performance/postfinal-fresh-holdout-v1/ADAPTER-AUDIT.md).
+
+The first independently passing audit and public run exposed one trailing
+space in the new native statistics source when the final formatting gate ran.
+Preserve both original evidence files exactly. Correct the single space,
+independently rerun all **63** audit controls and all **2,176** four-worker
+public cases, and exclusively create version-two audit and public-run
+records. The version-two audit checks the exact fingerprints of both retained
+version-one records. The corrected native helper separately passes all
+**38** synthetic statistical controls; no final cases are generated.
+
+The production controller is still not integrated or frozen. The fresh
+one-use guard, production randomness, cases, timing, and winner remain
+**NOT MEASURED** and **NOT OPENED**.
+
 ## Make all verified benchmark graphs clear and readable
 
 Create six new, accessible graphs directly from the independently verified

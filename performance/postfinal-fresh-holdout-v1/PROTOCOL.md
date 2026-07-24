@@ -71,13 +71,14 @@ SOABI:   cpython-314-x86_64-linux-gnu
 required flags: -I -B
 ```
 
-The manifest fingerprints the interpreter, this protocol, its generator, the
-final public v4 isolated runner, the universal public oracle, both source-audit
-tools and their passing reports, the public oracle's source-bound all-candidate
-passing proof, the explicitly enumerated owned candidate Python and C/Rust/Zig
-sources, the complete explicitly enumerated owned Rust source graph, all five
-owned native binaries, project and Rust build manifests, and explicitly
-requested additional public proof files.
+An eventual manifest must fingerprint the interpreter, this protocol, its
+generator, the fully verified public v5 runner and manifest, the expanded
+stage-three public oracle and its source-bound all-candidate proof, the
+independently verified version-two four-channel adapter audit and public
+smoke run, both original source-audit tools and their passing reports, all
+12 current-source candidate correctness proofs, the explicitly enumerated
+owned Python and C/Rust/Zig sources, the complete owned Rust source graph,
+all five native binaries, and the project and Rust build manifests.
 
 The original from-scratch audit must contain all 76 passing controls, five
 attested native artifacts, and passing actual isolated mappings. The
@@ -177,17 +178,23 @@ validate exact owned mappings before and after case processing; shuffle paired
 trial order; keep IPC and correctness validation outside timed regions; and
 produce the exact fully counted observations and confidence intervals.
 
-**No such four-channel holdout adapter is currently frozen.** The available
-public v4 guarded worker honestly returns only three per-observation correctness
-checks. It cannot establish this protocol's fourth callback/converter/warning
-channel, 14,942,208 gates, or a source-bound isolated streaming fresh oracle.
-Accordingly, `open --affirm-one-use` intentionally exits `FAIL_CLOSED` after
-validating the public freeze and guard. It does not read the third private key
-event, derive a production case, import a candidate, spawn a worker, perform a
-timing, generate expected output, consume or overwrite the guard, or claim
-holdout results. Changing this limitation requires a new, explicitly
-authorized, independently audited, prospectively committed adapter and a new
-genuine freeze; it cannot be silently relaxed.
+An [independently audited four-channel adapter](ADAPTER-AUDIT.md) now passes
+**2,176** publicly generated, fixed-key cases in all four actual isolated
+workers, including **26,112** separate observable-behavior comparisons and
+**17,416** native-isolation checks. This is public validation only: it does
+not open a holdout, derive a production case, or perform timing.
+
+**The adapter is not yet integrated into this prospective one-use
+controller or frozen in a final manifest.** The current controller also
+retains an older public-runner default; it must be updated to bind the
+verified public v5 sources and version-two adapter evidence before any
+manifest is prepared. Accordingly,
+`open --affirm-one-use` still intentionally exits `FAIL_CLOSED`. It must
+not read the private key, create a production case, start a candidate,
+consume or overwrite the guard, or claim a holdout result. Completing the
+controller requires a separately reviewed, committed, source-bound streaming
+executor and a genuine new freeze; the public adapter proof alone is not
+final qualification.
 
 ## Resource bounds and accurate memory labels
 

@@ -109,6 +109,8 @@ sha256sum performance/postfinal-public-v5/manifest.json \
   tools/postfinal_public_practice_charts_v5.py
 ```
 
-The separate **65,536-case** one-use holdout remains unopened; its full
-four-channel isolated executor is **NOT IMPLEMENTED**. Final performance,
-final memory, and a drop-in replacement winner are **NOT MEASURED**.
+The separate **65,536-case** one-use holdout remains unopened. Its
+[four-channel adapter](../postfinal-fresh-holdout-v1/ADAPTER-AUDIT.md) is
+independently verified on public cases; the one-use production controller is
+**NOT YET INTEGRATED**. Final performance, final memory, and a drop-in
+replacement winner are **NOT MEASURED**.

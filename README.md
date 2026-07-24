@@ -66,8 +66,11 @@ The original one-time hidden test found a genuine Zig `split` mismatch and
 cannot be rerun. Its [unchanged failure report](performance/v9/evidence/FINAL-HOLDOUT-FAILURE.md)
 remains part of the experiment. The separate, newly planned
 [65,536-case final test](performance/postfinal-fresh-holdout-v1/PROTOCOL.md)
-is **NOT OPENED**; its complete isolated executor is **NOT IMPLEMENTED**.
-Final speed, final memory, and a qualified winner remain **NOT MEASURED**.
+is **NOT OPENED**. Its
+[independently audited four-engine adapter](performance/postfinal-fresh-holdout-v1/ADAPTER-AUDIT.md)
+passes **2,176** public cases and **26,112** separate compatibility checks;
+the one-use production executor is **NOT YET INTEGRATED**. Final speed,
+final memory, and a qualified winner remain **NOT MEASURED**.
 
 ## What is actually verified
 
@@ -109,6 +112,12 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/postfinal_public_practice_charts_v5.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/postfinal_public_practice_presentation_v1.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_fresh_holdout_adapter_v1.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_fresh_holdout_adapter_smoke_v1.py --self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -I -B -c \
+  'import resource,runpy,sys; n=192*1024*1024; resource.setrlimit(resource.RLIMIT_AS,(n,n)); sys.argv=["tools/postfinal_fresh_holdout_adapter_audit_v1.py","--validate"]; runpy.run_path(sys.argv[0],run_name="__main__")'
 
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.postfinal_public_practice_v5 verify
