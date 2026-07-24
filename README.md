@@ -87,6 +87,12 @@ representation test. The run stops before testing C or Zig. The
 [preserved actual failure](oracle/cpython-3.14.6/evidence/postfinal-locale-v2-rust-failures.json)
 records what was actually observed without inventing missing results.
 
+A [fresh official test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V3.md)
+binds the corrected engines to their two passing version-seven audits.
+It retains the complete **146** official tests, **403** corpus patterns,
+and both genuine locale tests. Its design passes **96** candidate-free
+safety checks. The actual repaired four-engine run is **NOT RUN**.
+
 Earlier [official Python test results](oracle/cpython-3.14.6/evidence/postfinal-locale-v1-all.json),
 [22-stage engine campaigns](candidates/evidence/rust-v8-rust-postfinal-locale-v5-sealed-campaign.json),
 [from-scratch audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V5.json),
@@ -150,6 +156,8 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_generic_alias_public_oracle_stage12.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_cpython_locale_oracle_v2.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_cpython_locale_oracle_v3.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_cpython_locale_v2_failure.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \

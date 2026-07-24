@@ -7,6 +7,37 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the complete official tests for the repaired matchers
+
+Push both genuine version-seven independence reports, including the
+strict proof in `93f815b3`. Independently verify all four real
+producer/report fingerprints and preserve the genuine recorded
+version-two official failure.
+
+Freeze the corrected
+[official Python compatibility protocol](../oracle/cpython-3.14.6/POSTFINAL-LOCALE-V3.md)
+and [controller](../tools/postfinal_cpython_locale_oracle_v3.py),
+with respective SHA-256 values
+`a1f77b1628c03d42b9d8e2650c9b501d9be4cec917d765539c91c750154bd6ac`
+and `28b98c8913ca89ec2ba600484205c3bcb63ae22a86e33d4f7cf3c6f1a68c8a58`.
+
+Require the exact **146** original selected CPython methods, all
+**403** external corpus cases, the same **eight** named exclusions,
+both genuinely compiled locale tests, and all four independently
+executed Python, Rust, C, and Zig roles. The new source validates
+all **12** current implementation files, **five** native binaries,
+**48** ordinary pickle cases, and **six** independently reproduced
+match displays.
+
+Its candidate-free self-test passes **96/96** checks, retaining
+all **113** and **73** earlier safeguards. An independently run
+source-only preflight verifies the actual reports and preserved
+official failure without starting a candidate or test worker.
+
+The full new official run remains **NOT RUN** at this freeze
+checkpoint. Commit and push the source and protocol before generating
+the exclusive genuine four-role compatibility result.
+
 ## Verify repaired engines cannot delegate regex execution
 
 Push the complete version-seven native isolation source and protocol
