@@ -7,6 +7,40 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Verify both durable 3,584-case Python reference workers
+
+First freeze, commit, and push the corrected one-codec full behavior
+oracle in `3a644dbd`. Then run only the two actual, isolated pinned
+standard-Python reference workers:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/python_re_universal_public_oracle_stage17.py --self-oracle
+```
+
+The exclusively created
+[complete durable Python reference](../oracle/cpython-3.14.6/evidence/public-contract-v17-self-oracle.json)
+has SHA-256
+`de1272f7c3681402b8787ea2a53de8228ef0341760505dc052c52b023e3d3c3d`.
+Both actual Python workers pass all **3,584/3,584** cases, preserving
+**7,168/7,168** individual observations, both complete worker reports,
+and both true independently computed record hashes.
+
+Independently read the exact persisted bytes and validate their complete
+case arrays and worker hashes outside, inside, and again outside the
+original matching context. The true stored JSON round-trips exactly;
+all three independent validations pass with **zero** mismatches.
+Reauthenticate the preserved failure without rerunning its reference,
+alongside all actual source and no-delegation proofs, **584** official
+test records, and **384** native public-type results.
+
+Rust, C, and Zig have **NOT RUN** on the corrected 3,584-case matrix.
+The full fuzz and supplemental public-surface campaigns are **NOT RUN**;
+expanded performance remains **NOT FROZEN** and **NOT MEASURED**.
+Commit and push the complete durable standard-Python evidence before
+starting any candidate.
+
 ## Freeze a durable corrected 3,584-case public behavior comparison
 
 First push the independently authenticated true reference failure in
