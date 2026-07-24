@@ -7,6 +7,65 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the real original-case collision in the corrected design
+
+Commit and push the corrected public design in `1fe0452f` before its
+first actual freeze. Run the pinned interpreter with the exact real
+command:
+
+```sh
+env PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_public_practice_v10.py --freeze
+```
+
+The actual command exits **1**. Public-case selection fails at
+`tools/postfinal_public_expansion_v10.py:814` with
+`tools.postfinal_public_expansion_v8.PublicExpansionError: an original public case or semantic identity was repeated`.
+Distinct required original case identities can legitimately describe
+the same regular-expression behavior. Rejecting their shared semantic
+identity incorrectly rejects genuine required public cases. Do not
+remove original examples to make the design pass.
+
+An independent, read-only reconstruction authenticates all **8,192**
+distinct frozen parent case IDs and descriptors but finds exactly
+**7,900** distinct matching-behavior identities. There are **87**
+collision classes, **379** participating original cases, and **292**
+extra cases; the largest class contains **65** cases. The first
+collision occurs at original positions **136** and **137**:
+`cal.large.long-ending.00` and `cal.large.long-ending.01`, both genuine
+`search` cases in the `large-long-ending` category. Their reference
+answers remain consistent: there are **zero** inconsistent result
+digests. A first read-only forensic attempt separately raised
+`TypeError: cannot use 'list' as a set element`; using a canonical
+bytes token corrects the diagnostic without starting a worker,
+running a candidate, or creating a file.
+
+Any future valid **33,280**-case public design must retain all
+**8,192** distinct original case IDs and all **25,088** distinct
+generated case IDs. It must allow the originals' real shared
+identities, for exactly **32,988** distinct matching behaviors:
+**7,900** original and **25,088** newly generated. This is a
+prospective requirement, not a created manifest or benchmark result.
+
+The prior successful, read-only **10,312/10,312** original-record
+authentication remains valid, including **9,731** eligible records,
+**581** authenticated oversized records, **10,312** skipped opaque
+history values, and exact **8,192**-case V6 and V7 descriptor parity.
+The genuine **198/198** and **330/330** candidate-free synthetic
+safety tests also remain valid. None proves that actual case selection
+or freezing succeeds; the actual V10 freeze is **FALSIFIED**. The
+earlier V8 UTF-8 failure likewise remains **FALSIFIED**, with all
+**577/10,312** failures and **483/48/46** operation counts preserved.
+
+The actual V10 freeze fails before either Python reference worker,
+any candidate, manifest creation, clock sampling, or performance
+measurement. Its larger manifest is **NOT CREATED** and **NOT FROZEN**.
+The **8,192**-case V7 public manifest remains frozen and published;
+its speed is **NOT MEASURED**. A corrected broader public comparison
+remains **NOT FROZEN** and **NOT MEASURED**. The independent final
+test remains **NOT OPENED**, and no winner has been established.
+
 ## Correct the public-data design without running a benchmark
 
 Preserve the genuinely falsified **33,280**-case V8 expansion, its

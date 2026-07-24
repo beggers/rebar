@@ -152,15 +152,14 @@ frozen public data before any engine starts. The
 [preserved public failure](performance/postfinal-public-v8/evidence/postfinal-public-freeze-failure-v8.json)
 is not an engine or speed result.
 
-A [corrected 33,280-case public comparison](performance/postfinal-public-v10/PROTOCOL.md)
-authenticates all **10,312** original public records, preserves all
-**8,192** previous examples, and openly excludes **581** oversized
-records from measurement. Its one-time manifest is **NOT CREATED** and
-**NOT FROZEN**. The source and protocol must be committed and pushed
-before the manifest may be frozen; the manifest must then be committed
-and pushed before any engine is timed. This is a public comparison,
-not the independent final test. New speed, memory, confidence
-intervals, and rankings remain **NOT MEASURED**.
+The [second 33,280-case public design](performance/postfinal-public-v10/PROTOCOL.md)
+is also **FALSIFIED**: its **8,192** distinct original test cases
+legitimately represent **7,900** different matching behaviors, but its
+actual freeze wrongly requires every behavior to be unique.
+Authenticating all **10,312** public records did not make this design
+pass. Neither larger design created a manifest or started an engine.
+A corrected public comparison remains **NOT FROZEN**; new speed,
+memory, confidence intervals, and rankings remain **NOT MEASURED**.
 
 ## Final-test status
 
