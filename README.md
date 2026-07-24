@@ -34,8 +34,10 @@ overall win.
 The next Rust version uses its own direct matcher for simple, provably
 straight-line expressions. It has passed the full compatibility campaign,
 but its speed is **NOT MEASURED**. A distinct **8,192-case** public
-comparison and a new **65,536-case** one-time final are being prepared;
-neither is a result or a winner.
+comparison and a new
+[65,536-case one-time final](performance/postfinal-fresh-holdout-v1/PROTOCOL.md)
+are being prepared; neither is a result or a winner. No new final case is
+generated before the engines, public checks, and test protocol are frozen.
 
 ![Every measured win, uncertain result, and slowdown for all three independent regex engines](performance/postfinal-public-v3/evidence/postfinal-public-practice-v3-outcomes.svg)
 

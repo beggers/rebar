@@ -7,6 +7,31 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## A fresh 65,536-case final is specified, not opened
+
+The new
+[one-time holdout protocol](../performance/postfinal-fresh-holdout-v1/PROTOCOL.md)
+fixes **16** independently generated expression families, **16** input and
+lifecycle strata, and **256** cryptographically separated variants: exactly
+**65,536** previously unseen cases. Its eventual four-engine, **19-trial**
+comparison would contain **4,980,736** observations, **14,942,208**
+four-channel candidate-correctness checks, and **196,611** prospectively
+specified confidence intervals.
+
+The generator's independently run self-test passes all exact population and
+one-use invariants using only a public, nonproduction key. It creates no
+guard, draws no secret, imports no candidate, measures no operation, and
+generates no real holdout case. The actual freeze first requires the current
+source-bound Rust, C, and Zig proofs and a passing, freshly generated
+all-candidate public differential. The sole production key cannot be drawn
+until the source and manifest are committed, pushed, and rechecked against
+the remote, with a durable exclusive one-use guard already in place.
+
+The eventual four-channel executor has **NOT BEEN IMPLEMENTED**. Its opening
+therefore fails closed; final accuracy, timing, memory, and rankings remain
+**NOT MEASURED**. This additive prospective protocol never reopens or
+repairs the failed original hidden final.
+
 ## Separate engine processes close the hidden-wrapper loophole
 
 The historical **76-control** independence check is retained and still
