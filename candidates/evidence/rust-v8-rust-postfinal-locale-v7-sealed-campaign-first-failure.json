@@ -1,0 +1,112 @@
+{
+  "schema": "rebar-postfinal-campaign-v7-first-current-build-failure-v1",
+  "status": "FAIL",
+  "result": "FAIL",
+  "candidate_family": "RUST",
+  "candidate_module": "candidates.rust_candidate",
+  "first_attempt": true,
+  "phase": "candidate-edge-proof-validation-before-first-campaign-stage",
+  "python": "3.14.6",
+  "python_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "goal_path": "GOAL.md",
+  "goal_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+  "campaign_source_path": "tools/rust_v8_multi_candidate_campaign_postfinal_v7.py",
+  "campaign_source_sha256": "92e397149585ee35ce5d26e984f00d093992471d3e92b929f65dd0386f75b243",
+  "campaign_protocol_path": "oracle/cpython-3.14.6/POSTFINAL-CAMPAIGN-V7.md",
+  "campaign_protocol_sha256": "dd7e6f80128fb9c8198398755caa178ede0a0ce178fedce2049a7e066be3250c",
+  "campaign_freeze_commit": "87b71ae3",
+  "command": [
+    "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+    "-I",
+    "-B",
+    "tools/rust_v8_multi_candidate_campaign_postfinal_v7.py",
+    "--module",
+    "candidates.rust_candidate",
+    "--edge-oracle",
+    "candidates/evidence/rust-v7-edge-oracle-rust-postfinal-locale-v1.json.gz",
+    "--deep-proof",
+    "candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-LOCALE-V1.json.gz",
+    "--output",
+    "candidates/evidence/rust-v8-rust-postfinal-locale-v7-sealed-campaign.json"
+  ],
+  "environment": {
+    "PYTHONDONTWRITEBYTECODE": "1"
+  },
+  "exit_code": 1,
+  "exception_type": "AssertionError",
+  "exception_message": "the RUST public-python is stale or unproven",
+  "failure_stack": [
+    "tools/rust_v8_multi_candidate_campaign_postfinal_v7.py:2076:<module>",
+    "tools/rust_v8_multi_candidate_campaign_postfinal_v7.py:2072:main",
+    "tools/rust_v8_multi_candidate_campaign.py:1427:main",
+    "tools/rust_v8_multi_candidate_campaign.py:994:run_campaign",
+    "tools/rust_v8_multi_candidate_campaign.py:472:validate_edge",
+    "tools/rust_v8_multi_candidate_contract.py:514:read_edge_proof",
+    "tools/rust_v8_multi_candidate_contract.py:458:validate_edge_document"
+  ],
+  "historical_edge_path": "candidates/evidence/rust-v7-edge-oracle-rust-postfinal-locale-v1.json.gz",
+  "historical_edge_sha256": "8569275c5b705870bde368ee20981be1a90c07675b12fe53b64f19c7e765b408",
+  "historical_edge_checks": 223198,
+  "historical_edge_categories": 49,
+  "historical_deep_path": "candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-LOCALE-V1.json.gz",
+  "historical_deep_sha256": "ca437ae8e2dc46f4d0b8e259f304a402efc6f0817dfe89600d92728a86c2ce9f",
+  "historical_deep_checks": 393,
+  "historical_deep_seeded_cases": 64,
+  "historical_deep_was_validated_by_failed_campaign": false,
+  "changed_rust_roles": [
+    {
+      "role": "public-python",
+      "path": "candidates/rust_candidate.py",
+      "historical_sha256": "ed210957f3fc7a8d87ce38cfc775cd380bed19dcde7e8acd23d09197abb60048",
+      "current_sha256": "8ebf907cdd2c8150ab0b5741b65dbc4b4b53cede5b210db61fdbef9384c48a6f"
+    },
+    {
+      "role": "native-bridge",
+      "path": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+      "historical_sha256": "81fc4c4a92005f0588dd9b811988587d4d421dd8e1102eebcab53f4deb27cd36",
+      "current_sha256": "2905f340b79d0b4aca472e9c4aeb1416b89ca993e25e184fc6ab54b1b39f1312"
+    },
+    {
+      "role": "bridge-source",
+      "path": "candidates/rust/py_bridge.c",
+      "historical_sha256": "3d432d8f53a75eb2c3c75d118c811ac7ba12c432d987422223d55773fbb36abe",
+      "current_sha256": "74c72c5a821429dafedebe253d773bea98bf99245c8059b8ea8bae20ce3b7fa3"
+    }
+  ],
+  "unchanged_rust_roles": [
+    {
+      "role": "native-source",
+      "path": "candidates/rust/src/lib.rs",
+      "sha256": "3a2ab20885daea11bbc90cb9707a154174742f836e818521c1d00e2a0afd0b64"
+    },
+    {
+      "role": "native-engine",
+      "path": "candidates/_rust_engine.so",
+      "sha256": "d590300720215718782227dd8da1192047b4781bdb41ed94446cac06ba880e84"
+    }
+  ],
+  "other_historical_edge_roles_checked_read_only": {
+    "vm": {
+      "candidate_module": "candidates.vm_candidate",
+      "historical_edge_sha256": "0c07fdbf8848f4236735c97bbda4969c4de0ceb6e10c11fdac0c674d5efd303b",
+      "changed_role_count": 2,
+      "campaign_status": "NOT RUN"
+    },
+    "zig": {
+      "candidate_module": "candidates.zig_candidate",
+      "historical_edge_sha256": "8a8f76a85e2888dc0eb19e07c7343dd5c8caeab8745baf8a277f68beea1424a6",
+      "changed_role_count": 2,
+      "campaign_status": "NOT RUN"
+    }
+  },
+  "campaign_output_path": "candidates/evidence/rust-v8-rust-postfinal-locale-v7-sealed-campaign.json",
+  "campaign_output_created": false,
+  "completed_campaign_stages": 0,
+  "candidate_matching_workers_started": 0,
+  "qualifies_current_engine": false,
+  "holdout_accessed": false,
+  "performance_fixtures_opened": 0,
+  "timing_performed": false,
+  "performance": "NOT MEASURED",
+  "required_remedy": "Generate and exclusively preserve a new 223198-case edge proof and independently guarded 393-case deep proof for each exact current candidate build before retrying its frozen 22-stage campaign."
+}

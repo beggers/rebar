@@ -100,8 +100,11 @@ verifies the full result without weakening file-safety checks or
 discarding data.
 
 The [complete 22-stage compatibility campaign](oracle/cpython-3.14.6/POSTFINAL-CAMPAIGN-V7.md)
-includes **4,494,555 Unicode comparisons per engine**. The Rust, C,
-and Zig campaign results are each **NOT RUN**.
+includes **4,494,555 Unicode comparisons per engine**. The
+[first Rust attempt](candidates/evidence/rust-v8-rust-postfinal-locale-v7-sealed-campaign-first-failure.json)
+correctly stopped before testing: its old proof belonged to an earlier
+Rust build. Rust is **FAILED BEFORE TESTING**; C and Zig are
+**NOT RUN**. All three need freshly checked, current-build proofs.
 
 ## Larger fair speed comparison
 

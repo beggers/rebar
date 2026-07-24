@@ -7,6 +7,36 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the first current-build campaign failure
+
+First freeze, commit, and push the complete version-seven campaign in
+`87b71ae3`. Then start exactly one Rust campaign against the previously
+published Rust edge and deep proofs. The run genuinely fails before its
+first matching stage with `AssertionError: the RUST public-python is
+stale or unproven`. It creates no successful campaign report, launches
+no candidate-matching worker, and performs no timing.
+
+Preserve the exact command, failed prerequisite, original archive
+fingerprints, observed current source fingerprints, and zero completed
+stages in the [first Rust campaign failure](../candidates/evidence/rust-v8-rust-postfinal-locale-v7-sealed-campaign-first-failure.json).
+The historical Rust edge and deep archives really belong to the same
+older build: the public Python file, C bridge source, and compiled
+native bridge all changed. The independent version-seven source and
+no-delegation audits confirm the actual current build; neither archived
+proof can be quietly rewritten or treated as current.
+
+Read-only inspection also finds that the old C and Zig edge archives
+each contain two stale current-build roles. Neither engine was run.
+Require a freshly generated **223,198-case**, **49-category** edge
+proof and a separately guarded **393-case** deep proof for each exact
+current build before retrying any 22-stage campaign. Preserve the
+original failure, archives, frozen matrices, seeds, exact native
+ownership, and all candidate-specific records.
+
+Rust is **FAILED BEFORE TESTING**; C and Zig are **NOT RUN**. The
+expanded public-interface suite is **NOT RUN**. All current speed,
+memory, rankings, and final holdout measurements are **NOT MEASURED**.
+
 ## Freeze the complete 22-stage native compatibility campaigns
 
 Freeze the [complete campaign controller](../tools/rust_v8_multi_candidate_campaign_postfinal_v7.py)
