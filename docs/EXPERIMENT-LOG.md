@@ -7,6 +7,50 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the JSON-normalized three-engine ownership inspection
+
+Preserve the actual V13, V15, V17, and V19 failures, including the
+original three-worker V19 report and the controller's genuine exit
+**1**, before freezing the corrected source:
+
+- [JSON-normalized three-engine inspection source](../tools/postfinal_independent_engine_audit_v21.py),
+  SHA-256 `ded077962416ada3bddd825d77b2e6785fe3b01184fe5d9058ec17a57b08ea4d`.
+- [JSON-normalized inspection protocol](../oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V21.md),
+  SHA-256 `5a78673c6b23e4781070cf5a2290d5f6cecd402fff77ff388d8795370de93a1f`.
+
+Before freezing, run the genuine, read-only historical check:
+
+```sh
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_independent_engine_audit_v21.py \
+  --history-preflight
+```
+
+The project lead and two independent reviewers verify the exact
+four recorded failures, all three real original V19 worker streams,
+the separate historical and rebuilt Zig binaries, all **12** actual
+engine sources, and all **five** native binaries. This check starts
+no candidate, worker, or subprocess, writes no file, samples no
+clock, and does not access the holdout.
+
+All **591** source-only checks pass with both the isolated pinned
+interpreter and a completely empty environment. Real tuples,
+integer-keyed mappings, duplicate keys, non-finite numbers,
+truncated or modified reports, missing engine outputs, fabricated
+partial writes, and missing file or directory syncs are checked.
+The complete report is JSON-normalized and validated **before**
+exclusive file creation; its decoded read-back is compared only
+with that exact normalized document and the exact original bytes.
+
+At this source-freeze commit, actual three-engine ownership and
+independent strict inspection are **NOT RUN**. Compatibility is
+**NOT QUALIFIED**, performance is **NOT MEASURED**, and the holdout
+is **NOT ACCESSED**.
+
 ## Preserve the actual three-engine report-publication failure
 
 Freeze, independently review, commit, and push the V19 current-engine
