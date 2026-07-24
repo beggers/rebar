@@ -7,6 +7,63 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Pass the complete corrected Python compatibility reference twice
+
+First commit and push the corrected **1,376-case** reference source,
+protocol, and independently reviewed fresh all-engine inspection. Keep
+the entire genuine failed V18 reference unchanged. Verify the exclusive
+new V19 passing and failure paths are both absent.
+
+Independently verify the actual `en_US.ISO-8859-1` and `en_US.UTF-8`
+locales report distinct genuine `ISO-8859-1` and `UTF-8` character
+encodings. Run the frozen candidate-free controller exactly once:
+
+```sh
+env \
+  LOCPATH=/tmp/rebar-public-surface-v18-locales.fxKbEmtUtR \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/python_re_public_surface_oracle_stage19.py \
+  --self-oracle \
+  --source-sha256 \
+  fda386f3c00be660a41e92d8005fc287706d9dc050967cf2b708cb6f8aba113e \
+  --protocol-sha256 \
+  53a415c7257222602ae69870c0e4343d85f77e1a2963f508d18d227038abc2ea \
+  --iso8859-1-locale en_US.ISO-8859-1 \
+  --utf8-locale en_US.UTF-8
+```
+
+Both genuinely separate Python 3.14.6 reference processes pass all
+**1,376** original cases across **43** categories. Each includes all
+**736** extra real-world cases, **64** real-locale examples, and
+**192** actual locale transitions. Both complete record sets have
+SHA-256 `c002fc9e82bb73e592ffa3b5ba73731070004eb892cf85cfcf288fe7693b0aef`.
+Both actual child processes exit **0**, retain complete original
+stdout and stderr, and produce exactly matching results.
+
+The reference independently authenticates all **152** original
+Python tests, **151** genuine applicable passes, the sole original
+private-debug-only skip, and **zero** public-test waivers. It imports
+no candidate and reads no candidate audit, ownership proof, native
+engine, V12 source, benchmark, or holdout.
+
+Exclusively preserve the complete passing reference:
+
+- [Complete independently reproduced Python compatibility reference](../oracle/cpython-3.14.6/evidence/public-surface-v19-self-oracle.json),
+  SHA-256 `a2ac2853a6551b9eb95564ee74731c9e7d44998f5ec32ad5aac2259b5b313ad8`.
+
+The exact parent stdout matches the complete saved reference bytes.
+No failing V19 reference archive was created. The original V18
+failure remains **FAIL** and is not reclassified. The project lead and
+two independent reviewers separately validate the full frozen archive,
+both complete worker streams, every record, the original Python
+baseline, and the real locale transitions without rerunning an oracle.
+Current-engine
+qualification remains **BLOCKED**, the expanded candidate runs are
+**NOT RUN**, the larger holdout is **NOT OPENED**, and performance
+is **NOT MEASURED**.
+
 ## Freeze the fresh three-engine independence inspection
 
 Freeze the new all-engine inspection source and append-only protocol

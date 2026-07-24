@@ -92,9 +92,10 @@ preserve **1,376** distinct examples in **43** categories, including
 Unicode, byte buffers, callbacks, warnings, serialization, unusual flags,
 real system locales, and Python's complete public regex objects. The
 [previous reference failure](oracle/cpython-3.14.6/evidence/public-surface-v18-self-oracle-failures.json)
-is preserved. The corrected reference and all current-engine expanded
-results are **NOT RUN**. Changing an engine invalidates its earlier
-ownership and compatibility proofs; those checks must be run again.
+is preserved. [Both corrected Python references now pass all 1,376 examples](oracle/cpython-3.14.6/evidence/public-surface-v19-self-oracle.json).
+The expanded tests against the actual engines remain **NOT RUN**.
+Changing an engine invalidates its earlier ownership and compatibility
+proofs; those checks must be run again.
 
 The [experiment log](docs/EXPERIMENT-LOG.md) contains the full failure
 records, individual experiments, audits, reproduction commands, and
