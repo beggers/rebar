@@ -3244,8 +3244,27 @@ fn run_program(
                         continue;
                     }
                 } else {
-                    let old_begins = begins.to_vec();
-                    let old_ends = ends.to_vec();
+                    const INLINE_LOOK_CAPTURE_SLOTS: usize = 16;
+                    let mut inline_old_begins = [0_isize; INLINE_LOOK_CAPTURE_SLOTS];
+                    let mut overflow_old_begins = Vec::new();
+                    let old_begins: &[isize] = if begins.len() <= INLINE_LOOK_CAPTURE_SLOTS {
+                        let snapshot = &mut inline_old_begins[..begins.len()];
+                        snapshot.copy_from_slice(begins);
+                        snapshot
+                    } else {
+                        overflow_old_begins.extend_from_slice(begins);
+                        overflow_old_begins.as_slice()
+                    };
+                    let mut inline_old_ends = [0_isize; INLINE_LOOK_CAPTURE_SLOTS];
+                    let mut overflow_old_ends = Vec::new();
+                    let old_ends: &[isize] = if ends.len() <= INLINE_LOOK_CAPTURE_SLOTS {
+                        let snapshot = &mut inline_old_ends[..ends.len()];
+                        snapshot.copy_from_slice(ends);
+                        snapshot
+                    } else {
+                        overflow_old_ends.extend_from_slice(ends);
+                        overflow_old_ends.as_slice()
+                    };
                     let old_last = *last;
                     let result = run_look(program, context, pos, instruction, begins, ends, last);
                     if result.is_some() == positive {
@@ -4084,4 +4103,256 @@ pub unsafe extern "C" fn rebar_collect_wide(
         finishes,
         last_values,
     )
+}
+
+#[cfg(test)]
+mod assertion_snapshot_tests {
+    use super::{run_match, Compiler, Context, Engine, Expr, SearchAnchor};
+
+    fn literal(value: u8) -> Expr {
+        Expr::Lit(u32::from(value), 0)
+    }
+
+    fn capture(number: usize, child: Expr) -> Expr {
+        Expr::Group(number, Box::new(child))
+    }
+
+    fn assertion(behind: bool, positive: bool, child: Expr, width: usize) -> Expr {
+        Expr::Look(behind, positive, Box::new(child), width)
+    }
+
+    fn execute(root: Expr, subject: &[u8], groups: usize) -> (i32, Vec<isize>, Vec<isize>, isize) {
+        let program = Compiler::compile(&root).expect("owned test expression must compile");
+        let engine = Engine {
+            program,
+            groups,
+            names: Vec::new(),
+            flags: 0,
+            starts: None,
+            start_set: None,
+            mandatory_literal_prefix: None,
+            mandatory_run_delimiter: None,
+            even_suffix_delimiter: None,
+            leading_lookbehind: None,
+            start_anchor: SearchAnchor::Unrestricted,
+            byte_mode: true,
+            deterministic: false,
+        };
+        let context = Context {
+            chars: &[],
+            folds: &[],
+            masks: &[],
+            bytes: Some(subject),
+            wide: None,
+            end: subject.len(),
+        };
+        let mut begins = vec![-1; groups + 1];
+        let mut ends = vec![-1; groups + 1];
+        let mut last = -1;
+        let result = run_match(
+            &engine,
+            &context,
+            0,
+            2,
+            0,
+            &mut begins,
+            &mut ends,
+            &mut last,
+        );
+        (result, begins, ends, last)
+    }
+
+    fn assert_sequential_assertion_captures(groups: usize, nested: bool) {
+        let captures = Expr::Seq(
+            (1..=groups)
+                .map(|number| capture(number, literal(b'a')))
+                .collect(),
+        );
+        let inner = assertion(false, true, captures, 0);
+        let look = if nested {
+            assertion(false, true, inner, 0)
+        } else {
+            inner
+        };
+        let consume = Expr::Repeat(Box::new(literal(b'a')), groups, Some(groups), 0);
+        let subject = vec![b'a'; groups];
+        let (matched, begins, ends, last) =
+            execute(Expr::Seq(vec![look, consume]), &subject, groups);
+
+        assert_eq!(matched, 1);
+        assert_eq!(begins[0], 0);
+        assert_eq!(ends[0], groups as isize);
+        for number in 1..=groups {
+            assert_eq!(begins[number], (number - 1) as isize);
+            assert_eq!(ends[number], number as isize);
+        }
+        assert_eq!(last, groups as isize);
+    }
+
+    #[test]
+    fn positive_assertion_preserves_capture_and_lastindex() {
+        let root = Expr::Seq(vec![
+            assertion(false, true, capture(1, literal(b'a')), 0),
+            literal(b'a'),
+        ]);
+        let (matched, begins, ends, last) = execute(root, b"a", 1);
+
+        assert_eq!(matched, 1);
+        assert_eq!(begins, vec![0, 0]);
+        assert_eq!(ends, vec![1, 1]);
+        assert_eq!(last, 1);
+    }
+
+    #[test]
+    fn positive_assertion_preserves_later_group_lastindex() {
+        let root = Expr::Seq(vec![
+            assertion(false, true, capture(1, literal(b'a')), 0),
+            capture(2, literal(b'a')),
+        ]);
+        let (matched, begins, ends, last) = execute(root, b"a", 2);
+
+        assert_eq!(matched, 1);
+        assert_eq!(begins, vec![0, 0, 0]);
+        assert_eq!(ends, vec![1, 1, 1]);
+        assert_eq!(last, 2);
+    }
+
+    #[test]
+    fn negative_assertion_restores_failed_child_captures() {
+        let child = Expr::Seq(vec![capture(1, literal(b'a')), literal(b'b')]);
+        let root = Expr::Seq(vec![assertion(false, false, child, 0), literal(b'a')]);
+        let (matched, begins, ends, last) = execute(root, b"a", 1);
+
+        assert_eq!(matched, 1);
+        assert_eq!(begins, vec![0, -1]);
+        assert_eq!(ends, vec![1, -1]);
+        assert_eq!(last, -1);
+    }
+
+    #[test]
+    fn nested_assertions_preserve_both_visible_captures() {
+        let nested = assertion(false, true, capture(1, literal(b'a')), 0);
+        let outer = Expr::Seq(vec![nested, capture(2, literal(b'a'))]);
+        let root = Expr::Seq(vec![assertion(false, true, outer, 0), literal(b'a')]);
+        let (matched, begins, ends, last) = execute(root, b"a", 2);
+
+        assert_eq!(matched, 1);
+        assert_eq!(begins, vec![0, 0, 0]);
+        assert_eq!(ends, vec![1, 1, 1]);
+        assert_eq!(last, 2);
+    }
+
+    #[test]
+    fn failed_alternative_rolls_back_positive_assertion() {
+        let first = Expr::Seq(vec![
+            assertion(false, true, capture(1, literal(b'a')), 0),
+            literal(b'a'),
+            literal(b'b'),
+        ]);
+        let root = Expr::Alt(vec![first, literal(b'a')]);
+        let (matched, begins, ends, last) = execute(root, b"a", 1);
+
+        assert_eq!(matched, 1);
+        assert_eq!(begins, vec![0, -1]);
+        assert_eq!(ends, vec![1, -1]);
+        assert_eq!(last, -1);
+    }
+
+    #[test]
+    fn atomic_group_preserves_successful_assertion_capture() {
+        let atomic = Expr::Atomic(Box::new(Expr::Seq(vec![
+            assertion(false, true, capture(1, literal(b'a')), 0),
+            literal(b'a'),
+        ])));
+        let root = Expr::Seq(vec![atomic, literal(b'b')]);
+        let (matched, begins, ends, last) = execute(root, b"ab", 1);
+
+        assert_eq!(matched, 1);
+        assert_eq!(begins, vec![0, 0]);
+        assert_eq!(ends, vec![2, 1]);
+        assert_eq!(last, 1);
+    }
+
+    #[test]
+    fn atomic_group_prevents_alternative_capture_leakage() {
+        let first = Expr::Seq(vec![
+            assertion(false, true, capture(1, literal(b'a')), 0),
+            literal(b'a'),
+        ]);
+        let second = Expr::Seq(vec![literal(b'a'), literal(b'a')]);
+        let atomic = Expr::Atomic(Box::new(Expr::Alt(vec![first, second])));
+        let root = Expr::Seq(vec![atomic, literal(b'b')]);
+        let (matched, begins, ends, last) = execute(root, b"aab", 1);
+
+        assert_eq!(matched, 0);
+        assert_eq!(begins, vec![-1, -1]);
+        assert_eq!(ends, vec![-1, -1]);
+        assert_eq!(last, -1);
+    }
+
+    #[test]
+    fn assertion_snapshot_uses_exact_inline_boundary() {
+        assert_sequential_assertion_captures(15, false);
+    }
+
+    #[test]
+    fn assertion_snapshot_spills_after_inline_boundary() {
+        assert_sequential_assertion_captures(16, false);
+    }
+
+    #[test]
+    fn assertion_snapshot_preserves_large_heap_spill() {
+        assert_sequential_assertion_captures(64, false);
+    }
+
+    #[test]
+    fn nested_assertion_snapshots_preserve_independent_heap_spills() {
+        assert_sequential_assertion_captures(32, true);
+    }
+
+    #[test]
+    fn negative_assertion_restores_heap_spill_captures() {
+        let groups = 32;
+        let mut child: Vec<Expr> = (1..=groups)
+            .map(|number| capture(number, literal(b'a')))
+            .collect();
+        child.push(literal(b'b'));
+        let look = assertion(false, false, Expr::Seq(child), 0);
+        let consume = Expr::Repeat(Box::new(literal(b'a')), groups, Some(groups), 0);
+        let subject = vec![b'a'; groups];
+        let (matched, begins, ends, last) =
+            execute(Expr::Seq(vec![look, consume]), &subject, groups);
+
+        assert_eq!(matched, 1);
+        assert_eq!(begins[0], 0);
+        assert_eq!(ends[0], groups as isize);
+        assert!(begins[1..].iter().all(|value| *value == -1));
+        assert!(ends[1..].iter().all(|value| *value == -1));
+        assert_eq!(last, -1);
+    }
+
+    #[test]
+    fn fixed_width_lookbehind_restores_positive_and_negative_captures() {
+        let positive = Expr::Seq(vec![
+            literal(b'a'),
+            assertion(true, true, capture(1, literal(b'a')), 1),
+            literal(b'b'),
+        ]);
+        let (matched, begins, ends, last) = execute(positive, b"ab", 1);
+        assert_eq!(matched, 1);
+        assert_eq!(begins, vec![0, 0]);
+        assert_eq!(ends, vec![2, 1]);
+        assert_eq!(last, 1);
+
+        let negative = Expr::Seq(vec![
+            literal(b'b'),
+            assertion(true, false, capture(1, literal(b'a')), 1),
+            literal(b'b'),
+        ]);
+        let (matched, begins, ends, last) = execute(negative, b"bb", 1);
+        assert_eq!(matched, 1);
+        assert_eq!(begins, vec![0, -1]);
+        assert_eq!(ends, vec![2, -1]);
+        assert_eq!(last, -1);
+    }
 }

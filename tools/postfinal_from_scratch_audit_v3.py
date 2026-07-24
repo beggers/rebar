@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import copy
+import gc
 import hashlib
 import json
 import os
@@ -1049,9 +1050,11 @@ def audit() -> dict[str, Any]:
         label="immutable complete V2 source-audit report",
     )
     validate_previous_v2_report(predecessor_report, label="immutable complete V2 source audit")
+    del predecessor_report, predecessor_payload
     controls = self_test()
     validate_wrapper_controls(controls, schema=SCHEMA, minimum=MINIMUM_PREVIOUS_WRAPPER_CONTROLS)
     ensure_candidate_free()
+    gc.collect()
     current = previous.audit()
     validate_previous_v2_report(current, label="fresh isolated current-source V2 audit")
     ensure_candidate_free()

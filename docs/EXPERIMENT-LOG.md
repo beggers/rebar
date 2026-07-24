@@ -7,6 +7,65 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Rebuild Rust and disclose both new verification failures
+
+Preserve the [five engines from the latest completed comparison](../performance/postfinal-public-v6/NATIVE-ARCHIVE-V1.md)
+and the [five original engines](../performance/postfinal-public-v5/NATIVE-ARCHIVE-V1.md)
+before rebuilding Rust. The actual new Rust source is
+`94de5c9ea872bb3649a24a49e99abf5f4e4acd42cfd6d2695f7d17d101f6b888`;
+the new native engine is
+`1d0851d461fcb4caf4873a4c6fb30c1fd133dfb2140b0602622b9d06e9c1f0d1`;
+and the unchanged native bridge is
+`81fc4c4a92005f0588dd9b811988587d4d421dd8e1102eebcab53f4deb27cd36`.
+
+An initial isolated version-three safety-control child exited with
+**SIGKILL**. Release memory retained by completed workers and rerun the
+controls successfully. The signal does not establish why the child was
+killed; do not label it an out-of-memory event.
+
+Independently verify both fresh
+[from-scratch](../candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V3.json)
+and
+[independent-execution](../candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V3.json)
+audits. The rebuilt engine passes **33** native tests,
+[223,198 matching checks](../candidates/evidence/rust-v7-edge-oracle-rust-postfinal-assertion-snapshot-v1.json.gz),
+[393 Python-object checks](../candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-ASSERTION-SNAPSHOT-V1.json.gz),
+and
+[479 callback and scanner checks](../candidates/evidence/rust-v8-observability-rust-qualified-postfinal-assertion-snapshot-v1.json.gz).
+All three current engines pass
+[1,179,648 direct comparisons against Python](../candidates/evidence/python-re-universal-public-oracle-v5-all.json)
+with zero mismatches.
+
+The first new 22-stage run stops without writing a result:
+`AssertionError: complete from-scratch audit failed`. Its controller
+invoked the historical `audit_from_scratch.run_audit()` instead of the
+already passing, source-specific version-three audit.
+
+The first [complete intermediate campaign](../candidates/evidence/rust-v8-rust-postfinal-assertion-snapshot-v1-sealed-campaign.json)
+has SHA-256
+`9e744de16c6c627715303bcf27ae9ef628b04fcdc078e3ebe9e936204b719db2`.
+It passes all 22 stages, but independent review finds that its additive
+controller could fall back to the historical audit when the required
+current proof is missing. Reject that controller, preserve its report,
+and add explicit checks rejecting missing and symlinked proof.
+
+The [accepted, separately preserved campaign](../candidates/evidence/rust-v8-rust-postfinal-assertion-snapshot-v2-sealed-campaign.json)
+has SHA-256
+`9015b2a02bdf32e1f4dfdb3eb0c8fb8e67d07b78649ccb1ba3ba4da6cd4b76e8`.
+Its hardened additive controller has SHA-256
+`cdabec673a905b122c474a8279b84f194534fda77a0c70555fb9aa9fd299592d`,
+passes **43** synthetic safety controls, and refuses missing or
+symlinked evidence without falling back. The original campaign
+controller remains unchanged.
+
+All **22** accepted stages pass, including **4,494,555** complete
+Unicode comparisons. The official Python test step records **146**
+named methods: **144** pass and **2** are skipped because the required
+`en_US.iso88591` locale is unavailable. The skipped methods are
+`ReTests.test_locale_caching` and `ReTests.test_locale_compiled`;
+neither is hidden or counted as passed. No new speed was measured; the
+independent final test was not accessed and remains **NOT OPENED**.
+
 ## Preserve all five measured engines before rebuilding Rust
 
 Independently preserve the exact **five** C, Rust, and Zig native
