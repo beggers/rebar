@@ -96,8 +96,10 @@ inspection exists.
 The [real-record-verified rebuild inspection](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V17.md)
 successfully checks both preserved failures, the complete historical
 Zig results, and all **12** actual source files and **five** rebuilt
-native binaries without starting a candidate. Its full ownership and
-no-delegation runs remain **NOT RUN**.
+native binaries without starting a candidate. Its
+[first actual ownership run fails during its final source-integrity check](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V17-POST-OWNER-INTEGRITY-FAILURE.json)
+after the three native workers return. Their observations were not
+saved, so no passing ownership result exists.
 
 The [fresh original correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V14.md)
 then requires all **223,198** original cases and all **393** deeper

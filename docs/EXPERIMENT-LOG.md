@@ -7,6 +7,55 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the actual ownership run's final integrity failure
+
+Freeze, independently review, smoke-test against the genuine
+historical records, commit, and push the V17 ownership source
+before attempting its actual three-engine inspection. Verify
+that all four fresh ownership and strict outputs are absent.
+
+Run the actual pinned three-engine ownership command exactly once:
+
+```sh
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_independent_engine_audit_v17.py \
+  --ownership-audit
+```
+
+The real historical validation completes. All three isolated C,
+Rust, and Zig native-owner workers return. The frozen controller
+then fails during its final current-source integrity check:
+
+```text
+tools.postfinal_from_scratch_audit_v2.AuditV2Error:
+actual current 76-control source audit changed the immutable universal audit contract
+```
+
+That exception occurs before the genuine owner observations are
+published. The three returned worker records are **NOT PRESERVED
+BY THE FAILED CONTROLLER**; no match result, complete stdout or
+stderr, or passing candidate record may be invented.
+
+- [Complete genuine post-owner source-integrity failure](../candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V17-POST-OWNER-INTEGRITY-FAILURE.json),
+  SHA-256 `8aa1021ba4fc9dcb2456f05c174214c8c7f6c8f4fa2215a13c3373f00e5f557d`.
+
+Retain the real pinned process, actual exit **1**, all **27**
+combined traceback lines, actual phase and three completed owner
+roles, and both earlier preserved failures. Individual stdout and
+stderr remain **NOT CAPTURED**. All four new V17 passing and failing
+output paths remain absent. The owner run is **FAIL**, not an
+independent-engine pass.
+
+The next frozen inspection must persist genuine worker output
+before any final recheck and determine why the actual immutable
+source audit changes. Current candidate correctness remains
+**NOT QUALIFIED**, performance is **NOT MEASURED**, and the
+holdout is **NOT OPENED**.
+
 ## Freeze the audit only after testing real historical records
 
 Preserve both real failing inspection attempts before freezing the

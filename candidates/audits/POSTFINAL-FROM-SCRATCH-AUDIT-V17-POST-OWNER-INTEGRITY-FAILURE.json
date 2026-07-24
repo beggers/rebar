@@ -1,0 +1,77 @@
+{
+  "actual_completed_native_owner_families": [
+    "rust",
+    "vm",
+    "zig"
+  ],
+  "actual_exception_message": "actual current 76-control source audit changed the immutable universal audit contract",
+  "actual_exception_type": "tools.postfinal_from_scratch_audit_v2.AuditV2Error",
+  "actual_invocation": {
+    "arguments": [
+      "-I",
+      "-B",
+      "tools/postfinal_independent_engine_audit_v17.py",
+      "--ownership-audit"
+    ],
+    "executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+    "exit_code": 1,
+    "output_capture": "complete combined command output; stdout and stderr were not separately captured",
+    "required_parent_environment": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONHASHSEED": "0",
+      "PYTHONPATH": "/home/dev-user/src/rebar"
+    }
+  },
+  "actual_native_owner_observations": "NOT PRESERVED BY THE FAILED CONTROLLER",
+  "actual_native_owner_workers_completed": 3,
+  "candidate_matching_results": "NOT PUBLISHED",
+  "complete_captured_combined_output_lines": [
+    "Traceback (most recent call last):",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_independent_engine_audit_v17.py\", line 2557, in <module>",
+    "    raise SystemExit(main())",
+    "                     ~~~~^^",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_independent_engine_audit_v17.py\", line 2545, in main",
+    "    report = run_audit(strict=False)",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_independent_engine_audit_v17.py\", line 1503, in run_audit",
+    "    after = snapshot_current_graph()",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_independent_engine_audit_v17.py\", line 289, in snapshot_current_graph",
+    "    current = original_owner.core.audit()",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_from_scratch_audit_v3.py\", line 1058, in audit",
+    "    current = previous.audit()",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_from_scratch_audit_v2.py\", line 475, in audit",
+    "    current = validate_report(original.run_audit(), label=\"actual current 76-control source audit\")",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_from_scratch_audit_v2.py\", line 402, in validate_report",
+    "    require(",
+    "    ~~~~~~~^",
+    "        document.get(\"schema_version\") == 1",
+    "        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "    ...<3 lines>...",
+    "        f\"{label} changed the immutable universal audit contract\",",
+    "        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "    )",
+    "    ^",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_from_scratch_audit_v2.py\", line 58, in require",
+    "    raise AuditV2Error(message)",
+    "tools.postfinal_from_scratch_audit_v2.AuditV2Error: actual current 76-control source audit changed the immutable universal audit contract"
+  ],
+  "controller": {
+    "protocol_path": "oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V17.md",
+    "protocol_sha256": "ba912f19b21f0264ecb2066f1141e4ad667802c599437df5a4328e089aa7ba4f",
+    "source_path": "tools/postfinal_independent_engine_audit_v17.py",
+    "source_sha256": "3184060f66835f0f49cc533a6abb51961de7f92ae2d72ee8c2bd58a94b37ad48"
+  },
+  "current_build_qualified": false,
+  "failure_stage": "unpreserved-static-graph-integrity-recheck-after-three-genuine-native-owner-workers",
+  "fresh_ownership_failure_report": "NOT CREATED",
+  "fresh_ownership_report": "NOT CREATED",
+  "fresh_strict_failure_report": "NOT CREATED",
+  "fresh_strict_report": "NOT CREATED",
+  "historical_failure_qualifies_current_build": false,
+  "holdout": "NOT ACCESSED",
+  "performance": "NOT MEASURED",
+  "preserved_v13_failure_sha256": "465820b50be4d544199844d7bde4c5b8e58391828bdb1c716cc33c50ca6c964b",
+  "preserved_v15_failure_sha256": "a3695f1fd847e9ad882783d18c519b551d7791c5327f55964e202a31ade818ff",
+  "schema": "rebar-postfinal-independent-engine-audit-v17-actual-post-owner-integrity-failure",
+  "status": "FAIL",
+  "synthetic": false
+}
