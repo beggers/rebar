@@ -112,8 +112,9 @@ Each run covers all **152** original public tests, including the genuine
 multi-gigabyte cases. The only skipped test requires Python's own private
 debug build. These complete tests have **NOT RUN** against the candidates.
 
-The [expanded real-world compatibility tests](oracle/cpython-3.14.6/PUBLIC-SURFACE-V19.md)
-preserve **1,376** distinct examples in **43** categories, including
+The [frozen expanded compatibility tests](oracle/cpython-3.14.6/PUBLIC-SURFACE-V27.md)
+preserve the [original Python reference](oracle/cpython-3.14.6/PUBLIC-SURFACE-V19.md)
+and all **1,376** distinct examples in **43** categories, including
 Unicode, byte buffers, callbacks, warnings, serialization, unusual flags,
 real system locales, and Python's complete public regex objects. The
 [previous reference failure](oracle/cpython-3.14.6/evidence/public-surface-v18-self-oracle-failures.json)
@@ -143,26 +144,13 @@ SHA-256
 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`.
 [AMENDMENTS.md](AMENDMENTS.md) records later clarifications separately.
 
-The current source, isolation, upstream-test, and public-type designs can
-be checked without running any candidates or benchmarks:
+The current engine-isolation, full-correctness, and public-compatibility
+designs can be checked without running a candidate or benchmark:
 
 ```sh
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
-"$PY" -I -B \
-  tools/postfinal_from_scratch_audit_v10.py --self-test
-"$PY" -I -B \
-  tools/postfinal_no_delegation_audit_v10.py --self-test
-PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_cpython_locale_oracle_v5.py --self-test
-"$PY" -I -B \
-  tools/postfinal_cpython_locale_oracle_v6.py --self-test
-"$PY" -I -B \
-  tools/postfinal_current_build_proofs_v11.py --self-test
-"$PY" -I -B \
-  tools/postfinal_current_build_proofs_v12.py --self-test
-"$PY" -I -B \
-  tools/python_re_public_surface_oracle_stage19.py --self-test
-PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_published_pins_v8.py --self-test
+"$PY" -I -B tools/postfinal_independent_engine_audit_v21.py --self-test
+"$PY" -I -B tools/postfinal_current_build_proofs_v24.py --self-test
+"$PY" -I -B tools/python_re_public_surface_oracle_stage27.py --self-test
 ```

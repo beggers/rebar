@@ -7,6 +7,43 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the complete public Python regex compatibility contract
+
+Preserve the actual frozen V19 two-process Python reference and the
+exact current V21 ownership and V24 full-correctness source hashes.
+Freeze the additive public-contract producer and its protocol:
+
+- [Complete public-contract source](../tools/python_re_public_surface_oracle_stage27.py),
+  SHA-256 `fd0ef1babdb5943d74ef443486805ef6586e46b06eb9d46e4f5b7b650045032b`.
+- [Complete public-contract protocol](../oracle/cpython-3.14.6/PUBLIC-SURFACE-V27.md),
+  SHA-256 `c8cc917b52affbce8d61ae1ad217835c7c890fe1e1369d211475a7aaf443cd3f`.
+
+The fixed public contract preserves all **1,376** original stimuli,
+**43** independent categories, **736** expanded cases, and **64**
+genuine locale cases with **192** real transitions. It retains the
+complete two-worker standard-library reference, every actual object,
+exception, callback, byte-buffer and Unicode observation, and all
+five authentic current-engine inspection failures. The current
+V24 family state must preserve all required incidents while allowing
+real extra historical entries.
+
+The project lead and both independent reviewers each verify the
+final exact source. All **1,018** independent new source checks and
+**2,692** cumulative source checks pass under both the pinned
+isolated interpreter and an entirely empty environment. Each test
+records **zero** candidate imports, original correctness workers,
+report or evidence reads, filesystem writes, clocks, benchmarks,
+and holdout access. Exhaustively verify true ordered write attempts,
+actual syscall returns, complete source pins, and the original V19
+baseline identity.
+
+Production remains blocked until each independently implemented
+C, Rust, and Zig engine genuinely passes all original V24 edge and
+deep cases and their full ownership proofs. The expanded **1,376**
+public cases are **NOT RUN** against any current engine at this
+source-freeze commit. Performance is **NOT MEASURED** and the
+holdout is **NOT ACCESSED**.
+
 ## Freeze and integrate the complete original correctness runner
 
 Keep the unsuccessful V22 integration, its exact frozen source, and
