@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Record both actual Python public-type reference runs
+
+First commit and push the corrected complete-observation source and
+protocol in `8cdff0c8`. Then start exactly two isolated, pinned
+Python-reference processes:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/python_re_generic_alias_public_oracle_stage14.py --self-oracle
+```
+
+The exclusively created
+[complete public-type Python reference](../oracle/cpython-3.14.6/evidence/public-generic-alias-v14-self-oracle.json)
+has SHA-256
+`7da9c6aa5fa1db4ef0dea593d8f9d501ecc952aa62ed7bf5a0f17d0b726b04bf`.
+Both actual workers separately pass all **128/128** cases, recording
+**256/256** individual observations, both original worker reports, and
+both complete reference arrays. There are **zero** disagreements,
+candidate imports, or candidate executions.
+
+The full authentic result is independently validated against the exact
+pushed controller, matrix, native-source audits, **584** genuinely
+passing official test records, and preserved original failure. Rust, C,
+and Zig have **NOT RUN** on the new 128-case matrix. Broader campaigns
+are **NOT RUN**; expanded speed remains **NOT FROZEN** and
+**NOT MEASURED**. Commit and push the complete standard-Python reference
+before starting any candidate.
+
 ## Freeze complete independently recorded public-type comparisons
 
 After all four roles pass the official upstream tests, prepare a fresh

@@ -63,9 +63,10 @@ These checks cover all **12** implementation files and **five** native
 binaries.
 
 The [new 128-case public type and serialization test](oracle/cpython-3.14.6/PUBLIC-GENERIC-ALIASES-V14.md)
-requires two complete, independently recorded Python reference runs and
-all **384** individual results from Rust, C, and Zig. Its new reference
-and engine runs are **NOT RUN**. The
+now has [two complete, independently recorded Python reference runs](oracle/cpython-3.14.6/evidence/public-generic-alias-v14-self-oracle.json):
+**256/256** actual checks pass, and both complete sets of observations
+are preserved. The **384** Rust, C, and Zig comparisons remain
+**NOT RUN**. The
 [original serialization failure](candidates/evidence/python-re-generic-alias-public-oracle-v11-rust-failures.json)
 and [original official-test failure](oracle/cpython-3.14.6/evidence/postfinal-locale-v2-rust-failures.json)
 remain available; older successful checks do not certify modified code.
