@@ -67,6 +67,12 @@ across C, Rust, and Zig and all four tested pickle protocols, plus six
 basic text-and-bytes matches. This smoke check is **not** a full
 compatibility pass or an audit.
 
+The [renewed 128-case compatibility suite](oracle/cpython-3.14.6/PUBLIC-GENERIC-ALIASES-V12.md)
+is now frozen against the genuinely audited, rebuilt engines. Its
+candidate-free design passes **86** independent safety checks and
+retains the original 16 Rust failures. Its new two-Python reference
+run and three-engine comparison are **NOT RUN**.
+
 Earlier [official Python test results](oracle/cpython-3.14.6/evidence/postfinal-locale-v1-all.json),
 [22-stage engine campaigns](candidates/evidence/rust-v8-rust-postfinal-locale-v5-sealed-campaign.json),
 [from-scratch audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V5.json),
@@ -119,6 +125,8 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_from_scratch_audit_v6.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_no_delegation_audit_v6.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/python_re_generic_alias_public_oracle_stage12.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_generic_alias_public_oracle_stage11.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \

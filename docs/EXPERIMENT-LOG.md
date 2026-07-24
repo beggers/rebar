@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the repaired public Python type contract
+
+First commit and push both real V6 source and no-delegation audits.
+Preserve the original Stage 11 passing two-Python baseline and all
+**16** real Rust pickle failures. Never reuse the earlier candidate
+results to qualify modified source files.
+
+Independently verify the new
+[128-case Stage 12 protocol](../oracle/cpython-3.14.6/PUBLIC-GENERIC-ALIASES-V12.md)
+and [source](../tools/python_re_generic_alias_public_oracle_stage12.py).
+Their respective SHA-256 values are
+`1cec5253aabb5464c16d0de461bdd11463ddf11fafea9da6347b8a0af3d30cb1`
+and `361e080a0475f5ee7fd7d5da0386a4e2443775069aadca84e053bac357554aaa`.
+The **128** exact frozen obligations retain all four original groups;
+the fresh matrix is
+`65c93cfbbc337ecd762a6b201bacc77e35eb72d201a9e8bc222d730714885aef`.
+
+The candidate-free synthetic design passes **86/86** safety controls.
+A separately executed real source-only preflight verifies both genuine
+V6 audit controllers and reports, all **12** current production sources,
+all **five** native binaries, and the real saved Stage 11 Rust failure.
+Neither check starts a Python reference, candidate worker, benchmark,
+or final test.
+
+The Stage 12 two-Python reference and all three candidates remain
+**NOT RUN** at the design checkpoint. Freeze and push this protocol
+and source before starting the actual two-reference self-oracle;
+separately push its real results before testing any candidate.
+
 ## Verify the repaired engines cannot delegate matching
 
 Commit and push the independent-execution audit design in `b2196421`
