@@ -7,6 +7,39 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Verify all three repaired engines were built from scratch
+
+Commit and push the candidate repairs and complete source-audit design
+in `22d09eed` before starting the actual audit. The source has SHA-256
+`77e7ea97f96280019b3be9abfeeb8fc6ff27ca6ecd13189e611586af5719c18f`.
+Its independent, candidate-free self-test passes **324/324** controls,
+including all **198** earlier controls.
+
+Run the actual audit exactly once using the pinned Python:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_from_scratch_audit_v6.py --audit
+```
+
+The exclusively created
+[real passing report](../candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V6.json)
+has SHA-256
+`0314e3e5de3386d7c9c1e7f8fa4648554ff53cb53e3aafcecc4cb8e4923ddcbb`.
+It verifies all **12** current source files, all **five** genuine native
+binaries, **three** independent native engines, **four** independently
+owned pipelines, and all **48** real standard-library pickle checks.
+Pattern ownership is genuinely local to each candidate; match ownership
+is genuinely local to its native bridge. All five foreign native-loader
+entry points remain blocked. The exact earlier passing reference and
+failed Rust experiment are preserved.
+
+The fresh no-delegation audit, complete official tests, and full
+128-case all-engine compatibility run remain **NOT RUN**. Expanded
+benchmark inputs remain **NOT FROZEN**; current speed and memory are
+**NOT MEASURED**.
+
 ## Repair all three engines' real Python type ownership
 
 Keep the [original passing two-Python reference](../oracle/cpython-3.14.6/evidence/public-generic-alias-v11-self-oracle.json)

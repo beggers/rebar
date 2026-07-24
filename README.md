@@ -72,11 +72,13 @@ Earlier [official Python test results](oracle/cpython-3.14.6/evidence/postfinal-
 [from-scratch audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V5.json),
 and [independent-execution audit](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V5.json)
 are real historical results for their exact earlier source files and native
-builds. **They do not qualify the newly modified engines.** The new
-from-scratch audit design passes **324 candidate-free safety checks**;
-its actual audit is **NOT RUN**. Fresh no-delegation audits, the complete
-official Python tests, and the expanded compatibility comparison must
-also pass again for all three.
+builds. **They do not qualify the newly modified engines.** A
+[fresh from-scratch audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V6.json)
+now genuinely verifies all **12** implementation files, **five** native
+binaries, **three** independent engines, and **48** normal Python
+serialization checks. Its design also passes **324 candidate-free safety
+checks**. A fresh independent-execution audit, the complete official
+Python tests, and the expanded compatibility comparison are **NOT RUN**.
 
 ## Larger fair speed comparison
 
