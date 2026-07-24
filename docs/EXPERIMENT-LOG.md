@@ -7,6 +7,39 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## A from-scratch Rust quote matcher is qualified; its speed is not measured
+
+The version-1 public run exposed 54 substantial Rust slowdowns in a category
+using quote-aware delimiters. The next candidate recognizes the equivalent
+pattern from its **own parsed Rust expression**, verifies captures, character
+classes, scoped flags, repeat modes, and newline-sensitive anchors, and scans
+the suffix with Rust's own existing byte-search code. It does not call Python's
+regex implementation, C, Zig, or an external package. All uncertain patterns,
+wide Unicode representations, and unsupported flags retain the original Rust
+matcher.
+
+The original **76-control**, **five-native-library** independence audit passes.
+The
+[first failed sandboxed audit and explicitly authorized unchanged retry](../performance/v7/evidence/POSTFINAL-RUST-QUOTE-PARITY-INDEPENDENCE-INCIDENT.md)
+are both retained. The changed source also passes its fresh
+[223,198-case matching proof](../candidates/evidence/rust-v7-edge-oracle-rust-post-final-stage-02-parity.json.gz),
+[393 public-object checks](../candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POST-FINAL-STAGE-02-PARITY.json.gz),
+[479 observability checks](../candidates/evidence/rust-v8-observability-rust-qualified-post-final-stage-02-parity.json.gz),
+and the
+[original complete 22-stage campaign](../candidates/evidence/rust-v8-rust-post-final-stage-02-parity-sealed-campaign.json),
+including **4,494,555** Unicode checks.
+
+The
+[version-2 prospective public protocol](../performance/postfinal-public-v2/PROTOCOL.md)
+freezes exactly the same **4,096** public case IDs, all **260** categories,
+the same **12** operations, Python, C, Rust, and Zig, **13** paired trials,
+and **2,000** confidence draws before timing. Its manifest SHA-256 is
+`2228e444ae142494def731d8b94ba5fcf08c69aa8a7e04cc1c47cbebeb149b4a`.
+Its selection, source hashes, original independence proof, native libraries,
+and all three candidates' matching proofs are fixed. New speed, confidence,
+memory, rankings, and slowdowns are **NOT MEASURED**. The failed hidden final
+is not reopened or retried.
+
 ## The frozen 4,096-case public benchmark exposes much smaller speedups
 
 The new [post-final public protocol](../performance/postfinal-public-v1/PROTOCOL.md)

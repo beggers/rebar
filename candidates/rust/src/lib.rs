@@ -130,6 +130,12 @@ struct MandatoryRunDelimiter {
     delimiter: u8,
 }
 
+#[derive(Clone, Copy)]
+struct EvenSuffixDelimiter {
+    separator: u8,
+    quote: u8,
+}
+
 const MANDATORY_LITERAL_PREFIX_CAPACITY: usize = 16;
 const MANDATORY_LITERAL_PREFIX_DEPTH: usize = 64;
 
@@ -232,6 +238,7 @@ pub struct Engine {
     start_set: Option<search::StartSet>,
     mandatory_literal_prefix: Option<MandatoryLiteralPrefix>,
     mandatory_run_delimiter: Option<MandatoryRunDelimiter>,
+    even_suffix_delimiter: Option<EvenSuffixDelimiter>,
     leading_lookbehind: Option<usize>,
     start_anchor: SearchAnchor,
     byte_mode: bool,
@@ -1664,6 +1671,102 @@ fn contains_group_capture(node: &Expr) -> bool {
     }
 }
 
+/// Recognize an unbounded class that consumes every character except `quote`.
+///
+/// This must run before `prepare_classes` inserts its ASCII lookup table.
+/// Singleton ranges and repeated equivalent literals describe the same set.
+fn even_suffix_quote_star(node: &Expr, quote: u32, flags: u32) -> bool {
+    let Expr::Repeat(child, minimum, maximum, mode) = node else {
+        return false;
+    };
+    if *minimum != 0 || maximum.is_some() || *mode != 0 {
+        return false;
+    }
+
+    let Expr::Class(members, true, class_flags) = child.as_ref() else {
+        return false;
+    };
+    if *class_flags != flags || flags & (I | L) != 0 || members.is_empty() {
+        return false;
+    }
+
+    members.iter().all(|member| match member {
+        Member::Lit(value) => *value == quote,
+        Member::Range(first, last) => *first == quote && *last == quote,
+        Member::Cat(_) | Member::Table(_) => false,
+    })
+}
+
+/// Prove that a capture-free delimiter is followed by an even-quote suffix.
+///
+/// The recognized expression is an exact-case, one-byte separator followed by
+/// `(?=(?:[^q]*q[^q]*q)*[^q]*$)`. Recognition is derived exclusively from the
+/// parsed AST. Multiline anchors, case or locale folding, non-greedy repeats,
+/// capturing groups, newline quotes, and uncertain class members all fall back
+/// to the original ordered, capture-aware VM.
+fn even_suffix_delimiter(root: &Expr, groups: usize) -> Option<EvenSuffixDelimiter> {
+    if groups != 0 {
+        return None;
+    }
+
+    let Expr::Seq(values) = root else {
+        return None;
+    };
+    let [Expr::Lit(separator, separator_flags), Expr::Look(false, true, child, 0)] =
+        values.as_slice()
+    else {
+        return None;
+    };
+    if *separator_flags & (I | L) != 0 {
+        return None;
+    }
+
+    let Expr::Seq(look_values) = child.as_ref() else {
+        return None;
+    };
+    let [Expr::Repeat(pair, pair_minimum, pair_maximum, pair_mode), final_class, Expr::Anchor('$', anchor_flags)] =
+        look_values.as_slice()
+    else {
+        return None;
+    };
+    if *pair_minimum != 0
+        || pair_maximum.is_some()
+        || *pair_mode != 0
+        || *anchor_flags & (I | L | M) != 0
+    {
+        return None;
+    }
+
+    let Expr::Seq(pair_values) = pair.as_ref() else {
+        return None;
+    };
+    let [first_class, Expr::Lit(first_quote, first_flags), second_class, Expr::Lit(second_quote, second_flags)] =
+        pair_values.as_slice()
+    else {
+        return None;
+    };
+    if first_quote != second_quote
+        || first_flags != second_flags
+        || *first_flags & (I | L) != 0
+    {
+        return None;
+    }
+
+    let separator = u8::try_from(*separator).ok()?;
+    let quote = u8::try_from(*first_quote).ok()?;
+    if separator == quote || quote == b'\n' {
+        return None;
+    }
+    if !even_suffix_quote_star(first_class, *first_quote, *first_flags)
+        || !even_suffix_quote_star(second_class, *first_quote, *first_flags)
+        || !even_suffix_quote_star(final_class, *first_quote, *first_flags)
+    {
+        return None;
+    }
+
+    Some(EvenSuffixDelimiter { separator, quote })
+}
+
 /// Derive only byte prefixes that every original, ordered AST path requires.
 ///
 /// Assertions and captures are still executed by the original VM. An uncertain
@@ -2432,6 +2535,7 @@ pub unsafe extern "C" fn rebar_compile(
     };
     match parser.parse() {
         Ok(mut root) => {
+            let even_suffix_delimiter = even_suffix_delimiter(&root, parser.groups);
             let chars: [u32; 128] = std::array::from_fn(|index| index as u32);
             let folds: [u32; 128] =
                 std::array::from_fn(|index| unicode_tables::simple_lower(index as u32));
@@ -2470,6 +2574,7 @@ pub unsafe extern "C" fn rebar_compile(
                 start_set,
                 mandatory_literal_prefix,
                 mandatory_run_delimiter,
+                even_suffix_delimiter,
                 leading_lookbehind: lookbehind,
                 start_anchor,
                 byte_mode: byte_mode != 0,
@@ -3507,6 +3612,67 @@ pub unsafe extern "C" fn rebar_match_wide(
 }
 
 #[inline]
+fn collect_even_suffix_delimiters(
+    delimiter: EvenSuffixDelimiter,
+    text: &[u8],
+    pos: usize,
+    end: usize,
+    capacity: usize,
+    starts: &mut [isize],
+    finishes: &mut [isize],
+    last_values: &mut [isize],
+) -> isize {
+    if capacity == 0 || pos >= end {
+        return 0;
+    }
+
+    let mut suffix_even = true;
+    let mut quote = search::next_singleton(text, delimiter.quote, pos, end);
+    while let Some(at) = quote {
+        suffix_even = !suffix_even;
+        let Some(next) = at.checked_add(1) else {
+            return -1;
+        };
+        quote = search::next_singleton(text, delimiter.quote, next, end);
+    }
+
+    let mut next_quote = search::next_singleton(text, delimiter.quote, pos, end);
+    let mut current = pos;
+    let mut count = 0;
+    while count < capacity {
+        let Some(separator) =
+            search::next_singleton(text, delimiter.separator, current, end)
+        else {
+            break;
+        };
+
+        while let Some(at) = next_quote {
+            if at >= separator {
+                break;
+            }
+            suffix_even = !suffix_even;
+            let Some(next) = at.checked_add(1) else {
+                return -1;
+            };
+            next_quote = search::next_singleton(text, delimiter.quote, next, end);
+        }
+
+        let Some(next) = separator.checked_add(1) else {
+            return -1;
+        };
+        if suffix_even {
+            starts[count] = separator as isize;
+            finishes[count] = next as isize;
+            last_values[count] = -1;
+            count += 1;
+        }
+        current = next;
+    }
+
+    count as isize
+}
+
+#[inline]
 fn collect_matches(
     engine: &Engine,
     context: &Context<'_>,
@@ -3516,6 +3682,26 @@ fn collect_matches(
     finishes: &mut [isize],
     last_values: &mut [isize],
 ) -> isize {
+    if let Some(delimiter) = engine.even_suffix_delimiter
+        && let Some(text) = context.bytes.or_else(|| {
+            context
+                .wide
+                .filter(|subject| subject.kind == 1)
+                .map(|subject| subject.data)
+        })
+    {
+        return collect_even_suffix_delimiters(
+            delimiter,
+            text,
+            pos,
+            context.end.min(text.len()),
+            capacity,
+            starts,
+            finishes,
+            last_values,
+        );
+    }
+
     let stride = engine.groups + 1;
     let mut current = pos;
     let mut nonempty = 0;

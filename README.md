@@ -26,7 +26,13 @@ remain unchanged.
 
 ## Overall public performance
 
-Later Rust development is a **separate public experiment**, not a rerun of the
+The latest Rust experiment is a **new, from-scratch quote-aware matching
+architecture**. It has passed the complete original correctness campaign, and
+its [next 4,096-case comparison](performance/postfinal-public-v2/PROTOCOL.md)
+is frozen before measurement. Its speed is **NOT MEASURED**.
+
+The graphs and figures below are the complete **earlier version-1 public
+experiment**, not results for the changed Rust engine and not a rerun of the
 failed final. Python and all three independently built engines received the
 same **4,096 public cases**, **13 paired runs**, and **638,976** correctness
 checks. **1× means the same speed as standard Python; higher is faster.**
@@ -39,10 +45,11 @@ checks. **1× means the same speed as standard Python; higher is faster.**
 | Zig | 1.215× | 1.196–1.236× | 2,188/4,096 | 797/4,096 |
 | Rust | 1.033× | 1.017–1.048× | 1,504/4,096 | 1,302/4,096 |
 
-The new Rust design batches up to 16 split matches in its own native engine.
-It remains compatible with the public tests, but the larger benchmark confirms
-that it is not a meaningful overall speedup. **No engine reaches the 1.5×
-target.** All **2,548** substantial slowdowns are included.
+That measured Rust version batches up to 16 split matches in its own native
+engine. The public results show that batching alone is not a meaningful
+overall speedup. **No version-1 engine reaches the 1.5× target.** All
+**2,548** substantial slowdowns are included. The newer quote-aware Rust
+engine has not yet been timed and is not included in those numbers.
 
 ![All public wins, uncertain cases, and slowdowns for C, Zig, and Rust](performance/postfinal-public-v1/evidence/postfinal-public-practice-v1-outcomes.svg)
 
@@ -61,7 +68,8 @@ engine memory and isolated whole-process memory are **NOT MEASURED**.
 
 ## What is actually verified
 
-Post-final Rust passes **223,198** matching checks, **393** public-object
+The current from-scratch quote-aware Rust passes **223,198** matching checks,
+**393** public-object
 checks, **479** tracing and unusual-argument checks, and the original complete
 **22-stage** Python-compatibility campaign, including **4,494,555** Unicode
 comparisons. The original
