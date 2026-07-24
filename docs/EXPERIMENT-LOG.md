@@ -7,6 +7,50 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the genuine failed 3,584-case Python self-oracle
+
+First freeze and push the complete version-fifteen public-behavior
+source and protocol in `76ab9df7`. Run its two genuine pinned Python
+reference workers exactly once; do not start Rust, C, or Zig:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/python_re_universal_public_oracle_stage15.py --self-oracle
+```
+
+The exclusively produced
+[original broad Python self-oracle](../oracle/cpython-3.14.6/evidence/public-contract-v15-self-oracle.json)
+has SHA-256
+`755cb818f59259bb5adb05a93782afc3eef12e001c41a976ba4b9258ae54ac01`.
+It preserves both complete **3,584-row** standard-Python workers,
+all **7,168** individual reference observations, and the original case
+order. The two Python processes genuinely agree on every actual answer.
+
+Nevertheless, the producer's printed **PASS** and its stored **PASS**
+status are **FALSIFIED**. Both worker fingerprints and both reference
+fingerprints claim
+`0d6a74b1f923436c14569bfdd84431e4251f3bb8dd3129fbbcaf82a47f906b94`.
+The frozen controller's own independent digest of both durably parsed
+reference arrays is actually
+`7a3bed83093800085fe1bd084820108142929f60e37632b3c24a02c6a4584d72`.
+Its `_validate_complete_reference` rejects the actual file both inside
+and outside its temporary production context.
+
+Root-cause analysis finds two inconsistent Unicode and surrogate
+canonicalizers: the producer validates the in-memory worker records,
+but serializing and parsing the actual evidence changes the portable
+record representation. It never independently validates the durably
+parsed report before declaring success. Preserve the exact actual
+11,599,416-byte evidence and all four incorrect fingerprints without
+rerunning, rewriting, or deleting it.
+
+All three version-fifteen candidate runs are **NOT RUN**. Freeze a
+separate, fresh-version test that proves the same canonical record
+digest survives serialization, parsing, and an independent validator.
+The complete fuzz and public-surface campaigns remain **NOT RUN**;
+expanded performance remains **NOT FROZEN** and **NOT MEASURED**.
+
 ## Freeze the complete 3,584-case public behavior comparison
 
 First commit and push the genuinely passing current-source type and

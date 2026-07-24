@@ -74,10 +74,14 @@ remain available; older successful checks do not certify modified code.
 
 The [next 3,584-case compatibility test](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V15.md)
 covers public functions, errors, flags, locales, buffers, replacements,
-scanners, Unicode, and concurrent matching. Its new Python reference and
-all three engine comparisons are **NOT RUN**. Extra tests of the complete
-public interface, caching, and millions of generated examples are also
-**NOT RUN**. A complete drop-in replacement is not yet proven.
+scanners, Unicode, and concurrent matching. Its
+[first Python-only run](oracle/cpython-3.14.6/evidence/public-contract-v15-self-oracle.json)
+revealed a fault in the test itself: both Python processes returned the
+same **7,168** results, but the recorded result hashes are incorrect.
+Independent validation rejects the report, so this attempt is
+**FALSIFIED**; Rust, C, and Zig were **NOT RUN**. A corrected test,
+the full public interface, caching, and millions of generated examples
+remain **NOT RUN**. A complete drop-in replacement is not yet proven.
 
 ## Larger fair speed comparison
 
