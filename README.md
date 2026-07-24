@@ -12,43 +12,39 @@ are a separate, fully disclosed public development experiment.
 
 ## Overall public performance
 
-The next Rust architecture reduces repeated Python-to-Rust metadata work and
-has passed the full correctness campaign. Its
-[new public benchmark](performance/postfinal-public-v3/PROTOCOL.md) is frozen
-but **NOT MEASURED**. The graph and table below are the latest completed,
-independently verified version-2 public comparison.
-
 Python, C, Rust, and Zig ran the same **4,096** public cases and **13** paired
-trials. All **638,976** exact-answer checks passed. **1× means the same speed
+trials. All **638,976** exact-answer checks passed, and an independent replay
+verified every measurement and confidence interval. **1× means the same speed
 as standard Python; higher is faster. The target is 1.5×.**
 
-![Overall measured speed and uncertainty for three from-scratch regex engines compared with standard Python](performance/postfinal-public-v2/evidence/postfinal-public-practice-v2-overall.svg)
+![Overall measured speed and uncertainty for three independently written regex engines compared with standard Python](performance/postfinal-public-v3/evidence/postfinal-public-practice-v3-overall.svg)
 
 | Engine | Public speed | 95% uncertainty range | Clearly faster cases | More than 20% slower |
 | --- | ---: | ---: | ---: | ---: |
-| Zig | 1.216× | 1.197–1.237× | 2,130/4,096 | 771/4,096 |
-| C | 1.213× | 1.196–1.229× | 2,597/4,096 | 479/4,096 |
-| Rust | 1.100× | 1.082–1.120× | 1,589/4,096 | 1,116/4,096 |
+| C | 1.217× | 1.200–1.233× | 2,637/4,096 | 461/4,096 |
+| Zig | 1.215× | 1.196–1.236× | 2,156/4,096 | 786/4,096 |
+| Rust | 1.115× | 1.096–1.135× | 1,664/4,096 | 1,066/4,096 |
 
-**No candidate reaches 1.5×.** Rust's new, independently written matcher
-does fix all **54** previously slow quote-aware splitting cases: it is clearly
-faster than Python on **54/54**, with an **11.21×** average for that category.
-That targeted result is not an overall win.
+**No candidate reaches 1.5×. There is no proven replacement or winner.**
+Rust's independently written matcher does fix all **54** previously slow
+quote-aware splitting cases: it is clearly faster than Python on **54/54**,
+with an **11.81×** average for that category. That targeted result is not an
+overall win.
 
-![Every measured win, uncertain result, and slowdown for all three independent regex engines](performance/postfinal-public-v2/evidence/postfinal-public-practice-v2-outcomes.svg)
+![Every measured win, uncertain result, and slowdown for all three independent regex engines](performance/postfinal-public-v3/evidence/postfinal-public-practice-v3-outcomes.svg)
 
 ## Detailed public results
 
-![Performance across all 12 Python regular-expression operations and 260 public workload categories](performance/postfinal-public-v2/evidence/postfinal-public-practice-v2-api.svg)
+![Performance across all 12 Python regular-expression operations and 260 public workload categories](performance/postfinal-public-v3/evidence/postfinal-public-practice-v3-api.svg)
 
-![All 2,366 individually recorded public cases where an engine is more than 20 percent slower than Python](performance/postfinal-public-v2/evidence/postfinal-public-practice-v2-regressions.svg)
+![All 2,313 individually recorded public cases where an engine is more than 20 percent slower than Python](performance/postfinal-public-v3/evidence/postfinal-public-practice-v3-regressions.svg)
 
-![Python-visible temporary memory allocations across all 4,096 public cases](performance/postfinal-public-v2/evidence/postfinal-public-practice-v2-memory.svg)
+![Python-visible temporary memory allocations across all 4,096 public cases](performance/postfinal-public-v3/evidence/postfinal-public-practice-v3-memory.svg)
 
 The memory chart measures Python-visible temporary allocations only. Native
 engine memory and isolated whole-process memory are **NOT MEASURED**.
 
-![Overall public speed rankings for independently implemented Zig, C, and Rust engines](performance/postfinal-public-v2/evidence/postfinal-public-practice-v2-rankings.svg)
+![Overall public speed rankings for independently implemented C, Zig, and Rust engines](performance/postfinal-public-v3/evidence/postfinal-public-practice-v3-rankings.svg)
 
 ## Why there is no final winner
 
@@ -82,11 +78,12 @@ four implementation families, all five loaded native libraries, and **76**
 controls against external packages, Python's regex engine, and hidden engine
 sharing. Public correctness does not repair the historical hidden Zig failure.
 
-The [complete 4,096-case results](performance/postfinal-public-v2/RESULTS.md)
+The [complete 4,096-case results](performance/postfinal-public-v3/RESULTS.md)
 preserve every observation, confidence range, slowdown, and independent
-verification. Their [protocol and complete case list](performance/postfinal-public-v2/PROTOCOL.md)
+verification. Their [protocol and complete case list](performance/postfinal-public-v3/PROTOCOL.md)
 were frozen and pushed before timing. The
-[previous 4,096-case comparison](performance/postfinal-public-v1/RESULTS.md),
+[previous](performance/postfinal-public-v2/RESULTS.md) and
+[original](performance/postfinal-public-v1/RESULTS.md) 4,096-case comparisons,
 the earlier
 [rejected Rust experiment](performance/v7/evidence/POSTFINAL-RUST-BATCHED-SPLIT-01.md)
 and [experiment log](docs/EXPERIMENT-LOG.md) remain preserved. None of these
@@ -111,9 +108,9 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/postfinal_public_practice_charts_v3.py --self-test
 
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
-  tools/postfinal_public_practice_charts_v2.py \
-  --summary performance/postfinal-public-v2/evidence/postfinal-public-practice-v2-summary.json \
-  --integrity performance/postfinal-public-v2/evidence/postfinal-public-practice-v2-integrity.json \
-  --manifest performance/postfinal-public-v2/manifest.json \
-  --output-dir performance/postfinal-public-v2/evidence
+  tools/postfinal_public_practice_charts_v3.py \
+  --summary performance/postfinal-public-v3/evidence/postfinal-public-practice-v3-summary.json \
+  --integrity performance/postfinal-public-v3/evidence/postfinal-public-practice-v3-integrity.json \
+  --manifest performance/postfinal-public-v3/manifest.json \
+  --output-dir performance/postfinal-public-v3/evidence
 ```

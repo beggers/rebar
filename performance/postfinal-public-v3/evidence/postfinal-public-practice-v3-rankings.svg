@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1640" height="639" viewBox="0 0 1640 639" role="img" aria-labelledby="public-chart-title public-chart-description">
+<title id="public-chart-title">Expanded public ordering only — not a final ranking</title>
+<desc id="public-chart-description">Public development only; final independent benchmark failed; no final winner. CPython, C, Rust, and Zig ran the same 4096 calibration-only public cases, 13 paired trials, and 2000 bootstrap draws. Four-way public development estimates on all 4,096 shared cases; no final winner. Public manifest SHA-256 5f49f255271b8f71786e7fa67a61827b53c1330e1ad7afe29c8750991df4b90f; public summary SHA-256 a5c5b3ad70c8fcb1df81da63ab30e727793e8a98c04c0889ca27ae9dce808bfc. Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:31px;font-weight:760}.subtitle{font-size:16px;fill:#475569}.heading{font-size:19px;font-weight:730}.label{font-size:14px}.value{font-size:15px;font-weight:720}.note{font-size:13.5px;fill:#475569}.tick{font-size:13px;fill:#475569}.banner{font-size:16px;font-weight:740;fill:#7f1d1d}.status{font-size:14px;font-weight:680;fill:#7f1d1d}.grid{stroke:#e2e8f0;stroke-width:1}.baseline{stroke:#64748b;stroke-width:2}.panel{fill:#f8fafc;stroke:#d9e2ee;stroke-width:1}</style>
+<text x="30" y="46" class="title">Expanded public ordering only — not a final ranking</text>
+<text x="31" y="77" class="subtitle">Four-way public development estimates on all 4,096 shared cases; no final winner</text>
+<rect x="23" y="93" width="1594" height="45" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="37" y="123" class="banner">Public development only; final independent benchmark failed; no final winner</text>
+<text x="31" y="163" class="status">Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</text>
+<text x="31" y="186" class="note">Public plan SHA-256: 5f49f255271b8f71786e7fa67a61827b53c1330e1ad7afe29c8750991df4b90f</text>
+<text x="31" y="208" class="note">Public measurement SHA-256: a5c5b3ad70c8fcb1df81da63ab30e727793e8a98c04c0889ca27ae9dce808bfc</text>
+<line x1="365.89" y1="289" x2="365.89" y2="552" class="grid"/>
+<text x="365.89" y="281" text-anchor="middle" class="tick">0.75×</text>
+<line x1="544.71" y1="289" x2="544.71" y2="552" class="baseline"/>
+<text x="544.71" y="281" text-anchor="middle" class="tick">1× CPython</text>
+<line x1="683.42" y1="289" x2="683.42" y2="552" class="grid"/>
+<text x="683.42" y="281" text-anchor="middle" class="tick">1.25×</text>
+<line x1="796.75" y1="289" x2="796.75" y2="552" class="grid"/>
+<text x="796.75" y="281" text-anchor="middle" class="tick">1.5×</text>
+<text x="876" y="276" class="label">Public speed and 95% interval</text>
+<text x="1280" y="276" class="label">Clear wins</text>
+<text x="1430" y="276" class="label">&gt;20% slower</text>
+<text x="30" y="323" class="heading">1. C</text>
+<line x1="658.01" y1="318" x2="674.86" y2="318" stroke="#2563eb" stroke-width="7" stroke-linecap="round"/>
+<circle cx="666.57" cy="318" r="6" fill="#2563eb"/>
+<text x="876" y="322" class="value">1.217× [1.200× to 1.233×]</text>
+<text x="1280" y="322" class="value">2,637/4,096</text>
+<text x="1430" y="322" class="value">461/4,096</text>
+<text x="30" y="395" class="heading">2. Zig</text>
+<line x1="655.74" y1="390" x2="676.22" y2="390" stroke="#7c3aed" stroke-width="7" stroke-linecap="round"/>
+<circle cx="665.60" cy="390" r="6" fill="#7c3aed"/>
+<text x="876" y="394" class="value">1.215× [1.196× to 1.236×]</text>
+<text x="1280" y="394" class="value">2,156/4,096</text>
+<text x="1430" y="394" class="value">786/4,096</text>
+<text x="30" y="467" class="heading">3. Rust</text>
+<line x1="601.90" y1="462" x2="623.39" y2="462" stroke="#c2410c" stroke-width="7" stroke-linecap="round"/>
+<circle cx="612.22" cy="462" r="6" fill="#c2410c"/>
+<text x="876" y="466" class="value">1.115× [1.096× to 1.135×]</text>
+<text x="1280" y="466" class="value">1,664/4,096</text>
+<text x="1430" y="466" class="value">1,066/4,096</text>
+<text x="30" y="539" class="heading">4. CPython (standard Python)</text>
+<circle cx="544.71" cy="534" r="6" fill="#64748b"/>
+<text x="876" y="538" class="value">Exactly 1.000×; neutral baseline</text>
+<text x="1280" y="538" class="label">Baseline</text>
+<text x="1430" y="538" class="label">Baseline</text>
+<text x="30" y="621" class="note">Public point-estimate ordering does not establish candidate-to-candidate significance. Final ranking: NOT MEASURED; final winner: NONE.</text>
+</svg>

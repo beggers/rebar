@@ -7,6 +7,36 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## One-pass Rust metadata is measured and independently verified
+
+The prospectively frozen
+[version-3 public experiment](../performance/postfinal-public-v3/RESULTS.md)
+compares pinned Python 3.14.6 against the separately written C, Rust, and Zig
+engines on **4,096** identical public cases, all **260** workload categories,
+all **12** operations, and **13** paired trials. Its
+[complete raw dataset](../performance/postfinal-public-v3/evidence/postfinal-public-practice-v3-raw.jsonl.gz)
+contains **212,992** observations. All **638,976** correctness gates pass;
+the independent, candidate-free
+[integrity replay](../performance/postfinal-public-v3/evidence/postfinal-public-practice-v3-integrity.json)
+recomputes all **12,291** confidence intervals and retains all **2,313**
+cases that were more than 20% slower than Python.
+
+C is **1.217×** as fast as Python (95% interval **1.200–1.233×**;
+**2,637/4,096** clearly faster; **461** substantial slowdowns), Zig is
+**1.215×** (**1.196–1.236×**; **2,156/4,096** faster; **786** slowdowns),
+and Rust is **1.115×** (**1.096–1.135×**; **1,664/4,096** faster;
+**1,066** slowdowns). No engine reaches **1.5×**. C's and Zig's intervals
+overlap; their ranking does not establish that either is reliably faster than
+the other.
+
+Rust's single-pass bridge changes only its own compiled-pattern metadata
+handling. All **54/54** quote-aware splitting cases remain clearly faster,
+averaging **11.81×** without a substantial slowdown. The earlier Rust
+snapshot was **1.100×**, with **1,116** substantial slowdowns; these runs
+are separately measured, so no paired cross-run improvement or causal claim
+is made. Native process memory remains **NOT MEASURED**. The consumed
+original hidden test remains failed and was not reopened.
+
 ## The next Rust bridge removes repeated metadata work
 
 The last complete public result identifies **1,041** substantial Rust
