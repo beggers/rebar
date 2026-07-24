@@ -83,6 +83,10 @@ Independent validation rejects the report, so this attempt is
 the full public interface, caching, and millions of generated examples
 remain **NOT RUN**. A complete drop-in replacement is not yet proven.
 
+The [separately frozen failure audit](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V15-FAILURE.md)
+distinguishes the stored-JSON hash from the original test's conflicting
+Unicode-validation hash. Its dedicated failure record is **NOT WRITTEN**.
+
 ## Larger fair speed comparison
 
 The previously frozen [8,192-example public comparison](performance/postfinal-public-v7/PROTOCOL.md)

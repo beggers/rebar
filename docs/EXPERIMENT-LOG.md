@@ -7,6 +7,40 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze an independently validated record of the real reference failure
+
+First preserve and push the complete original false-pass Python evidence
+in `b8fd5dad`; do not rerun its reference or alter its bytes. Prepare the
+separate
+[actual failure-preservation protocol](../oracle/cpython-3.14.6/PUBLIC-CONTRACT-V15-FAILURE.md)
+and [candidate-free incident recorder](../tools/python_re_universal_public_oracle_stage15_failure.py).
+Their respective SHA-256 values are
+`6aa2b8e5bcd6867af60c570d19508a67e0094eedca4ab815266e0f91e2c83b03`
+and `07a522f263cd9e0baad022f91988d034b3cde3013b143bd1f9a77174fa0b58b6`.
+
+An earlier recorder draft exposes the same underlying error: its
+synthetic checks pass, but it confuses the two actual digest
+implementations and cannot authenticate the real failure. Reject that
+draft before freezing or writing it. Require the corrected recorder to
+distinguish the ordinary stored-JSON transport hash
+`0d6a74b1f923436c14569bfdd84431e4251f3bb8dd3129fbbcaf82a47f906b94`
+from the original surrogate-transforming validator hash
+`7a3bed83093800085fe1bd084820108142929f60e37632b3c24a02c6a4584d72`.
+
+The final source independently passes **62** synthetic controls and
+retains the original **1,734** behavior-oracle safeguards. Independently
+execute the complete real in-memory preflight: authenticate the unchanged
+original report and all **7,168** actual records; capture both real
+validator rejections; build and validate the full truthful **FAIL**
+record; serialize, parse, and validate it again; and rehash the original
+evidence. Do not create an output, start a candidate, time an engine, or
+open a performance case.
+
+The actual one-use additive failure record remains **NOT WRITTEN** at
+this source-freeze checkpoint. All three broad-test candidate runs
+remain **NOT RUN**, and performance remains **NOT MEASURED**. Commit and
+push the exact recorder and protocol before creating the failure record.
+
 ## Preserve the genuine failed 3,584-case Python self-oracle
 
 First freeze and push the complete version-fifteen public-behavior
