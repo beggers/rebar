@@ -1,0 +1,1619 @@
+{
+  "actual_explicit_original_worker_environment": {
+    "LC_ALL": "C",
+    "PATH": "/usr/bin:/bin",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONHASHSEED": "0",
+    "PYTHONPATH": "/home/dev-user/src/rebar"
+  },
+  "actual_invoking_controller": "V12",
+  "actual_invoking_controller_path": "tools/postfinal_current_build_proofs_v12.py",
+  "actual_invoking_controller_sha256": "81a519fa4890d5a7f6901d58c9154711be116fd7de4b081c0c052d64db481b3f",
+  "actual_original_worker_command": [
+    "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+    "-I",
+    "-B",
+    "-c",
+    "import json,sys;from pathlib import Path;sys.path.insert(0,sys.argv[1]);from tools import rust_v8_multi_candidate_contract as c;s=c.SPECS[sys.argv[2]];r,v,e=c.run_gate(s,Path(sys.argv[3]),Path(sys.argv[4]),Path(sys.argv[5]));print(json.dumps(v,ensure_ascii=True,allow_nan=False,sort_keys=True));raise SystemExit(e)",
+    "/home/dev-user/src/rebar",
+    "candidates.vm_candidate",
+    "/home/dev-user/src/rebar/candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass.json.gz",
+    "/tmp/rebar-v12-original-deep-vm-ou06x80a/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V12-PRIVATE.json.gz",
+    "/tmp/rebar-v12-original-deep-vm-ou06x80a"
+  ],
+  "actual_original_worker_returncode": 0,
+  "actual_original_worker_stderr": {
+    "observed_bytes": 0,
+    "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "observed_stream_complete": true,
+    "preview_base64": "",
+    "preview_bytes": 0,
+    "preview_complete": true
+  },
+  "actual_original_worker_stdout": {
+    "observed_bytes": 3478,
+    "observed_sha256": "cb288bcf2e5162f70744432f824bfc176a6df94a20bf55c6121d59b5954d734d",
+    "observed_stream_complete": true,
+    "preview_base64": "eyJjYW5kaWRhdGVfZmFtaWx5IjogIkMiLCAiY2FuZGlkYXRlX21vZHVsZSI6ICJjYW5kaWRhdGVzLnZtX2NhbmRpZGF0ZSIsICJjYW5kaWRhdGVfc2hhMjU2IjogImIxODRmMzM4ODMyMDkwOWIzYzI4ZmJkM2NlOWMxNWNlZmM5OTJkM2U4NTJlOTQ5NWFkOGZiNTAzZDFjYmFhZDgiLCAiY2hlY2tzIjogMzkzLCAiY3Jvc3NfZW5naW5lX2d1YXJkX2NvdW50IjogMTAsICJkaWZmZXJlbnRpYWxfcG9pc29uX3NlbGZfdGVzdHMiOiB7ImNoYW5nZWRfb2JzZXJ2YXRpb25fcG9pc29uIjogIlBBU1MiLCAiaWRlbnRpY2FsX3JlZmVyZW5jZSI6ICJQQVNTIiwgIm1pc3Npbmdfb2JzZXJ2YXRpb25fcG9pc29uIjogIlBBU1MifSwgImVkZ2Vfb3JhY2xlIjogeyJhcmNoaXZlX3NoYTI1NiI6ICJhMzg5Yzc5Y2RlZDA0ZGI0NzhjNjI0YzVmNDMzNWVhNzNjN2Y2YzE5ODRkMjUyYjgxNzBjMzIzZTEyMzNmNTRhIiwgImNhbmRpZGF0ZV9hcnRpZmFjdHMiOiBbeyJwYXRoIjogImNhbmRpZGF0ZXMvX3ZtX25hdGl2ZS5jcHl0aG9uLTMxNC14ODZfNjQtbGludXgtZ251LnNvIiwgInJvbGUiOiAibmF0aXZlLWJyaWRnZSIsICJzaGEyNTYiOiAiOTMwODU2M2Y3NTQxZjdiOWY1NmFmYzc5NjVhNDdhZTRkNGQwMGIxYTk0ZGI4ODU3ODkxZTQ5M2E4MmFlNTE0OCJ9LCB7InBhdGgiOiAiY2FuZGlkYXRlcy92bV9jYW5kaWRhdGUucHkiLCAicm9sZSI6ICJwdWJsaWMtcHl0aG9uIiwgInNoYTI1NiI6ICIyYmQ4Y2Q2ZDM4NDRkNmNkOGM5NGYzMzg4MDNiNDE2NzFkNmFhMWU5OTk4OTdlMjFhODFjYmU5MTE4MmViMmZiIn1dLCAiY2FuZGlkYXRlX3NoYTI1NiI6ICJiMzRjMmZjZDM2Mzk2YzMzNzMzMDhkODA4ODljNGU4NTU2MDNiZmIzNGJmNWMwY2U1MjcyNWQyYmRhMDMyNTI2IiwgImNhdGVnb3J5X2NvdW50IjogNDksICJjaGVja3MiOiAyMjMxOTgsICJmYWlsZWQiOiAwLCAiZmFtaWx5IjogIkMiLCAibW9kdWxlIjogImNhbmRpZGF0ZXMudm1fY2FuZGlkYXRlIiwgInBhdGgiOiAiL2hvbWUvZGV2LXVzZXIvc3JjL3JlYmFyL2NhbmRpZGF0ZXMvZXZpZGVuY2UvcnVzdC12Ny1lZGdlLW9yYWNsZS12bS1wb3N0ZmluYWwtY3VycmVudC1idWlsZC12MTEtcXVhbGlmaWVkLXBhc3MuanNvbi5neiIsICJwcm9kdWN0aW9uX2FydGlmYWN0cyI6IFt7InBhdGgiOiAiY2FuZGlkYXRlcy9fdm1fbmF0aXZlLmNweXRob24tMzE0LXg4Nl82NC1saW51eC1nbnUuc28iLCAicm9sZSI6ICJuYXRpdmUtYnJpZGdlIiwgInNoYTI1NiI6ICI5MzA4NTYzZjc1NDFmN2I5ZjU2YWZjNzk2NWE0N2FlNGQ0ZDAwYjFhOTRkYjg4NTc4OTFlNDkzYTgyYWU1MTQ4In0sIHsicGF0aCI6ICJjYW5kaWRhdGVzL192bV9uYXRpdmUuYyIsICJyb2xlIjogIm5hdGl2ZS1zb3VyY2UiLCAic2hhMjU2IjogImE1MTZhZThmMjQwOWFmMDU0YjQ1NjA2OGU0MDNkZjYzZDhmZWEwMjlhNTE2Y2UxYWRiMjJlZTVmODM2YTgxOWMifSwgeyJwYXRoIjogImNhbmRpZGF0ZXMvdm1fY2FuZGlkYXRlLnB5IiwgInJvbGUiOiAicHVibGljLXB5dGhvbiIsICJzaGEyNTYiOiAiMmJkOGNkNmQzODQ0ZDZjZDhjOTRmMzM4ODAzYjQxNjcxZDZhYTFlOTk5ODk3ZTIxYTgxY2JlOTExODJlYjJmYiJ9XSwgInJlZmVyZW5jZV9zaGEyNTYiOiAiYjM0YzJmY2QzNjM5NmMzMzczMzA4ZDgwODg5YzRlODU1NjAzYmZiMzRiZjVjMGNlNTI3MjVkMmJkYTAzMjUyNiIsICJzY2hlbWEiOiAicmViYXItdjctaW5kZXBlbmRlbnQtZWRnZS1vcmFjbGUtdjEiLCAic2NyaXB0X3NoYTI1NiI6ICJmZTZhMjYzYTQ4ZjI0M2VhMDJmYWFhNzhmYzNiYmQwNTEyMzNhMmIyMjIxOTY3YTVmNzZkZDFiYjc5ZDI0MmNhIiwgInNlZWQiOiAyMDI2MDcyMzI5fSwgImV2aWRlbmNlX3BhdGgiOiAiL3RtcC9yZWJhci12MTItb3JpZ2luYWwtZGVlcC12bS1vdTA2eDgwYS9SVVNULVY4LURFRVAtQ09OVFJBQ1QtQy1QT1NURklOQUwtQ1VSUkVOVC1CVUlMRC1WMTItUFJJVkFURS5qc29uLmd6IiwgImV2aWRlbmNlX3NoYTI1NiI6ICJjMWVlY2VlNDUzNmQ4ZmJkZDgyZTJkMzQwMGVhNTE3MTNjMjdjZTJmYzExMjExNTgwZDM3NjJjNjE1NTFiNDczIiwgImZpeHR1cmVfc2hhMjU2IjogImM3MmE1ZTQ3ZjE1Yzk0Y2UxM2NlMzRkNDkxOGMwNWVmODFlZWE1YjAxMGFjMTE5YjI1NTI2NGU2MDkzOWVmMTYiLCAiZm9yYmlkZGVuX3JlZ2V4X2d1YXJkcyI6IDEzLCAiZnJvemVuX2ZhaWx1cmVfZXZpZGVuY2UiOiB7ImFyY2hpdmVfc2hhMjU2IjogImRiNDNjYmY4YmUxZDY4OTFlYjRmMDA5YjhhZTkyOTk1YTY0MzRmOTc1M2I5NDRmYmYwYThlZDBiNDQyMzcxOTIiLCAicGF0aCI6ICJjYW5kaWRhdGVzL2F1ZGl0cy9SVVNULVY4LURFRVAtQ09OVFJBQ1QuanNvbi5neiIsICJwdWJsaWNfbWlzbWF0Y2hfY291bnQiOiAxMDQsICJzdGF0dXMiOiAiRkFJTCJ9LCAiaG9sZG91dCI6ICJOT1QgQUNDRVNTRUQiLCAiaW1wbGVtZW50YXRpb25fcHJpdmF0ZV9nY190b3BvbG9neV9kaWZmZXJlbmNlX2NvdW50IjogMSwgIm5hdGl2ZV9hcnRpZmFjdHMiOiBbeyJwYXRoIjogImNhbmRpZGF0ZXMvX3ZtX25hdGl2ZS5jcHl0aG9uLTMxNC14ODZfNjQtbGludXgtZ251LnNvIiwgInJvbGUiOiAibmF0aXZlLWJyaWRnZSIsICJzaGEyNTYiOiAiOTMwODU2M2Y3NTQxZjdiOWY1NmFmYzc5NjVhNDdhZTRkNGQwMGIxYTk0ZGI4ODU3ODkxZTQ5M2E4MmFlNTE0OCJ9LCB7InBhdGgiOiAiY2FuZGlkYXRlcy9fdm1fbmF0aXZlLmMiLCAicm9sZSI6ICJuYXRpdmUtc291cmNlIiwgInNoYTI1NiI6ICJhNTE2YWU4ZjI0MDlhZjA1NGI0NTYwNjhlNDAzZGY2M2Q4ZmVhMDI5YTUxNmNlMWFkYjIyZWU1ZjgzNmE4MTljIn0sIHsicGF0aCI6ICJjYW5kaWRhdGVzL3ZtX2NhbmRpZGF0ZS5weSIsICJyb2xlIjogInB1YmxpYy1weXRob24iLCAic2hhMjU2IjogIjJiZDhjZDZkMzg0NGQ2Y2Q4Yzk0ZjMzODgwM2I0MTY3MWQ2YWExZTk5OTg5N2UyMWE4MWNiZTkxMTgyZWIyZmIifV0sICJwZXJmb3JtYW5jZSI6ICJOT1QgTUVBU1VSRUQiLCAicHVibGljX21pc21hdGNoX2NvdW50IjogMCwgInB1YmxpY19taXNtYXRjaF9mYW1pbHlfY291bnRzIjoge30sICJweXRob24iOiAiMy4xNC42IiwgInJlZmVyZW5jZV9hX3NoYTI1NiI6ICJiMTg0ZjMzODgzMjA5MDliM2MyOGZiZDNjZTljMTVjZWZjOTkyZDNlODUyZTk0OTVhZDhmYjUwM2QxY2JhYWQ4IiwgInJlZmVyZW5jZV9iX3NoYTI1NiI6ICJiMTg0ZjMzODgzMjA5MDliM2MyOGZiZDNjZTljMTVjZWZjOTkyZDNlODUyZTk0OTVhZDhmYjUwM2QxY2JhYWQ4IiwgInNjaGVtYSI6ICJyZWJhci1ydXN0LXY4LWRlZXAtcHVibGljLWNvbnRyYWN0LXYxIiwgInNlZWQiOiAyMDI2MDcyMzQ3LCAic2VlZGVkX2Nhc2VfY291bnQiOiA2NCwgInN0YXR1cyI6ICJQQVNTIiwgInN0ZGxpYl92c19zdGRsaWJfbWlzbWF0Y2hlcyI6IDAsICJzdWl0ZV9zaGEyNTYiOiAiYmE0YjY0MGQxMjQ0NGE1MzQ2ZDkxOGEwMzlkOGE3YTlmZWYwYzc4YTU0ZjZiNjZjNmYwZWIwYzlkZGRiZTk3OCJ9Cg==",
+    "preview_bytes": 3478,
+    "preview_complete": true
+  },
+  "actual_retry_protocol_path": "oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V12.md",
+  "actual_retry_protocol_sha256": "f74ccaf19f836f801de34aaf3228f9bcd14aabe88032ebee4dbe886247ec6b40",
+  "actual_v10_base_report_sha256": "589321a768e10c52f039a68acb211574ec884598771ede2152f91994cc69f353",
+  "actual_v10_strict_report_sha256": "d8f31dd480bdba530a454b38428a23ef347c6e3cce7796f8992d6e7767381f4b",
+  "actual_verified_parent_environment": {
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONHASHSEED": "0",
+    "PYTHONPATH": "/home/dev-user/src/rebar"
+  },
+  "all_family_audited_provenance": {
+    "all_family_audit_qualified": true,
+    "all_family_native_elf_sha256_by_path": {
+      "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so": "382483ce462aaf31fa067b86db606bc5d2d912796026366a6baf4bed11fb8a77",
+      "candidates/_rust_engine.so": "d590300720215718782227dd8da1192047b4781bdb41ed94446cac06ba880e84",
+      "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so": "9308563f7541f7b9f56afc7965a47ae4d4d00b1a94db8857891e493a82ae5148",
+      "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so": "9df530874eed4387f87f13de14b5af51b34ea0d447422faaf8bdb5032b40681f",
+      "candidates/_zig_probe.so": "96b899f8c5f25e4c94fe029d6218c0408cd20f7a86d661bcc4ce891648f17cb6"
+    },
+    "all_family_source_sha256_by_path": {
+      "candidates/_vm_native.c": "a516ae8f2409af054b456068e403df63d8fea029a516ce1adb22ee5f836a819c",
+      "candidates/rust/py_bridge.c": "81e46602a292e3826121dcf6cdfa231af9d66d62a9a50311df3aa841512edead",
+      "candidates/rust/src/lib.rs": "3a2ab20885daea11bbc90cb9707a154174742f836e818521c1d00e2a0afd0b64",
+      "candidates/rust/src/newline.rs": "13216ffbea967af121c77d57abe14906030e7f3a6906c554399511154a3d6d8b",
+      "candidates/rust/src/search.rs": "4612c86424b9cbcb193d7ace521f359d7e3507281e83d3bf7e7ef7d189dd68fe",
+      "candidates/rust/src/stack.rs": "5198a056e99bde5632169cfc5b07ad913910cdb1b30785dad4744ccb9a30809e",
+      "candidates/rust/src/unicode_tables.rs": "f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af",
+      "candidates/rust_candidate.py": "20d0f690cf88ae67652d273df7548a188feb4676718c86e80dd4e2a1829c8127",
+      "candidates/vm_candidate.py": "2bd8cd6d3844d6cd8c94f338803b41671d6aa1e999897e21a81cbe91182eb2fb",
+      "candidates/zig/mini_regex.zig": "539bf5d378e0c2845c01519fcce62f1ef5e68610f477912c44a03027fb67a346",
+      "candidates/zig/py_bridge.c": "302bfdd130db5a9e12043ccb98f4e844d320852b9f9210849c326c4341bc01e7",
+      "candidates/zig_candidate.py": "07e9fa19af8fe9938dc8ed5170e30a478ff56f0d04cd2488a0bd1869e28201cc"
+    }
+  },
+  "campaign_qualified": true,
+  "candidate_family": "C",
+  "candidate_module": "candidates.vm_candidate",
+  "complete_original_deep_candidate_sha256": "b184f3388320909b3c28fbd3ce9c15cefc992d3e852e9495ad8fb503d1cbaad8",
+  "complete_original_deep_checks": 393,
+  "complete_original_deep_public_mismatch_count": 0,
+  "complete_original_deep_reference_sha256": "b184f3388320909b3c28fbd3ce9c15cefc992d3e852e9495ad8fb503d1cbaad8",
+  "complete_original_deep_seeded_cases": 64,
+  "complete_original_producer_bytes_preserved": true,
+  "corrected_v10_native_owner_after": {
+    "benchmark_or_timing_executed": false,
+    "candidate_module": "candidates.vm_candidate",
+    "external_engine_guard_count": 15,
+    "external_regex_packages": 0,
+    "family": "vm",
+    "foreign_engine_guard_observations": [
+      {
+        "blocked": true,
+        "module": "_regex"
+      },
+      {
+        "blocked": true,
+        "module": "candidates._rust_bridge"
+      },
+      {
+        "blocked": true,
+        "module": "candidates._zig_bridge"
+      },
+      {
+        "blocked": true,
+        "module": "candidates.ast_candidate"
+      },
+      {
+        "blocked": true,
+        "module": "candidates.rust_candidate"
+      },
+      {
+        "blocked": true,
+        "module": "candidates.zig_candidate"
+      },
+      {
+        "blocked": true,
+        "module": "hyperscan"
+      },
+      {
+        "blocked": true,
+        "module": "onig"
+      },
+      {
+        "blocked": true,
+        "module": "oniguruma"
+      },
+      {
+        "blocked": true,
+        "module": "pcre"
+      },
+      {
+        "blocked": true,
+        "module": "pcre2"
+      },
+      {
+        "blocked": true,
+        "module": "pyre2"
+      },
+      {
+        "blocked": true,
+        "module": "re2"
+      },
+      {
+        "blocked": true,
+        "module": "regex"
+      },
+      {
+        "blocked": true,
+        "module": "rure"
+      }
+    ],
+    "foreign_engine_guard_observations_after": [
+      {
+        "blocked": true,
+        "module": "_regex"
+      },
+      {
+        "blocked": true,
+        "module": "candidates._rust_bridge"
+      },
+      {
+        "blocked": true,
+        "module": "candidates._zig_bridge"
+      },
+      {
+        "blocked": true,
+        "module": "candidates.ast_candidate"
+      },
+      {
+        "blocked": true,
+        "module": "candidates.rust_candidate"
+      },
+      {
+        "blocked": true,
+        "module": "candidates.zig_candidate"
+      },
+      {
+        "blocked": true,
+        "module": "hyperscan"
+      },
+      {
+        "blocked": true,
+        "module": "onig"
+      },
+      {
+        "blocked": true,
+        "module": "oniguruma"
+      },
+      {
+        "blocked": true,
+        "module": "pcre"
+      },
+      {
+        "blocked": true,
+        "module": "pcre2"
+      },
+      {
+        "blocked": true,
+        "module": "pyre2"
+      },
+      {
+        "blocked": true,
+        "module": "re2"
+      },
+      {
+        "blocked": true,
+        "module": "regex"
+      },
+      {
+        "blocked": true,
+        "module": "rure"
+      }
+    ],
+    "genuine_matching_executed": true,
+    "guard": {
+      "cached_regex_aliases_poisoned": 12,
+      "cpython_sre_blocked": true,
+      "cross_family_blocked": true,
+      "enabled": true,
+      "family": "vm",
+      "foreign_dynamic_libraries_blocked": true,
+      "native_loader_aliases_blocked": [
+        "ctypes.CDLL",
+        "ctypes.cdll.LoadLibrary",
+        "ctypes.cdll._dlltype",
+        "ctypes._dlopen",
+        "_ctypes.dlopen"
+      ],
+      "prohibited_modules": [
+        "_sre",
+        "candidates.ast_candidate",
+        "candidates.rust_candidate",
+        "candidates.zig_candidate",
+        "pcre",
+        "pcre2",
+        "re",
+        "re2",
+        "regex"
+      ],
+      "stdlib_re_blocked": true,
+      "third_party_regex_blocked": true
+    },
+    "guarded_builtin_import_unchanged": true,
+    "holdout_or_case_fixture_access": false,
+    "loaded_candidate_modules": [
+      "candidates._vm_native",
+      "candidates.vm_candidate"
+    ],
+    "match_repr_checks": 2,
+    "native_binary_sha256": {
+      "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so": "9308563f7541f7b9f56afc7965a47ae4d4d00b1a94db8857891e493a82ae5148"
+    },
+    "native_bridge_module": "candidates._vm_native",
+    "native_loader_guard_count": 5,
+    "native_loader_guard_observations": [
+      {
+        "alias": "ctypes.CDLL",
+        "blocked": true
+      },
+      {
+        "alias": "ctypes.cdll.LoadLibrary",
+        "blocked": true
+      },
+      {
+        "alias": "ctypes.cdll._dlltype",
+        "blocked": true
+      },
+      {
+        "alias": "ctypes._dlopen",
+        "blocked": true
+      },
+      {
+        "alias": "_ctypes.dlopen",
+        "blocked": true
+      }
+    ],
+    "native_loader_guard_observations_after": [
+      {
+        "alias": "ctypes.CDLL",
+        "blocked": true
+      },
+      {
+        "alias": "ctypes.cdll.LoadLibrary",
+        "blocked": true
+      },
+      {
+        "alias": "ctypes.cdll._dlltype",
+        "blocked": true
+      },
+      {
+        "alias": "ctypes._dlopen",
+        "blocked": true
+      },
+      {
+        "alias": "_ctypes.dlopen",
+        "blocked": true
+      }
+    ],
+    "native_type_identity_verified": true,
+    "passed": true,
+    "persistent_cross_engine_guard": true,
+    "poisoned_module_bindings_unchanged": true,
+    "protected_loader_identities_unchanged": true,
+    "public_cpython_module_verified": true,
+    "public_type_ownership": {
+      "Match": {
+        "name": "Match",
+        "native_bridge_identity": true,
+        "native_owner_module": "candidates._vm_native",
+        "public_module": "re",
+        "public_type_identity": true,
+        "qualified_name": "Match"
+      },
+      "Pattern": {
+        "name": "Pattern",
+        "native_bridge_identity": false,
+        "native_owner_module": "candidates.vm_candidate",
+        "public_module": "re",
+        "public_type_identity": true,
+        "qualified_name": "Pattern"
+      }
+    },
+    "records": [
+      {
+        "actual_repr": "<re.Match object; span=(1, 12), match='abracadabra'>",
+        "bound_signature_error": {
+          "message": "no signature found for builtin <built-in method group of re.Match object at 0xADDRESS>",
+          "passed": true,
+          "type": "ValueError"
+        },
+        "class_signature_error": {
+          "message": "no signature found for builtin <method 'group' of 're.Match' objects>",
+          "passed": true,
+          "type": "ValueError"
+        },
+        "compiled_pattern_type_identity": true,
+        "expected_repr": "<re.Match object; span=(1, 12), match='abracadabra'>",
+        "genuine_matching_executed": true,
+        "id": "vm:match-repr:str",
+        "kind": "str",
+        "match_qualified_name": "Match",
+        "matched_representation": "'abracadabra'",
+        "native_owner_module": "candidates._vm_native",
+        "native_type_identity": true,
+        "passed": true,
+        "pattern_readonly_groupindex_error": {
+          "message": "attribute 'groupindex' of 're.Pattern' objects is not writable",
+          "passed": true,
+          "type": "AttributeError"
+        },
+        "pattern_representation": "'(.+)(.*?)\\\\1'",
+        "public_bridge_type_identity": true,
+        "public_pattern_type_module": "re",
+        "public_type_module": "re",
+        "readonly_errors": {
+          "lastgroup": {
+            "message": "attribute 'lastgroup' of 're.Match' objects is not writable",
+            "passed": true,
+            "type": "AttributeError"
+          },
+          "lastindex": {
+            "message": "attribute 'lastindex' of 're.Match' objects is not writable",
+            "passed": true,
+            "type": "AttributeError"
+          },
+          "regs": {
+            "message": "attribute 'regs' of 're.Match' objects is not writable",
+            "passed": true,
+            "type": "AttributeError"
+          }
+        },
+        "result_type_identity": true,
+        "role": "vm",
+        "span": [
+          1,
+          12
+        ],
+        "subject_representation": "'[abracadabra]'",
+        "weakref_error": {
+          "message": "cannot create weak reference to 're.Match' object",
+          "passed": true,
+          "type": "TypeError"
+        }
+      },
+      {
+        "actual_repr": "<re.Match object; span=(1, 12), match=b'abracadabra'>",
+        "bound_signature_error": {
+          "message": "no signature found for builtin <built-in method group of re.Match object at 0xADDRESS>",
+          "passed": true,
+          "type": "ValueError"
+        },
+        "class_signature_error": {
+          "message": "no signature found for builtin <method 'group' of 're.Match' objects>",
+          "passed": true,
+          "type": "ValueError"
+        },
+        "compiled_pattern_type_identity": true,
+        "expected_repr": "<re.Match object; span=(1, 12), match=b'abracadabra'>",
+        "genuine_matching_executed": true,
+        "id": "vm:match-repr:bytes",
+        "kind": "bytes",
+        "match_qualified_name": "Match",
+        "matched_representation": "b'abracadabra'",
+        "native_owner_module": "candidates._vm_native",
+        "native_type_identity": true,
+        "passed": true,
+        "pattern_readonly_groupindex_error": {
+          "message": "attribute 'groupindex' of 're.Pattern' objects is not writable",
+          "passed": true,
+          "type": "AttributeError"
+        },
+        "pattern_representation": "b'(.+)(.*?)\\\\1'",
+        "public_bridge_type_identity": true,
+        "public_pattern_type_module": "re",
+        "public_type_module": "re",
+        "readonly_errors": {
+          "lastgroup": {
+            "message": "attribute 'lastgroup' of 're.Match' objects is not writable",
+            "passed": true,
+            "type": "AttributeError"
+          },
+          "lastindex": {
+            "message": "attribute 'lastindex' of 're.Match' objects is not writable",
+            "passed": true,
+            "type": "AttributeError"
+          },
+          "regs": {
+            "message": "attribute 'regs' of 're.Match' objects is not writable",
+            "passed": true,
+            "type": "AttributeError"
+          }
+        },
+        "result_type_identity": true,
+        "role": "vm",
+        "span": [
+          1,
+          12
+        ],
+        "subject_representation": "b'[abracadabra]'",
+        "weakref_error": {
+          "message": "cannot create weak reference to 're.Match' object",
+          "passed": true,
+          "type": "TypeError"
+        }
+      }
+    ],
+    "regex_guard_count": 13,
+    "regex_guard_observations": [
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "compile"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "search"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "match"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "fullmatch"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "findall"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "finditer"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "split"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "sub"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "subn"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "_compile"
+      },
+      {
+        "blocked": true,
+        "module": "_sre",
+        "name": "compile"
+      },
+      {
+        "blocked": true,
+        "module": "re._compiler",
+        "name": "compile"
+      },
+      {
+        "blocked": true,
+        "module": "re._parser",
+        "name": "parse"
+      }
+    ],
+    "regex_guard_observations_after": [
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "compile"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "search"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "match"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "fullmatch"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "findall"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "finditer"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "split"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "sub"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "subn"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "_compile"
+      },
+      {
+        "blocked": true,
+        "module": "_sre",
+        "name": "compile"
+      },
+      {
+        "blocked": true,
+        "module": "re._compiler",
+        "name": "compile"
+      },
+      {
+        "blocked": true,
+        "module": "re._parser",
+        "name": "parse"
+      }
+    ],
+    "result": "PASS",
+    "schema": "rebar-postfinal-from-scratch-audit-v10-native-owner-worker",
+    "stage07_guard_sentinel": {
+      "after_matching_verified": true,
+      "before_matching_verified": true,
+      "fresh_sentinel_rejected": true,
+      "imported_sentinel_identity": true,
+      "live_module_rejected": true,
+      "same_name_forged_sentinel_rejected": true,
+      "sentinel_type_exact": true,
+      "stage07_source_sha256": "150abcfc597658f48d64c04053889bd4b299c75ad7413bc1cafa5f864e9e7c25",
+      "subclass_sentinel_rejected": true,
+      "sys_modules_sentinel_identity": true
+    },
+    "stage07_matcher_descendant_guards": {
+      "after_matching_verified": true,
+      "all_cached_aliases_same_sentinel": true,
+      "before_matching_verified": true,
+      "cached_alias_count": 1,
+      "discovered_descendants": [
+        "re._casefix",
+        "re._compiler",
+        "re._constants",
+        "re._parser"
+      ],
+      "helper_alias_replacement_count": 1,
+      "observations_after": [
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._casefix",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        },
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._compiler",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        },
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._constants",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        },
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._parser",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        }
+      ],
+      "observations_before": [
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._casefix",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        },
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._compiler",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        },
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._constants",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        },
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._parser",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        }
+      ],
+      "required_descendants": [
+        "re._compiler",
+        "re._parser"
+      ],
+      "stage07_source_sha256": "150abcfc597658f48d64c04053889bd4b299c75ad7413bc1cafa5f864e9e7c25"
+    },
+    "standard_pickle_check_count": 16,
+    "standard_pickle_checks": [
+      {
+        "argument": "str",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 0
+      },
+      {
+        "argument": "str",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 2
+      },
+      {
+        "argument": "str",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 4
+      },
+      {
+        "argument": "str",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 5
+      },
+      {
+        "argument": "bytes",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 0
+      },
+      {
+        "argument": "bytes",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 2
+      },
+      {
+        "argument": "bytes",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 4
+      },
+      {
+        "argument": "bytes",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 5
+      },
+      {
+        "argument": "str",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 0
+      },
+      {
+        "argument": "str",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 2
+      },
+      {
+        "argument": "str",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 4
+      },
+      {
+        "argument": "str",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 5
+      },
+      {
+        "argument": "bytes",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 0
+      },
+      {
+        "argument": "bytes",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 2
+      },
+      {
+        "argument": "bytes",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 4
+      },
+      {
+        "argument": "bytes",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 5
+      }
+    ],
+    "standard_pickle_failure_count": 0,
+    "status": "PASS"
+  },
+  "corrected_v10_native_owner_before": {
+    "benchmark_or_timing_executed": false,
+    "candidate_module": "candidates.vm_candidate",
+    "external_engine_guard_count": 15,
+    "external_regex_packages": 0,
+    "family": "vm",
+    "foreign_engine_guard_observations": [
+      {
+        "blocked": true,
+        "module": "_regex"
+      },
+      {
+        "blocked": true,
+        "module": "candidates._rust_bridge"
+      },
+      {
+        "blocked": true,
+        "module": "candidates._zig_bridge"
+      },
+      {
+        "blocked": true,
+        "module": "candidates.ast_candidate"
+      },
+      {
+        "blocked": true,
+        "module": "candidates.rust_candidate"
+      },
+      {
+        "blocked": true,
+        "module": "candidates.zig_candidate"
+      },
+      {
+        "blocked": true,
+        "module": "hyperscan"
+      },
+      {
+        "blocked": true,
+        "module": "onig"
+      },
+      {
+        "blocked": true,
+        "module": "oniguruma"
+      },
+      {
+        "blocked": true,
+        "module": "pcre"
+      },
+      {
+        "blocked": true,
+        "module": "pcre2"
+      },
+      {
+        "blocked": true,
+        "module": "pyre2"
+      },
+      {
+        "blocked": true,
+        "module": "re2"
+      },
+      {
+        "blocked": true,
+        "module": "regex"
+      },
+      {
+        "blocked": true,
+        "module": "rure"
+      }
+    ],
+    "foreign_engine_guard_observations_after": [
+      {
+        "blocked": true,
+        "module": "_regex"
+      },
+      {
+        "blocked": true,
+        "module": "candidates._rust_bridge"
+      },
+      {
+        "blocked": true,
+        "module": "candidates._zig_bridge"
+      },
+      {
+        "blocked": true,
+        "module": "candidates.ast_candidate"
+      },
+      {
+        "blocked": true,
+        "module": "candidates.rust_candidate"
+      },
+      {
+        "blocked": true,
+        "module": "candidates.zig_candidate"
+      },
+      {
+        "blocked": true,
+        "module": "hyperscan"
+      },
+      {
+        "blocked": true,
+        "module": "onig"
+      },
+      {
+        "blocked": true,
+        "module": "oniguruma"
+      },
+      {
+        "blocked": true,
+        "module": "pcre"
+      },
+      {
+        "blocked": true,
+        "module": "pcre2"
+      },
+      {
+        "blocked": true,
+        "module": "pyre2"
+      },
+      {
+        "blocked": true,
+        "module": "re2"
+      },
+      {
+        "blocked": true,
+        "module": "regex"
+      },
+      {
+        "blocked": true,
+        "module": "rure"
+      }
+    ],
+    "genuine_matching_executed": true,
+    "guard": {
+      "cached_regex_aliases_poisoned": 12,
+      "cpython_sre_blocked": true,
+      "cross_family_blocked": true,
+      "enabled": true,
+      "family": "vm",
+      "foreign_dynamic_libraries_blocked": true,
+      "native_loader_aliases_blocked": [
+        "ctypes.CDLL",
+        "ctypes.cdll.LoadLibrary",
+        "ctypes.cdll._dlltype",
+        "ctypes._dlopen",
+        "_ctypes.dlopen"
+      ],
+      "prohibited_modules": [
+        "_sre",
+        "candidates.ast_candidate",
+        "candidates.rust_candidate",
+        "candidates.zig_candidate",
+        "pcre",
+        "pcre2",
+        "re",
+        "re2",
+        "regex"
+      ],
+      "stdlib_re_blocked": true,
+      "third_party_regex_blocked": true
+    },
+    "guarded_builtin_import_unchanged": true,
+    "holdout_or_case_fixture_access": false,
+    "loaded_candidate_modules": [
+      "candidates._vm_native",
+      "candidates.vm_candidate"
+    ],
+    "match_repr_checks": 2,
+    "native_binary_sha256": {
+      "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so": "9308563f7541f7b9f56afc7965a47ae4d4d00b1a94db8857891e493a82ae5148"
+    },
+    "native_bridge_module": "candidates._vm_native",
+    "native_loader_guard_count": 5,
+    "native_loader_guard_observations": [
+      {
+        "alias": "ctypes.CDLL",
+        "blocked": true
+      },
+      {
+        "alias": "ctypes.cdll.LoadLibrary",
+        "blocked": true
+      },
+      {
+        "alias": "ctypes.cdll._dlltype",
+        "blocked": true
+      },
+      {
+        "alias": "ctypes._dlopen",
+        "blocked": true
+      },
+      {
+        "alias": "_ctypes.dlopen",
+        "blocked": true
+      }
+    ],
+    "native_loader_guard_observations_after": [
+      {
+        "alias": "ctypes.CDLL",
+        "blocked": true
+      },
+      {
+        "alias": "ctypes.cdll.LoadLibrary",
+        "blocked": true
+      },
+      {
+        "alias": "ctypes.cdll._dlltype",
+        "blocked": true
+      },
+      {
+        "alias": "ctypes._dlopen",
+        "blocked": true
+      },
+      {
+        "alias": "_ctypes.dlopen",
+        "blocked": true
+      }
+    ],
+    "native_type_identity_verified": true,
+    "passed": true,
+    "persistent_cross_engine_guard": true,
+    "poisoned_module_bindings_unchanged": true,
+    "protected_loader_identities_unchanged": true,
+    "public_cpython_module_verified": true,
+    "public_type_ownership": {
+      "Match": {
+        "name": "Match",
+        "native_bridge_identity": true,
+        "native_owner_module": "candidates._vm_native",
+        "public_module": "re",
+        "public_type_identity": true,
+        "qualified_name": "Match"
+      },
+      "Pattern": {
+        "name": "Pattern",
+        "native_bridge_identity": false,
+        "native_owner_module": "candidates.vm_candidate",
+        "public_module": "re",
+        "public_type_identity": true,
+        "qualified_name": "Pattern"
+      }
+    },
+    "records": [
+      {
+        "actual_repr": "<re.Match object; span=(1, 12), match='abracadabra'>",
+        "bound_signature_error": {
+          "message": "no signature found for builtin <built-in method group of re.Match object at 0xADDRESS>",
+          "passed": true,
+          "type": "ValueError"
+        },
+        "class_signature_error": {
+          "message": "no signature found for builtin <method 'group' of 're.Match' objects>",
+          "passed": true,
+          "type": "ValueError"
+        },
+        "compiled_pattern_type_identity": true,
+        "expected_repr": "<re.Match object; span=(1, 12), match='abracadabra'>",
+        "genuine_matching_executed": true,
+        "id": "vm:match-repr:str",
+        "kind": "str",
+        "match_qualified_name": "Match",
+        "matched_representation": "'abracadabra'",
+        "native_owner_module": "candidates._vm_native",
+        "native_type_identity": true,
+        "passed": true,
+        "pattern_readonly_groupindex_error": {
+          "message": "attribute 'groupindex' of 're.Pattern' objects is not writable",
+          "passed": true,
+          "type": "AttributeError"
+        },
+        "pattern_representation": "'(.+)(.*?)\\\\1'",
+        "public_bridge_type_identity": true,
+        "public_pattern_type_module": "re",
+        "public_type_module": "re",
+        "readonly_errors": {
+          "lastgroup": {
+            "message": "attribute 'lastgroup' of 're.Match' objects is not writable",
+            "passed": true,
+            "type": "AttributeError"
+          },
+          "lastindex": {
+            "message": "attribute 'lastindex' of 're.Match' objects is not writable",
+            "passed": true,
+            "type": "AttributeError"
+          },
+          "regs": {
+            "message": "attribute 'regs' of 're.Match' objects is not writable",
+            "passed": true,
+            "type": "AttributeError"
+          }
+        },
+        "result_type_identity": true,
+        "role": "vm",
+        "span": [
+          1,
+          12
+        ],
+        "subject_representation": "'[abracadabra]'",
+        "weakref_error": {
+          "message": "cannot create weak reference to 're.Match' object",
+          "passed": true,
+          "type": "TypeError"
+        }
+      },
+      {
+        "actual_repr": "<re.Match object; span=(1, 12), match=b'abracadabra'>",
+        "bound_signature_error": {
+          "message": "no signature found for builtin <built-in method group of re.Match object at 0xADDRESS>",
+          "passed": true,
+          "type": "ValueError"
+        },
+        "class_signature_error": {
+          "message": "no signature found for builtin <method 'group' of 're.Match' objects>",
+          "passed": true,
+          "type": "ValueError"
+        },
+        "compiled_pattern_type_identity": true,
+        "expected_repr": "<re.Match object; span=(1, 12), match=b'abracadabra'>",
+        "genuine_matching_executed": true,
+        "id": "vm:match-repr:bytes",
+        "kind": "bytes",
+        "match_qualified_name": "Match",
+        "matched_representation": "b'abracadabra'",
+        "native_owner_module": "candidates._vm_native",
+        "native_type_identity": true,
+        "passed": true,
+        "pattern_readonly_groupindex_error": {
+          "message": "attribute 'groupindex' of 're.Pattern' objects is not writable",
+          "passed": true,
+          "type": "AttributeError"
+        },
+        "pattern_representation": "b'(.+)(.*?)\\\\1'",
+        "public_bridge_type_identity": true,
+        "public_pattern_type_module": "re",
+        "public_type_module": "re",
+        "readonly_errors": {
+          "lastgroup": {
+            "message": "attribute 'lastgroup' of 're.Match' objects is not writable",
+            "passed": true,
+            "type": "AttributeError"
+          },
+          "lastindex": {
+            "message": "attribute 'lastindex' of 're.Match' objects is not writable",
+            "passed": true,
+            "type": "AttributeError"
+          },
+          "regs": {
+            "message": "attribute 'regs' of 're.Match' objects is not writable",
+            "passed": true,
+            "type": "AttributeError"
+          }
+        },
+        "result_type_identity": true,
+        "role": "vm",
+        "span": [
+          1,
+          12
+        ],
+        "subject_representation": "b'[abracadabra]'",
+        "weakref_error": {
+          "message": "cannot create weak reference to 're.Match' object",
+          "passed": true,
+          "type": "TypeError"
+        }
+      }
+    ],
+    "regex_guard_count": 13,
+    "regex_guard_observations": [
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "compile"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "search"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "match"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "fullmatch"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "findall"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "finditer"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "split"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "sub"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "subn"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "_compile"
+      },
+      {
+        "blocked": true,
+        "module": "_sre",
+        "name": "compile"
+      },
+      {
+        "blocked": true,
+        "module": "re._compiler",
+        "name": "compile"
+      },
+      {
+        "blocked": true,
+        "module": "re._parser",
+        "name": "parse"
+      }
+    ],
+    "regex_guard_observations_after": [
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "compile"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "search"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "match"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "fullmatch"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "findall"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "finditer"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "split"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "sub"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "subn"
+      },
+      {
+        "blocked": true,
+        "module": "re",
+        "name": "_compile"
+      },
+      {
+        "blocked": true,
+        "module": "_sre",
+        "name": "compile"
+      },
+      {
+        "blocked": true,
+        "module": "re._compiler",
+        "name": "compile"
+      },
+      {
+        "blocked": true,
+        "module": "re._parser",
+        "name": "parse"
+      }
+    ],
+    "result": "PASS",
+    "schema": "rebar-postfinal-from-scratch-audit-v10-native-owner-worker",
+    "stage07_guard_sentinel": {
+      "after_matching_verified": true,
+      "before_matching_verified": true,
+      "fresh_sentinel_rejected": true,
+      "imported_sentinel_identity": true,
+      "live_module_rejected": true,
+      "same_name_forged_sentinel_rejected": true,
+      "sentinel_type_exact": true,
+      "stage07_source_sha256": "150abcfc597658f48d64c04053889bd4b299c75ad7413bc1cafa5f864e9e7c25",
+      "subclass_sentinel_rejected": true,
+      "sys_modules_sentinel_identity": true
+    },
+    "stage07_matcher_descendant_guards": {
+      "after_matching_verified": true,
+      "all_cached_aliases_same_sentinel": true,
+      "before_matching_verified": true,
+      "cached_alias_count": 1,
+      "discovered_descendants": [
+        "re._casefix",
+        "re._compiler",
+        "re._constants",
+        "re._parser"
+      ],
+      "helper_alias_replacement_count": 1,
+      "observations_after": [
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._casefix",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        },
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._compiler",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        },
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._constants",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        },
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._parser",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        }
+      ],
+      "observations_before": [
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._casefix",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        },
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._compiler",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        },
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._constants",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        },
+        {
+          "blocked": true,
+          "cache_identity": true,
+          "module": "re._parser",
+          "sentinel_identity": true,
+          "sentinel_type_exact": true
+        }
+      ],
+      "required_descendants": [
+        "re._compiler",
+        "re._parser"
+      ],
+      "stage07_source_sha256": "150abcfc597658f48d64c04053889bd4b299c75ad7413bc1cafa5f864e9e7c25"
+    },
+    "standard_pickle_check_count": 16,
+    "standard_pickle_checks": [
+      {
+        "argument": "str",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 0
+      },
+      {
+        "argument": "str",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 2
+      },
+      {
+        "argument": "str",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 4
+      },
+      {
+        "argument": "str",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 5
+      },
+      {
+        "argument": "bytes",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 0
+      },
+      {
+        "argument": "bytes",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 2
+      },
+      {
+        "argument": "bytes",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 4
+      },
+      {
+        "argument": "bytes",
+        "origin": "Pattern",
+        "passed": true,
+        "protocol": 5
+      },
+      {
+        "argument": "str",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 0
+      },
+      {
+        "argument": "str",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 2
+      },
+      {
+        "argument": "str",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 4
+      },
+      {
+        "argument": "str",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 5
+      },
+      {
+        "argument": "bytes",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 0
+      },
+      {
+        "argument": "bytes",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 2
+      },
+      {
+        "argument": "bytes",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 4
+      },
+      {
+        "argument": "bytes",
+        "origin": "Match",
+        "passed": true,
+        "protocol": 5
+      }
+    ],
+    "standard_pickle_failure_count": 0,
+    "status": "PASS"
+  },
+  "exclusive_creation": true,
+  "full_current_family_native_elf_sha256": {
+    "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so": "9308563f7541f7b9f56afc7965a47ae4d4d00b1a94db8857891e493a82ae5148"
+  },
+  "full_current_family_source_sha256": {
+    "candidates/_vm_native.c": "a516ae8f2409af054b456068e403df63d8fea029a516ce1adb22ee5f836a819c",
+    "candidates/vm_candidate.py": "2bd8cd6d3844d6cd8c94f338803b41671d6aa1e999897e21a81cbe91182eb2fb"
+  },
+  "holdout": "NOT ACCESSED",
+  "immutable_v11_format_builder_used": true,
+  "immutable_v11_format_validator_used": true,
+  "mode": "qualified-deep",
+  "original_v11_format_archive_bytes": 81265,
+  "original_v11_format_archive_path": "candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V11-PASS.json.gz",
+  "original_v11_format_archive_sha256": "c1eecee4536d8fbdd82e2d3400ea51713c27ce2fc11211580d3762c61551b473",
+  "original_v11_format_owner_proof_bytes": 49104,
+  "original_v11_format_owner_proof_path": "candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V11-PASS-PROOF.json",
+  "original_v11_format_owner_proof_schema": "rebar-postfinal-current-build-proofs-v11-qualified-deep-durable-proof",
+  "original_v11_format_owner_proof_sha256": "e1419f2268eec0e78f34039e2790a9e59d85c378a5bb892bd7124351d81ccb41",
+  "performance": "NOT MEASURED",
+  "preserved_actual_first_v11_failure": {
+    "actual_v11_controller_path": "tools/postfinal_current_build_proofs_v11.py",
+    "actual_v11_controller_sha256": "2895dd28b3dc69985cc0f6f8575398e8b8b10f58141f0612645a687478da9f04",
+    "actual_v11_first_child_exit_code": 0,
+    "actual_v11_first_child_stderr": {
+      "observed_bytes": 0,
+      "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "observed_stream_complete": true,
+      "preview_base64": "",
+      "preview_bytes": 0,
+      "preview_complete": true
+    },
+    "actual_v11_first_child_stdout": {
+      "observed_bytes": 4518,
+      "observed_sha256": "74251351cc4c347b89d138c00e9ad71a79527e3f801c03df2e8264dc5267a3da",
+      "observed_stream_complete": true,
+      "preview_base64": "eyJjYW5kaWRhdGVfZmFtaWx5IjogIlJVU1QiLCAiY2FuZGlkYXRlX21vZHVsZSI6ICJjYW5kaWRhdGVzLnJ1c3RfY2FuZGlkYXRlIiwgImNhbmRpZGF0ZV9zaGEyNTYiOiAiYjE4NGYzMzg4MzIwOTA5YjNjMjhmYmQzY2U5YzE1Y2VmYzk5MmQzZTg1MmU5NDk1YWQ4ZmI1MDNkMWNiYWFkOCIsICJjaGVja3MiOiAzOTMsICJjcm9zc19lbmdpbmVfZ3VhcmRfY291bnQiOiAxMCwgImRpZmZlcmVudGlhbF9wb2lzb25fc2VsZl90ZXN0cyI6IHsiY2hhbmdlZF9vYnNlcnZhdGlvbl9wb2lzb24iOiAiUEFTUyIsICJpZGVudGljYWxfcmVmZXJlbmNlIjogIlBBU1MiLCAibWlzc2luZ19vYnNlcnZhdGlvbl9wb2lzb24iOiAiUEFTUyJ9LCAiZWRnZV9vcmFjbGUiOiB7ImFyY2hpdmVfc2hhMjU2IjogIjM3ZGU5ZjI1NGRjM2VkYjcyYmZlMDRmNTFjZWE4YzUyODQ0OTA2NGZiYTYyZGYyNzMwMzJiYjVkN2I1OGI0MTkiLCAiY2FuZGlkYXRlX2FydGlmYWN0cyI6IFt7InBhdGgiOiAiY2FuZGlkYXRlcy9ydXN0L3B5X2JyaWRnZS5jIiwgInJvbGUiOiAiYnJpZGdlLXNvdXJjZSIsICJzaGEyNTYiOiAiODFlNDY2MDJhMjkyZTM4MjYxMjFkY2Y2Y2RmYTIzMWFmOWQ2NmQ2MmE5YTUwMzExZGYzYWE4NDE1MTJlZGVhZCJ9LCB7InBhdGgiOiAiY2FuZGlkYXRlcy9fcnVzdF9icmlkZ2UuY3B5dGhvbi0zMTQteDg2XzY0LWxpbnV4LWdudS5zbyIsICJyb2xlIjogIm5hdGl2ZS1icmlkZ2UiLCAic2hhMjU2IjogIjM4MjQ4M2NlNDYyYWFmMzFmYTA2N2I4NmRiNjA2YmM1ZDJkOTEyNzk2MDI2MzY2YTZiYWY0YmVkMTFmYjhhNzcifSwgeyJwYXRoIjogImNhbmRpZGF0ZXMvX3J1c3RfZW5naW5lLnNvIiwgInJvbGUiOiAibmF0aXZlLWVuZ2luZSIsICJzaGEyNTYiOiAiZDU5MDMwMDcyMDIxNTcxODc4MjIyN2RkOGRhMTE5MjA0N2I0NzgxYmRiNDFlZDk0NDQ2Y2FjMDZiYTg4MGU4NCJ9LCB7InBhdGgiOiAiY2FuZGlkYXRlcy9ydXN0L3NyYy9saWIucnMiLCAicm9sZSI6ICJuYXRpdmUtc291cmNlIiwgInNoYTI1NiI6ICIzYTJhYjIwODg1ZGFlYTExYmJjOTBjYjk3MDdhMTU0MTc0NzQyZjgzNmU4MTg1MjFjMWQwMGUyYTBhZmQwYjY0In0sIHsicGF0aCI6ICJjYW5kaWRhdGVzL3J1c3RfY2FuZGlkYXRlLnB5IiwgInJvbGUiOiAicHVibGljLXB5dGhvbiIsICJzaGEyNTYiOiAiMjBkMGY2OTBjZjg4YWU2NzY1MmQyNzNkZjc1NDhhMTg4ZmViNDY3NjcxOGM4NmU4MGRkNGUyYTE4MjljODEyNyJ9XSwgImNhbmRpZGF0ZV9zaGEyNTYiOiAiYjM0YzJmY2QzNjM5NmMzMzczMzA4ZDgwODg5YzRlODU1NjAzYmZiMzRiZjVjMGNlNTI3MjVkMmJkYTAzMjUyNiIsICJjYXRlZ29yeV9jb3VudCI6IDQ5LCAiY2hlY2tzIjogMjIzMTk4LCAiZmFpbGVkIjogMCwgImZhbWlseSI6ICJSVVNUIiwgIm1vZHVsZSI6ICJjYW5kaWRhdGVzLnJ1c3RfY2FuZGlkYXRlIiwgInBhdGgiOiAiL2hvbWUvZGV2LXVzZXIvc3JjL3JlYmFyL2NhbmRpZGF0ZXMvZXZpZGVuY2UvcnVzdC12Ny1lZGdlLW9yYWNsZS1ydXN0LXBvc3RmaW5hbC1jdXJyZW50LWJ1aWxkLXYxMS1xdWFsaWZpZWQtcGFzcy5qc29uLmd6IiwgInByb2R1Y3Rpb25fYXJ0aWZhY3RzIjogW3sicGF0aCI6ICJjYW5kaWRhdGVzL3J1c3QvcHlfYnJpZGdlLmMiLCAicm9sZSI6ICJicmlkZ2Utc291cmNlIiwgInNoYTI1NiI6ICI4MWU0NjYwMmEyOTJlMzgyNjEyMWRjZjZjZGZhMjMxYWY5ZDY2ZDYyYTlhNTAzMTFkZjNhYTg0MTUxMmVkZWFkIn0sIHsicGF0aCI6ICJjYW5kaWRhdGVzL19ydXN0X2JyaWRnZS5jcHl0aG9uLTMxNC14ODZfNjQtbGludXgtZ251LnNvIiwgInJvbGUiOiAibmF0aXZlLWJyaWRnZSIsICJzaGEyNTYiOiAiMzgyNDgzY2U0NjJhYWYzMWZhMDY3Yjg2ZGI2MDZiYzVkMmQ5MTI3OTYwMjYzNjZhNmJhZjRiZWQxMWZiOGE3NyJ9LCB7InBhdGgiOiAiY2FuZGlkYXRlcy9fcnVzdF9lbmdpbmUuc28iLCAicm9sZSI6ICJuYXRpdmUtZW5naW5lIiwgInNoYTI1NiI6ICJkNTkwMzAwNzIwMjE1NzE4NzgyMjI3ZGQ4ZGExMTkyMDQ3YjQ3ODFiZGI0MWVkOTQ0NDZjYWMwNmJhODgwZTg0In0sIHsicGF0aCI6ICJjYW5kaWRhdGVzL3J1c3Qvc3JjL2xpYi5ycyIsICJyb2xlIjogIm5hdGl2ZS1zb3VyY2UiLCAic2hhMjU2IjogIjNhMmFiMjA4ODVkYWVhMTFiYmM5MGNiOTcwN2ExNTQxNzQ3NDJmODM2ZTgxODUyMWMxZDAwZTJhMGFmZDBiNjQifSwgeyJwYXRoIjogImNhbmRpZGF0ZXMvcnVzdF9jYW5kaWRhdGUucHkiLCAicm9sZSI6ICJwdWJsaWMtcHl0aG9uIiwgInNoYTI1NiI6ICIyMGQwZjY5MGNmODhhZTY3NjUyZDI3M2RmNzU0OGExODhmZWI0Njc2NzE4Yzg2ZTgwZGQ0ZTJhMTgyOWM4MTI3In1dLCAicmVmZXJlbmNlX3NoYTI1NiI6ICJiMzRjMmZjZDM2Mzk2YzMzNzMzMDhkODA4ODljNGU4NTU2MDNiZmIzNGJmNWMwY2U1MjcyNWQyYmRhMDMyNTI2IiwgInNjaGVtYSI6ICJyZWJhci12Ny1pbmRlcGVuZGVudC1lZGdlLW9yYWNsZS12MSIsICJzY3JpcHRfc2hhMjU2IjogImZlNmEyNjNhNDhmMjQzZWEwMmZhYWE3OGZjM2JiZDA1MTIzM2EyYjIyMjE5NjdhNWY3NmRkMWJiNzlkMjQyY2EiLCAic2VlZCI6IDIwMjYwNzIzMjl9LCAiZXZpZGVuY2VfcGF0aCI6ICIvdG1wL3JlYmFyLXYxMS1vcmlnaW5hbC1kZWVwLXJ1c3QtZGtuZnowbzMvUlVTVC1WOC1ERUVQLUNPTlRSQUNULVJVU1QtUE9TVEZJTkFMLUNVUlJFTlQtQlVJTEQtVjExLVBSSVZBVEUuanNvbi5neiIsICJldmlkZW5jZV9zaGEyNTYiOiAiOWNjMzBiMTcyNTc1YzgzYjM5OWY2ODAwNTdhNmQzM2FlOTUyZTQ0ZjkyMDA3OWMzZDhjM2I2NzU2NmFmYjQwNyIsICJmaXh0dXJlX3NoYTI1NiI6ICJjNzJhNWU0N2YxNWM5NGNlMTNjZTM0ZDQ5MThjMDVlZjgxZWVhNWIwMTBhYzExOWIyNTUyNjRlNjA5MzllZjE2IiwgImZvcmJpZGRlbl9yZWdleF9ndWFyZHMiOiAxMywgImZyb3plbl9mYWlsdXJlX2V2aWRlbmNlIjogeyJhcmNoaXZlX3NoYTI1NiI6ICJkYjQzY2JmOGJlMWQ2ODkxZWI0ZjAwOWI4YWU5Mjk5NWE2NDM0Zjk3NTNiOTQ0ZmJmMGE4ZWQwYjQ0MjM3MTkyIiwgInBhdGgiOiAiY2FuZGlkYXRlcy9hdWRpdHMvUlVTVC1WOC1ERUVQLUNPTlRSQUNULmpzb24uZ3oiLCAicHVibGljX21pc21hdGNoX2NvdW50IjogMTA0LCAic3RhdHVzIjogIkZBSUwifSwgImhvbGRvdXQiOiAiTk9UIEFDQ0VTU0VEIiwgImltcGxlbWVudGF0aW9uX3ByaXZhdGVfZ2NfdG9wb2xvZ3lfZGlmZmVyZW5jZV9jb3VudCI6IDM2LCAibmF0aXZlX2FydGlmYWN0cyI6IFt7InBhdGgiOiAiY2FuZGlkYXRlcy9ydXN0L3B5X2JyaWRnZS5jIiwgInJvbGUiOiAiYnJpZGdlLXNvdXJjZSIsICJzaGEyNTYiOiAiODFlNDY2MDJhMjkyZTM4MjYxMjFkY2Y2Y2RmYTIzMWFmOWQ2NmQ2MmE5YTUwMzExZGYzYWE4NDE1MTJlZGVhZCJ9LCB7InBhdGgiOiAiY2FuZGlkYXRlcy9fcnVzdF9icmlkZ2UuY3B5dGhvbi0zMTQteDg2XzY0LWxpbnV4LWdudS5zbyIsICJyb2xlIjogIm5hdGl2ZS1icmlkZ2UiLCAic2hhMjU2IjogIjM4MjQ4M2NlNDYyYWFmMzFmYTA2N2I4NmRiNjA2YmM1ZDJkOTEyNzk2MDI2MzY2YTZiYWY0YmVkMTFmYjhhNzcifSwgeyJwYXRoIjogImNhbmRpZGF0ZXMvX3J1c3RfZW5naW5lLnNvIiwgInJvbGUiOiAibmF0aXZlLWVuZ2luZSIsICJzaGEyNTYiOiAiZDU5MDMwMDcyMDIxNTcxODc4MjIyN2RkOGRhMTE5MjA0N2I0NzgxYmRiNDFlZDk0NDQ2Y2FjMDZiYTg4MGU4NCJ9LCB7InBhdGgiOiAiY2FuZGlkYXRlcy9ydXN0L3NyYy9saWIucnMiLCAicm9sZSI6ICJuYXRpdmUtc291cmNlIiwgInNoYTI1NiI6ICIzYTJhYjIwODg1ZGFlYTExYmJjOTBjYjk3MDdhMTU0MTc0NzQyZjgzNmU4MTg1MjFjMWQwMGUyYTBhZmQwYjY0In0sIHsicGF0aCI6ICJjYW5kaWRhdGVzL3J1c3RfY2FuZGlkYXRlLnB5IiwgInJvbGUiOiAicHVibGljLXB5dGhvbiIsICJzaGEyNTYiOiAiMjBkMGY2OTBjZjg4YWU2NzY1MmQyNzNkZjc1NDhhMTg4ZmViNDY3NjcxOGM4NmU4MGRkNGUyYTE4MjljODEyNyJ9XSwgInBlcmZvcm1hbmNlIjogIk5PVCBNRUFTVVJFRCIsICJwdWJsaWNfbWlzbWF0Y2hfY291bnQiOiAwLCAicHVibGljX21pc21hdGNoX2ZhbWlseV9jb3VudHMiOiB7fSwgInB5dGhvbiI6ICIzLjE0LjYiLCAicmVmZXJlbmNlX2Ffc2hhMjU2IjogImIxODRmMzM4ODMyMDkwOWIzYzI4ZmJkM2NlOWMxNWNlZmM5OTJkM2U4NTJlOTQ5NWFkOGZiNTAzZDFjYmFhZDgiLCAicmVmZXJlbmNlX2Jfc2hhMjU2IjogImIxODRmMzM4ODMyMDkwOWIzYzI4ZmJkM2NlOWMxNWNlZmM5OTJkM2U4NTJlOTQ5NWFkOGZiNTAzZDFjYmFhZDgiLCAic2NoZW1hIjogInJlYmFyLXJ1c3QtdjgtZGVlcC1wdWJsaWMtY29udHJhY3QtdjEiLCAic2VlZCI6IDIwMjYwNzIzNDcsICJzZWVkZWRfY2FzZV9jb3VudCI6IDY0LCAic3RhdHVzIjogIlBBU1MiLCAic3RkbGliX3ZzX3N0ZGxpYl9taXNtYXRjaGVzIjogMCwgInN1aXRlX3NoYTI1NiI6ICJiYTRiNjQwZDEyNDQ0YTUzNDZkOTE4YTAzOWQ4YTdhOWZlZjBjNzhhNTRmNmI2NmM2ZjBlYjBjOWRkZGJlOTc4In0K",
+      "preview_bytes": 4518,
+      "preview_complete": true
+    },
+    "actual_v11_first_failure_error_message": "PYTHONDONTWRITEBYTECODE=1 is mandatory",
+    "actual_v11_first_failure_error_type": "AssertionError",
+    "actual_v11_first_failure_path": "candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-PRODUCER-CRASH.json.gz",
+    "actual_v11_first_failure_reason": "post-original-integrity-failure",
+    "actual_v11_first_failure_sha256": "360d430666bfae146eb9abc18cab2bcd9822096f78e6f21ed3b938bb50631c39",
+    "actual_v11_first_invalidated_original_path": "candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-INVALIDATED-AFTER-OWNER-FAILURE.json.gz",
+    "actual_v11_first_invalidated_original_sha256": "9cc30b172575c83b399f680057a6d33ae952e44f920079c3d8c3b67566afb407",
+    "actual_v11_first_invocation_qualified": false,
+    "actual_v11_first_invocation_status": "FAIL",
+    "actual_v11_first_original_candidate_sha256": "b184f3388320909b3c28fbd3ce9c15cefc992d3e852e9495ad8fb503d1cbaad8",
+    "actual_v11_first_original_checks": 393,
+    "actual_v11_first_original_seeded_cases": 64,
+    "actual_v11_first_original_was_invalidated": true,
+    "actual_v11_protocol_path": "oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V11.md",
+    "actual_v11_protocol_sha256": "334405521f2f945cc58cabf246cf8f784e8a6a5be7091a20587b0daf428412af",
+    "first_failure_retroactively_qualified": false
+  },
+  "preserved_immutable_history": {
+    "genuine_official_cpython_baseline": {
+      "actual_independent_reference_count": 2,
+      "applicable_public_method_count": 151,
+      "path": "oracle/cpython-3.14.6/evidence/postfinal-locale-v5-self-oracle.json",
+      "public_method_count": 152,
+      "sha256": "3a5c300640b4d5207694d474eb231ce6ff7cb11ce6f3a17da0edd2e48fea3916",
+      "status": "PASS"
+    },
+    "genuine_v8_preimport_owner_failure": {
+      "original_edge_worker_started": false,
+      "path": "candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v8-diagnostic-native-owner-failure.json.gz",
+      "sha256": "2f8bfcba726d729865cb8411a25ef1c3e0633e80c70af8895e5875a71f15ed7b",
+      "status": "FAIL"
+    },
+    "genuine_v9_cached_compiler_owner_failure": {
+      "actual_returncode": 1,
+      "actual_stderr_sha256": "7cfcf842efd492372ee01c330db0fc632aac9182c5f5b45870c5286a3e841097",
+      "actual_stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "candidate_module": "candidates.rust_candidate",
+      "original_edge_worker_started": false,
+      "path": "candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v9-diagnostic-native-owner-failure.json.gz",
+      "qualifies_current_engine": false,
+      "sha256": "04e52f831534458e9af50ad3ab962d78ad43e6a8725cbfccfee37bf9c234f07c",
+      "stage": "before-original-edge",
+      "status": "FAIL",
+      "stderr_bytes": 203,
+      "stderr_sha256": "7cfcf842efd492372ee01c330db0fc632aac9182c5f5b45870c5286a3e841097",
+      "stdout_bytes": 0,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "historical_current_build_edge_failures": {
+      "rust": {
+        "archive_sha256": "3ffdb21d10f40deabd70fa1f408fa38ff2b027a2d269c4b75e607a05cefde3b8",
+        "category_count": 49,
+        "checks": 223198,
+        "failed": 16,
+        "qualifies_current_engine": false,
+        "status": "FAIL"
+      },
+      "vm": {
+        "archive_sha256": "2cce7c26d2487c8e400d2fd6b8cfbc81d4b734b08f7a8f356def910a9cbb385c",
+        "category_count": 49,
+        "checks": 223198,
+        "failed": 33,
+        "qualifies_current_engine": false,
+        "status": "FAIL"
+      },
+      "zig": {
+        "archive_sha256": "5fa7283942994139d531593cc1bdf25f5da48f6de424d7604ce2ce569100788a",
+        "category_count": 49,
+        "checks": 223198,
+        "failed": 16,
+        "qualifies_current_engine": false,
+        "status": "FAIL"
+      }
+    },
+    "historical_v10_unqualified_rust_original_edge": {
+      "campaign_qualified": false,
+      "canonical_payload_bytes": 7409,
+      "canonical_payload_sha256": "d175561b7794dab1461e30bee6868f98fabf49b650a2520a52dbfb0eeecc57f1",
+      "category_count": 49,
+      "checks": 223198,
+      "complete_native_owner_proof_present": false,
+      "complete_rust_source_provenance_present": false,
+      "compressed_bytes": 2319,
+      "failed": 0,
+      "original_artifact_count": 5,
+      "path": "candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v10-diagnostic-pass.json.gz",
+      "qualifies_current_engine": false,
+      "reference_sha256": "b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526",
+      "sha256": "37de9f254dc3edb72bfe04f51cea8c528449064fba62df273032bb5d7b58b419",
+      "status": "PASS"
+    }
+  },
+  "production_observations_invented": false,
+  "qualified_original_v11_edge": {
+    "archive_path": "candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass.json.gz",
+    "archive_sha256": "a389c79cded04db478c624c5f4335ea73c7f6c1984d252b8170c323e1233f54a",
+    "campaign_qualified": true,
+    "proof_path": "candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass-proof.json",
+    "proof_sha256": "64f7508b4d87b88c5ee9917679f1ec15c5f821315a8825fc8049ab22e7584fd0",
+    "status": "PASS"
+  },
+  "result": "PASS",
+  "retry_proof_path": "candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json",
+  "schema": "rebar-postfinal-current-build-proofs-v12-qualified-deep-retry-durable-proof",
+  "status": "PASS",
+  "stdout_is_not_durable_proof": true,
+  "unchanged_original_v8_deep_validator_used": true,
+  "v11_executed_this_retry": false,
+  "v11_format_controller_path": "tools/postfinal_current_build_proofs_v11.py",
+  "v11_format_controller_sha256": "2895dd28b3dc69985cc0f6f8575398e8b8b10f58141f0612645a687478da9f04",
+  "v11_format_protocol_path": "oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V11.md",
+  "v11_format_protocol_sha256": "334405521f2f945cc58cabf246cf8f784e8a6a5be7091a20587b0daf428412af"
+}

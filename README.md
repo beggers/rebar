@@ -68,7 +68,7 @@ Not yet. Every row below is a current, guarded run of the same
 | Engine built from scratch | Checks completed | Differences from Python | Deeper checks | Complete Python tests |
 | --- | ---: | ---: | --- | --- |
 | [Rust](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json) | NOT RUN |
-| [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | NOT RUN | NOT RUN |
+| [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json) | NOT RUN |
 | [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | NOT RUN | NOT RUN |
 
 The separate [Rust ownership proof](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-qualified-pass-proof.json),
@@ -149,8 +149,8 @@ passes all **393** checks and proves who actually ran it.
 
 The [append-only deep-test recovery protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V12.md)
 preserves that original failure and verifies the required Python
-environment before any engine is started. Rust passes the corrected
-deep test; the C and Zig deep tests are **NOT RUN**.
+environment before any engine is started. Rust and C pass the
+corrected deep test; the Zig deep test is **NOT RUN**.
 
 The expanded public-API reference fails at case `surface16.00.14`:
 its observation recorder mistakes a valid, deeply nested Python

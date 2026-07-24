@@ -7,6 +7,58 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Prove the independently written C engine passes every deep public case
+
+First independently freeze and publish the additive V12 deep-test
+controller and the passing original Rust deep-test records. Verify
+all **six** new C output paths are distinct and unused. Set the exact
+frozen parent environment before starting the genuine C worker:
+
+```sh
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v12.py \
+  --qualified-deep \
+  --module candidates.vm_candidate \
+  --base-report-sha256 \
+  589321a768e10c52f039a68acb211574ec884598771ede2152f91994cc69f353 \
+  --strict-report-sha256 \
+  d8f31dd480bdba530a454b38428a23ef347c6e3cce7796f8992d6e7767381f4b
+```
+
+The actual independently written C engine passes **393/393**
+original deep checks, including **64** seeded cases. Its exact
+behavior matches both real Python references at SHA-256
+`b184f3388320909b3c28fbd3ce9c15cefc992d3e852e9495ad8fb503d1cbaad8`,
+with **zero** standard-library or public candidate mismatches.
+
+Exclusively preserve all three actual C correctness records:
+
+- [Complete original C deep-test observations](../candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V11-PASS.json.gz),
+  SHA-256 `c1eecee4536d8fbdd82e2d3400ea51713c27ce2fc11211580d3762c61551b473`.
+- [Complete original C native-ownership proof](../candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V11-PASS-PROOF.json),
+  SHA-256 `e1419f2268eec0e78f34039e2790a9e59d85c378a5bb892bd7124351d81ccb41`.
+- [Independently identified C retry-controller proof](../candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json),
+  SHA-256 `01336f4cc685f90892b492e5b3a1c5d0222cd3f056b52f787b9267e7bd6617d3`.
+
+Both published three-engine audits are authenticated before
+matching. All real C source and native-binary fingerprints, the
+original **223,198-case** qualification, and complete native
+ownership before and after the **393-case** test are independently
+checked. The true original Rust failure remains preserved and is
+not converted into a C failure or a passing Rust attempt.
+
+Two independent reviewers and the project lead validate the full
+unchanged original C output, both genuine native-ownership
+observations, and the exact V12 retry provenance without rerunning
+the candidate. C deep correctness is **PASS**. Official upstream
+candidate tests, expanded candidate tests, and current performance
+remain **NOT RUN** or **NOT MEASURED**; the expanded holdout remains
+**NOT OPENED**.
+
 ## Rerun the original Rust deep test with truthful independent provenance
 
 First freeze, independently review, commit, and push the additive
