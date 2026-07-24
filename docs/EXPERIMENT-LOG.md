@@ -7,6 +7,48 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the corrected from-scratch and engine-ownership checks
+
+Preserve the complete failed Rust safety check and the unchanged,
+independently verified Python-versus-Python baseline. Correct the
+safety checker in a separately versioned protocol; do not change the
+frozen original checker, its failure, any engine, or a benchmark.
+
+The corrected check accepts a blocked import only when it returns the
+exact original blocking object, with its original type and unchanged
+entry in Python's module cache. Recheck that same object before and
+after actual matching. Reject a real imported engine, another engine's
+implementation, a substituted blocking object, and any standard-library
+or third-party matcher.
+
+Freeze the [corrected ownership protocol](../candidates/audits/POSTFINAL-NATIVE-OWNERSHIP-V9.md)
+and its two independent controllers:
+
+- [From-scratch and engine ownership](../tools/postfinal_from_scratch_audit_v9.py):
+  SHA-256 `30822ec9a66a75528c0bf5b94f5451ba81f1fd3689e1d3849f35acf52507f8e1`.
+- [Strict no-delegation](../tools/postfinal_no_delegation_audit_v9.py):
+  SHA-256 `5a236445936362b738d9fbfc5ed239a47c75d6f4f1e40e3d8d3b86883a502f7c`.
+- Protocol SHA-256
+  `d7946e85be148fa0d141afb4091c03469b4a3d142f587ec01163817a3f7f3219`.
+
+Both independent reviewers and the project lead ran each controller
+using the pinned, isolated Python, both in the ordinary environment and
+in an empty environment. The from-scratch controller passed **778/778**
+source-only checks in both; the strict controller passed **921/921** in
+both. Each imported zero candidates, started zero workers, read or wrote
+zero files, sampled no clock, and accessed no benchmark or holdout.
+
+The strict controller authenticates the exact, externally supplied real
+base report and all three actual ownership records before reading old
+evidence or running an engine. It preserves all **12** candidate source
+files, **five** native binaries, **48** ordinary serialization checks,
+the complete prior failures, and the two genuine Python references.
+
+These are source and safety-checker results, not passing engine
+results. Version-nine engine audits and rebuilt correctness checks are
+**NOT RUN**. Current performance is **NOT MEASURED**, and the expanded
+final test is **NOT OPENED**.
+
 ## Rebuild Rust and preserve a genuine safety-checker failure
 
 First complete, independently review, commit, and push the actual

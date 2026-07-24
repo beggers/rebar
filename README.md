@@ -92,21 +92,20 @@ and [does not secretly call Python or another regular-expression package](candid
 These inspections prove independent implementation, not complete
 compatibility. Deeper correctness checks remain **NOT RUN**.
 
-The [stricter native ownership and serialization protocol](candidates/audits/POSTFINAL-NATIVE-OWNERSHIP-V8.md)
-now requires genuine, engine-owned `re.Pattern` and `re.Match` objects,
-ordinary Python serialization, and persistent protection against
-calling another regular-expression engine. Its complete rebuilt-engine
-audits are **NOT RUN**.
-
-The [fresh-build verification protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V8.md)
-requires each rebuilt engine to pass its own native-ownership and
-serialization checks before any full compatibility comparison begins.
-Those rebuilt-engine comparisons are **NOT RUN**.
-
 The [first rebuilt Rust safety check](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v8-diagnostic-native-owner-failure.json.gz)
 found a genuine bug in the safety checker itself: a deliberately
 blocked engine was mistaken for a real import. The check stopped
 before running Rust or claiming a compatibility pass.
+
+The [corrected from-scratch and engine-ownership protocol](candidates/audits/POSTFINAL-NATIVE-OWNERSHIP-V9.md)
+fixes that error without allowing an outside engine. It requires all
+three engines to do their own matching, produce genuine Python pattern
+and match objects, support ordinary serialization, and remain isolated
+before and after matching. Its actual three-engine audits are **NOT RUN**.
+
+The [original fresh-build verification protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V8.md)
+preserves the safety-checker failure and the original correctness
+requirements. The rebuilt-engine comparisons are **NOT RUN**.
 
 An [immutable-source verification launcher](oracle/cpython-3.14.6/POSTFINAL-PUBLISHED-PINS-V8.md)
 checks real published evidence without changing any frozen audit or
@@ -135,10 +134,10 @@ be checked without running any candidates or benchmarks:
 ```sh
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
-PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_from_scratch_audit_v8.py --self-test
-PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_no_delegation_audit_v8.py --self-test
+"$PY" -I -B \
+  tools/postfinal_from_scratch_audit_v9.py --self-test
+"$PY" -I -B \
+  tools/postfinal_no_delegation_audit_v9.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_cpython_locale_oracle_v5.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
