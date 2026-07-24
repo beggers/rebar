@@ -88,6 +88,12 @@ each independent run records all **152** original tests, **151**
 actual passes, and the one original debug-only skip. The candidate
 upstream runs are **NOT RUN**.
 
+The [expanded real-world compatibility contract](oracle/cpython-3.14.6/PUBLIC-SURFACE-V17.md)
+adds **1,376** distinct cases across **43** categories. They cover
+unusual flags, all serialization protocols, live byte buffers,
+Unicode, genuine locale changes, callbacks, warnings, and complete
+public Python objects. Its reference and candidate runs are **NOT RUN**.
+
 Independent inspections cover the engines' **12** source files and
 **five** native binaries. They check that each engine is
 [implemented from its own source](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V7.json)
@@ -152,6 +158,8 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_cpython_locale_oracle_v5.py --self-test
 "$PY" -I -B \
   tools/postfinal_current_build_proofs_v10.py --self-test
+"$PY" -I -B \
+  tools/python_re_public_surface_oracle_stage17.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_published_pins_v8.py --self-test
 ```

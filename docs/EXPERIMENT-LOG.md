@@ -7,6 +7,44 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the expanded real-world Python compatibility contract
+
+Freeze the independent
+[public-compatibility protocol](../oracle/cpython-3.14.6/PUBLIC-SURFACE-V17.md),
+SHA-256
+`a703805d1cc711488f84bf4d5a4596de8ef194fd47a2116162ec6a490a3da0e5`,
+and its
+[self-contained Python behavior generator](../tools/python_re_public_surface_oracle_stage17.py),
+SHA-256
+`cc36700fd5e43ed409472423a74b7da686804b09c92511d90bec863026c25bf8`.
+Import no earlier uncommitted test generator and do not require a
+candidate or candidate audit to authenticate Python's genuine baseline.
+
+Generate exactly **43** independent categories of **32** actual
+behavior inputs: **1,376** distinct cases, including **640**
+self-contained original cases and **736** additional real-user cases.
+The complete matrix SHA-256 is
+`7885a9ac0b2e22db88db7dc4ab9c33c4ba229ddb6d15fcdd4bfe9b0d6f10e8aa`;
+the actual full behavioral-stimulus SHA-256 is
+`8c1a4fd434af5fb1ea0dcd1aa3faaa06b07e7d186ca52c1593575eff93b4d7da`.
+
+Require real unknown flag compilation, every available pattern-pickle
+protocol, live mutable-buffer exports and release, non-ASCII Unicode,
+real ISO-8859-1 and UTF-8 locale transitions, preserved callback
+side effects, actual warning source locations, public scanner
+behavior, and exact pattern, match, mapping, error, and typing
+semantics. Missing real locales are an infrastructure failure, never
+two passing reference errors.
+
+Both independent reviewers and the project lead independently ran the
+source-only checks under pinned isolated Python and an empty
+environment: **336/336** passed in both. They started zero workers,
+ran zero matchers, changed zero locales, read or wrote zero files,
+sampled no clock, and opened no holdout. Both real reference runs and
+every candidate run remain **NOT RUN**. Missing durable engine proof
+correctly blocks all candidate qualification. Performance remains
+**NOT MEASURED**.
+
 ## Build the actual independently owned Zig engine
 
 Use the exact officially locked Zig **0.16.0** compiler, not a package
