@@ -7,6 +7,40 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Pass the complete official CPython suite for all three engines
+
+First push the exact version-three official test source and protocol
+in `d34c1e6f`, after independently verifying both freshly passing
+version-seven source and anti-delegation audits. Execute the frozen
+original official suite exactly once:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_cpython_locale_oracle_v3.py --audit
+```
+
+The exclusively created
+[full official compatibility evidence](../oracle/cpython-3.14.6/evidence/postfinal-locale-v3-all.json)
+has SHA-256
+`18a011a5ce6e47e52cd02e4cb0812c8f9f7919a069edd7d74e57631623b901b5`.
+Unmodified Python, Rust, C, and Zig each independently pass all
+**146/146** genuine original tests. Preserve all **584** individual
+method results; there are **zero** failed, skipped, timed-out,
+or crashed tests. All four roles run the original **403**-pattern
+external corpus and both truly compiled ISO-8859-1 and UTF-8
+locale tests with the exact **eight** original named exclusions.
+
+The actual report verifies both genuine fresh V7 independence
+proofs, all **12** current source files, all **five** actual native
+binaries, all **48** standard pickle cases, and all **six** corrected
+match representations. The first real **145/146** V2 Rust failure
+remains preserved; no earlier V2 success is invented.
+
+The newly source-bound differential, property, and fuzz suites are
+**NOT RUN**. Expanded performance remains **NOT FROZEN** and
+**NOT MEASURED**. No winner is selected.
+
 ## Freeze the complete official tests for the repaired matchers
 
 Push both genuine version-seven independence reports, including the

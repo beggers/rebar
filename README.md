@@ -91,7 +91,10 @@ A [fresh official test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V3.md)
 binds the corrected engines to their two passing version-seven audits.
 It retains the complete **146** official tests, **403** corpus patterns,
 and both genuine locale tests. Its design passes **96** candidate-free
-safety checks. The actual repaired four-engine run is **NOT RUN**.
+safety checks. The
+[actual full official run](oracle/cpython-3.14.6/evidence/postfinal-locale-v3-all.json)
+passes **146/146** upstream tests for Python, Rust, C, and Zig,
+preserving all **584** individual results with zero skips or failures.
 
 Earlier [official Python test results](oracle/cpython-3.14.6/evidence/postfinal-locale-v1-all.json),
 [22-stage engine campaigns](candidates/evidence/rust-v8-rust-postfinal-locale-v5-sealed-campaign.json),
@@ -112,7 +115,9 @@ also passes, separately verifying all **48** serialization cases,
 all **six** corrected match representations, and all **five** native
 loading safeguards. Its design passes **131** controls and retains
 **676** earlier anti-delegation checks. The complete official rerun
-remains **NOT RUN**, and the earlier genuine Rust failure is preserved.
+now passes for all four roles; the earlier genuine Rust failure is
+preserved. The newly source-bound differential and fuzz campaigns
+are **NOT RUN**.
 
 ## Larger fair speed comparison
 
