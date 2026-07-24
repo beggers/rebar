@@ -7,6 +7,64 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the first actual rebuilt-engine inspection failure
+
+First freeze, commit, and push the genuine **1,376-case** twice-passing
+Python reference, the repaired Zig native source and actual native
+binary, and both new inspection and original-correctness protocols.
+Verify that all four new ownership and strict-inspection output
+paths are absent.
+
+Run the frozen actual three-engine ownership inspection exactly once:
+
+```sh
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_independent_engine_audit_v13.py \
+  --ownership-audit
+```
+
+The real command exits **1** before starting any candidate or native
+ownership worker. While authenticating the complete preserved
+historical Zig failure, the frozen controller passes the live,
+repaired native-binary snapshot to the old original-edge validator.
+The original historical bridge has SHA-256
+`9df530874eed4387f87f13de14b5af51b34ea0d447422faaf8bdb5032b40681f`;
+the real repaired bridge has SHA-256
+`ad1a7ea024721e329857753d288abd834fcfc029055a6274195daf00754bf65a`.
+The genuine frozen validator therefore raises:
+
+```text
+AssertionError: the ZIG native-bridge is stale or unproven
+```
+
+Exclusively preserve the complete first actual invocation, all
+**34** original combined-output traceback lines, the real pinned
+interpreter and parent environment, the frozen controller,
+the independently observed native fingerprints, and the absence of
+any published all-family pass or failure report:
+
+- [Complete first historical-graph inspection failure](../candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V13-HISTORICAL-GRAPH-PREFLIGHT-FAILURE.json),
+  SHA-256 `465820b50be4d544199844d7bde4c5b8e58391828bdb1c716cc33c50ca6c964b`.
+
+The actual command captured stdout and stderr as one combined
+stream; separately recorded streams are **NOT AVAILABLE** and are
+not invented. No native owner worker started. No V13 ownership
+report, strict report, or corresponding failure report was created.
+Do not retry, change the frozen source, weaken historical
+validation, or treat the existing old audit as a current-build
+pass.
+
+The passing current-build inspection remains **NOT RUN**; all
+candidate correctness results are **NOT QUALIFIED**; current speed
+and memory remain **NOT MEASURED**; the holdout remains
+**NOT OPENED**. The necessary successor must independently
+authenticate the genuine historical graph and the separately
+remeasured rebuilt current graph.
+
 ## Freeze truthful rebuilt-engine correctness and failure preservation
 
 Freeze the complete current-build correctness source and its protocol

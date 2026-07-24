@@ -83,7 +83,9 @@ one another. They do not certify the changed native binary.
 
 The [fresh rebuild-inspection protocol](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V13.md)
 requires both inspections to be repeated against the actual changed source
-files and native binaries. These new inspections are **NOT RUN**.
+files and native binaries. The [first actual inspection failed before any engine was started](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V13-HISTORICAL-GRAPH-PREFLIGHT-FAILURE.json):
+it accidentally compared old Zig failure evidence with the new binary.
+A passing rebuilt-engine inspection does **NOT** exist.
 
 The [fresh original correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V14.md)
 then requires all **223,198** original cases and all **393** deeper
