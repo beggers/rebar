@@ -87,6 +87,10 @@ files and native binaries. The [first actual inspection failed before any engine
 it accidentally compared old Zig failure evidence with the new binary.
 A passing rebuilt-engine inspection does **NOT** exist.
 
+The [corrected rebuild inspection](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V15.md)
+checks the historical and rebuilt binaries separately. Its actual
+three-engine ownership and no-delegation runs are **NOT RUN**.
+
 The [fresh original correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V14.md)
 then requires all **223,198** original cases and all **393** deeper
 cases to be repeated against each independently inspected engine.

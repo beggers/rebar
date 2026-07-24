@@ -7,6 +7,48 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze separate historical and rebuilt-engine inspections
+
+Preserve and publish the actual V13 historical-graph preflight
+failure before freezing the corrected append-only producer:
+
+- [Corrected historical and rebuilt-engine inspection](../tools/postfinal_independent_engine_audit_v15.py),
+  SHA-256 `05ef6b3186aee2a294247e76a3ec20a63ca609e9eebf5b2f882f6b35485514ea`.
+- [Corrected inspection protocol](../oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V15.md),
+  SHA-256 `d8e74273945f0047513e7a720183d8b2cd866cbb31911510a16bc64d5219c1f3`.
+
+Validate the original Zig correctness evidence only against the
+genuinely authenticated historical three-engine graph. Preserve
+all original **223,198** checks, both original Python references,
+all **393** deeper checks, all **26** genuine representation
+differences, the first actual V13 failure, and all **34** complete
+combined traceback lines. The unrecorded separate stdout and stderr
+remain **NOT CAPTURED**; none are invented.
+
+Independently recompute the actual **12** current source files and
+**five** native binaries. A future ownership inspection must start
+all three genuinely independent C, Rust, and Zig native workers;
+the strict inspection must run three further independent workers
+and authenticate the actual fresh ownership-report fingerprint.
+Every worker must block Python's matcher, third-party regular
+expression engines, and all other candidates.
+
+Every newly created report tracks its actual exclusive file
+creation, each completed write, and genuine file and directory
+synchronization. A partial report cannot become a passing result
+or be described as never created.
+
+The project lead and two independent reviewers verify the source in
+normal and empty environments. Each run passes **402** fresh
+controls, **319** earlier independent controls, **990** ownership
+controls, and **1,203** strict no-delegation controls. No candidate
+is imported, and no report, historical evidence, benchmark,
+holdout, or worker is accessed by the source-only checks.
+
+Both actual corrected inspection runs remain **NOT RUN** at this
+source-freeze commit. Compatibility is **NOT QUALIFIED**;
+performance is **NOT MEASURED** and the holdout is **NOT OPENED**.
+
 ## Preserve the first actual rebuilt-engine inspection failure
 
 First freeze, commit, and push the genuine **1,376-case** twice-passing
