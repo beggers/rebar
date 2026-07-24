@@ -1,0 +1,64 @@
+{
+  "actual_exception_message": "the complete genuine first V13 failure is not frozen canonical JSON",
+  "actual_exception_type": "AuditV15Error",
+  "actual_invocation": {
+    "arguments": [
+      "-I",
+      "-B",
+      "tools/postfinal_independent_engine_audit_v15.py",
+      "--ownership-audit"
+    ],
+    "executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+    "exit_code": 1,
+    "output_capture": "complete combined command output; stdout and stderr were not separately captured",
+    "required_parent_environment": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONHASHSEED": "0",
+      "PYTHONPATH": "/home/dev-user/src/rebar"
+    }
+  },
+  "actual_native_owner_workers_started": 0,
+  "candidate_matching_results": "NOT RUN",
+  "complete_captured_combined_output_lines": [
+    "Traceback (most recent call last):",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_independent_engine_audit_v15.py\", line 2051, in <module>",
+    "    raise SystemExit(main())",
+    "                     ~~~~^^",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_independent_engine_audit_v15.py\", line 2039, in main",
+    "    report = run_audit(strict=False)",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_independent_engine_audit_v15.py\", line 1298, in run_audit",
+    "    history = authenticate_historical_audits()",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_independent_engine_audit_v15.py\", line 748, in authenticate_historical_audits",
+    "    require(actual_v13_raw in {",
+    "    ~~~~~~~^^^^^^^^^^^^^^^^^^^^",
+    "        v11.canonical(actual_v13),",
+    "        ^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "        original_owner.core.canonical(actual_v13) + b\"\\n\",",
+    "        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "    }, \"the complete genuine first V13 failure is not frozen canonical JSON\")",
+    "    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_independent_engine_audit_v15.py\", line 101, in require",
+    "    raise AuditV15Error(message)",
+    "AuditV15Error: the complete genuine first V13 failure is not frozen canonical JSON"
+  ],
+  "controller": {
+    "protocol_path": "oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V15.md",
+    "protocol_sha256": "d8e74273945f0047513e7a720183d8b2cd866cbb31911510a16bc64d5219c1f3",
+    "source_path": "tools/postfinal_independent_engine_audit_v15.py",
+    "source_sha256": "05ef6b3186aee2a294247e76a3ec20a63ca609e9eebf5b2f882f6b35485514ea"
+  },
+  "current_build_qualified": false,
+  "failure_stage": "strict-authentication-of-the-original-v13-failure-before-any-new-native-owner-worker",
+  "fresh_ownership_failure_report": "NOT CREATED",
+  "fresh_ownership_report": "NOT CREATED",
+  "fresh_strict_failure_report": "NOT CREATED",
+  "fresh_strict_report": "NOT CREATED",
+  "historical_failure_qualifies_current_build": false,
+  "holdout": "NOT ACCESSED",
+  "performance": "NOT MEASURED",
+  "preserved_v13_failure_path": "candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V13-HISTORICAL-GRAPH-PREFLIGHT-FAILURE.json",
+  "preserved_v13_failure_sha256": "465820b50be4d544199844d7bde4c5b8e58391828bdb1c716cc33c50ca6c964b",
+  "schema": "rebar-postfinal-independent-engine-audit-v15-actual-preserved-failure-codec-preflight-failure",
+  "status": "FAIL",
+  "synthetic": false
+}

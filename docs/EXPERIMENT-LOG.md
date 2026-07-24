@@ -7,6 +7,54 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the corrected audit's real failure-record-format rejection
+
+First freeze, independently review, commit, and push the corrected
+historical-versus-live ownership source. Confirm all four new V15
+ownership and strict-inspection paths are absent. Run its actual
+three-engine ownership mode exactly once:
+
+```sh
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_independent_engine_audit_v15.py \
+  --ownership-audit
+```
+
+The real command exits **1** before starting any matching or
+native-ownership worker. The authentic preserved first V13 failure
+is strict, valid, duplicate-free JSON at its exact published hash.
+However, the new controller incorrectly insists its original bytes
+also match one of two later canonical encoders. The actual failure
+is:
+
+```text
+AuditV15Error: the complete genuine first V13 failure is not frozen canonical JSON
+```
+
+Preserve the complete pinned source, exact parent environment,
+actual **20-line** combined traceback, genuine exit code, and
+the unchanged original V13 failure:
+
+- [Complete actual audit failure-record-format rejection](../candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V15-PRESERVED-FAILURE-CODEC-PREFLIGHT-FAILURE.json),
+  SHA-256 `a3695f1fd847e9ad882783d18c519b551d7791c5327f55964e202a31ade818ff`.
+- [Unchanged first historical-graph audit failure](../candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V13-HISTORICAL-GRAPH-PREFLIGHT-FAILURE.json),
+  SHA-256 `465820b50be4d544199844d7bde4c5b8e58391828bdb1c716cc33c50ca6c964b`.
+
+The original command produced one combined output stream;
+individual stdout and stderr remain **NOT CAPTURED**. All four
+V15 pass and failure outputs remain absent. Zero native owners
+or candidate matching workers started. Do not rewrite historical
+evidence, retroactively change its fingerprint, retry a frozen
+controller, or treat a source-only check as a real owner pass.
+
+A passing current-build ownership inspection and all rebuilt
+candidate correctness results remain **NOT RUN**. Speed and memory
+remain **NOT MEASURED**; the holdout remains **NOT OPENED**.
+
 ## Freeze separate historical and rebuilt-engine inspections
 
 Preserve and publish the actual V13 historical-graph preflight
