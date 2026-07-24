@@ -7,6 +7,38 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze independently isolated Python-signature inspection
+
+Preserve the exact **32**-mismatch stage-seven Python failure and
+the actual **256**-mismatch stage-eight Rust harness failure. The
+first is a process-dependent Python hash; the second is the harness
+importing `inspect` inside a correctly guarded native worker.
+Neither establishes that an independently implemented candidate
+delegated regex matching.
+
+The additive [isolated-signature protocol](../oracle/cpython-3.14.6/PUBLIC-CONTRACT-V10.md)
+has SHA-256
+`c0194ee2ef1e32bd64dc646e2f395bee6036b9c053e31d95ebb3cfbc52b0a543`.
+The independently verified
+[candidate-free signature controller](../tools/python_re_universal_public_oracle_stage10.py)
+has SHA-256
+`a24cfa72f44931c76b425ea3eb6568ff67dc87236c8d5fe930837a14c2f58f08`.
+Its direct, isolated self-test passes **793/793** synthetic controls,
+without metadata workers, candidate processes, evidence writes,
+timing, or final-test access.
+
+Keep all **3,584** unchanged public cases, all **8** groups, and
+every **256**-case public-signature obligation. Authenticate genuine
+signatures in a separate isolated process; never import Python's
+matcher into a matching worker, omit signatures, or guess metadata.
+The actual stage-ten two-Python baseline is **NOT RUN**. Rust, C,
+and Zig are each **NOT RUN** against this corrected design.
+
+Freeze, commit, and push this exact source and protocol before
+starting any production worker. New **8,192**- and **33,280**-case
+speed comparisons remain **NOT FROZEN** and **NOT MEASURED**. The
+independent final test remains **NOT OPENED**.
+
 ## Preserve the first Rust candidate's harness-side failure
 
 After committing and pushing the actual passing two-Python baseline,

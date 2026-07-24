@@ -125,6 +125,15 @@ correctly blocks. This is not evidence that Rust delegated matching
 or returned an incorrect regular-expression result. C and Zig are
 **NOT RUN**; the expanded candidate comparison remains **BLOCKED**.
 
+The [new frozen, isolated-signature compatibility design](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V10.md)
+preserves all **3,584** original cases across **8** groups and all
+**256** real public-signature checks. It inspects signatures in a
+separate process, without weakening any engine's independence guard.
+Its candidate-free safety test passes **793/793** checks. This is a
+design-only checkpoint: the new two-Python self-comparison is
+**NOT RUN**, and the new Rust, C, and Zig candidate runs are all
+**NOT RUN**.
+
 A fair **8,192**-case speed comparison and a separate expanded
 **33,280**-case public suite remain **BLOCKED**, **NOT FROZEN**, and
 **NOT MEASURED**. The expanded public suite is not a hidden final test.
@@ -166,6 +175,8 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage07.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage08.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/python_re_universal_public_oracle_stage10.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/rust_v8_multi_candidate_campaign_postfinal_v5.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -I -B -c \
