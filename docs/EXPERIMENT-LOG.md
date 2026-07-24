@@ -42,6 +42,15 @@ records. The version-two audit checks the exact fingerprints of both retained
 version-one records. The corrected native helper separately passes all
 **38** synthetic statistical controls; no final cases are generated.
 
+A fresh attempt to rerun the original public-results replay also correctly
+refuses to overwrite its existing independently verified evidence. Record
+that no-write failure and remove the non-repeatable command from the README.
+Instead, recheck the entire original uncompressed observation fingerprint
+and use the source-bound, repeatable presentation check to authenticate all
+**425,984** original observations, **24,579** recorded confidence intervals,
+**5,173** slowdowns, and all six unchanged headline graphs. Preserve the
+original passing replay and every measurement unchanged.
+
 The production controller is still not integrated or frozen. The fresh
 one-use guard, production randomness, cases, timing, and winner remain
 **NOT MEASURED** and **NOT OPENED**.

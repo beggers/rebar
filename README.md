@@ -119,8 +119,14 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -I -B -c \
   'import resource,runpy,sys; n=192*1024*1024; resource.setrlimit(resource.RLIMIT_AS,(n,n)); sys.argv=["tools/postfinal_fresh_holdout_adapter_audit_v1.py","--validate"]; runpy.run_path(sys.argv[0],run_name="__main__")'
 
-PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
-  -m tools.postfinal_public_practice_v5 verify
+sha256sum \
+  performance/postfinal-public-v5/manifest.json \
+  performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-summary.json \
+  performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-integrity.json \
+  performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-raw.jsonl.gz
+gzip -dc \
+  performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-raw.jsonl.gz \
+  | sha256sum
 
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/postfinal_public_practice_charts_v5.py \
