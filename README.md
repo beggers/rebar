@@ -54,99 +54,39 @@ The [published comparison](performance/postfinal-public-v6/RESULTS.md),
 and [predeclared measurement rules](performance/postfinal-public-v6/PROTOCOL.md)
 retain the complete results, uncertainty ranges, and all regressions.
 
-## What the current engines still need to prove
+## Are the current engines compatible with Python?
 
-Python, Rust, C, and Zig have each independently passed the same
-[146 selected upstream Python tests](oracle/cpython-3.14.6/evidence/postfinal-locale-v3-all.json),
-including **403** original patterns and genuine locale tests. These
-are **146 of Python's 152 public test methods**, and the earlier runner
-used simplified Python test support. Its **584** saved results do not
-prove that the complete, authentic upstream suite passes.
+Not yet. Every engine has been checked against the same **223,198**
+actual Python behavior checks. The following table shows every known
+difference; each link contains the complete, reproducible results.
 
-The [complete original 152-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V4.md)
-now freezes Python's actual test-support files, the full original test
-corpus, and the real multi-gigabyte test requirements. It allows no
-public-test waivers; the only conditional skip is Python's original
-private-debug-build requirement. The complete upstream reference and
-all three candidate runs are **NOT RUN**.
+| Engine built from scratch | Checks completed | Differences from Python | Complete upstream tests |
+| --- | ---: | ---: | --- |
+| [Rust](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-locale-v7-first-failure.json.gz) | 223,198 | 16 | NOT RUN |
+| [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-locale-v7-first-failure.json.gz) | 223,198 | 33 | NOT RUN |
+| [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-locale-v7-first-failure.json.gz) | 223,198 | 16 | NOT RUN |
 
-Two independent inspections verify that the three engines
-[are built from their own source code](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V7.json)
-and [cannot secretly use Python or another regex engine](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V7.json).
-These checks cover all **12** implementation files and **five** native
-binaries.
+The [complete upstream-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V4.md)
+requires all **152** original public Python tests, the genuine Python
+test-support files, the full original test corpus, and real
+multi-gigabyte inputs. There are no public-test waivers; the only
+conditional skip is Python's own private-debug-build requirement. The
+complete upstream reference and candidate runs are **NOT RUN**.
 
-The [new 128-case public type and serialization test](oracle/cpython-3.14.6/PUBLIC-GENERIC-ALIASES-V14.md)
-[passes for all three current engines](candidates/evidence/python-re-generic-alias-public-oracle-v14-all.json):
-**128/128** cases each, with zero mismatches. Its
-[two independent Python reference runs](oracle/cpython-3.14.6/evidence/public-generic-alias-v14-self-oracle.json)
-preserve all **256** Python results; the candidate evidence preserves
-all **384** Rust, C, and Zig results. The
-[original serialization failure](candidates/evidence/python-re-generic-alias-public-oracle-v11-rust-failures.json)
-and [original official-test failure](oracle/cpython-3.14.6/evidence/postfinal-locale-v2-rust-failures.json)
-remain available; older successful checks do not certify modified code.
-
-The [next 3,584-case compatibility test](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V15.md)
-covers public functions, errors, flags, locales, buffers, replacements,
-scanners, Unicode, and concurrent matching. Its
-[first Python-only run](oracle/cpython-3.14.6/evidence/public-contract-v15-self-oracle.json)
-revealed a fault in the test itself: both Python processes returned the
-same **7,168** results, but the recorded result hashes are incorrect.
-Independent validation rejects the report, so this attempt is
-**FALSIFIED**; Rust, C, and Zig were **NOT RUN**. The
-[corrected 3,584-case test](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V17.md)
-now has [7,168 independently verified Python reference results](oracle/cpython-3.14.6/evidence/public-contract-v17-self-oracle.json),
-including Unicode checks on the exact saved bytes.
-[All three current engines pass every case](candidates/evidence/python-re-universal-public-oracle-v17-all.json):
-**3,584/3,584** each and **10,752/10,752** total, with zero
-mismatches. Complete public-interface and caching tests remain
-**NOT RUN**. A complete drop-in replacement is not yet proven.
-
-The [separately frozen failure audit](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V15-FAILURE.md)
-distinguishes the stored-JSON hash from the original test's conflicting
-Unicode-validation hash. Its
-[independently verified failure record](oracle/cpython-3.14.6/evidence/public-contract-v15-reference-failures.json)
-preserves both hashes and confirms no candidate was rerun.
-
-The complete three-engine result is 20 MB because it keeps every
-observation. A [strictly size-limited evidence reader](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V17-EVIDENCE.md)
-verifies the full result without weakening file-safety checks or
-discarding data.
-
-The [complete 22-stage compatibility campaign](oracle/cpython-3.14.6/POSTFINAL-CAMPAIGN-V7.md)
-includes **4,494,555 Unicode comparisons per engine**. The
-[first Rust attempt](candidates/evidence/rust-v8-rust-postfinal-locale-v7-sealed-campaign-first-failure.json)
-correctly stopped before testing: its old proof belonged to an earlier
-Rust build.
-
-The [fresh current-build proof protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V7.md)
-first requires **223,198** edge cases and **393** additional behavior
-checks for each engine. It preserves complete failed and successful
-results separately. The
-[first complete Rust edge run](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-locale-v7-first-failure.json.gz)
-found **16 Python-visible differences in 223,198 checks**. Its deeper
-checks are **NOT RUN**. The
-[first complete C edge run](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-locale-v7-first-failure.json.gz)
-found **33 differences in the same 223,198 checks**. The
-[first complete Zig edge run](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-locale-v7-first-failure.json.gz)
-found **16 differences in the same 223,198 checks**. All three engines'
-deeper checks are **NOT RUN**. None of these current builds is a
-qualified Python replacement.
+Independent inspections cover the engines' **12** source files and
+**five** native binaries. They check that each engine is
+[implemented from its own source](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V7.json)
+and [does not secretly call Python or another regular-expression package](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V7.json).
+These inspections prove independent implementation, not complete
+compatibility. Deeper correctness checks remain **NOT RUN**.
 
 ## Larger fair speed comparison
 
-The previously frozen [8,192-example public comparison](performance/postfinal-public-v7/PROTOCOL.md)
-has [published test inputs](performance/postfinal-public-v7/manifest.json),
-but the current engines have **not** been timed against it. Two proposed
-33,280-example expansions exposed real test-design mistakes; the
-[first recorded failure](performance/postfinal-public-v8/evidence/postfinal-public-freeze-failure-v8.json)
-and [second recorded failure](performance/postfinal-public-v10/evidence/postfinal-public-freeze-failure-v10.json)
-remain available rather than being hidden or overwritten.
-
-The corrected 33,280-example comparison is **NOT FROZEN**. Current
-runtime, uncertainty, rankings, regressions, and memory use are
-**NOT MEASURED**. The independent final test for the rebuilt engines is
-**NOT OPENED**.
+A larger, **33,280-example** public comparison and a separate,
+independently generated **33,280-example** final test are planned.
+Neither has been frozen or used to measure the current engines. The
+final test is **NOT OPENED**. Current speed, memory use, uncertainty,
+slowdowns, and rankings are **NOT MEASURED**.
 
 ## Evidence and reproduction
 
@@ -168,7 +108,7 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_no_delegation_audit_v7.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_cpython_locale_oracle_v3.py --self-test
+  tools/postfinal_cpython_locale_oracle_v4.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/python_re_generic_alias_public_oracle_stage14.py --self-test
+  tools/postfinal_current_build_proofs_v7.py --self-test
 ```

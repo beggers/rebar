@@ -7,6 +7,25 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Make the current project status readable
+
+Keep the README focused on the purpose, the clearly identified
+archived headline and detailed graphs, and one straightforward table
+showing the actual current Rust, C, and Zig compatibility failures.
+Retain the frozen complete **152-method** upstream-test requirement,
+the independently written source and isolation checks, the planned
+larger public and final tests, and the immutable goal hash.
+
+Move descriptions of individual historical experiments, corrected
+test designs, rejected campaigns, detailed failure classifications,
+and earlier intermediate evidence out of the README. Preserve them in
+this append-only experiment history and the original linked evidence;
+delete no failures or archived results. Update the source-only
+reproduction commands to the actual frozen complete Python oracle and
+current-build correctness-proof controller. Current performance
+remains **NOT MEASURED**, and the future final test remains
+**NOT OPENED**.
+
 ## Preserve all 16 genuine current-build Zig edge failures
 
 First freeze, independently verify, commit, and push the complete
