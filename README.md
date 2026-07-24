@@ -105,6 +105,14 @@ each pass **22/22** stages, **146/146** official Python tests, and
 **4,494,555** Unicode comparisons. Each report is independently bound
 to its actual engine; earlier reports never qualify a changed build.
 
+The [next frozen public compatibility test](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V7.md)
+defines **3,584** checks across **8** groups, including real locales,
+invalid patterns, buffers, callbacks, shared patterns across threads,
+and Unicode. Its candidate-free safety test passes **429/429** checks.
+This checkpoint freezes the design only: Python's self-comparison is
+**NOT RUN**, and the Rust, C, and Zig candidate checks are all
+**NOT RUN**.
+
 A fair **8,192**-case speed comparison and a separate expanded
 **33,280**-case public suite are planned, **NOT FROZEN**, and
 **NOT MEASURED**. The expanded public suite is not a hidden final test.
@@ -142,6 +150,8 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_cpython_locale_oracle_v1.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage06.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/python_re_universal_public_oracle_stage07.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/rust_v8_multi_candidate_campaign_postfinal_v5.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -I -B -c \

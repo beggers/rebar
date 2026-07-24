@@ -7,6 +7,46 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze expanded compatibility checks only after fixing their safeguards
+
+The three complete **22**-stage, source-bound correctness campaigns
+were already committed and pushed in `df68898`. Preserve their
+passing results, the original **1,179,648** current-engine checks,
+and all historical performance graphs.
+
+The first proposed controller fails its actual direct, isolated
+self-test with exit **137** and **zero** output. An earlier pipe into
+`jq` masks the failure; its cause is **NOT ESTABLISHED**. Independent
+review also finds that Python-baseline and candidate mismatches are
+raised before durable failure evidence is written. Preserve both
+failures instead of claiming a prematurely frozen suite.
+
+The corrected [public compatibility protocol](../oracle/cpython-3.14.6/PUBLIC-CONTRACT-V7.md)
+has SHA-256
+`b4d719609179dde5f582695393539e7a320c09438e4bc635ca843627ac9d7524`.
+The corrected [candidate-free controller](../tools/python_re_universal_public_oracle_stage07.py)
+has SHA-256
+`150abcfc597658f48d64c04053889bd4b299c75ad7413bc1cafa5f864e9e7c25`.
+Its direct, unpiped self-test actually exits **0** and passes
+**429/429** synthetic controls without starting an engine, comparing
+Python against itself, writing evidence, measuring speed, or accessing
+the final test.
+
+The frozen design defines **8** groups and **3,584** obligations.
+Its canonical matrix SHA-256 is
+`0233ca9bc1229b2f905192f9b8ae0c0268b7d23ba3621124192993c6d486f3db`.
+The corrected gate separately reserves four exclusively created
+`O_EXCL` baseline and candidate failure files and verifies all
+**5** protected loader-alias routes. No failure file is created during
+the safety test.
+
+Commit and push this frozen design before any production comparison.
+The actual two-Python self-comparison is **NOT RUN**. Rust, C, and
+Zig are each **NOT RUN** against the new **3,584** obligations. No new
+production correctness result is claimed. Separate speed benchmarks
+remain **NOT FROZEN** and **NOT MEASURED**; the independent
+**65,536**-case final test remains **NOT OPENED**.
+
 ## Run every official Python test in genuine locales
 
 The completed six-graph comparison still describes only the
