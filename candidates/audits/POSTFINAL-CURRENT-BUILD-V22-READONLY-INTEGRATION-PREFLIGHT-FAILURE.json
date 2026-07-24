@@ -1,0 +1,136 @@
+{
+  "schema": "rebar-postfinal-current-build-proof-v22-actual-read-only-integration-preflight-failure",
+  "status": "FAIL",
+  "synthetic": false,
+  "production_observations_invented": false,
+  "qualifies_current_engine": false,
+  "actual_invocation": {
+    "executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+    "python_flags": [
+      "-I",
+      "-B",
+      "-c"
+    ],
+    "environment": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONHASHSEED": "0",
+      "PYTHONPATH": "/home/dev-user/src/rebar",
+      "LC_ALL": "C",
+      "PATH": "/usr/bin:/bin"
+    },
+    "exit_code": 1,
+    "output_capture": "complete combined traceback; stdout and stderr were not separately captured",
+    "actual_inline_python_source_lines": [
+      "import json,sys",
+      "sys.path.insert(0,\"/home/dev-user/src/rebar\")",
+      "from tools import postfinal_current_build_proofs_v22 as p",
+      "from tools import postfinal_independent_engine_audit_v21 as a",
+      "assert p.V21_SOURCE_SHA256==\"ded077962416ada3bddd825d77b2e6785fe3b01184fe5d9058ec17a57b08ea4d\"",
+      "assert p.V21_PROTOCOL_SHA256==\"5a78673c6b23e4781070cf5a2290d5f6cecd402fff77ff388d8795370de93a1f\"",
+      "pins={\"audit_source\":p.V21_SOURCE_SHA256,\"audit_protocol\":p.V21_PROTOCOL_SHA256,\"base_report\":\"4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4\",\"strict_report\":\"6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d\"}",
+      "rows=[]",
+      "with a.read_only_history_boundary() as effects:",
+      " for family in p.FAMILIES:",
+      "  state=p.preflight(family,pins)",
+      "  assert set(state)=={\"v21\",\"owner\",\"v8\",\"audits\",\"snapshot\",\"history\",\"preserved_incidents\",\"controller\",\"parent_environment\"}",
+      "  assert state[\"v21\"] is a and len(state[\"audits\"])==11 and state[\"audits\"][\"pins\"]==pins",
+      "  graph=state[\"audits\"][\"graph\"]",
+      "  assert sum(len(z) for z in graph[\"source_sha256_by_family\"].values())==12 and sum(len(z) for z in graph[\"native_sha256_by_family\"].values())==5",
+      "  for version,incident in ((\"v13\",\"v13_first_owner_preflight_failure\"),(\"v15\",\"v15_first_owner_preflight_failure\"),(\"v17\",\"v17_first_owner_postflight_failure\"),(\"v19\",\"v19_first_owner_publication_failure\")):",
+      "   actual=state[\"audits\"][\"preserved_\"+version+\"_failure\"]",
+      "   assert actual==state[\"history\"][\"preserved_\"+version+\"_first_audit_failure\"]==state[\"preserved_incidents\"][incident]",
+      "   assert state[\"preserved_incidents\"][incident+\"_qualifies_current_engine\"] is False",
+      "  assert state[\"snapshot\"][\"family\"]==family",
+      "  assert not any(name==\"candidates\" or name.startswith(\"candidates.\") for name in sys.modules)",
+      "  rows.append({\"family\":family,\"audit_roles\":len(state[\"audits\"]),\"source_count\":12,\"native_binary_count\":5,\"authentic_preserved_failures\":4})",
+      " assert [x[\"family\"] for x in rows]==list(p.FAMILIES)",
+      " assert all(value==0 for value in effects.values())",
+      "print(json.dumps({\"schema\":\"rebar-v22-root-all-family-zero-worker-actual-audit-integration-smoke\",\"status\":\"PASS\",\"source_sha256\":\"ba3062b5fe4aea944e89022266c8d9a7a035708bb30d736f074fc29ce7157e27\",\"protocol_sha256\":\"e06a24155ca95bf287a5dece90d1a385dad806de8512f177d3146c7bba7acc29\",\"external_base_report_sha256\":pins[\"base_report\"],\"external_strict_report_sha256\":pins[\"strict_report\"],\"families\":rows,\"read_only_boundary_effects\":effects,\"production_original_edge_workers_started\":0,\"production_original_deep_workers_started\":0,\"performance\":\"NOT MEASURED\",\"holdout\":\"NOT ACCESSED\"},sort_keys=True))"
+    ]
+  },
+  "frozen_failed_controller": {
+    "source_path": "tools/postfinal_current_build_proofs_v22.py",
+    "source_sha256": "ba3062b5fe4aea944e89022266c8d9a7a035708bb30d736f074fc29ce7157e27",
+    "protocol_path": "oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V22.md",
+    "protocol_sha256": "e06a24155ca95bf287a5dece90d1a385dad806de8512f177d3146c7bba7acc29"
+  },
+  "actual_passing_prerequisites": {
+    "audit_source_sha256": "ded077962416ada3bddd825d77b2e6785fe3b01184fe5d9058ec17a57b08ea4d",
+    "audit_protocol_sha256": "5a78673c6b23e4781070cf5a2290d5f6cecd402fff77ff388d8795370de93a1f",
+    "base_report_path": "candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V21.json",
+    "base_report_sha256": "4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4",
+    "strict_report_path": "candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V21.json",
+    "strict_report_sha256": "6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d",
+    "both_independent_ownership_audits_passed": true
+  },
+  "failed_stage": "candidate-free authentication of the genuine historical V13 summary before the first original edge worker",
+  "attempted_family": "rust",
+  "families_not_reached": [
+    "vm",
+    "zig"
+  ],
+  "actual_exception_type": "tools.postfinal_current_build_proofs_v22.ProofV22Error",
+  "actual_exception_message": "the genuine original failed V13 first invocation was forged",
+  "actual_combined_traceback_lines": [
+    "Traceback (most recent call last):",
+    "  File \"<string>\", line 11, in <module>",
+    "    state=p.preflight(family,pins)",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_current_build_proofs_v22.py\", line 638, in preflight",
+    "    preserved = validate_preserved_incidents(",
+    "        v21,",
+    "        audits,",
+    "    )",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_current_build_proofs_v22.py\", line 556, in validate_preserved_incidents",
+    "    validate_v13_failure_summary(actual_v13)",
+    "    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_current_build_proofs_v22.py\", line 497, in validate_v13_failure_summary",
+    "    require(",
+    "    ~~~~~~~^",
+    "        isinstance(value, dict)",
+    "        ^^^^^^^^^^^^^^^^^^^^^^^",
+    "    ...<2 lines>...",
+    "        \"the genuine original failed V13 first invocation was forged\",",
+    "        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+    "    )",
+    "    ^",
+    "  File \"/home/dev-user/src/rebar/tools/postfinal_current_build_proofs_v22.py\", line 156, in require",
+    "    raise ProofV22Error(message)",
+    "tools.postfinal_current_build_proofs_v22.ProofV22Error: the genuine original failed V13 first invocation was forged"
+  ],
+  "actual_combined_traceback_line_count": 24,
+  "actual_historical_summary_mismatch": {
+    "historical_version": "v13",
+    "field": "failed_stage",
+    "expected_field_count": 26,
+    "actual_authenticated_field_count": 26,
+    "missing_fields": [],
+    "extra_fields": [],
+    "v22_expected_value": "historical-zig-edge-preflight",
+    "actual_authenticated_v21_value": "historical-zig-edge-authentication-before-any-new-native-owner-worker",
+    "other_fields_match": true,
+    "other_historical_summaries_exactly_match": [
+      "v15",
+      "v17",
+      "v19"
+    ]
+  },
+  "actual_failed_invocation_boundary_counters": "NOT PRESERVED BY THE FAILED CONTROLLER",
+  "independent_follow_up_differential": {
+    "status": "PASS",
+    "validation_scope": "read-only authentication of the exact published V21 reports and all four historical summary shapes only",
+    "read_only_boundary_effects": {
+      "candidate_imports": 0,
+      "clock_samples": 0,
+      "filesystem_writes": 0,
+      "native_workers_started": 0,
+      "subprocesses_started": 0
+    }
+  },
+  "native_owner_workers_started": 0,
+  "original_edge_workers_started": 0,
+  "original_deep_workers_started": 0,
+  "correctness_results_published": false,
+  "benchmark_or_timing_executed": false,
+  "performance": "NOT MEASURED",
+  "holdout": "NOT ACCESSED"
+}

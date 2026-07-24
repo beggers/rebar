@@ -91,6 +91,10 @@ inspection failures remain documented in the
 [experiment log](docs/EXPERIMENT-LOG.md).
 A [later duplicate invocation](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V21-DUPLICATE-PREFLIGHT-FAILURE.json)
 was safely refused before any engine ran or evidence was changed.
+The [first full-check integration](candidates/audits/POSTFINAL-CURRENT-BUILD-V22-READONLY-INTEGRATION-PREFLIGHT-FAILURE.json)
+then rejected an authentic historical failure before starting any
+engine. Its exact cause is preserved; fresh compatibility checks remain
+**NOT RUN**.
 
 The [fresh original correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V14.md)
 then requires all **223,198** original cases and all **393** deeper

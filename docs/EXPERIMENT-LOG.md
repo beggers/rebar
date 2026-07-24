@@ -7,6 +7,55 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the actual full-check integration preflight failure
+
+After publishing both independently passing current-engine ownership
+and strict no-delegation audits, authenticate their actual external
+hashes in the candidate-free V22 full-correctness integration. Use
+the real pinned CPython interpreter, require all three independent
+families, and block candidate imports, native workers, subprocesses,
+file writes, timing, and holdout access.
+
+The first actual integration stops on the Rust family's historical
+preflight and exits **1**. The runner expects the shortened V13
+failure-stage label:
+
+```text
+historical-zig-edge-preflight
+```
+
+Both genuine, independently passing V21 ownership reports contain
+the complete authentic V13 stage:
+
+```text
+historical-zig-edge-authentication-before-any-new-native-owner-worker
+```
+
+The other **25** original V13 fields agree exactly. All **28** V15,
+**18** V17, and **36** V19 summary fields also agree exactly. No
+candidate, native-owner worker, original edge case, original deep
+case, benchmark, or holdout is started.
+
+- [Frozen failing full-check source](../tools/postfinal_current_build_proofs_v22.py),
+  SHA-256 `ba3062b5fe4aea944e89022266c8d9a7a035708bb30d736f074fc29ce7157e27`.
+- [Frozen failing full-check protocol](../oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V22.md),
+  SHA-256 `e06a24155ca95bf287a5dece90d1a385dad806de8512f177d3146c7bba7acc29`.
+- [Actual integration failure, complete original inline source, and traceback](../candidates/audits/POSTFINAL-CURRENT-BUILD-V22-READONLY-INTEGRATION-PREFLIGHT-FAILURE.json).
+
+Preserve the exact original **24** combined traceback lines without
+claiming separate stdout or stderr. The failed controller did not
+record its boundary counters. A separate read-only diagnostic
+authenticates both actual V21 reports and all four historical
+summaries and records **zero** candidate imports, workers,
+subprocesses, writes, and clock samples. Do not substitute that
+successful diagnostic for the failed original invocation.
+
+The V22 full-check source and protocol are preserved as genuine
+failing evidence, not qualified. Both V21 ownership and strict
+audits remain valid and unchanged. The original edge, deep, full
+upstream, and expanded public compatibility cases are **NOT RUN**.
+Performance is **NOT MEASURED** and the holdout is **NOT ACCESSED**.
+
 ## Run and preserve the independent strict no-delegation inspection
 
 Publish the successful current-engine ownership report and its actual
