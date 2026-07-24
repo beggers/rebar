@@ -86,6 +86,7 @@ static PyTypeObject ZigMatchType;
 static PyTypeObject ZigIteratorType;
 static PyTypeObject *ZigScannerType;
 static PyObject *zig_default_endpos;
+static PyObject *zig_generic_alias_factory;
 static PyObject *zig_span(intptr_t begin, intptr_t finish);
 
 static ZigMatch *zig_match_new(PyObject *pattern, PyObject *string, PyObject *groupindex, size_t groups, Py_ssize_t pos, Py_ssize_t endpos) {
@@ -413,7 +414,15 @@ static PyObject *zig_match_expand(ZigMatch *match, PyObject *value) {
 static PyObject *zig_match_copy(ZigMatch *match, PyObject *ignored) { (void)ignored; return Py_NewRef(match); }
 static PyObject *zig_match_deepcopy(ZigMatch *match, PyObject *memo) { (void)memo; return Py_NewRef(match); }
 static PyObject *zig_match_reduce(ZigMatch *match, PyObject *ignored) { (void)match; (void)ignored; PyErr_SetString(PyExc_TypeError, "cannot pickle 're.Match' object"); return NULL; }
-static PyObject *zig_match_class_getitem(PyObject *type, PyObject *item) { return Py_GenericAlias(type, item); }
+static PyObject *zig_match_class_getitem(PyObject *type, PyObject *item) {
+    if (zig_generic_alias_factory == NULL) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "the native Zig generic alias factory is not initialized");
+        return NULL;
+    }
+    return PyObject_CallFunctionObjArgs(zig_generic_alias_factory, type,
+                                         item, NULL);
+}
 
 static PyObject *zig_match_repr(ZigMatch *match) {
     PyObject *value = zig_match_piece(match, 0, Py_None);
@@ -579,7 +588,7 @@ static PyMappingMethods zig_match_mapping = {0, zig_match_subscript, 0};
 
 static PyTypeObject ZigMatchType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "candidates._zig_bridge.Match",
+    .tp_name = "re.Match",
     .tp_basicsize = offsetof(ZigMatch, spans),
     .tp_itemsize = sizeof(intptr_t),
     .tp_dealloc = (destructor)zig_match_dealloc,
@@ -3351,16 +3360,61 @@ static PyObject *bridge_install_pattern_methods(PyObject *module,
                         "the native pattern owner must be a type");
         return NULL;
     }
+    PyObject *bound = PyObject_GetAttrString(pattern_type,
+                                             "__class_getitem__");
+    if (bound == NULL) return NULL;
+    if (!PyMethod_Check(bound) || PyMethod_Self(bound) != pattern_type) {
+        Py_DECREF(bound);
+        PyErr_SetString(PyExc_TypeError,
+                        "the Zig generic alias must belong to its exact pattern type");
+        return NULL;
+    }
+    PyObject *function = PyMethod_Function(bound);
+    if (function == NULL || !PyFunction_Check(function)) {
+        Py_DECREF(bound);
+        PyErr_SetString(PyExc_TypeError,
+                        "the Zig generic alias method must be an owned Python function");
+        return NULL;
+    }
+    PyObject *globals = PyFunction_GetGlobals(function);
+    if (globals == NULL || !PyDict_Check(globals)) {
+        Py_DECREF(bound);
+        PyErr_SetString(PyExc_TypeError,
+                        "the Zig generic alias method has no owned globals");
+        return NULL;
+    }
+    PyObject *owner = PyDict_GetItemString(globals, "Pattern");
+    PyObject *match = PyDict_GetItemString(globals, "Match");
+    PyObject *factory = PyDict_GetItemString(globals,
+                                              "_ZigGenericAlias");
+    if (owner != pattern_type || match != (PyObject *)&ZigMatchType ||
+        factory == NULL || !PyType_Check(factory) ||
+        factory == (PyObject *)&Py_GenericAliasType ||
+        !PyType_IsSubtype((PyTypeObject *)factory, &Py_GenericAliasType)) {
+        Py_DECREF(bound);
+        PyErr_SetString(PyExc_TypeError,
+                        "the Zig generic alias factory must be an owned GenericAlias subclass");
+        return NULL;
+    }
+    PyObject *factory_ref = Py_NewRef(factory);
+    Py_DECREF(bound);
     for (PyMethodDef *method = zig_pattern_methods;
          method->ml_name != NULL; method++) {
         PyObject *descriptor =
             PyDescr_NewMethod((PyTypeObject *)pattern_type, method);
-        if (descriptor == NULL) return NULL;
+        if (descriptor == NULL) {
+            Py_DECREF(factory_ref);
+            return NULL;
+        }
         int installed = PyObject_SetAttrString(pattern_type,
                                                 method->ml_name, descriptor);
         Py_DECREF(descriptor);
-        if (installed < 0) return NULL;
+        if (installed < 0) {
+            Py_DECREF(factory_ref);
+            return NULL;
+        }
     }
+    Py_XSETREF(zig_generic_alias_factory, factory_ref);
     Py_RETURN_NONE;
 }
 

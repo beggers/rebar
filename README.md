@@ -75,8 +75,8 @@ their most recent preserved complete runs.
 Rust's original test results are complete, but the runner did not save
 its separate before-and-after engine-ownership proof. Rust therefore
 remains **NOT QUALIFIED** until both records are preserved together.
-The C engine has also been rebuilt from its own source; its updated
-behavior checks are **NOT RUN**.
+The C and Zig engines have also been rebuilt from their own source;
+their updated behavior checks are **NOT RUN**.
 
 The [complete upstream-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V5.md)
 requires all **152** original public Python tests, the genuine Python

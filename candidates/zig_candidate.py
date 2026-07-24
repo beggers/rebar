@@ -1015,10 +1015,37 @@ def _subject_length(value):
 Match = _zig_bridge.Match
 
 
+def _resolve_zig_generic_alias(origin_name, arguments):
+    if type(origin_name) is not str or type(arguments) is not tuple:
+        raise TypeError("a Zig generic alias requires an origin name and argument tuple")
+    if origin_name == "Pattern":
+        origin = Pattern
+    elif origin_name == "Match":
+        origin = Match
+    else:
+        raise TypeError("unowned Zig regular-expression generic alias origin")
+    return _ZigGenericAlias(origin, arguments)
+
+
+class _ZigGenericAlias(types.GenericAlias):
+    __slots__ = ()
+
+    def __reduce__(self):
+        origin = self.__origin__
+        if origin is Pattern:
+            origin_name = "Pattern"
+        elif origin is Match:
+            origin_name = "Match"
+        else:
+            raise TypeError("unowned Zig regular-expression generic alias origin")
+        return _resolve_zig_generic_alias, (origin_name, self.__args__)
+
+
 _PATTERN_METHODS = ("search", "match", "fullmatch", "findall", "finditer", "split", "sub", "subn", "scanner")
 
 
 class Pattern:
+    __module__ = "re"
     __slots__ = ("pattern", "flags", "groups", "_groupindex", "_handle",
                  "_literal", "_templates", "__weakref__")
 
@@ -1059,7 +1086,7 @@ class Pattern:
 
     @classmethod
     def __class_getitem__(cls, item):
-        return types.GenericAlias(cls, item)
+        return _ZigGenericAlias(cls, item)
 
     def __repr__(self):
         flags = self.flags & ~int(UNICODE)

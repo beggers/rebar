@@ -7,6 +7,62 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Build the actual independently owned Zig engine
+
+Use the exact officially locked Zig **0.16.0** compiler, not a package
+containing another matching engine. Give the existing independent
+Zig implementation its own public `re.Pattern`, native `re.Match`,
+and zero-slot generic-alias type. Authenticate the Zig candidate's
+own Python factory from its actual pattern and match globals; reject
+unknown origins instead of falling back to Python or another engine.
+
+Compile the actual unchanged project-owned Zig matching source and
+the actual pinned-CPython C bridge:
+
+```sh
+REBAR_ZIG=/tmp/rebar-zig-0.16.0.pTlEyN4d/zig-x86_64-linux-0.16.0/zig
+REBAR_PY_INCLUDE=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/include/python3.14
+
+"$REBAR_ZIG" build-lib \
+  /home/dev-user/src/rebar/candidates/zig/mini_regex.zig \
+  --cache-dir /tmp/rebar-zig-0.16.0-rebar-local-cache \
+  --global-cache-dir /tmp/rebar-zig-0.16.0-rebar-global-cache \
+  -dynamic -O ReleaseFast -fPIC -fsoname=_zig_probe.so \
+  -fallow-shlib-undefined -z undefs -lc \
+  -femit-bin=/home/dev-user/src/rebar/candidates/_zig_probe.so
+
+ZIG_GLOBAL_CACHE_DIR=/tmp/rebar-zig-0.16.0-rebar-global-cache \
+  "$REBAR_ZIG" cc -std=c11 -O3 -fPIC -shared \
+  -I"$REBAR_PY_INCLUDE" -I"$REBAR_PY_INCLUDE" \
+  /home/dev-user/src/rebar/candidates/zig/py_bridge.c \
+  /home/dev-user/src/rebar/candidates/_zig_probe.so \
+  -Wl,--enable-new-dtags -Wl,-rpath,'$ORIGIN' \
+  -o /home/dev-user/src/rebar/candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so
+```
+
+The first attempted bridge build used GNU `-l:_zig_probe.so` and
+genuinely failed: `ld.lld: error: unable to find library
+-l:_zig_probe.so`. Preserve that failure. Zig's linker accepts the
+actually generated engine as an explicit file instead. Both corrected
+commands above genuinely exited **0**. The resulting bridge depends
+only on the project's own `_zig_probe.so` and the ordinary system C
+library; its actual runtime search path is the literal `$ORIGIN`.
+
+The Zig Python source, owned bridge source, unchanged Zig matcher,
+built matcher, and built bridge have respective SHA-256 values
+`07e9fa19af8fe9938dc8ed5170e30a478ff56f0d04cd2488a0bd1869e28201cc`,
+`302bfdd130db5a9e12043ccb98f4e844d320852b9f9210849c326c4341bc01e7`,
+`539bf5d378e0c2845c01519fcce62f1ef5e68610f477912c44a03027fb67a346`,
+`96b899f8c5f25e4c94fe029d6218c0408cd20f7a86d661bcc4ce891648f17cb6`,
+and
+`9df530874eed4387f87f13de14b5af51b34ea0d447422faaf8bdb5032b40681f`.
+
+The pinned compiler's exact binary SHA-256 remains
+`2317bbb91798556d9d0f38aabdac23db83f0979b25f767259ae474546724087c`.
+No candidate was imported or run. Updated Zig behavior, all-engine
+qualification, speed, memory, and final performance remain **NOT RUN**
+or **NOT MEASURED**, as appropriate.
+
 ## Rebuild the independently owned C matching engine
 
 First freeze and push the version-ten cached-matcher-safe ownership
