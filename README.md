@@ -81,7 +81,11 @@ full official Python tests.
 The [new official Python test design](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V2.md)
 preserves all **146** selected upstream tests, the **403-pattern**
 official corpus, and both genuine locale tests. It passes **113**
-candidate-free safety checks. Its actual four-engine run is **NOT RUN**.
+candidate-free safety checks. Its first real run is **FALSIFIED**:
+Rust passes **145/146** tests and fails the genuine match-object
+representation test. The run stops before testing C or Zig. The
+[failure-preservation protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V2-FAILURE.md)
+records what was actually observed without inventing missing results.
 
 Earlier [official Python test results](oracle/cpython-3.14.6/evidence/postfinal-locale-v1-all.json),
 [22-stage engine campaigns](candidates/evidence/rust-v8-rust-postfinal-locale-v5-sealed-campaign.json),
@@ -97,9 +101,9 @@ serialization checks. A separate
 proves that each engine blocks Python's matcher, outside regex packages,
 the other engines, and all **five** foreign native-library loading
 routes. The audit designs pass **324** and **75** safety checks,
-including all **676** earlier malicious-input checks. The complete
-official Python tests and the expanded compatibility comparison are
-**NOT RUN**.
+including all **676** earlier malicious-input checks. The first complete
+official run **FAILED** for Rust; the official C and Zig runs and the
+expanded compatibility comparison are **NOT RUN**.
 
 ## Larger fair speed comparison
 
@@ -139,6 +143,8 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_generic_alias_public_oracle_stage12.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_cpython_locale_oracle_v2.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_cpython_locale_v2_failure.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_generic_alias_public_oracle_stage11.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \

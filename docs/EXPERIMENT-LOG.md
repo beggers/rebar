@@ -7,6 +7,49 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the first genuine full-suite match-representation failure
+
+Push the exact official source and protocol in `8a8a7541`. Run the
+predeclared command once against the unmodified original Python suite:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_cpython_locale_oracle_v2.py --audit
+```
+
+The actual official command exits **1**. Rust passes **145/146**
+selected tests and fails `ReTests.test_match_repr`. Its genuine native
+match type is `candidates._rust_bridge.Match`, but its printed form
+incorrectly says `<re.Match object; ...>`. The original upstream test
+derives the expected display from the real type's module. The Python
+baseline ran but its per-method results were not recorded. C and Zig
+official tests are **NOT RUN**, and no passing four-role report exists.
+
+Independently diagnose the same hardcoded display in all three native
+sources using real text and byte matches. This is a separate diagnostic,
+not evidence that the official C or Zig tests ran. Do not change the
+native implementations before preserving the first failure.
+
+Freeze the independent
+[failure-preservation protocol](../oracle/cpython-3.14.6/POSTFINAL-LOCALE-V2-FAILURE.md)
+and [one-time recorder](../tools/postfinal_cpython_locale_v2_failure.py).
+Their respective SHA-256 values are
+`75e9a2709c7755de96ae23106db536a38bfd97a80fb37c5ea3f6a98139e26818`
+and `42069714991730daff44351eb76ef2fe44478720eb0c51d76b9ea162600b96a5`.
+Both independent reviews pass **79/79** candidate-free controls,
+preserving all **113** official and **73** original safety checks.
+The complete real source-only preflight authenticates the frozen
+official test, both V6 reports, all **12** source files, all **five**
+native binaries, and all real Stage 12 references.
+
+The observed failure is a faithful semantic transcription; its original
+raw stdout or stderr bytes and raw-stream hash are **NOT RECORDED**.
+No baseline records, unrun-engine results, benchmarks, or timings are
+fabricated. The exclusive failure record is **NOT CREATED** at this
+source checkpoint. Push the failure protocol and recorder before
+running `--record` exactly once.
+
 ## Freeze the rebuilt engines' complete official Python tests
 
 After pushing both actual independence reports and the genuine
