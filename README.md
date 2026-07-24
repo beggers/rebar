@@ -79,9 +79,12 @@ scanners, Unicode, and concurrent matching. Its
 revealed a fault in the test itself: both Python processes returned the
 same **7,168** results, but the recorded result hashes are incorrect.
 Independent validation rejects the report, so this attempt is
-**FALSIFIED**; Rust, C, and Zig were **NOT RUN**. A corrected test,
-the full public interface, caching, and millions of generated examples
-remain **NOT RUN**. A complete drop-in replacement is not yet proven.
+**FALSIFIED**; Rust, C, and Zig were **NOT RUN**. The
+[corrected 3,584-case test](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V17.md)
+checks Unicode results after they are actually written and read back;
+its Python and candidate runs are **NOT RUN**. Complete public-interface,
+caching, and large-scale fuzz tests are also **NOT RUN**. A complete
+drop-in replacement is not yet proven.
 
 The [separately frozen failure audit](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V15-FAILURE.md)
 distinguishes the stored-JSON hash from the original test's conflicting

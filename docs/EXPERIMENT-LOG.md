@@ -7,6 +7,46 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a durable corrected 3,584-case public behavior comparison
+
+First push the independently authenticated true reference failure in
+`2c04f326`. Preserve the original false-pass report, its authentic
+two-worker **7,168** observations, the actual ordinary transport and
+Unicode-validator hashes, and both failed validator contexts. Do not
+change or rerun the original full-public experiment.
+
+Freeze the corrected
+[durable public behavior protocol](../oracle/cpython-3.14.6/PUBLIC-CONTRACT-V17.md)
+and [independent durable comparison controller](../tools/python_re_universal_public_oracle_stage17.py).
+Their respective SHA-256 values are
+`8773d4fd2d0b9f04808b2a22358a233b44abfd892862aaaf224cd0d607081520`
+and `9e5ca448ecc6a6de8745b0c84cf5b4ae5d92cd098914731a4047d45e6ce1b6d4`.
+The fresh deterministic seed is `2026072485`; the complete unchanged
+**3,584-case**, **eight-group** case matrix has SHA-256
+`e1c6ccf6cbb057f3e3cb708c1b4efe2a175bc77d6eda5e127cae18e5455cfa47`.
+
+Use exactly one frozen JSON transport and content digest. Before writing
+any successful evidence, serialize the complete actual rows, parse the
+exact resulting bytes, and independently validate the complete result
+outside, inside, and again outside the matching-worker context. Reject
+double-converted Unicode, lone-surrogate keys, changed worker hashes,
+missing rows, unauthorized engine loading, and inconsistent metadata.
+
+The candidate-free self-test independently passes **207/207** focused
+safety controls, retaining the original **793**, **468**, and **96**
+correctness, source-ownership, and official-test controls. The actual
+read-only preflight authenticates the truthful **FAIL** failure report,
+both digest implementations, the full current native source graph, all
+**584** official checks, and all **384** current public-type results.
+It starts no reference, metadata, or candidate worker.
+
+At this source-freeze checkpoint, the new **7,168** Python reference
+observations and **10,752** native candidate observations remain
+**NOT RUN**. The complete fuzz, supplemental public-interface, and
+holdout campaigns remain **NOT RUN** and performance is **NOT MEASURED**.
+Commit and push the exact new source and protocol before starting
+either fresh Python reference.
+
 ## Record the exact failed Python comparison without rerunning it
 
 Freeze, commit, and push the corrected actual-evidence failure recorder
