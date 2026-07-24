@@ -68,13 +68,14 @@ their most recent preserved complete runs.
 
 | Engine built from scratch | Checks completed | Differences from Python | Complete upstream tests |
 | --- | ---: | ---: | --- |
-| [Rust](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v10-diagnostic-pass.json.gz) | 223,198 | 0 | NOT RUN |
+| [Rust](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-diagnostic-pass.json.gz) | 223,198 | 0 | NOT RUN |
 | [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-locale-v7-first-failure.json.gz) | 223,198 | 33 | NOT RUN |
 | [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-locale-v7-first-failure.json.gz) | 223,198 | 16 | NOT RUN |
 
-Rust's original test results are complete, but the runner did not save
-its separate before-and-after engine-ownership proof. Rust therefore
-remains **NOT QUALIFIED** until both records are preserved together.
+Rust's [separate before-and-after engine-ownership proof](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-diagnostic-pass-proof.json)
+also verifies its own native engine, complete source, cached-matcher
+protection, and ordinary serialization. This is a passing single-engine
+diagnostic, not full three-engine or upstream-test qualification.
 The C and Zig engines have also been rebuilt from their own source;
 their updated behavior checks are **NOT RUN**.
 

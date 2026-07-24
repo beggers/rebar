@@ -7,6 +7,47 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the complete original Rust result and its native-engine proof
+
+First freeze, independently review, commit, and push the actual
+version-eleven dual-evidence controller and correctness protocol.
+Verify all **seven** permitted Rust output paths are fresh. Run the
+genuine, guarded original Rust behavior producer exactly once:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v11.py \
+  --diagnostic-edge --module candidates.rust_candidate
+```
+
+The actual independently owned Rust engine passes **223,198/223,198**
+frozen Python behavior checks across **49** categories, with **zero**
+mismatches. Its genuine reference and actual result SHA-256 are both
+`b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526`.
+Exclusively preserve both actual complete outputs:
+
+- [Unmodified original behavior archive](../candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-diagnostic-pass.json.gz),
+  SHA-256 `37de9f254dc3edb72bfe04f51cea8c528449064fba62df273032bb5d7b58b419`.
+- [Full canonical native-owner proof](../candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-diagnostic-pass-proof.json),
+  SHA-256 `860413b55f0fba3ce663d80992e0676febaf5dc4c7e9432a3ad44c625c8489b7`.
+
+The durable proof independently validates all **seven** actual Rust
+source files, both actual native binaries, genuine matching before
+and after the original producer, all **13** Python-matcher guards,
+all **five** native-loader guards, all **16** ordinary serialization
+cases, every cached internal Python matcher, the unchanged original
+worker streams, and both exclusively linked result files. No
+standard-library matcher, external regex package, or other candidate
+performed the Rust matching.
+
+Both reviewers and the project lead independently verify the exact
+complete archive and proof without running Rust again. The honest
+record explicitly says `campaign_qualified: false`: this genuine
+single-engine diagnostic is not all-family qualification and does
+not replace the complete upstream candidate tests. Current speed and
+memory remain **NOT MEASURED**; the expanded final holdout remains
+**NOT OPENED**.
+
 ## Freeze complete, permanent original results and engine-ownership proofs
 
 Preserve the actual version-ten Rust original result without claiming
