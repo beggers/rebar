@@ -7,6 +7,40 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve all 33 genuine current-build C edge failures
+
+First independently verify, commit, and push all **16** real Rust
+edge mismatches in `602b2554`. Only then run the identical unchanged,
+**223,198-case**, **49-category** edge oracle against the independent
+C virtual-machine engine:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v7.py \
+  --edge --module candidates.vm_candidate
+```
+
+The complete C result is genuinely **FAIL**, with **33** actual
+Python-visible mismatches. Its immutable, exclusively created
+[complete first C failure archive](../candidates/evidence/rust-v7-edge-oracle-vm-postfinal-locale-v7-first-failure.json.gz)
+has SHA-256
+`2cce7c26d2487c8e400d2fd6b8cfbc81d4b734b08f7a8f356def910a9cbb385c`.
+Preserve every mismatch, the exact current candidate role hashes,
+all 49 categories, the original seed, and the complete original
+denominator.
+
+The C engine has the same **16** native match-type naming problems
+observed in Rust, plus **17** compiled-pattern error-message
+differences. Its actual source identifies the private native pattern
+type instead of Python's visible `re.Pattern` when rejecting changes
+to `groupindex`. Neither finding is an external-engine delegation or
+a justified waiver.
+
+No passing C proof, deep C result, native repair, benchmark, or
+holdout was created. Zig remains **NOT RUN**. Current speed, memory,
+and rankings remain **NOT MEASURED**.
+
 ## Preserve all 16 genuine current-build Rust edge failures
 
 First freeze, independently review, commit, and push the exact

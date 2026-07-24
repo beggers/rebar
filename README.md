@@ -118,7 +118,10 @@ checks for each engine. It preserves complete failed and successful
 results separately. The
 [first complete Rust edge run](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-locale-v7-first-failure.json.gz)
 found **16 Python-visible differences in 223,198 checks**. Its deeper
-checks are **NOT RUN**. The C and Zig runs are **NOT RUN**.
+checks are **NOT RUN**. The
+[first complete C edge run](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-locale-v7-first-failure.json.gz)
+found **33 differences in the same 223,198 checks**. Its deeper checks
+and the Zig run are **NOT RUN**.
 
 ## Larger fair speed comparison
 
