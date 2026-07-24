@@ -7,6 +7,54 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Correct the public-data design without running a benchmark
+
+Preserve the genuinely falsified **33,280**-case V8 expansion, its
+complete failure report, and all **577/10,312** wrong ASCII-encoded
+comparisons: **483** `findall`, **48** `escape`, and **46** `split`.
+Do not edit its already-published sources or disguise the failure as a
+passing benchmark.
+
+The first real corrected-design probe also fails with
+`public subject exceeds its predeclared limit`: some authentic public
+archive records exceed the declared safe benchmark-input size. Preserve
+that result rather than silently discarding the records. The actual
+corrected public-only verification then exits **0** and reports **PASS**:
+all **10,312/10,312** original public results authenticate with their
+original UTF-8 encoding. Exactly **9,731** records are safe to select;
+**581** are authenticated but explicitly excluded from measurement.
+All **10,312** opaque history entries are skipped without decoding
+their values. Both independently frozen **8,192**-case V6 and V7
+public descriptors match exactly. No candidate, worker, clock, output
+file, timing result, hidden case, or final test is accessed.
+
+The [corrected public-case generator](../tools/postfinal_public_expansion_v10.py)
+has SHA-256
+`ae0ff9664939b4d86a25fb860d93c02119a9a195ccf3fc32cbb805170a242065`.
+The [corrected public protocol](../performance/postfinal-public-v10/PROTOCOL.md)
+has SHA-256
+`e918053c99255e1a528102738e02a1e5979d65eadf0049ef3beed84d26941257`.
+The separately authored [prospective measurement runner](../tools/postfinal_public_practice_v10.py)
+has SHA-256
+`e99a4241ceb69c6f5e685fd05dab134f585670418738f0bc5cb0da0b61ffa02d`.
+The generator's candidate-free synthetic safety test passes
+**198/198**; the runner's candidate-free synthetic safety test passes
+**330/330**, including **212** inherited controls. These test the
+proposed source, not candidate correctness or performance.
+
+The corrected design prospectively retains the exact **8,192** original
+public examples and expands to **33,280** cases across **260** workload
+categories. The Rust, C, and Zig engines are separately implemented
+from scratch; none may wrap another regular-expression package, call
+Python's matching engine, or delegate to another candidate. The
+one-time manifest is **NOT CREATED** and **NOT FROZEN**. Source and
+protocol must be committed and pushed before freezing; the manifest
+must be separately committed and pushed before any timing. The already
+frozen and published **8,192**-case V7 benchmark also remains
+**NOT MEASURED**. No new speed, memory, confidence interval, ranking,
+or slowdown has been measured. The independent final test remains
+**NOT OPENED**, and no winner has been established.
+
 ## Preserve the genuine failure of the larger public benchmark
 
 After committing and pushing the larger benchmark source and protocol
