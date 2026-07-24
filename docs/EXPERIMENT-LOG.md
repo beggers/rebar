@@ -7,6 +7,51 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Verify rebuilt Rust against every deeper correctness case
+
+After separately committing and pushing all three rebuilt engines'
+original **223,198-case** results, run the independently frozen
+deeper producer exactly once against the rebuilt Rust matcher.
+Require its actual same-family V24 original archive and owner proof,
+all independently published owner pins, every preserved failure,
+and all audited source and native-binary hashes before allowing the
+deeper original worker to start.
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar LC_ALL=C PATH=/usr/bin:/bin \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v24.py --qualified-deep \
+  --module candidates.rust_candidate \
+  --v21-audit-source-sha256 ded077962416ada3bddd825d77b2e6785fe3b01184fe5d9058ec17a57b08ea4d \
+  --v21-audit-protocol-sha256 5a78673c6b23e4781070cf5a2290d5f6cecd402fff77ff388d8795370de93a1f \
+  --v21-base-report-sha256 4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4 \
+  --v21-strict-report-sha256 6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d
+```
+
+The actual independent original worker exits **0**. Rust passes
+**393 / 393** deeper compatibility cases, including all **64**
+fixed-seed cases, with **zero** public mismatches and the exact
+unchanged CPython-reference observation hash. Real Rust matching
+and ownership checks pass both before and after the deeper worker;
+its separately passing original **223,198-case** archive and proof
+remain unchanged and are embedded by hash in the deeper proof.
+
+- [Actual complete original Rust deeper-case observations](../candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V24-PASS.json.gz),
+  SHA-256 `ace3fa8d10725f71881107ace3d9e7d7132a6200723e4f1897e1d5ae6d3d0037`.
+- [Actual complete Rust deeper-case owner proof](../candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json),
+  SHA-256 `a26f0659a746838d9af72ff1beff22b91c76d83e7a426b0cc47dbe0400ce67f7`.
+- [Exact original Rust deeper-case stdout and both actual receipts](../candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V24-PASS-PRODUCTION-SUMMARY.json).
+
+The archive is exclusively written in **83,095** genuine bytes;
+the independent canonical owner proof is exclusively written in
+**92,235** genuine bytes. Both record distinct, complete **18**-field
+actual write and synchronization receipts. No failure or invalidated
+evidence is created. This qualifies the actual rebuilt Rust matcher
+against the frozen original and deeper contracts, not the full
+upstream or expanded public Python tests. Those remain **NOT RUN**;
+performance is **NOT MEASURED**, and the holdout is **NOT ACCESSED**.
+
 ## Verify rebuilt Zig against every original correctness case
 
 Commit and push the complete Rust and C original-case results before

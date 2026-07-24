@@ -18,10 +18,11 @@ and NOT QUALIFIED**. Bindings are not extra matching engines.
 
 **Current status: all three independently rebuilt Rust, C, and Zig engines
 pass all 223,198 original compatibility checks without calling Python's
-matcher or another regex engine. Their deeper and complete Python tests
-are still NOT RUN. Current speed and memory are NOT MEASURED. There is no
-winner.** The headline graphs below describe earlier, archived builds,
-not the engines currently under test.
+matcher or another regex engine. Rust also passes all 393 deeper cases.
+The deeper C and Zig checks and complete Python tests are still NOT RUN.
+Current speed and memory are NOT MEASURED. There is no winner.** The
+headline graphs below describe earlier, archived builds, not the engines
+currently under test.
 
 ## Headline results from the last completed comparison
 
@@ -65,18 +66,20 @@ retain the complete results, uncertainty ranges, and all regressions.
 ## Are the current engines compatible with Python?
 
 Not yet. The rebuilt Rust, C, and Zig engines all pass every original
-compatibility case, but still have to pass the deeper and complete
-Python suites.
+compatibility case. Rust also passes every deeper case. All three must
+still pass the complete Python compatibility tests.
 [Zig's own native Python bridge](candidates/zig/py_bridge.c) has been
 rebuilt to correct its genuine `Pattern` versus `re.Pattern` bug. The
-earlier results remain visible; only a new result against the current
-engine counts as fresh evidence.
+current results are separately verified against the rebuilt engines.
 
-| Engine built from scratch | Earlier original checks | Earlier deeper checks | Fresh rebuilt-engine proof | Complete Python tests |
-| --- | --- | --- | --- | --- |
-| [Rust](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-qualified-pass.json.gz) | PASS: 223,198 / 223,198 | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json) | [PASS: 223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v24-qualified-pass-proof.json) | NOT RUN |
-| [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass.json.gz) | PASS: 223,198 / 223,198 | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json) | [PASS: 223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v24-qualified-pass-proof.json) | NOT RUN |
-| [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-qualified-pass.json.gz) | PASS: 223,198 / 223,198 | [FAIL: 26 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-POSTFINAL-CURRENT-BUILD-V12-INVALIDATED-AFTER-OWNER-FAILURE.json.gz) | [PASS: 223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v24-qualified-pass-proof.json) | NOT RUN |
+| Engine built from scratch | Original cases | Deeper cases | Complete Python tests |
+| --- | --- | --- | --- |
+| Rust | [PASS: 223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v24-qualified-pass-proof.json) | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | NOT RUN |
+| C | [PASS: 223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v24-qualified-pass-proof.json) | NOT RUN | NOT RUN |
+| Zig | [PASS: 223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v24-qualified-pass-proof.json) | NOT RUN | NOT RUN |
+
+The [earlier Zig deeper-test failure](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-POSTFINAL-CURRENT-BUILD-V12-INVALIDATED-AFTER-OWNER-FAILURE.json.gz)
+remains preserved; it does not count as a result for the rebuilt engine.
 
 The [normalized rebuild inspection](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V21.md)
 checks all **12** current engine source files and all **five** current
@@ -107,8 +110,9 @@ holdout.
 The corrected protocol requires all **223,198** original cases and
 all **393** deeper cases to be repeated against each independently
 inspected engine. Rust, C, and Zig each pass all **223,198** original
-cases in **49** categories with zero mismatches. The fresh **393**
-deeper checks remain **NOT RUN** for each engine.
+cases in **49** categories with zero mismatches. Rust also passes all
+**393** deeper checks, including **64** fixed-seed difficult cases.
+The fresh deeper checks remain **NOT RUN** for C and Zig.
 
 The [frozen full upstream Python test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V12.md)
 preserves Python's exact original test suite. Python itself has
