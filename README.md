@@ -31,6 +31,12 @@ quote-aware splitting cases: it is clearly faster than Python on **54/54**,
 with an **11.81×** average for that category. That targeted result is not an
 overall win.
 
+The next Rust version uses its own direct matcher for simple, provably
+straight-line expressions. It has passed the full compatibility campaign,
+but its speed is **NOT MEASURED**. A distinct **8,192-case** public
+comparison and a new **65,536-case** one-time final are being prepared;
+neither is a result or a winner.
+
 ![Every measured win, uncertain result, and slowdown for all three independent regex engines](performance/postfinal-public-v3/evidence/postfinal-public-practice-v3-outcomes.svg)
 
 ## Detailed public results
@@ -66,11 +72,11 @@ remain unchanged.
 
 ## What is actually verified
 
-The current from-scratch quote-aware Rust passes **223,198** matching checks,
-**393** public-object checks, **479** tracing and unusual-argument checks,
-and the original complete **22-stage** Python-compatibility campaign,
+The current from-scratch direct-matching Rust passes **223,198** matching
+checks, **393** public-object checks, **479** tracing and unusual-argument
+checks, and the original complete **22-stage** Python-compatibility campaign,
 including **4,494,555** Unicode comparisons. Its
-[additional 83,968 quote-specific checks](candidates/evidence/rust-postfinal-quote-parity-stage-03-slot-batch-oracle.json)
+[additional 83,968 quote-specific checks](candidates/evidence/rust-postfinal-quote-parity-stage-04-deterministic-oracle.json)
 also match standard Python exactly, including escaped punctuation, text,
 bytes, captures, newlines, scanners, and Unicode. The original
 [from-scratch audit](candidates/audits/FROM-SCRATCH-AUDIT.json) verifies all
@@ -86,7 +92,9 @@ were frozen and pushed before timing. The
 [original](performance/postfinal-public-v1/RESULTS.md) 4,096-case comparisons,
 the earlier
 [rejected Rust experiment](performance/v7/evidence/POSTFINAL-RUST-BATCHED-SPLIT-01.md)
-and [experiment log](docs/EXPERIMENT-LOG.md) remain preserved. None of these
+and [experiment log](docs/EXPERIMENT-LOG.md) remain preserved. The
+[direct-matching Rust evidence](candidates/evidence/POSTFINAL-RUST-DETERMINISTIC-04.md)
+includes unsuccessful controls as well as every passing gate. None of these
 public results repairs or reruns the failed hidden final.
 
 ## Reproduce and inspect
@@ -101,7 +109,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.audit_from_scratch --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
-  tools/rust_postfinal_quote_parity_stage03_oracle.py --self-test
+  tools/rust_postfinal_quote_parity_stage04_oracle.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.postfinal_public_practice_v3 self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \

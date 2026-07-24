@@ -7,6 +7,36 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## A from-scratch direct Rust matcher passes the complete compatibility gate
+
+Rust now classifies its own compiled bytecode once. Expressions containing
+only validated straight-line instructions and fixed-count repetitions run
+through a new, allocation-free Rust interpreter. Branches, assertions,
+variable repetition, and every uncertain instruction continue through the
+original Rust backtracking engine. Neither path calls Python's regex engine,
+another candidate, or an external package.
+
+The exact source passes **223,198** independent edge comparisons,
+**393** family-bound public-object checks, **479** tracing and lifetime
+checks, all **22** sealed correctness and safety stages, and another
+**83,968** quote-specific comparisons. All **20** optimized Rust unit tests
+also pass. The original 76-control audit binds the current sources and five
+loaded native libraries. Complete hashes and reports are in the
+[direct Rust evidence](../candidates/evidence/POSTFINAL-RUST-DETERMINISTIC-04.md).
+
+Preserved diagnostics include an overly broad static control that mistook the
+CPython-compatible scanner's displayed `_sre.SRE_Scanner` type name for an
+engine import, and preliminary object and tracing reports that were correct
+but did not identify the candidate family strongly enough. The subsequently
+passing sealed campaign uses the family-bound proof and retains all three
+diagnostics; no failure was removed or silently converted into a pass.
+
+Speed is **NOT MEASURED**. The existing **4,096-case** public results remain
+the latest measured comparison. A larger **8,192-case** public comparison
+and a separately generated **65,536-case** one-use holdout are being
+prepared, not claimed as measured. The original consumed hidden final
+remains **FALSIFIED**.
+
 ## One-pass Rust metadata is measured and independently verified
 
 The prospectively frozen

@@ -242,6 +242,7 @@ pub struct Engine {
     leading_lookbehind: Option<usize>,
     start_anchor: SearchAnchor,
     byte_mode: bool,
+    deterministic: bool,
 }
 #[derive(Clone, Copy)]
 struct BorrowedText<'a> {
@@ -2441,6 +2442,41 @@ impl Compiler {
     }
 }
 
+/// Accept only bytecode whose execution never needs a backtracking stack.
+///
+/// Fixed-count runs cannot create an alternative: their minimum and maximum
+/// coincide, irrespective of the requested greedy, lazy, or possessive mode.
+/// All other repetition, control flow, assertions with subprograms, and
+/// nonterminal acceptance remain in the original general-purpose interpreter.
+fn deterministic_program(program: &Program, groups: usize) -> bool {
+    if program.guards != 0 || !program.repeats.is_empty() {
+        return false;
+    }
+
+    let Some((accept, instructions)) = program.code.split_last() else {
+        return false;
+    };
+    if accept.op != Op::Accept {
+        return false;
+    }
+
+    instructions.iter().all(|instruction| match instruction.op {
+        Op::Literal | Op::Dot | Op::Anchor | Op::Boundary => true,
+        Op::Category => char::from_u32(instruction.value as u32).is_some(),
+        Op::Class => instruction.left < program.classes.len(),
+        Op::SaveBegin | Op::SaveEnd | Op::Backref => instruction.left <= groups,
+        Op::Run => program.runs.get(instruction.left).is_some_and(|run| {
+            run.width != 0
+                && run.maximum == Some(run.minimum)
+                && run.mode <= 2
+                && run.captures.iter().all(|&(number, begin, end)| {
+                    number <= groups && begin <= end && end <= run.width
+                })
+        }),
+        _ => false,
+    })
+}
+
 /// Recognize only a mandatory, linear run followed by an exact byte literal.
 ///
 /// Capture instructions do not consume a character. Any other instruction can
@@ -2563,6 +2599,7 @@ pub unsafe extern "C" fn rebar_compile(
                 );
                 return std::ptr::null_mut();
             };
+            let deterministic = deterministic_program(&program, parser.groups);
             let mandatory_run_delimiter = mandatory_run_delimiter(&program);
             set_error(String::new(), None, false);
             Box::into_raw(Box::new(Engine {
@@ -2578,6 +2615,7 @@ pub unsafe extern "C" fn rebar_compile(
                 leading_lookbehind: lookbehind,
                 start_anchor,
                 byte_mode: byte_mode != 0,
+                deterministic,
             }))
         }
         Err((msg, pos, include)) => {
@@ -2818,6 +2856,175 @@ fn run_look(
             last,
         )
     }
+}
+
+/// Execute a validated, straight-line program without choice or undo stacks.
+///
+/// A failed candidate must restore every capture: the general interpreter does
+/// this with its undo stack, whereas subsequent search candidates here reuse
+/// the caller's capture buffers directly.
+#[inline]
+fn run_deterministic(
+    program: &Program,
+    context: &Context<'_>,
+    start: usize,
+    full: bool,
+    nonempty: bool,
+    begins: &mut [isize],
+    ends: &mut [isize],
+    last: &mut isize,
+) -> Option<usize> {
+    let mut pos = start;
+    let result = 'execute: {
+        for instruction in &program.code {
+            match instruction.op {
+                Op::Literal => {
+                    if pos >= context.end
+                        || !eq_lit(
+                            instruction.value as u32,
+                            context.character(pos),
+                            instruction.flags,
+                            context,
+                            pos,
+                        )
+                    {
+                        break 'execute None;
+                    }
+                    pos += 1;
+                }
+                Op::Dot => {
+                    if pos >= context.end
+                        || (instruction.flags & S == 0 && context.character(pos) == 10)
+                    {
+                        break 'execute None;
+                    }
+                    pos += 1;
+                }
+                Op::Category => {
+                    if pos >= context.end
+                        || !char::from_u32(instruction.value as u32)
+                            .is_some_and(|code| category(code, instruction.flags, context, pos))
+                    {
+                        break 'execute None;
+                    }
+                    pos += 1;
+                }
+                Op::Class => {
+                    if pos >= context.end {
+                        break 'execute None;
+                    }
+                    let class = &program.classes[instruction.left];
+                    if !class_match(&class.members, class.negative, class.flags, context, pos) {
+                        break 'execute None;
+                    }
+                    pos += 1;
+                }
+                Op::Anchor => {
+                    let matched = match instruction.value as u8 {
+                        b'^' => {
+                            pos == 0
+                                || (instruction.flags & M != 0
+                                    && pos > 0
+                                    && context.character(pos - 1) == 10)
+                        }
+                        b'$' => {
+                            pos == context.end
+                                || (pos.checked_add(1) == Some(context.end)
+                                    && pos < context.end
+                                    && context.character(pos) == 10)
+                                || (instruction.flags & M != 0
+                                    && context.has_character(pos)
+                                    && context.character(pos) == 10)
+                        }
+                        b'A' => pos == 0,
+                        _ => pos == context.end,
+                    };
+                    if !matched {
+                        break 'execute None;
+                    }
+                }
+                Op::Boundary => {
+                    let left = pos > 0 && category('w', instruction.flags, context, pos - 1);
+                    let right = pos < context.end && category('w', instruction.flags, context, pos);
+                    if (left != right) != (instruction.value != 0) {
+                        break 'execute None;
+                    }
+                }
+                Op::SaveBegin => {
+                    begins[instruction.left] = pos as isize;
+                }
+                Op::SaveEnd => {
+                    ends[instruction.left] = pos as isize;
+                    *last = instruction.left as isize;
+                }
+                Op::Backref => {
+                    let number = instruction.left;
+                    let begin = begins[number];
+                    let end = ends[number];
+                    if begin < 0 || end < begin {
+                        break 'execute None;
+                    }
+                    let begin = begin as usize;
+                    let count = end as usize - begin;
+                    if count > context.end.saturating_sub(pos)
+                        || !(0..count).all(|offset| {
+                            eq(
+                                context.character(begin + offset),
+                                context.character(pos + offset),
+                                instruction.flags,
+                                context,
+                                begin + offset,
+                                pos + offset,
+                            )
+                        })
+                    {
+                        break 'execute None;
+                    }
+                    pos += count;
+                }
+                Op::Run => {
+                    let run = &program.runs[instruction.left];
+                    if (pos > context.end && run.captures.is_empty())
+                        || run.minimum > context.end.saturating_sub(pos) / run.width
+                    {
+                        break 'execute None;
+                    }
+                    for matched in 0..run.minimum {
+                        let begin = pos + matched * run.width;
+                        if !(begin..begin + run.width)
+                            .all(|at| repeat_atom_match(&run.atom, context, at))
+                        {
+                            break 'execute None;
+                        }
+                    }
+                    if run.minimum != 0 {
+                        let base = pos + (run.minimum - 1) * run.width;
+                        for &(number, begin, end) in &run.captures {
+                            begins[number] = (base + begin) as isize;
+                            ends[number] = (base + end) as isize;
+                            *last = number as isize;
+                        }
+                    }
+                    pos += run.minimum * run.width;
+                }
+                Op::Accept => {
+                    if (!full || pos == context.end) && !(nonempty && pos == start) {
+                        break 'execute Some(pos);
+                    }
+                    break 'execute None;
+                }
+                _ => break 'execute None,
+            }
+        }
+        None
+    };
+
+    if result.is_none() {
+        begins.fill(-1);
+        ends.fill(-1);
+        *last = -1;
+    }
+    result
 }
 
 fn run_program(
@@ -3440,17 +3647,31 @@ fn run_match(
                 continue;
             }
         }
-        if let Some(finish) = run_program(
-            program,
-            context,
-            start,
-            0,
-            mode == 2,
-            nonempty != 0 && start == pos,
-            begins,
-            ends,
-            last,
-        ) {
+        let finish = if engine.deterministic {
+            run_deterministic(
+                program,
+                context,
+                start,
+                mode == 2,
+                nonempty != 0 && start == pos,
+                begins,
+                ends,
+                last,
+            )
+        } else {
+            run_program(
+                program,
+                context,
+                start,
+                0,
+                mode == 2,
+                nonempty != 0 && start == pos,
+                begins,
+                ends,
+                last,
+            )
+        };
+        if let Some(finish) = finish {
             begins[0] = start as isize;
             ends[0] = finish as isize;
             return 1;

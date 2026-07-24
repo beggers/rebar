@@ -1,0 +1,63 @@
+{
+  "artifact_directory": "/tmp/rebar-rust-stage04-deterministic-campaign-steps",
+  "candidate": "candidates.rust_candidate",
+  "excluded_steps": [
+    {
+      "name": "frozen-performance-correctness-v6",
+      "reason": "performance fixture or held-out workload",
+      "script": "tools/perf_v6.py"
+    },
+    {
+      "name": "frozen-performance-v7-integrity",
+      "reason": "performance fixture or held-out workload",
+      "script": "tools/perf_v7.py"
+    },
+    {
+      "name": "frozen-performance-correctness-v7",
+      "reason": "performance fixture or held-out workload",
+      "script": "tools/perf_v7.py"
+    }
+  ],
+  "fail_fast": true,
+  "goal": {
+    "actual_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+    "expected_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+    "passed": true
+  },
+  "holdout_accessed": false,
+  "memory_limit_mib": 2048,
+  "mode": "sealed-practice-only",
+  "passed": false,
+  "performance": "NOT MEASURED",
+  "pinned_cpython": "3.14.6",
+  "python_executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "python_version": "3.14.6",
+  "required_correctness_step_count": 17,
+  "schema": "rebar-rust-campaign-gate-v1",
+  "steps": [
+    {
+      "inspected_files": [
+        "candidates/rust_candidate.py",
+        "candidates/rust/src/lib.rs",
+        "candidates/rust/src/newline.rs",
+        "candidates/rust/src/search.rs",
+        "candidates/rust/src/stack.rs",
+        "candidates/rust/src/unicode_tables.rs",
+        "candidates/rust/py_bridge.c",
+        "candidates/rust/Cargo.toml",
+        "candidates/rust/Cargo.lock"
+      ],
+      "issues": [
+        {
+          "file": "candidates/rust/py_bridge.c",
+          "line": 2176,
+          "match": "_sre",
+          "reason": "CPython regex delegation"
+        }
+      ],
+      "name": "from-scratch-static-audit",
+      "passed": false
+    }
+  ],
+  "timing_performed": false
+}
