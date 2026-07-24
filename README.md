@@ -85,7 +85,9 @@ remain **NOT RUN**. A complete drop-in replacement is not yet proven.
 
 The [separately frozen failure audit](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V15-FAILURE.md)
 distinguishes the stored-JSON hash from the original test's conflicting
-Unicode-validation hash. Its dedicated failure record is **NOT WRITTEN**.
+Unicode-validation hash. Its
+[independently verified failure record](oracle/cpython-3.14.6/evidence/public-contract-v15-reference-failures.json)
+preserves both hashes and confirms no candidate was rerun.
 
 ## Larger fair speed comparison
 

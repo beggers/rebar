@@ -7,6 +7,39 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Record the exact failed Python comparison without rerunning it
+
+Freeze, commit, and push the corrected actual-evidence failure recorder
+in `5d176fab` before producing its one-use report. Then run only the
+independently reviewed failure-preservation command:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/python_re_universal_public_oracle_stage15_failure.py --record
+```
+
+The resulting
+[actual full-behavior failure record](../oracle/cpython-3.14.6/evidence/public-contract-v15-reference-failures.json)
+has SHA-256
+`cb71e1a44549c7c76c3bf08900e6107d2b49e789e5002afc725d1e9df0c92880`.
+Its genuine result is **FAIL**. It retains the exact original
+`755cb818f59259bb5adb05a93782afc3eef12e001c41a976ba4b9258ae54ac01`
+report, both complete real Python worker streams, all **7,168** actual
+observations, and both independent failed-validator contexts.
+
+Independently validate the ordinary JSON transport fingerprint
+`0d6a74b1f923436c14569bfdd84431e4251f3bb8dd3129fbbcaf82a47f906b94`
+and the old validator's conflicting Unicode-transformed fingerprint
+`7a3bed83093800085fe1bd084820108142929f60e37632b3c24a02c6a4584d72`
+for each worker and reference array. All **four** failed contractual
+fingerprints remain visible; all three candidates remain **NOT RUN**.
+The original evidence retains its exact SHA-256 after recording.
+
+No reference, candidate, locale, fuzz case, benchmark, hidden input,
+or timer is rerun. The fixed broad compatibility gate and performance
+remain **NOT RUN** and **NOT MEASURED**.
+
 ## Freeze an independently validated record of the real reference failure
 
 First preserve and push the complete original false-pass Python evidence
