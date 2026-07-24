@@ -20,7 +20,9 @@ and scanner checks. Its speed is **NOT MEASURED**.
 The [new, prospectively frozen speed comparison](performance/postfinal-public-v6/PROTOCOL.md)
 will test the current Rust, C, and Zig engines against Python on the exact
 same **8,192** public workloads. It cannot run before its complete protocol
-is committed and pushed. The larger final test remains **NOT OPENED**.
+is committed and pushed. Its new graphs will be published only after an
+independent replay confirms every result. The larger final test remains
+**NOT OPENED**.
 
 ## Earlier public performance
 
@@ -127,6 +129,10 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_public_native_archive_v1.py --verify
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -I -B -c \
   'import sys;sys.path.insert(0,".");from tools.postfinal_public_practice_v6 import main;main(["--self-test"])'
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  tools/postfinal_public_practice_charts_v6.py --self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  tools/postfinal_public_practice_presentation_v2.py --self-test
 jq '{status, cases, total_comparisons, mismatches, comparison_complete}' \
   candidates/evidence/python-re-universal-public-oracle-v4-all.json
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \

@@ -7,6 +7,25 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Prepare clear graphs for the exact current engines
+
+Complete the frozen **8,192**-case public measurement before running any
+chart self-test or changing an engine. Preserve every original observation
+and require an independently replayed, source-bound result before either
+renderer can produce a graph or claim a speed.
+
+The standard six-graph renderer passes **163** in-memory adverse-input
+checks. The plain-language six-graph renderer separately passes **84**.
+Both preserve the exact current Rust, C, and Zig engine fingerprints;
+all **12** compatibility proofs; both fresh independence audits; all
+**260** case categories; and all frozen case weights.
+
+Derive the candidate rankings, **1.5×** speed target, **60%** faster-case
+target, and every slowdown from the actual independently verified result.
+Do not copy the archived **5,173** slowdowns or any historical ranking.
+Keep the older graphs unchanged, mark exact native memory **NOT MEASURED**,
+and leave the **65,536**-case final test **NOT OPENED**.
+
 ## Freeze a fair comparison for the newly rebuilt Rust engine
 
 Keep all **8,192** original public cases, **260** workload categories,
