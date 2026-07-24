@@ -7,6 +7,48 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Prepare a larger public comparison without freezing or timing it
+
+Preserve the previously pushed **8,192**-case public source, protocol,
+and one-time manifest in `4096efbc`. Its manifest remains **FROZEN**;
+its speed remains **NOT MEASURED**. The earlier actual freeze failure
+and successful retry remain recorded without alteration below.
+
+The [larger public-case generator](../tools/postfinal_public_expansion_v8.py)
+has SHA-256
+`e921d5962746d564381a0a11d22eb125b080370b572ffd0f630e925025f1ec97`.
+The [prospective larger public protocol](../performance/postfinal-public-v8/PROTOCOL.md)
+has SHA-256
+`e19d504f6d7504b4052f2bbfbc0a584596178919c5396e076d3e6261356a2095`.
+The [prospective public benchmark runner](../tools/postfinal_public_practice_v8.py)
+has SHA-256
+`7818577b36bb822cc99e02a07fcd5ba74e20f1ecf6f0dcb3c0913d2a97bd244f`.
+Their direct, isolated, candidate-free synthetic safety tests pass
+**177/177** and **212/212**, respectively, without creating files,
+starting engines, reading final tests, or measuring time.
+
+The prospective public design specifies exactly **33,280** cases:
+**128** cases in each of **260** workload categories, retaining all
+**8,192** existing public cases. It covers **12** Python operations,
+**4** actual input types, and **13** paired trials. Its **1,730,560**
+timing rows, **5,191,680** correctness gates, **99,843** confidence
+intervals, **266,248** safeguards, and **99,840** untimed candidate
+prequalification checks are prospective denominators, not observations.
+Every speed, memory result, confidence interval, ranking, and slowdown
+remains **NOT MEASURED**.
+
+The previously passing independent baseline
+`5207ca3829216b9482f0b5a2928b339261e2c51d673cce7d80da0f4f4622a8f9`
+and three-engine compatibility report
+`0af512f940ce7c28e50c1977794e3fbb8a2c33206e77dd2379d4fa12b391fec7`
+remain mandatory. Preserve both actual earlier **32** baseline failures
+and **256** harness failures. The larger source and protocol must be
+committed and pushed before the one-time manifest may be frozen. No
+engine may be timed until that manifest is separately committed and
+pushed. The larger manifest is **NOT FROZEN**. These cases are public,
+not secret final-test examples. The independent **65,536**-case final
+test remains **NOT OPENED**, and no winner has been established.
+
 ## Freeze the public comparison without measuring the engines
 
 First commit and push the exact public benchmark source and protocol in

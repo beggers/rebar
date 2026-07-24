@@ -140,16 +140,21 @@ independently passes **3,584/3,584** cases for Rust, C, and Zig:
 prevented from importing Python's matcher, another candidate, or
 an external matching package.
 
-The [next public speed-comparison protocol](performance/postfinal-public-v7/PROTOCOL.md)
-now has a [one-time public benchmark manifest](performance/postfinal-public-v7/manifest.json)
-covering **8,192** existing examples, **260** workload categories,
-**12** Python operations, and **13** planned paired trials. The one-time
-manifest is **FROZEN**. Timing is permitted only after its source,
-protocol, and manifest are committed and pushed. Freezing starts no
-engines and takes no speed measurements. The separate proposed
-**33,280**-case public expansion remains **NOT FROZEN** and is not a
-hidden final test. New speed, memory, confidence intervals, and rankings
-remain **NOT MEASURED**.
+The [published public benchmark](performance/postfinal-public-v7/PROTOCOL.md)
+has a [frozen one-time manifest](performance/postfinal-public-v7/manifest.json)
+covering **8,192** examples, **260** workload categories, **12** Python
+operations, and **13** planned paired trials. Its speed is
+**NOT MEASURED**.
+
+A [broader public comparison](performance/postfinal-public-v8/PROTOCOL.md)
+plans **33,280** examples: **128** in each of **260** categories,
+including all existing **8,192**. It covers **12** Python operations,
+**4** input types, and **13** planned paired trials. Its source and
+protocol must be committed and pushed before its one-time manifest may
+be frozen; no engine may be timed until that manifest is separately
+committed and pushed. The larger manifest is **NOT FROZEN**; this is a
+public test, not the hidden final test. New speed, memory, confidence
+intervals, and rankings remain **NOT MEASURED**.
 
 ## Final-test status
 
@@ -191,6 +196,10 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage10.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_public_practice_v7.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_public_expansion_v8.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_public_practice_v8.py --self-test
 # Historical successful one-time freeze; the manifest now exists.
 # Do not rerun: freezing exclusively creates the manifest once.
 # PYTHONPATH=. is mandatory for the inherited contract.
