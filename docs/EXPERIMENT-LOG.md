@@ -7,6 +7,31 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the complete 22-stage native compatibility campaigns
+
+Freeze the [complete campaign controller](../tools/rust_v8_multi_candidate_campaign_postfinal_v7.py)
+and its [predeclared compatibility protocol](../oracle/cpython-3.14.6/POSTFINAL-CAMPAIGN-V7.md)
+before running any engine. Their respective SHA-256 fingerprints are
+`92e397149585ee35ce5d26e984f00d093992471d3e92b929f65dd0386f75b243`
+and `dd7e6f80128fb9c8198398755caa178ede0a0ce178fedce2049a7e066be3250c`.
+
+The controller's actual candidate-free preflight authenticates the
+immutable objective; both frozen from-scratch and no-delegation audits;
+the complete upstream Python results; the complete public-type results;
+the corrected **7,168-observation** Python reference; and all
+**10,752** independently implemented Rust, C, and Zig observations.
+It reads the complete results exclusively through the separately
+published, exact-path **32 MiB** evidence reader. It also checks and
+preserves the genuine earlier failed reference without qualifying that
+failure as a passing experiment.
+
+All **242** deliberately adversarial, candidate-free safety checks pass.
+Each engine must still pass all **22** individually evidenced original
+compatibility stages, including **4,494,555** full-Unicode comparisons,
+against the exact pinned Python 3.14.6 reference. The Rust, C, and Zig
+campaigns are each **NOT RUN**. No benchmark or final holdout was run
+or opened; speed, memory, and rankings remain **NOT MEASURED**.
+
 ## Freeze the safe, bounded complete-evidence reader
 
 First commit and push the exact complete **20,220,593-byte**,

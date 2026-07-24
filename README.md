@@ -85,9 +85,8 @@ now has [7,168 independently verified Python reference results](oracle/cpython-3
 including Unicode checks on the exact saved bytes.
 [All three current engines pass every case](candidates/evidence/python-re-universal-public-oracle-v17-all.json):
 **3,584/3,584** each and **10,752/10,752** total, with zero
-mismatches. Complete public-interface, caching, large-scale fuzz, and
-expanded speed tests remain **NOT RUN**. A complete drop-in replacement
-is not yet proven.
+mismatches. Complete public-interface and caching tests remain
+**NOT RUN**. A complete drop-in replacement is not yet proven.
 
 The [separately frozen failure audit](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V15-FAILURE.md)
 distinguishes the stored-JSON hash from the original test's conflicting
@@ -99,6 +98,10 @@ The complete three-engine result is 20 MB because it keeps every
 observation. A [strictly size-limited evidence reader](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V17-EVIDENCE.md)
 verifies the full result without weakening file-safety checks or
 discarding data.
+
+The [complete 22-stage compatibility campaign](oracle/cpython-3.14.6/POSTFINAL-CAMPAIGN-V7.md)
+includes **4,494,555 Unicode comparisons per engine**. The Rust, C,
+and Zig campaign results are each **NOT RUN**.
 
 ## Larger fair speed comparison
 
