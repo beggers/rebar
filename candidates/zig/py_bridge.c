@@ -579,7 +579,7 @@ static PyMappingMethods zig_match_mapping = {0, zig_match_subscript, 0};
 
 static PyTypeObject ZigMatchType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "re.Match",
+    .tp_name = "candidates._zig_bridge.Match",
     .tp_basicsize = offsetof(ZigMatch, spans),
     .tp_itemsize = sizeof(intptr_t),
     .tp_dealloc = (destructor)zig_match_dealloc,
@@ -3351,8 +3351,6 @@ static PyObject *bridge_install_pattern_methods(PyObject *module,
                         "the native pattern owner must be a type");
         return NULL;
     }
-    ((PyTypeObject *)pattern_type)->tp_name = "re.Pattern";
-    PyType_Modified((PyTypeObject *)pattern_type);
     for (PyMethodDef *method = zig_pattern_methods;
          method->ml_name != NULL; method++) {
         PyObject *descriptor =

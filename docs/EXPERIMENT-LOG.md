@@ -7,6 +7,58 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Repair all three engines' real Python type ownership
+
+Keep the [original passing two-Python reference](../oracle/cpython-3.14.6/evidence/public-generic-alias-v11-self-oracle.json)
+and [actual first Rust failure](../candidates/evidence/python-re-generic-alias-public-oracle-v11-rust-failures.json)
+unchanged. The failure is a real replacement defect: a class claiming to
+come from Python's `re` module cannot be saved and restored by normal
+Python `pickle` when it is actually implemented in another module. Do not
+fake Python's module, replace its pickler, add a regex fallback, or weaken
+the independent-engine checks.
+
+Repair the separately owned Python and native type declarations in
+[Rust](../candidates/rust_candidate.py) and its
+[native bridge](../candidates/rust/py_bridge.c),
+[C](../candidates/vm_candidate.py) and its
+[native implementation](../candidates/_vm_native.c), and
+[Zig](../candidates/zig_candidate.py) and its
+[native bridge](../candidates/zig/py_bridge.c). Each public type now
+identifies its real implementing module. The independently implemented
+regular-expression matchers are not replaced by an external package or
+Python's own matcher.
+
+Run only targeted real checks: both `Pattern` and `Match`, both `str`
+and `bytes`, pickle protocols **0, 2, 4, and 5**, and all three engines.
+All **48** ordinary standard-library pickle round trips succeed; six
+actual text-and-bytes matching smoke checks also succeed. These are
+smoke checks, not a passing correctness campaign or audit.
+
+The preserved version-five source and no-delegation audits, official
+**146/146** test results, and **22-stage** campaigns apply only to the
+fingerprinted earlier builds. None qualifies any of the six modified
+source files. A fresh
+[from-scratch audit design](../tools/postfinal_from_scratch_audit_v6.py)
+must be committed before its real one-time report is generated. The
+fresh source audit, fresh independent-execution audit, renewed full
+official-test results, and a passing all-engine **128-case** replacement
+comparison are **NOT RUN**. The genuine earlier Rust **16/128** failure
+remains recorded, and the earlier test did not reach C or Zig.
+
+The independently reviewed source-audit design passes **324/324**
+candidate-free safety checks, including all **198** previous checks.
+It verifies the five exact native-loader protections, distinguishes
+candidate-owned patterns from native-owned matches, and rejects
+substituted pickle protocols. Its source has SHA-256
+`77e7ea97f96280019b3be9abfeeb8fc6ff27ca6ecd13189e611586af5719c18f`.
+The actual source audit remains **NOT RUN** at this design checkpoint.
+
+The archived speed graphs remain historical. The corrected expanded
+comparison is **NOT FROZEN**, current-engine speed and memory remain
+**NOT MEASURED**, and the independent final test for the rebuilt engines
+remains **NOT OPENED**. The earlier, already-falsified final result
+remains preserved. There is no winner.
+
 ## Preserve the first real generic-alias candidate failure
 
 Commit and push the generic-alias source and protocol in `3e3df8d4`,

@@ -2728,7 +2728,7 @@ static PyMappingMethods MatchMapping={0,match_subscript,0};
 
 static PyTypeObject MatchType={
     PyVarObject_HEAD_INIT(NULL,0)
-    .tp_name="re.Match", .tp_basicsize=offsetof(MatchObject,caps), .tp_itemsize=sizeof(Py_ssize_t),
+    .tp_name="candidates._vm_native.Match", .tp_basicsize=offsetof(MatchObject,caps), .tp_itemsize=sizeof(Py_ssize_t),
     .tp_dealloc=(destructor)match_dealloc, .tp_repr=(reprfunc)match_repr, .tp_flags=Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_GC, .tp_doc="The result of re.match() and re.search().\nMatch objects always have a boolean value of True.",
     .tp_traverse=(traverseproc)match_traverse, .tp_clear=(inquiry)match_clear,
     .tp_methods=MatchMethods, .tp_getset=MatchGetSet, .tp_as_mapping=&MatchMapping
@@ -3636,7 +3636,7 @@ static PyGetSetDef PatternGetSet[]={
 
 static PyTypeObject PatternType={
     PyVarObject_HEAD_INIT(NULL,0)
-    .tp_name="re.Pattern", .tp_basicsize=sizeof(PatternObject), .tp_dealloc=(destructor)pattern_dealloc,
+    .tp_name="candidates._vm_native.Pattern", .tp_basicsize=sizeof(PatternObject), .tp_dealloc=(destructor)pattern_dealloc,
     .tp_repr=(reprfunc)pattern_repr,
     .tp_hash=pattern_hash,
     .tp_richcompare=pattern_richcompare,
@@ -3659,7 +3659,7 @@ static PyType_Slot PublicPatternSlots[]={
 };
 
 static PyType_Spec PublicPatternSpec={
-    .name="re.Pattern",
+    .name="candidates.vm_candidate.Pattern",
     .basicsize=sizeof(PatternObject),
     .itemsize=0,
     .flags=Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_GC,
@@ -3679,7 +3679,7 @@ static PyObject *native_pattern_type(PyObject *self, PyObject *args) {
         PyTuple_GET_SIZE(bases)!=1 ||
         PyTuple_GET_ITEM(bases,0)!=(PyObject *)&PatternType ||
         !module || !PyUnicode_Check(module) ||
-        PyUnicode_CompareWithASCIIString(module,"re") ||
+        PyUnicode_CompareWithASCIIString(module,"candidates.vm_candidate") ||
         !qualname || !PyUnicode_Check(qualname) ||
         PyUnicode_CompareWithASCIIString(qualname,"Pattern") ||
         !slots || !PyTuple_Check(slots) || PyTuple_GET_SIZE(slots)) {

@@ -745,7 +745,7 @@ static PyMappingMethods rust_match_mapping = {0, rust_match_subscript, 0};
 
 static PyTypeObject RustMatchType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "re.Match",
+    .tp_name = "candidates._rust_bridge.Match",
     .tp_basicsize = offsetof(RustMatch, spans),
     .tp_itemsize = sizeof(intptr_t),
     .tp_dealloc = (destructor)rust_match_dealloc,
@@ -3695,7 +3695,7 @@ static PyObject *bridge_pattern_type(
         {0, NULL},
     };
     PyType_Spec specification = {
-        .name = "re.Pattern",
+        .name = "candidates.rust_candidate.Pattern",
         .basicsize = (int)base->tp_basicsize,
         .itemsize = 0,
         .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,

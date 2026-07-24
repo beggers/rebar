@@ -1098,7 +1098,7 @@ class _PatternType(type):
 
 
 class Pattern(_vm_native.Pattern, metaclass=_PatternType):
-    __module__ = "re"
+    __module__ = __name__
     __slots__ = ()
 
 

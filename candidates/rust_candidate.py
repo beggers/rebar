@@ -449,7 +449,7 @@ class _PatternType(type):
 
 
 class Pattern(metaclass=_PatternType):
-    __module__ = "re"
+    __module__ = __name__
     __slots__ = (
         "pattern", "flags", "groups", "_groupindex", "_handle",
         "_literal", "_bound_methods", "_templates", "__weakref__",

@@ -1019,7 +1019,6 @@ _PATTERN_METHODS = ("search", "match", "fullmatch", "findall", "finditer", "spli
 
 
 class Pattern:
-    __module__ = "re"
     __slots__ = ("pattern", "flags", "groups", "_groupindex", "_handle",
                  "_literal", "_templates", "__weakref__")
 
