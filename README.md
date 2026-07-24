@@ -9,15 +9,12 @@ The [official stable Zig compiler](toolchains/zig-0.16.0.lock.json) is
 independently pinned and verified so the Zig engine can be rebuilt
 directly from its own source.
 
-Separately written [C++](experiments/cpp_from_scratch_v1/PROTOCOL.md)
-and [Go](experiments/go_from_scratch_v1/PROTOCOL.md) engines are
-additional experiments. Both are **NOT BUILT, NOT RUN, and NOT
-QUALIFIED**.
-
-A [source-only C++ compatibility review](experiments/cpp_from_scratch_v1/STATIC-GAPS-V1.md)
-records what the independent engine still has to implement.
-A [source-only Go compatibility review](experiments/go_from_scratch_v1/STATIC-GAPS-V1.md)
-does the same for the separately written Go engine.
+A [from-scratch language and Python-boundary inventory](experiments/FROM-SCRATCH-LANGUAGE-LANDSCAPE-V1.md)
+records the three C, Rust, and Zig implementations, separately written
+[C++](experiments/cpp_from_scratch_v1/STATIC-GAPS-V1.md) and
+[Go](experiments/go_from_scratch_v1/STATIC-GAPS-V1.md) designs, and the
+compilers actually available. C++ and Go are **NOT BUILT, NOT RUN,
+and NOT QUALIFIED**. Bindings are not extra matching engines.
 
 **Current status: no engine is yet proved to be a complete replacement. New
 speed and memory results are NOT MEASURED. There is no winner.** The
@@ -65,9 +62,9 @@ retain the complete results, uncertainty ranges, and all regressions.
 
 ## Are the current engines compatible with Python?
 
-Not yet. Every engine has been checked against the same **223,198**
-actual Python behavior checks. The following table shows every known
-difference; each link contains the complete, reproducible results.
+Not yet. The last complete comparison checked earlier builds against the
+same **223,198** actual Python behavior checks. Each row is a preserved
+historical result; rebuilt engines must pass the complete suite again.
 
 | Engine built from scratch | Checks completed | Differences from Python | Complete upstream tests |
 | --- | ---: | ---: | --- |

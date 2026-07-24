@@ -7,6 +7,32 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Record the actual from-scratch language and Python-boundary options
+
+Inspect only the independent engine sources, their explicit protocols,
+the pinned Zig compiler, and separately invoked compiler-discovery
+commands. Freeze the concise
+[source-only language inventory](../experiments/FROM-SCRATCH-LANGUAGE-LANDSCAPE-V1.md),
+SHA-256
+`ce2957dfe3294eeb21f2fc62f0461fb7b8be7bf00e2b71ebe17ea70cd713bb75`.
+
+Confirm the registered C, Rust, and Zig designs each have their own
+matching implementation and Python boundary. Confirm that the separate
+C++ and Go designs also contain independently written matching code,
+but remain **NOT BUILT, NOT RUN, and NOT QUALIFIED**. Changing a
+binding or wrapping the same engine does not create another candidate.
+
+Independently observe C, C++, Rust, Go, and the exact officially pinned
+Zig compiler. Java has an available runtime but no observed compiler;
+Nim, Swift, .NET, and a WebAssembly runtime are not available on the
+current `PATH`. The exact Zig binary reports **0.16.0** and matches the
+published compiler SHA-256
+`2317bbb91798556d9d0f38aabdac23db83f0979b25f767259ae474546724087c`.
+
+No engine is run, built, qualified, or timed in this source-only
+inventory. No benchmark fixture, historical result, or holdout is
+opened. Performance remains **NOT MEASURED**.
+
 ## Preserve the genuine cached-Python-matcher isolation failure
 
 First separately commit, push, and independently verify the corrected
