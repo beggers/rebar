@@ -12,7 +12,9 @@ are a separate, fully disclosed public development experiment.
 
 All three independently written engines now pass a new **8,192-pattern**
 compatibility test: **1,179,648** comparisons with Python and **zero**
-differences. Their performance after these repairs is **NOT MEASURED**.
+differences. Each repaired engine also passes the original **223,198-check**
+matching and parser suite. Their performance after these repairs is
+**NOT MEASURED**.
 
 ## Overall public performance
 
@@ -85,10 +87,12 @@ remain unchanged.
 
 ## What is actually verified
 
-Before the new repairs, from-scratch direct-matching Rust passed **223,198** matching
-checks, **393** public-object checks, **479** tracing and unusual-argument
-checks, and the original complete **22-stage** Python-compatibility campaign,
-including **4,494,555** Unicode comparisons. Its
+The current Rust, C, and Zig sources each pass the same
+[223,198 matching, parser, Unicode, and object checks](candidates/evidence/POSTFINAL-UNIVERSAL-STAGE05-EDGE.md),
+with **zero failures**. Before these latest repairs, direct-matching Rust also
+passed the separate **393-check** public-object suite, **479-check** tracing
+suite, and complete **22-stage** Python-compatibility campaign, including
+**4,494,555** Unicode comparisons. Its
 [additional 83,968 quote-specific checks](candidates/evidence/rust-postfinal-quote-parity-stage-04-deterministic-oracle.json)
 also match standard Python exactly, including escaped punctuation, text,
 bytes, captures, newlines, scanners, and Unicode. The original
@@ -101,10 +105,9 @@ also checks that Python, another candidate, and third-party engines cannot
 be reached through cached modules or disguised imports. It verifies each
 engine in its own guarded process. Both audits have been rerun against the
 current repaired sources and native libraries. Neither claims to prove
-reproducible compiler builds. The original matching, object, tracing, and
-22-stage results are historical; their full current-source reruns are
-**NOT MEASURED**. Public correctness does not repair the historical hidden
-Zig failure.
+reproducible compiler builds. The separate **393-check**, **479-check**, and
+**22-stage** current-source reruns are still in progress. Public correctness
+does not repair the historical hidden Zig failure.
 
 The [complete 4,096-case results](performance/postfinal-public-v3/RESULTS.md)
 preserve every observation, confidence range, slowdown, and independent

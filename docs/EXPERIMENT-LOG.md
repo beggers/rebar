@@ -7,6 +7,21 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## All repaired engines pass the frozen matching and parser test
+
+Run the unchanged **223,198-check** matching oracle separately against the
+current Rust, C, and Zig sources. Each candidate passes every byte, Unicode,
+scanner, bounded-window, parser, and object case, including the independently
+generated **14,783-case** object and **20,480-case** parser suites. All three
+match Python's complete observation digest and produce new deterministic,
+source-bound evidence.
+
+Preserve the three exact reports and fingerprints in the
+[full matching and parser evidence](../candidates/evidence/POSTFINAL-UNIVERSAL-STAGE05-EDGE.md).
+The broader standalone public-object, tracing, and **22-stage** campaign
+remain separate gates. No speed, memory, hidden fixture, or new holdout is
+accessed.
+
 ## All three engines pass the larger public compatibility test
 
 The original frozen **8,192-pattern** test exposed **693** Rust, **368** C,
