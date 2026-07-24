@@ -7,6 +7,54 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Qualify the original Zig behavior result against both full-engine audits
+
+First publish both passing, independently reviewed three-engine
+reports. Verify that all **seven** audit-qualified Zig result paths
+are unused. Test the actual, officially compiled Zig implementation
+against the unchanged Python behavior suite and both independent
+audit fingerprints:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v11.py \
+  --qualified-edge \
+  --module candidates.zig_candidate \
+  --base-report-sha256 \
+  589321a768e10c52f039a68acb211574ec884598771ede2152f91994cc69f353 \
+  --strict-report-sha256 \
+  d8f31dd480bdba530a454b38428a23ef347c6e3cce7796f8992d6e7767381f4b
+```
+
+The actual independent Zig engine passes **223,198/223,198**
+original Python checks in all **49** frozen categories, with
+**zero** mismatches and exact behavior SHA-256
+`b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526`.
+Exclusively preserve both complete, audit-qualified Zig records:
+
+- [Original audit-qualified Zig behavior archive](../candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-qualified-pass.json.gz),
+  SHA-256 `7601383522ec3e1b96ddf5b16d01d466e7a0b5fe2c545861ecc7b1d32b4f5fa2`.
+- [Complete audit-qualified Zig ownership proof](../candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-qualified-pass-proof.json),
+  SHA-256 `3a59b37daaf318198d190e6d75445d1462a883f6083c54626ed729374b8171f7`.
+
+The complete proof authenticates both whole-engine audits, their
+full **12-source, five-binary** graph, all three independent Zig
+sources, and both own Zig native binaries. The exact official Zig
+matcher genuinely executes before and after its full original
+behavior comparison. All **13** Python matcher guards, **five**
+native-loader guards, and **16** genuine Python serialization
+checks pass; the bridge cannot use an external matcher.
+
+Two independent reviewers and the project lead separately verify
+both actual audit reports, the unchanged original Zig behavior
+archive, the entire durable ownership proof, and all real source
+and native-binary fingerprints. The final proof correctly records
+`campaign_qualified: true`. All three independent languages now
+pass the same complete original edge suite and both anti-delegation
+audits. Python's full upstream tests, the expanded public API
+matrix, and current performance remain **NOT RUN** or
+**NOT MEASURED**. The expanded final holdout remains **NOT OPENED**.
+
 ## Qualify the original C behavior result against both full-engine audits
 
 First publish both separately reviewed full-engine audit reports.
