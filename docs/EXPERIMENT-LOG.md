@@ -7,6 +7,51 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze truthful rebuilt-engine correctness and failure preservation
+
+Freeze the complete current-build correctness source and its protocol
+before executing any rebuilt engine:
+
+- [Fresh original correctness source](../tools/postfinal_current_build_proofs_v14.py),
+  SHA-256 `d824f266fa0771da90de5cbfd68ef2d8e1a042fce17d87213e1111ea95b1c417`.
+- [Fresh original correctness protocol](../oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V14.md),
+  SHA-256 `4391186888a28a730fba946e82d1e38835d4e464f4a85bc526061d43183c197e`.
+
+Preserve all **223,198** original cases and all **49** categories,
+and all **393** deeper cases including **64** seeded examples.
+Every run must authenticate both fresh three-engine inspections,
+all **12** source files and **five** native binaries, and actual
+new matching-engine ownership immediately before and after matching.
+A deeper passing result additionally requires that same engine's
+complete independently verified passing original-case result.
+
+Independent reviewers reject both initial, uncommitted source drafts.
+Source `cb8d98942906953b29161e02ca0f2dc3b996b5ddf42d3a02a318f3afda522cf1`
+checked Zig's total **26** historical differences but not all **18**
+original and **eight** seeded `re.Pattern` versus `Pattern` cases.
+Source `d7683b45b51656de24fcf827b3693b431cc4d800417586ab15fc6c3737fdfdc1`
+could incorrectly claim that an archive was not written when its
+subsequent owner proof failed. Neither draft was committed or used
+to execute or qualify an engine.
+
+The corrected source validates every genuine historical Zig difference
+and records an actual non-overwriting publication receipt immediately
+after each archive and owner proof is created. Comprehensive controls
+independently poison incomplete archives, proof failures, both
+published files, and failed later validation for every original and
+deeper check and all three engine families.
+
+The project lead and two independent reviewers run source-only checks
+in normal and empty environments. Each run passes all **1,300** new
+controls and all **340** and **763** inherited controls. Candidate
+imports, matching processes, existing evidence reads, clocks,
+benchmark and holdout reads, and file writes are all zero.
+
+The actual fresh independence inspections and rebuilt-engine
+correctness results remain **NOT RUN** at this source-freeze commit.
+No engine is yet qualified. Performance is **NOT MEASURED** and the
+larger holdout is **NOT OPENED**.
+
 ## Repair and rebuild Zig's own native Python type
 
 First commit and push the actual twice-passing **1,376-case** Python

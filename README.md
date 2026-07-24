@@ -85,6 +85,11 @@ The [fresh rebuild-inspection protocol](oracle/cpython-3.14.6/POSTFINAL-INDEPEND
 requires both inspections to be repeated against the actual changed source
 files and native binaries. These new inspections are **NOT RUN**.
 
+The [fresh original correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V14.md)
+then requires all **223,198** original cases and all **393** deeper
+cases to be repeated against each independently inspected engine.
+These rebuilt-engine tests are **NOT RUN**.
+
 Python itself has [twice passed its original complete reference tests](oracle/cpython-3.14.6/evidence/postfinal-locale-v6-self-oracle.json).
 Each run covers all **152** original public tests, including the genuine
 multi-gigabyte cases. The only skipped test requires Python's own private
