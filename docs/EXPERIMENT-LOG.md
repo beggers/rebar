@@ -7,6 +7,55 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Verify rebuilt Zig against every original correctness case
+
+Commit and push the complete Rust and C original-case results before
+starting the separately implemented Zig engine. Keep the official
+independently pinned Zig compiler, genuinely rebuilt Zig native bridge,
+all **12** audited current sources, all **five** current native
+binaries, both independently published V21 no-delegation reports,
+and the exact frozen V24 correctness rules unchanged.
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar LC_ALL=C PATH=/usr/bin:/bin \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v24.py --qualified-edge \
+  --module candidates.zig_candidate \
+  --v21-audit-source-sha256 ded077962416ada3bddd825d77b2e6785fe3b01184fe5d9058ec17a57b08ea4d \
+  --v21-audit-protocol-sha256 5a78673c6b23e4781070cf5a2290d5f6cecd402fff77ff388d8795370de93a1f \
+  --v21-base-report-sha256 4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4 \
+  --v21-strict-report-sha256 6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d
+```
+
+The original worker exits **0**. The rebuilt Zig engine passes all
+**223,198 / 223,198** frozen cases in **49** categories, with **zero**
+mismatches. Genuine independently isolated Zig native-owner workers
+pass immediately before and after the original cases, each performing
+**13** real matcher guards, **five** native-loader guards, and **16**
+serialization checks without using Python, Rust, C, or an external
+regex package to match.
+
+- [Actual complete original Zig observations](../candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v24-qualified-pass.json.gz),
+  SHA-256 `872070799b77708f6ac16c64de1ae6eb8d18b050133c8a67357f0592babee179`.
+- [Actual complete Zig native-owner proof](../candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v24-qualified-pass-proof.json),
+  SHA-256 `240970ee474cc5f7693d9e080067aa38b481ed003abc48dd8da4738c8cb33e0c`.
+- [Exact original Zig production stdout and both real write receipts](../candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v24-qualified-pass-production-summary.json).
+
+The actual exclusive original archive write requests and returns
+**2,203** bytes. The separately created complete canonical proof
+write requests and returns **96,552** bytes. Each uses its own
+**18**-field syscall receipt and records actual exclusive creation,
+file and directory synchronization, close, complete write and
+verified readback. Neither failure nor invalidated evidence is
+produced or suppressed.
+
+All three independently implemented rebuilt engines now genuinely
+pass all **223,198** original cases. The deeper **393** cases,
+complete upstream suite, and expanded public compatibility suite
+remain **NOT RUN** for each candidate. Performance is **NOT
+MEASURED**; the holdout is **NOT ACCESSED**.
+
 ## Verify rebuilt C against every original correctness case
 
 After committing and pushing the independently owned rebuilt Rust result,
