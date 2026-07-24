@@ -29,6 +29,18 @@ and the
 [original complete 22-stage campaign](../candidates/evidence/rust-v8-rust-post-final-stage-02-parity-sealed-campaign.json),
 including **4,494,555** Unicode checks.
 
+The separate
+[quote-parity differential oracle](../tools/rust_postfinal_quote_parity_oracle.py)
+adds **83,968** exact Python-versus-Rust observations across **1,312**
+deterministic cases. Its
+[complete source-bound evidence](../candidates/evidence/rust-postfinal-quote-parity-stage-02-oracle.json)
+records **zero mismatches**, separately isolated standard-library and Rust
+workers, all original native-library fingerprints, six anti-delegation
+controls, all text and buffer representations, scanner and split edge cases,
+invalid expressions, scoped flags, captures, escaped separators, and
+newline-sensitive anchors. Its synthetic controls pass without importing a
+candidate, opening a benchmark, or reading a hidden case.
+
 The
 [version-2 prospective public protocol](../performance/postfinal-public-v2/PROTOCOL.md)
 freezes exactly the same **4,096** public case IDs, all **260** categories,

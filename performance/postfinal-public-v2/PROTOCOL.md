@@ -52,6 +52,19 @@ including all **4,494,555** full-Unicode checks. The unchanged qualified C and
 Zig engines retain their own separately frozen matching proofs. Public
 correctness does not repair the original hidden Zig failure.
 
+An additional
+[independently isolated quote-pattern oracle](../../candidates/evidence/rust-postfinal-quote-parity-stage-02-oracle.json)
+checks **83,968** exact observations across **1,312** deterministically
+generated cases, with **zero mismatches**. It separately compares standard
+Python with the actual audited Rust source and loaded native code. It covers
+escaped and Latin-1 separators, six text and byte-buffer representations,
+match windows, every split limit, all scanner modes, newline-sensitive
+anchors, invalid inputs, captures, case and multiline flags, lazy and bounded
+repeats, and expressions the generic Rust matcher must continue to handle.
+Its reference and Rust observation hashes both equal
+`6e74329a7d935ccf6c1187d44dbad7a31a06f8042a5f698b5d07a5bcc0f9f959`.
+It uses no performance measurement, hidden input, or external regex engine.
+
 ## Exactly the same public cases
 
 The experiment uses exactly the same **4,096 case IDs in the same order** as

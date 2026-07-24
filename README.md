@@ -69,10 +69,12 @@ engine memory and isolated whole-process memory are **NOT MEASURED**.
 ## What is actually verified
 
 The current from-scratch quote-aware Rust passes **223,198** matching checks,
-**393** public-object
-checks, **479** tracing and unusual-argument checks, and the original complete
-**22-stage** Python-compatibility campaign, including **4,494,555** Unicode
-comparisons. The original
+**393** public-object checks, **479** tracing and unusual-argument checks,
+and the original complete **22-stage** Python-compatibility campaign,
+including **4,494,555** Unicode comparisons. Its
+[additional 83,968 quote-specific checks](candidates/evidence/rust-postfinal-quote-parity-stage-02-oracle.json)
+also match standard Python exactly, including escaped punctuation, text,
+bytes, captures, newlines, scanners, and Unicode. The original
 [from-scratch audit](candidates/audits/FROM-SCRATCH-AUDIT.json) verifies all
 four implementation families, all five loaded native libraries, and **76**
 controls against external packages, Python's regex engine, and hidden engine
@@ -98,15 +100,9 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.audit_from_scratch --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
-  -m tools.rust_postfinal_split_audit --self-test
+  tools/rust_postfinal_quote_parity_oracle.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
-  -m tools.postfinal_public_practice_v1 self-test
+  -m tools.postfinal_public_practice_v2 self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
-  tools/postfinal_public_practice_charts_v1.py --self-test
-PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
-  tools/postfinal_public_practice_charts_v1.py \
-  --summary performance/postfinal-public-v1/evidence/postfinal-public-practice-v1-summary.json \
-  --integrity performance/postfinal-public-v1/evidence/postfinal-public-practice-v1-integrity.json \
-  --manifest performance/postfinal-public-v1/manifest.json \
-  --output-dir performance/postfinal-public-v1/evidence
+  tools/postfinal_public_practice_charts_v2.py --self-test
 ```
