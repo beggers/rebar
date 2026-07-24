@@ -7,6 +7,43 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the genuine cached-matcher-safe ownership checks
+
+Preserve both real safety-check failures without editing their
+controllers, sources, archives, or output paths. Use Python's actual
+original guard to find every cached `re.*` module, including
+`re._compiler` and `re._parser`. Replace each real cached module and
+every retained alias with the exact original blocking object. Verify
+that object, its type, every cache entry, and every original alias
+before and after actual matching.
+
+Keep genuine zero- and one-alias cases valid. Reject false booleans,
+negative or substituted counts, restored matchers, external engines,
+cross-family matching, and weakened original Python or native guards.
+
+Freeze the [version-ten ownership protocol](../candidates/audits/POSTFINAL-NATIVE-OWNERSHIP-V10.md),
+SHA-256
+`902bc095d08331089dcc1d1d11233747438a0cacb0cf1057ae41a2474bde2fa6`,
+and its actual independent controllers:
+
+- [From-scratch and cached-matcher-safe ownership](../tools/postfinal_from_scratch_audit_v10.py):
+  SHA-256 `0c4d3f07bb51b0ce5ddc148810cb157d21067ddb07b578d3a793aaac5c671505`.
+- [Strict no-delegation](../tools/postfinal_no_delegation_audit_v10.py):
+  SHA-256 `885168bd6df92ac9cabc8fc78a8389ee487f0be8d3c7fe67a393e984011b8d95`.
+
+Both independent reviewers and the project lead each ran both real
+controllers in pinned direct isolated Python and an empty environment.
+Actual from-scratch controls passed **990/990** in both environments;
+actual strict controls passed **1,203/1,203** in both. Each run imported
+zero candidates, started zero workers, read or wrote zero files,
+sampled no clocks, and opened no holdout.
+
+The strict gate authenticates an actual, separately published complete
+three-family base report before accessing historical evidence or
+starting an engine. These are safety-controller results, not
+three-engine matching results. Candidate audits remain **NOT RUN**;
+speed and memory remain **NOT MEASURED**.
+
 ## Record the actual from-scratch language and Python-boundary options
 
 Inspect only the independent engine sources, their explicit protocols,

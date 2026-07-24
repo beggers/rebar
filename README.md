@@ -94,17 +94,17 @@ found a genuine bug in the safety checker itself: a deliberately
 blocked engine was mistaken for a real import. The check stopped
 before running Rust or claiming a compatibility pass.
 
-The [corrected from-scratch and engine-ownership protocol](candidates/audits/POSTFINAL-NATIVE-OWNERSHIP-V9.md)
-fixes that error without allowing an outside engine. It requires all
-three engines to do their own matching, produce genuine Python pattern
-and match objects, support ordinary serialization, and remain isolated
-before and after matching. Its actual three-engine audits are **NOT RUN**.
-
 The [first corrected Rust isolation check](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v9-diagnostic-native-owner-failure.json.gz)
 found another real safety gap: an internal Python matcher was already
 cached and could still be reached. The check correctly recorded a
 failure before importing Rust or starting the behavior tests. Rust has
 not been qualified, and no failure was hidden or waived.
+
+The [cached-matcher-safe, from-scratch ownership protocol](candidates/audits/POSTFINAL-NATIVE-OWNERSHIP-V10.md)
+closes both safety gaps. It requires each C, Rust, and Zig engine to do
+its own matching, blocks Python's cached internal matchers, checks
+genuine Python pattern and match objects, and repeats all protections
+after matching. Its actual three-engine audits are **NOT RUN**.
 
 The [fresh-build correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V9.md)
 keeps every original Python behavior check, verifies that the actual
@@ -139,9 +139,9 @@ be checked without running any candidates or benchmarks:
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
 "$PY" -I -B \
-  tools/postfinal_from_scratch_audit_v9.py --self-test
+  tools/postfinal_from_scratch_audit_v10.py --self-test
 "$PY" -I -B \
-  tools/postfinal_no_delegation_audit_v9.py --self-test
+  tools/postfinal_no_delegation_audit_v10.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_cpython_locale_oracle_v5.py --self-test
 "$PY" -I -B \
