@@ -96,7 +96,13 @@ then rejected an authentic historical failure before starting any
 engine. Its exact cause is preserved; fresh compatibility checks remain
 **NOT RUN**.
 
-The [fresh original correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V14.md)
+The [corrected full-check protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V24.md)
+now [passes its read-only three-engine integration](candidates/audits/POSTFINAL-CURRENT-BUILD-V24-READONLY-INTEGRATION-PASS.json).
+It verifies all five real failures, both independent ownership checks,
+and every native source without running a candidate or opening the
+holdout.
+
+The corrected protocol
 then requires all **223,198** original cases and all **393** deeper
 cases to be repeated against each independently inspected engine.
 These rebuilt-engine tests are **NOT RUN**.

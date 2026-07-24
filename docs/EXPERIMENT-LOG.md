@@ -7,6 +7,53 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze and integrate the complete original correctness runner
+
+Keep the unsuccessful V22 integration, its exact frozen source, and
+all five genuine earlier failures immutable. Freeze the additive
+corrected full-correctness producer and protocol:
+
+- [Corrected complete correctness runner](../tools/postfinal_current_build_proofs_v24.py),
+  SHA-256 `92b1f082196592e578a5fa6e09b63637c6a1304c04875e5816938ed4fc28eb52`.
+- [Corrected complete correctness protocol](../oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V24.md),
+  SHA-256 `f3ab4f5c3c697a6d39c109b743d949b980bfe0d79aeb6b58a0bc392a3f81e534`.
+
+An independently rejected earlier source-only draft tracked only
+aggregate write bytes. Correct the producer before source freeze:
+append each requested write to its own **18**-field artifact receipt
+before invoking the syscall, immediately retain its actual return,
+preserve genuine partial writes and exceptions, forbid retrying
+invalid writes, and independently validate file and directory syncs.
+Never rewrite the frozen **17**-field failed V22 producer.
+
+The project lead and two independent security reviewers each verify
+the exact corrected frozen source. All **8,330** deterministic
+controls pass with the pinned isolated interpreter and with an
+empty environment. This includes **2,244** inherited controls,
+**6,086** new controls, exact ordered write ledgers, separate owner
+roles, all authentic historical failures, real **25**-field V22
+failure documents, their **27**-field authenticated summaries,
+and the genuine **26**-field V13 history.
+
+Before any full correctness worker, run the genuine candidate-free
+integration using both separately published V21 ownership hashes.
+All three current C, Rust, and Zig families pass. Verify all
+**11** independent ownership roles, all **five** historical failure
+records, all **12** sources, all **five** native binaries, and
+all **18** truthful per-artifact receipt fields:
+
+- [Actual three-family, zero-worker integration](../candidates/audits/POSTFINAL-CURRENT-BUILD-V24-READONLY-INTEGRATION-PASS.json).
+
+The real integration starts **zero** native workers, original edge
+workers, or original deep workers. All five enforced read-only
+effect counters are **zero**. This is an integration pass, not a
+passing regex correctness suite.
+
+Freeze, commit, and push this source and integration before running
+any candidate. All **223,198** original edge cases and **393**
+deeper cases against each engine remain **NOT RUN** at this commit.
+Performance is **NOT MEASURED** and the holdout is **NOT ACCESSED**.
+
 ## Preserve the actual full-check integration preflight failure
 
 After publishing both independently passing current-engine ownership

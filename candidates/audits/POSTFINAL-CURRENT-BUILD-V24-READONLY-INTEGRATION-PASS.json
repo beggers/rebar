@@ -1,0 +1,52 @@
+{
+  "externally_supplied_base_report_sha256": "4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4",
+  "externally_supplied_strict_report_sha256": "6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d",
+  "families": [
+    {
+      "family": "rust",
+      "owner_roles": 11,
+      "source_count": 12,
+      "native_binary_count": 5,
+      "actual_history_incidents": 5,
+      "genuine_v13_fields": 26,
+      "actual_v22_incident_fields": 27,
+      "owned_per_artifact_receipt_fields": 18
+    },
+    {
+      "family": "vm",
+      "owner_roles": 11,
+      "source_count": 12,
+      "native_binary_count": 5,
+      "actual_history_incidents": 5,
+      "genuine_v13_fields": 26,
+      "actual_v22_incident_fields": 27,
+      "owned_per_artifact_receipt_fields": 18
+    },
+    {
+      "family": "zig",
+      "owner_roles": 11,
+      "source_count": 12,
+      "native_binary_count": 5,
+      "actual_history_incidents": 5,
+      "genuine_v13_fields": 26,
+      "actual_v22_incident_fields": 27,
+      "owned_per_artifact_receipt_fields": 18
+    }
+  ],
+  "holdout": "NOT ACCESSED",
+  "native_owner_workers_started": 0,
+  "original_deep_workers_started": 0,
+  "original_edge_workers_started": 0,
+  "performance": "NOT MEASURED",
+  "proof_protocol_sha256": "f3ab4f5c3c697a6d39c109b743d949b980bfe0d79aeb6b58a0bc392a3f81e534",
+  "proof_source_sha256": "92b1f082196592e578a5fa6e09b63637c6a1304c04875e5816938ed4fc28eb52",
+  "read_only_boundary_effects": {
+    "candidate_imports": 0,
+    "clock_samples": 0,
+    "filesystem_writes": 0,
+    "native_workers_started": 0,
+    "subprocesses_started": 0
+  },
+  "schema": "rebar-v24-root-three-family-actual-zero-worker-integration-smoke",
+  "status": "PASS"
+}
