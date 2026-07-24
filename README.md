@@ -79,8 +79,11 @@ The [complete upstream-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V5.
 requires all **152** original public Python tests, the genuine Python
 test-support files, the full original test corpus, and real
 multi-gigabyte inputs. There are no public-test waivers; the only
-conditional skip is Python's own private-debug-build requirement. The
-complete upstream reference and candidate runs are **NOT RUN**.
+conditional skip is Python's own private-debug-build requirement.
+[Python has passed the complete reference suite twice](oracle/cpython-3.14.6/evidence/postfinal-locale-v5-self-oracle.json):
+each independent run records all **152** original tests, **151**
+actual passes, and the one original debug-only skip. The candidate
+upstream runs are **NOT RUN**.
 
 Independent inspections cover the engines' **12** source files and
 **five** native binaries. They check that each engine is

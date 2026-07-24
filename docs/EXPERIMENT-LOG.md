@@ -7,6 +7,49 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Run Python's complete original correctness suite twice
+
+Only after freezing, independently reviewing, committing, and
+pushing the directly runnable complete original Python test oracle
+in `3e6be51c`, run the genuine standard-library self-oracle:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_cpython_locale_oracle_v5.py \
+  --self-oracle \
+  --source-sha256 9a4f2ac53617fb91e498ae2935bde622417921415af255e390668f69ba908730 \
+  --protocol-sha256 1329cf9c8e36391af134b2fb2b212e71067ace736b282dacd2a6c90233384840
+```
+
+The actual result is **PASS**. Preserve both complete independently
+executed Python reference processes and every original case in the
+[complete standard-library self-oracle report](../oracle/cpython-3.14.6/evidence/postfinal-locale-v5-self-oracle.json).
+Its exact SHA-256 is
+`3a5c300640b4d5207694d474eb231ce6ff7cb11ce6f3a17da0edd2e48fea3916`.
+
+Each process preserves exactly **152** unchanged original public
+method records, **151** genuine passes, and the same one actual
+private-debug-build conditional skip. There are **zero** public
+waivers, unexplained skips, failures, errors, crashes, timeouts,
+captured standard-output or standard-error warnings, or differences
+between the independent original result vectors.
+
+Both actual processes run the complete **403-case** upstream
+corpus, all **11** original external assertions, and the real
+**26-file** original test-support tree. Each genuinely delivers
+`2,147,483,648` items to both original large-memory methods under
+the real `42,949,672,960`-byte upstream memory limit. The original
+CPU resource, real `fork`, authentic locales, and unchanged
+upstream method source are preserved.
+
+The reference workers import **zero** candidates, read **zero**
+candidate audit or proof reports, and touch **zero** benchmark or
+held-out cases. No candidate official report or reference failure
+archive is created. The authentic Python correctness baseline is
+now genuinely established; Rust, C, Zig, C++, and Go full upstream
+candidate results remain **NOT RUN** and performance remains
+**NOT MEASURED**.
+
 ## Freeze an actually runnable complete Python correctness oracle
 
 Freeze the independently reviewed
