@@ -82,10 +82,12 @@ Independent validation rejects the report, so this attempt is
 **FALSIFIED**; Rust, C, and Zig were **NOT RUN**. The
 [corrected 3,584-case test](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V17.md)
 now has [7,168 independently verified Python reference results](oracle/cpython-3.14.6/evidence/public-contract-v17-self-oracle.json),
-including Unicode checks on the exact saved bytes. Its Rust, C, and
-Zig runs remain **NOT RUN**. Complete public-interface, caching, and
-large-scale fuzz tests are also **NOT RUN**. A complete drop-in
-replacement is not yet proven.
+including Unicode checks on the exact saved bytes.
+[All three current engines pass every case](candidates/evidence/python-re-universal-public-oracle-v17-all.json):
+**3,584/3,584** each and **10,752/10,752** total, with zero
+mismatches. Complete public-interface, caching, large-scale fuzz, and
+expanded speed tests remain **NOT RUN**. A complete drop-in replacement
+is not yet proven.
 
 The [separately frozen failure audit](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V15-FAILURE.md)
 distinguishes the stored-JSON hash from the original test's conflicting

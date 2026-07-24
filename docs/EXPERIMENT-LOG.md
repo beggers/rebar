@@ -7,6 +7,47 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Verify all 10,752 durable native public-behavior observations
+
+First freeze, independently validate, commit, and push the complete
+two-worker Python reference in `dd758c1d`. Only then execute the
+separately guarded Rust, C, and Zig engines on the same **3,584**
+frozen cases:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/python_re_universal_public_oracle_stage17.py --candidate all
+```
+
+The exclusively created
+[complete native public-behavior results](../candidates/evidence/python-re-universal-public-oracle-v17-all.json)
+have SHA-256
+`255644709afe8fa8ce41cefcfd029b7f865bbcd0314d528902bb5a56d52aa288`.
+Rust, C, and Zig each genuinely pass **3,584/3,584** cases. Preserve
+all **10,752** actual native answers, both real Python workers and
+all **7,168** reference answers, all three separate signature-metadata
+processes, all actual native-ownership guards, and the authentic earlier
+failure.
+
+Independently rehash the **20,220,593-byte** evidence and validate
+the exact stored JSON outside, inside, and again outside the matching
+context. Every complete candidate record, genuine metadata guard,
+individual case identity, record fingerprint, and reference comparison
+passes, with **zero** mismatches or delegated matchers.
+
+The previous generic JSON reader has a **16,777,216-byte** safety
+bound and cannot ingest this complete **20,220,593-byte** report.
+Record this real ingestion limitation; do not truncate results,
+increase an unrelated global bound, classify a passing engine as
+failed, or ignore safety. Freeze a separate exact-path, no-symlink,
+**33,554,432-byte** bounded reader before any downstream campaign.
+
+The complete 22-stage fuzz campaigns and the supplementary full
+public-surface suite remain **NOT RUN**. The new bounded reader is
+**NOT FROZEN**. Expanded performance, holdout, memory, and rankings
+remain **NOT MEASURED**.
+
 ## Verify both durable 3,584-case Python reference workers
 
 First freeze, commit, and push the corrected one-codec full behavior
