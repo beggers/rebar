@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Pass complete public-type comparisons on all three engines
+
+First commit and push both complete standard-Python reference runs in
+`ae90ab67`. Only then run the exact source-frozen cases in independent,
+guarded Rust, C, and Zig processes:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/python_re_generic_alias_public_oracle_stage14.py --candidate all
+```
+
+The exclusively created
+[complete three-engine public-type evidence](../candidates/evidence/python-re-generic-alias-public-oracle-v14-all.json)
+has SHA-256
+`f9243bd27a4d4ae24c0c3f0b24785e381440fc19c8911b52719cc6813bc1e8cc`.
+Every genuine native engine passes **128/128** cases. The actual report
+preserves both independently run Python reference workers, all **256**
+individual standard-Python observations, every actual native worker, and
+all **384** individual Rust, C, and Zig observations. There are **zero**
+mismatches, omitted rows, fallback engines, or cross-family substitutions.
+
+Independently revalidate the complete report, the pushed reference, exact
+source and protocol hashes, current native ownership and isolation proofs,
+all **584** passing official observations, and the authentic preserved
+failure. The broader differential, fuzz, and full public-surface campaigns
+remain **NOT RUN**. Expanded performance remains **NOT FROZEN** and
+**NOT MEASURED**; no winner is selected.
+
 ## Record both actual Python public-type reference runs
 
 First commit and push the corrected complete-observation source and
