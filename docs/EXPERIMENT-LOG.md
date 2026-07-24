@@ -7,6 +7,30 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a genuinely independent Go engine experiment
+
+Preserve a fifth, separately authored regular-expression architecture
+under [`experiments/go_from_scratch_v1`](../experiments/go_from_scratch_v1/PROTOCOL.md).
+Its own Go lexer, parser, expression tree, prioritized matching engine,
+capture management, explicit C interface, and independent CPython
+extension were written without reading the other candidate engines.
+It does not import Go's `regexp` or `regexp/syntax`, an external regex
+library, Python's matching engine, or an existing project matcher.
+
+The Go boundary uses explicitly released native handles; the separate
+Python adapter retains and releases Python buffers, decodes Python's
+one-, two-, and four-byte Unicode representations, and owns its pattern,
+match, scanner, and iterator types. These are source-level design
+features, not verified runtime or compatibility results. Unsupported
+features and the [proposed **48-case** preliminary comparison](../experiments/go_from_scratch_v1/PROTOCOL.md)
+remain visible and **NOT RUN**.
+
+First freeze, commit, and push the exact Go module, two Go source files,
+C extension, and protocol. Go is **NOT BUILT, NOT RUN, and NOT
+QUALIFIED**. Its actual Python compatibility, native safety, speed,
+memory use, and ranking are **NOT MEASURED**. No candidate or final
+holdout has been opened for this independent design.
+
 ## Freeze a genuinely independent C++ engine experiment
 
 Preserve a fourth, separately authored regular-expression engine under
