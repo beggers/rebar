@@ -1530,7 +1530,7 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
                     CharClass cls=vm->classes[atom.a];
                     if (cls.count!=1 || cls.items[0].kind!=1 || cls.items[0].a!=quote) { exact=0; break; }
                 }
-                if (exact) {
+                if (exact && quote != '\n' && !(child.ins[10].b & F_M)) {
                     int even=1;
                     Py_ssize_t found_separator=-1;
                     for (Py_ssize_t cursor=endpos; cursor-->pos;) {
@@ -2006,7 +2006,7 @@ static PyObject *collect_core(VM *vm, Subject subject, Py_ssize_t pos, Py_ssize_
                     CharClass cls=vm->classes[atom.a];
                     if (cls.count!=1 || cls.items[0].kind!=1 || cls.items[0].a!=quote) { exact=0; break; }
                 }
-                if (exact) {
+                if (exact && quote != '\n' && !(child.ins[10].b & F_M)) {
                     int total=0,prefix=0;
                     for (Py_ssize_t cursor=pos; cursor<endpos; cursor++) if (equal_char(subject_char(&subject,cursor),quote,child.ins[3].b)) total=!total;
                     Py_ssize_t previous=pos,matches=0;
@@ -2766,10 +2766,10 @@ static int pattern_window(PatternObject *pattern, PyObject *const *args,
                                 values)) return 0;
     PyObject *string=values[0],*pos_value=values[1],*end_value=values[2];
     *pos=0;
+    *endpos=PY_SSIZE_T_MAX;
     if (pos_value && !fast_index(pos_value,pos)) return 0;
+    if (end_value && !fast_index(end_value,endpos)) return 0;
     if (!pattern_subject(pattern,string,subject)) return 0;
-    if (!end_value) *endpos=subject->length;
-    else if (!fast_index(end_value,endpos)) return 0;
     if (*pos<0) *pos=0;
     if (*pos>subject->length) *pos=subject->length;
     if (*endpos<0) *endpos=0;

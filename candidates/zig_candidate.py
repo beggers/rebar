@@ -548,7 +548,14 @@ def _preflight_pattern(pattern, flags):
                 group_count += 1
                 group_number = group_count
                 if name in groups:
-                    fail(f"redefinition of group name {name!r} as group {group_number}; was group {groups[name]}", index + 4)
+                    message = (
+                        f"redefinition of group name {name!r} as group "
+                        f"{group_number}; was group {groups[name]}"
+                    )
+                    try:
+                        raise PatternError(message)
+                    except PatternError:
+                        raise PatternError(message, pattern, index + 4) from None
                 groups[name] = group_number
                 capture = True
                 index = close + 1

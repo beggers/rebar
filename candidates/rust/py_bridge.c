@@ -1668,29 +1668,43 @@ findall_error:
     return NULL;
 }
 
-static int rust_subject_window(const RustSubject *subject, PyObject *pos_value, PyObject *end_value, size_t *start, size_t *end) {
-    Py_ssize_t requested_pos = 0;
-    Py_ssize_t requested_end = (Py_ssize_t)subject->length;
-    if (pos_value != NULL && !rust_index_arg(pos_value, &requested_pos)) return 0;
-    if (end_value != NULL && !rust_index_arg(end_value, &requested_end)) return 0;
+static int rust_window_indices(
+    PyObject *pos_value,
+    PyObject *end_value,
+    Py_ssize_t *requested_pos,
+    Py_ssize_t *requested_end
+) {
+    *requested_pos = 0;
+    *requested_end = PY_SSIZE_T_MAX;
+    if (pos_value != NULL && !rust_index_arg(pos_value, requested_pos)) return 0;
+    if (end_value != NULL && !rust_index_arg(end_value, requested_end)) return 0;
+    return 1;
+}
+
+static void rust_subject_clamp_window(
+    const RustSubject *subject,
+    Py_ssize_t requested_pos,
+    Py_ssize_t requested_end,
+    size_t *start,
+    size_t *end
+) {
     if (requested_pos < 0) requested_pos = 0;
     if ((size_t)requested_pos > subject->length) requested_pos = (Py_ssize_t)subject->length;
     if (requested_end < 0) requested_end = 0;
     if ((size_t)requested_end > subject->length) requested_end = (Py_ssize_t)subject->length;
     *start = (size_t)requested_pos;
     *end = (size_t)requested_end;
-    return 1;
 }
 
 static PyObject *rust_pattern_direct(PyObject *pattern, void *handle, PyObject *groupindex, PyObject *pattern_value, PyObject *literal, PyObject *value, PyObject *pos_value, PyObject *end_value, uint8_t mode) {
+    Py_ssize_t requested_pos;
+    Py_ssize_t requested_end;
+    if (!rust_window_indices(pos_value, end_value, &requested_pos, &requested_end)) return NULL;
     RustSubject subject;
     if (!rust_subject_open(&subject, pattern_value, value, literal == NULL || literal == Py_None)) return NULL;
     size_t start;
     size_t end;
-    if (!rust_subject_window(&subject, pos_value, end_value, &start, &end)) {
-        rust_subject_release(&subject);
-        return NULL;
-    }
+    rust_subject_clamp_window(&subject, requested_pos, requested_end, &start, &end);
     if (start > end && mode != 1) {
         rust_subject_release(&subject);
         Py_RETURN_NONE;
@@ -1879,14 +1893,14 @@ static PyObject *rust_pattern_findall_direct(
         PyErr_SetString(PyExc_ValueError, "Rust regex group count does not match the compiled program");
         return NULL;
     }
+    Py_ssize_t requested_pos;
+    Py_ssize_t requested_end;
+    if (!rust_window_indices(pos, endpos, &requested_pos, &requested_end)) return NULL;
     RustSubject subject;
     if (!rust_subject_open(&subject, pattern_value, value, 1)) return NULL;
     size_t start;
     size_t end;
-    if (!rust_subject_window(&subject, pos, endpos, &start, &end)) {
-        rust_subject_release(&subject);
-        return NULL;
-    }
+    rust_subject_clamp_window(&subject, requested_pos, requested_end, &start, &end);
     PyObject *result = start > end
         ? PyList_New(0)
         : rust_batched_findall(handle, &subject, groups, start, end);
@@ -1909,14 +1923,14 @@ static PyObject *rust_pattern_literal_findall_direct(
     PyObject *pos,
     PyObject *endpos
 ) {
+    Py_ssize_t requested_pos;
+    Py_ssize_t requested_end;
+    if (!rust_window_indices(pos, endpos, &requested_pos, &requested_end)) return NULL;
     RustSubject subject;
     if (!rust_subject_open(&subject, literal, value, 0)) return NULL;
     size_t start;
     size_t end;
-    if (!rust_subject_window(&subject, pos, endpos, &start, &end)) {
-        rust_subject_release(&subject);
-        return NULL;
-    }
+    rust_subject_clamp_window(&subject, requested_pos, requested_end, &start, &end);
     if (start > end) {
         rust_subject_release(&subject);
         return PyList_New(0);
@@ -2189,6 +2203,9 @@ static PyObject *rust_iterator_create(PyTypeObject *type, PyObject *pattern, voi
         PyErr_SetString(PyExc_ValueError, "Rust regex group count does not match the compiled program");
         return NULL;
     }
+    Py_ssize_t requested_pos;
+    Py_ssize_t requested_end;
+    if (!rust_window_indices(pos, endpos, &requested_pos, &requested_end)) return NULL;
     RustIterator *iterator = (RustIterator *)PyType_GenericAlloc(type, 0);
     if (iterator == NULL) return NULL;
     iterator->pattern = Py_NewRef(pattern);
@@ -2200,10 +2217,13 @@ static PyObject *rust_iterator_create(PyTypeObject *type, PyObject *pattern, voi
         Py_DECREF(iterator);
         return NULL;
     }
-    if (!rust_subject_window(&iterator->subject, pos, endpos, &iterator->cursor, &iterator->end)) {
-        Py_DECREF(iterator);
-        return NULL;
-    }
+    rust_subject_clamp_window(
+        &iterator->subject,
+        requested_pos,
+        requested_end,
+        &iterator->cursor,
+        &iterator->end
+    );
     iterator->original = iterator->cursor;
     if (groups + 1 > RUST_ITERATOR_CAPTURE_WORDS) {
         size_t stride = groups + 1;

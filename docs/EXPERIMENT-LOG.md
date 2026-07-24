@@ -7,6 +7,34 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## All three engines pass the larger public compatibility test
+
+The original frozen **8,192-pattern** test exposed **693** Rust, **368** C,
+and **355** Zig differences. The first complete, independently repaired run
+preserves all **1,179,648** comparisons: C and Zig pass, while Rust retains
+**306** differences. Its first **256** records all concern the nested
+exception Python creates for a repeated named group; the remaining **50**
+records are counted and fingerprinted, not silently assumed to be the same.
+
+Direct, isolated CPython checks also show that all six compiled matching
+operations evaluate `pos`, then `endpos`, before validating a string or
+acquiring a buffer. Independently repair the Rust, C, and Zig bridges and
+their owned duplicate-group handling. Repair the C and Zig matchers so
+newline quotes and multiline anchors cannot enter an invalid quote shortcut.
+
+The next separately versioned full run passes **393,216/393,216** checks
+for each candidate: **1,179,648** comparisons, zero mismatches, zero crashed
+workers. Refresh the **76** source/native-library controls and **32**
+isolated anti-delegation controls against the exact current sources. Preserve
+the initial failures, intermediate complete failure, both historical audit
+reports, immutable oracle, versioned runners, and final passing report in the
+[complete expanded correctness evidence](../candidates/evidence/PYTHON-RE-UNIVERSAL-PUBLIC-ORACLE-STAGE03.md).
+
+No candidate uses Python's regex engine, another candidate, or an external
+regex package. Current speed, current memory, and the fresh **65,536-case**
+holdout remain **NOT MEASURED**. The historical hidden failure remains
+unchanged.
+
 ## A broader public oracle finds real failures in all three engines
 
 The new

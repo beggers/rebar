@@ -490,7 +490,16 @@ class _BytecodeParser:
                         self.groups += 1
                         number = self.groups
                         if label in self.groupindex:
-                            self.error(f"redefinition of group name {label!r} as group {number}; was group {self.groupindex[label]}", name_start)
+                            message = (
+                                f"redefinition of group name {label!r} as "
+                                f"group {number}; was group {self.groupindex[label]}"
+                            )
+                            try:
+                                raise PatternError(message)
+                            except PatternError:
+                                raise PatternError(
+                                    message, self.original, name_start
+                                ) from None
                         self.groupindex[label] = number
                         self.open_groups.add(number)
                         _vm_native.check_recursion(semantic_depth + 2)

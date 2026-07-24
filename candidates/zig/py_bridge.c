@@ -1049,7 +1049,12 @@ static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, P
     Py_ssize_t pos;
     Py_ssize_t requested_end;
     unsigned long mode = PyLong_AsUnsignedLong(args[8]);
-    if (PyErr_Occurred() || mode > 2 || !zig_index_arg(args[6], &pos)) return NULL;
+    if (
+        PyErr_Occurred()
+        || mode > 2
+        || !zig_index_arg(args[6], &pos)
+        || !zig_index_arg(args[7], &requested_end)
+    ) return NULL;
     Py_buffer view = {0};
     const uint8_t *data;
     size_t length;
@@ -1076,10 +1081,6 @@ static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, P
         }
         data = view.buf;
         length = (size_t)view.len;
-    }
-    if (!zig_index_arg(args[7], &requested_end)) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return NULL;
     }
     Py_ssize_t start = pos < 0 ? 0 : pos;
     Py_ssize_t end = requested_end < 0 ? 0 : requested_end;
@@ -1481,6 +1482,7 @@ static PyObject *bridge_pattern_iterator(PyObject *module, PyObject *const *args
         groups > SIZE_MAX / (2 * sizeof(intptr_t)) - 1) {
         return PyErr_NoMemory();
     }
+    if (!zig_index_arg(args[6], &requested_end)) return NULL;
     ZigIterator *iterator =
         (ZigIterator *)ZigScannerType->tp_alloc(ZigScannerType, 0);
     if (iterator == NULL) return NULL;
@@ -1519,10 +1521,6 @@ static PyObject *bridge_pattern_iterator(PyObject *module, PyObject *const *args
         }
         iterator->data = iterator->view.buf;
         iterator->length = (size_t)iterator->view.len;
-    }
-    if (!zig_index_arg(args[6], &requested_end)) {
-        Py_DECREF(iterator);
-        return NULL;
     }
     Py_ssize_t start = pos < 0 ? 0 : pos;
     Py_ssize_t end = requested_end < 0 ? 0 : requested_end;
@@ -1845,6 +1843,7 @@ static PyObject *bridge_findall(PyObject *module, PyObject *const *args, Py_ssiz
         PyErr_SetString(PyExc_ValueError, "Zig regex group count does not match the compiled program");
         return NULL;
     }
+    if (!zig_index_arg(args[5], &requested_end)) return NULL;
     Py_buffer view = {0};
     const uint8_t *data;
     size_t length;
@@ -1871,10 +1870,6 @@ static PyObject *bridge_findall(PyObject *module, PyObject *const *args, Py_ssiz
         }
         data = view.buf;
         length = (size_t)view.len;
-    }
-    if (!zig_index_arg(args[5], &requested_end)) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return NULL;
     }
     size_t pos = requested_pos < 0 ? 0 : (size_t)requested_pos;
     size_t end = requested_end < 0 ? 0 : (size_t)requested_end;
@@ -2009,7 +2004,10 @@ static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const 
     }
     Py_ssize_t requested_pos;
     Py_ssize_t requested_end;
-    if (!zig_index_arg(pos_value, &requested_pos)) return NULL;
+    if (
+        !zig_index_arg(pos_value, &requested_pos)
+        || !zig_index_arg(end_value, &requested_end)
+    ) return NULL;
     int text_mode = PyUnicode_Check(literal);
     Py_buffer view = {0};
     const char *data = NULL;
@@ -2035,10 +2033,6 @@ static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const 
         data = view.buf;
         length = view.len;
         literal_length = PyBytes_GET_SIZE(literal);
-    }
-    if (!zig_index_arg(end_value, &requested_end)) {
-        if (view.obj != NULL) PyBuffer_Release(&view);
-        return NULL;
     }
     Py_ssize_t pos = requested_pos < 0 ? 0 : requested_pos;
     Py_ssize_t end = requested_end < 0 ? 0 : requested_end;

@@ -2,7 +2,7 @@
   "audit_source_path": "tools/postfinal_no_delegation_audit_v1.py",
   "audit_source_sha256": "e505e17f4849242d990ee8e184794962327335d807000d1a8a0e65a0cb10c0ed",
   "base_audit_report_path": "candidates/audits/FROM-SCRATCH-AUDIT.json",
-  "base_audit_report_sha256": "c78449b1153221bd0d17854c4f6682062392d19a04cfd0a424a1c6f3fa3478cb",
+  "base_audit_report_sha256": "78045bdba4bf49db0d60df344603d7658650d84efed4ca59b5a8019a439a42d6",
   "base_audit_source_path": "tools/audit_from_scratch.py",
   "base_audit_source_sha256": "4c47a77cf096df354e59d03096447c56bff890389869c6a75667a36c8471d024",
   "build_input_fingerprints": {
@@ -269,7 +269,7 @@
         "native_loads": [],
         "passed": true,
         "registry_capability_checked": true,
-        "sha256": "ed210957f3fc7a8d87ce38cfc775cd380bed19dcde7e8acd23d09197abb60048"
+        "sha256": "80812459261edb9585bdf703f137af3e0e788638af2ad7183d00b6d357e8a926"
       }
     },
     "vm": {
@@ -1413,7 +1413,7 @@
     "candidates/rust/src/search.rs": "4612c86424b9cbcb193d7ace521f359d7e3507281e83d3bf7e7ef7d189dd68fe",
     "candidates/rust/src/stack.rs": "5198a056e99bde5632169cfc5b07ad913910cdb1b30785dad4744ccb9a30809e",
     "candidates/rust/src/unicode_tables.rs": "f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af",
-    "candidates/rust_candidate.py": "ed210957f3fc7a8d87ce38cfc775cd380bed19dcde7e8acd23d09197abb60048",
+    "candidates/rust_candidate.py": "80812459261edb9585bdf703f137af3e0e788638af2ad7183d00b6d357e8a926",
     "candidates/vm_candidate.py": "ef00948bb6138342501fbfef4070900ce1b4a57ecf9d805fc897fedcb36978d0",
     "candidates/zig/mini_regex.zig": "8e961fbda077efb300ecfa90744519884171f93503f7128326b520ddc9da856a",
     "candidates/zig/py_bridge.c": "17d8578bbc1e73db84aa59755bf3c8add2801066d238e506c0e6f16efa920568",
@@ -1587,7 +1587,7 @@
     "candidates/rust/src/search.rs": "4612c86424b9cbcb193d7ace521f359d7e3507281e83d3bf7e7ef7d189dd68fe",
     "candidates/rust/src/stack.rs": "5198a056e99bde5632169cfc5b07ad913910cdb1b30785dad4744ccb9a30809e",
     "candidates/rust/src/unicode_tables.rs": "f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af",
-    "candidates/rust_candidate.py": "ed210957f3fc7a8d87ce38cfc775cd380bed19dcde7e8acd23d09197abb60048",
+    "candidates/rust_candidate.py": "80812459261edb9585bdf703f137af3e0e788638af2ad7183d00b6d357e8a926",
     "candidates/vm_candidate.py": "ef00948bb6138342501fbfef4070900ce1b4a57ecf9d805fc897fedcb36978d0",
     "candidates/zig/mini_regex.zig": "8e961fbda077efb300ecfa90744519884171f93503f7128326b520ddc9da856a",
     "candidates/zig/py_bridge.c": "17d8578bbc1e73db84aa59755bf3c8add2801066d238e506c0e6f16efa920568",

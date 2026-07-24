@@ -169,6 +169,15 @@ class _Native:
             raise OverflowError(message)
         if message == "maximum recursion depth exceeded":
             raise RecursionError(message)
+        if message.startswith("redefinition of group name "):
+            try:
+                raise PatternError(message)
+            except PatternError:
+                raise PatternError(
+                    message,
+                    pattern if include else None,
+                    position if position is not None and position >= 0 else None,
+                ) from None
         raise PatternError(message, pattern if include else None, position if position is not None and position >= 0 else None)
 
     def compile(self, pattern, flags):

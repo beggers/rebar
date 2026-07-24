@@ -2748,6 +2748,7 @@ fn compileOwned(pattern: [*]const u8, length: usize, flags: u32, recursion_enter
         const accept = program.code.items[entry + 8];
         if (split.op != .split or split.left != entry + 1 or split.right != entry + 6 or jump.op != .jump or jump.left != entry or first_run.op != .run or second_run.op != .run or final_run.op != .run or first_quote.op != .literal or second_quote.op != .literal or first_quote.value != second_quote.value or first_quote.extra != second_quote.extra or first_quote.extra & (2 | 8) != 0 or ending.op != .end or ending.extra & 8 != 0 or accept.op != .accept) continue;
         const quote = first_quote.value;
+        if (quote == '\n') continue;
         if (!excludesOnly(program, first_run.value, quote, first_quote.extra) or !excludesOnly(program, second_run.value, quote, first_quote.extra) or !excludesOnly(program, final_run.value, quote, first_quote.extra)) continue;
         instruction.op = .peek_even;
         instruction.extra = quote;
