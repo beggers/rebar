@@ -7,6 +7,41 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the authentic complete Python correctness oracle
+
+Freeze the [complete original upstream-test protocol](../oracle/cpython-3.14.6/POSTFINAL-LOCALE-V4.md)
+and [independent correctness controller](../tools/postfinal_cpython_locale_oracle_v4.py)
+before starting another candidate run. Their SHA-256 hashes are,
+respectively,
+`54a4e397860ddab092dd9386a3a8cf3521d96b1fcf4d7d35bcbe55118d8a7a76`
+and
+`9f39e055922daf9b2a5f4a93048d97df6dcd4164eb9b6017bf4a20c3dcbb0652`.
+
+Use the unmodified CPython 3.14.6 test suite: **165** original methods,
+including all **152** public methods and **13** private implementation
+and debug methods, **403** original corpus cases, and **11** genuine
+external-file assertions. The frozen public-method matrix is
+`5802606619ee4aad65a1d031259740b003c891de8674a5321d0bf6dbce2b590a`.
+Authenticate all **26** real upstream test-support files against tree
+hash `6cd13337b46bd6a53a32ac0c557da79b0ddd536ac82be885cc57be77e80f1632`
+and the official release archive against
+`143b1dddefaec3bd2e21e3b839b34a2b7fb9842272883c576420d605e9f30c63`.
+
+There are **zero** public-method waivers. On a regular release build,
+require **151** actually executed public methods and preserve the one
+genuine, named private-debug-build conditional skip from the unchanged
+upstream source. Require the original real two-gibibyte input in both
+large-memory tests; do not substitute the upstream decorator's small
+dry-run input. Preserve the original CPU, multiprocessing, locale, and
+external-corpus tests.
+
+Independently rerun the source-only self-test against the pinned
+interpreter: **69/69 controls passed**. This run started **zero**
+candidate workers, read or wrote **zero** evidence files, touched
+**zero** performance or holdout cases, and sampled **zero** timers.
+The actual Python reference and Rust, C, and Zig official-test runs
+are all **NOT RUN**. Current speed and memory remain **NOT MEASURED**.
+
 ## Preserve all 33 genuine current-build C edge failures
 
 First independently verify, commit, and push all **16** real Rust

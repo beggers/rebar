@@ -63,6 +63,13 @@ are **146 of Python's 152 public test methods**, and the earlier runner
 used simplified Python test support. Its **584** saved results do not
 prove that the complete, authentic upstream suite passes.
 
+The [complete original 152-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V4.md)
+now freezes Python's actual test-support files, the full original test
+corpus, and the real multi-gigabyte test requirements. It allows no
+public-test waivers; the only conditional skip is Python's original
+private-debug-build requirement. The complete upstream reference and
+all three candidate runs are **NOT RUN**.
+
 Two independent inspections verify that the three engines
 [are built from their own source code](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V7.json)
 and [cannot secretly use Python or another regex engine](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V7.json).
