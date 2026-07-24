@@ -7,6 +7,39 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Verify repaired engines cannot delegate regex execution
+
+Push the complete version-seven native isolation source and protocol
+in `e002716c` before executing its one-time production audit. The
+controller has SHA-256
+`9283457064f32658747b449c4ee6ebd20ca7cc7dc442ce03ece6b02896cff4e4`.
+Its independent no-effect self-test passes **131/131** controls.
+
+Run the real strict isolation audit exactly once:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_no_delegation_audit_v7.py --audit
+```
+
+The exclusively created
+[actual repaired-engine strict audit](../candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V7.json)
+has SHA-256
+`1f71caac01bffdffbf7ffdc2e21a9aa8d6936c452051cbdaa4c90ac67010fd34`.
+It independently binds the genuine fresh source proof, all **12**
+repaired source files, all **five** mapped native binaries,
+all **48** ordinary standard-library pickle cases, and all **six**
+exact text-and-bytes official match representations. Its three
+separate guarded workers block Python `re`, `_sre`, outside regex
+packages, the other engines, all five foreign native-loader aliases,
+and the cached JSON import route.
+
+Both actual reports have identical native and dependency evidence.
+The first genuine **145/146** official Rust failure stays preserved
+and never qualifies the repaired engines. The full official rerun,
+expanded public suite, and benchmark remain **NOT RUN**.
+
 ## Freeze the repaired engines' fresh anti-delegation audit
 
 First push the genuinely passing version-seven source proof in

@@ -101,11 +101,12 @@ now actually passes for all **12** corrected source files and
 **five** native binaries. It verifies **48** real serialization
 checks and all **six** exact official text-and-byte representation
 reproductions; its candidate-free design passes **468** controls.
-The [new independent-execution audit design](oracle/cpython-3.14.6/POSTFINAL-NO-DELEGATION-V7.md)
-passes **131** further controls and retains **676** inherited
-anti-delegation checks. Its actual audit and the complete official
-rerun are **NOT RUN**. The earlier genuine Rust failure remains
-preserved.
+The [actual independent-execution audit](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V7.json)
+also passes, separately verifying all **48** serialization cases,
+all **six** corrected match representations, and all **five** native
+loading safeguards. Its design passes **131** controls and retains
+**676** earlier anti-delegation checks. The complete official rerun
+remains **NOT RUN**, and the earlier genuine Rust failure is preserved.
 
 ## Larger fair speed comparison
 
