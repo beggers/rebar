@@ -7,6 +7,53 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze every original Python test behind a live no-delegation guard
+
+Preserve the exact original Python **3.14.6** regex test module and
+its unchanged **152** public tests, **403** original corpus entries,
+**26** genuine test-support files, **11** upstream fixture checks,
+real **40 GiB** resource setting, and both actual multi-gigabyte
+test obligations. Keep the complete already-passing two-process
+Python reference and its one genuine private-debug-only conditional
+skip; introduce no public waiver.
+
+Separately freeze the independently implemented full-suite runner:
+
+- [Original Python test-suite runner](../tools/postfinal_cpython_locale_oracle_v6.py),
+  SHA-256 `b1522b55b37de2e004b029c128e2e75c3020cda34165bcf0de07cb5ebb3136cb`.
+- [Original Python test-suite and live-ownership protocol](../oracle/cpython-3.14.6/POSTFINAL-LOCALE-V6.md),
+  SHA-256 `8e43ceaa61f6e70e2e1193de71bde8583c101cdbe40bc78d862ae789531aff57`.
+
+Actual future candidate execution first requires both independently
+published all-engine audits and each language's original
+audit-qualified edge archive, edge ownership proof, deep archive,
+and deep ownership proof. The original Python suite must run in the
+real candidate process with the unchanged internal-matcher guard
+verified immediately before and after every test: **304** actual
+checks around **152** original methods. No external regex package,
+Python matcher, other candidate, guessed proof, or copied reference
+can satisfy this rule.
+
+Two independent reviewers and the project lead separately run both
+candidate-free checks:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_cpython_locale_oracle_v6.py --self-test
+
+env -i PATH=/usr/bin:/bin \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_cpython_locale_oracle_v6.py --self-test
+```
+
+Both runs pass all **672/672** source-only safety checks without
+importing a candidate, running a reference or native worker,
+reading evidence, changing a locale, sampling a clock, or accessing
+a benchmark or holdout. These checks freeze the genuine upstream
+test design; they do not constitute upstream candidate results.
+New upstream references and all candidate runs remain **NOT RUN**;
+current speed and memory remain **NOT MEASURED**.
+
 ## Preserve the real first audit-qualified Rust deep-test setup failure
 
 First verify all **seven** Rust deep-result destinations are unused

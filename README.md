@@ -79,7 +79,7 @@ complete behavior results are bound to both independently passing
 three-engine inspections. None substitutes for Python's full
 upstream tests.
 
-The [complete upstream-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V5.md)
+The [complete upstream-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V6.md)
 requires all **152** original public Python tests, the genuine Python
 test-support files, the full original test corpus, and real
 multi-gigabyte inputs. There are no public-test waivers; the only
@@ -87,7 +87,9 @@ conditional skip is Python's own private-debug-build requirement.
 [Python has passed the complete reference suite twice](oracle/cpython-3.14.6/evidence/postfinal-locale-v5-self-oracle.json):
 each independent run records all **152** original tests, **151**
 actual passes, and the one original debug-only skip. The candidate
-upstream runs are **NOT RUN**.
+upstream runs are **NOT RUN**. The frozen runner verifies that each
+candidate uses its own engine immediately before and after every
+original Python test.
 
 The [expanded real-world compatibility contract](oracle/cpython-3.14.6/PUBLIC-SURFACE-V17.md)
 adds **1,376** distinct cases across **43** categories. They cover
@@ -171,6 +173,8 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
   tools/postfinal_no_delegation_audit_v10.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_cpython_locale_oracle_v5.py --self-test
+"$PY" -I -B \
+  tools/postfinal_cpython_locale_oracle_v6.py --self-test
 "$PY" -I -B \
   tools/postfinal_current_build_proofs_v11.py --self-test
 "$PY" -I -B \
