@@ -7,7 +7,7 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
-## A larger public benchmark is frozen before any timing
+## The frozen 4,096-case public benchmark exposes much smaller speedups
 
 The new [post-final public protocol](../performance/postfinal-public-v1/PROTOCOL.md)
 fixes **4,096** equal-weight public cases, **260** workload categories, all
@@ -23,10 +23,27 @@ at most **16** real calls per sample, **212,992** complete observations, and
 **638,976** mandatory correctness checks. Its runner verifies the original
 76-control, five-native-library audit and all three frozen edge proofs before
 importing a candidate for timing. Source, seeds, coverage, candidate hashes,
-case weights, regression thresholds, and full result reporting are committed
-before the benchmark is run. Expanded speed, confidence, memory, slowdowns,
-rankings, and any winner remain **NOT MEASURED**. The old hidden final remains
-failed and is not retried.
+case weights, regression thresholds, and full result reporting were committed
+and pushed at `5a65274dc1f2e4190e16ee5c193d6379515666bd` before timing.
+
+The [complete public run](../performance/postfinal-public-v1/evidence/postfinal-public-practice-v1-summary.json)
+then genuinely completed all **4,096** cases and
+[all **212,992** compressed raw observations](../performance/postfinal-public-v1/evidence/postfinal-public-practice-v1-raw.jsonl.gz).
+Every sample passed its three correctness gates. The
+[candidate-free independent replay](../performance/postfinal-public-v1/evidence/postfinal-public-practice-v1-integrity.json)
+verified all **638,976** checks, all **12,291** recomputed confidence ranges,
+the exact manifest, all five current native libraries, and every one of
+**2,548** substantial slowdowns.
+
+In the same run, C is **1.222×** (range **1.205–1.238×**,
+**2,689/4,096** clearly faster, **449** slowdowns); Zig is **1.215×**
+(range **1.196–1.236×**, **2,188/4,096** clearly faster, **797** slowdowns);
+and Rust is **1.033×** (range **1.017–1.048×**, **1,504/4,096** clearly
+faster, **1,302** slowdowns). **No engine reaches 1.5×.** The
+[complete result](../performance/postfinal-public-v1/RESULTS.md) links all six
+graphs and names every regression. These are public development results, not
+an unseen final test. The original hidden final remains failed and is not
+retried.
 
 ## Post-final Rust batching is correct but does not prove a speed improvement
 
@@ -56,8 +73,9 @@ links all six generated graphs and every regression. The
 [preserved independence incident](../performance/v7/evidence/POSTFINAL-RUST-BATCHED-SPLIT-INDEPENDENCE-INCIDENT.md)
 records the first actual failed audit, both failed campaign preflights, the
 observed `-9` child status, and the unchanged, authorized **22/22** passing
-retry. No failed check is removed or silently rerun. The separately frozen
-**4,096-case public** practice results remain **NOT MEASURED**.
+retry. No failed check is removed or silently rerun. The subsequent
+[4,096-case public benchmark](../performance/postfinal-public-v1/RESULTS.md)
+confirms that the Rust change does not achieve the 1.5× target.
 
 ## The one-time hidden benchmark falsifies compatibility
 

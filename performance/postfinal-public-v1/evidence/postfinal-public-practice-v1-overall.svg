@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1640" height="625" viewBox="0 0 1640 625" role="img" aria-labelledby="public-chart-title public-chart-description">
+<title id="public-chart-title">Expanded public development speed compared with CPython</title>
+<desc id="public-chart-description">Public development only; final independent benchmark failed; no final winner. CPython, C, Rust, and Zig ran the same 4096 calibration-only public cases, 13 paired trials, and 2000 bootstrap draws. All four engines; 4,096 shared public cases; measured 95% confidence ranges. Public manifest SHA-256 4b541eaa1602855aeb67655c8732635d4c951a61ca2fae37f395a1b080a78d1e; public summary SHA-256 2f478bd2bbca7af5c635d9d40ba8ffa41a13f7a0ab92b2ab09d1bf3d2eed32a8. Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:31px;font-weight:760}.subtitle{font-size:16px;fill:#475569}.heading{font-size:19px;font-weight:730}.label{font-size:14px}.value{font-size:15px;font-weight:720}.note{font-size:13.5px;fill:#475569}.tick{font-size:13px;fill:#475569}.banner{font-size:16px;font-weight:740;fill:#7f1d1d}.status{font-size:14px;font-weight:680;fill:#7f1d1d}.grid{stroke:#e2e8f0;stroke-width:1}.baseline{stroke:#64748b;stroke-width:2}.panel{fill:#f8fafc;stroke:#d9e2ee;stroke-width:1}</style>
+<text x="30" y="46" class="title">Expanded public development speed compared with CPython</text>
+<text x="31" y="77" class="subtitle">All four engines; 4,096 shared public cases; measured 95% confidence ranges</text>
+<rect x="23" y="93" width="1594" height="45" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="37" y="123" class="banner">Public development only; final independent benchmark failed; no final winner</text>
+<text x="31" y="163" class="status">Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</text>
+<text x="31" y="186" class="note">Public plan SHA-256: 4b541eaa1602855aeb67655c8732635d4c951a61ca2fae37f395a1b080a78d1e</text>
+<text x="31" y="208" class="note">Public measurement SHA-256: 2f478bd2bbca7af5c635d9d40ba8ffa41a13f7a0ab92b2ab09d1bf3d2eed32a8</text>
+<line x1="397.83" y1="261" x2="397.83" y2="535" class="grid"/>
+<text x="397.83" y="253" text-anchor="middle" class="tick">0.75×</text>
+<line x1="593.10" y1="261" x2="593.10" y2="535" class="baseline"/>
+<text x="593.10" y="253" text-anchor="middle" class="tick">1× CPython</text>
+<line x1="744.56" y1="261" x2="744.56" y2="535" class="grid"/>
+<text x="744.56" y="253" text-anchor="middle" class="tick">1.25×</text>
+<line x1="868.31" y1="261" x2="868.31" y2="535" class="grid"/>
+<text x="868.31" y="253" text-anchor="middle" class="tick">1.5×</text>
+<text x="31" y="288" class="heading">CPython (standard Python)</text>
+<circle cx="593.10" cy="283" r="7" fill="#64748b"/>
+<text x="954" y="288" class="value">Exactly 1.000×; neutral baseline; 4,096/4,096 cases</text>
+<text x="31" y="355" class="heading">C</text>
+<line x1="719.70" y1="350" x2="737.87" y2="350" stroke="#2563eb" stroke-width="7" stroke-linecap="round"/>
+<circle cx="728.97" cy="350" r="7" fill="#2563eb" stroke="#ffffff" stroke-width="1.5"/>
+<text x="954" y="341" class="value">1.222×; 95% range 1.205× to 1.238×</text>
+<text x="954" y="366" class="note">2,689/4,096 clear wins; 449/4,096 substantial slowdowns</text>
+<text x="31" y="437" class="heading">Zig</text>
+<line x1="714.63" y1="432" x2="736.98" y2="432" stroke="#7c3aed" stroke-width="7" stroke-linecap="round"/>
+<circle cx="725.35" cy="432" r="7" fill="#7c3aed" stroke="#ffffff" stroke-width="1.5"/>
+<text x="954" y="423" class="value">1.215×; 95% range 1.196× to 1.236×</text>
+<text x="954" y="448" class="note">2,188/4,096 clear wins; 797/4,096 substantial slowdowns</text>
+<text x="31" y="519" class="heading">Rust</text>
+<line x1="604.86" y1="514" x2="625.21" y2="514" stroke="#c2410c" stroke-width="7" stroke-linecap="round"/>
+<circle cx="615.04" cy="514" r="7" fill="#c2410c" stroke="#ffffff" stroke-width="1.5"/>
+<text x="954" y="505" class="value">1.033×; 95% range 1.017× to 1.048×</text>
+<text x="954" y="530" class="note">1,504/4,096 clear wins; 1,302/4,096 substantial slowdowns</text>
+<text x="31" y="604" class="note">Confidence intervals compare each candidate only with CPython; no final or candidate-to-candidate performance claim is made.</text>
+</svg>

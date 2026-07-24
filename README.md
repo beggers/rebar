@@ -28,36 +28,36 @@ remain unchanged.
 
 Later Rust development is a **separate public experiment**, not a rerun of the
 failed final. Python and all three independently built engines received the
-same **624 public cases** and **seven paired runs**. **1× means the same speed
-as standard Python; higher is faster.**
+same **4,096 public cases**, **13 paired runs**, and **638,976** correctness
+checks. **1× means the same speed as standard Python; higher is faster.**
 
-![Overall public speed and uncertainty for C, Zig, and Rust compared with standard Python](performance/v7/evidence/postfinal-rust-batched-split-01-overall.svg)
+![Overall speed and uncertainty for C, Zig, and Rust on all 4,096 public cases compared with standard Python](performance/postfinal-public-v1/evidence/postfinal-public-practice-v1-overall.svg)
 
 | Engine | Public speed | 95% uncertainty range | Clearly faster cases | More than 20% slower |
 | --- | ---: | ---: | ---: | ---: |
-| C | 1.335× | 1.286–1.389× | 449/624 | 47/624 |
-| Zig | 1.282× | 1.233–1.332× | 362/624 | 89/624 |
-| Rust | 1.136× | 1.091–1.183× | 261/624 | 119/624 |
+| C | 1.222× | 1.205–1.238× | 2,689/4,096 | 449/4,096 |
+| Zig | 1.215× | 1.196–1.236× | 2,188/4,096 | 797/4,096 |
+| Rust | 1.033× | 1.017–1.048× | 1,504/4,096 | 1,302/4,096 |
 
 The new Rust design batches up to 16 split matches in its own native engine.
-It remains fully compatible with the public tests, but it does not establish
-the required speedup; **the optimization is rejected as a performance win**.
-All **255** substantial slowdowns are included.
+It remains compatible with the public tests, but the larger benchmark confirms
+that it is not a meaningful overall speedup. **No engine reaches the 1.5×
+target.** All **2,548** substantial slowdowns are included.
 
-![Public wins, uncertain cases, and slowdowns for every independently written engine](performance/v7/evidence/postfinal-rust-batched-split-01-outcomes.svg)
+![All public wins, uncertain cases, and slowdowns for C, Zig, and Rust](performance/postfinal-public-v1/evidence/postfinal-public-practice-v1-outcomes.svg)
 
 ## Detailed public results
 
-![Candidate performance across all 12 regular-expression operations](performance/v7/evidence/postfinal-rust-batched-split-01-api.svg)
+![Candidate performance across all 12 regular-expression operations and 260 public workload categories](performance/postfinal-public-v1/evidence/postfinal-public-practice-v1-api.svg)
 
-![Every one of the 255 public cases more than 20% slower than Python](performance/v7/evidence/postfinal-rust-batched-split-01-regressions.svg)
+![Every one of the 2,548 measured public cases more than 20% slower than Python](performance/postfinal-public-v1/evidence/postfinal-public-practice-v1-regressions.svg)
 
-![Python-visible temporary allocation for all three engines](performance/v7/evidence/postfinal-rust-batched-split-01-memory.svg)
+![Python-visible temporary allocations across all 4,096 public cases](performance/postfinal-public-v1/evidence/postfinal-public-practice-v1-memory.svg)
 
 The memory chart measures Python-visible temporary allocations only. Native
 engine memory and isolated whole-process memory are **NOT MEASURED**.
 
-![Public-development rankings for C, Zig, and Rust against standard Python](performance/v7/evidence/postfinal-rust-batched-split-01-rankings.svg)
+![Overall public-development rankings for C, Zig, and Rust against standard Python](performance/postfinal-public-v1/evidence/postfinal-public-practice-v1-rankings.svg)
 
 ## What is actually verified
 
@@ -70,12 +70,13 @@ four implementation families, all five loaded native libraries, and **76**
 controls against external packages, Python's regex engine, and hidden engine
 sharing. Public correctness does not repair the historical hidden Zig failure.
 
-The [full Rust experiment](performance/v7/evidence/POSTFINAL-RUST-BATCHED-SPLIT-01.md)
-preserves all results, regressions, raw data, and rejected conclusions. The
-[experiment log](docs/EXPERIMENT-LOG.md) preserves earlier and subsequent
-designs. A separate **4,096-case** public benchmark has a prospectively
-[frozen protocol and case list](performance/postfinal-public-v1/PROTOCOL.md).
-Its results are **NOT MEASURED**; it cannot repair the failed hidden final.
+The [complete 4,096-case results](performance/postfinal-public-v1/RESULTS.md)
+preserve all observations, confidence ranges, slowdowns, and the independent
+replay. Its [protocol and complete case list](performance/postfinal-public-v1/PROTOCOL.md)
+were frozen and pushed before timing. The earlier
+[rejected Rust experiment](performance/v7/evidence/POSTFINAL-RUST-BATCHED-SPLIT-01.md)
+and [experiment log](docs/EXPERIMENT-LOG.md) remain preserved. None of these
+public results repairs or reruns the failed hidden final.
 
 ## Reproduce and inspect
 
@@ -91,10 +92,13 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.rust_postfinal_split_audit --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
-  tools/render_postfinal_rust_split.py --self-test
+  -m tools.postfinal_public_practice_v1 self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
-  tools/render_postfinal_rust_split.py \
-  --summary performance/v7/evidence/postfinal-rust-batched-split-01-summary.json \
-  --integrity performance/v7/evidence/postfinal-rust-batched-split-01-integrity.json \
-  --output-dir performance/v7/evidence
+  tools/postfinal_public_practice_charts_v1.py --self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  tools/postfinal_public_practice_charts_v1.py \
+  --summary performance/postfinal-public-v1/evidence/postfinal-public-practice-v1-summary.json \
+  --integrity performance/postfinal-public-v1/evidence/postfinal-public-practice-v1-integrity.json \
+  --manifest performance/postfinal-public-v1/manifest.json \
+  --output-dir performance/postfinal-public-v1/evidence
 ```

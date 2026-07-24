@@ -1,0 +1,1161 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1640" height="7400" viewBox="0 0 1640 7400" role="img" aria-labelledby="public-chart-title public-chart-description">
+<title id="public-chart-title">All 12 public operations and all 260 workload categories</title>
+<desc id="public-chart-description">Public development only; final independent benchmark failed; no final winner. CPython, C, Rust, and Zig ran the same 4096 calibration-only public cases, 13 paired trials, and 2000 bootstrap draws. Every frozen operation and category; geometric means only, not category confidence intervals. Public manifest SHA-256 4b541eaa1602855aeb67655c8732635d4c951a61ca2fae37f395a1b080a78d1e; public summary SHA-256 2f478bd2bbca7af5c635d9d40ba8ffa41a13f7a0ab92b2ab09d1bf3d2eed32a8. Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:31px;font-weight:760}.subtitle{font-size:16px;fill:#475569}.heading{font-size:19px;font-weight:730}.label{font-size:14px}.value{font-size:15px;font-weight:720}.note{font-size:13.5px;fill:#475569}.tick{font-size:13px;fill:#475569}.banner{font-size:16px;font-weight:740;fill:#7f1d1d}.status{font-size:14px;font-weight:680;fill:#7f1d1d}.grid{stroke:#e2e8f0;stroke-width:1}.baseline{stroke:#64748b;stroke-width:2}.panel{fill:#f8fafc;stroke:#d9e2ee;stroke-width:1}</style>
+<text x="30" y="46" class="title">All 12 public operations and all 260 workload categories</text>
+<text x="31" y="77" class="subtitle">Every frozen operation and category; geometric means only, not category confidence intervals</text>
+<rect x="23" y="93" width="1594" height="45" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="37" y="123" class="banner">Public development only; final independent benchmark failed; no final winner</text>
+<text x="31" y="163" class="status">Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</text>
+<text x="31" y="186" class="note">Public plan SHA-256: 4b541eaa1602855aeb67655c8732635d4c951a61ca2fae37f395a1b080a78d1e</text>
+<text x="31" y="208" class="note">Public measurement SHA-256: 2f478bd2bbca7af5c635d9d40ba8ffa41a13f7a0ab92b2ab09d1bf3d2eed32a8</text>
+<circle cx="380" cy="230" r="5.5" fill="#64748b"/>
+<text x="392" y="235" class="label">CPython (standard Python)</text>
+<circle cx="635" cy="230" r="5.5" fill="#2563eb"/>
+<text x="647" y="235" class="label">C</text>
+<circle cx="740" cy="230" r="5.5" fill="#7c3aed"/>
+<text x="752" y="235" class="label">Zig</text>
+<circle cx="845" cy="230" r="5.5" fill="#c2410c"/>
+<text x="857" y="235" class="label">Rust</text>
+<line x1="463.81" y1="268" x2="463.81" y2="772" class="grid"/>
+<text x="463.81" y="260" text-anchor="middle" class="tick">0.5×</text>
+<line x1="574.68" y1="268" x2="574.68" y2="772" class="grid"/>
+<text x="574.68" y="260" text-anchor="middle" class="tick">0.75×</text>
+<line x1="653.34" y1="268" x2="653.34" y2="772" class="baseline"/>
+<text x="653.34" y="260" text-anchor="middle" class="tick">1× CPython</text>
+<line x1="714.36" y1="268" x2="714.36" y2="772" class="grid"/>
+<text x="714.36" y="260" text-anchor="middle" class="tick">1.25×</text>
+<line x1="764.22" y1="268" x2="764.22" y2="772" class="grid"/>
+<text x="764.22" y="260" text-anchor="middle" class="tick">1.5×</text>
+<line x1="842.88" y1="268" x2="842.88" y2="772" class="grid"/>
+<text x="842.88" y="260" text-anchor="middle" class="tick">2×</text>
+<line x1="953.75" y1="268" x2="953.75" y2="772" class="grid"/>
+<text x="953.75" y="260" text-anchor="middle" class="tick">3×</text>
+<text x="31" y="294" class="label">Prepare a regular expression (compile); 210/210</text>
+<circle cx="694.45" cy="282" r="4.8" fill="#2563eb"/>
+<text x="1031" y="294" class="label">C 1.162×</text>
+<circle cx="986.44" cy="290" r="4.8" fill="#7c3aed"/>
+<text x="1201" y="294" class="label">Zig 3.381×</text>
+<circle cx="896.69" cy="298" r="4.8" fill="#c2410c"/>
+<text x="1371" y="294" class="label">Rust 2.435×</text>
+<text x="31" y="336" class="label">Escape special characters (escape); 161/161</text>
+<circle cx="979.67" cy="324" r="4.8" fill="#2563eb"/>
+<text x="1031" y="336" class="label">C 3.298×</text>
+<circle cx="653.54" cy="332" r="4.8" fill="#7c3aed"/>
+<text x="1201" y="336" class="label">Zig 1.001×</text>
+<circle cx="653.23" cy="340" r="4.8" fill="#c2410c"/>
+<text x="1371" y="336" class="label">Rust 1.000×</text>
+<text x="31" y="378" class="label">Find all matching results (findall); 414/414</text>
+<circle cx="642.31" cy="366" r="4.8" fill="#2563eb"/>
+<text x="1031" y="378" class="label">C 0.960×</text>
+<circle cx="688.83" cy="374" r="4.8" fill="#7c3aed"/>
+<text x="1201" y="378" class="label">Zig 1.139×</text>
+<circle cx="595.32" cy="382" r="4.8" fill="#c2410c"/>
+<text x="1371" y="378" class="label">Rust 0.809×</text>
+<text x="31" y="420" class="label">Stream matching results (finditer); 414/414</text>
+<circle cx="662.30" cy="408" r="4.8" fill="#2563eb"/>
+<text x="1031" y="420" class="label">C 1.033×</text>
+<circle cx="660.87" cy="416" r="4.8" fill="#7c3aed"/>
+<text x="1201" y="420" class="label">Zig 1.028×</text>
+<circle cx="624.68" cy="424" r="4.8" fill="#c2410c"/>
+<text x="1371" y="420" class="label">Rust 0.900×</text>
+<text x="31" y="462" class="label">Match the entire input (fullmatch); 358/358</text>
+<circle cx="695.77" cy="450" r="4.8" fill="#2563eb"/>
+<text x="1031" y="462" class="label">C 1.168×</text>
+<circle cx="623.19" cy="458" r="4.8" fill="#7c3aed"/>
+<text x="1201" y="462" class="label">Zig 0.896×</text>
+<circle cx="591.15" cy="466" r="4.8" fill="#c2410c"/>
+<text x="1371" y="462" class="label">Rust 0.797×</text>
+<text x="31" y="504" class="label">Match at the beginning (match); 229/229</text>
+<circle cx="702.99" cy="492" r="4.8" fill="#2563eb"/>
+<text x="1031" y="504" class="label">C 1.199×</text>
+<circle cx="583.88" cy="500" r="4.8" fill="#7c3aed"/>
+<text x="1201" y="504" class="label">Zig 0.776×</text>
+<circle cx="585.35" cy="508" r="4.8" fill="#c2410c"/>
+<text x="1371" y="504" class="label">Rust 0.780×</text>
+<text x="31" y="546" class="label">Read match information (match-surface); 241/241</text>
+<circle cx="634.22" cy="534" r="4.8" fill="#2563eb"/>
+<text x="1031" y="546" class="label">C 0.932×</text>
+<circle cx="648.94" cy="542" r="4.8" fill="#7c3aed"/>
+<text x="1201" y="546" class="label">Zig 0.984×</text>
+<circle cx="857.62" cy="550" r="4.8" fill="#c2410c"/>
+<text x="1371" y="546" class="label">Rust 2.111×</text>
+<text x="31" y="588" class="label">Scan repeated matches (scanner); 413/413</text>
+<circle cx="634.83" cy="576" r="4.8" fill="#2563eb"/>
+<text x="1031" y="588" class="label">C 0.935×</text>
+<circle cx="652.01" cy="584" r="4.8" fill="#7c3aed"/>
+<text x="1201" y="588" class="label">Zig 0.995×</text>
+<circle cx="609.83" cy="592" r="4.8" fill="#c2410c"/>
+<text x="1371" y="588" class="label">Rust 0.853×</text>
+<text x="31" y="630" class="label">Search for a match (search); 414/414</text>
+<circle cx="693.68" cy="618" r="4.8" fill="#2563eb"/>
+<text x="1031" y="630" class="label">C 1.159×</text>
+<circle cx="683.45" cy="626" r="4.8" fill="#7c3aed"/>
+<text x="1201" y="630" class="label">Zig 1.116×</text>
+<circle cx="636.27" cy="634" r="4.8" fill="#c2410c"/>
+<text x="1371" y="630" class="label">Rust 0.939×</text>
+<text x="31" y="672" class="label">Split around matches (split); 414/414</text>
+<circle cx="806.95" cy="660" r="4.8" fill="#2563eb"/>
+<text x="1031" y="672" class="label">C 1.754×</text>
+<circle cx="824.17" cy="668" r="4.8" fill="#7c3aed"/>
+<text x="1201" y="672" class="label">Zig 1.868×</text>
+<circle cx="670.34" cy="676" r="4.8" fill="#c2410c"/>
+<text x="1371" y="672" class="label">Rust 1.064×</text>
+<text x="31" y="714" class="label">Replace matching text (sub); 414/414</text>
+<circle cx="759.03" cy="702" r="4.8" fill="#2563eb"/>
+<text x="1031" y="714" class="label">C 1.472×</text>
+<circle cx="767.16" cy="710" r="4.8" fill="#7c3aed"/>
+<text x="1201" y="714" class="label">Zig 1.516×</text>
+<circle cx="689.20" cy="718" r="4.8" fill="#c2410c"/>
+<text x="1371" y="714" class="label">Rust 1.140×</text>
+<text x="31" y="756" class="label">Replace and count matches (subn); 414/414</text>
+<circle cx="715.07" cy="744" r="4.8" fill="#2563eb"/>
+<text x="1031" y="756" class="label">C 1.253×</text>
+<circle cx="722.08" cy="752" r="4.8" fill="#7c3aed"/>
+<text x="1201" y="756" class="label">Zig 1.286×</text>
+<circle cx="684.24" cy="760" r="4.8" fill="#c2410c"/>
+<text x="1371" y="756" class="label">Rust 1.120×</text>
+<text x="31" y="814" class="heading">Every one of the 260 observed public workload categories</text>
+<text x="34" y="853" class="label">backref; 1/1 cases</text>
+<text x="840" y="853" class="label">C 1.286×</text>
+<text x="1085" y="853" class="label">Zig 0.802×</text>
+<text x="1330" y="853" class="label">Rust 0.859×</text>
+<text x="34" y="878" class="label">block-dotall; 1/1 cases</text>
+<text x="840" y="878" class="label">C 1.371×</text>
+<text x="1085" y="878" class="label">Zig 1.198×</text>
+<text x="1330" y="878" class="label">Rust 0.669×</text>
+<text x="34" y="903" class="label">branch-control; 1/1 cases</text>
+<text x="840" y="903" class="label">C 0.998×</text>
+<text x="1085" y="903" class="label">Zig 0.865×</text>
+<text x="1330" y="903" class="label">Rust 0.960×</text>
+<text x="34" y="928" class="label">branch-miss; 1/1 cases</text>
+<text x="840" y="928" class="label">C 0.750×</text>
+<text x="1085" y="928" class="label">Zig 1.011×</text>
+<text x="1330" y="928" class="label">Rust 0.328×</text>
+<text x="34" y="953" class="label">branch-prefix; 1/1 cases</text>
+<text x="840" y="953" class="label">C 1.053×</text>
+<text x="1085" y="953" class="label">Zig 0.741×</text>
+<text x="1330" y="953" class="label">Rust 0.684×</text>
+<text x="34" y="978" class="label">broader-apache-vhost-log; 8/8 cases</text>
+<text x="840" y="978" class="label">C 1.077×</text>
+<text x="1085" y="978" class="label">Zig 0.754×</text>
+<text x="1330" y="978" class="label">Rust 0.649×</text>
+<text x="34" y="1003" class="label">broader-astral-emoji-run; 8/8 cases</text>
+<text x="840" y="1003" class="label">C 1.257×</text>
+<text x="1085" y="1003" class="label">Zig 1.549×</text>
+<text x="1330" y="1003" class="label">Rust 1.146×</text>
+<text x="34" y="1028" class="label">broader-atomic-prefix-guard; 15/15 cases</text>
+<text x="840" y="1028" class="label">C 0.857×</text>
+<text x="1085" y="1028" class="label">Zig 0.959×</text>
+<text x="1330" y="1028" class="label">Rust 0.830×</text>
+<text x="34" y="1053" class="label">broader-binary-highbit-fields; 8/8 cases</text>
+<text x="840" y="1053" class="label">C 1.575×</text>
+<text x="1085" y="1053" class="label">Zig 1.233×</text>
+<text x="1330" y="1053" class="label">Rust 1.190×</text>
+<text x="34" y="1078" class="label">broader-binary-template-subn; 44/44 cases</text>
+<text x="840" y="1078" class="label">C 1.137×</text>
+<text x="1085" y="1078" class="label">Zig 1.583×</text>
+<text x="1330" y="1078" class="label">Rust 1.149×</text>
+<text x="34" y="1103" class="label">broader-bounded-greedy-code; 8/8 cases</text>
+<text x="840" y="1103" class="label">C 1.033×</text>
+<text x="1085" y="1103" class="label">Zig 1.707×</text>
+<text x="1330" y="1103" class="label">Rust 1.369×</text>
+<text x="34" y="1128" class="label">broader-bounded-template-subn; 43/43 cases</text>
+<text x="840" y="1128" class="label">C 1.686×</text>
+<text x="1085" y="1128" class="label">Zig 1.316×</text>
+<text x="1330" y="1128" class="label">Rust 1.052×</text>
+<text x="34" y="1153" class="label">broader-bracketed-ipv6-host; 64/64 cases</text>
+<text x="840" y="1153" class="label">C 1.136×</text>
+<text x="1085" y="1153" class="label">Zig 0.661×</text>
+<text x="1330" y="1153" class="label">Rust 0.580×</text>
+<text x="34" y="1178" class="label">broader-c-preprocessor-line; 8/8 cases</text>
+<text x="840" y="1178" class="label">C 0.796×</text>
+<text x="1085" y="1178" class="label">Zig 0.717×</text>
+<text x="1330" y="1178" class="label">Rust 0.557×</text>
+<text x="34" y="1203" class="label">broader-callable-capture-replace; 53/53 cases</text>
+<text x="840" y="1203" class="label">C 0.943×</text>
+<text x="1085" y="1203" class="label">Zig 0.903×</text>
+<text x="1330" y="1203" class="label">Rust 0.865×</text>
+<text x="34" y="1228" class="label">broader-cjk-word-boundary; 7/7 cases</text>
+<text x="840" y="1228" class="label">C 0.975×</text>
+<text x="1085" y="1228" class="label">Zig 0.880×</text>
+<text x="1330" y="1228" class="label">Rust 1.014×</text>
+<text x="34" y="1253" class="label">broader-cold-compile-lookaround; 64/64 cases</text>
+<text x="840" y="1253" class="label">C 1.141×</text>
+<text x="1085" y="1253" class="label">Zig 2.731×</text>
+<text x="1330" y="1253" class="label">Rust 1.926×</text>
+<text x="34" y="1278" class="label">broader-cold-module-search; 16/16 cases</text>
+<text x="840" y="1278" class="label">C 1.053×</text>
+<text x="1085" y="1278" class="label">Zig 2.711×</text>
+<text x="1330" y="1278" class="label">Rust 1.894×</text>
+<text x="34" y="1303" class="label">broader-combining-mark-run; 7/7 cases</text>
+<text x="840" y="1303" class="label">C 0.789×</text>
+<text x="1085" y="1303" class="label">Zig 0.973×</text>
+<text x="1330" y="1303" class="label">Rust 0.881×</text>
+<text x="34" y="1328" class="label">broader-conditional-angle-pair; 64/64 cases</text>
+<text x="840" y="1328" class="label">C 1.065×</text>
+<text x="1085" y="1328" class="label">Zig 0.692×</text>
+<text x="1330" y="1328" class="label">Rust 0.724×</text>
+<text x="34" y="1353" class="label">broader-conjunct-lookahead; 8/8 cases</text>
+<text x="840" y="1353" class="label">C 0.743×</text>
+<text x="1085" y="1353" class="label">Zig 0.686×</text>
+<text x="1330" y="1353" class="label">Rust 0.563×</text>
+<text x="34" y="1378" class="label">broader-cross-script-digits; 8/8 cases</text>
+<text x="840" y="1378" class="label">C 0.976×</text>
+<text x="1085" y="1378" class="label">Zig 1.291×</text>
+<text x="1330" y="1378" class="label">Rust 0.896×</text>
+<text x="34" y="1403" class="label">broader-cyrillic-case-fold; 8/8 cases</text>
+<text x="840" y="1403" class="label">C 0.921×</text>
+<text x="1085" y="1403" class="label">Zig 1.348×</text>
+<text x="1330" y="1403" class="label">Rust 1.328×</text>
+<text x="34" y="1428" class="label">broader-dense-literal-collection; 8/8 cases</text>
+<text x="840" y="1428" class="label">C 1.392×</text>
+<text x="1085" y="1428" class="label">Zig 1.270×</text>
+<text x="1330" y="1428" class="label">Rust 0.864×</text>
+<text x="34" y="1453" class="label">broader-dual-lookaround-password; 16/16 cases</text>
+<text x="840" y="1453" class="label">C 0.815×</text>
+<text x="1085" y="1453" class="label">Zig 0.599×</text>
+<text x="1330" y="1453" class="label">Rust 0.537×</text>
+<text x="34" y="1478" class="label">broader-escape-literal-mixture; 64/64 cases</text>
+<text x="840" y="1478" class="label">C 2.653×</text>
+<text x="1085" y="1478" class="label">Zig 1.001×</text>
+<text x="1330" y="1478" class="label">Rust 0.999×</text>
+<text x="34" y="1503" class="label">broader-fixed-width-lookbehind; 8/8 cases</text>
+<text x="840" y="1503" class="label">C 1.258×</text>
+<text x="1085" y="1503" class="label">Zig 0.946×</text>
+<text x="1330" y="1503" class="label">Rust 0.557×</text>
+<text x="34" y="1528" class="label">broader-git-unified-hunk; 7/7 cases</text>
+<text x="840" y="1528" class="label">C 1.173×</text>
+<text x="1085" y="1528" class="label">Zig 0.839×</text>
+<text x="1330" y="1528" class="label">Rust 0.819×</text>
+<text x="34" y="1553" class="label">broader-greek-simple-fold; 8/8 cases</text>
+<text x="840" y="1553" class="label">C 0.811×</text>
+<text x="1085" y="1553" class="label">Zig 1.311×</text>
+<text x="1330" y="1553" class="label">Rust 1.404×</text>
+<text x="34" y="1578" class="label">broader-highbit-negative-bytes; 8/8 cases</text>
+<text x="840" y="1578" class="label">C 1.294×</text>
+<text x="1085" y="1578" class="label">Zig 1.204×</text>
+<text x="1330" y="1578" class="label">Rust 1.455×</text>
+<text x="34" y="1603" class="label">broader-http-cookie-pairs; 53/53 cases</text>
+<text x="840" y="1603" class="label">C 0.796×</text>
+<text x="1085" y="1603" class="label">Zig 0.741×</text>
+<text x="1330" y="1603" class="label">Rust 0.656×</text>
+<text x="34" y="1628" class="label">broader-js-template-hole; 8/8 cases</text>
+<text x="840" y="1628" class="label">C 1.089×</text>
+<text x="1085" y="1628" class="label">Zig 0.674×</text>
+<text x="1330" y="1628" class="label">Rust 0.821×</text>
+<text x="34" y="1653" class="label">broader-json-escaped-string; 8/8 cases</text>
+<text x="840" y="1653" class="label">C 0.737×</text>
+<text x="1085" y="1653" class="label">Zig 1.163×</text>
+<text x="1330" y="1653" class="label">Rust 1.218×</text>
+<text x="34" y="1678" class="label">broader-jwt-token-segments; 15/15 cases</text>
+<text x="840" y="1678" class="label">C 0.673×</text>
+<text x="1085" y="1678" class="label">Zig 0.660×</text>
+<text x="1330" y="1678" class="label">Rust 0.395×</text>
+<text x="34" y="1703" class="label">broader-lazy-markup-tag; 8/8 cases</text>
+<text x="840" y="1703" class="label">C 1.001×</text>
+<text x="1085" y="1703" class="label">Zig 0.906×</text>
+<text x="1330" y="1703" class="label">Rust 0.731×</text>
+<text x="34" y="1728" class="label">broader-long-tail-search-hit; 15/15 cases</text>
+<text x="840" y="1728" class="label">C 1.738×</text>
+<text x="1085" y="1728" class="label">Zig 1.289×</text>
+<text x="1330" y="1728" class="label">Rust 1.343×</text>
+<text x="34" y="1753" class="label">broader-long-tail-search-miss; 16/16 cases</text>
+<text x="840" y="1753" class="label">C 2.091×</text>
+<text x="1085" y="1753" class="label">Zig 1.212×</text>
+<text x="1330" y="1753" class="label">Rust 1.620×</text>
+<text x="34" y="1778" class="label">broader-lookahead-empty-steps; 7/7 cases</text>
+<text x="840" y="1778" class="label">C 0.835×</text>
+<text x="1085" y="1778" class="label">Zig 1.225×</text>
+<text x="1330" y="1778" class="label">Rust 0.669×</text>
+<text x="34" y="1803" class="label">broader-multiline-mixed-windows; 8/8 cases</text>
+<text x="840" y="1803" class="label">C 1.168×</text>
+<text x="1085" y="1803" class="label">Zig 0.715×</text>
+<text x="1330" y="1803" class="label">Rust 0.843×</text>
+<text x="34" y="1828" class="label">broader-mutable-buffer-captures; 8/8 cases</text>
+<text x="840" y="1828" class="label">C 1.477×</text>
+<text x="1085" y="1828" class="label">Zig 1.087×</text>
+<text x="1330" y="1828" class="label">Rust 0.930×</text>
+<text x="34" y="1853" class="label">broader-named-byte-match-surface; 64/64 cases</text>
+<text x="840" y="1853" class="label">C 1.012×</text>
+<text x="1085" y="1853" class="label">Zig 0.892×</text>
+<text x="1330" y="1853" class="label">Rust 0.928×</text>
+<text x="34" y="1878" class="label">broader-named-match-surface; 64/64 cases</text>
+<text x="840" y="1878" class="label">C 0.943×</text>
+<text x="1085" y="1878" class="label">Zig 0.863×</text>
+<text x="1330" y="1878" class="label">Rust 0.830×</text>
+<text x="34" y="1903" class="label">broader-ndjson-event-fields; 8/8 cases</text>
+<text x="840" y="1903" class="label">C 1.054×</text>
+<text x="1085" y="1903" class="label">Zig 1.069×</text>
+<text x="1330" y="1903" class="label">Rust 0.773×</text>
+<text x="34" y="1928" class="label">broader-negative-class-columns; 55/55 cases</text>
+<text x="840" y="1928" class="label">C 1.336×</text>
+<text x="1085" y="1928" class="label">Zig 0.851×</text>
+<text x="1330" y="1928" class="label">Rust 0.685×</text>
+<text x="34" y="1953" class="label">broader-negative-delimiter-boundary; 7/7 cases</text>
+<text x="840" y="1953" class="label">C 1.078×</text>
+<text x="1085" y="1953" class="label">Zig 1.264×</text>
+<text x="1330" y="1953" class="label">Rust 0.916×</text>
+<text x="34" y="1978" class="label">broader-nested-local-flag; 8/8 cases</text>
+<text x="840" y="1978" class="label">C 0.993×</text>
+<text x="1085" y="1978" class="label">Zig 1.367×</text>
+<text x="1330" y="1978" class="label">Rust 1.220×</text>
+<text x="34" y="2003" class="label">broader-nul-separated-binary; 55/55 cases</text>
+<text x="840" y="2003" class="label">C 1.621×</text>
+<text x="1085" y="2003" class="label">Zig 1.366×</text>
+<text x="1330" y="2003" class="label">Rust 1.205×</text>
+<text x="34" y="2028" class="label">broader-nullable-branch-cursor; 7/7 cases</text>
+<text x="840" y="2028" class="label">C 1.085×</text>
+<text x="1085" y="2028" class="label">Zig 1.063×</text>
+<text x="1330" y="2028" class="label">Rust 0.719×</text>
+<text x="34" y="2053" class="label">broader-overlap-ordered-branches; 7/7 cases</text>
+<text x="840" y="2053" class="label">C 0.594×</text>
+<text x="1085" y="2053" class="label">Zig 1.086×</text>
+<text x="1330" y="2053" class="label">Rust 0.749×</text>
+<text x="34" y="2078" class="label">broader-percent-query-pairs; 8/8 cases</text>
+<text x="840" y="2078" class="label">C 0.586×</text>
+<text x="1085" y="2078" class="label">Zig 1.419×</text>
+<text x="1330" y="2078" class="label">Rust 1.110×</text>
+<text x="34" y="2103" class="label">broader-possessive-digit-run; 16/16 cases</text>
+<text x="840" y="2103" class="label">C 0.954×</text>
+<text x="1085" y="2103" class="label">Zig 0.717×</text>
+<text x="1330" y="2103" class="label">Rust 0.729×</text>
+<text x="34" y="2128" class="label">broader-python-decorator; 64/64 cases</text>
+<text x="840" y="2128" class="label">C 1.388×</text>
+<text x="1085" y="2128" class="label">Zig 0.928×</text>
+<text x="1330" y="2128" class="label">Rust 0.778×</text>
+<text x="34" y="2153" class="label">broader-python-relative-import; 8/8 cases</text>
+<text x="840" y="2153" class="label">C 0.845×</text>
+<text x="1085" y="2153" class="label">Zig 0.786×</text>
+<text x="1330" y="2153" class="label">Rust 0.507×</text>
+<text x="34" y="2178" class="label">broader-quoted-named-backref; 8/8 cases</text>
+<text x="840" y="2178" class="label">C 1.756×</text>
+<text x="1085" y="2178" class="label">Zig 1.776×</text>
+<text x="1330" y="2178" class="label">Rust 0.624×</text>
+<text x="34" y="2203" class="label">broader-readonly-buffer-scanner; 48/48 cases</text>
+<text x="840" y="2203" class="label">C 0.957×</text>
+<text x="1085" y="2203" class="label">Zig 1.016×</text>
+<text x="1330" y="2203" class="label">Rust 0.912×</text>
+<text x="34" y="2228" class="label">broader-rfc5424-syslog; 8/8 cases</text>
+<text x="840" y="2228" class="label">C 0.921×</text>
+<text x="1085" y="2228" class="label">Zig 0.711×</text>
+<text x="1330" y="2228" class="label">Rust 0.466×</text>
+<text x="34" y="2253" class="label">broader-rust-attribute; 8/8 cases</text>
+<text x="840" y="2253" class="label">C 0.974×</text>
+<text x="1085" y="2253" class="label">Zig 0.777×</text>
+<text x="1330" y="2253" class="label">Rust 0.562×</text>
+<text x="34" y="2278" class="label">broader-rust-use-tree; 15/15 cases</text>
+<text x="840" y="2278" class="label">C 0.922×</text>
+<text x="1085" y="2278" class="label">Zig 0.821×</text>
+<text x="1330" y="2278" class="label">Rust 0.614×</text>
+<text x="34" y="2303" class="label">broader-scanner-dense-stream; 53/53 cases</text>
+<text x="840" y="2303" class="label">C 0.947×</text>
+<text x="1085" y="2303" class="label">Zig 1.002×</text>
+<text x="1330" y="2303" class="label">Rust 0.874×</text>
+<text x="34" y="2328" class="label">broader-split-optional-captures; 55/55 cases</text>
+<text x="840" y="2328" class="label">C 2.179×</text>
+<text x="1085" y="2328" class="label">Zig 2.213×</text>
+<text x="1330" y="2328" class="label">Rust 2.254×</text>
+<text x="34" y="2353" class="label">broader-toml-dotted-key; 64/64 cases</text>
+<text x="840" y="2353" class="label">C 0.676×</text>
+<text x="1085" y="2353" class="label">Zig 1.093×</text>
+<text x="1330" y="2353" class="label">Rust 0.967×</text>
+<text x="34" y="2378" class="label">broader-turkish-simple-fold; 7/7 cases</text>
+<text x="840" y="2378" class="label">C 0.451×</text>
+<text x="1085" y="2378" class="label">Zig 1.369×</text>
+<text x="1330" y="2378" class="label">Rust 1.097×</text>
+<text x="34" y="2403" class="label">broader-unicode-space-split; 55/55 cases</text>
+<text x="840" y="2403" class="label">C 1.246×</text>
+<text x="1085" y="2403" class="label">Zig 1.255×</text>
+<text x="1330" y="2403" class="label">Rust 1.151×</text>
+<text x="34" y="2428" class="label">broader-warm-module-findall; 8/8 cases</text>
+<text x="840" y="2428" class="label">C 1.014×</text>
+<text x="1085" y="2428" class="label">Zig 0.971×</text>
+<text x="1330" y="2428" class="label">Rust 0.888×</text>
+<text x="34" y="2453" class="label">broader-warm-module-finditer; 8/8 cases</text>
+<text x="840" y="2453" class="label">C 1.231×</text>
+<text x="1085" y="2453" class="label">Zig 1.053×</text>
+<text x="1330" y="2453" class="label">Rust 1.040×</text>
+<text x="34" y="2478" class="label">broader-warm-module-search; 16/16 cases</text>
+<text x="840" y="2478" class="label">C 0.938×</text>
+<text x="1085" y="2478" class="label">Zig 0.800×</text>
+<text x="1330" y="2478" class="label">Rust 0.839×</text>
+<text x="34" y="2503" class="label">broader-warm-module-sub; 53/53 cases</text>
+<text x="840" y="2503" class="label">C 1.295×</text>
+<text x="1085" y="2503" class="label">Zig 1.049×</text>
+<text x="1330" y="2503" class="label">Rust 1.090×</text>
+<text x="34" y="2528" class="label">broader-warm-module-subn; 44/44 cases</text>
+<text x="840" y="2528" class="label">C 1.230×</text>
+<text x="1085" y="2528" class="label">Zig 1.016×</text>
+<text x="1330" y="2528" class="label">Rust 1.054×</text>
+<text x="34" y="2553" class="label">broader-windowed-binary-collect; 8/8 cases</text>
+<text x="840" y="2553" class="label">C 0.773×</text>
+<text x="1085" y="2553" class="label">Zig 0.755×</text>
+<text x="1330" y="2553" class="label">Rust 0.578×</text>
+<text x="34" y="2578" class="label">bytes; 1/1 cases</text>
+<text x="840" y="2578" class="label">C 1.119×</text>
+<text x="1085" y="2578" class="label">Zig 0.985×</text>
+<text x="1330" y="2578" class="label">Rust 0.860×</text>
+<text x="34" y="2603" class="label">bytes-like; 1/1 cases</text>
+<text x="840" y="2603" class="label">C 2.275×</text>
+<text x="1085" y="2603" class="label">Zig 1.255×</text>
+<text x="1330" y="2603" class="label">Rust 1.030×</text>
+<text x="34" y="2628" class="label">bytes-replace; 1/1 cases</text>
+<text x="840" y="2628" class="label">C 1.170×</text>
+<text x="1085" y="2628" class="label">Zig 1.935×</text>
+<text x="1330" y="2628" class="label">Rust 1.497×</text>
+<text x="34" y="2653" class="label">bytes-scan; 1/1 cases</text>
+<text x="840" y="2653" class="label">C 1.229×</text>
+<text x="1085" y="2653" class="label">Zig 1.084×</text>
+<text x="1330" y="2653" class="label">Rust 0.908×</text>
+<text x="34" y="2678" class="label">bytes-view-long; 1/1 cases</text>
+<text x="840" y="2678" class="label">C 1.360×</text>
+<text x="1085" y="2678" class="label">Zig 1.635×</text>
+<text x="1330" y="2678" class="label">Rust 1.552×</text>
+<text x="34" y="2703" class="label">capture-look; 1/1 cases</text>
+<text x="840" y="2703" class="label">C 1.360×</text>
+<text x="1085" y="2703" class="label">Zig 0.960×</text>
+<text x="1330" y="2703" class="label">Rust 1.004×</text>
+<text x="34" y="2728" class="label">capture-optional; 1/1 cases</text>
+<text x="840" y="2728" class="label">C 1.298×</text>
+<text x="1085" y="2728" class="label">Zig 1.089×</text>
+<text x="1330" y="2728" class="label">Rust 1.013×</text>
+<text x="34" y="2753" class="label">cold; 1/1 cases</text>
+<text x="840" y="2753" class="label">C 1.213×</text>
+<text x="1085" y="2753" class="label">Zig 2.759×</text>
+<text x="1330" y="2753" class="label">Rust 1.659×</text>
+<text x="34" y="2778" class="label">compile; 1/1 cases</text>
+<text x="840" y="2778" class="label">C 1.341×</text>
+<text x="1085" y="2778" class="label">Zig 3.408×</text>
+<text x="1330" y="2778" class="label">Rust 2.053×</text>
+<text x="34" y="2803" class="label">compile-complex; 1/1 cases</text>
+<text x="840" y="2803" class="label">C 1.134×</text>
+<text x="1085" y="2803" class="label">Zig 4.548×</text>
+<text x="1330" y="2803" class="label">Rust 3.032×</text>
+<text x="34" y="2828" class="label">conditional; 1/1 cases</text>
+<text x="840" y="2828" class="label">C 1.206×</text>
+<text x="1085" y="2828" class="label">Zig 0.811×</text>
+<text x="1330" y="2828" class="label">Rust 0.940×</text>
+<text x="34" y="2853" class="label">deeper-atomic-alternatives; 8/8 cases</text>
+<text x="840" y="2853" class="label">C 0.574×</text>
+<text x="1085" y="2853" class="label">Zig 1.635×</text>
+<text x="1330" y="2853" class="label">Rust 0.989×</text>
+<text x="34" y="2878" class="label">deeper-backref-named; 8/8 cases</text>
+<text x="840" y="2878" class="label">C 0.838×</text>
+<text x="1085" y="2878" class="label">Zig 0.805×</text>
+<text x="1330" y="2878" class="label">Rust 0.722×</text>
+<text x="34" y="2903" class="label">deeper-boundary-positions; 7/7 cases</text>
+<text x="840" y="2903" class="label">C 0.589×</text>
+<text x="1085" y="2903" class="label">Zig 1.127×</text>
+<text x="1330" y="2903" class="label">Rust 0.598×</text>
+<text x="34" y="2928" class="label">deeper-bounded-repeats; 8/8 cases</text>
+<text x="840" y="2928" class="label">C 1.127×</text>
+<text x="1085" y="2928" class="label">Zig 0.821×</text>
+<text x="1330" y="2928" class="label">Rust 0.970×</text>
+<text x="34" y="2953" class="label">deeper-buffer-tokenize; 48/48 cases</text>
+<text x="840" y="2953" class="label">C 1.007×</text>
+<text x="1085" y="2953" class="label">Zig 1.000×</text>
+<text x="1330" y="2953" class="label">Rust 0.876×</text>
+<text x="34" y="2978" class="label">deeper-byte-highbit; 8/8 cases</text>
+<text x="840" y="2978" class="label">C 1.079×</text>
+<text x="1085" y="2978" class="label">Zig 1.005×</text>
+<text x="1330" y="2978" class="label">Rust 0.842×</text>
+<text x="34" y="3003" class="label">deeper-cold-compile; 64/64 cases</text>
+<text x="840" y="3003" class="label">C 1.188×</text>
+<text x="1085" y="3003" class="label">Zig 3.505×</text>
+<text x="1330" y="3003" class="label">Rust 2.532×</text>
+<text x="34" y="3028" class="label">deeper-combining-wide; 7/7 cases</text>
+<text x="840" y="3028" class="label">C 1.178×</text>
+<text x="1085" y="3028" class="label">Zig 1.216×</text>
+<text x="1330" y="3028" class="label">Rust 1.056×</text>
+<text x="34" y="3053" class="label">deeper-conditionals-nested; 8/8 cases</text>
+<text x="840" y="3053" class="label">C 1.167×</text>
+<text x="1085" y="3053" class="label">Zig 0.884×</text>
+<text x="1330" y="3053" class="label">Rust 1.021×</text>
+<text x="34" y="3078" class="label">deeper-config-lines; 8/8 cases</text>
+<text x="840" y="3078" class="label">C 0.876×</text>
+<text x="1085" y="3078" class="label">Zig 0.902×</text>
+<text x="1330" y="3078" class="label">Rust 0.665×</text>
+<text x="34" y="3103" class="label">deeper-csv-split-even; 54/54 cases</text>
+<text x="840" y="3103" class="label">C 5.549×</text>
+<text x="1085" y="3103" class="label">Zig 11.608×</text>
+<text x="1330" y="3103" class="label">Rust 0.304×</text>
+<text x="34" y="3128" class="label">deeper-dates-zones; 8/8 cases</text>
+<text x="840" y="3128" class="label">C 1.104×</text>
+<text x="1085" y="3128" class="label">Zig 0.876×</text>
+<text x="1330" y="3128" class="label">Rust 1.045×</text>
+<text x="34" y="3153" class="label">deeper-dense-class-finditer; 7/7 cases</text>
+<text x="840" y="3153" class="label">C 1.186×</text>
+<text x="1085" y="3153" class="label">Zig 1.241×</text>
+<text x="1330" y="3153" class="label">Rust 0.986×</text>
+<text x="34" y="3178" class="label">deeper-dense-literal-findall; 7/7 cases</text>
+<text x="840" y="3178" class="label">C 0.883×</text>
+<text x="1085" y="3178" class="label">Zig 1.052×</text>
+<text x="1330" y="3178" class="label">Rust 1.024×</text>
+<text x="34" y="3203" class="label">deeper-email-mixed; 8/8 cases</text>
+<text x="840" y="3203" class="label">C 0.850×</text>
+<text x="1085" y="3203" class="label">Zig 0.811×</text>
+<text x="1330" y="3203" class="label">Rust 0.504×</text>
+<text x="34" y="3228" class="label">deeper-error-stack; 8/8 cases</text>
+<text x="840" y="3228" class="label">C 1.163×</text>
+<text x="1085" y="3228" class="label">Zig 1.045×</text>
+<text x="1330" y="3228" class="label">Rust 0.685×</text>
+<text x="34" y="3253" class="label">deeper-escape-mixed; 64/64 cases</text>
+<text x="840" y="3253" class="label">C 4.046×</text>
+<text x="1085" y="3253" class="label">Zig 1.005×</text>
+<text x="1330" y="3253" class="label">Rust 1.003×</text>
+<text x="34" y="3278" class="label">deeper-file-names; 15/15 cases</text>
+<text x="840" y="3278" class="label">C 0.447×</text>
+<text x="1085" y="3278" class="label">Zig 1.122×</text>
+<text x="1330" y="3278" class="label">Rust 0.807×</text>
+<text x="34" y="3303" class="label">deeper-fullmatch-structured; 64/64 cases</text>
+<text x="840" y="3303" class="label">C 2.138×</text>
+<text x="1085" y="3303" class="label">Zig 1.222×</text>
+<text x="1330" y="3303" class="label">Rust 0.932×</text>
+<text x="34" y="3328" class="label">deeper-html-attributes; 8/8 cases</text>
+<text x="840" y="3328" class="label">C 0.807×</text>
+<text x="1085" y="3328" class="label">Zig 0.932×</text>
+<text x="1330" y="3328" class="label">Rust 0.670×</text>
+<text x="34" y="3353" class="label">deeper-http-headers; 8/8 cases</text>
+<text x="840" y="3353" class="label">C 1.278×</text>
+<text x="1085" y="3353" class="label">Zig 0.785×</text>
+<text x="1330" y="3353" class="label">Rust 0.874×</text>
+<text x="34" y="3378" class="label">deeper-inline-modes; 8/8 cases</text>
+<text x="840" y="3378" class="label">C 0.806×</text>
+<text x="1085" y="3378" class="label">Zig 0.977×</text>
+<text x="1330" y="3378" class="label">Rust 0.707×</text>
+<text x="34" y="3403" class="label">deeper-lookahead-chain; 8/8 cases</text>
+<text x="840" y="3403" class="label">C 1.048×</text>
+<text x="1085" y="3403" class="label">Zig 0.782×</text>
+<text x="1330" y="3403" class="label">Rust 0.930×</text>
+<text x="34" y="3428" class="label">deeper-lookbehind-chain; 8/8 cases</text>
+<text x="840" y="3428" class="label">C 1.015×</text>
+<text x="1085" y="3428" class="label">Zig 1.061×</text>
+<text x="1330" y="3428" class="label">Rust 0.849×</text>
+<text x="34" y="3453" class="label">deeper-markdown-code; 8/8 cases</text>
+<text x="840" y="3453" class="label">C 1.282×</text>
+<text x="1085" y="3453" class="label">Zig 1.395×</text>
+<text x="1330" y="3453" class="label">Rust 0.912×</text>
+<text x="34" y="3478" class="label">deeper-match-access; 64/64 cases</text>
+<text x="840" y="3478" class="label">C 0.880×</text>
+<text x="1085" y="3478" class="label">Zig 1.124×</text>
+<text x="1330" y="3478" class="label">Rust 6.024×</text>
+<text x="34" y="3503" class="label">deeper-match-short; 64/64 cases</text>
+<text x="840" y="3503" class="label">C 1.073×</text>
+<text x="1085" y="3503" class="label">Zig 0.632×</text>
+<text x="1330" y="3503" class="label">Rust 0.689×</text>
+<text x="34" y="3528" class="label">deeper-module-warm-search; 16/16 cases</text>
+<text x="840" y="3528" class="label">C 1.341×</text>
+<text x="1085" y="3528" class="label">Zig 0.908×</text>
+<text x="1330" y="3528" class="label">Rust 1.311×</text>
+<text x="34" y="3553" class="label">deeper-module-warm-sub; 44/44 cases</text>
+<text x="840" y="3553" class="label">C 1.240×</text>
+<text x="1085" y="3553" class="label">Zig 1.042×</text>
+<text x="1330" y="3553" class="label">Rust 0.919×</text>
+<text x="34" y="3578" class="label">deeper-money-units; 8/8 cases</text>
+<text x="840" y="3578" class="label">C 0.763×</text>
+<text x="1085" y="3578" class="label">Zig 1.432×</text>
+<text x="1330" y="3578" class="label">Rust 0.885×</text>
+<text x="34" y="3603" class="label">deeper-multiline-anchors; 8/8 cases</text>
+<text x="840" y="3603" class="label">C 0.921×</text>
+<text x="1085" y="3603" class="label">Zig 0.712×</text>
+<text x="1330" y="3603" class="label">Rust 0.758×</text>
+<text x="34" y="3628" class="label">deeper-negative-class; 8/8 cases</text>
+<text x="840" y="3628" class="label">C 0.933×</text>
+<text x="1085" y="3628" class="label">Zig 0.791×</text>
+<text x="1330" y="3628" class="label">Rust 0.672×</text>
+<text x="34" y="3653" class="label">deeper-nullable-positions; 7/7 cases</text>
+<text x="840" y="3653" class="label">C 0.533×</text>
+<text x="1085" y="3653" class="label">Zig 2.214×</text>
+<text x="1330" y="3653" class="label">Rust 0.652×</text>
+<text x="34" y="3678" class="label">deeper-path-mixed-bytes; 8/8 cases</text>
+<text x="840" y="3678" class="label">C 0.850×</text>
+<text x="1085" y="3678" class="label">Zig 1.054×</text>
+<text x="1330" y="3678" class="label">Rust 0.988×</text>
+<text x="34" y="3703" class="label">deeper-quote-captures; 7/7 cases</text>
+<text x="840" y="3703" class="label">C 1.866×</text>
+<text x="1085" y="3703" class="label">Zig 1.945×</text>
+<text x="1330" y="3703" class="label">Rust 0.621×</text>
+<text x="34" y="3728" class="label">deeper-request-logs; 8/8 cases</text>
+<text x="840" y="3728" class="label">C 0.995×</text>
+<text x="1085" y="3728" class="label">Zig 0.731×</text>
+<text x="1330" y="3728" class="label">Rust 0.548×</text>
+<text x="34" y="3753" class="label">deeper-scanner-window; 48/48 cases</text>
+<text x="840" y="3753" class="label">C 1.006×</text>
+<text x="1085" y="3753" class="label">Zig 1.015×</text>
+<text x="1330" y="3753" class="label">Rust 0.852×</text>
+<text x="34" y="3778" class="label">deeper-search-long-hit; 15/15 cases</text>
+<text x="840" y="3778" class="label">C 1.451×</text>
+<text x="1085" y="3778" class="label">Zig 1.503×</text>
+<text x="1330" y="3778" class="label">Rust 1.315×</text>
+<text x="34" y="3803" class="label">deeper-search-long-miss; 16/16 cases</text>
+<text x="840" y="3803" class="label">C 1.776×</text>
+<text x="1085" y="3803" class="label">Zig 2.288×</text>
+<text x="1330" y="3803" class="label">Rust 1.676×</text>
+<text x="34" y="3828" class="label">deeper-shared-prefix-alternatives; 8/8 cases</text>
+<text x="840" y="3828" class="label">C 0.382×</text>
+<text x="1085" y="3828" class="label">Zig 0.862×</text>
+<text x="1330" y="3828" class="label">Rust 0.510×</text>
+<text x="34" y="3853" class="label">deeper-shell-vars; 44/44 cases</text>
+<text x="840" y="3853" class="label">C 1.508×</text>
+<text x="1085" y="3853" class="label">Zig 1.289×</text>
+<text x="1330" y="3853" class="label">Rust 1.030×</text>
+<text x="34" y="3878" class="label">deeper-source-comments; 53/53 cases</text>
+<text x="840" y="3878" class="label">C 1.168×</text>
+<text x="1085" y="3878" class="label">Zig 1.880×</text>
+<text x="1330" y="3878" class="label">Rust 1.056×</text>
+<text x="34" y="3903" class="label">deeper-sql-tokens; 32/32 cases</text>
+<text x="840" y="3903" class="label">C 0.596×</text>
+<text x="1085" y="3903" class="label">Zig 1.281×</text>
+<text x="1330" y="3903" class="label">Rust 1.126×</text>
+<text x="34" y="3928" class="label">deeper-unicode-casefold; 7/7 cases</text>
+<text x="840" y="3928" class="label">C 0.760×</text>
+<text x="1085" y="3928" class="label">Zig 2.047×</text>
+<text x="1330" y="3928" class="label">Rust 1.348×</text>
+<text x="34" y="3953" class="label">deeper-unicode-word-lines; 8/8 cases</text>
+<text x="840" y="3953" class="label">C 1.282×</text>
+<text x="1085" y="3953" class="label">Zig 1.860×</text>
+<text x="1330" y="3953" class="label">Rust 1.710×</text>
+<text x="34" y="3978" class="label">deeper-uuid-hash; 7/7 cases</text>
+<text x="840" y="3978" class="label">C 1.967×</text>
+<text x="1085" y="3978" class="label">Zig 3.108×</text>
+<text x="1330" y="3978" class="label">Rust 1.264×</text>
+<text x="34" y="4003" class="label">deeper-version-tags; 64/64 cases</text>
+<text x="840" y="4003" class="label">C 1.180×</text>
+<text x="1085" y="4003" class="label">Zig 0.836×</text>
+<text x="1330" y="4003" class="label">Rust 0.810×</text>
+<text x="34" y="4028" class="label">deeper-windowed-collect; 8/8 cases</text>
+<text x="840" y="4028" class="label">C 0.967×</text>
+<text x="1085" y="4028" class="label">Zig 1.002×</text>
+<text x="1330" y="4028" class="label">Rust 0.726×</text>
+<text x="34" y="4053" class="label">dense-iter; 1/1 cases</text>
+<text x="840" y="4053" class="label">C 1.213×</text>
+<text x="1085" y="4053" class="label">Zig 1.241×</text>
+<text x="1330" y="4053" class="label">Rust 1.054×</text>
+<text x="34" y="4078" class="label">empty; 1/1 cases</text>
+<text x="840" y="4078" class="label">C 1.664×</text>
+<text x="1085" y="4078" class="label">Zig 1.342×</text>
+<text x="1330" y="4078" class="label">Rust 0.905×</text>
+<text x="34" y="4103" class="label">escape; 1/1 cases</text>
+<text x="840" y="4103" class="label">C 2.471×</text>
+<text x="1085" y="4103" class="label">Zig 0.943×</text>
+<text x="1330" y="4103" class="label">Rust 1.003×</text>
+<text x="34" y="4128" class="label">expanded-ascii-boundary; 7/7 cases</text>
+<text x="840" y="4128" class="label">C 0.974×</text>
+<text x="1085" y="4128" class="label">Zig 1.083×</text>
+<text x="1330" y="4128" class="label">Rust 0.898×</text>
+<text x="34" y="4153" class="label">expanded-atomic-possessive; 7/7 cases</text>
+<text x="840" y="4153" class="label">C 0.745×</text>
+<text x="1085" y="4153" class="label">Zig 1.514×</text>
+<text x="1330" y="4153" class="label">Rust 0.978×</text>
+<text x="34" y="4178" class="label">expanded-backreference; 8/8 cases</text>
+<text x="840" y="4178" class="label">C 0.803×</text>
+<text x="1085" y="4178" class="label">Zig 0.777×</text>
+<text x="1330" y="4178" class="label">Rust 0.689×</text>
+<text x="34" y="4203" class="label">expanded-branch-alternatives; 8/8 cases</text>
+<text x="840" y="4203" class="label">C 0.513×</text>
+<text x="1085" y="4203" class="label">Zig 0.985×</text>
+<text x="1330" y="4203" class="label">Rust 0.577×</text>
+<text x="34" y="4228" class="label">expanded-byte-buffer; 8/8 cases</text>
+<text x="840" y="4228" class="label">C 1.158×</text>
+<text x="1085" y="4228" class="label">Zig 0.854×</text>
+<text x="1330" y="4228" class="label">Rust 0.836×</text>
+<text x="34" y="4253" class="label">expanded-class-heavy; 7/7 cases</text>
+<text x="840" y="4253" class="label">C 1.330×</text>
+<text x="1085" y="4253" class="label">Zig 1.444×</text>
+<text x="1330" y="4253" class="label">Rust 1.051×</text>
+<text x="34" y="4278" class="label">expanded-cold-compile; 48/48 cases</text>
+<text x="840" y="4278" class="label">C 1.153×</text>
+<text x="1085" y="4278" class="label">Zig 3.524×</text>
+<text x="1330" y="4278" class="label">Rust 2.779×</text>
+<text x="34" y="4303" class="label">expanded-cold-module; 39/39 cases</text>
+<text x="840" y="4303" class="label">C 1.209×</text>
+<text x="1085" y="4303" class="label">Zig 3.083×</text>
+<text x="1330" y="4303" class="label">Rust 1.679×</text>
+<text x="34" y="4328" class="label">expanded-combining-emoji; 7/7 cases</text>
+<text x="840" y="4328" class="label">C 1.145×</text>
+<text x="1085" y="4328" class="label">Zig 1.627×</text>
+<text x="1330" y="4328" class="label">Rust 1.037×</text>
+<text x="34" y="4353" class="label">expanded-comment-strip; 48/48 cases</text>
+<text x="840" y="4353" class="label">C 1.375×</text>
+<text x="1085" y="4353" class="label">Zig 1.647×</text>
+<text x="1330" y="4353" class="label">Rust 1.067×</text>
+<text x="34" y="4378" class="label">expanded-conditionals; 8/8 cases</text>
+<text x="840" y="4378" class="label">C 1.141×</text>
+<text x="1085" y="4378" class="label">Zig 0.733×</text>
+<text x="1330" y="4378" class="label">Rust 0.910×</text>
+<text x="34" y="4403" class="label">expanded-csv-fields; 8/8 cases</text>
+<text x="840" y="4403" class="label">C 0.594×</text>
+<text x="1085" y="4403" class="label">Zig 1.168×</text>
+<text x="1330" y="4403" class="label">Rust 0.982×</text>
+<text x="34" y="4428" class="label">expanded-dates-numbers; 8/8 cases</text>
+<text x="840" y="4428" class="label">C 0.997×</text>
+<text x="1085" y="4428" class="label">Zig 0.928×</text>
+<text x="1330" y="4428" class="label">Rust 1.006×</text>
+<text x="34" y="4453" class="label">expanded-email-extract; 8/8 cases</text>
+<text x="840" y="4453" class="label">C 0.832×</text>
+<text x="1085" y="4453" class="label">Zig 0.779×</text>
+<text x="1330" y="4453" class="label">Rust 0.503×</text>
+<text x="34" y="4478" class="label">expanded-html-tags; 8/8 cases</text>
+<text x="840" y="4478" class="label">C 0.692×</text>
+<text x="1085" y="4478" class="label">Zig 1.114×</text>
+<text x="1330" y="4478" class="label">Rust 0.826×</text>
+<text x="34" y="4503" class="label">expanded-ip-version; 8/8 cases</text>
+<text x="840" y="4503" class="label">C 0.803×</text>
+<text x="1085" y="4503" class="label">Zig 0.800×</text>
+<text x="1330" y="4503" class="label">Rust 0.662×</text>
+<text x="34" y="4528" class="label">expanded-json-fields; 7/7 cases</text>
+<text x="840" y="4528" class="label">C 1.070×</text>
+<text x="1085" y="4528" class="label">Zig 0.794×</text>
+<text x="1330" y="4528" class="label">Rust 0.913×</text>
+<text x="34" y="4553" class="label">expanded-line-records; 8/8 cases</text>
+<text x="840" y="4553" class="label">C 0.982×</text>
+<text x="1085" y="4553" class="label">Zig 0.747×</text>
+<text x="1330" y="4553" class="label">Rust 0.736×</text>
+<text x="34" y="4578" class="label">expanded-long-literal; 16/16 cases</text>
+<text x="840" y="4578" class="label">C 1.060×</text>
+<text x="1085" y="4578" class="label">Zig 1.152×</text>
+<text x="1330" y="4578" class="label">Rust 0.978×</text>
+<text x="34" y="4603" class="label">expanded-lookaround; 8/8 cases</text>
+<text x="840" y="4603" class="label">C 1.098×</text>
+<text x="1085" y="4603" class="label">Zig 0.846×</text>
+<text x="1330" y="4603" class="label">Rust 1.120×</text>
+<text x="34" y="4628" class="label">expanded-markdown-links; 8/8 cases</text>
+<text x="840" y="4628" class="label">C 1.403×</text>
+<text x="1085" y="4628" class="label">Zig 0.976×</text>
+<text x="1330" y="4628" class="label">Rust 0.921×</text>
+<text x="34" y="4653" class="label">expanded-match-surface; 48/48 cases</text>
+<text x="840" y="4653" class="label">C 0.884×</text>
+<text x="1085" y="4653" class="label">Zig 1.115×</text>
+<text x="1330" y="4653" class="label">Rust 5.536×</text>
+<text x="34" y="4678" class="label">expanded-newline-normalize; 43/43 cases</text>
+<text x="840" y="4678" class="label">C 1.084×</text>
+<text x="1085" y="4678" class="label">Zig 1.270×</text>
+<text x="1330" y="4678" class="label">Rust 1.307×</text>
+<text x="34" y="4703" class="label">expanded-nullable-empty; 7/7 cases</text>
+<text x="840" y="4703" class="label">C 0.545×</text>
+<text x="1085" y="4703" class="label">Zig 2.010×</text>
+<text x="1330" y="4703" class="label">Rust 0.647×</text>
+<text x="34" y="4728" class="label">expanded-path-bytes; 8/8 cases</text>
+<text x="840" y="4728" class="label">C 1.372×</text>
+<text x="1085" y="4728" class="label">Zig 0.998×</text>
+<text x="1330" y="4728" class="label">Rust 1.002×</text>
+<text x="34" y="4753" class="label">expanded-path-text; 8/8 cases</text>
+<text x="840" y="4753" class="label">C 0.617×</text>
+<text x="1085" y="4753" class="label">Zig 0.903×</text>
+<text x="1330" y="4753" class="label">Rust 0.663×</text>
+<text x="34" y="4778" class="label">expanded-phone-postcode; 8/8 cases</text>
+<text x="840" y="4778" class="label">C 0.802×</text>
+<text x="1085" y="4778" class="label">Zig 0.783×</text>
+<text x="1330" y="4778" class="label">Rust 0.708×</text>
+<text x="34" y="4803" class="label">expanded-quoted-escapes; 8/8 cases</text>
+<text x="840" y="4803" class="label">C 0.539×</text>
+<text x="1085" y="4803" class="label">Zig 1.291×</text>
+<text x="1330" y="4803" class="label">Rust 1.014×</text>
+<text x="34" y="4828" class="label">expanded-replace-callback; 43/43 cases</text>
+<text x="840" y="4828" class="label">C 1.150×</text>
+<text x="1085" y="4828" class="label">Zig 1.176×</text>
+<text x="1330" y="4828" class="label">Rust 1.067×</text>
+<text x="34" y="4853" class="label">expanded-replace-redact; 43/43 cases</text>
+<text x="840" y="4853" class="label">C 1.298×</text>
+<text x="1085" y="4853" class="label">Zig 1.538×</text>
+<text x="1330" y="4853" class="label">Rust 1.315×</text>
+<text x="34" y="4878" class="label">expanded-replace-template; 48/48 cases</text>
+<text x="840" y="4878" class="label">C 1.810×</text>
+<text x="1085" y="4878" class="label">Zig 1.440×</text>
+<text x="1330" y="4878" class="label">Rust 0.936×</text>
+<text x="34" y="4903" class="label">expanded-scanner; 48/48 cases</text>
+<text x="840" y="4903" class="label">C 1.012×</text>
+<text x="1085" y="4903" class="label">Zig 1.006×</text>
+<text x="1330" y="4903" class="label">Rust 0.858×</text>
+<text x="34" y="4928" class="label">expanded-source-tokens; 23/23 cases</text>
+<text x="840" y="4928" class="label">C 0.987×</text>
+<text x="1085" y="4928" class="label">Zig 1.191×</text>
+<text x="1330" y="4928" class="label">Rust 0.959×</text>
+<text x="34" y="4953" class="label">expanded-split-captures; 40/40 cases</text>
+<text x="840" y="4953" class="label">C 1.376×</text>
+<text x="1085" y="4953" class="label">Zig 1.554×</text>
+<text x="1330" y="4953" class="label">Rust 1.448×</text>
+<text x="34" y="4978" class="label">expanded-split-delimiters; 48/48 cases</text>
+<text x="840" y="4978" class="label">C 1.484×</text>
+<text x="1085" y="4978" class="label">Zig 1.846×</text>
+<text x="1330" y="4978" class="label">Rust 1.577×</text>
+<text x="34" y="5003" class="label">expanded-unicode-case; 7/7 cases</text>
+<text x="840" y="5003" class="label">C 1.566×</text>
+<text x="1085" y="5003" class="label">Zig 1.461×</text>
+<text x="1330" y="5003" class="label">Rust 1.296×</text>
+<text x="34" y="5028" class="label">expanded-unicode-words; 7/7 cases</text>
+<text x="840" y="5028" class="label">C 0.906×</text>
+<text x="1085" y="5028" class="label">Zig 1.396×</text>
+<text x="1330" y="5028" class="label">Rust 1.107×</text>
+<text x="34" y="5053" class="label">expanded-url-extract; 8/8 cases</text>
+<text x="840" y="5053" class="label">C 1.260×</text>
+<text x="1085" y="5053" class="label">Zig 0.973×</text>
+<text x="1330" y="5053" class="label">Rust 0.894×</text>
+<text x="34" y="5078" class="label">expanded-whitespace-clean; 48/48 cases</text>
+<text x="840" y="5078" class="label">C 2.343×</text>
+<text x="1085" y="5078" class="label">Zig 2.261×</text>
+<text x="1330" y="5078" class="label">Rust 1.757×</text>
+<text x="34" y="5103" class="label">expanded-windowed; 15/15 cases</text>
+<text x="840" y="5103" class="label">C 0.816×</text>
+<text x="1085" y="5103" class="label">Zig 0.783×</text>
+<text x="1330" y="5103" class="label">Rust 0.606×</text>
+<text x="34" y="5128" class="label">findall; 1/1 cases</text>
+<text x="840" y="5128" class="label">C 1.191×</text>
+<text x="1085" y="5128" class="label">Zig 1.245×</text>
+<text x="1330" y="5128" class="label">Rust 0.901×</text>
+<text x="34" y="5153" class="label">finditer; 1/1 cases</text>
+<text x="840" y="5153" class="label">C 1.490×</text>
+<text x="1085" y="5153" class="label">Zig 1.015×</text>
+<text x="1330" y="5153" class="label">Rust 1.028×</text>
+<text x="34" y="5178" class="label">fullmatch; 1/1 cases</text>
+<text x="840" y="5178" class="label">C 1.500×</text>
+<text x="1085" y="5178" class="label">Zig 1.030×</text>
+<text x="1330" y="5178" class="label">Rust 0.912×</text>
+<text x="34" y="5203" class="label">fullmatch-miss; 1/1 cases</text>
+<text x="840" y="5203" class="label">C 1.619×</text>
+<text x="1085" y="5203" class="label">Zig 0.992×</text>
+<text x="1330" y="5203" class="label">Rust 1.064×</text>
+<text x="34" y="5228" class="label">ignore-case; 1/1 cases</text>
+<text x="840" y="5228" class="label">C 1.285×</text>
+<text x="1085" y="5228" class="label">Zig 1.470×</text>
+<text x="1330" y="5228" class="label">Rust 1.132×</text>
+<text x="34" y="5253" class="label">large-ascii-mode; 7/7 cases</text>
+<text x="840" y="5253" class="label">C 1.108×</text>
+<text x="1085" y="5253" class="label">Zig 1.488×</text>
+<text x="1330" y="5253" class="label">Rust 0.933×</text>
+<text x="34" y="5278" class="label">large-branch-control; 15/15 cases</text>
+<text x="840" y="5278" class="label">C 1.577×</text>
+<text x="1085" y="5278" class="label">Zig 1.211×</text>
+<text x="1330" y="5278" class="label">Rust 0.997×</text>
+<text x="34" y="5303" class="label">large-bytes-buffer; 8/8 cases</text>
+<text x="840" y="5303" class="label">C 1.070×</text>
+<text x="1085" y="5303" class="label">Zig 1.204×</text>
+<text x="1330" y="5303" class="label">Rust 0.914×</text>
+<text x="34" y="5328" class="label">large-bytes-replace; 32/32 cases</text>
+<text x="840" y="5328" class="label">C 1.154×</text>
+<text x="1085" y="5328" class="label">Zig 1.890×</text>
+<text x="1330" y="5328" class="label">Rust 1.432×</text>
+<text x="34" y="5353" class="label">large-bytes-tokens; 8/8 cases</text>
+<text x="840" y="5353" class="label">C 2.851×</text>
+<text x="1085" y="5353" class="label">Zig 1.644×</text>
+<text x="1330" y="5353" class="label">Rust 1.175×</text>
+<text x="34" y="5378" class="label">large-cleanup; 32/32 cases</text>
+<text x="840" y="5378" class="label">C 1.772×</text>
+<text x="1085" y="5378" class="label">Zig 1.736×</text>
+<text x="1330" y="5378" class="label">Rust 1.475×</text>
+<text x="34" y="5403" class="label">large-cold-compile; 32/32 cases</text>
+<text x="840" y="5403" class="label">C 1.164×</text>
+<text x="1085" y="5403" class="label">Zig 4.487×</text>
+<text x="1330" y="5403" class="label">Rust 2.947×</text>
+<text x="34" y="5428" class="label">large-cold-search; 16/16 cases</text>
+<text x="840" y="5428" class="label">C 1.186×</text>
+<text x="1085" y="5428" class="label">Zig 2.451×</text>
+<text x="1330" y="5428" class="label">Rust 1.714×</text>
+<text x="34" y="5453" class="label">large-conditionals; 32/32 cases</text>
+<text x="840" y="5453" class="label">C 1.125×</text>
+<text x="1085" y="5453" class="label">Zig 0.740×</text>
+<text x="1330" y="5453" class="label">Rust 0.818×</text>
+<text x="34" y="5478" class="label">large-empty-iterator; 7/7 cases</text>
+<text x="840" y="5478" class="label">C 1.702×</text>
+<text x="1085" y="5478" class="label">Zig 1.649×</text>
+<text x="1330" y="5478" class="label">Rust 0.814×</text>
+<text x="34" y="5503" class="label">large-escape; 32/32 cases</text>
+<text x="840" y="5503" class="label">C 3.419×</text>
+<text x="1085" y="5503" class="label">Zig 0.994×</text>
+<text x="1330" y="5503" class="label">Rust 0.995×</text>
+<text x="34" y="5528" class="label">large-everyday-address; 15/15 cases</text>
+<text x="840" y="5528" class="label">C 1.055×</text>
+<text x="1085" y="5528" class="label">Zig 1.020×</text>
+<text x="1330" y="5528" class="label">Rust 0.854×</text>
+<text x="34" y="5553" class="label">large-findall-tokens; 7/7 cases</text>
+<text x="840" y="5553" class="label">C 2.065×</text>
+<text x="1085" y="5553" class="label">Zig 1.512×</text>
+<text x="1330" y="5553" class="label">Rust 1.044×</text>
+<text x="34" y="5578" class="label">large-finditer-pairs; 7/7 cases</text>
+<text x="840" y="5578" class="label">C 1.494×</text>
+<text x="1085" y="5578" class="label">Zig 1.023×</text>
+<text x="1330" y="5578" class="label">Rust 0.925×</text>
+<text x="34" y="5603" class="label">large-formatted-lines; 8/8 cases</text>
+<text x="840" y="5603" class="label">C 1.228×</text>
+<text x="1085" y="5603" class="label">Zig 0.907×</text>
+<text x="1330" y="5603" class="label">Rust 0.665×</text>
+<text x="34" y="5628" class="label">large-literal-hit; 15/15 cases</text>
+<text x="840" y="5628" class="label">C 1.087×</text>
+<text x="1085" y="5628" class="label">Zig 0.774×</text>
+<text x="1330" y="5628" class="label">Rust 0.927×</text>
+<text x="34" y="5653" class="label">large-literal-miss; 16/16 cases</text>
+<text x="840" y="5653" class="label">C 1.202×</text>
+<text x="1085" y="5653" class="label">Zig 0.843×</text>
+<text x="1330" y="5653" class="label">Rust 1.071×</text>
+<text x="34" y="5678" class="label">large-long-ending; 15/15 cases</text>
+<text x="840" y="5678" class="label">C 1.979×</text>
+<text x="1085" y="5678" class="label">Zig 1.379×</text>
+<text x="1330" y="5678" class="label">Rust 1.482×</text>
+<text x="34" y="5703" class="label">large-module-replace; 32/32 cases</text>
+<text x="840" y="5703" class="label">C 1.689×</text>
+<text x="1085" y="5703" class="label">Zig 1.387×</text>
+<text x="1330" y="5703" class="label">Rust 1.114×</text>
+<text x="34" y="5728" class="label">large-module-search; 16/16 cases</text>
+<text x="840" y="5728" class="label">C 1.106×</text>
+<text x="1085" y="5728" class="label">Zig 0.859×</text>
+<text x="1330" y="5728" class="label">Rust 0.571×</text>
+<text x="34" y="5753" class="label">large-nearby-capture; 15/15 cases</text>
+<text x="840" y="5753" class="label">C 1.718×</text>
+<text x="1085" y="5753" class="label">Zig 0.716×</text>
+<text x="1330" y="5753" class="label">Rust 0.612×</text>
+<text x="34" y="5778" class="label">large-prefix-check; 32/32 cases</text>
+<text x="840" y="5778" class="label">C 1.274×</text>
+<text x="1085" y="5778" class="label">Zig 0.814×</text>
+<text x="1330" y="5778" class="label">Rust 0.835×</text>
+<text x="34" y="5803" class="label">large-references; 32/32 cases</text>
+<text x="840" y="5803" class="label">C 1.112×</text>
+<text x="1085" y="5803" class="label">Zig 0.657×</text>
+<text x="1330" y="5803" class="label">Rust 0.711×</text>
+<text x="34" y="5828" class="label">large-replace-callback; 32/32 cases</text>
+<text x="840" y="5828" class="label">C 1.102×</text>
+<text x="1085" y="5828" class="label">Zig 1.069×</text>
+<text x="1330" y="5828" class="label">Rust 1.031×</text>
+<text x="34" y="5853" class="label">large-replace-groups; 32/32 cases</text>
+<text x="840" y="5853" class="label">C 2.054×</text>
+<text x="1085" y="5853" class="label">Zig 1.598×</text>
+<text x="1330" y="5853" class="label">Rust 1.189×</text>
+<text x="34" y="5878" class="label">large-request-records; 7/7 cases</text>
+<text x="840" y="5878" class="label">C 0.815×</text>
+<text x="1085" y="5878" class="label">Zig 0.786×</text>
+<text x="1330" y="5878" class="label">Rust 0.761×</text>
+<text x="34" y="5903" class="label">large-scanner-bytes; 32/32 cases</text>
+<text x="840" y="5903" class="label">C 1.057×</text>
+<text x="1085" y="5903" class="label">Zig 1.022×</text>
+<text x="1330" y="5903" class="label">Rust 0.830×</text>
+<text x="34" y="5928" class="label">large-scanner-text; 32/32 cases</text>
+<text x="840" y="5928" class="label">C 1.105×</text>
+<text x="1085" y="5928" class="label">Zig 1.020×</text>
+<text x="1330" y="5928" class="label">Rust 0.796×</text>
+<text x="34" y="5953" class="label">large-split-keep; 32/32 cases</text>
+<text x="840" y="5953" class="label">C 1.003×</text>
+<text x="1085" y="5953" class="label">Zig 1.156×</text>
+<text x="1330" y="5953" class="label">Rust 1.199×</text>
+<text x="34" y="5978" class="label">large-structured-text; 8/8 cases</text>
+<text x="840" y="5978" class="label">C 1.379×</text>
+<text x="1085" y="5978" class="label">Zig 1.321×</text>
+<text x="1330" y="5978" class="label">Rust 0.989×</text>
+<text x="34" y="6003" class="label">large-unicode-casefold; 7/7 cases</text>
+<text x="840" y="6003" class="label">C 1.048×</text>
+<text x="1085" y="6003" class="label">Zig 1.559×</text>
+<text x="1330" y="6003" class="label">Rust 1.113×</text>
+<text x="34" y="6028" class="label">large-unicode-words; 7/7 cases</text>
+<text x="840" y="6028" class="label">C 1.082×</text>
+<text x="1085" y="6028" class="label">Zig 1.564×</text>
+<text x="1330" y="6028" class="label">Rust 1.162×</text>
+<text x="34" y="6053" class="label">large-verbose-dotall; 15/15 cases</text>
+<text x="840" y="6053" class="label">C 1.849×</text>
+<text x="1085" y="6053" class="label">Zig 1.587×</text>
+<text x="1330" y="6053" class="label">Rust 0.524×</text>
+<text x="34" y="6078" class="label">large-whole-check; 32/32 cases</text>
+<text x="840" y="6078" class="label">C 1.274×</text>
+<text x="1085" y="6078" class="label">Zig 1.352×</text>
+<text x="1330" y="6078" class="label">Rust 1.035×</text>
+<text x="34" y="6103" class="label">large-window-collection; 8/8 cases</text>
+<text x="840" y="6103" class="label">C 1.210×</text>
+<text x="1085" y="6103" class="label">Zig 0.958×</text>
+<text x="1330" y="6103" class="label">Rust 0.878×</text>
+<text x="34" y="6128" class="label">large-window-search; 15/15 cases</text>
+<text x="840" y="6128" class="label">C 0.811×</text>
+<text x="1085" y="6128" class="label">Zig 0.769×</text>
+<text x="1330" y="6128" class="label">Rust 0.638×</text>
+<text x="34" y="6153" class="label">lines-records; 1/1 cases</text>
+<text x="840" y="6153" class="label">C 1.079×</text>
+<text x="1085" y="6153" class="label">Zig 0.970×</text>
+<text x="1330" y="6153" class="label">Rust 0.963×</text>
+<text x="34" y="6178" class="label">literal-replace; 1/1 cases</text>
+<text x="840" y="6178" class="label">C 1.320×</text>
+<text x="1085" y="6178" class="label">Zig 0.913×</text>
+<text x="1330" y="6178" class="label">Rust 0.753×</text>
+<text x="34" y="6203" class="label">look-negative-ahead; 1/1 cases</text>
+<text x="840" y="6203" class="label">C 1.106×</text>
+<text x="1085" y="6203" class="label">Zig 1.105×</text>
+<text x="1330" y="6203" class="label">Rust 0.592×</text>
+<text x="34" y="6228" class="label">look-negative-behind; 1/1 cases</text>
+<text x="840" y="6228" class="label">C 1.226×</text>
+<text x="1085" y="6228" class="label">Zig 1.180×</text>
+<text x="1330" y="6228" class="label">Rust 1.021×</text>
+<text x="34" y="6253" class="label">many-results; 1/1 cases</text>
+<text x="840" y="6253" class="label">C 1.035×</text>
+<text x="1085" y="6253" class="label">Zig 1.558×</text>
+<text x="1330" y="6253" class="label">Rust 1.217×</text>
+<text x="34" y="6278" class="label">match; 1/1 cases</text>
+<text x="840" y="6278" class="label">C 1.326×</text>
+<text x="1085" y="6278" class="label">Zig 0.876×</text>
+<text x="1330" y="6278" class="label">Rust 0.953×</text>
+<text x="34" y="6303" class="label">match-miss; 1/1 cases</text>
+<text x="840" y="6303" class="label">C 1.013×</text>
+<text x="1085" y="6303" class="label">Zig 0.818×</text>
+<text x="1330" y="6303" class="label">Rust 0.917×</text>
+<text x="34" y="6328" class="label">match-surface; 1/1 cases</text>
+<text x="840" y="6328" class="label">C 1.291×</text>
+<text x="1085" y="6328" class="label">Zig 1.129×</text>
+<text x="1330" y="6328" class="label">Rust 0.759×</text>
+<text x="34" y="6353" class="label">mode-ascii; 1/1 cases</text>
+<text x="840" y="6353" class="label">C 1.150×</text>
+<text x="1085" y="6353" class="label">Zig 1.175×</text>
+<text x="1330" y="6353" class="label">Rust 0.838×</text>
+<text x="34" y="6378" class="label">mode-astral; 1/1 cases</text>
+<text x="840" y="6378" class="label">C 1.588×</text>
+<text x="1085" y="6378" class="label">Zig 1.344×</text>
+<text x="1330" y="6378" class="label">Rust 1.047×</text>
+<text x="34" y="6403" class="label">mode-casefold; 1/1 cases</text>
+<text x="840" y="6403" class="label">C 1.149×</text>
+<text x="1085" y="6403" class="label">Zig 1.454×</text>
+<text x="1330" y="6403" class="label">Rust 1.082×</text>
+<text x="34" y="6428" class="label">module; 1/1 cases</text>
+<text x="840" y="6428" class="label">C 1.172×</text>
+<text x="1085" y="6428" class="label">Zig 0.921×</text>
+<text x="1330" y="6428" class="label">Rust 0.574×</text>
+<text x="34" y="6453" class="label">module-replace; 1/1 cases</text>
+<text x="840" y="6453" class="label">C 1.559×</text>
+<text x="1085" y="6453" class="label">Zig 1.311×</text>
+<text x="1330" y="6453" class="label">Rust 1.202×</text>
+<text x="34" y="6478" class="label">pattern-verbose; 1/1 cases</text>
+<text x="840" y="6478" class="label">C 1.915×</text>
+<text x="1085" y="6478" class="label">Zig 1.227×</text>
+<text x="1330" y="6478" class="label">Rust 0.510×</text>
+<text x="34" y="6503" class="label">real-comments; 1/1 cases</text>
+<text x="840" y="6503" class="label">C 1.388×</text>
+<text x="1085" y="6503" class="label">Zig 0.970×</text>
+<text x="1330" y="6503" class="label">Rust 0.738×</text>
+<text x="34" y="6528" class="label">real-config; 1/1 cases</text>
+<text x="840" y="6528" class="label">C 1.585×</text>
+<text x="1085" y="6528" class="label">Zig 1.095×</text>
+<text x="1330" y="6528" class="label">Rust 1.075×</text>
+<text x="34" y="6553" class="label">real-csv; 1/1 cases</text>
+<text x="840" y="6553" class="label">C 2.073×</text>
+<text x="1085" y="6553" class="label">Zig 2.808×</text>
+<text x="1330" y="6553" class="label">Rust 0.514×</text>
+<text x="34" y="6578" class="label">real-datetime; 1/1 cases</text>
+<text x="840" y="6578" class="label">C 1.125×</text>
+<text x="1085" y="6578" class="label">Zig 0.907×</text>
+<text x="1330" y="6578" class="label">Rust 0.874×</text>
+<text x="34" y="6603" class="label">real-email; 1/1 cases</text>
+<text x="840" y="6603" class="label">C 0.959×</text>
+<text x="1085" y="6603" class="label">Zig 0.987×</text>
+<text x="1330" y="6603" class="label">Rust 0.523×</text>
+<text x="34" y="6628" class="label">real-ip; 1/1 cases</text>
+<text x="840" y="6628" class="label">C 1.042×</text>
+<text x="1085" y="6628" class="label">Zig 1.031×</text>
+<text x="1330" y="6628" class="label">Rust 0.925×</text>
+<text x="34" y="6653" class="label">real-lines; 1/1 cases</text>
+<text x="840" y="6653" class="label">C 1.746×</text>
+<text x="1085" y="6653" class="label">Zig 1.600×</text>
+<text x="1330" y="6653" class="label">Rust 1.357×</text>
+<text x="34" y="6678" class="label">real-log; 1/1 cases</text>
+<text x="840" y="6678" class="label">C 0.872×</text>
+<text x="1085" y="6678" class="label">Zig 0.709×</text>
+<text x="1330" y="6678" class="label">Rust 0.896×</text>
+<text x="34" y="6703" class="label">real-markup; 1/1 cases</text>
+<text x="840" y="6703" class="label">C 1.075×</text>
+<text x="1085" y="6703" class="label">Zig 0.847×</text>
+<text x="1330" y="6703" class="label">Rust 0.691×</text>
+<text x="34" y="6728" class="label">real-path; 1/1 cases</text>
+<text x="840" y="6728" class="label">C 1.318×</text>
+<text x="1085" y="6728" class="label">Zig 1.325×</text>
+<text x="1330" y="6728" class="label">Rust 0.874×</text>
+<text x="34" y="6753" class="label">real-quotes; 1/1 cases</text>
+<text x="840" y="6753" class="label">C 1.368×</text>
+<text x="1085" y="6753" class="label">Zig 1.251×</text>
+<text x="1330" y="6753" class="label">Rust 0.751×</text>
+<text x="34" y="6778" class="label">real-url; 1/1 cases</text>
+<text x="840" y="6778" class="label">C 1.345×</text>
+<text x="1085" y="6778" class="label">Zig 0.977×</text>
+<text x="1330" y="6778" class="label">Rust 0.825×</text>
+<text x="34" y="6803" class="label">real-uuid; 1/1 cases</text>
+<text x="840" y="6803" class="label">C 1.369×</text>
+<text x="1085" y="6803" class="label">Zig 1.111×</text>
+<text x="1330" y="6803" class="label">Rust 0.724×</text>
+<text x="34" y="6828" class="label">real-version; 1/1 cases</text>
+<text x="840" y="6828" class="label">C 1.974×</text>
+<text x="1085" y="6828" class="label">Zig 1.384×</text>
+<text x="1330" y="6828" class="label">Rust 1.090×</text>
+<text x="34" y="6853" class="label">real-whitespace; 1/1 cases</text>
+<text x="840" y="6853" class="label">C 1.352×</text>
+<text x="1085" y="6853" class="label">Zig 1.150×</text>
+<text x="1330" y="6853" class="label">Rust 1.140×</text>
+<text x="34" y="6878" class="label">repeat-nested; 1/1 cases</text>
+<text x="840" y="6878" class="label">C 1.204×</text>
+<text x="1085" y="6878" class="label">Zig 1.477×</text>
+<text x="1330" y="6878" class="label">Rust 1.150×</text>
+<text x="34" y="6903" class="label">replace-limited; 1/1 cases</text>
+<text x="840" y="6903" class="label">C 1.306×</text>
+<text x="1085" y="6903" class="label">Zig 1.141×</text>
+<text x="1330" y="6903" class="label">Rust 1.057×</text>
+<text x="34" y="6928" class="label">scanner; 1/1 cases</text>
+<text x="840" y="6928" class="label">C 0.980×</text>
+<text x="1085" y="6928" class="label">Zig 0.859×</text>
+<text x="1330" y="6928" class="label">Rust 0.926×</text>
+<text x="34" y="6953" class="label">search-boundary; 1/1 cases</text>
+<text x="840" y="6953" class="label">C 9.510×</text>
+<text x="1085" y="6953" class="label">Zig 5.647×</text>
+<text x="1330" y="6953" class="label">Rust 6.813×</text>
+<text x="34" y="6978" class="label">search-class; 1/1 cases</text>
+<text x="840" y="6978" class="label">C 1.269×</text>
+<text x="1085" y="6978" class="label">Zig 0.895×</text>
+<text x="1330" y="6978" class="label">Rust 0.973×</text>
+<text x="34" y="7003" class="label">search-hit; 1/1 cases</text>
+<text x="840" y="7003" class="label">C 1.047×</text>
+<text x="1085" y="7003" class="label">Zig 0.692×</text>
+<text x="1330" y="7003" class="label">Rust 0.908×</text>
+<text x="34" y="7028" class="label">search-miss; 1/1 cases</text>
+<text x="840" y="7028" class="label">C 1.186×</text>
+<text x="1085" y="7028" class="label">Zig 0.695×</text>
+<text x="1330" y="7028" class="label">Rust 1.018×</text>
+<text x="34" y="7053" class="label">split; 1/1 cases</text>
+<text x="840" y="7053" class="label">C 1.451×</text>
+<text x="1085" y="7053" class="label">Zig 1.126×</text>
+<text x="1330" y="7053" class="label">Rust 1.019×</text>
+<text x="34" y="7078" class="label">split-limited; 1/1 cases</text>
+<text x="840" y="7078" class="label">C 1.544×</text>
+<text x="1085" y="7078" class="label">Zig 1.115×</text>
+<text x="1330" y="7078" class="label">Rust 0.884×</text>
+<text x="34" y="7103" class="label">sub; 1/1 cases</text>
+<text x="840" y="7103" class="label">C 1.970×</text>
+<text x="1085" y="7103" class="label">Zig 1.419×</text>
+<text x="1330" y="7103" class="label">Rust 1.240×</text>
+<text x="34" y="7128" class="label">subn-callable; 1/1 cases</text>
+<text x="840" y="7128" class="label">C 1.060×</text>
+<text x="1085" y="7128" class="label">Zig 0.971×</text>
+<text x="1330" y="7128" class="label">Rust 0.933×</text>
+<text x="34" y="7153" class="label">template-repeat; 1/1 cases</text>
+<text x="840" y="7153" class="label">C 1.513×</text>
+<text x="1085" y="7153" class="label">Zig 1.184×</text>
+<text x="1330" y="7153" class="label">Rust 1.142×</text>
+<text x="34" y="7178" class="label">unicode; 1/1 cases</text>
+<text x="840" y="7178" class="label">C 0.952×</text>
+<text x="1085" y="7178" class="label">Zig 0.983×</text>
+<text x="1330" y="7178" class="label">Rust 0.978×</text>
+<text x="34" y="7203" class="label">unicode-name; 1/1 cases</text>
+<text x="840" y="7203" class="label">C 1.309×</text>
+<text x="1085" y="7203" class="label">Zig 0.927×</text>
+<text x="1330" y="7203" class="label">Rust 0.920×</text>
+<text x="34" y="7228" class="label">window-findall; 1/1 cases</text>
+<text x="840" y="7228" class="label">C 1.153×</text>
+<text x="1085" y="7228" class="label">Zig 1.071×</text>
+<text x="1330" y="7228" class="label">Rust 0.894×</text>
+<text x="34" y="7253" class="label">window-match; 1/1 cases</text>
+<text x="840" y="7253" class="label">C 1.016×</text>
+<text x="1085" y="7253" class="label">Zig 0.813×</text>
+<text x="1330" y="7253" class="label">Rust 0.779×</text>
+<text x="34" y="7278" class="label">window-scanner; 1/1 cases</text>
+<text x="840" y="7278" class="label">C 0.929×</text>
+<text x="1085" y="7278" class="label">Zig 1.002×</text>
+<text x="1330" y="7278" class="label">Rust 0.957×</text>
+<text x="34" y="7303" class="label">window-search; 1/1 cases</text>
+<text x="840" y="7303" class="label">C 0.915×</text>
+<text x="1085" y="7303" class="label">Zig 0.809×</text>
+<text x="1330" y="7303" class="label">Rust 0.820×</text>
+<text x="34" y="7328" class="label">zero-boundary; 1/1 cases</text>
+<text x="840" y="7328" class="label">C 1.705×</text>
+<text x="1085" y="7328" class="label">Zig 1.634×</text>
+<text x="1330" y="7328" class="label">Rust 0.783×</text>
+<text x="31" y="7381" class="note">All 12 original operations and all 260 measured categories retain their full denominators; group values do not establish confidence or final results.</text>
+</svg>
