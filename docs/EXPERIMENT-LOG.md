@@ -7,6 +7,58 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the actual three-engine report-publication failure
+
+Freeze, independently review, commit, and push the V19 current-engine
+ownership inspection before invoking it exactly once:
+
+```sh
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_independent_engine_audit_v19.py \
+  --ownership-audit
+```
+
+The actual command exits **1**. It writes all **161,316** bytes to a
+new, exclusively created report; the complete write, file sync, and
+parent-directory sync succeed. Its final read-back fails because line
+1741 compares decoded JSON with the original in-memory Python object.
+The exact canonical bytes and SHA-256 are unchanged. The particular
+pre-serialization value is **NOT PRESERVED BY THE FAILED CONTROLLER**
+and must not be guessed.
+
+- [Actual report-publication failure and original syscall receipt](../candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V19-PUBLICATION-FAILURE.json).
+- [Original exclusively written three-worker report](../candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V19.json),
+  SHA-256 `e46484d4a8b389fde66131ac3f8c2db94b1a95ebbf35760f1602117e8c9f23c6`.
+
+The second artifact contains the real outputs of all three isolated
+native workers. Verify every original output, complete error stream,
+child exit, outside-engine guard, and canonical byte independently:
+
+| Native engine | Original output | Output SHA-256 | Outside regex packages |
+| --- | ---: | --- | ---: |
+| Rust | 12,108 bytes | `13f647d66cc48354f41ca643b5ff18d94bdccf86cb525aded821e16859b865ce` | 0 |
+| C | 11,990 bytes | `82b444dccee6b61c5b9e41fa25d08cd5e086bb35946a01a6c4b25a473780cf38` | 0 |
+| Zig | 12,096 bytes | `573c8b30a67657b63431f56c8e8f81826db09ffa39b0c70f19928d1d685a0b33` | 0 |
+
+Each native process really returns **0** and records all **13**
+Python-matching guards, all **five** native-loader guards, and **16**
+passing serialization checks. All three original error streams are
+genuinely empty. This confirms the worker outputs were retained;
+it does not turn the controller's exit **1** into a passing audit.
+
+The saved report contains an embedded `PASS`, but it remains part of
+the failed invocation and **does not qualify the current engines**.
+The designated V19 failure output and both strict outputs were never
+created. Preserve both actual artifacts, never retry or overwrite the
+exclusive destination, and require the successor to validate decoded
+reports against their JSON-normalized form. Current compatibility is
+**NOT QUALIFIED**, performance is **NOT MEASURED**, and the holdout is
+**NOT ACCESSED**.
+
 ## Freeze the worker-preserving current-engine ownership inspection
 
 Preserve the genuine V13, V15, and V17 failures before freezing

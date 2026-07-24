@@ -103,9 +103,14 @@ saved, so no passing ownership result exists.
 
 The [worker-preserving rebuild inspection](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V19.md)
 checks all three real past failures and the full current native
-source graph. It retains genuine worker output before checking the
-source files again. Its actual ownership and strict inspections
-are **NOT RUN**.
+source graph. Its
+[first actual run](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V19-PUBLICATION-FAILURE.json)
+preserves the complete outputs from all three native engines, but fails
+when its evidence writer compares decoded JSON with the original
+Python object. The
+[original report](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V19.json)
+is intact, but the inspection exits unsuccessfully and does **not**
+qualify any engine. The independent strict inspection is **NOT RUN**.
 
 The [fresh original correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V14.md)
 then requires all **223,198** original cases and all **393** deeper

@@ -1,0 +1,129 @@
+{
+  "schema": "rebar-postfinal-independent-engine-audit-v19-actual-exclusive-publication-first-failure",
+  "status": "FAIL",
+  "synthetic": false,
+  "production_observations_invented": false,
+  "qualifies_current_engine": false,
+  "historical_failure_qualifies_current_build": false,
+  "actual_invocation": {
+    "arguments": [
+      "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+      "-I",
+      "-B",
+      "tools/postfinal_independent_engine_audit_v19.py",
+      "--ownership-audit"
+    ],
+    "environment": {
+      "PYTHONDONTWRITEBYTECODE": "1",
+      "PYTHONHASHSEED": "0",
+      "PYTHONPATH": "/home/dev-user/src/rebar"
+    },
+    "exit_code": 1,
+    "invocations": 1,
+    "output_capture": "one complete JSON error line; stdout and stderr were not separately captured"
+  },
+  "actual_output": {
+    "actual_error_message": "the exclusive V19 publication failed; actual syscall receipt retained",
+    "actual_exclusive_publication_receipt": {
+      "actual_bytes_written": 161316,
+      "actual_error_message": "an exact exclusively published V19 all-family report was changed",
+      "actual_error_type": "AuditV19Error",
+      "actual_write_calls": [
+        {
+          "requested_bytes": 161316,
+          "returned_bytes": 161316
+        }
+      ],
+      "canonical_reread_succeeded": false,
+      "exclusive_create_succeeded": true,
+      "expected_bytes": 161316,
+      "file_fsync_succeeded": true,
+      "parent_directory_fsync_succeeded": true,
+      "production_observations_invented": false,
+      "report_path": "candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V19.json",
+      "report_sha256": "e46484d4a8b389fde66131ac3f8c2db94b1a95ebbf35760f1602117e8c9f23c6",
+      "schema": "rebar-postfinal-independent-engine-audit-v19-actual-exclusive-publication-receipt",
+      "status": "FAIL"
+    },
+    "holdout": "NOT ACCESSED",
+    "performance": "NOT MEASURED",
+    "schema": "rebar-postfinal-independent-engine-audit-v19-actual-exclusive-publication-failure",
+    "status": "FAIL"
+  },
+  "frozen_controller": {
+    "protocol_path": "oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V19.md",
+    "protocol_sha256": "78cd73d751caccb3458c709b2953e6c9cfc6c7a0edd8406b99d5aee36a9034e5",
+    "source_path": "tools/postfinal_independent_engine_audit_v19.py",
+    "source_sha256": "f8f76365749d6893779756844424d1b3f5390bd37c3507f3b6655cce1390b1d6"
+  },
+  "preserved_report": {
+    "path": "candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V19.json",
+    "sha256": "e46484d4a8b389fde66131ac3f8c2db94b1a95ebbf35760f1602117e8c9f23c6",
+    "bytes": 161316,
+    "embedded_document_status": "PASS",
+    "actual_controller_status": "FAIL",
+    "canonical_bytes_independently_verified": true,
+    "embedded_pass_qualifies_current_engine": false,
+    "completed_native_owner_worker_count": 3,
+    "complete_actual_native_owner_streams_preserved": true,
+    "workers": {
+      "rust": {
+        "actual_returncode": 0,
+        "original_stdout_bytes": 12108,
+        "original_stdout_sha256": "13f647d66cc48354f41ca643b5ff18d94bdccf86cb525aded821e16859b865ce",
+        "complete_original_stdout_verified": true,
+        "original_stderr_bytes": 0,
+        "original_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "complete_original_stderr_verified": true,
+        "matcher_guards": 13,
+        "native_loader_guards": 5,
+        "standard_pickle_checks": 16,
+        "standard_pickle_failures": 0,
+        "external_regex_packages": 0
+      },
+      "vm": {
+        "actual_returncode": 0,
+        "original_stdout_bytes": 11990,
+        "original_stdout_sha256": "82b444dccee6b61c5b9e41fa25d08cd5e086bb35946a01a6c4b25a473780cf38",
+        "complete_original_stdout_verified": true,
+        "original_stderr_bytes": 0,
+        "original_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "complete_original_stderr_verified": true,
+        "matcher_guards": 13,
+        "native_loader_guards": 5,
+        "standard_pickle_checks": 16,
+        "standard_pickle_failures": 0,
+        "external_regex_packages": 0
+      },
+      "zig": {
+        "actual_returncode": 0,
+        "original_stdout_bytes": 12096,
+        "original_stdout_sha256": "573c8b30a67657b63431f56c8e8f81826db09ffa39b0c70f19928d1d685a0b33",
+        "complete_original_stdout_verified": true,
+        "original_stderr_bytes": 0,
+        "original_stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "complete_original_stderr_verified": true,
+        "matcher_guards": 13,
+        "native_loader_guards": 5,
+        "standard_pickle_checks": 16,
+        "standard_pickle_failures": 0,
+        "external_regex_packages": 0
+      }
+    }
+  },
+  "actual_root_cause": {
+    "source_path": "tools/postfinal_independent_engine_audit_v19.py",
+    "source_line": 1741,
+    "failed_expression": "saved == report and saved_raw == raw",
+    "verified_canonical_bytes_changed": false,
+    "verified_canonical_sha256_changed": false,
+    "decoded_document_compared_against_original_in_memory_mapping": true,
+    "original_non_roundtripping_in_memory_value": "NOT PRESERVED BY THE FAILED CONTROLLER"
+  },
+  "fresh_v19_ownership_failure_report": false,
+  "fresh_v19_strict_report": false,
+  "fresh_v19_strict_failure_report": false,
+  "strict_audit": "NOT RUN",
+  "performance": "NOT MEASURED",
+  "holdout": "NOT ACCESSED"
+}
