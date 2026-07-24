@@ -7,6 +7,48 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the public comparison without measuring the engines
+
+First commit and push the exact public benchmark source and protocol in
+`0b673fe4`. The first direct, isolated freeze genuinely fails with
+`AssertionError: PYTHONPATH=. or the canonical root is mandatory`
+because the command omitted the inherited deep-contract environment.
+That failed attempt creates no manifest, starts no candidate, and
+takes no measurement. Preserve the failure; do not describe it as a
+successful freeze or a candidate error.
+
+The actual one-time retry succeeds with the exact required environment:
+
+```sh
+env PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_public_practice_v7.py --freeze
+```
+
+Its exit status is **0**. The resulting
+[public benchmark manifest](../performance/postfinal-public-v7/manifest.json)
+has SHA-256
+`465c751c6756cbea73bc3dc6d4397e2777d04a107b9a607241697b148c9c5f26`.
+It authenticates the previously pushed benchmark source
+`cc5b79daf3a0d018d15c76d01665cf94a30d3838c5a5c21389cba51444e96e7e`
+and protocol
+`c8fed02bde3d2b096905a44db99405b47801743749053e8dc402cb70cc1f51c0`.
+The one-time manifest is **FROZEN**. Timing is permitted only after
+the source, protocol, and manifest are committed and pushed. Creation
+is exclusive and one-time; do not repeat the command.
+
+The frozen public plan contains exactly **8,192** unique preserved
+examples, **260** categories, **12** operations, **13** paired trials,
+**4** warmups, and **2,000** confidence resamples. The **425,984**
+timing rows, **1,277,952** correctness checks, **24,579** confidence
+intervals, and **65,544** process and native-library guards remain
+planned denominators, **NOT MEASURED** results. The freeze starts no
+candidate or timing clock and never accesses the independent final
+test. The separate **33,280**-case expansion remains **NOT FROZEN**;
+the **65,536**-case final test remains **NOT OPENED**. There is no
+winner. Preserve the earlier actual **32** Python self-oracle failures
+and **256** Rust harness failures below.
+
 ## Prepare the public speed comparison without freezing or running it
 
 Preserve the previously pushed **1,190,400** successful three-engine

@@ -140,15 +140,16 @@ independently passes **3,584/3,584** cases for Rust, C, and Zig:
 prevented from importing Python's matcher, another candidate, or
 an external matching package.
 
-The [next fair public speed-comparison protocol](performance/postfinal-public-v7/PROTOCOL.md)
-plans **8,192** existing public examples across **260** workload
-categories, **12** Python operations, and **13** paired trials. Its
-isolated, candidate-free safety test passes **346/346** checks. This is a
-source-and-protocol pre-freeze checkpoint only: the one-time benchmark
-manifest is **NOT CREATED** and **NOT FROZEN**, and no candidate has
-been timed. The separate proposed **33,280**-case public expansion is
-**NOT FROZEN** and is not a hidden final test. New speed, memory,
-confidence intervals, and rankings remain **NOT MEASURED**.
+The [next public speed-comparison protocol](performance/postfinal-public-v7/PROTOCOL.md)
+now has a [one-time public benchmark manifest](performance/postfinal-public-v7/manifest.json)
+covering **8,192** existing examples, **260** workload categories,
+**12** Python operations, and **13** planned paired trials. The one-time
+manifest is **FROZEN**. Timing is permitted only after its source,
+protocol, and manifest are committed and pushed. Freezing starts no
+engines and takes no speed measurements. The separate proposed
+**33,280**-case public expansion remains **NOT FROZEN** and is not a
+hidden final test. New speed, memory, confidence intervals, and rankings
+remain **NOT MEASURED**.
 
 ## Final-test status
 
@@ -190,6 +191,11 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage10.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_public_practice_v7.py --self-test
+# Historical successful one-time freeze; the manifest now exists.
+# Do not rerun: freezing exclusively creates the manifest once.
+# PYTHONPATH=. is mandatory for the inherited contract.
+# env PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+#   tools/postfinal_public_practice_v7.py --freeze
 # Historical one-shot baseline; never overwrites the preserved evidence.
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage10.py --self-oracle
