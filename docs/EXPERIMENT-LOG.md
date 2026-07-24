@@ -7,6 +7,38 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the first Rust candidate's harness-side failure
+
+After committing and pushing the actual passing two-Python baseline,
+run the first candidate only. Rust records **256** mismatches among
+the **3,584** frozen cases; all **256** are in the
+`public-surface` test group. Every actual exception is
+`ImportError: stage-07 blocked unowned matching import: re`.
+
+The test harness's `_surface_obligation` imports `inspect` after
+the strict native-engine guard is installed; that introspection
+indirectly requests Python's `re`. The guard correctly rejects the
+unowned matching engine. This demonstrates a test-harness
+introspection bug, not a Rust matching error, fallback, external
+package, or delegation.
+
+The [complete exclusive Rust failure report](../candidates/evidence/python-re-universal-public-oracle-v8-rust-failures.json)
+retains all **256** case identities, expected values, actual
+exceptions, and matching-source guards. Its SHA-256 is
+`f509cedf5f58d1c211b63177fb843bfba3dc0b132469a392df43a9c802e323b1`.
+It independently binds the passing Python-baseline report
+`efcf0f661363e9032ce8c0afe7ea06a4762b783eec4c4ee6ec7c7059c14994df`,
+the immutable stage-eight source, and the exact case matrix.
+
+The historical **32**-mismatch stage-seven Python failure remains
+unchanged at
+`765e635745a7e332a1bd22426065c43fd52036d013add0d88d840d8fde1121e0`.
+C and Zig are **NOT RUN** against stage eight. Do not weaken the
+guard, discard failures, alter frozen evidence, or claim candidate
+success before an additive harness correction is frozen. Performance
+is **BLOCKED** and **NOT MEASURED**; the independent final test is
+**NOT OPENED**.
+
 ## Independently pass the corrected two-Python baseline
 
 Only after committing and pushing the corrected compatibility design,

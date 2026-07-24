@@ -117,8 +117,13 @@ numbers as portable and safely preserves Unicode surrogates. Its
 candidate-free safety test passes **597/597** checks. The
 [actual two-Python self-comparison](oracle/cpython-3.14.6/evidence/public-contract-v8-self-oracle.json)
 now passes all **3,584** cases and preserves **7,168** independent
-observations with **zero** mismatches. Rust, C, and Zig have
-**NOT RUN** against this new suite.
+observations with **zero** mismatches. The first
+[Rust candidate run](candidates/evidence/python-re-universal-public-oracle-v8-rust-failures.json)
+then exposes **256** test-harness failures: public-surface
+introspection attempts an import that Rust's independence guard
+correctly blocks. This is not evidence that Rust delegated matching
+or returned an incorrect regular-expression result. C and Zig are
+**NOT RUN**; the expanded candidate comparison remains **BLOCKED**.
 
 A fair **8,192**-case speed comparison and a separate expanded
 **33,280**-case public suite remain **BLOCKED**, **NOT FROZEN**, and
