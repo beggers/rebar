@@ -1,0 +1,215 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1640" height="1745" viewBox="0 0 1640 1745" role="img" aria-labelledby="public-chart-title public-chart-description">
+<title id="public-chart-title">Measured Python-traced expanded public allocations</title>
+<desc id="public-chart-description">Public development only; final independent benchmark failed; no final winner. CPython, C, Rust, and Zig ran the same 4096 calibration-only public cases, 13 paired trials, and 2000 bootstrap draws. Python-traced temporary allocations only; final, native, and whole-process memory are NOT MEASURED. Public manifest SHA-256 2228e444ae142494def731d8b94ba5fcf08c69aa8a7e04cc1c47cbebeb149b4a; public summary SHA-256 5f9a7bc81e751c9881ca521213c527ea2cfb5adcd48f02e207576f2cdd6b3386. Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:31px;font-weight:760}.subtitle{font-size:16px;fill:#475569}.heading{font-size:19px;font-weight:730}.label{font-size:14px}.value{font-size:15px;font-weight:720}.note{font-size:13.5px;fill:#475569}.tick{font-size:13px;fill:#475569}.banner{font-size:16px;font-weight:740;fill:#7f1d1d}.status{font-size:14px;font-weight:680;fill:#7f1d1d}.grid{stroke:#e2e8f0;stroke-width:1}.baseline{stroke:#64748b;stroke-width:2}.panel{fill:#f8fafc;stroke:#d9e2ee;stroke-width:1}</style>
+<text x="30" y="46" class="title">Measured Python-traced expanded public allocations</text>
+<text x="31" y="77" class="subtitle">Python-traced temporary allocations only; final, native, and whole-process memory are NOT MEASURED</text>
+<rect x="23" y="93" width="1594" height="45" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="37" y="123" class="banner">Public development only; final independent benchmark failed; no final winner</text>
+<text x="31" y="163" class="status">Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</text>
+<text x="31" y="186" class="note">Public plan SHA-256: 2228e444ae142494def731d8b94ba5fcf08c69aa8a7e04cc1c47cbebeb149b4a</text>
+<text x="31" y="208" class="note">Public measurement SHA-256: 5f9a7bc81e751c9881ca521213c527ea2cfb5adcd48f02e207576f2cdd6b3386</text>
+<circle cx="380" cy="230" r="5.5" fill="#64748b"/>
+<text x="392" y="235" class="label">CPython (standard Python)</text>
+<circle cx="635" cy="230" r="5.5" fill="#7c3aed"/>
+<text x="647" y="235" class="label">Zig</text>
+<circle cx="740" cy="230" r="5.5" fill="#2563eb"/>
+<text x="752" y="235" class="label">C</text>
+<circle cx="845" cy="230" r="5.5" fill="#c2410c"/>
+<text x="857" y="235" class="label">Rust</text>
+<rect x="22" y="246" width="1596" height="465" rx="9" class="panel"/>
+<text x="37" y="274" class="heading">Zig: 0.272× median traced ratio; 229/4,096 zero-traced cases</text>
+<line x1="425.00" y1="307" x2="425.00" y2="719" class="grid"/>
+<text x="425.00" y="299" text-anchor="middle" class="tick">0×</text>
+<line x1="492.86" y1="307" x2="492.86" y2="719" class="grid"/>
+<text x="492.86" y="299" text-anchor="middle" class="tick">0.25×</text>
+<line x1="560.72" y1="307" x2="560.72" y2="719" class="grid"/>
+<text x="560.72" y="299" text-anchor="middle" class="tick">0.5×</text>
+<line x1="628.58" y1="307" x2="628.58" y2="719" class="grid"/>
+<text x="628.58" y="299" text-anchor="middle" class="tick">0.75×</text>
+<line x1="696.44" y1="307" x2="696.44" y2="719" class="baseline"/>
+<text x="696.44" y="299" text-anchor="middle" class="tick">1× CPython</text>
+<line x1="832.16" y1="307" x2="832.16" y2="719" class="grid"/>
+<text x="832.16" y="299" text-anchor="middle" class="tick">1.5×</text>
+<line x1="967.89" y1="307" x2="967.89" y2="719" class="grid"/>
+<text x="967.89" y="299" text-anchor="middle" class="tick">2×</text>
+<text x="37" y="335" class="label">Prepare a regular expression (compile)</text>
+<circle cx="509.65" cy="331" r="5.5" fill="#7c3aed"/>
+<text x="1057" y="335" class="value">0.312×</text>
+<text x="1147" y="335" class="label">210/210 cases; 0 zero-traced</text>
+<text x="37" y="368" class="label">Escape special characters (escape)</text>
+<circle cx="696.44" cy="364" r="5.5" fill="#7c3aed"/>
+<text x="1057" y="368" class="value">1.000×</text>
+<text x="1147" y="368" class="label">161/161 cases; 0 zero-traced</text>
+<text x="37" y="401" class="label">Find all matching results (findall)</text>
+<circle cx="483.02" cy="397" r="5.5" fill="#7c3aed"/>
+<text x="1057" y="401" class="value">0.214×</text>
+<text x="1147" y="401" class="label">414/414 cases; 0 zero-traced</text>
+<text x="37" y="434" class="label">Stream matching results (finditer)</text>
+<circle cx="618.75" cy="430" r="5.5" fill="#7c3aed"/>
+<text x="1057" y="434" class="value">0.714×</text>
+<text x="1147" y="434" class="label">414/414 cases; 0 zero-traced</text>
+<text x="37" y="467" class="label">Match the entire input (fullmatch)</text>
+<circle cx="456.37" cy="463" r="5.5" fill="#7c3aed"/>
+<text x="1057" y="467" class="value">0.116×</text>
+<text x="1147" y="467" class="label">358/358 cases; 24 zero-traced</text>
+<text x="37" y="500" class="label">Match at the beginning (match)</text>
+<circle cx="457.75" cy="496" r="5.5" fill="#7c3aed"/>
+<text x="1057" y="500" class="value">0.121×</text>
+<text x="1147" y="500" class="label">229/229 cases; 31 zero-traced</text>
+<text x="37" y="533" class="label">Read match information (match-surface)</text>
+<circle cx="524.19" cy="529" r="5.5" fill="#7c3aed"/>
+<text x="1057" y="533" class="value">0.365×</text>
+<text x="1147" y="533" class="label">241/241 cases; 112 zero-traced</text>
+<text x="37" y="566" class="label">Scan repeated matches (scanner)</text>
+<circle cx="659.35" cy="562" r="5.5" fill="#7c3aed"/>
+<text x="1057" y="566" class="value">0.863×</text>
+<text x="1147" y="566" class="label">413/413 cases; 0 zero-traced</text>
+<text x="37" y="599" class="label">Search for a match (search)</text>
+<circle cx="453.62" cy="595" r="5.5" fill="#7c3aed"/>
+<text x="1057" y="599" class="value">0.105×</text>
+<text x="1147" y="599" class="label">414/414 cases; 62 zero-traced</text>
+<text x="37" y="632" class="label">Split around matches (split)</text>
+<circle cx="520.35" cy="628" r="5.5" fill="#7c3aed"/>
+<text x="1057" y="632" class="value">0.351×</text>
+<text x="1147" y="632" class="label">414/414 cases; 0 zero-traced</text>
+<text x="37" y="665" class="label">Replace matching text (sub)</text>
+<circle cx="473.50" cy="661" r="5.5" fill="#7c3aed"/>
+<text x="1057" y="665" class="value">0.179×</text>
+<text x="1147" y="665" class="label">414/414 cases; 0 zero-traced</text>
+<text x="37" y="698" class="label">Replace and count matches (subn)</text>
+<circle cx="469.50" cy="694" r="5.5" fill="#7c3aed"/>
+<text x="1057" y="698" class="value">0.164×</text>
+<text x="1147" y="698" class="label">414/414 cases; 0 zero-traced</text>
+<rect x="22" y="720" width="1596" height="465" rx="9" class="panel"/>
+<text x="37" y="748" class="heading">C: 0.332× median traced ratio; 225/4,096 zero-traced cases</text>
+<line x1="425.00" y1="781" x2="425.00" y2="1193" class="grid"/>
+<text x="425.00" y="773" text-anchor="middle" class="tick">0×</text>
+<line x1="492.86" y1="781" x2="492.86" y2="1193" class="grid"/>
+<text x="492.86" y="773" text-anchor="middle" class="tick">0.25×</text>
+<line x1="560.72" y1="781" x2="560.72" y2="1193" class="grid"/>
+<text x="560.72" y="773" text-anchor="middle" class="tick">0.5×</text>
+<line x1="628.58" y1="781" x2="628.58" y2="1193" class="grid"/>
+<text x="628.58" y="773" text-anchor="middle" class="tick">0.75×</text>
+<line x1="696.44" y1="781" x2="696.44" y2="1193" class="baseline"/>
+<text x="696.44" y="773" text-anchor="middle" class="tick">1× CPython</text>
+<line x1="832.16" y1="781" x2="832.16" y2="1193" class="grid"/>
+<text x="832.16" y="773" text-anchor="middle" class="tick">1.5×</text>
+<line x1="967.89" y1="781" x2="967.89" y2="1193" class="grid"/>
+<text x="967.89" y="773" text-anchor="middle" class="tick">2×</text>
+<text x="37" y="809" class="label">Prepare a regular expression (compile)</text>
+<circle cx="984.09" cy="805" r="5.5" fill="#2563eb"/>
+<text x="1057" y="809" class="value">2.060×</text>
+<text x="1147" y="809" class="label">210/210 cases; 0 zero-traced</text>
+<text x="37" y="842" class="label">Escape special characters (escape)</text>
+<circle cx="627.47" cy="838" r="5.5" fill="#2563eb"/>
+<text x="1057" y="842" class="value">0.746×</text>
+<text x="1147" y="842" class="label">161/161 cases; 0 zero-traced</text>
+<text x="37" y="875" class="label">Find all matching results (findall)</text>
+<circle cx="504.03" cy="871" r="5.5" fill="#2563eb"/>
+<text x="1057" y="875" class="value">0.291×</text>
+<text x="1147" y="875" class="label">414/414 cases; 0 zero-traced</text>
+<text x="37" y="908" class="label">Stream matching results (finditer)</text>
+<circle cx="561.37" cy="904" r="5.5" fill="#2563eb"/>
+<text x="1057" y="908" class="value">0.502×</text>
+<text x="1147" y="908" class="label">414/414 cases; 0 zero-traced</text>
+<text x="37" y="941" class="label">Match the entire input (fullmatch)</text>
+<circle cx="455.59" cy="937" r="5.5" fill="#2563eb"/>
+<text x="1057" y="941" class="value">0.113×</text>
+<text x="1147" y="941" class="label">358/358 cases; 20 zero-traced</text>
+<text x="37" y="974" class="label">Match at the beginning (match)</text>
+<circle cx="454.48" cy="970" r="5.5" fill="#2563eb"/>
+<text x="1057" y="974" class="value">0.109×</text>
+<text x="1147" y="974" class="label">229/229 cases; 31 zero-traced</text>
+<text x="37" y="1007" class="label">Read match information (match-surface)</text>
+<circle cx="509.96" cy="1003" r="5.5" fill="#2563eb"/>
+<text x="1057" y="1007" class="value">0.313×</text>
+<text x="1147" y="1007" class="label">241/241 cases; 112 zero-traced</text>
+<text x="37" y="1040" class="label">Scan repeated matches (scanner)</text>
+<circle cx="625.30" cy="1036" r="5.5" fill="#2563eb"/>
+<text x="1057" y="1040" class="value">0.738×</text>
+<text x="1147" y="1040" class="label">413/413 cases; 0 zero-traced</text>
+<text x="37" y="1073" class="label">Search for a match (search)</text>
+<circle cx="452.88" cy="1069" r="5.5" fill="#2563eb"/>
+<text x="1057" y="1073" class="value">0.103×</text>
+<text x="1147" y="1073" class="label">414/414 cases; 62 zero-traced</text>
+<text x="37" y="1106" class="label">Split around matches (split)</text>
+<circle cx="524.60" cy="1102" r="5.5" fill="#2563eb"/>
+<text x="1057" y="1106" class="value">0.367×</text>
+<text x="1147" y="1106" class="label">414/414 cases; 0 zero-traced</text>
+<text x="37" y="1139" class="label">Replace matching text (sub)</text>
+<circle cx="473.53" cy="1135" r="5.5" fill="#2563eb"/>
+<text x="1057" y="1139" class="value">0.179×</text>
+<text x="1147" y="1139" class="label">414/414 cases; 0 zero-traced</text>
+<text x="37" y="1172" class="label">Replace and count matches (subn)</text>
+<circle cx="478.70" cy="1168" r="5.5" fill="#2563eb"/>
+<text x="1057" y="1172" class="value">0.198×</text>
+<text x="1147" y="1172" class="label">414/414 cases; 0 zero-traced</text>
+<rect x="22" y="1194" width="1596" height="465" rx="9" class="panel"/>
+<text x="37" y="1222" class="heading">Rust: 0.266× median traced ratio; 229/4,096 zero-traced cases</text>
+<line x1="425.00" y1="1255" x2="425.00" y2="1667" class="grid"/>
+<text x="425.00" y="1247" text-anchor="middle" class="tick">0×</text>
+<line x1="492.86" y1="1255" x2="492.86" y2="1667" class="grid"/>
+<text x="492.86" y="1247" text-anchor="middle" class="tick">0.25×</text>
+<line x1="560.72" y1="1255" x2="560.72" y2="1667" class="grid"/>
+<text x="560.72" y="1247" text-anchor="middle" class="tick">0.5×</text>
+<line x1="628.58" y1="1255" x2="628.58" y2="1667" class="grid"/>
+<text x="628.58" y="1247" text-anchor="middle" class="tick">0.75×</text>
+<line x1="696.44" y1="1255" x2="696.44" y2="1667" class="baseline"/>
+<text x="696.44" y="1247" text-anchor="middle" class="tick">1× CPython</text>
+<line x1="832.16" y1="1255" x2="832.16" y2="1667" class="grid"/>
+<text x="832.16" y="1247" text-anchor="middle" class="tick">1.5×</text>
+<line x1="967.89" y1="1255" x2="967.89" y2="1667" class="grid"/>
+<text x="967.89" y="1247" text-anchor="middle" class="tick">2×</text>
+<text x="37" y="1283" class="label">Prepare a regular expression (compile)</text>
+<circle cx="497.29" cy="1279" r="5.5" fill="#c2410c"/>
+<text x="1057" y="1283" class="value">0.266×</text>
+<text x="1147" y="1283" class="label">210/210 cases; 0 zero-traced</text>
+<text x="37" y="1316" class="label">Escape special characters (escape)</text>
+<circle cx="696.44" cy="1312" r="5.5" fill="#c2410c"/>
+<text x="1057" y="1316" class="value">1.000×</text>
+<text x="1147" y="1316" class="label">161/161 cases; 0 zero-traced</text>
+<text x="37" y="1349" class="label">Find all matching results (findall)</text>
+<circle cx="489.79" cy="1345" r="5.5" fill="#c2410c"/>
+<text x="1057" y="1349" class="value">0.239×</text>
+<text x="1147" y="1349" class="label">414/414 cases; 0 zero-traced</text>
+<text x="37" y="1382" class="label">Stream matching results (finditer)</text>
+<circle cx="585.75" cy="1378" r="5.5" fill="#c2410c"/>
+<text x="1057" y="1382" class="value">0.592×</text>
+<text x="1147" y="1382" class="label">414/414 cases; 0 zero-traced</text>
+<text x="37" y="1415" class="label">Match the entire input (fullmatch)</text>
+<circle cx="456.37" cy="1411" r="5.5" fill="#c2410c"/>
+<text x="1057" y="1415" class="value">0.116×</text>
+<text x="1147" y="1415" class="label">358/358 cases; 24 zero-traced</text>
+<text x="37" y="1448" class="label">Match at the beginning (match)</text>
+<circle cx="457.75" cy="1444" r="5.5" fill="#c2410c"/>
+<text x="1057" y="1448" class="value">0.121×</text>
+<text x="1147" y="1448" class="label">229/229 cases; 31 zero-traced</text>
+<text x="37" y="1481" class="label">Read match information (match-surface)</text>
+<circle cx="509.53" cy="1477" r="5.5" fill="#c2410c"/>
+<text x="1057" y="1481" class="value">0.311×</text>
+<text x="1147" y="1481" class="label">241/241 cases; 112 zero-traced</text>
+<text x="37" y="1514" class="label">Scan repeated matches (scanner)</text>
+<circle cx="647.00" cy="1510" r="5.5" fill="#c2410c"/>
+<text x="1057" y="1514" class="value">0.818×</text>
+<text x="1147" y="1514" class="label">413/413 cases; 0 zero-traced</text>
+<text x="37" y="1547" class="label">Search for a match (search)</text>
+<circle cx="453.62" cy="1543" r="5.5" fill="#c2410c"/>
+<text x="1057" y="1547" class="value">0.105×</text>
+<text x="1147" y="1547" class="label">414/414 cases; 62 zero-traced</text>
+<text x="37" y="1580" class="label">Split around matches (split)</text>
+<circle cx="524.60" cy="1576" r="5.5" fill="#c2410c"/>
+<text x="1057" y="1580" class="value">0.367×</text>
+<text x="1147" y="1580" class="label">414/414 cases; 0 zero-traced</text>
+<text x="37" y="1613" class="label">Replace matching text (sub)</text>
+<circle cx="473.50" cy="1609" r="5.5" fill="#c2410c"/>
+<text x="1057" y="1613" class="value">0.179×</text>
+<text x="1147" y="1613" class="label">414/414 cases; 0 zero-traced</text>
+<text x="37" y="1646" class="label">Replace and count matches (subn)</text>
+<circle cx="470.08" cy="1642" r="5.5" fill="#c2410c"/>
+<text x="1057" y="1646" class="value">0.166×</text>
+<text x="1147" y="1646" class="label">414/414 cases; 0 zero-traced</text>
+<text x="31" y="1705" class="note">Python-traced allocations do not measure isolated native, whole-process, or final-benchmark memory: NOT MEASURED.</text>
+<text x="31" y="1728" class="note">The linear axis preserves genuine zero-traced results; zero Python-traced allocations do not mean zero native memory.</text>
+</svg>

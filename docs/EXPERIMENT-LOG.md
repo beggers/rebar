@@ -7,6 +7,36 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## The Rust quote matcher fixes all 54 target cases, not the overall goal
+
+The version-2
+[complete independently verified public result](../performance/postfinal-public-v2/RESULTS.md)
+measures pinned Python, C, Zig, and the independently implemented quote-aware
+Rust engine on the same **4,096** previously selected public cases. The
+complete
+[212,992-observation raw dataset](../performance/postfinal-public-v2/evidence/postfinal-public-practice-v2-raw.jsonl.gz)
+passes all **638,976** correctness gates. The
+[candidate-free replay](../performance/postfinal-public-v2/evidence/postfinal-public-practice-v2-integrity.json)
+recomputes all **12,291** confidence intervals, verifies all five native
+libraries and the original **76** anti-delegation controls, and retains every
+one of **2,366** substantial slowdowns.
+
+In the same paired run, Zig is **1.216×** (range **1.197–1.237×**,
+**2,130/4,096** faster, **771** slowdowns); C is **1.213×** (range
+**1.196–1.229×**, **2,597/4,096** faster, **479** slowdowns); and Rust is
+**1.100×** (range **1.082–1.120×**, **1,589/4,096** faster, **1,116**
+slowdowns). **No candidate reaches 1.5×.** All six
+[prospectively fixed graphs](../tools/postfinal_public_practice_charts_v2.py)
+are generated from the independently replayed observations.
+
+The Rust change succeeds on its actual target: all **54/54** formerly slow
+quote-aware CSV cases are statistically faster than Python, with **11.205×**
+geometric-average public speed and zero slowdowns. The
+[separate 83,968-observation property oracle](../candidates/evidence/rust-postfinal-quote-parity-stage-02-oracle.json)
+also records zero mismatches. The previous and current snapshots were
+measured separately; no paired cross-run confidence or causality is claimed.
+The hidden final remains failed and was not reopened.
+
 ## A from-scratch Rust quote matcher is qualified; its speed is not measured
 
 The version-1 public run exposed 54 substantial Rust slowdowns in a category
