@@ -7,6 +7,48 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze an actually runnable complete Python correctness oracle
+
+Freeze the independently reviewed
+[complete original Python correctness protocol](../oracle/cpython-3.14.6/POSTFINAL-LOCALE-V5.md)
+and [directly runnable oracle](../tools/postfinal_cpython_locale_oracle_v5.py)
+before invoking an original reference test or changing a candidate.
+Their respective exact SHA-256 hashes are
+`1329cf9c8e36391af134b2fb2b212e71067ace736b282dacd2a6c90233384840`
+and
+`9a4f2ac53617fb91e498ae2935bde622417921415af255e390668f69ba908730`.
+
+Preserve the exact original complete **152-public-method** matrix,
+**403** upstream corpus cases, **11** external assertions, and
+**26** authenticated original Python support files. The release
+build must actually run **151** original public methods and record
+exactly the one genuine named private-debug-build conditional skip;
+there are no public-test waivers.
+
+Require both real two-gibibyte original tests, the actual **36 GiB**
+replacement requirement, genuine `40G` upstream memory limit,
+original CPU assertion, native `fork`, real private locales, all
+public flags, lexical scanners, warnings, serialization, Unicode,
+and every unchanged source method. Run the actual baseline twice
+in separate isolated pinned CPython workers; no stale candidate
+audit, previous campaign, matching candidate, performance file,
+or held-out case is a prerequisite.
+
+Independent review exposed and rejected a preliminary controller
+that could not import its trusted upstream source when run directly
+with `-I`. Freeze only the corrected exact controller. Both
+reviewers and the project lead actually ran the documented direct
+source-only checks in normal and nearly empty environments:
+**139/139 passed**, and the actual no-candidate preflight was
+**READY** with enough available memory for the real original test.
+Source checks imported no candidates and ran no official methods,
+workers, benchmarks, or holdout cases.
+
+Keep actual reference and candidate execution separate. At this
+source-only commit, both original Python reference runs and all
+candidate upstream runs remain **NOT RUN**. Speed, memory, and the
+larger independent final comparison remain **NOT MEASURED**.
+
 ## Inspect the independently implemented Go engine
 
 Independently inspect the frozen Go lexer, parser, expression

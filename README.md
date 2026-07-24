@@ -75,7 +75,7 @@ difference; each link contains the complete, reproducible results.
 | [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-locale-v7-first-failure.json.gz) | 223,198 | 33 | NOT RUN |
 | [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-locale-v7-first-failure.json.gz) | 223,198 | 16 | NOT RUN |
 
-The [complete upstream-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V4.md)
+The [complete upstream-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V5.md)
 requires all **152** original public Python tests, the genuine Python
 test-support files, the full original test corpus, and real
 multi-gigabyte inputs. There are no public-test waivers; the only
@@ -124,11 +124,11 @@ be checked without running any candidates or benchmarks:
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_from_scratch_audit_v7.py --self-test
+  tools/postfinal_from_scratch_audit_v8.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_no_delegation_audit_v7.py --self-test
+  tools/postfinal_no_delegation_audit_v8.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_cpython_locale_oracle_v4.py --self-test
+  tools/postfinal_cpython_locale_oracle_v5.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_current_build_proofs_v7.py --self-test
+  tools/postfinal_current_build_proofs_v8.py --self-test
 ```
