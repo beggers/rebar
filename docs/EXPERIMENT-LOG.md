@@ -7,6 +7,53 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Verify rebuilt C against every deeper correctness case
+
+Push Rust's newly authenticated **393-case** deeper result before
+starting the separately owned C matcher. Authenticate C's actual
+published **223,198-case** V24 archive and native-owner proof, all
+four exact external no-delegation pins, the complete independently
+owned current native graph, and all five preserved failure records.
+Run exactly one frozen original deeper C worker:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar LC_ALL=C PATH=/usr/bin:/bin \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v24.py --qualified-deep \
+  --module candidates.vm_candidate \
+  --v21-audit-source-sha256 ded077962416ada3bddd825d77b2e6785fe3b01184fe5d9058ec17a57b08ea4d \
+  --v21-audit-protocol-sha256 5a78673c6b23e4781070cf5a2290d5f6cecd402fff77ff388d8795370de93a1f \
+  --v21-base-report-sha256 4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4 \
+  --v21-strict-report-sha256 6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d
+```
+
+The actual original C deeper worker exits **0** and passes **393 /
+393** cases, including all **64** fixed-seed cases. It produces
+**zero** public mismatches and the exact independently pinned
+Python-reference observation hash. Genuine before-and-after C
+ownership observations authenticate real matching, complete
+source and binary ownership, and no delegation to Python, Rust,
+Zig, or an external regex package.
+
+- [Actual complete original C deeper observations](../candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V24-PASS.json.gz),
+  SHA-256 `b3ede5c0d8a72f2c5cd112b1a03a0827652ad151880645d99213257065e11e0c`.
+- [Actual complete C deeper native-owner proof](../candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json),
+  SHA-256 `8695063d5cad48e80ea186315d315d5b8e96c80967e33cac62487c0eef2a4364`.
+- [Exact original C deeper production stdout and both actual receipts](../candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V24-PASS-PRODUCTION-SUMMARY.json).
+
+The original archive is separately and exclusively created with
+**81,265** actually requested and written bytes. The canonical
+owner proof is separately and exclusively created with **89,945**
+actually requested and written bytes. Both complete **18**-field
+ledgers preserve real file and directory synchronization and exact
+readback; neither failure nor invalidated evidence is created.
+
+This qualifies only C's independently owned original and deeper
+correctness. The full upstream and expanded public suites remain
+**NOT RUN**. Performance is **NOT MEASURED**; the holdout is
+**NOT ACCESSED**.
+
 ## Verify rebuilt Rust against every deeper correctness case
 
 After separately committing and pushing all three rebuilt engines'
