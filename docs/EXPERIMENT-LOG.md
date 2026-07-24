@@ -7,6 +7,36 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Verify all three repaired engines against the failed Python contract
+
+First push the independently passing Python reference in `e991d991`.
+Then run the actual three-candidate correctness command once:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/python_re_generic_alias_public_oracle_stage12.py \
+  --candidate all
+```
+
+The exclusively created
+[passing all-engine report](../candidates/evidence/python-re-generic-alias-public-oracle-v12-all.json)
+has SHA-256
+`6b0188e22f80a64e79252660d6b308d16d7a38ec01c45013bf67484b8d49be8c`.
+Rust, C, and Zig each pass all **128/128** original public type and
+serialization cases. All **384/384** candidate observations match the
+actual two-process Python reference, with **zero** failures.
+
+Every independent process verifies the genuinely audited native binary,
+public pattern and match owner, Python-matcher block, cross-candidate
+block, external-package block, and all five native-loader blocks.
+The original **16** Stage 11 Rust failures remain unchanged and
+recorded. No benchmark, memory sample, hidden case, or final case
+is accessed.
+
+The complete official Python test suite remains **NOT RUN**. Expanded
+performance remains **NOT FROZEN** and **NOT MEASURED**.
+
 ## Verify two independent Python references for the repaired contract
 
 Commit and push the frozen Stage 12 source and protocol in `2715e306`

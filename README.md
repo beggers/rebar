@@ -73,7 +73,10 @@ candidate-free design passes **86** independent safety checks and
 retains the original 16 Rust failures. Its
 [actual two-Python reference](oracle/cpython-3.14.6/evidence/public-generic-alias-v12-self-oracle.json)
 passes all **128** cases and **256** independent observations.
-The three-engine comparison is **NOT RUN**.
+The [actual three-engine comparison](candidates/evidence/python-re-generic-alias-public-oracle-v12-all.json)
+passes **128/128** cases for Rust, C, and Zig: **384/384** matching
+answers and **zero** mismatches. This does not replace the remaining
+full official Python tests.
 
 Earlier [official Python test results](oracle/cpython-3.14.6/evidence/postfinal-locale-v1-all.json),
 [22-stage engine campaigns](candidates/evidence/rust-v8-rust-postfinal-locale-v5-sealed-campaign.json),
