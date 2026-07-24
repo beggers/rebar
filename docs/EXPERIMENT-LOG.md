@@ -7,6 +7,49 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Run and preserve the normalized three-engine ownership inspection
+
+Freeze, independently review, commit, and push the V21 source and
+protocol before invoking the actual current-engine ownership audit
+exactly once:
+
+```sh
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_independent_engine_audit_v21.py \
+  --ownership-audit
+```
+
+The actual process exits **0** and returns **PASS**. The real C,
+Rust, and Zig owner workers each execute separately, return **0**,
+retain their complete original output, run all **13** matching
+guards, all **five** native-loader guards, and all **16**
+serialization checks, and load **zero** external regex packages.
+
+- [Actual current-engine ownership report](../candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V21.json),
+  SHA-256 `4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4`.
+- [Decoded original successful publication receipt](../candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V21-PUBLICATION-RECEIPT.json).
+
+The report contains **168,118** canonical bytes. The genuine
+exclusive creation, complete write, file sync, directory sync,
+and normalized JSON read-back all succeed. Preserve the exact
+decoded original success receipt rather than infer it from the report.
+The project lead and both independent reviewers separately
+validate all three original worker transcripts, all four preserved
+historical failures, and the complete **12**-source, **five**-binary
+current graph inside a boundary that forbids candidate imports,
+worker creation, filesystem writes, clock samples, and holdout access.
+
+This proves independent engine ownership, not complete Python
+compatibility. The separately executed strict no-delegation
+inspection is **NOT RUN** at this commit. The original edge,
+deep, full upstream, and expanded public correctness tests remain
+**NOT RUN**. Performance is **NOT MEASURED** and the holdout is
+**NOT ACCESSED**.
+
 ## Freeze the JSON-normalized three-engine ownership inspection
 
 Preserve the actual V13, V15, V17, and V19 failures, including the

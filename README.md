@@ -114,8 +114,13 @@ qualify any engine. The independent strict inspection is **NOT RUN**.
 
 The [normalized rebuild inspection](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V21.md)
 preserves all four actual failures and checks reports in their exact
-JSON-normalized form. Its **591** source-safety checks pass, but its
-actual three-engine and independent strict inspections are **NOT RUN**.
+JSON-normalized form. Its
+[actual three-engine inspection](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V21.json)
+passes: all three own implementations execute, preserve their original
+outputs, and use no outside regex package. The
+[complete publication receipt](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V21-PUBLICATION-RECEIPT.json)
+confirms the report was written, synced, and read back successfully.
+The independent strict inspection is **NOT RUN**.
 
 The [fresh original correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V14.md)
 then requires all **223,198** original cases and all **393** deeper
