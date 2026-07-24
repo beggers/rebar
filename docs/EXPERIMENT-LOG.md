@@ -7,6 +7,39 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Verify the repaired native source and exact official reproduction
+
+Commit and push all three corrected native bridges and the complete
+version-seven source-audit design in `a4e2787a` before starting its
+one-time production audit. The audit source has SHA-256
+`defa306e47a0d325af7d4c7fabb54324f6cb6d4653a494c46846838f5e2cf487`.
+Its independently reviewed self-test passes **468/468** controls.
+
+Run the actual source audit exactly once:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_from_scratch_audit_v7.py --audit
+```
+
+The exclusively created
+[actual passing source proof](../candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V7.json)
+has SHA-256
+`efae1f94fb06a1eabbab352794410c4d8e20a78202dcbf769b08ff9c7cee130a`.
+It independently verifies all **12** corrected source files,
+all **five** currently mapped native binaries, **three** native
+engines, and **four** owned source pipelines. All **48** ordinary
+standard-library pickle cases pass. Three independently guarded
+workers additionally execute all **six** actual official text and
+bytes representations on `[abracadabra]`, with the correct
+`(1, 12)` span and the genuine native type name.
+
+The actual report preserves the authenticated **145/146** official
+failure and does not misrepresent V6 or Stage 12 as proof for new
+binary files. The fresh no-delegation audit and complete official
+Python rerun are **NOT RUN**. No timing is performed.
+
 ## Repair all three real native match representations
 
 First commit and push the exact authentic official failure in

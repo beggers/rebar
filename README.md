@@ -96,12 +96,13 @@ builds. **They do not qualify the newly modified engines.** The
 [earlier source audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V6.json)
 and [earlier independent-execution audit](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V6.json)
 remain valid evidence for their recorded, pre-fix binaries only.
-The newly predeclared version-seven source audit passes **468**
-candidate-free safety checks and requires **48** real serialization
-checks and **six** exact official representation reproductions. Its
-actual audit is **NOT RUN**. The complete official run **FAILED** for
-the earlier Rust build; official results for the newly fixed engines
-and expanded compatibility comparisons remain **NOT RUN**.
+The [fresh version-seven source audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V7.json)
+now actually passes for all **12** corrected source files and
+**five** native binaries. It verifies **48** real serialization
+checks and all **six** exact official text-and-byte representation
+reproductions; its candidate-free design passes **468** controls.
+The new independent-execution audit and complete official rerun are
+**NOT RUN**. The earlier genuine Rust failure remains preserved.
 
 ## Larger fair speed comparison
 
