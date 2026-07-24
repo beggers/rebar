@@ -7,6 +7,48 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Prove the independently owned Zig engine against every original edge case
+
+First compile, separately commit, and push the real Zig matching
+engine using the independently pinned official Zig compiler. Verify
+that all seven possible Zig result paths are fresh. Run the same
+frozen, isolated original Python behavior comparison used for Rust
+and C:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v11.py \
+  --diagnostic-edge --module candidates.zig_candidate
+```
+
+The actual independently written Zig engine passes
+**223,198/223,198** checks across all **49** original categories,
+with **zero** mismatches. Its observed behavior matches Python's
+exact frozen SHA-256
+`b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526`.
+Separately preserve both complete, exclusively published records:
+
+- [Original Zig behavior archive](../candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-diagnostic-pass.json.gz),
+  SHA-256 `7601383522ec3e1b96ddf5b16d01d466e7a0b5fe2c545861ecc7b1d32b4f5fa2`.
+- [Complete Zig native-ownership proof](../candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-diagnostic-pass-proof.json),
+  SHA-256 `d50b53fb42a8a1bf0b919039c1931ea98c638ce96db004074e35d56d8b0391c7`.
+
+The proof authenticates all three independent Zig source files, the
+real Zig engine and its Python bridge, matching before and after the
+original comparison, all **13** Python matcher guards, all **five**
+native-loader guards, and all **16** genuine Python serialization
+checks. Inspection of both native binaries confirms the bridge loads
+the project's own Zig matcher, not Python, another candidate, or an
+external regular-expression package.
+
+Two independent reviewers and the project lead verify the complete
+original results, exact unchanged source and binary fingerprints,
+and durable before-and-after ownership proof without rerunning Zig.
+The result correctly records `campaign_qualified: false`: this
+passing individual diagnostic is not a completed three-engine audit
+or a complete upstream-test result. Current speed and memory remain
+**NOT MEASURED**; the expanded final holdout remains **NOT OPENED**.
+
 ## Prove the independently owned C engine against every original edge case
 
 First compile, separately commit, and push the actual independent C

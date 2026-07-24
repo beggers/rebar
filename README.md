@@ -62,22 +62,21 @@ retain the complete results, uncertainty ranges, and all regressions.
 
 ## Are the current engines compatible with Python?
 
-Not yet. Every row below uses the same **223,198** original Python
-behavior checks. Rust and C are current guarded runs; Zig shows its
-most recent preserved complete run.
+Not yet. Every row below is a current, guarded run of the same
+**223,198** original Python behavior checks.
 
 | Engine built from scratch | Checks completed | Differences from Python | Complete upstream tests |
 | --- | ---: | ---: | --- |
 | [Rust](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-diagnostic-pass.json.gz) | 223,198 | 0 | NOT RUN |
 | [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-diagnostic-pass.json.gz) | 223,198 | 0 | NOT RUN |
-| [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-locale-v7-first-failure.json.gz) | 223,198 | 16 | NOT RUN |
+| [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-diagnostic-pass.json.gz) | 223,198 | 0 | NOT RUN |
 
-The separate [Rust ownership proof](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-diagnostic-pass-proof.json)
-and [C ownership proof](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-diagnostic-pass-proof.json)
-verify that each engine performed its own matching. These are passing
-single-engine diagnostics, not full three-engine or upstream-test
-qualification. Zig has also been rebuilt from its own source; its
-updated behavior checks are **NOT RUN**.
+The separate [Rust ownership proof](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-diagnostic-pass-proof.json),
+[C ownership proof](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-diagnostic-pass-proof.json),
+and [Zig ownership proof](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-diagnostic-pass-proof.json)
+verify that each engine performed its own matching. These passing
+individual checks are not a complete three-engine inspection or a
+substitute for Python's full upstream tests.
 
 The [complete upstream-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V5.md)
 requires all **152** original public Python tests, the genuine Python
@@ -122,7 +121,7 @@ after matching. Its actual three-engine audits are **NOT RUN**.
 The [durable fresh-build correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V11.md)
 saves both the complete original Python behavior results and a
 separate proof that the actual engine performed its own matching.
-The rebuilt-engine comparisons are **NOT RUN**.
+Its stronger, three-engine-qualified comparisons are **NOT RUN**.
 
 An [immutable-source verification launcher](oracle/cpython-3.14.6/POSTFINAL-PUBLISHED-PINS-V8.md)
 checks real published evidence without changing any frozen audit or
