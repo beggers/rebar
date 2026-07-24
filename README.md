@@ -72,8 +72,11 @@ all **384** Rust, C, and Zig results. The
 and [original official-test failure](oracle/cpython-3.14.6/evidence/postfinal-locale-v2-rust-failures.json)
 remain available; older successful checks do not certify modified code.
 
-Broader tests of public APIs, caching, scanners, replacements, unusual
-inputs, Unicode, concurrency, and millions of generated examples are
+The [next 3,584-case compatibility test](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V15.md)
+covers public functions, errors, flags, locales, buffers, replacements,
+scanners, Unicode, and concurrent matching. Its new Python reference and
+all three engine comparisons are **NOT RUN**. Extra tests of the complete
+public interface, caching, and millions of generated examples are also
 **NOT RUN**. A complete drop-in replacement is not yet proven.
 
 ## Larger fair speed comparison

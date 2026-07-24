@@ -7,6 +7,51 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the complete 3,584-case public behavior comparison
+
+First commit and push the genuinely passing current-source type and
+serialization evidence in `5b132ced`. Independently verify both complete
+Python reference workers, all **384** native observations, both repaired
+native-independence audits, all **584** original official results, and
+the preserved original failure.
+
+Freeze the
+[broad public behavior protocol](../oracle/cpython-3.14.6/PUBLIC-CONTRACT-V15.md)
+and [independent differential-test controller](../tools/python_re_universal_public_oracle_stage15.py),
+with respective SHA-256 values
+`546c5e6152310eda173e182011cb13ab359e0960018b76cd6ce18c7b6006d691`
+and `fc288f0771462a850d5ac4859ba05fe3731953e7160419ddcdbf98e8563ac580`.
+The predeclared, complete **3,584-case** matrix has SHA-256
+`3e643ab0c455bc789e4939af2dba73af18abb033f2f34f003b49b1299b35eeeb`.
+
+Keep all **eight** original public-behavior groups, including callable
+signatures, real ISO-8859-1 and UTF-8 locales, all **256** byte values,
+memory views, invalid and released buffers, exception coordinates,
+replacements and reentrant callbacks, scanner behavior, real shared-pattern
+threads, position limits, and unusual Unicode. Require two truly separate
+Python reference processes and retain all **7,168** actual reference rows.
+Require each from-scratch Rust, C, and Zig worker to retain all **3,584**
+individually observed answers: **10,752** native observations in total.
+
+The independently reproduced, candidate-free self-test passes
+**1,734/1,734** distinct checks with zero file effects, candidate imports,
+workers, timing samples, or hidden-case access. Authenticate the true
+current source graph and all four passing current-build public-type
+artifacts without importing a candidate.
+
+Do not claim that these **3,584** predeclared cases prove every possible
+public behavior. Exact complete exports, cache identity and eviction,
+additional scanner and replacement edge cases, and concurrent cache
+clearing require the separately predeclared supplementary public-surface
+test.
+
+At this source-freeze checkpoint, both new **3,584-case** Python reference
+runs and all three candidate comparisons are **NOT RUN**. The 22-stage
+fuzz and extra public-surface campaigns are **NOT RUN**. Expanded speed,
+memory, and holdout results remain **NOT FROZEN** and **NOT MEASURED**.
+Commit and push the exact protocol and source before starting any new
+reference or candidate.
+
 ## Pass complete public-type comparisons on all three engines
 
 First commit and push both complete standard-Python reference runs in
