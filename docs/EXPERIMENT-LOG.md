@@ -7,6 +7,48 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze complete, permanent original results and engine-ownership proofs
+
+Preserve the actual version-ten Rust original result without claiming
+its missing engine-ownership evidence. Freeze the additive
+[durable full-correctness protocol](../oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V11.md),
+SHA-256
+`334405521f2f945cc58cabf246cf8f784e8a6a5be7091a20587b0daf428412af`,
+and the
+[complete paired-evidence runner](../tools/postfinal_current_build_proofs_v11.py),
+SHA-256
+`2895dd28b3dc69985cc0f6f8575398e8b8b10f58141f0612645a687478da9f04`.
+
+For every rebuilt engine, separately and exclusively preserve the
+unchanged original behavior archive and a complete canonical
+before-and-after native-ownership proof. Reopen, verify, and bind
+both actual files before reporting success. Save all seven Rust
+sources and two native binaries, both C sources and its native
+binary, or all three Zig sources and both of its native binaries.
+Retain all **13** real Python-matcher guards, all **five** native
+loader guards, all **16** serialization checks, the exact cached
+Python blockers, and complete actual worker outcomes.
+
+Reject an original-only or console-only result, changed source,
+incomplete worker, substituted engine, mismatched archive, or missing
+proof. Qualified runs must first verify both actual independently
+published three-family ownership reports. Preserve all prior
+failures and the genuine earlier **223,198/223,198** original-only
+Rust pass; never classify it as a complete ownership proof.
+
+Both independent reviewers and the project lead each verified the
+frozen paired-evidence runner in pinned isolated Python and an empty
+environment: all **763/763** in-memory source-only checks passed in
+both. All positive and negative controls cover Rust, C, Zig,
+diagnostic behavior, fully qualified behavior, and the full deep
+suite. Each verification imported zero candidates, read zero audit
+reports or historical evidence, started zero workers, wrote zero
+files, and sampled no clock.
+
+Actual version-eleven candidate runs remain **NOT RUN**. Performance
+and memory remain **NOT MEASURED**. The expanded final speed test is
+**NOT OPENED**.
+
 ## Freeze the expanded real-world Python compatibility contract
 
 Freeze the independent

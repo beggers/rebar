@@ -118,10 +118,10 @@ its own matching, blocks Python's cached internal matchers, checks
 genuine Python pattern and match objects, and repeats all protections
 after matching. Its actual three-engine audits are **NOT RUN**.
 
-The [fresh-build correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V10.md)
-keeps every original Python behavior check, verifies that the actual
-engine performs its own work, and preserves passing and failing
-results separately. The rebuilt-engine comparisons are **NOT RUN**.
+The [durable fresh-build correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V11.md)
+saves both the complete original Python behavior results and a
+separate proof that the actual engine performed its own matching.
+The rebuilt-engine comparisons are **NOT RUN**.
 
 An [immutable-source verification launcher](oracle/cpython-3.14.6/POSTFINAL-PUBLISHED-PINS-V8.md)
 checks real published evidence without changing any frozen audit or
@@ -157,7 +157,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_cpython_locale_oracle_v5.py --self-test
 "$PY" -I -B \
-  tools/postfinal_current_build_proofs_v10.py --self-test
+  tools/postfinal_current_build_proofs_v11.py --self-test
 "$PY" -I -B \
   tools/python_re_public_surface_oracle_stage17.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
