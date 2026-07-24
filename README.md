@@ -65,11 +65,11 @@ retain the complete results, uncertainty ranges, and all regressions.
 Not yet. Every row below is a current, guarded run of the same
 **223,198** original Python behavior checks.
 
-| Engine built from scratch | Checks completed | Differences from Python | Complete upstream tests |
-| --- | ---: | ---: | --- |
-| [Rust](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | NOT RUN |
-| [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | NOT RUN |
-| [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | NOT RUN |
+| Engine built from scratch | Checks completed | Differences from Python | Deeper checks | Complete Python tests |
+| --- | ---: | ---: | --- | --- |
+| [Rust](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | FAIL: test-run setup | NOT RUN |
+| [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | NOT RUN | NOT RUN |
+| [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | NOT RUN | NOT RUN |
 
 The separate [Rust ownership proof](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-qualified-pass-proof.json),
 [C ownership proof](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass-proof.json),
@@ -129,6 +129,14 @@ saves both the complete original Python behavior results and a
 separate proof that the actual engine performed its own matching.
 Its stronger, three-engine-qualified Rust, C, and Zig comparisons
 all pass with zero differences from Python.
+
+The first deeper Rust run completed **393** checks with zero
+reported behavior differences, but its parent process omitted
+Python's mandatory `PYTHONDONTWRITEBYTECODE=1` setting. The required
+after-run verification therefore failed. Both the
+[complete invalidated original output](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-INVALIDATED-AFTER-OWNER-FAILURE.json.gz)
+and [exact setup-failure evidence](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-PRODUCER-CRASH.json.gz)
+are preserved. The deeper result is **FAIL**, not a certified pass.
 
 An [immutable-source verification launcher](oracle/cpython-3.14.6/POSTFINAL-PUBLISHED-PINS-V8.md)
 checks real published evidence without changing any frozen audit or

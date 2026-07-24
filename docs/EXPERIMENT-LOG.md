@@ -7,6 +7,66 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the real first audit-qualified Rust deep-test setup failure
+
+First verify all **seven** Rust deep-result destinations are unused
+and authenticate the separately published passing three-engine
+ownership and anti-delegation audits. Run the unchanged deep
+correctness producer exactly once:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v11.py \
+  --qualified-deep \
+  --module candidates.rust_candidate \
+  --base-report-sha256 \
+  589321a768e10c52f039a68acb211574ec884598771ede2152f91994cc69f353 \
+  --strict-report-sha256 \
+  d8f31dd480bdba530a454b38428a23ef347c6e3cce7796f8992d6e7767381f4b
+```
+
+The actual isolated Rust producer exits **0**. Its complete
+**393-case** original output reports zero candidate mismatches and
+zero Python-versus-Python differences. Both actual Python reference
+workers and Rust report the frozen deep behavior SHA-256
+`b184f3388320909b3c28fbd3ce9c15cefc992d3e852e9495ad8fb503d1cbaad8`.
+The full observed producer stdout is **4,518** bytes with SHA-256
+`74251351cc4c347b89d138c00e9ad71a79527e3f801c03df2e8264dc5267a3da`;
+the real stderr is empty.
+
+Nevertheless, the parent process correctly refuses to certify the
+result. The immutable deep oracle explicitly requires the literal
+`PYTHONDONTWRITEBYTECODE=1` environment variable in the validation
+process. Python's `-B` option does not create that environment
+variable. The parent was started without it, so after-run validation
+raises the genuine error:
+
+```text
+AssertionError: PYTHONDONTWRITEBYTECODE=1 is mandatory
+```
+
+Exclusively preserve both complete original failure records:
+
+- [Actual deep-test integrity failure](../candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-PRODUCER-CRASH.json.gz),
+  SHA-256 `360d430666bfae146eb9abc18cab2bcd9822096f78e6f21ed3b938bb50631c39`.
+- [Complete invalidated original deep-test output](../candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-INVALIDATED-AFTER-OWNER-FAILURE.json.gz),
+  SHA-256 `9cc30b172575c83b399f680057a6d33ae952e44f920079c3d8c3b67566afb407`.
+
+Two independent reviewers and the project lead separately recover
+and validate both complete archives, every original producer stream,
+the genuine pre-run native ownership, all **393** original
+observations, and the immutable parent-side failure. The record
+correctly retains `campaign_qualified: false` and
+`passing_evidence_published: false`. Zero reported original
+mismatches do not replace the missing final verification.
+
+Never retry or overwrite either occupied failure path. Any retry
+must separately freeze a new append-only controller and protocol,
+preserve both original failures, and require the real
+`PYTHONDONTWRITEBYTECODE=1` and canonical `PYTHONPATH` environment
+before starting. Current performance and memory remain
+**NOT MEASURED**; the expanded final holdout remains **NOT OPENED**.
+
 ## Qualify the original Zig behavior result against both full-engine audits
 
 First publish both passing, independently reviewed three-engine
