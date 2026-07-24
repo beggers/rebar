@@ -100,6 +100,11 @@ memory and final-test memory remain **NOT MEASURED**.
 | Source-bound detailed graph renderer | `a8fb1924bebf4b3784e4b873b1c185d4690f98449c16ab127896c63979c2de90` |
 | Independently verified clear graph renderer | `16f1689d91586917274ff057c75a1d1f15856e5345d848ed34ef2a676ad223f8` |
 
+The [five exact benchmarked native libraries](NATIVE-ARCHIVE-V1.md),
+including the rejected Rust engine, are separately preserved and
+independently verified against the frozen comparison. Their archive
+remains verifiable after a subsequent Rust engine changes.
+
 The [complete measured summary](evidence/postfinal-public-practice-v6-summary.json),
 [independent replay](evidence/postfinal-public-practice-v6-integrity.json),
 and [all original observations](evidence/postfinal-public-practice-v6-raw.jsonl.gz)

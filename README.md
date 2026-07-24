@@ -91,8 +91,10 @@ A separately documented [next-engine safety plan](candidates/audits/POSTFINAL-RE
 requires fresh checks before any further Rust change; it does not claim
 new measurements or final-test results.
 The original source and isolation audits remain historical evidence.
-The [five original benchmarked native libraries](performance/postfinal-public-v5/NATIVE-ARCHIVE-V1.md)
-are independently preserved and verified. The
+The [five libraries from the current comparison](performance/postfinal-public-v6/NATIVE-ARCHIVE-V1.md),
+including the rejected Rust engine, are preserved separately from the
+[five original benchmarked libraries](performance/postfinal-public-v5/NATIVE-ARCHIVE-V1.md).
+Both archives are independently verified. The
 [experiment log](docs/EXPERIMENT-LOG.md) preserves
 earlier measurements, rejected designs, and the unchanged
 [interrupted Unicode-sensitive comparison](performance/postfinal-public-v4/RESULTS.md).

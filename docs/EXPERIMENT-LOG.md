@@ -7,6 +7,32 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve all five measured engines before rebuilding Rust
+
+Independently preserve the exact **five** C, Rust, and Zig native
+libraries from the completed **8,192**-case public benchmark. Bind every
+original binary and deterministic compressed archive to the frozen
+manifest, all measurements, the complete independent replay, and both
+version-two independence proofs. Preserve the earlier five original
+native libraries separately; their Rust engine is not the Rust engine
+measured in the newer comparison.
+
+Record the first actual archive failure. All five compressed files are
+successfully and exclusively created, but the final proof is rejected
+before publication because Python's version is a tuple in memory and a
+list in JSON. Independently verify every original and compressed byte;
+normalize the version; and complete the exact interrupted archive with
+an explicitly guarded, one-use recovery. Never replace an archived
+file or discard the failed attempt.
+
+The corrected tool passes **129** adverse-input checks plus **64**
+original checks. The new and original archives both independently
+verify. Archive verification never reads the live Rust source or native
+engine, never starts a candidate, and never measures performance. The
+[complete native preservation record](../performance/postfinal-public-v6/NATIVE-ARCHIVE-V1.md)
+records all original and compressed hashes. The **65,536**-case final
+test remains **NOT OPENED**.
+
 ## Prepare fresh proof slots before the next Rust architecture
 
 Preserve the complete, independently replayed **8,192**-case public
