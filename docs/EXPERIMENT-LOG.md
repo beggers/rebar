@@ -7,6 +7,54 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze 1,376 real-world cases inside the actual guarded matching process
+
+Preserve all **1,376** distinct real Python compatibility inputs,
+all **43** categories and their **32** variants, the **640** original
+base cases, and the **736** additional seeded cases. Retain all
+public exports and genuine pattern and match members; do not remove
+unusual flags, Unicode behavior, warnings, callback traces, live
+byte buffers, serialization, or real ISO-8859-1 and UTF-8 locale
+transitions.
+
+Separately freeze the independently reviewed public behavior runner:
+
+- [Complete guarded public-API runner](../tools/python_re_public_surface_oracle_stage18.py),
+  SHA-256 `31419fb54be8292dd1b7ecf82e23506889fa6b03eb8e7d29e19de90287546862`.
+- [Frozen public-API and same-process-ownership protocol](../oracle/cpython-3.14.6/PUBLIC-SURFACE-V18.md),
+  SHA-256 `66c6f52ff50c57f4bd6c22cdb13a55a1bfe41982238c5e7742b069505e624abb`.
+
+Before running a candidate, the protocol requires a complete new
+two-worker Python reference, both actual full-engine audit reports,
+all **six** independently qualified original edge and deep
+archives, and all **six** complete native-ownership proofs. Every
+candidate's actual **1,376** observations must happen inside that
+engine's genuine guarded native process, between its real before-
+and after-matching Python, external-package, native-loader, and
+cross-family checks. A passing guard from a different process
+cannot certify the actual public matching.
+
+Two independent reviewers and the project lead separately run both
+non-production controls:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/python_re_public_surface_oracle_stage18.py --self-test
+
+env -i PATH=/usr/bin:/bin \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/python_re_public_surface_oracle_stage18.py --self-test
+```
+
+Both checks pass **810/810** source-only protections while
+independently proving the exact **1,376** unchanged behavioral
+inputs. Neither run imports a candidate, executes a Python
+reference, reads evidence, changes a locale, performs regex
+matching, starts a worker, samples a clock, or accesses any
+performance test or holdout. Actual public reference and candidate
+results remain **NOT RUN**. Speed and memory remain
+**NOT MEASURED**.
+
 ## Freeze every original Python test behind a live no-delegation guard
 
 Preserve the exact original Python **3.14.6** regex test module and

@@ -91,11 +91,13 @@ upstream runs are **NOT RUN**. The frozen runner verifies that each
 candidate uses its own engine immediately before and after every
 original Python test.
 
-The [expanded real-world compatibility contract](oracle/cpython-3.14.6/PUBLIC-SURFACE-V17.md)
+The [expanded real-world compatibility contract](oracle/cpython-3.14.6/PUBLIC-SURFACE-V18.md)
 adds **1,376** distinct cases across **43** categories. They cover
 unusual flags, all serialization protocols, live byte buffers,
 Unicode, genuine locale changes, callbacks, warnings, and complete
-public Python objects. Its reference and candidate runs are **NOT RUN**.
+public Python objects. Every future candidate observation must run
+inside that candidate's actual guarded matching process. Its
+reference and candidate runs are **NOT RUN**.
 
 The [three-engine ownership inspection](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V10.json)
 and [separate strict anti-delegation inspection](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V10.json)
@@ -179,6 +181,8 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_current_build_proofs_v11.py --self-test
 "$PY" -I -B \
   tools/python_re_public_surface_oracle_stage17.py --self-test
+"$PY" -I -B \
+  tools/python_re_public_surface_oracle_stage18.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_published_pins_v8.py --self-test
 ```
