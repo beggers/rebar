@@ -107,7 +107,9 @@ then requires all **223,198** original cases and all **393** deeper
 cases to be repeated against each independently inspected engine.
 These rebuilt-engine tests are **NOT RUN**.
 
-Python itself has [twice passed its original complete reference tests](oracle/cpython-3.14.6/evidence/postfinal-locale-v6-self-oracle.json).
+The [frozen full upstream Python test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V12.md)
+preserves Python's exact original test suite. Python itself has
+[twice passed its complete reference tests](oracle/cpython-3.14.6/evidence/postfinal-locale-v6-self-oracle.json).
 Each run covers all **152** original public tests, including the genuine
 multi-gigabyte cases. The only skipped test requires Python's own private
 debug build. These complete tests have **NOT RUN** against the candidates.
@@ -152,5 +154,6 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
 "$PY" -I -B tools/postfinal_independent_engine_audit_v21.py --self-test
 "$PY" -I -B tools/postfinal_current_build_proofs_v24.py --self-test
+"$PY" -I -B tools/postfinal_cpython_locale_oracle_v12.py --self-test
 "$PY" -I -B tools/python_re_public_surface_oracle_stage27.py --self-test
 ```

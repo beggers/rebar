@@ -7,6 +7,40 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the complete original CPython regex test suite
+
+Preserve the actual pinned CPython 3.14.6 test suite, its already
+published independent two-process reference, and the genuinely
+reviewed V21 native ownership and V24 original-correctness source
+contracts. Freeze the additive upstream producer and protocol:
+
+- [Full original CPython test producer](../tools/postfinal_cpython_locale_oracle_v12.py),
+  SHA-256 `c678d02dd906953d320ef0da4b9f0216750c33b81663107127082a98d09e8b64`.
+- [Full original CPython test protocol](../oracle/cpython-3.14.6/POSTFINAL-LOCALE-V12.md),
+  SHA-256 `2d3da88d31a131f3452c3a884df5285775fd9af9e794339af870f02ed249c00c`.
+
+Keep all **152** original public methods in genuine upstream source
+order, all **26** real support files, **403** corpus cases, and
+**11** external fixture checks. Preserve the actual multi-gigabyte
+tests, real resource decorators, fresh system locales, fork
+behavior, and all **304** independently isolated before-and-after
+native-owner guards per candidate. The only private conditional
+skip is Python's genuine debug-build memory-leak test.
+
+The project lead and two independent reviewers each verify the
+exact complete source without opening a candidate, report, fixture,
+benchmark, or holdout. All **1,035** deterministic controls pass
+with the normal isolated pinned interpreter and an entirely empty
+environment. Verify all five real failure histories, exact current
+source pins, separately persisted true per-write publication
+receipts, and fail-closed resource and locale handling.
+
+Require actual external V21 ownership reports and all four genuine
+V24 original edge and deep artifacts for each engine before an
+upstream run can start. At this freeze, the complete original
+upstream candidate tests remain **NOT RUN**. Performance is
+**NOT MEASURED** and the holdout is **NOT ACCESSED**.
+
 ## Freeze the complete public Python regex compatibility contract
 
 Preserve the actual frozen V19 two-process Python reference and the
