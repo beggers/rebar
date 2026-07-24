@@ -78,6 +78,11 @@ passes **128/128** cases for Rust, C, and Zig: **384/384** matching
 answers and **zero** mismatches. This does not replace the remaining
 full official Python tests.
 
+The [new official Python test design](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V2.md)
+preserves all **146** selected upstream tests, the **403-pattern**
+official corpus, and both genuine locale tests. It passes **113**
+candidate-free safety checks. Its actual four-engine run is **NOT RUN**.
+
 Earlier [official Python test results](oracle/cpython-3.14.6/evidence/postfinal-locale-v1-all.json),
 [22-stage engine campaigns](candidates/evidence/rust-v8-rust-postfinal-locale-v5-sealed-campaign.json),
 [from-scratch audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V5.json),
@@ -132,6 +137,8 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_no_delegation_audit_v6.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_generic_alias_public_oracle_stage12.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_cpython_locale_oracle_v2.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_generic_alias_public_oracle_stage11.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \

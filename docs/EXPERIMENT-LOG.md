@@ -7,6 +7,34 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the rebuilt engines' complete official Python tests
+
+After pushing both actual independence reports and the genuine
+three-engine generic-alias comparison, independently inspect the new
+[official Python compatibility protocol](../oracle/cpython-3.14.6/POSTFINAL-LOCALE-V2.md)
+and [controller](../tools/postfinal_cpython_locale_oracle_v2.py).
+Their respective SHA-256 values are
+`a515d2a81d8d02df523316d8315ca3617fe3f4330d33745f536ed15917ff20c5`
+and `e6858d00747645c6f81cad66e2d6ca957c374e88718abc356fc5367b5be100e1`.
+
+Freeze the original CPython **152** public methods, the exact
+**146** selected tests, all **403** upstream regular-expression corpus
+patterns, the exact **eight** named private or resource exclusions,
+and both genuinely compiled locale tests. Require independent
+processes for unmodified Python, Rust, C, and Zig.
+
+Independently run the candidate-free controller self-test:
+**113/113 PASS**, retaining all **73** previous controls and starting
+no candidates, official tests, locales, clock, or workers. Separately
+verify all four real V6 audit fingerprints, all **12** exact source
+files, all **five** native binaries, all **48** pickle checks, and the
+genuine historical-only original official result. Preserve the
+historical reports without reusing them as proof of new correctness.
+
+The actual full official test is **NOT RUN** at this checkpoint.
+Commit and push this frozen source and protocol before starting the
+one-time real four-role official test.
+
 ## Verify all three repaired engines against the failed Python contract
 
 First push the independently passing Python reference in `e991d991`.
