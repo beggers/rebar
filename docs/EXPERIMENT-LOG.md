@@ -7,6 +7,43 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze portable compatibility checks without erasing the real failure
+
+Keep the [actual stage-seven Python-versus-Python failure](../oracle/cpython-3.14.6/evidence/public-contract-v7-self-oracle-failures.json)
+unchanged at SHA-256
+`765e635745a7e332a1bd22426065c43fd52036d013add0d88d840d8fde1121e0`.
+All **32** process-dependent pattern-hash mismatches, all **7,168**
+Python observations, all original cases, and the unchanged frozen
+source remain preserved. No replacement engine ran that failed suite.
+
+Reject an intermediate `bfccb` late-bound implementation before
+freezing it. The final additive
+[portable compatibility controller](../tools/python_re_universal_public_oracle_stage08.py)
+has SHA-256
+`10464ca347e6eab248a2887a6fd0625cff63497173024616ca8338af0801b0aa`.
+Its direct, independently verified candidate-free safety test passes
+**597/597** checks. It neither starts a Python self-comparison nor
+imports a candidate, creates production evidence, takes a timing, or
+opens the final test.
+
+The final [portable compatibility protocol](../oracle/cpython-3.14.6/PUBLIC-CONTRACT-V8.md)
+has SHA-256
+`502f300e8ffbd33cf3cbbf6fde7e9cb5e81ed3f87f83634f47068015cdd9dbdd`.
+It preserves all **8** original groups, all **3,584** obligations,
+and the immutable case matrix
+`0233ca9bc1229b2f905192f9b8ae0c0268b7d23ba3621124192993c6d486f3db`.
+Real pattern-hash consistency and dictionary behavior are retained;
+process-specific numeric hashes are not compared. Lone Unicode
+surrogates are preserved losslessly in portable evidence, with no
+dropped or rewritten historical cases.
+
+Commit and push the exact corrected protocol and source before any
+production worker runs. The stage-eight Python self-comparison is
+**NOT RUN**. Rust, C, and Zig are each **NOT RUN** against the new
+portable contract. No stage-eight passing production result,
+benchmark, or memory measurement exists. The independent final test
+remains **NOT OPENED**.
+
 ## Preserve the actual failed two-Python reference comparison
 
 After freezing and pushing the expanded compatibility design, run its

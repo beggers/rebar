@@ -105,16 +105,19 @@ each pass **22/22** stages, **146/146** official Python tests, and
 **4,494,555** Unicode comparisons. Each report is independently bound
 to its actual engine; earlier reports never qualify a changed build.
 
-The [next frozen public compatibility test](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V7.md)
-defines **3,584** checks across **8** groups, including real locales,
-invalid patterns, buffers, callbacks, shared patterns across threads,
-and Unicode. Its candidate-free safety test passes **429/429** checks,
-but its actual two-Python self-comparison **FAILED**: the independent
-Python processes disagree on **32** object-hash checks and agree on
-the other **3,552**. The
-[complete preserved failure report](oracle/cpython-3.14.6/evidence/public-contract-v7-self-oracle-failures.json)
-retains every result. Rust, C, and Zig have **NOT RUN** against this
-suite. The failed Python oracle blocks expanded testing.
+The first expanded Python self-comparison
+[failed on 32 of 3,584 checks](oracle/cpython-3.14.6/evidence/public-contract-v7-self-oracle-failures.json)
+because independent Python processes produced different
+compiled-pattern hash values. Every result remains preserved.
+
+The [new frozen portable compatibility design](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V8.md)
+retains all **3,584** checks across the same **8** groups. It compares
+genuine pattern-hash behavior without treating process-specific hash
+numbers as portable and safely preserves Unicode surrogates. Its
+candidate-free safety test passes **597/597** checks. This checkpoint
+freezes the corrected design only: its Python self-comparison is
+**NOT RUN**, and its Rust, C, and Zig candidate checks are all
+**NOT RUN**.
 
 A fair **8,192**-case speed comparison and a separate expanded
 **33,280**-case public suite remain **BLOCKED**, **NOT FROZEN**, and
@@ -155,6 +158,8 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage06.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage07.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/python_re_universal_public_oracle_stage08.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/rust_v8_multi_candidate_campaign_postfinal_v5.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -I -B -c \
