@@ -7,6 +7,39 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Establish the genuine two-Python generic-alias baseline
+
+First commit and push the generic-alias source and protocol in
+`3e3df8d4`. The frozen correctness source has SHA-256
+`2d8b0417e837d830c3b01495657305536a9d14e289aeb61d503278f5944b16f3`;
+the frozen protocol has SHA-256
+`b9d93b2ee18d33ad3e474c7e7d9bf7f94cd612526e39982fec0c2a0d0a4d096e`.
+The complete **128**-case public matrix has SHA-256
+`7e5adbf2ca9c0f752a0c9dddaabe812a780cf58ca9b60efc178bafbaceee7e65`.
+
+Run the actual pinned, isolated Python baseline once:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/python_re_generic_alias_public_oracle_stage11.py \
+  --self-oracle
+```
+
+Two independently started, candidate-free CPython **3.14.6** processes
+actually agree on all **128** cases and **256/256** observations,
+with **zero** mismatches. The exclusively created
+[actual public generic-alias baseline](../oracle/cpython-3.14.6/evidence/public-generic-alias-v11-self-oracle.json)
+has SHA-256
+`31245bf7864ae76e46e676a3a35d0fae399d1f6446af482db9f7aa47b5426f8a`.
+Do not rerun or overwrite the existing exclusive evidence.
+
+The Rust, C, and Zig candidate comparisons are still **NOT RUN**;
+the passing Python baseline does not qualify an engine or establish
+a speed. Preserve the earlier real source-provenance and unsafe-draft
+failures below. Current speed remains **NOT MEASURED**, the independent
+final test remains **NOT OPENED**, and no winner has been established.
+
 ## Predeclare the missing public generic-alias compatibility check
 
 Python **3.14.6** documents actual runtime `re.Pattern[str]`,

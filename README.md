@@ -142,9 +142,10 @@ an external matching package.
 
 A [predeclared 128-case public compatibility test](oracle/cpython-3.14.6/PUBLIC-GENERIC-ALIASES-V11.md)
 covers Python's documented `re.Pattern[str]`, `re.Pattern[bytes]`,
-`re.Match[str]`, and `re.Match[bytes]` behavior. Its two-Python
-reference and all three replacement-engine comparisons are **NOT RUN**;
-passing earlier tests does not establish this additional behavior.
+`re.Match[str]`, and `re.Match[bytes]` behavior. Its
+[actual two-Python baseline](oracle/cpython-3.14.6/evidence/public-generic-alias-v11-self-oracle.json)
+passes all **128** cases and **256/256** independent observations.
+The three replacement-engine comparisons remain **NOT RUN**.
 
 The [published public benchmark](performance/postfinal-public-v7/PROTOCOL.md)
 has a [frozen one-time manifest](performance/postfinal-public-v7/manifest.json)
