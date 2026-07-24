@@ -14,6 +14,9 @@ and [Go](experiments/go_from_scratch_v1/PROTOCOL.md) engines are
 additional experiments. Both are **NOT BUILT, NOT RUN, and NOT
 QUALIFIED**.
 
+A [source-only C++ compatibility review](experiments/cpp_from_scratch_v1/STATIC-GAPS-V1.md)
+records what the independent engine still has to implement.
+
 **Current status: no engine is yet proved to be a complete replacement. New
 speed and memory results are NOT MEASURED. There is no winner.** The
 headline graphs below describe earlier, archived builds, not the modified

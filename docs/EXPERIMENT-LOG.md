@@ -7,6 +7,27 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Inspect the independently implemented C++ engine
+
+Independently inspect the frozen C++ parser, instruction compiler,
+backtracking executor, and direct CPython extension without building,
+importing, timing, or running a candidate. Preserve the exact source
+fingerprints and original upstream-test locations in the
+[C++ source-only compatibility review](../experiments/cpp_from_scratch_v1/STATIC-GAPS-V1.md).
+
+The source owns its complete matching pipeline and does not wrap an
+external regular-expression package. This does not establish that it
+passes Python's tests. Record the actual visible gaps: complete
+flags, lexical scanner, owned public package, warning behavior,
+structural pattern equality, Unicode names, replacement grammar,
+forward references, native buffer lifetime, weak references, pickle,
+per-interpreter state, and genuine large-input resource tests.
+
+No C++ compiler was invoked; no implementation, official case,
+evidence file, candidate, benchmark, or holdout was run or changed.
+C++ remains **NOT BUILT, NOT RUN, and NOT QUALIFIED**. Performance
+and memory remain **NOT MEASURED**.
+
 ## Freeze guarded, source-bound current-build correctness checks
 
 Freeze the independently reviewed
