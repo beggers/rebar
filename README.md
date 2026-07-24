@@ -110,13 +110,15 @@ The [complete 22-stage compatibility campaign](oracle/cpython-3.14.6/POSTFINAL-C
 includes **4,494,555 Unicode comparisons per engine**. The
 [first Rust attempt](candidates/evidence/rust-v8-rust-postfinal-locale-v7-sealed-campaign-first-failure.json)
 correctly stopped before testing: its old proof belonged to an earlier
-Rust build. Rust is **FAILED BEFORE TESTING**; C and Zig are
-**NOT RUN**. All three need freshly checked, current-build proofs.
+Rust build.
 
 The [fresh current-build proof protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V7.md)
 first requires **223,198** edge cases and **393** additional behavior
 checks for each engine. It preserves complete failed and successful
-results separately. All six fresh proofs are **NOT RUN**.
+results separately. The
+[first complete Rust edge run](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-locale-v7-first-failure.json.gz)
+found **16 Python-visible differences in 223,198 checks**. Its deeper
+checks are **NOT RUN**. The C and Zig runs are **NOT RUN**.
 
 ## Larger fair speed comparison
 

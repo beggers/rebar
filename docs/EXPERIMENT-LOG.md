@@ -7,6 +7,46 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve all 16 genuine current-build Rust edge failures
+
+First freeze, independently review, commit, and push the exact
+current-build correctness-proof controller and protocol in `724c335e`.
+Only then run the original pinned edge oracle against the actual
+audited Rust source and native bridge:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v7.py \
+  --edge --module candidates.rust_candidate
+```
+
+The actual original oracle completes all **223,198** checks in the
+unchanged **49** categories. It genuinely finds **16** mismatches;
+the result is **FAIL**, not a stale-proof error, a passing proof, or
+an approximation. Keep the complete, exclusively created
+[first Rust edge-failure archive](../candidates/evidence/rust-v7-edge-oracle-rust-postfinal-locale-v7-first-failure.json.gz)
+unchanged, with SHA-256
+`3ffdb21d10f40deabd70fa1f408fa38ff2b027a2d269c4b75e607a05cefde3b8`.
+
+All **16** retained discrepancies follow one Python-visible native
+type-name conflict. Four are `Match.__module__`; two concern public
+signature-error text; ten concern native match representations,
+weak-reference errors, and read-only attribute errors. The unchanged
+current strict audit requires the private native-module name, while
+the original edge oracle requires Python-compatible `re.Match`.
+Neither demand can be satisfied by quietly reusing the old audit.
+Preserve both findings; require a successor audit to prove actual
+native type identity, mapped owned code, and persistent
+anti-delegation while matching Python's public name.
+
+The archive independently verifies all **five** current Rust source
+and binary roles and the original seed. No passing Rust edge archive,
+Rust deep proof, complete campaign, native source repair, or new
+benchmark was created. The C and Zig edge and deep proofs are
+**NOT RUN**. Speed, memory, rankings, and held-out measurements
+remain **NOT MEASURED**.
+
 ## Freeze source-bound current-build correctness proofs
 
 The actual first Rust campaign proved that previously published edge
