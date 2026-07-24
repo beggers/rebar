@@ -7,6 +7,49 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the first real generic-alias candidate failure
+
+Commit and push the generic-alias source and protocol in `3e3df8d4`,
+then the independently passing two-Python baseline in `6a480067`,
+before starting any candidate. The source has SHA-256
+`2d8b0417e837d830c3b01495657305536a9d14e289aeb61d503278f5944b16f3`,
+the protocol has SHA-256
+`b9d93b2ee18d33ad3e474c7e7d9bf7f94cd612526e39982fec0c2a0d0a4d096e`,
+and the actual **128**-case, **256/256**-observation Python baseline
+has SHA-256
+`31245bf7864ae76e46e676a3a35d0fae399d1f6446af482db9f7aa47b5426f8a`.
+
+Run the actual isolated candidate command:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/python_re_generic_alias_public_oracle_stage11.py \
+  --candidate all
+```
+
+It exits **1** on the first candidate. The exclusively created
+[actual Rust generic-alias failures](../candidates/evidence/python-re-generic-alias-public-oracle-v11-rust-failures.json)
+have SHA-256
+`5d0fce04b95a6d15e4aaff28d2c59337136660a248616672928f7aa85f7efa36`.
+Exactly **16/128** actual Rust observations disagree with Python:
+all **4** pickle protocols, both public `Pattern` and `Match` origins,
+and both `str` and `bytes` arguments. Real Python successfully
+restores every actual generic alias. Rust instead raises
+`PicklingError: Can't pickle <class 're.Pattern'>: stage-07 blocked unowned matching import: re`,
+or the equivalent error for `re.Match`. Its other **112/128**
+observations agree, but the Rust candidate **FAILS** the frozen
+complete contract.
+
+The gate correctly stops on the first failing engine. C and Zig are
+**NOT RUN** against this contract; there is no passing three-engine
+report. The three engines therefore remain unqualified under the
+expanded public correctness requirements. No speed or memory has been
+measured, no final test is opened, and no winner has been established.
+Preserve the separately recorded V8 and V10 public-benchmark failures
+and all earlier failed drafts below; do not rerun or overwrite the
+exclusive failure evidence.
+
 ## Establish the genuine two-Python generic-alias baseline
 
 First commit and push the generic-alias source and protocol in

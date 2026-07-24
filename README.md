@@ -8,9 +8,11 @@ Python's matching engine, or delegates to another candidate.
 
 Python and all three currently installed candidates each pass all
 **146/146** selected official regular-expression tests, with no failures
-or skips. Each engine also passes all **22** required compatibility
-stages. Together, they match Python in **1,190,400** fresh public
-correctness checks. Their speed is **NOT MEASURED**. The independent
+or skips. Each engine also passes all **22** previously recorded
+compatibility stages and matches Python across **1,190,400** public
+checks. A newly added public compatibility test fails for Rust and has
+not yet run against C or Zig. **No current engine is qualified as a
+drop-in replacement.** Their speed is **NOT MEASURED**. The independent
 final test is **NOT OPENED**. **There is no proven winner.**
 
 ## Latest completed public comparison
@@ -145,7 +147,10 @@ covers Python's documented `re.Pattern[str]`, `re.Pattern[bytes]`,
 `re.Match[str]`, and `re.Match[bytes]` behavior. Its
 [actual two-Python baseline](oracle/cpython-3.14.6/evidence/public-generic-alias-v11-self-oracle.json)
 passes all **128** cases and **256/256** independent observations.
-The three replacement-engine comparisons remain **NOT RUN**.
+The [actual first Rust result](candidates/evidence/python-re-generic-alias-public-oracle-v11-rust-failures.json)
+fails **16/128** cases: Python can serialize its public pattern and
+match types, but Rust cannot. Rust matches the other **112** cases.
+C and Zig are **NOT RUN**. No engine passes the complete public test.
 
 The [published public benchmark](performance/postfinal-public-v7/PROTOCOL.md)
 has a [frozen one-time manifest](performance/postfinal-public-v7/manifest.json)
