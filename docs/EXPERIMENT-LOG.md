@@ -7,6 +7,24 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## All repaired engines pass the independent object contract
+
+Run the unchanged **393-case** pattern and match object suite separately
+against the current Rust, C, and Zig implementations. Each passes all **393**
+observations with zero public differences, zero standard-library
+self-mismatches, **13** forbidden-regex controls, and **10** cross-engine
+guards. Every proof is linked to that engine's newly passing matching report
+and the exact current source and native libraries.
+
+One initial C invocation correctly rejected an incorrect `VM` report name
+before running the suite or creating any evidence. The immutable test names
+the C family `C`; preserve the correct `C` proof and require the expanded
+benchmark and chart renderer to validate that exact file.
+
+Record all three report hashes in the
+[matching and object-contract evidence](../candidates/evidence/POSTFINAL-UNIVERSAL-STAGE05-EDGE.md).
+Current timing, tracing, and final Unicode qualification are not inferred.
+
 ## All repaired engines pass the frozen matching and parser test
 
 Run the unchanged **223,198-check** matching oracle separately against the

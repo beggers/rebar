@@ -32,6 +32,25 @@ for engine in rust vm zig; do
 done
 ```
 
-The separate public-object, tracing, and complete Unicode campaign proofs
-must still be regenerated for the current source. Expanded public speed,
-native memory, and the **65,536-case** holdout remain **NOT MEASURED**.
+## Separate pattern and match object test
+
+A separately frozen **393-case** test compares Python's actual pattern and
+match objects, signatures, exceptions, captures, and visible lifecycle.
+Two independently run Python references agree on every observation. The
+current source for each candidate passes, with **13** forbidden-regex checks
+and **10** cross-engine isolation checks.
+
+| Engine | Correct checks | Public differences | Evidence SHA-256 |
+| --- | ---: | ---: | --- |
+| Rust | 393 | 0 | `e7df2331ab821f6fe60353410d2f74045c31ef840b057dc363d4214894bcda8a` |
+| C | 393 | 0 | `b1606a8076630650cd6092abbc3916c2755f4f0af071bc8861ff87a89b9e7207` |
+| Zig | 393 | 0 | `0c18b9c8222b0b642a95ebc3793cc48f3eb135842f35c4b370fd05bb45da1a41` |
+
+The C candidate's frozen proof correctly uses the engine family name `C`,
+even though its Python module is named `vm_candidate`. The report is
+`RUST-V8-DEEP-CONTRACT-C-POST-FINAL-STAGE-05-UNIVERSAL-PARITY.json.gz`;
+substituting `VM` fails before creating evidence.
+
+The separate tracing and complete Unicode campaign proofs must still be
+regenerated for the current source. Expanded public speed, native memory,
+and the **65,536-case** holdout remain **NOT MEASURED**.
