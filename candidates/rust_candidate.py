@@ -439,8 +439,35 @@ def _normalize_count(value):
     return count
 
 
+class _OwnedGenericAlias(types.GenericAlias):
+    __slots__ = ()
+
+    def __reduce__(self):
+        origin = self.__origin__
+        if origin is Pattern:
+            name = "Pattern"
+        elif origin is Match:
+            name = "Match"
+        else:
+            raise TypeError(
+                "cannot pickle an unowned Rust regular-expression generic alias"
+            )
+        return _restore_owned_generic_alias, (name, self.__args__)
+
+
+def _restore_owned_generic_alias(name, arguments):
+    if type(name) is not str or type(arguments) is not tuple:
+        raise TypeError("invalid owned Rust regular-expression generic alias")
+    if name == "Pattern":
+        origin = Pattern
+    elif name == "Match":
+        origin = Match
+    else:
+        raise ValueError("unknown owned Rust regular-expression generic alias")
+    return _OwnedGenericAlias(origin, arguments)
+
+
 Match = _rust_bridge.Match
-_rust_bridge.set_template(_template)
 _NATIVE_BIND = _rust_bridge.bind
 
 
@@ -449,7 +476,7 @@ class _PatternType(type):
 
 
 class Pattern(metaclass=_PatternType):
-    __module__ = __name__
+    __module__ = "re"
     __slots__ = (
         "pattern", "flags", "groups", "_groupindex", "_handle",
         "_literal", "_bound_methods", "_templates", "__weakref__",
@@ -498,7 +525,7 @@ class Pattern(metaclass=_PatternType):
 
     @classmethod
     def __class_getitem__(cls, item):
-        return types.GenericAlias(cls, item)
+        return _OwnedGenericAlias(cls, item)
 
     def __repr__(self):
         flags = self.flags & ~int(UNICODE)
@@ -545,6 +572,8 @@ for _pattern_descriptor in _rust_bridge.pattern_descriptors(Pattern):
     type.__setattr__(
         Pattern, _pattern_descriptor.__name__, _pattern_descriptor
     )
+
+_rust_bridge.set_template(_template)
 
 
 class Scanner:

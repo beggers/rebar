@@ -7,6 +7,77 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Rebuild Rust and preserve a genuine safety-checker failure
+
+First complete, independently review, commit, and push the actual
+two-process original Python correctness baseline in `9ca4e428` and
+the immutable-source report-verification protocol in `19c2cf6a`.
+Only then change the two independently owned Rust source files.
+
+Give the actual native Rust pattern and match types Python's exact
+public `re.Pattern` and `re.Match` names. Implement an independently
+owned `types.GenericAlias` subclass and reconstruction function so
+normal Python serialization can preserve the actual native Rust
+origin; do not import Python's matcher, bind `sys.modules['re']`,
+change another engine, or weaken any ordinary pickle observation.
+Authenticate the candidate's own final native pattern and factory
+before configuring its owned native template helper.
+
+Compile the actual direct bridge against the pinned CPython 3.14.6
+headers and the independently owned unchanged Rust engine:
+
+```sh
+cc -pthread -shared -fPIC -O3 \
+  -Wl,-z,noexecstack -Wl,--exclude-libs,ALL \
+  -I/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/include/python3.14 \
+  candidates/rust/py_bridge.c \
+  -L/home/dev-user/src/rebar/candidates -l:_rust_engine.so \
+  '-Wl,-rpath,$ORIGIN' \
+  -o candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so
+```
+
+The actual new Python source, bridge C source, native bridge, and
+unchanged Rust engine respectively have SHA-256 hashes
+`20d0f690cf88ae67652d273df7548a188feb4676718c86e80dd4e2a1829c8127`,
+`81e46602a292e3826121dcf6cdfa231af9d66d62a9a50311df3aa841512edead`,
+`382483ce462aaf31fa067b86db606bc5d2d912796026366a6baf4bed11fb8a77`,
+and
+`d590300720215718782227dd8da1192047b4781bdb41ed94446cac06ba880e84`.
+
+Run the unchanged frozen version-eight diagnostic exactly once:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v8.py \
+  --diagnostic-edge --module candidates.rust_candidate
+```
+
+The genuine isolated result is **FAIL**, before importing Rust or
+starting any original edge or deep worker. Preserve the complete
+[first Rust native-ownership failure](../candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v8-diagnostic-native-owner-failure.json.gz),
+SHA-256
+`2f8bfcba726d729865cb8411a25ef1c3e0633e80c70af8895e5875a71f15ed7b`.
+Its complete actual standard-error SHA-256 is
+`020e506be39aab54cc62c7fc5f5ce15a2e8a505e6585df6089298c833e42ba2c`.
+
+The original standard-library isolation guard intentionally installs
+a forbidden-engine sentinel in `sys.modules`. The newer audit
+mistakenly assumes an import returning that sentinel is a successful
+foreign-engine import. Its actual error is
+`the V8 native guard admitted an external engine: candidates.ast_candidate`.
+The genuinely blocked module was not a running external engine,
+and the Rust candidate had not yet been imported. Two independent
+reviewers authenticated the complete crash and identified the same
+guard-composition error.
+
+Do not retry the occupied evidence target, edit frozen audit source,
+disable the external-engine guard, invent a Rust match, or report an
+edge pass. This Rust source change compiles, but its **223,198-case
+diagnostic is NOT RUN**, full upstream candidate tests are **NOT RUN**,
+and all new performance remains **NOT MEASURED**. A separately
+frozen successor must correctly distinguish the actual poison
+sentinel from a genuinely imported foreign engine.
+
 ## Freeze verification of real published audit fingerprints
 
 Preserve the immutable, independently frozen native-ownership,

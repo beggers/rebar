@@ -63,6 +63,7 @@ static PyTypeObject RustIteratorType;
 static PyTypeObject RustScannerType;
 static PyTypeObject RustBoundMethodType;
 static PyObject *rust_template_helper;
+static PyObject *rust_generic_alias_factory;
 
 typedef enum {
     RUST_PATTERN_ATTRIBUTE_HANDLE,
@@ -498,7 +499,16 @@ static PyObject *rust_match_reduce(RustMatch *match, PyObject *ignored) {
 }
 
 static PyObject *rust_match_class_getitem(PyObject *type, PyObject *item) {
-    return Py_GenericAlias(type, item);
+    if (rust_generic_alias_factory == NULL) {
+        PyErr_SetString(
+            PyExc_RuntimeError,
+            "owned Rust generic-alias factory is not configured"
+        );
+        return NULL;
+    }
+    return PyObject_CallFunctionObjArgs(
+        rust_generic_alias_factory, type, item, NULL
+    );
 }
 
 static PyObject *rust_match_repr(RustMatch *match) {
@@ -751,7 +761,7 @@ static PyMappingMethods rust_match_mapping = {0, rust_match_subscript, 0};
 
 static PyTypeObject RustMatchType = {
     PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "candidates._rust_bridge.Match",
+    .tp_name = "re.Match",
     .tp_basicsize = offsetof(RustMatch, spans),
     .tp_itemsize = sizeof(intptr_t),
     .tp_dealloc = (destructor)rust_match_dealloc,
@@ -768,10 +778,126 @@ static PyTypeObject RustMatchType = {
 
 static PyObject *bridge_set_template(PyObject *module, PyObject *value) {
     (void)module;
-    if (!PyCallable_Check(value)) {
-        PyErr_SetString(PyExc_TypeError, "Rust match template helper must be callable");
+    if (!PyFunction_Check(value)) {
+        PyErr_SetString(
+            PyExc_TypeError,
+            "Rust match template helper must be an owned Python function"
+        );
         return NULL;
     }
+
+    PyObject *globals = PyFunction_GetGlobals(value);
+    if (globals == NULL || !PyDict_Check(globals)) {
+        PyErr_SetString(
+            PyExc_TypeError,
+            "Rust match template helper has no owned module globals"
+        );
+        return NULL;
+    }
+
+    PyObject *owner = PyDict_GetItemString(globals, "__name__");
+    PyObject *owned_template = PyDict_GetItemString(globals, "_template");
+    PyObject *factory = PyDict_GetItemString(globals, "_OwnedGenericAlias");
+    PyObject *resolver = PyDict_GetItemString(
+        globals, "_restore_owned_generic_alias"
+    );
+    PyObject *pattern = PyDict_GetItemString(globals, "Pattern");
+    PyObject *match = PyDict_GetItemString(globals, "Match");
+    if (
+        owner == NULL
+        || !PyUnicode_Check(owner)
+        || PyUnicode_CompareWithASCIIString(
+            owner, "candidates.rust_candidate"
+        ) != 0
+        || owned_template != value
+        || factory == NULL
+        || !PyType_Check(factory)
+        || resolver == NULL
+        || !PyFunction_Check(resolver)
+        || PyFunction_GetGlobals(resolver) != globals
+        || pattern == NULL
+        || !PyType_Check(pattern)
+        || match != (PyObject *)&RustMatchType
+    ) {
+        if (!PyErr_Occurred()) {
+            PyErr_SetString(
+                PyExc_TypeError,
+                "Rust template and generic aliases must originate from the owned candidate"
+            );
+        }
+        return NULL;
+    }
+
+#ifndef Py_GIL_DISABLED
+    if (
+        rust_primary_pattern_type == NULL
+        || pattern != (PyObject *)rust_primary_pattern_type
+    ) {
+        PyErr_SetString(
+            PyExc_TypeError,
+            "Rust generic aliases require the final owned native Pattern type"
+        );
+        return NULL;
+    }
+#endif
+
+    PyObject *factory_module = PyObject_GetAttrString(
+        factory, "__module__"
+    );
+    if (factory_module == NULL) return NULL;
+    PyObject *factory_name = PyObject_GetAttrString(
+        factory, "__qualname__"
+    );
+    if (factory_name == NULL) {
+        Py_DECREF(factory_module);
+        return NULL;
+    }
+    PyObject *pattern_module = PyObject_GetAttrString(
+        pattern, "__module__"
+    );
+    if (pattern_module == NULL) {
+        Py_DECREF(factory_name);
+        Py_DECREF(factory_module);
+        return NULL;
+    }
+    PyObject *pattern_name = PyObject_GetAttrString(
+        pattern, "__qualname__"
+    );
+    if (pattern_name == NULL) {
+        Py_DECREF(pattern_module);
+        Py_DECREF(factory_name);
+        Py_DECREF(factory_module);
+        return NULL;
+    }
+
+    int owned_public_types =
+        PyUnicode_Check(factory_module)
+        && PyUnicode_Check(factory_name)
+        && PyUnicode_Check(pattern_module)
+        && PyUnicode_Check(pattern_name)
+        && PyUnicode_CompareWithASCIIString(
+            factory_module, "candidates.rust_candidate"
+        ) == 0
+        && PyUnicode_CompareWithASCIIString(
+            factory_name, "_OwnedGenericAlias"
+        ) == 0
+        && PyUnicode_CompareWithASCIIString(pattern_module, "re") == 0
+        && PyUnicode_CompareWithASCIIString(pattern_name, "Pattern") == 0;
+    Py_DECREF(pattern_name);
+    Py_DECREF(pattern_module);
+    Py_DECREF(factory_name);
+    Py_DECREF(factory_module);
+    if (!owned_public_types) {
+        if (!PyErr_Occurred()) {
+            PyErr_SetString(
+                PyExc_TypeError,
+                "Rust generic aliases must retain their owned factory and re.Pattern"
+            );
+        }
+        return NULL;
+    }
+
+    Py_XSETREF(rust_generic_alias_factory, Py_NewRef(factory));
     Py_XSETREF(rust_template_helper, Py_NewRef(value));
     Py_RETURN_NONE;
 }
@@ -3701,7 +3827,7 @@ static PyObject *bridge_pattern_type(
         {0, NULL},
     };
     PyType_Spec specification = {
-        .name = "candidates.rust_candidate.Pattern",
+        .name = "re.Pattern",
         .basicsize = (int)base->tp_basicsize,
         .itemsize = 0,
         .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_BASETYPE,
