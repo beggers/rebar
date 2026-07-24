@@ -7,6 +7,30 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Verify and pin the genuine stable Zig compiler
+
+Retrieve Zig's actual stable release metadata directly from the
+official `https://ziglang.org/download/index.json`. Freeze the
+[complete Zig compiler lock](../toolchains/zig-0.16.0.lock.json) for
+stable Zig **0.16.0**, Linux `x86_64`, and the official archive
+`https://ziglang.org/download/0.16.0/zig-x86_64-linux-0.16.0.tar.xz`.
+
+Download the exact **55,478,392-byte** archive into a new dedicated
+temporary directory. Independently verify its published SHA-256:
+`70e49664a74374b48b51e6f3fdfbf437f6395d42509050588bd49abe52ba3d00`.
+Validate all **20,832** archive entries before extraction: require
+the single declared directory root; reject device files, path
+escapes, unsafe symlinks, and unsafe hard links. Verify the extracted
+compiler's SHA-256,
+`2317bbb91798556d9d0f38aabdac23db83f0979b25f767259ae474546724087c`,
+and actually run its version command: `0.16.0`.
+
+The existing independent Zig engine source and first-failure
+evidence remain unchanged. Installing a genuine compiler is not a
+candidate build, a passing correctness run, an external regex
+package, or a performance result. The rebuilt candidate remains
+**NOT RUN** and current speed remains **NOT MEASURED**.
+
 ## Freeze genuine native ownership and serialization requirements
 
 Freeze the independently reviewed

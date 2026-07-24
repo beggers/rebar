@@ -5,6 +5,10 @@ Can a regular-expression engine built from scratch replace Python 3.14.6's
 three competing engines are independently implemented in C, Rust, and Zig;
 none may use Python's matching engine or wrap another regex package.
 
+The [official stable Zig compiler](toolchains/zig-0.16.0.lock.json) is
+independently pinned and verified so the Zig engine can be rebuilt
+directly from its own source.
+
 Separately written [C++](experiments/cpp_from_scratch_v1/PROTOCOL.md)
 and [Go](experiments/go_from_scratch_v1/PROTOCOL.md) engines are
 additional experiments. Both are **NOT BUILT, NOT RUN, and NOT
