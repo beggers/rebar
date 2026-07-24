@@ -94,12 +94,14 @@ unusual flags, all serialization protocols, live byte buffers,
 Unicode, genuine locale changes, callbacks, warnings, and complete
 public Python objects. Its reference and candidate runs are **NOT RUN**.
 
-Independent inspections cover the engines' **12** source files and
-**five** native binaries. They check that each engine is
-[implemented from its own source](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V7.json)
-and [does not secretly call Python or another regular-expression package](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V7.json).
-These inspections prove independent implementation, not complete
-compatibility. Deeper correctness checks remain **NOT RUN**.
+The [current three-engine ownership inspection](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V10.json)
+checks all **12** original source files and all **five** native
+binaries. Every engine performed its own matching with Python's
+internal matcher, external regular-expression packages, and the other
+candidates blocked. All **48** genuine serialization checks passed.
+This proves independent implementation, not complete compatibility.
+The separate, stricter whole-project anti-delegation inspection and
+the complete upstream candidate tests are **NOT RUN**.
 
 The [first rebuilt Rust safety check](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v8-diagnostic-native-owner-failure.json.gz)
 found a genuine bug in the safety checker itself: a deliberately
@@ -116,7 +118,8 @@ The [cached-matcher-safe, from-scratch ownership protocol](candidates/audits/POS
 closes both safety gaps. It requires each C, Rust, and Zig engine to do
 its own matching, blocks Python's cached internal matchers, checks
 genuine Python pattern and match objects, and repeats all protections
-after matching. Its actual three-engine audits are **NOT RUN**.
+after matching. The first actual three-engine ownership inspection
+passes; its separate stricter audit is **NOT RUN**.
 
 The [durable fresh-build correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V11.md)
 saves both the complete original Python behavior results and a

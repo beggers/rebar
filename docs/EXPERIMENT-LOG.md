@@ -7,6 +7,47 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Prove all three current engines genuinely do their own matching
+
+First separately freeze, independently review, commit, and push the
+cached-matcher-safe original-implementation audit and the independent
+ownership protocol. Verify both its passing and failure evidence
+paths are unused. Run the actual full-source, all-engine ownership
+inspection exactly once:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_from_scratch_audit_v10.py --audit
+```
+
+The genuine inspection independently starts all **three** guarded
+C, Rust, and Zig engine workers. It authenticates all **12** current
+source files and all **five** independently owned native binaries.
+Each actual matcher passes all **13** Python-matcher guards, all
+**five** native-loader guards, and all **16** genuine serialization
+checks. Across the three engines, all **39** Python-matcher guards,
+all **15** native-loader guards, and all **48** serialization checks
+pass. No Python matcher, outside regular-expression package, or
+other candidate performs the work.
+
+Exclusively preserve the complete actual
+[three-engine from-scratch ownership report](../candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V10.json),
+SHA-256
+`589321a768e10c52f039a68acb211574ec884598771ede2152f91994cc69f353`.
+The report preserves the real earlier blocked-matcher and
+cached-matcher failures without treating either as a passing result.
+It retains the two independently passing official Python reference
+runs and their exact **152** upstream tests, including Python's one
+genuine private-debug-only skip.
+
+Two independent reviewers and the project lead separately verify the
+complete report, every actual engine worker, and every current source
+and native-binary fingerprint without rerunning any candidate. This
+is an actual passing three-engine source-ownership inspection, not
+the separate stricter anti-delegation inspection, a full upstream
+candidate result, or a speed measurement. Current speed and memory
+remain **NOT MEASURED**; the expanded holdout remains **NOT OPENED**.
+
 ## Prove the independently owned Zig engine against every original edge case
 
 First compile, separately commit, and push the real Zig matching
