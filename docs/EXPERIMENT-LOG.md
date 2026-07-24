@@ -7,6 +7,45 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Prove the independently owned C engine against every original edge case
+
+First compile, separately commit, and push the actual independent C
+source and native module. Verify all **seven** potential C evidence
+paths are fresh. Run the same frozen, isolated original behavior
+comparison that the Rust engine passed:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v11.py \
+  --diagnostic-edge --module candidates.vm_candidate
+```
+
+The actual native C engine passes **223,198/223,198** checks across
+all **49** original categories, with **zero** mismatches. Its real
+result equals Python's exact frozen behavior SHA-256
+`b34c2fcd36396c3373308d80889c4e855603bfb34bf5c0ce52725d2bda032526`.
+Independently and exclusively preserve:
+
+- [Original C behavior archive](../candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-diagnostic-pass.json.gz),
+  SHA-256 `a389c79cded04db478c624c5f4335ea73c7f6c1984d252b8170c323e1233f54a`.
+- [Complete C native-ownership proof](../candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-diagnostic-pass-proof.json),
+  SHA-256 `0dc1fe325eaa96b9f04fde33d3e215bda37a2b760cf2ee1e076e47cabb608dd9`.
+
+The proof verifies both independently owned C source files, the
+actual newly compiled C binary, genuine native matching before and
+after the full original suite, all **13** Python matcher guards, all
+**five** native-loader guards, all **16** genuine serialization
+checks, every blocked internal Python matcher, and the complete
+original producer streams. C cannot borrow the Rust, Zig, standard
+library, or an external regular-expression engine.
+
+Both independent reviewers and the project lead separately verify
+the exact two actual artifacts without rerunning C. The result is
+correctly `campaign_qualified: false`: this is a real single-family
+diagnostic, not a complete three-family or original-upstream
+qualification. Current speed and memory remain **NOT MEASURED**;
+the expanded final holdout remains **NOT OPENED**.
+
 ## Preserve the complete original Rust result and its native-engine proof
 
 First freeze, independently review, commit, and push the actual
