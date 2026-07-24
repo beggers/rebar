@@ -7,6 +7,57 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Verify rebuilt Rust against every original correctness case
+
+Run the frozen V24 correctness producer exactly once against the actual
+independently owned rebuilt Rust engine, after committing and pushing all
+three frozen correctness protocols and the independently passed ownership
+and strict no-delegation reports. Use pinned CPython 3.14.6, the exact
+externally authenticated owner-source, owner-protocol, base-report, and
+strict-report hashes, and freshly verified, previously absent destinations.
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar LC_ALL=C PATH=/usr/bin:/bin \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v24.py --qualified-edge \
+  --module candidates.rust_candidate \
+  --v21-audit-source-sha256 ded077962416ada3bddd825d77b2e6785fe3b01184fe5d9058ec17a57b08ea4d \
+  --v21-audit-protocol-sha256 5a78673c6b23e4781070cf5a2290d5f6cecd402fff77ff388d8795370de93a1f \
+  --v21-base-report-sha256 4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4 \
+  --v21-strict-report-sha256 6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d
+```
+
+The actual original Rust worker exits **0** and passes **223,198 /
+223,198** frozen cases in **49** categories, with **zero** mismatches.
+Real independent native ownership checks pass immediately before and
+after the original worker. Each owner performs **13** matching guards,
+**five** native-loader guards, and **16** serialization checks; neither
+loads another regex engine or uses Python's matcher.
+
+- [Actual complete original Rust observations](../candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v24-qualified-pass.json.gz),
+  SHA-256 `37de9f254dc3edb72bfe04f51cea8c528449064fba62df273032bb5d7b58b419`.
+- [Actual complete Rust native-owner proof](../candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v24-qualified-pass-proof.json),
+  SHA-256 `882c712bfed8d0a355bda14847dc78feb2b59b3609ed5f48bd0daccb4e9c33c6`.
+- [Exact original production stdout and both real write receipts](../candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v24-qualified-pass-production-summary.json).
+
+Preserve the archive's actual **2,319-byte** write and the proof's actual
+**97,399-byte** write as separate complete **18**-field syscall receipts.
+Both receipts include real exclusive creation, complete ordered writes,
+file and directory synchronization, close, and verified readback. Neither
+an invalidated archive nor failure evidence was created. Independently
+revalidate the complete original archive, owner proof, frozen source and
+native graph, actual worker exit and full streams, both genuine native
+owners, all five preserved incidents, and every owner hash under a
+read-only boundary; all write, subprocess, candidate-import, and clock
+counters remain zero during validation.
+
+This result qualifies only the fresh original **223,198-case** Rust
+suite. The Rust deeper suite, complete upstream tests, and expanded
+public tests remain **NOT RUN**. Both correctness suites remain
+**NOT RUN** for rebuilt C and Zig. Performance is **NOT MEASURED**;
+the holdout is **NOT ACCESSED**.
+
 ## Freeze the complete original CPython regex test suite
 
 Preserve the actual pinned CPython 3.14.6 test suite, its already
