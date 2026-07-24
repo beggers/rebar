@@ -7,6 +7,71 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the genuine failure of the larger public benchmark
+
+After committing and pushing the larger benchmark source and protocol
+in `a28eff8f`, attempt its first actual isolated freeze:
+
+```sh
+env PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_public_practice_v8.py --freeze
+```
+
+This exits **1** with `ModuleNotFoundError: No module named 'tools'`.
+The exact isolated module retry preserves the pinned interpreter,
+environment, and public source:
+
+```sh
+env PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -c \
+  'import sys;sys.path.insert(0,".");from tools.postfinal_public_practice_v8 import main;main(["freeze"])'
+```
+
+It also exits **1**, after passing source provenance but before creating
+a manifest, with the real production error
+`tools.postfinal_public_expansion_v8.PublicExpansionError: corrupt public reference answer`.
+The larger public design is **FALSIFIED**. Its earlier **177/177** and
+**212/212** synthetic checks do not constitute a passing production
+freeze or a passing public-data comparison.
+
+Twice independently stream and selectively decode only the **10,312**
+previously frozen, explicitly public rows, skipping all **10,312**
+opaque-history rows without deserializing them or opening a secret
+test. The original UTF-8 JSON encoding with
+`ensure_ascii=False` reproduces **10,312/10,312** saved answers. The
+larger benchmark's ASCII encoding with `ensure_ascii=True` incorrectly
+rejects **577/10,312** genuine public answers: **483** `findall`,
+**48** `escape`, and **46** `split` cases, all text. The first failure
+is `cal.unicode.words`: the correct saved digest is
+`21f3db7cbb6c5d5bb6fcaf4dc6847779d647399a97f9e62a62861733a4fa1949`,
+while the incorrect ASCII digest is
+`af46c189444aa11a5f11a6894aaac409e79913384e82e6ea96e6668468f10885`.
+
+The [actual public freeze-failure report](../performance/postfinal-public-v8/evidence/postfinal-public-freeze-failure-v8.json)
+has SHA-256
+`e46a5b0482293a016c1ba6d0bcadb4c5bcf97ea15af9a2027734ac855c688aba`.
+Its [public-only failure recorder](../tools/postfinal_public_expansion_v8_failure.py)
+has SHA-256
+`800963bc33227c936a2f8506fa80057672acb1c831b772a1bb412aec6540eb94`.
+The actual exclusive recorder exits **0**, reports **RECORDED**, and
+preserves the real design verdict **FAIL**. Its independently isolated
+synthetic self-test passes **48/48** without starting an engine,
+writing evidence, measuring time, or opening a secret test; that
+recorder-safety result does not turn the falsified design into a pass.
+The report preserves the mismatch without modifying the published generator
+`e921d5962746d564381a0a11d22eb125b080370b572ffd0f630e925025f1ec97`,
+protocol
+`e19d504f6d7504b4052f2bbfbc0a584596178919c5396e076d3e6261356a2095`,
+or runner
+`7818577b36bb822cc99e02a07fcd5ba74e20f1ecf6f0dcb3c0913d2a97bd244f`.
+Neither actual attempt creates a larger manifest, starts a candidate,
+measures time, reads final cases, or changes the frozen and published
+**8,192**-case public benchmark. A corrected **33,280**-case public
+comparison remains **NOT FROZEN** and **NOT MEASURED**. The independent
+final test remains **NOT OPENED**, and no winner has been established.
+
 ## Prepare a larger public comparison without freezing or timing it
 
 Preserve the previously pushed **8,192**-case public source, protocol,

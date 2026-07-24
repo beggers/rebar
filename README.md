@@ -146,14 +146,12 @@ covering **8,192** examples, **260** workload categories, **12** Python
 operations, and **13** planned paired trials. Its speed is
 **NOT MEASURED**.
 
-A [broader public comparison](performance/postfinal-public-v8/PROTOCOL.md)
-plans **33,280** examples: **128** in each of **260** categories,
-including all existing **8,192**. It covers **12** Python operations,
-**4** input types, and **13** planned paired trials. Its source and
-protocol must be committed and pushed before its one-time manifest may
-be frozen; no engine may be timed until that manifest is separately
-committed and pushed. The larger manifest is **NOT FROZEN**; this is a
-public test, not the hidden final test. New speed, memory, confidence
+The proposed [33,280-case public expansion](performance/postfinal-public-v8/PROTOCOL.md)
+is **FALSIFIED**: its saved-answer check disagrees with previously
+frozen public data before any engine starts. The
+[preserved public failure](performance/postfinal-public-v8/evidence/postfinal-public-freeze-failure-v8.json)
+is not an engine or speed result. A corrected public expansion remains
+**NOT FROZEN** and **NOT MEASURED**. New speed, memory, confidence
 intervals, and rankings remain **NOT MEASURED**.
 
 ## Final-test status
@@ -197,9 +195,7 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_public_practice_v7.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_public_expansion_v8.py --self-test
-PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_public_practice_v8.py --self-test
+  tools/postfinal_public_expansion_v8_failure.py --self-test
 # Historical successful one-time freeze; the manifest now exists.
 # Do not rerun: freezing exclusively creates the manifest once.
 # PYTHONPATH=. is mandatory for the inherited contract.
