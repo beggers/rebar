@@ -7,6 +7,26 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Correct the inherited current-result chart audit
+
+The first standard-graph production run rejects the real, independently
+verified current results before creating an output. Its frozen, inherited
+chart validator still expects the original `FROM-SCRATCH-AUDIT.json`,
+while the current benchmark correctly uses
+`POSTFINAL-FROM-SCRATCH-AUDIT-V2.json`.
+
+Preserve the failure and both independence checks. Rebind only the
+inherited, source-verified chart context to the exact passing version-two
+audit; restore the original context afterward. Add an explicit test that
+rejects the historical audit path. The corrected renderer passes all
+**164** synthetic adverse-input checks and separately validates the real
+frozen manifest, measured summary, and independent replay without timing
+an engine or generating a standard graph. The separate clear presentation
+already passes all **84** of its own checks.
+
+No correctness test, candidate, benchmark observation, historical result,
+or hidden final test is changed.
+
 ## Prepare clear graphs for the exact current engines
 
 Complete the frozen **8,192**-case public measurement before running any
@@ -14,7 +34,7 @@ chart self-test or changing an engine. Preserve every original observation
 and require an independently replayed, source-bound result before either
 renderer can produce a graph or claim a speed.
 
-The standard six-graph renderer passes **163** in-memory adverse-input
+The original standard six-graph renderer passes **163** in-memory adverse-input
 checks. The plain-language six-graph renderer separately passes **84**.
 Both preserve the exact current Rust, C, and Zig engine fingerprints;
 all **12** compatibility proofs; both fresh independence audits; all

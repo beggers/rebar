@@ -257,6 +257,18 @@ def require_v6_audit_binding(
             and type(document.get(key)) is type(expected),
             f"the actual public V6 current-source audit changed {key}",
         )
+    if reference is None or "from_scratch_audit_path" in document:
+        expected_path = str(protocol.BASE_AUDIT_PATH.resolve())
+        require(
+            document.get("from_scratch_audit_path") == expected_path,
+            "the public V6 manifest substituted its actual V2 base audit path",
+        )
+        if reference is not None:
+            require(
+                document["from_scratch_audit_path"]
+                == reference.get("from_scratch_audit_path"),
+                "the public V6 replay substituted its V2 base audit path",
+            )
 
 
 def require_v6_universal_oracle(
@@ -445,7 +457,15 @@ def v6_renderer(*, strict_bindings: bool = True) -> Iterator[None]:
         name: getattr(inherited, name) for name in wrapper_updates
     }
     saved_core = {name: getattr(v4, name) for name in core_updates}
+    original_updates: dict[str, Any] = {
+        "AUDIT_PATH": str(protocol.BASE_AUDIT_PATH.resolve()),
+    }
+    saved_original = {
+        name: getattr(v4.original, name) for name in original_updates
+    }
     try:
+        for name, value in original_updates.items():
+            setattr(v4.original, name, value)
         for name, value in core_updates.items():
             setattr(v4, name, value)
         for name, value in wrapper_updates.items():
@@ -456,6 +476,8 @@ def v6_renderer(*, strict_bindings: bool = True) -> Iterator[None]:
             setattr(inherited, name, value)
         for name, value in saved_core.items():
             setattr(v4, name, value)
+        for name, value in saved_original.items():
+            setattr(v4.original, name, value)
         v4.original.require_candidate_free()
 
 
@@ -517,6 +539,9 @@ def _synthetic_v6_documents() -> tuple[dict, dict, dict]:
         document.update(common)
     manifest.update(
         {
+            "from_scratch_audit_path": str(
+                protocol.BASE_AUDIT_PATH.resolve()
+            ),
             "source_public_v5_runner_path": _relative(
                 protocol.FROZEN_V5_SOURCE_PATH
             ),
@@ -646,6 +671,7 @@ def self_test() -> dict[str, Any]:
                 ("changed V5 population denominator", "manifest", "public_v5_case_population_count", 8_191),
                 ("changed V5 category denominator", "manifest", "public_v5_workload_category_count", 259),
                 ("unsafe Unicode worker framing", "manifest", "private_worker_wire_ensure_ascii", False),
+                ("substituted V2 base audit path", "manifest", "from_scratch_audit_path", str(ROOT / "candidates" / "audits" / "FROM-SCRATCH-AUDIT.json")),
                 ("changed V2 base audit", "manifest", "from_scratch_audit_sha256", "0" * 64),
                 ("substituted V2 base audit source", "manifest", "from_scratch_audit_source_sha256", "0" * 64),
                 ("changed V2 strict audit", "manifest", "postfinal_no_delegation_audit_sha256", "0" * 64),
