@@ -7,6 +7,41 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze verification of real published audit fingerprints
+
+Preserve the immutable, independently frozen native-ownership,
+no-delegation, and current-build proof controllers. Resolve their
+real audit-publication ordering without editing previously frozen
+source or guessing an unproduced report.
+
+Freeze the independently reviewed
+[actual-report fingerprint protocol](../oracle/cpython-3.14.6/POSTFINAL-PUBLISHED-PINS-V8.md)
+and [immutable-source launcher](../tools/postfinal_published_pins_v8.py)
+with respective SHA-256 hashes
+`2c5f69f928049c6f8e6d22a9fa7c60f3093948cc4e2a44c38bd197711e8d39f9`
+and
+`4a87aaf55caced1fe3f1901b4974c1915fc176269126d8a4a998499df069601b`.
+
+Before a real strict audit or full correctness proof, independently
+authenticate the exact immutable source, complete real three-family
+audit reports, **12** owned implementation files, **five** native
+binaries, **48** real serialization observations, genuine matching
+guards, and all three preserved original failure archives. Supply
+only the observed SHA-256 of an actually published passing report
+to the original frozen controller. Temporarily set only its
+documented missing report fingerprint; invoke its unchanged
+production entry point and restore the original state. Never
+change Python's matching engine, a candidate module, audit source,
+matcher, result, expected answer, report, or earlier evidence.
+
+Both independent reviewers and the project lead actually ran the
+documented direct isolated checks in normal and nearly empty
+environments: **211/211 source controls passed** in each. Each
+control starts **zero** workers, imports **zero** candidates,
+reads **zero** audit or historical evidence, writes **zero** files,
+and reads **zero** holdout cases. No actual candidate audit,
+qualified proof, or timing is represented as passed.
+
 ## Run Python's complete original correctness suite twice
 
 Only after freezing, independently reviewing, committing, and

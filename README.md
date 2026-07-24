@@ -103,6 +103,10 @@ requires each rebuilt engine to pass its own native-ownership and
 serialization checks before any full compatibility comparison begins.
 Those rebuilt-engine comparisons are **NOT RUN**.
 
+An [immutable-source verification launcher](oracle/cpython-3.14.6/POSTFINAL-PUBLISHED-PINS-V8.md)
+checks real published evidence without changing any frozen audit or
+silently substituting another engine.
+
 ## Larger fair speed comparison
 
 A larger, **33,280-example** public comparison and a separate,
@@ -134,4 +138,6 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_cpython_locale_oracle_v5.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_current_build_proofs_v8.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_published_pins_v8.py --self-test
 ```
