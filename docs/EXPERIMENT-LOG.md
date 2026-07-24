@@ -7,6 +7,88 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve all 26 real Zig public-method compatibility failures
+
+First publish the unchanged V12 recovery protocol and the passing
+Rust and C deep comparisons. Verify that all six Zig output
+destinations are distinct and unused. Run the identical original
+**393-case** deep suite with the correct genuine parent environment:
+
+```sh
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v12.py \
+  --qualified-deep \
+  --module candidates.zig_candidate \
+  --base-report-sha256 \
+  589321a768e10c52f039a68acb211574ec884598771ede2152f91994cc69f353 \
+  --strict-report-sha256 \
+  d8f31dd480bdba530a454b38428a23ef347c6e3cce7796f8992d6e7767381f4b
+```
+
+The actual independently built Zig engine completes the original
+**393** checks and **64** seeded cases. Both real Python references
+agree. Zig returns **26** genuine public mismatches and exits **1**.
+All **18** original mismatches and all **eight** seeded mismatches
+are in public method introspection: Zig's bound and class methods
+display `Pattern`, while genuine Python displays `re.Pattern`.
+The other recorded introspection fields agree; no failure is waived.
+
+The complete failed case identities are:
+
+```text
+public-method-introspection/pattern-bound/findall
+public-method-introspection/pattern-bound/finditer
+public-method-introspection/pattern-bound/fullmatch
+public-method-introspection/pattern-bound/match
+public-method-introspection/pattern-bound/scanner
+public-method-introspection/pattern-bound/search
+public-method-introspection/pattern-bound/split
+public-method-introspection/pattern-bound/sub
+public-method-introspection/pattern-bound/subn
+public-method-introspection/pattern-class/findall
+public-method-introspection/pattern-class/finditer
+public-method-introspection/pattern-class/fullmatch
+public-method-introspection/pattern-class/match
+public-method-introspection/pattern-class/scanner
+public-method-introspection/pattern-class/search
+public-method-introspection/pattern-class/split
+public-method-introspection/pattern-class/sub
+public-method-introspection/pattern-class/subn
+seeded/005/public-method-introspection/pattern-class/finditer
+seeded/009/public-method-introspection/pattern-class/match
+seeded/013/public-method-introspection/pattern-class/split
+seeded/020/public-method-introspection/pattern-bound/fullmatch
+seeded/036/public-method-introspection/pattern-class/sub
+seeded/040/public-method-introspection/pattern-class/findall
+seeded/050/public-method-introspection/pattern-bound/split
+seeded/058/public-method-introspection/pattern-bound/sub
+```
+
+Exclusively preserve all three complete original Zig failure
+records:
+
+- [Complete original 393-case Zig mismatch archive](../candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-POSTFINAL-CURRENT-BUILD-V12-INVALIDATED-AFTER-OWNER-FAILURE.json.gz),
+  SHA-256 `d7f11c33a010406db1637e0715e72bfebdc13acf21118735b6b1f6e550927865`.
+- [Complete actual Zig producer-failure evidence](../candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-POSTFINAL-CURRENT-BUILD-V12-PRODUCER-CRASH.json.gz),
+  SHA-256 `5c3e07d9f11d5c8244d3d22fc94f287f4f0573423bf38e70b6abc383c96eca90`.
+- [Separate truthful failed-retry provenance](../candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-POSTFINAL-CURRENT-BUILD-V12-RETRY-FAIL-PROOF.json),
+  SHA-256 `b5deb6c3ce522fe0dbc3c4e723867ffe830520f0a47a0b72cc5b1d9a0a69ad9d`.
+
+Two independent reviewers and the project lead validate the
+complete original mismatch rows, actual child exit code and
+streams, genuine native ownership, real earlier Rust failure, both
+whole-engine audits, and complete separately recorded failed V12
+attempt. Zig deep correctness is **FAIL**; no Zig passing archive,
+ownership proof, or retry record was published. Fixing a native Zig
+type would change the audited source graph and must therefore begin
+with a separately reviewed implementation, rebuilt independent
+binary, and complete new all-engine ownership checks. Performance
+remains **NOT MEASURED**; the holdout remains **NOT OPENED**.
+
 ## Prove the independently written C engine passes every deep public case
 
 First independently freeze and publish the additive V12 deep-test
