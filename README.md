@@ -93,6 +93,12 @@ checks the historical and rebuilt binaries separately. Its
 before starting any engine. No passing current three-engine
 inspection exists.
 
+The [real-record-verified rebuild inspection](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V17.md)
+successfully checks both preserved failures, the complete historical
+Zig results, and all **12** actual source files and **five** rebuilt
+native binaries without starting a candidate. Its full ownership and
+no-delegation runs remain **NOT RUN**.
+
 The [fresh original correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V14.md)
 then requires all **223,198** original cases and all **393** deeper
 cases to be repeated against each independently inspected engine.

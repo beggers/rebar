@@ -7,6 +7,54 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the audit only after testing real historical records
+
+Preserve both real failing inspection attempts before freezing the
+corrected, append-only owner audit:
+
+- [Real-record-verified engine inspection source](../tools/postfinal_independent_engine_audit_v17.py),
+  SHA-256 `3184060f66835f0f49cc533a6abb51961de7f92ae2d72ee8c2bd58a94b37ad48`.
+- [Real-record-verified inspection protocol](../oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V17.md),
+  SHA-256 `ba912f19b21f0264ecb2066f1141e4ad667802c599437df5a4328e089aa7ba4f`.
+
+Run a genuine, read-only preflight against the actual historical
+records and all actual rebuilt native files before freezing:
+
+```sh
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_independent_engine_audit_v17.py \
+  --history-preflight
+```
+
+The actual preflight passes. It strictly authenticates the unchanged
+first failure `465820b50be4d544199844d7bde4c5b8e58391828bdb1c716cc33c50ca6c964b`
+and the unchanged second failure
+`a3695f1fd847e9ad882783d18c519b551d7791c5327f55964e202a31ade818ff`.
+It never rewrites or recanonicalizes either record. It verifies
+all **393** archived Zig results, all **26** real mismatches,
+the genuinely distinct old and current native fingerprints,
+all **12** current source files, and all **five** current binaries.
+It imports no candidate, starts no matching or ownership worker,
+makes no subprocess, and performs no file writes, timing, benchmark,
+or holdout access.
+
+The project lead and two independent reviewers separately validate
+the same exact final source and genuine preflight. Both isolated
+source-control environments pass **511** new checks, **402** V15
+checks, **319** V13 checks, **990** ownership checks, and **1,203**
+strict no-delegation checks. The corrected producer records each
+exclusive report creation, partial write, and file or directory
+synchronization before making a passing claim.
+
+At the frozen-source commit the corrected actual three-engine
+ownership and strict inspections remain **NOT RUN**. Rebuilt
+candidate correctness is **NOT QUALIFIED**, performance is
+**NOT MEASURED**, and the holdout is **NOT OPENED**.
+
 ## Preserve the corrected audit's real failure-record-format rejection
 
 First freeze, independently review, commit, and push the corrected
