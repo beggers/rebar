@@ -7,6 +7,64 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Run the complete original Python reference twice without a candidate
+
+First separately freeze, independently review, commit, and push
+the complete original Python test-suite controller and protocol.
+Verify both its passing and failure output destinations are fresh.
+Authenticate the actual system resources without changing an
+upstream obligation: **55,391,318,016** bytes were available for the
+original **38,654,705,664-byte** minimum, and the real locale
+compiler, all **26** official support files, all **403** original
+corpus cases, and all **11** external fixture checks were present.
+
+Run both genuine, independent, pinned standard-library workers:
+
+```sh
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_cpython_locale_oracle_v6.py \
+  --self-oracle \
+  --source-sha256 \
+  b1522b55b37de2e004b029c128e2e75c3020cda34165bcf0de07cb5ebb3136cb \
+  --protocol-sha256 \
+  8e43ceaa61f6e70e2e1193de71bde8583c101cdbe40bc78d862ae789531aff57
+```
+
+Both actual Python workers run all **152** unchanged original
+methods. Each records **151** actual passes, exactly one original
+private-debug-only conditional skip, and **zero** unclassified
+failures or skips. Each actually executes both original
+**2,147,483,648-byte** search and replacement tests with the real
+**42,949,672,960-byte** upstream memory setting. Both independently
+verify freshly compiled ISO-8859-1 and UTF-8 locales, real CPU and
+multiprocessing support, the unchanged **403-case** upstream
+corpus, all **11** fixtures, and all **26** original support files.
+No candidate, candidate audit, or candidate proof is imported.
+
+Exclusively preserve the complete actual
+[two-process original Python reference](../oracle/cpython-3.14.6/evidence/postfinal-locale-v6-self-oracle.json),
+SHA-256
+`1c0445780b747680ff75ced694a61b43949dc1f7eb81a8e4a8c45cfa9376cebf`.
+Independently validate all original source-order method records with
+both frozen V5 and V6 validators.
+
+The outer progress summarizer initially looked for a nonexistent
+`original_public_methods` field. The complete actual worker report
+correctly uses the frozen `public_original_methods` field, remains
+exclusively published, and independently validates **PASS**. The
+display-only field-name mistake does not modify either worker, the
+original report, any test, or any evidence.
+
+Two independent reviewers and the project lead separately verify
+both genuine completed workers and the full original canonical
+record. Official candidate results remain **NOT RUN**. Speed and
+memory comparisons remain **NOT MEASURED**; the expanded final
+holdout remains **NOT OPENED**.
+
 ## Preserve the genuine failure of the first expanded Python reference
 
 First separately freeze, review, commit, and push the complete

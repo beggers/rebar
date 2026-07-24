@@ -84,9 +84,10 @@ requires all **152** original public Python tests, the genuine Python
 test-support files, the full original test corpus, and real
 multi-gigabyte inputs. There are no public-test waivers; the only
 conditional skip is Python's own private-debug-build requirement.
-[Python has passed the complete reference suite twice](oracle/cpython-3.14.6/evidence/postfinal-locale-v5-self-oracle.json):
+[Python has passed the current complete reference suite twice](oracle/cpython-3.14.6/evidence/postfinal-locale-v6-self-oracle.json):
 each independent run records all **152** original tests, **151**
-actual passes, and the one original debug-only skip. The candidate
+actual passes, the one original debug-only skip, both genuine
+**2 GiB** input tests, and real fresh locales. The candidate
 upstream runs are **NOT RUN**. The frozen runner verifies that each
 candidate uses its own engine immediately before and after every
 original Python test.
