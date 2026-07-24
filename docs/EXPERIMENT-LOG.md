@@ -7,6 +7,48 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the genuine cached-Python-matcher isolation failure
+
+First separately commit, push, and independently verify the corrected
+ownership checks in `ce30d03c` and the full original-behavior runner in
+`66fb0fda`. Confirm all five new Rust evidence destinations are fresh.
+Then run exactly one real, pinned, isolated Rust diagnostic:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v9.py \
+  --diagnostic-edge --module candidates.rust_candidate
+```
+
+The actual result is **FAIL**, with process exit **1**, before importing
+the Rust candidate and before starting the original behavior checks.
+Preserve the complete
+[original cached-matcher failure](../candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v9-diagnostic-native-owner-failure.json.gz),
+SHA-256
+`04e52f831534458e9af50ad3ab962d78ad43e6a8725cbfccfee37bf9c234f07c`.
+Its complete actual standard error is **203** bytes with SHA-256
+`7cfcf842efd492372ee01c330db0fc632aac9182c5f5b45870c5286a3e841097`:
+
+```text
+RuntimeError: a V8 public owner can reach a Python matcher: re._compiler
+```
+
+The inherited isolation guard had blocked top-level `re` and `_sre`,
+but Python's previously imported `re._compiler` remained in the module
+cache. The unchanged no-delegation check correctly rejected the real
+reachable Python matcher. This is an actual safety-check failure, not a
+failing Rust match, an accepted outside engine, or a reason to remove
+any of the **13** original Python-matcher guards.
+
+Both independent reviewers verified the complete recorded output,
+all **seven** current Rust sources, both actual Rust native binaries,
+the exact frozen version-nine sources, and the unchanged original
+failure evidence. The original **223,198**-case Rust suite was
+**NOT RUN**; three-engine audits and complete upstream tests remain
+**NOT RUN**. Current speed and memory are **NOT MEASURED**, and the
+expanded final test is **NOT OPENED**. Never rerun the occupied
+evidence path or change any previously frozen source or result.
+
 ## Freeze the corrected, original-behavior correctness runner
 
 First push the independently reviewed from-scratch and no-delegation

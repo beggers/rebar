@@ -103,6 +103,12 @@ three engines to do their own matching, produce genuine Python pattern
 and match objects, support ordinary serialization, and remain isolated
 before and after matching. Its actual three-engine audits are **NOT RUN**.
 
+The [first corrected Rust isolation check](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v9-diagnostic-native-owner-failure.json.gz)
+found another real safety gap: an internal Python matcher was already
+cached and could still be reached. The check correctly recorded a
+failure before importing Rust or starting the behavior tests. Rust has
+not been qualified, and no failure was hidden or waived.
+
 The [fresh-build correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V9.md)
 keeps every original Python behavior check, verifies that the actual
 engine performs its own work, and preserves passing and failing
