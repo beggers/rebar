@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="673" viewBox="0 0 1560 673" role="img" aria-labelledby="postfinal-chart-title postfinal-chart-description">
+<title id="postfinal-chart-title">Public development ordering only — not a final ranking</title>
+<desc id="postfinal-chart-description">Public development only; final independent benchmark failed; no final winner. CPython (standard Python), C, Rust, and Zig share the same 624 public development cases and 7 paired measurements. Four-way public comparison on the same 624 cases; no final winner and no candidate-to-candidate confidence claim. Source: postfinal-rust-batched-split-01-summary.json; SHA-256 129bad3b6f651b3a7103da6059edd0a07f63468260596035baf4ecd16fd8f46c. Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:32px;font-weight:760}.subtitle{font-size:17px;fill:#475569}.heading{font-size:20px;font-weight:720}.label{font-size:15px;fill:#263449}.value{font-size:16px;font-weight:720}.note{font-size:15px;fill:#475569}.tick{font-size:14px;fill:#475569}.banner{font-size:17px;font-weight:740;fill:#7f1d1d}.status{font-size:15px;font-weight:680;fill:#7f1d1d}.grid{stroke:#e2e8f0;stroke-width:1}.baseline{stroke:#64748b;stroke-width:2.2}.panel{fill:#f8fafc;stroke:#d9e2ee;stroke-width:1}</style>
+<text x="30" y="49" class="title">Public development ordering only — not a final ranking</text>
+<text x="31" y="83" class="subtitle">Four-way public comparison on the same 624 cases; no final winner and no candidate-to-candidate confidence claim</text>
+<rect x="23" y="103" width="1514" height="49" rx="9" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="38" y="135" class="banner">Public development only; final independent benchmark failed; no final winner</text>
+<text x="32" y="181" class="status">Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</text>
+<text x="32" y="207" class="note">Source: postfinal-rust-batched-split-01-summary.json; SHA-256 129bad3b6f651b3a7103da6059edd0a07f63468260596035baf4ecd16fd8f46c</text>
+<line x1="360.97" y1="287" x2="360.97" y2="561" class="grid"/>
+<text x="360.97" y="277" text-anchor="middle" class="tick">0.75×</text>
+<line x1="540.13" y1="287" x2="540.13" y2="561" class="baseline"/>
+<text x="540.13" y="277" text-anchor="middle" class="tick">1× CPython</text>
+<line x1="679.10" y1="287" x2="679.10" y2="561" class="grid"/>
+<text x="679.10" y="277" text-anchor="middle" class="tick">1.25×</text>
+<line x1="792.64" y1="287" x2="792.64" y2="561" class="grid"/>
+<text x="792.64" y="277" text-anchor="middle" class="tick">1.5×</text>
+<text x="876" y="273" class="label">Public speed and 95% range</text>
+<text x="1252" y="273" class="label">Clear wins</text>
+<text x="1390" y="273" class="label">&gt;20% slower</text>
+<text x="31" y="323" class="heading">1. C</text>
+<line x1="696.94" y1="317" x2="744.60" y2="317" stroke="#2563eb" stroke-width="7" stroke-linecap="round"/>
+<circle cx="719.91" cy="317" r="7" fill="#2563eb" stroke="#ffffff" stroke-width="1.5"/>
+<text x="876" y="322" class="value">1.335× [1.286× to 1.389×]</text>
+<text x="1252" y="322" class="value">449/624</text>
+<text x="1390" y="322" class="value">47/624</text>
+<text x="31" y="399" class="heading">2. Zig</text>
+<line x1="670.76" y1="393" x2="718.68" y2="393" stroke="#7c3aed" stroke-width="7" stroke-linecap="round"/>
+<circle cx="694.89" cy="393" r="7" fill="#7c3aed" stroke="#ffffff" stroke-width="1.5"/>
+<text x="876" y="398" class="value">1.282× [1.233× to 1.332×]</text>
+<text x="1252" y="398" class="value">362/624</text>
+<text x="1390" y="398" class="value">89/624</text>
+<text x="31" y="475" class="heading">3. Rust</text>
+<line x1="594.42" y1="469" x2="644.58" y2="469" stroke="#c2410c" stroke-width="7" stroke-linecap="round"/>
+<circle cx="619.74" cy="469" r="7" fill="#c2410c" stroke="#ffffff" stroke-width="1.5"/>
+<text x="876" y="474" class="value">1.136× [1.091× to 1.183×]</text>
+<text x="1252" y="474" class="value">261/624</text>
+<text x="1390" y="474" class="value">119/624</text>
+<text x="31" y="551" class="heading">4. CPython (standard Python)</text>
+<circle cx="540.13" cy="545" r="7" fill="#64748b" stroke="#ffffff" stroke-width="1.5"/>
+<text x="876" y="550" class="value">Exactly 1.000×; neutral baseline</text>
+<text x="1252" y="550" class="label">Baseline</text>
+<text x="1390" y="550" class="label">Baseline</text>
+<text x="31" y="625" class="note">Ordering describes public-development point estimates only; overlapping ranges do not establish candidate-to-candidate significance.</text>
+<text x="31" y="651" class="note">The independent final benchmark failed. A complete final ranking is NOT MEASURED; no candidate is the final winner.</text>
+</svg>

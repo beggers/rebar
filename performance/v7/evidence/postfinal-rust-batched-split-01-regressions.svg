@@ -1,0 +1,1338 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="8268" viewBox="0 0 1560 8268" role="img" aria-labelledby="postfinal-chart-title postfinal-chart-description">
+<title id="postfinal-chart-title">Every individual public slowdown of more than 20%</title>
+<desc id="postfinal-chart-description">Public development only; final independent benchmark failed; no final winner. CPython (standard Python), C, Rust, and Zig share the same 624 public development cases and 7 paired measurements. All 255 measured public slowdowns; every case name and all 12 workload-family denominators. Source: postfinal-rust-batched-split-01-summary.json; SHA-256 129bad3b6f651b3a7103da6059edd0a07f63468260596035baf4ecd16fd8f46c. Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:32px;font-weight:760}.subtitle{font-size:17px;fill:#475569}.heading{font-size:20px;font-weight:720}.label{font-size:15px;fill:#263449}.value{font-size:16px;font-weight:720}.note{font-size:15px;fill:#475569}.tick{font-size:14px;fill:#475569}.banner{font-size:17px;font-weight:740;fill:#7f1d1d}.status{font-size:15px;font-weight:680;fill:#7f1d1d}.grid{stroke:#e2e8f0;stroke-width:1}.baseline{stroke:#64748b;stroke-width:2.2}.panel{fill:#f8fafc;stroke:#d9e2ee;stroke-width:1}</style>
+<text x="30" y="49" class="title">Every individual public slowdown of more than 20%</text>
+<text x="31" y="83" class="subtitle">All 255 measured public slowdowns; every case name and all 12 workload-family denominators</text>
+<rect x="23" y="103" width="1514" height="49" rx="9" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="38" y="135" class="banner">Public development only; final independent benchmark failed; no final winner</text>
+<text x="32" y="181" class="status">Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</text>
+<text x="32" y="207" class="note">Source: postfinal-rust-batched-split-01-summary.json; SHA-256 129bad3b6f651b3a7103da6059edd0a07f63468260596035baf4ecd16fd8f46c</text>
+<circle cx="424" cy="220" r="6" fill="#64748b"/>
+<text x="437" y="225" class="label">CPython (standard Python)</text>
+<circle cx="702" cy="220" r="6" fill="#2563eb"/>
+<text x="715" y="225" class="label">C</text>
+<circle cx="810" cy="220" r="6" fill="#7c3aed"/>
+<text x="823" y="225" class="label">Zig</text>
+<circle cx="918" cy="220" r="6" fill="#c2410c"/>
+<text x="931" y="225" class="label">Rust</text>
+<rect x="22" y="234" width="1516" height="1654" rx="10" class="panel"/>
+<text x="38" y="264" class="heading">C: 47/624 public cases took more than 20% longer than CPython</text>
+<text x="40" y="310" class="value">Prepare a regular expression (compile): 0/48</text>
+<text x="40" y="340" class="value">Escape special characters (escape): 0/48</text>
+<text x="40" y="370" class="value">Find all matching results (findall): 15/80</text>
+<text x="56" y="401" class="label">cal.broader.percent-query-pairs.34</text>
+<text x="846" y="401" class="value">0.698×</text>
+<text x="972" y="401" class="label">43.4% longer</text>
+<rect x="1219" y="388" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="388" width="157.72" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="427" class="label">cal.deeper.atomic-alternatives.05</text>
+<text x="846" y="427" class="value">0.579×</text>
+<text x="972" y="427" class="label">72.6% longer</text>
+<rect x="1219" y="414" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="414" width="178.75" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="453" class="label">cal.deeper.file-names.09</text>
+<text x="846" y="453" class="value">0.413×</text>
+<text x="972" y="453" class="label">142.4% longer</text>
+<rect x="1219" y="440" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="440" width="206.52" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="479" class="label">cal.deeper.inline-modes.41</text>
+<text x="846" y="479" class="value">0.830×</text>
+<text x="972" y="479" class="label">20.5% longer</text>
+<rect x="1219" y="466" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="466" width="127.56" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="505" class="label">cal.deeper.money-units.36</text>
+<text x="846" y="505" class="value">0.700×</text>
+<text x="972" y="505" class="label">42.9% longer</text>
+<rect x="1219" y="492" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="492" width="157.30" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="531" class="label">cal.deeper.shared-prefix-alternatives.00</text>
+<text x="846" y="531" class="value">0.564×</text>
+<text x="972" y="531" class="label">77.3% longer</text>
+<rect x="1219" y="518" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="518" width="181.36" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="557" class="label">cal.deeper.shared-prefix-alternatives.26</text>
+<text x="846" y="557" class="value">0.445×</text>
+<text x="972" y="557" class="label">124.7% longer</text>
+<rect x="1219" y="544" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="544" width="201.04" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="583" class="label">cal.deeper.unicode-casefold.44</text>
+<text x="846" y="583" class="value">0.816×</text>
+<text x="972" y="583" class="label">22.5% longer</text>
+<rect x="1219" y="570" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="570" width="131.26" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="609" class="label">cal.expanded.atomic-possessive.12</text>
+<text x="846" y="609" class="value">0.657×</text>
+<text x="972" y="609" class="label">52.3% longer</text>
+<rect x="1219" y="596" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="596" width="165.36" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="635" class="label">cal.expanded.branch-alternatives.00</text>
+<text x="846" y="635" class="value">0.570×</text>
+<text x="972" y="635" class="label">75.4% longer</text>
+<rect x="1219" y="622" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="622" width="180.35" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="661" class="label">cal.expanded.branch-alternatives.16</text>
+<text x="846" y="661" class="value">0.540×</text>
+<text x="972" y="661" class="label">85.3% longer</text>
+<rect x="1219" y="648" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="648" width="185.40" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="687" class="label">cal.expanded.html-tags.36</text>
+<text x="846" y="687" class="value">0.777×</text>
+<text x="972" y="687" class="label">28.6% longer</text>
+<rect x="1219" y="674" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="674" width="140.92" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="713" class="label">cal.expanded.path-text.30</text>
+<text x="846" y="713" class="value">0.638×</text>
+<text x="972" y="713" class="label">56.7% longer</text>
+<rect x="1219" y="700" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="700" width="168.63" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="739" class="label">cal.expanded.quoted-escapes.16</text>
+<text x="846" y="739" class="value">0.506×</text>
+<text x="972" y="739" class="label">97.8% longer</text>
+<rect x="1219" y="726" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="726" width="191.02" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="765" class="label">cal.large.everyday-address.19</text>
+<text x="846" y="765" class="value">0.770×</text>
+<text x="972" y="765" class="label">29.9% longer</text>
+<rect x="1219" y="752" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="752" width="142.62" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="790" class="value">Stream matching results (finditer): 9/67</text>
+<text x="56" y="821" class="label">cal.broader.conjunct-lookahead.19</text>
+<text x="846" y="821" class="value">0.713×</text>
+<text x="972" y="821" class="label">40.2% longer</text>
+<rect x="1219" y="808" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="808" width="154.67" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="847" class="label">cal.broader.json-escaped-string.63</text>
+<text x="846" y="847" class="value">0.630×</text>
+<text x="972" y="847" class="label">58.6% longer</text>
+<rect x="1219" y="834" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="834" width="170.02" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="873" class="label">cal.broader.overlap-ordered-branches.52</text>
+<text x="846" y="873" class="value">0.636×</text>
+<text x="972" y="873" class="label">57.3% longer</text>
+<rect x="1219" y="860" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="860" width="169.11" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="899" class="label">cal.broader.turkish-simple-fold.37</text>
+<text x="846" y="899" class="value">0.395×</text>
+<text x="972" y="899" class="label">153.2% longer</text>
+<rect x="1219" y="886" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="886" width="209.54" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="925" class="label">cal.deeper.boundary-positions.49</text>
+<text x="846" y="925" class="value">0.626×</text>
+<text x="972" y="925" class="label">59.7% longer</text>
+<rect x="1219" y="912" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="912" width="170.77" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="951" class="label">cal.deeper.nullable-positions.50</text>
+<text x="846" y="951" class="value">0.590×</text>
+<text x="972" y="951" class="label">69.5% longer</text>
+<rect x="1219" y="938" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="938" width="176.99" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="977" class="label">cal.expanded.csv-fields.41</text>
+<text x="846" y="977" class="value">0.609×</text>
+<text x="972" y="977" class="label">64.1% longer</text>
+<rect x="1219" y="964" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="964" width="173.67" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1003" class="label">cal.expanded.nullable-empty.12</text>
+<text x="846" y="1003" class="value">0.601×</text>
+<text x="972" y="1003" class="label">66.3% longer</text>
+<rect x="1219" y="990" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="990" width="175.04" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1029" class="label">cal.large.request-records.23</text>
+<text x="846" y="1029" class="value">0.809×</text>
+<text x="972" y="1029" class="label">23.6% longer</text>
+<rect x="1219" y="1016" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1016" width="133.23" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="1054" class="value">Match the entire input (fullmatch): 7/47</text>
+<text x="56" y="1085" class="label">cal.broader.toml-dotted-key.16</text>
+<text x="846" y="1085" class="value">0.744×</text>
+<text x="972" y="1085" class="label">34.4% longer</text>
+<rect x="1219" y="1072" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1072" width="148.37" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1111" class="label">cal.broader.toml-dotted-key.17</text>
+<text x="846" y="1111" class="value">0.738×</text>
+<text x="972" y="1111" class="label">35.5% longer</text>
+<rect x="1219" y="1098" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1098" width="149.64" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1137" class="label">cal.broader.toml-dotted-key.19</text>
+<text x="846" y="1137" class="value">0.792×</text>
+<text x="972" y="1137" class="label">26.2% longer</text>
+<rect x="1219" y="1124" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1124" width="137.42" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1163" class="label">cal.broader.toml-dotted-key.39</text>
+<text x="846" y="1163" class="value">0.751×</text>
+<text x="972" y="1163" class="label">33.2% longer</text>
+<rect x="1219" y="1150" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1150" width="146.90" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1189" class="label">cal.broader.toml-dotted-key.40</text>
+<text x="846" y="1189" class="value">0.746×</text>
+<text x="972" y="1189" class="label">34.1% longer</text>
+<rect x="1219" y="1176" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1176" width="147.97" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1215" class="label">cal.broader.toml-dotted-key.56</text>
+<text x="846" y="1215" class="value">0.721×</text>
+<text x="972" y="1215" class="label">38.8% longer</text>
+<rect x="1219" y="1202" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1202" width="153.19" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1241" class="label">cal.broader.toml-dotted-key.63</text>
+<text x="846" y="1241" class="value">0.757×</text>
+<text x="972" y="1241" class="label">32.1% longer</text>
+<rect x="1219" y="1228" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1228" width="145.52" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="1266" class="value">Match at the beginning (match): 1/48</text>
+<text x="56" y="1297" class="label">cal.deeper.match-short.30</text>
+<text x="846" y="1297" class="value">0.747×</text>
+<text x="972" y="1297" class="label">33.9% longer</text>
+<rect x="1219" y="1284" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1284" width="147.73" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="1322" class="value">Read match information (match-surface): 0/48</text>
+<text x="40" y="1352" class="value">Scan repeated matches (scanner): 10/48</text>
+<text x="56" y="1383" class="label">cal.broader.http-cookie-pairs.00</text>
+<text x="846" y="1383" class="value">0.701×</text>
+<text x="972" y="1383" class="label">42.6% longer</text>
+<rect x="1219" y="1370" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1370" width="156.96" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1409" class="label">cal.broader.http-cookie-pairs.24</text>
+<text x="846" y="1409" class="value">0.704×</text>
+<text x="972" y="1409" class="label">42.0% longer</text>
+<rect x="1219" y="1396" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1396" width="156.38" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1435" class="label">cal.broader.http-cookie-pairs.40</text>
+<text x="846" y="1435" class="value">0.696×</text>
+<text x="972" y="1435" class="label">43.6% longer</text>
+<rect x="1219" y="1422" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1422" width="157.94" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1461" class="label">cal.broader.http-cookie-pairs.41</text>
+<text x="846" y="1461" class="value">0.804×</text>
+<text x="972" y="1461" class="label">24.3% longer</text>
+<rect x="1219" y="1448" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1448" width="134.43" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1487" class="label">cal.broader.http-cookie-pairs.48</text>
+<text x="846" y="1487" class="value">0.704×</text>
+<text x="972" y="1487" class="label">42.0% longer</text>
+<rect x="1219" y="1474" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1474" width="156.45" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1513" class="label">cal.deeper.scanner-window.24</text>
+<text x="846" y="1513" class="value">0.831×</text>
+<text x="972" y="1513" class="label">20.4% longer</text>
+<rect x="1219" y="1500" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1500" width="127.35" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1539" class="label">cal.deeper.sql-tokens.11</text>
+<text x="846" y="1539" class="value">0.658×</text>
+<text x="972" y="1539" class="label">51.9% longer</text>
+<rect x="1219" y="1526" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1526" width="165.05" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1565" class="label">cal.deeper.sql-tokens.25</text>
+<text x="846" y="1565" class="value">0.637×</text>
+<text x="972" y="1565" class="label">57.0% longer</text>
+<rect x="1219" y="1552" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1552" width="168.84" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1591" class="label">cal.deeper.sql-tokens.27</text>
+<text x="846" y="1591" class="value">0.643×</text>
+<text x="972" y="1591" class="label">55.5% longer</text>
+<rect x="1219" y="1578" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1578" width="167.76" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1617" class="label">cal.deeper.sql-tokens.35</text>
+<text x="846" y="1617" class="value">0.646×</text>
+<text x="972" y="1617" class="label">54.9% longer</text>
+<rect x="1219" y="1604" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1604" width="167.33" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="1642" class="value">Search for a match (search): 4/48</text>
+<text x="56" y="1673" class="label">cal.branch.miss</text>
+<text x="846" y="1673" class="value">0.731×</text>
+<text x="972" y="1673" class="label">36.9% longer</text>
+<rect x="1219" y="1660" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1660" width="151.16" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1699" class="label">cal.broader.jwt-token-segments.04</text>
+<text x="846" y="1699" class="value">0.754×</text>
+<text x="972" y="1699" class="label">32.7% longer</text>
+<rect x="1219" y="1686" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1686" width="146.30" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1725" class="label">cal.deeper.search-long-hit.14</text>
+<text x="846" y="1725" class="value">0.362×</text>
+<text x="972" y="1725" class="label">176.0% longer</text>
+<rect x="1219" y="1712" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1712" width="215.27" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="1751" class="label">cal.large.window-search.16</text>
+<text x="846" y="1751" class="value">0.768×</text>
+<text x="972" y="1751" class="label">30.2% longer</text>
+<rect x="1219" y="1738" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1738" width="143.08" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="1776" class="value">Split around matches (split): 1/47</text>
+<text x="56" y="1807" class="label">cal.large.split-keep.24</text>
+<text x="846" y="1807" class="value">0.781×</text>
+<text x="972" y="1807" class="label">28.1% longer</text>
+<rect x="1219" y="1794" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="1794" width="140.21" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="1832" class="value">Replace matching text (sub): 0/48</text>
+<text x="40" y="1862" class="value">Replace and count matches (subn): 0/47</text>
+<rect x="22" y="1908" width="1516" height="2746" rx="10" class="panel"/>
+<text x="38" y="1938" class="heading">Zig: 89/624 public cases took more than 20% longer than CPython</text>
+<text x="40" y="1984" class="value">Prepare a regular expression (compile): 0/48</text>
+<text x="40" y="2014" class="value">Escape special characters (escape): 0/48</text>
+<text x="40" y="2044" class="value">Find all matching results (findall): 8/80</text>
+<text x="56" y="2075" class="label">cal.broader.rfc5424-syslog.24</text>
+<text x="846" y="2075" class="value">0.733×</text>
+<text x="972" y="2075" class="label">36.4% longer</text>
+<rect x="1219" y="2062" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2062" width="150.61" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2101" class="label">cal.broader.windowed-binary-collect.13</text>
+<text x="846" y="2101" class="value">0.810×</text>
+<text x="972" y="2101" class="label">23.5% longer</text>
+<rect x="1219" y="2088" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2088" width="132.97" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2127" class="label">cal.broader.windowed-binary-collect.17</text>
+<text x="846" y="2127" class="value">0.781×</text>
+<text x="972" y="2127" class="label">28.1% longer</text>
+<rect x="1219" y="2114" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2114" width="140.16" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2153" class="label">cal.deeper.config-lines.08</text>
+<text x="846" y="2153" class="value">0.827×</text>
+<text x="972" y="2153" class="label">21.0% longer</text>
+<rect x="1219" y="2140" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2140" width="128.52" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2179" class="label">cal.deeper.shared-prefix-alternatives.00</text>
+<text x="846" y="2179" class="value">0.816×</text>
+<text x="972" y="2179" class="label">22.5% longer</text>
+<rect x="1219" y="2166" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2166" width="131.36" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2205" class="label">cal.expanded.branch-alternatives.00</text>
+<text x="846" y="2205" class="value">0.792×</text>
+<text x="972" y="2205" class="label">26.2% longer</text>
+<rect x="1219" y="2192" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2192" width="137.37" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2231" class="label">cal.expanded.email-extract.18</text>
+<text x="846" y="2231" class="value">0.776×</text>
+<text x="972" y="2231" class="label">28.9% longer</text>
+<rect x="1219" y="2218" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2218" width="141.31" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2257" class="label">cal.expanded.ip-version.18</text>
+<text x="846" y="2257" class="value">0.735×</text>
+<text x="972" y="2257" class="label">36.1% longer</text>
+<rect x="1219" y="2244" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2244" width="150.30" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="2282" class="value">Stream matching results (finditer): 7/67</text>
+<text x="56" y="2313" class="label">cal.broader.conjunct-lookahead.19</text>
+<text x="846" y="2313" class="value">0.713×</text>
+<text x="972" y="2313" class="label">40.2% longer</text>
+<rect x="1219" y="2300" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2300" width="154.69" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2339" class="label">cal.broader.multiline-mixed-windows.33</text>
+<text x="846" y="2339" class="value">0.785×</text>
+<text x="972" y="2339" class="label">27.5% longer</text>
+<rect x="1219" y="2326" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2326" width="139.27" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2365" class="label">cal.deeper.multiline-anchors.55</text>
+<text x="846" y="2365" class="value">0.809×</text>
+<text x="972" y="2365" class="label">23.7% longer</text>
+<rect x="1219" y="2352" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2352" width="133.34" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2391" class="label">cal.deeper.multiline-anchors.56</text>
+<text x="846" y="2391" class="value">0.740×</text>
+<text x="972" y="2391" class="label">35.2% longer</text>
+<rect x="1219" y="2378" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2378" width="149.28" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2417" class="label">cal.expanded.byte-buffer.00</text>
+<text x="846" y="2417" class="value">0.783×</text>
+<text x="972" y="2417" class="label">27.7% longer</text>
+<rect x="1219" y="2404" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2404" width="139.61" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2443" class="label">cal.lines.records</text>
+<text x="846" y="2443" class="value">0.800×</text>
+<text x="972" y="2443" class="label">25.0% longer</text>
+<rect x="1219" y="2430" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2430" width="135.47" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2469" class="label">cal.real.log</text>
+<text x="846" y="2469" class="value">0.702×</text>
+<text x="972" y="2469" class="label">42.4% longer</text>
+<rect x="1219" y="2456" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2456" width="156.76" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="2494" class="value">Match the entire input (fullmatch): 22/47</text>
+<text x="56" y="2525" class="label">cal.backref.fullmatch</text>
+<text x="846" y="2525" class="value">0.753×</text>
+<text x="972" y="2525" class="label">32.7% longer</text>
+<rect x="1219" y="2512" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2512" width="146.33" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2551" class="label">cal.broader.bracketed-ipv6-host.09</text>
+<text x="846" y="2551" class="value">0.744×</text>
+<text x="972" y="2551" class="label">34.4% longer</text>
+<rect x="1219" y="2538" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2538" width="148.33" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2577" class="label">cal.broader.bracketed-ipv6-host.14</text>
+<text x="846" y="2577" class="value">0.721×</text>
+<text x="972" y="2577" class="label">38.7% longer</text>
+<rect x="1219" y="2564" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2564" width="153.05" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2603" class="label">cal.broader.bracketed-ipv6-host.18</text>
+<text x="846" y="2603" class="value">0.743×</text>
+<text x="972" y="2603" class="label">34.5% longer</text>
+<rect x="1219" y="2590" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2590" width="148.45" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2629" class="label">cal.broader.bracketed-ipv6-host.39</text>
+<text x="846" y="2629" class="value">0.680×</text>
+<text x="972" y="2629" class="label">47.0% longer</text>
+<rect x="1219" y="2616" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2616" width="160.97" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2655" class="label">cal.broader.bracketed-ipv6-host.41</text>
+<text x="846" y="2655" class="value">0.756×</text>
+<text x="972" y="2655" class="label">32.3% longer</text>
+<rect x="1219" y="2642" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2642" width="145.77" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2681" class="label">cal.broader.bracketed-ipv6-host.46</text>
+<text x="846" y="2681" class="value">0.729×</text>
+<text x="972" y="2681" class="label">37.2% longer</text>
+<rect x="1219" y="2668" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2668" width="151.53" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2707" class="label">cal.broader.bracketed-ipv6-host.62</text>
+<text x="846" y="2707" class="value">0.706×</text>
+<text x="972" y="2707" class="label">41.6% longer</text>
+<rect x="1219" y="2694" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2694" width="156.02" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2733" class="label">cal.broader.conditional-angle-pair.21</text>
+<text x="846" y="2733" class="value">0.741×</text>
+<text x="972" y="2733" class="label">34.9% longer</text>
+<rect x="1219" y="2720" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2720" width="148.90" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2759" class="label">cal.broader.conditional-angle-pair.24</text>
+<text x="846" y="2759" class="value">0.772×</text>
+<text x="972" y="2759" class="label">29.5% longer</text>
+<rect x="1219" y="2746" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2746" width="142.17" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2785" class="label">cal.broader.conditional-angle-pair.28</text>
+<text x="846" y="2785" class="value">0.768×</text>
+<text x="972" y="2785" class="label">30.1% longer</text>
+<rect x="1219" y="2772" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2772" width="143.01" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2811" class="label">cal.broader.conditional-angle-pair.29</text>
+<text x="846" y="2811" class="value">0.740×</text>
+<text x="972" y="2811" class="label">35.1% longer</text>
+<rect x="1219" y="2798" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2798" width="149.17" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2837" class="label">cal.broader.conditional-angle-pair.42</text>
+<text x="846" y="2837" class="value">0.780×</text>
+<text x="972" y="2837" class="label">28.2% longer</text>
+<rect x="1219" y="2824" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2824" width="140.28" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2863" class="label">cal.broader.conditional-angle-pair.54</text>
+<text x="846" y="2863" class="value">0.751×</text>
+<text x="972" y="2863" class="label">33.2% longer</text>
+<rect x="1219" y="2850" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2850" width="146.92" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2889" class="label">cal.broader.conditional-angle-pair.57</text>
+<text x="846" y="2889" class="value">0.738×</text>
+<text x="972" y="2889" class="label">35.5% longer</text>
+<rect x="1219" y="2876" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2876" width="149.63" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2915" class="label">cal.large.references.05</text>
+<text x="846" y="2915" class="value">0.703×</text>
+<text x="972" y="2915" class="label">42.2% longer</text>
+<rect x="1219" y="2902" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2902" width="156.58" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2941" class="label">cal.large.references.10</text>
+<text x="846" y="2941" class="value">0.730×</text>
+<text x="972" y="2941" class="label">37.0% longer</text>
+<rect x="1219" y="2928" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2928" width="151.28" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2967" class="label">cal.large.references.11</text>
+<text x="846" y="2967" class="value">0.720×</text>
+<text x="972" y="2967" class="label">38.9% longer</text>
+<rect x="1219" y="2954" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2954" width="153.35" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="2993" class="label">cal.large.references.17</text>
+<text x="846" y="2993" class="value">0.712×</text>
+<text x="972" y="2993" class="label">40.5% longer</text>
+<rect x="1219" y="2980" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="2980" width="154.98" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3019" class="label">cal.large.references.20</text>
+<text x="846" y="3019" class="value">0.758×</text>
+<text x="972" y="3019" class="label">31.8% longer</text>
+<rect x="1219" y="3006" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3006" width="145.22" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3045" class="label">cal.large.references.23</text>
+<text x="846" y="3045" class="value">0.726×</text>
+<text x="972" y="3045" class="label">37.8% longer</text>
+<rect x="1219" y="3032" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3032" width="152.12" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3071" class="label">cal.large.references.29</text>
+<text x="846" y="3071" class="value">0.740×</text>
+<text x="972" y="3071" class="label">35.1% longer</text>
+<rect x="1219" y="3058" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3058" width="149.17" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="3096" class="value">Match at the beginning (match): 28/48</text>
+<text x="56" y="3127" class="label">cal.branch.prefix</text>
+<text x="846" y="3127" class="value">0.823×</text>
+<text x="972" y="3127" class="label">21.5% longer</text>
+<rect x="1219" y="3114" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3114" width="129.48" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3153" class="label">cal.conditional.match</text>
+<text x="846" y="3153" class="value">0.786×</text>
+<text x="972" y="3153" class="label">27.2% longer</text>
+<rect x="1219" y="3140" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3140" width="138.94" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3179" class="label">cal.deeper.match-short.00</text>
+<text x="846" y="3179" class="value">0.713×</text>
+<text x="972" y="3179" class="label">40.2% longer</text>
+<rect x="1219" y="3166" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3166" width="154.61" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3205" class="label">cal.deeper.match-short.12</text>
+<text x="846" y="3205" class="value">0.721×</text>
+<text x="972" y="3205" class="label">38.8% longer</text>
+<rect x="1219" y="3192" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3192" width="153.19" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3231" class="label">cal.deeper.match-short.15</text>
+<text x="846" y="3231" class="value">0.724×</text>
+<text x="972" y="3231" class="label">38.1% longer</text>
+<rect x="1219" y="3218" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3218" width="152.46" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3257" class="label">cal.deeper.match-short.30</text>
+<text x="846" y="3257" class="value">0.722×</text>
+<text x="972" y="3257" class="label">38.4% longer</text>
+<rect x="1219" y="3244" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3244" width="152.82" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3283" class="label">cal.deeper.match-short.36</text>
+<text x="846" y="3283" class="value">0.732×</text>
+<text x="972" y="3283" class="label">36.6% longer</text>
+<rect x="1219" y="3270" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3270" width="150.89" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3309" class="label">cal.deeper.match-short.39</text>
+<text x="846" y="3309" class="value">0.722×</text>
+<text x="972" y="3309" class="label">38.6% longer</text>
+<rect x="1219" y="3296" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3296" width="152.98" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3335" class="label">cal.deeper.match-short.42</text>
+<text x="846" y="3335" class="value">0.697×</text>
+<text x="972" y="3335" class="label">43.5% longer</text>
+<rect x="1219" y="3322" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3322" width="157.81" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3361" class="label">cal.deeper.match-short.51</text>
+<text x="846" y="3361" class="value">0.721×</text>
+<text x="972" y="3361" class="label">38.6% longer</text>
+<rect x="1219" y="3348" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3348" width="153.03" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3387" class="label">cal.deeper.match-short.54</text>
+<text x="846" y="3387" class="value">0.730×</text>
+<text x="972" y="3387" class="label">36.9% longer</text>
+<rect x="1219" y="3374" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3374" width="151.19" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3413" class="label">cal.large.conditionals.05</text>
+<text x="846" y="3413" class="value">0.788×</text>
+<text x="972" y="3413" class="label">26.9% longer</text>
+<rect x="1219" y="3400" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3400" width="138.40" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3439" class="label">cal.large.conditionals.11</text>
+<text x="846" y="3439" class="value">0.806×</text>
+<text x="972" y="3439" class="label">24.1% longer</text>
+<rect x="1219" y="3426" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3426" width="133.98" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3465" class="label">cal.large.conditionals.15</text>
+<text x="846" y="3465" class="value">0.808×</text>
+<text x="972" y="3465" class="label">23.7% longer</text>
+<rect x="1219" y="3452" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3452" width="133.34" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3491" class="label">cal.large.conditionals.16</text>
+<text x="846" y="3491" class="value">0.791×</text>
+<text x="972" y="3491" class="label">26.4% longer</text>
+<rect x="1219" y="3478" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3478" width="137.64" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3517" class="label">cal.large.conditionals.22</text>
+<text x="846" y="3517" class="value">0.827×</text>
+<text x="972" y="3517" class="label">20.9% longer</text>
+<rect x="1219" y="3504" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3504" width="128.37" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3543" class="label">cal.large.conditionals.24</text>
+<text x="846" y="3543" class="value">0.802×</text>
+<text x="972" y="3543" class="label">24.6% longer</text>
+<rect x="1219" y="3530" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3530" width="134.92" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3569" class="label">cal.large.prefix-check.03</text>
+<text x="846" y="3569" class="value">0.773×</text>
+<text x="972" y="3569" class="label">29.4% longer</text>
+<rect x="1219" y="3556" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3556" width="142.00" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3595" class="label">cal.large.prefix-check.07</text>
+<text x="846" y="3595" class="value">0.781×</text>
+<text x="972" y="3595" class="label">28.0% longer</text>
+<rect x="1219" y="3582" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3582" width="140.04" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3621" class="label">cal.large.prefix-check.11</text>
+<text x="846" y="3621" class="value">0.789×</text>
+<text x="972" y="3621" class="label">26.7% longer</text>
+<rect x="1219" y="3608" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3608" width="138.08" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3647" class="label">cal.large.prefix-check.15</text>
+<text x="846" y="3647" class="value">0.783×</text>
+<text x="972" y="3647" class="label">27.7% longer</text>
+<rect x="1219" y="3634" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3634" width="139.65" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3673" class="label">cal.large.prefix-check.19</text>
+<text x="846" y="3673" class="value">0.768×</text>
+<text x="972" y="3673" class="label">30.2% longer</text>
+<rect x="1219" y="3660" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3660" width="143.02" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3699" class="label">cal.large.prefix-check.23</text>
+<text x="846" y="3699" class="value">0.753×</text>
+<text x="972" y="3699" class="label">32.8% longer</text>
+<rect x="1219" y="3686" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3686" width="146.37" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3725" class="label">cal.large.prefix-check.27</text>
+<text x="846" y="3725" class="value">0.737×</text>
+<text x="972" y="3725" class="label">35.7% longer</text>
+<rect x="1219" y="3712" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3712" width="149.83" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3751" class="label">cal.large.prefix-check.31</text>
+<text x="846" y="3751" class="value">0.769×</text>
+<text x="972" y="3751" class="label">30.0% longer</text>
+<rect x="1219" y="3738" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3738" width="142.81" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3777" class="label">cal.match.miss</text>
+<text x="846" y="3777" class="value">0.784×</text>
+<text x="972" y="3777" class="label">27.5% longer</text>
+<rect x="1219" y="3764" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3764" width="139.36" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3803" class="label">cal.match.prefix</text>
+<text x="846" y="3803" class="value">0.820×</text>
+<text x="972" y="3803" class="label">22.0% longer</text>
+<rect x="1219" y="3790" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3790" width="130.31" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3829" class="label">cal.window.match</text>
+<text x="846" y="3829" class="value">0.747×</text>
+<text x="972" y="3829" class="label">34.0% longer</text>
+<rect x="1219" y="3816" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3816" width="147.81" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="3854" class="value">Read match information (match-surface): 2/48</text>
+<text x="56" y="3885" class="label">cal.broader.named-match-surface.23</text>
+<text x="846" y="3885" class="value">0.712×</text>
+<text x="972" y="3885" class="label">40.5% longer</text>
+<rect x="1219" y="3872" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3872" width="154.93" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3911" class="label">cal.broader.named-match-surface.37</text>
+<text x="846" y="3911" class="value">0.814×</text>
+<text x="972" y="3911" class="label">22.9% longer</text>
+<rect x="1219" y="3898" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3898" width="131.97" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="3936" class="value">Scan repeated matches (scanner): 5/48</text>
+<text x="56" y="3967" class="label">cal.broader.http-cookie-pairs.00</text>
+<text x="846" y="3967" class="value">0.671×</text>
+<text x="972" y="3967" class="label">49.0% longer</text>
+<rect x="1219" y="3954" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3954" width="162.67" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="3993" class="label">cal.broader.http-cookie-pairs.24</text>
+<text x="846" y="3993" class="value">0.686×</text>
+<text x="972" y="3993" class="label">45.8% longer</text>
+<rect x="1219" y="3980" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="3980" width="159.98" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4019" class="label">cal.broader.http-cookie-pairs.40</text>
+<text x="846" y="4019" class="value">0.590×</text>
+<text x="972" y="4019" class="label">69.4% longer</text>
+<rect x="1219" y="4006" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4006" width="176.91" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4045" class="label">cal.broader.http-cookie-pairs.41</text>
+<text x="846" y="4045" class="value">0.743×</text>
+<text x="972" y="4045" class="label">34.6% longer</text>
+<rect x="1219" y="4032" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4032" width="148.60" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4071" class="label">cal.broader.http-cookie-pairs.48</text>
+<text x="846" y="4071" class="value">0.676×</text>
+<text x="972" y="4071" class="label">47.9% longer</text>
+<rect x="1219" y="4058" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4058" width="161.81" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="4096" class="value">Search for a match (search): 16/48</text>
+<text x="56" y="4127" class="label">cal.broader.dual-lookaround-password.00</text>
+<text x="846" y="4127" class="value">0.643×</text>
+<text x="972" y="4127" class="label">55.5% longer</text>
+<rect x="1219" y="4114" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4114" width="167.79" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4153" class="label">cal.broader.jwt-token-segments.04</text>
+<text x="846" y="4153" class="value">0.725×</text>
+<text x="972" y="4153" class="label">37.9% longer</text>
+<rect x="1219" y="4140" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4140" width="152.22" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4179" class="label">cal.broader.possessive-digit-run.62</text>
+<text x="846" y="4179" class="value">0.796×</text>
+<text x="972" y="4179" class="label">25.6% longer</text>
+<rect x="1219" y="4166" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4166" width="136.47" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4205" class="label">cal.broader.warm-module-search.16</text>
+<text x="846" y="4205" class="value">0.822×</text>
+<text x="972" y="4205" class="label">21.7% longer</text>
+<rect x="1219" y="4192" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4192" width="129.88" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4231" class="label">cal.broader.warm-module-search.34</text>
+<text x="846" y="4231" class="value">0.831×</text>
+<text x="972" y="4231" class="label">20.3% longer</text>
+<rect x="1219" y="4218" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4218" width="127.27" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4257" class="label">cal.expanded.long-literal.00</text>
+<text x="846" y="4257" class="value">0.695×</text>
+<text x="972" y="4257" class="label">43.9% longer</text>
+<rect x="1219" y="4244" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4244" width="158.24" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4283" class="label">cal.expanded.long-literal.01</text>
+<text x="846" y="4283" class="value">0.667×</text>
+<text x="972" y="4283" class="label">50.0% longer</text>
+<rect x="1219" y="4270" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4270" width="163.54" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4309" class="label">cal.large.literal-hit.24</text>
+<text x="846" y="4309" class="value">0.654×</text>
+<text x="972" y="4309" class="label">53.0% longer</text>
+<rect x="1219" y="4296" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4296" width="165.89" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4335" class="label">cal.large.literal-miss.05</text>
+<text x="846" y="4335" class="value">0.709×</text>
+<text x="972" y="4335" class="label">40.9% longer</text>
+<rect x="1219" y="4322" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4322" width="155.39" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4361" class="label">cal.large.literal-miss.09</text>
+<text x="846" y="4361" class="value">0.722×</text>
+<text x="972" y="4361" class="label">38.5% longer</text>
+<rect x="1219" y="4348" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4348" width="152.85" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4387" class="label">cal.large.nearby-capture.13</text>
+<text x="846" y="4387" class="value">0.708×</text>
+<text x="972" y="4387" class="label">41.2% longer</text>
+<rect x="1219" y="4374" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4374" width="155.60" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4413" class="label">cal.large.window-search.16</text>
+<text x="846" y="4413" class="value">0.821×</text>
+<text x="972" y="4413" class="label">21.7% longer</text>
+<rect x="1219" y="4400" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4400" width="129.91" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4439" class="label">cal.search.class-anchor</text>
+<text x="846" y="4439" class="value">0.800×</text>
+<text x="972" y="4439" class="label">25.0% longer</text>
+<rect x="1219" y="4426" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4426" width="135.56" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4465" class="label">cal.search.literal.hit</text>
+<text x="846" y="4465" class="value">0.461×</text>
+<text x="972" y="4465" class="label">117.1% longer</text>
+<rect x="1219" y="4452" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4452" width="198.44" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4491" class="label">cal.search.literal.miss</text>
+<text x="846" y="4491" class="value">0.621×</text>
+<text x="972" y="4491" class="label">61.1% longer</text>
+<rect x="1219" y="4478" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4478" width="171.71" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4517" class="label">cal.window.search</text>
+<text x="846" y="4517" class="value">0.805×</text>
+<text x="972" y="4517" class="label">24.2% longer</text>
+<rect x="1219" y="4504" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4504" width="134.26" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="4542" class="value">Split around matches (split): 0/47</text>
+<text x="40" y="4572" class="value">Replace matching text (sub): 1/48</text>
+<text x="56" y="4603" class="label">cal.broader.callable-capture-replace.05</text>
+<text x="846" y="4603" class="value">0.832×</text>
+<text x="972" y="4603" class="label">20.2% longer</text>
+<rect x="1219" y="4590" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4590" width="127.01" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="4628" class="value">Replace and count matches (subn): 0/47</text>
+<rect x="22" y="4674" width="1516" height="3526" rx="10" class="panel"/>
+<text x="38" y="4704" class="heading">Rust: 119/624 public cases took more than 20% longer than CPython</text>
+<text x="40" y="4750" class="value">Prepare a regular expression (compile): 0/48</text>
+<text x="40" y="4780" class="value">Escape special characters (escape): 1/48</text>
+<text x="56" y="4811" class="label">cal.deeper.escape-mixed.44</text>
+<text x="846" y="4811" class="value">0.767×</text>
+<text x="972" y="4811" class="label">30.4% longer</text>
+<rect x="1219" y="4798" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4798" width="143.37" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="4836" class="value">Find all matching results (findall): 31/80</text>
+<text x="56" y="4867" class="label">cal.broader.c-preprocessor-line.10</text>
+<text x="846" y="4867" class="value">0.602×</text>
+<text x="972" y="4867" class="label">66.1% longer</text>
+<rect x="1219" y="4854" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4854" width="174.96" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4893" class="label">cal.broader.fixed-width-lookbehind.53</text>
+<text x="846" y="4893" class="value">0.615×</text>
+<text x="972" y="4893" class="label">62.6% longer</text>
+<rect x="1219" y="4880" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4880" width="172.72" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4919" class="label">cal.broader.python-relative-import.12</text>
+<text x="846" y="4919" class="value">0.496×</text>
+<text x="972" y="4919" class="label">101.6% longer</text>
+<rect x="1219" y="4906" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4906" width="192.61" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4945" class="label">cal.broader.quoted-named-backref.06</text>
+<text x="846" y="4945" class="value">0.736×</text>
+<text x="972" y="4945" class="label">35.8% longer</text>
+<rect x="1219" y="4932" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4932" width="150.00" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4971" class="label">cal.broader.rfc5424-syslog.24</text>
+<text x="846" y="4971" class="value">0.500×</text>
+<text x="972" y="4971" class="label">100.2% longer</text>
+<rect x="1219" y="4958" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4958" width="192.01" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="4997" class="label">cal.broader.rust-attribute.47</text>
+<text x="846" y="4997" class="value">0.543×</text>
+<text x="972" y="4997" class="label">84.0% longer</text>
+<rect x="1219" y="4984" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="4984" width="184.77" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5023" class="label">cal.broader.windowed-binary-collect.13</text>
+<text x="846" y="5023" class="value">0.649×</text>
+<text x="972" y="5023" class="label">54.1% longer</text>
+<rect x="1219" y="5010" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5010" width="166.75" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5049" class="label">cal.broader.windowed-binary-collect.17</text>
+<text x="846" y="5049" class="value">0.685×</text>
+<text x="972" y="5049" class="label">46.0% longer</text>
+<rect x="1219" y="5036" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5036" width="160.13" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5075" class="label">cal.deeper.backref-named.47</text>
+<text x="846" y="5075" class="value">0.822×</text>
+<text x="972" y="5075" class="label">21.7% longer</text>
+<rect x="1219" y="5062" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5062" width="129.90" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5101" class="label">cal.deeper.config-lines.08</text>
+<text x="846" y="5101" class="value">0.650×</text>
+<text x="972" y="5101" class="label">53.8% longer</text>
+<rect x="1219" y="5088" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5088" width="166.52" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5127" class="label">cal.deeper.email-mixed.62</text>
+<text x="846" y="5127" class="value">0.521×</text>
+<text x="972" y="5127" class="label">91.9% longer</text>
+<rect x="1219" y="5114" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5114" width="188.47" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5153" class="label">cal.deeper.error-stack.02</text>
+<text x="846" y="5153" class="value">0.744×</text>
+<text x="972" y="5153" class="label">34.4% longer</text>
+<rect x="1219" y="5140" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5140" width="148.35" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5179" class="label">cal.deeper.html-attributes.01</text>
+<text x="846" y="5179" class="value">0.673×</text>
+<text x="972" y="5179" class="label">48.5% longer</text>
+<rect x="1219" y="5166" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5166" width="162.26" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5205" class="label">cal.deeper.inline-modes.41</text>
+<text x="846" y="5205" class="value">0.748×</text>
+<text x="972" y="5205" class="label">33.7% longer</text>
+<rect x="1219" y="5192" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5192" width="147.52" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5231" class="label">cal.deeper.inline-modes.48</text>
+<text x="846" y="5231" class="value">0.683×</text>
+<text x="972" y="5231" class="label">46.4% longer</text>
+<rect x="1219" y="5218" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5218" width="160.49" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5257" class="label">cal.deeper.quote-captures.40</text>
+<text x="846" y="5257" class="value">0.638×</text>
+<text x="972" y="5257" class="label">56.8% longer</text>
+<rect x="1219" y="5244" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5244" width="168.72" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5283" class="label">cal.deeper.shared-prefix-alternatives.00</text>
+<text x="846" y="5283" class="value">0.554×</text>
+<text x="972" y="5283" class="label">80.5% longer</text>
+<rect x="1219" y="5270" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5270" width="183.00" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5309" class="label">cal.deeper.shared-prefix-alternatives.26</text>
+<text x="846" y="5309" class="value">0.529×</text>
+<text x="972" y="5309" class="label">89.2% longer</text>
+<rect x="1219" y="5296" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5296" width="187.22" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5335" class="label">cal.expanded.branch-alternatives.00</text>
+<text x="846" y="5335" class="value">0.576×</text>
+<text x="972" y="5335" class="label">73.7% longer</text>
+<rect x="1219" y="5322" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5322" width="179.42" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5361" class="label">cal.expanded.email-extract.18</text>
+<text x="846" y="5361" class="value">0.508×</text>
+<text x="972" y="5361" class="label">96.9% longer</text>
+<rect x="1219" y="5348" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5348" width="190.62" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5387" class="label">cal.expanded.ip-version.18</text>
+<text x="846" y="5387" class="value">0.615×</text>
+<text x="972" y="5387" class="label">62.5% longer</text>
+<rect x="1219" y="5374" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5374" width="172.66" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5413" class="label">cal.expanded.path-text.30</text>
+<text x="846" y="5413" class="value">0.699×</text>
+<text x="972" y="5413" class="label">43.0% longer</text>
+<rect x="1219" y="5400" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5400" width="157.42" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5439" class="label">cal.expanded.windowed.34</text>
+<text x="846" y="5439" class="value">0.712×</text>
+<text x="972" y="5439" class="label">40.5% longer</text>
+<rect x="1219" y="5426" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5426" width="154.96" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5465" class="label">cal.large.everyday-address.19</text>
+<text x="846" y="5465" class="value">0.437×</text>
+<text x="972" y="5465" class="label">128.6% longer</text>
+<rect x="1219" y="5452" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5452" width="202.30" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5491" class="label">cal.large.formatted-lines.10</text>
+<text x="846" y="5491" class="value">0.747×</text>
+<text x="972" y="5491" class="label">33.9% longer</text>
+<rect x="1219" y="5478" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5478" width="147.70" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5517" class="label">cal.large.structured-text.20</text>
+<text x="846" y="5517" class="value">0.760×</text>
+<text x="972" y="5517" class="label">31.6% longer</text>
+<rect x="1219" y="5504" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5504" width="144.92" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5543" class="label">cal.look.negative-ahead</text>
+<text x="846" y="5543" class="value">0.661×</text>
+<text x="972" y="5543" class="label">51.4% longer</text>
+<rect x="1219" y="5530" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5530" width="164.63" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5569" class="label">cal.real.comments</text>
+<text x="846" y="5569" class="value">0.690×</text>
+<text x="972" y="5569" class="label">45.0% longer</text>
+<rect x="1219" y="5556" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5556" width="159.18" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5595" class="label">cal.real.email</text>
+<text x="846" y="5595" class="value">0.519×</text>
+<text x="972" y="5595" class="label">92.8% longer</text>
+<rect x="1219" y="5582" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5582" width="188.87" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5621" class="label">cal.real.markup</text>
+<text x="846" y="5621" class="value">0.680×</text>
+<text x="972" y="5621" class="label">47.1% longer</text>
+<rect x="1219" y="5608" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5608" width="161.08" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5647" class="label">cal.real.quotes</text>
+<text x="846" y="5647" class="value">0.744×</text>
+<text x="972" y="5647" class="label">34.4% longer</text>
+<rect x="1219" y="5634" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5634" width="148.33" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="5672" class="value">Stream matching results (finditer): 20/67</text>
+<text x="56" y="5703" class="label">cal.broader.apache-vhost-log.47</text>
+<text x="846" y="5703" class="value">0.555×</text>
+<text x="972" y="5703" class="label">80.3% longer</text>
+<rect x="1219" y="5690" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5690" width="182.92" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5729" class="label">cal.broader.conjunct-lookahead.19</text>
+<text x="846" y="5729" class="value">0.561×</text>
+<text x="972" y="5729" class="label">78.3% longer</text>
+<rect x="1219" y="5716" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5716" width="181.87" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5755" class="label">cal.broader.git-unified-hunk.21</text>
+<text x="846" y="5755" class="value">0.773×</text>
+<text x="972" y="5755" class="label">29.3% longer</text>
+<rect x="1219" y="5742" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5742" width="141.84" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5781" class="label">cal.broader.js-template-hole.29</text>
+<text x="846" y="5781" class="value">0.673×</text>
+<text x="972" y="5781" class="label">48.6% longer</text>
+<rect x="1219" y="5768" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5768" width="162.37" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5807" class="label">cal.broader.lazy-markup-tag.36</text>
+<text x="846" y="5807" class="value">0.653×</text>
+<text x="972" y="5807" class="label">53.1% longer</text>
+<rect x="1219" y="5794" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5794" width="165.94" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5833" class="label">cal.broader.lookahead-empty-steps.51</text>
+<text x="846" y="5833" class="value">0.747×</text>
+<text x="972" y="5833" class="label">33.8% longer</text>
+<rect x="1219" y="5820" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5820" width="147.67" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5859" class="label">cal.broader.nullable-branch-cursor.29</text>
+<text x="846" y="5859" class="value">0.730×</text>
+<text x="972" y="5859" class="label">37.0% longer</text>
+<rect x="1219" y="5846" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5846" width="151.33" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5885" class="label">cal.broader.overlap-ordered-branches.52</text>
+<text x="846" y="5885" class="value">0.788×</text>
+<text x="972" y="5885" class="label">27.0% longer</text>
+<rect x="1219" y="5872" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5872" width="138.51" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5911" class="label">cal.deeper.boundary-positions.49</text>
+<text x="846" y="5911" class="value">0.641×</text>
+<text x="972" y="5911" class="label">56.1% longer</text>
+<rect x="1219" y="5898" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5898" width="168.21" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5937" class="label">cal.deeper.lookahead-chain.45</text>
+<text x="846" y="5937" class="value">0.762×</text>
+<text x="972" y="5937" class="label">31.3% longer</text>
+<rect x="1219" y="5924" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5924" width="144.51" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5963" class="label">cal.deeper.multiline-anchors.55</text>
+<text x="846" y="5963" class="value">0.707×</text>
+<text x="972" y="5963" class="label">41.4% longer</text>
+<rect x="1219" y="5950" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5950" width="155.85" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="5989" class="label">cal.deeper.multiline-anchors.56</text>
+<text x="846" y="5989" class="value">0.833×</text>
+<text x="972" y="5989" class="label">20.0% longer</text>
+<rect x="1219" y="5976" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="5976" width="126.64" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6015" class="label">cal.deeper.nullable-positions.50</text>
+<text x="846" y="6015" class="value">0.686×</text>
+<text x="972" y="6015" class="label">45.7% longer</text>
+<rect x="1219" y="6002" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6002" width="159.87" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6041" class="label">cal.deeper.request-logs.60</text>
+<text x="846" y="6041" class="value">0.437×</text>
+<text x="972" y="6041" class="label">128.6% longer</text>
+<rect x="1219" y="6028" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6028" width="202.31" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6067" class="label">cal.expanded.line-records.47</text>
+<text x="846" y="6067" class="value">0.584×</text>
+<text x="972" y="6067" class="label">71.3% longer</text>
+<rect x="1219" y="6054" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6054" width="178.03" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6093" class="label">cal.expanded.nullable-empty.12</text>
+<text x="846" y="6093" class="value">0.674×</text>
+<text x="972" y="6093" class="label">48.4% longer</text>
+<rect x="1219" y="6080" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6080" width="162.22" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6119" class="label">cal.large.bytes-buffer.03</text>
+<text x="846" y="6119" class="value">0.797×</text>
+<text x="972" y="6119" class="label">25.5% longer</text>
+<rect x="1219" y="6106" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6106" width="136.29" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6145" class="label">cal.large.request-records.23</text>
+<text x="846" y="6145" class="value">0.758×</text>
+<text x="972" y="6145" class="label">31.9% longer</text>
+<rect x="1219" y="6132" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6132" width="145.26" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6171" class="label">cal.lines.records</text>
+<text x="846" y="6171" class="value">0.812×</text>
+<text x="972" y="6171" class="label">23.2% longer</text>
+<rect x="1219" y="6158" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6158" width="132.46" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6197" class="label">cal.zero.boundary</text>
+<text x="846" y="6197" class="value">0.737×</text>
+<text x="972" y="6197" class="label">35.6% longer</text>
+<rect x="1219" y="6184" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6184" width="149.72" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="6222" class="value">Match the entire input (fullmatch): 21/47</text>
+<text x="56" y="6253" class="label">cal.backref.fullmatch</text>
+<text x="846" y="6253" class="value">0.825×</text>
+<text x="972" y="6253" class="label">21.2% longer</text>
+<rect x="1219" y="6240" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6240" width="128.88" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6279" class="label">cal.broader.bracketed-ipv6-host.09</text>
+<text x="846" y="6279" class="value">0.638×</text>
+<text x="972" y="6279" class="label">56.8% longer</text>
+<rect x="1219" y="6266" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6266" width="168.75" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6305" class="label">cal.broader.bracketed-ipv6-host.14</text>
+<text x="846" y="6305" class="value">0.666×</text>
+<text x="972" y="6305" class="label">50.3% longer</text>
+<rect x="1219" y="6292" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6292" width="163.73" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6331" class="label">cal.broader.bracketed-ipv6-host.18</text>
+<text x="846" y="6331" class="value">0.620×</text>
+<text x="972" y="6331" class="label">61.4% longer</text>
+<rect x="1219" y="6318" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6318" width="171.90" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6357" class="label">cal.broader.bracketed-ipv6-host.39</text>
+<text x="846" y="6357" class="value">0.626×</text>
+<text x="972" y="6357" class="label">59.8% longer</text>
+<rect x="1219" y="6344" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6344" width="170.85" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6383" class="label">cal.broader.bracketed-ipv6-host.41</text>
+<text x="846" y="6383" class="value">0.639×</text>
+<text x="972" y="6383" class="label">56.4% longer</text>
+<rect x="1219" y="6370" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6370" width="168.42" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6409" class="label">cal.broader.bracketed-ipv6-host.46</text>
+<text x="846" y="6409" class="value">0.680×</text>
+<text x="972" y="6409" class="label">47.0% longer</text>
+<rect x="1219" y="6396" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6396" width="161.03" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6435" class="label">cal.broader.bracketed-ipv6-host.62</text>
+<text x="846" y="6435" class="value">0.655×</text>
+<text x="972" y="6435" class="label">52.7% longer</text>
+<rect x="1219" y="6422" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6422" width="165.69" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6461" class="label">cal.broader.conditional-angle-pair.21</text>
+<text x="846" y="6461" class="value">0.809×</text>
+<text x="972" y="6461" class="label">23.6% longer</text>
+<rect x="1219" y="6448" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6448" width="133.13" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6487" class="label">cal.broader.conditional-angle-pair.24</text>
+<text x="846" y="6487" class="value">0.828×</text>
+<text x="972" y="6487" class="label">20.8% longer</text>
+<rect x="1219" y="6474" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6474" width="128.15" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6513" class="label">cal.broader.conditional-angle-pair.28</text>
+<text x="846" y="6513" class="value">0.818×</text>
+<text x="972" y="6513" class="label">22.3% longer</text>
+<rect x="1219" y="6500" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6500" width="130.87" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6539" class="label">cal.broader.conditional-angle-pair.42</text>
+<text x="846" y="6539" class="value">0.829×</text>
+<text x="972" y="6539" class="label">20.6% longer</text>
+<rect x="1219" y="6526" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6526" width="127.80" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6565" class="label">cal.broader.conditional-angle-pair.54</text>
+<text x="846" y="6565" class="value">0.813×</text>
+<text x="972" y="6565" class="label">23.0% longer</text>
+<rect x="1219" y="6552" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6552" width="132.16" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6591" class="label">cal.broader.conditional-angle-pair.57</text>
+<text x="846" y="6591" class="value">0.786×</text>
+<text x="972" y="6591" class="label">27.2% longer</text>
+<rect x="1219" y="6578" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6578" width="138.86" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6617" class="label">cal.large.references.05</text>
+<text x="846" y="6617" class="value">0.733×</text>
+<text x="972" y="6617" class="label">36.5% longer</text>
+<rect x="1219" y="6604" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6604" width="150.69" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6643" class="label">cal.large.references.10</text>
+<text x="846" y="6643" class="value">0.821×</text>
+<text x="972" y="6643" class="label">21.8% longer</text>
+<rect x="1219" y="6630" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6630" width="130.07" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6669" class="label">cal.large.references.11</text>
+<text x="846" y="6669" class="value">0.764×</text>
+<text x="972" y="6669" class="label">30.9% longer</text>
+<rect x="1219" y="6656" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6656" width="144.07" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6695" class="label">cal.large.references.17</text>
+<text x="846" y="6695" class="value">0.752×</text>
+<text x="972" y="6695" class="label">33.0% longer</text>
+<rect x="1219" y="6682" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6682" width="146.64" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6721" class="label">cal.large.references.23</text>
+<text x="846" y="6721" class="value">0.756×</text>
+<text x="972" y="6721" class="label">32.2% longer</text>
+<rect x="1219" y="6708" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6708" width="145.67" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6747" class="label">cal.large.references.29</text>
+<text x="846" y="6747" class="value">0.758×</text>
+<text x="972" y="6747" class="label">32.0% longer</text>
+<rect x="1219" y="6734" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6734" width="145.42" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6773" class="label">cal.large.whole-check.07</text>
+<text x="846" y="6773" class="value">0.803×</text>
+<text x="972" y="6773" class="label">24.5% longer</text>
+<rect x="1219" y="6760" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6760" width="134.73" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="6798" class="value">Match at the beginning (match): 10/48</text>
+<text x="56" y="6829" class="label">cal.branch.prefix</text>
+<text x="846" y="6829" class="value">0.665×</text>
+<text x="972" y="6829" class="label">50.3% longer</text>
+<rect x="1219" y="6816" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6816" width="163.80" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6855" class="label">cal.broader.python-decorator.04</text>
+<text x="846" y="6855" class="value">0.830×</text>
+<text x="972" y="6855" class="label">20.5% longer</text>
+<rect x="1219" y="6842" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6842" width="127.53" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6881" class="label">cal.broader.python-decorator.11</text>
+<text x="846" y="6881" class="value">0.809×</text>
+<text x="972" y="6881" class="label">23.6% longer</text>
+<rect x="1219" y="6868" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6868" width="133.15" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6907" class="label">cal.broader.python-decorator.12</text>
+<text x="846" y="6907" class="value">0.810×</text>
+<text x="972" y="6907" class="label">23.5% longer</text>
+<rect x="1219" y="6894" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6894" width="133.05" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6933" class="label">cal.broader.python-decorator.18</text>
+<text x="846" y="6933" class="value">0.806×</text>
+<text x="972" y="6933" class="label">24.1% longer</text>
+<rect x="1219" y="6920" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6920" width="134.03" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6959" class="label">cal.broader.python-decorator.31</text>
+<text x="846" y="6959" class="value">0.824×</text>
+<text x="972" y="6959" class="label">21.3% longer</text>
+<rect x="1219" y="6946" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6946" width="129.14" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="6985" class="label">cal.broader.python-decorator.52</text>
+<text x="846" y="6985" class="value">0.808×</text>
+<text x="972" y="6985" class="label">23.7% longer</text>
+<rect x="1219" y="6972" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6972" width="133.41" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7011" class="label">cal.deeper.match-short.54</text>
+<text x="846" y="7011" class="value">0.542×</text>
+<text x="972" y="7011" class="label">84.5% longer</text>
+<rect x="1219" y="6998" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="6998" width="184.99" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7037" class="label">cal.large.prefix-check.30</text>
+<text x="846" y="7037" class="value">0.809×</text>
+<text x="972" y="7037" class="label">23.6% longer</text>
+<rect x="1219" y="7024" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7024" width="133.21" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7063" class="label">cal.window.match</text>
+<text x="846" y="7063" class="value">0.737×</text>
+<text x="972" y="7063" class="label">35.6% longer</text>
+<rect x="1219" y="7050" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7050" width="149.72" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="7088" class="value">Read match information (match-surface): 1/48</text>
+<text x="56" y="7119" class="label">cal.match.surface</text>
+<text x="846" y="7119" class="value">0.756×</text>
+<text x="972" y="7119" class="label">32.3% longer</text>
+<rect x="1219" y="7106" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7106" width="145.76" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="7144" class="value">Scan repeated matches (scanner): 7/48</text>
+<text x="56" y="7175" class="label">cal.broader.http-cookie-pairs.00</text>
+<text x="846" y="7175" class="value">0.701×</text>
+<text x="972" y="7175" class="label">42.7% longer</text>
+<rect x="1219" y="7162" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7162" width="157.07" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7201" class="label">cal.broader.http-cookie-pairs.24</text>
+<text x="846" y="7201" class="value">0.673×</text>
+<text x="972" y="7201" class="label">48.6% longer</text>
+<rect x="1219" y="7188" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7188" width="162.40" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7227" class="label">cal.broader.http-cookie-pairs.40</text>
+<text x="846" y="7227" class="value">0.695×</text>
+<text x="972" y="7227" class="label">44.0% longer</text>
+<rect x="1219" y="7214" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7214" width="158.29" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7253" class="label">cal.broader.http-cookie-pairs.41</text>
+<text x="846" y="7253" class="value">0.655×</text>
+<text x="972" y="7253" class="label">52.6% longer</text>
+<rect x="1219" y="7240" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7240" width="165.57" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7279" class="label">cal.broader.http-cookie-pairs.48</text>
+<text x="846" y="7279" class="value">0.706×</text>
+<text x="972" y="7279" class="label">41.7% longer</text>
+<rect x="1219" y="7266" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7266" width="156.12" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7305" class="label">cal.deeper.buffer-tokenize.32</text>
+<text x="846" y="7305" class="value">0.807×</text>
+<text x="972" y="7305" class="label">23.9% longer</text>
+<rect x="1219" y="7292" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7292" width="133.71" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7331" class="label">cal.deeper.scanner-window.24</text>
+<text x="846" y="7331" class="value">0.821×</text>
+<text x="972" y="7331" class="label">21.7% longer</text>
+<rect x="1219" y="7318" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7318" width="129.94" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="7356" class="value">Search for a match (search): 16/48</text>
+<text x="56" y="7387" class="label">cal.block.dotall</text>
+<text x="846" y="7387" class="value">0.612×</text>
+<text x="972" y="7387" class="label">63.5% longer</text>
+<rect x="1219" y="7374" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7374" width="173.25" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7413" class="label">cal.branch.miss</text>
+<text x="846" y="7413" class="value">0.331×</text>
+<text x="972" y="7413" class="label">202.2% longer</text>
+<rect x="1219" y="7400" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7400" width="221.02" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7439" class="label">cal.broader.dual-lookaround-password.00</text>
+<text x="846" y="7439" class="value">0.589×</text>
+<text x="972" y="7439" class="label">69.7% longer</text>
+<rect x="1219" y="7426" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7426" width="177.08" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7465" class="label">cal.broader.jwt-token-segments.04</text>
+<text x="846" y="7465" class="value">0.414×</text>
+<text x="972" y="7465" class="label">141.3% longer</text>
+<rect x="1219" y="7452" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7452" width="206.19" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7491" class="label">cal.broader.rust-use-tree.08</text>
+<text x="846" y="7491" class="value">0.591×</text>
+<text x="972" y="7491" class="label">69.1% longer</text>
+<rect x="1219" y="7478" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7478" width="176.76" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7517" class="label">cal.deeper.search-long-hit.14</text>
+<text x="846" y="7517" class="value">0.290×</text>
+<text x="972" y="7517" class="label">245.2% longer</text>
+<rect x="1219" y="7504" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7504" width="228.99" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7543" class="label">cal.large.module-search.16</text>
+<text x="846" y="7543" class="value">0.583×</text>
+<text x="972" y="7543" class="label">71.4% longer</text>
+<rect x="1219" y="7530" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7530" width="178.10" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7569" class="label">cal.large.module-search.17</text>
+<text x="846" y="7569" class="value">0.569×</text>
+<text x="972" y="7569" class="label">75.8% longer</text>
+<rect x="1219" y="7556" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7556" width="180.53" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7595" class="label">cal.large.nearby-capture.13</text>
+<text x="846" y="7595" class="value">0.640×</text>
+<text x="972" y="7595" class="label">56.3% longer</text>
+<rect x="1219" y="7582" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7582" width="168.37" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7621" class="label">cal.large.verbose-dotall.20</text>
+<text x="846" y="7621" class="value">0.662×</text>
+<text x="972" y="7621" class="label">51.0% longer</text>
+<rect x="1219" y="7608" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7608" width="164.33" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7647" class="label">cal.large.window-search.16</text>
+<text x="846" y="7647" class="value">0.675×</text>
+<text x="972" y="7647" class="label">48.2% longer</text>
+<rect x="1219" y="7634" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7634" width="162.00" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7673" class="label">cal.module.warm</text>
+<text x="846" y="7673" class="value">0.576×</text>
+<text x="972" y="7673" class="label">73.5% longer</text>
+<rect x="1219" y="7660" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7660" width="179.29" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7699" class="label">cal.pattern.verbose</text>
+<text x="846" y="7699" class="value">0.554×</text>
+<text x="972" y="7699" class="label">80.7% longer</text>
+<rect x="1219" y="7686" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7686" width="183.09" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7725" class="label">cal.real.url</text>
+<text x="846" y="7725" class="value">0.815×</text>
+<text x="972" y="7725" class="label">22.7% longer</text>
+<rect x="1219" y="7712" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7712" width="131.63" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7751" class="label">cal.real.uuid</text>
+<text x="846" y="7751" class="value">0.718×</text>
+<text x="972" y="7751" class="label">39.3% longer</text>
+<rect x="1219" y="7738" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7738" width="153.68" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7777" class="label">cal.window.search</text>
+<text x="846" y="7777" class="value">0.821×</text>
+<text x="972" y="7777" class="label">21.9% longer</text>
+<rect x="1219" y="7764" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7764" width="130.13" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="7802" class="value">Split around matches (split): 11/47</text>
+<text x="56" y="7833" class="label">cal.broader.negative-class-columns.13</text>
+<text x="846" y="7833" class="value">0.679×</text>
+<text x="972" y="7833" class="label">47.4% longer</text>
+<rect x="1219" y="7820" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7820" width="161.32" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7859" class="label">cal.broader.negative-class-columns.23</text>
+<text x="846" y="7859" class="value">0.642×</text>
+<text x="972" y="7859" class="label">55.7% longer</text>
+<rect x="1219" y="7846" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7846" width="167.95" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7885" class="label">cal.broader.negative-class-columns.44</text>
+<text x="846" y="7885" class="value">0.663×</text>
+<text x="972" y="7885" class="label">50.7% longer</text>
+<rect x="1219" y="7872" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7872" width="164.11" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7911" class="label">cal.broader.negative-class-columns.59</text>
+<text x="846" y="7911" class="value">0.660×</text>
+<text x="972" y="7911" class="label">51.5% longer</text>
+<rect x="1219" y="7898" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7898" width="164.71" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7937" class="label">cal.broader.negative-class-columns.62</text>
+<text x="846" y="7937" class="value">0.667×</text>
+<text x="972" y="7937" class="label">50.0% longer</text>
+<rect x="1219" y="7924" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7924" width="163.50" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7963" class="label">cal.deeper.csv-split-even.08</text>
+<text x="846" y="7963" class="value">0.614×</text>
+<text x="972" y="7963" class="label">62.9% longer</text>
+<rect x="1219" y="7950" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7950" width="172.90" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="7989" class="label">cal.deeper.csv-split-even.16</text>
+<text x="846" y="7989" class="value">0.617×</text>
+<text x="972" y="7989" class="label">62.0% longer</text>
+<rect x="1219" y="7976" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="7976" width="172.33" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="8015" class="label">cal.deeper.csv-split-even.22</text>
+<text x="846" y="8015" class="value">0.220×</text>
+<text x="972" y="8015" class="label">354.6% longer</text>
+<rect x="1219" y="8002" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="8002" width="244.28" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="8041" class="label">cal.deeper.csv-split-even.43</text>
+<text x="846" y="8041" class="value">0.182×</text>
+<text x="972" y="8041" class="label">448.2% longer</text>
+<rect x="1219" y="8028" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="8028" width="254.00" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="8067" class="label">cal.deeper.csv-split-even.51</text>
+<text x="846" y="8067" class="value">0.264×</text>
+<text x="972" y="8067" class="label">278.3% longer</text>
+<rect x="1219" y="8054" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="8054" width="234.24" height="17" rx="4" fill="#dc2626"/>
+<text x="56" y="8093" class="label">cal.real.csv</text>
+<text x="846" y="8093" class="value">0.523×</text>
+<text x="972" y="8093" class="label">91.4% longer</text>
+<rect x="1219" y="8080" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="8080" width="188.23" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="8118" class="value">Replace matching text (sub): 1/48</text>
+<text x="56" y="8149" class="label">cal.literal.replace</text>
+<text x="846" y="8149" class="value">0.748×</text>
+<text x="972" y="8149" class="label">33.8% longer</text>
+<rect x="1219" y="8136" width="254" height="17" rx="4" fill="#fee2e2"/>
+<rect x="1219" y="8136" width="147.58" height="17" rx="4" fill="#dc2626"/>
+<text x="40" y="8174" class="value">Replace and count matches (subn): 0/47</text>
+<text x="31" y="8246" class="note">All 255 measured post-final public case records are shown; the bars use a zero-preserving logarithmic visual scale.</text>
+</svg>

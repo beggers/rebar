@@ -2253,6 +2253,32 @@ static PyObject *bridge_bound_scanner(PyObject *module, PyObject *const *args, P
     return rust_bound_iterator(args, nargs, kwnames, "scanner", &RustScannerType);
 }
 
+static int rust_append_batched_split(
+    PyObject *result,
+    const RustSubject *subject,
+    size_t stride,
+    size_t *previous,
+    const intptr_t *begins,
+    const intptr_t *ends
+) {
+    PyObject *prefix = rust_findall_item(
+        subject,
+        (intptr_t)*previous,
+        begins[0]
+    );
+    if (rust_list_append_owned(result, prefix) != 0) return -1;
+
+    for (size_t group = 1; group < stride; group++) {
+        PyObject *piece = begins[group] < 0
+            ? Py_NewRef(Py_None)
+            : rust_findall_item(subject, begins[group], ends[group]);
+        if (rust_list_append_owned(result, piece) != 0) return -1;
+    }
+
+    *previous = (size_t)ends[0];
+    return 0;
+}
+
 static PyObject *bridge_bound_split(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
     (void)module;
     Py_ssize_t keywords = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
@@ -2302,60 +2328,179 @@ static PyObject *bridge_bound_split(PyObject *module, PyObject *const *args, Py_
         return NULL;
     }
     size_t stride = groups + 1;
-    if (stride == 0 || stride > SIZE_MAX / (sizeof(intptr_t) * 2)) {
+    if (
+        stride == 0
+        || stride > (SIZE_MAX / RUST_FINDALL_BATCH_CAPACITY - 1) / 2
+    ) {
         rust_subject_release(&subject);
         Py_DECREF(result);
         return PyErr_NoMemory();
     }
-    intptr_t local_begins[RUST_LOCAL_CAPTURE_WORDS];
-    intptr_t local_ends[RUST_LOCAL_CAPTURE_WORDS];
-    intptr_t *begins = local_begins;
-    intptr_t *ends = local_ends;
-    if (stride > RUST_LOCAL_CAPTURE_WORDS) {
-        begins = PyMem_Malloc(stride * sizeof(intptr_t) * 2);
-        if (begins == NULL) {
-            rust_subject_release(&subject);
-            Py_DECREF(result);
-            return PyErr_NoMemory();
-        }
-        ends = begins + stride;
+    size_t words = RUST_FINDALL_BATCH_CAPACITY * (stride * 2 + 1);
+    if (words > SIZE_MAX / sizeof(intptr_t)) {
+        rust_subject_release(&subject);
+        Py_DECREF(result);
+        return PyErr_NoMemory();
     }
+    intptr_t local[
+        RUST_FINDALL_BATCH_CAPACITY * (RUST_FINDALL_INLINE_STRIDE * 2 + 1)
+    ];
+    intptr_t *storage = words <= sizeof(local) / sizeof(local[0])
+        ? local
+        : PyMem_Malloc(words * sizeof(intptr_t));
+    if (storage == NULL) {
+        rust_subject_release(&subject);
+        Py_DECREF(result);
+        return PyErr_NoMemory();
+    }
+    intptr_t *begins = storage;
+    intptr_t *ends = begins + RUST_FINDALL_BATCH_CAPACITY * stride;
+    intptr_t *lasts = ends + RUST_FINDALL_BATCH_CAPACITY * stride;
     size_t current = 0;
     size_t previous = 0;
     size_t produced = 0;
-    uint8_t nonempty = 0;
-    while (limit >= 0 && current <= subject.length && (limit == 0 || produced < (size_t)limit)) {
-        intptr_t last = -1;
-        int found = rust_subject_match(handle, &subject, current, subject.length, 0, nonempty, begins, ends, &last);
-        if (found < 0) {
-            PyErr_SetString(PyExc_RuntimeError, "Rust continuation engine rejected the split bridge call");
+    uint8_t pending_nonempty = 0;
+    int batched = !subject.text || rebar_collect_wide != NULL;
+
+    while (
+        limit >= 0
+        && current <= subject.length
+        && (limit == 0 || produced < (size_t)limit)
+    ) {
+        if (batched && pending_nonempty) {
+            intptr_t last = -1;
+            int found = rust_subject_match(
+                handle,
+                &subject,
+                current,
+                subject.length,
+                1,
+                1,
+                begins,
+                ends,
+                &last
+            );
+            if (found < 0) {
+                PyErr_SetString(
+                    PyExc_RuntimeError,
+                    "Rust continuation engine rejected the split bridge call"
+                );
+                goto split_error;
+            }
+            if (found > 0) {
+                if (begins[0] == ends[0]) {
+                    PyErr_SetString(
+                        PyExc_RuntimeError,
+                        "Rust nonempty continuation produced an empty match"
+                    );
+                    goto split_error;
+                }
+                if (
+                    rust_append_batched_split(
+                        result,
+                        &subject,
+                        stride,
+                        &previous,
+                        begins,
+                        ends
+                    ) != 0
+                ) {
+                    goto split_error;
+                }
+                produced++;
+                current = (size_t)ends[0];
+            } else {
+                if (current == subject.length) break;
+                current++;
+            }
+            pending_nonempty = 0;
+            continue;
+        }
+
+        size_t capacity = batched ? RUST_FINDALL_BATCH_CAPACITY : 1;
+        if (limit > 0) {
+            size_t remaining = (size_t)limit - produced;
+            if (remaining < capacity) capacity = remaining;
+        }
+
+        intptr_t count;
+        if (!batched) {
+            count = rust_subject_match(
+                handle,
+                &subject,
+                current,
+                subject.length,
+                0,
+                pending_nonempty,
+                begins,
+                ends,
+                lasts
+            );
+        } else if (subject.text) {
+            count = rebar_collect_wide(
+                handle,
+                subject.data,
+                subject.length,
+                subject.kind,
+                current,
+                subject.length,
+                capacity,
+                begins,
+                ends,
+                lasts
+            );
+        } else {
+            count = rebar_collect_ascii(
+                handle,
+                subject.data,
+                subject.length,
+                current,
+                subject.length,
+                capacity,
+                begins,
+                ends,
+                lasts
+            );
+        }
+        if (count < 0 || (size_t)count > capacity) {
+            PyErr_SetString(
+                PyExc_RuntimeError,
+                "Rust continuation engine rejected the split bridge call"
+            );
             goto split_error;
         }
-        if (found == 0) break;
-        PyObject *prefix = rust_findall_item(&subject, (intptr_t)previous, begins[0]);
-        if (rust_list_append_owned(result, prefix) != 0) goto split_error;
-        for (size_t group = 1; group < stride; group++) {
-            PyObject *piece = begins[group] < 0 ? Py_NewRef(Py_None) : rust_findall_item(&subject, begins[group], ends[group]);
-            if (rust_list_append_owned(result, piece) != 0) goto split_error;
+        if (count == 0) break;
+
+        for (intptr_t match = 0; match < count; match++) {
+            size_t offset = (size_t)match * stride;
+            if (
+                rust_append_batched_split(
+                    result,
+                    &subject,
+                    stride,
+                    &previous,
+                    begins + offset,
+                    ends + offset
+                ) != 0
+            ) {
+                goto split_error;
+            }
+            produced++;
         }
-        previous = (size_t)ends[0];
-        produced++;
-        if (begins[0] == ends[0]) {
-            current = (size_t)begins[0];
-            nonempty = 1;
-        } else {
-            current = (size_t)ends[0];
-            nonempty = 0;
-        }
+
+        size_t last_offset = (size_t)(count - 1) * stride;
+        current = (size_t)ends[last_offset];
+        pending_nonempty = begins[last_offset] == ends[last_offset];
+        if ((size_t)count < capacity) break;
     }
     PyObject *tail = rust_findall_item(&subject, (intptr_t)previous, (intptr_t)subject.length);
     if (rust_list_append_owned(result, tail) != 0) goto split_error;
-    if (begins != local_begins) PyMem_Free(begins);
+    if (storage != local) PyMem_Free(storage);
     rust_subject_release(&subject);
     return result;
 
 split_error:
-    if (begins != local_begins) PyMem_Free(begins);
+    if (storage != local) PyMem_Free(storage);
     rust_subject_release(&subject);
     Py_DECREF(result);
     return NULL;

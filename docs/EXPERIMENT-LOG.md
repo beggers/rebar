@@ -2,6 +2,42 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+Historical entries describe the state when they were written. In particular,
+older statements that the final benchmark was sealed or had not yet run are
+historical: that benchmark subsequently opened exactly once, found the Zig
+`split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
+
+## Post-final Rust batching is correct but does not prove a speed improvement
+
+This experiment happened strictly **after** the one-time final failure. It
+changes only the independently written Rust bridge to collect up to 16 split
+matches from its own Rust engine per native call. The original 76-control,
+five-library independence audit and all frozen public gates pass: **223,198**
+matching checks, **393** public-object checks, **479** observability checks,
+and the complete **22-stage** correctness campaign, including all
+**4,494,555** Unicode comparisons. The original final candidates, failure,
+one-time marker, and hidden cases are not changed or reopened.
+
+The [single fresh four-way public run](../performance/v7/evidence/postfinal-rust-batched-split-01-summary.json)
+uses **624** shared public cases, **7** paired trials, **499** confidence
+draws, [all **17,472** observations](../performance/v7/evidence/postfinal-rust-batched-split-01-raw.jsonl.gz),
+and **52,416** exact correctness checks. Its
+[independent integrity replay](../performance/v7/evidence/postfinal-rust-batched-split-01-integrity.json)
+checks all five actually loaded native libraries, all three complete
+correctness chains, all **1,875** confidence intervals, and all **255**
+substantial slowdowns. In that same run, C is **1.335×**, Zig is **1.282×**,
+and Rust is **1.136×** as fast as Python; Rust retains **119/624** substantial
+slowdowns, including **11/47** split cases. The batched split is therefore
+**rejected as a speed improvement**, not described as a final winner.
+
+The [full post-final report](../performance/v7/evidence/POSTFINAL-RUST-BATCHED-SPLIT-01.md)
+links all six generated graphs and every regression. The
+[preserved independence incident](../performance/v7/evidence/POSTFINAL-RUST-BATCHED-SPLIT-INDEPENDENCE-INCIDENT.md)
+records the first actual failed audit, both failed campaign preflights, the
+observed `-9` child status, and the unchanged, authorized **22/22** passing
+retry. No failed check is removed or silently rerun. A materially larger,
+separately frozen **4,096-case public** practice run remains **NOT MEASURED**.
+
 ## The one-time hidden benchmark falsifies compatibility
 
 After the three independently built candidates were [frozen before opening](../performance/v9/evidence/FINAL-CANDIDATE-FREEZE.md), the original **24,576-case** protocol ran once. It rejected the Zig engine on the genuine hidden case `v9.split.literal-and-long-prefix.006:warmup:candidates.zig_candidate`: Zig's `split` did not match pinned CPython. The [complete failure report](../performance/v9/evidence/FINAL-HOLDOUT-FAILURE.md) preserves the actual exit status, all frozen candidate and protocol fingerprints, and the [irreversible no-retry marker](../performance/v9/evidence/V9-FINAL-HOLDOUT-24576-UNSEAL-MARKER.json). The [valid compressed partial raw stream](../performance/v9/evidence/V9-FINAL-HOLDOUT-24576-RAW.jsonl.gz) contains exactly **1,778,408** genuine paired rows, covering **14,342/24,576** completed cases before the failure. The [independent failed-run replay](../performance/v9/evidence/V9-FINAL-HOLDOUT-24576-FAILURE.json) verifies the evidence without rerunning a candidate, opening the secret again, or fabricating a complete result. Final speed, confidence intervals, memory, all-case regressions, rankings, and the **1.5×** target are **NOT MEASURED**. **The experiment is falsified; there is no winning replacement.**
@@ -10,11 +46,11 @@ The [failure-graph self-test incident](../performance/v9/evidence/FINAL-FAILURE-
 
 ## The frozen final runner is repaired without opening the benchmark
 
-The [complete pre-unseal incident report](../performance/v9/evidence/FINAL-PREUNSEAL-MISSING-TIME-INCIDENT.md) preserves the exact first attempted final command and its actual `NameError`: the frozen runner referred to Python's standard-library `time` module before importing it. The failure occurred **before the first worker started, before the one-time marker, and before any hidden case or timing**. The original [final protocol](../tools/rust_v9_holdout_protocol.py), manifest, candidates, proofs, stopping commit, and freeze remain byte-for-byte unchanged. The independent [five-check, no-opening launcher](../tools/run_frozen_v9_final.py) verifies the original protocol's exact SHA-256 and runs that identical code with only the genuine standard-library `time` module supplied. It does not change the test, authorization, candidate selection, clock, correctness checks, or one-time marker. The **24,576-case** final benchmark remains unopened and **NOT MEASURED**.
+The [complete pre-unseal incident report](../performance/v9/evidence/FINAL-PREUNSEAL-MISSING-TIME-INCIDENT.md) preserves the exact first attempted final command and its actual `NameError`: the frozen runner referred to Python's standard-library `time` module before importing it. The failure occurred **before the first worker started, before the one-time marker, and before any hidden case or timing**. The original [final protocol](../tools/rust_v9_holdout_protocol.py), manifest, proofs, stopping commit, and freeze remain byte-for-byte unchanged. The independent [five-check, no-opening launcher](../tools/run_frozen_v9_final.py) verifies the original protocol's exact SHA-256 and runs that identical code with only the genuine standard-library `time` module supplied. At that historical stage, the **24,576-case** final benchmark had not yet run. It subsequently ran exactly once and failed; complete final speed remains **NOT MEASURED**.
 
 ## Final candidates are fixed before the hidden benchmark
 
-After the nine complete public practice runs, the [candidate stopping-point report](../performance/v9/evidence/FINAL-CANDIDATE-FREEZE.md) records pushed commit `89e550923ede9cbd558c02f91b235aa17ffaff97`. The unchanged original final protocol created the [exclusive candidate freeze](../performance/v9/evidence/V9-FINAL-CANDIDATE-SELECTION-FREEZE.json) for CPython **3.14.6** and the independently written C, Rust, and Zig engines. It validates all three current matching, public-object, and genuine **22-stage** correctness proofs, the original no-delegation audit, and all five actual loaded native libraries. The freeze reports **zero** hidden cases, `opening_read=false`, and `performance_measured=false`. No final result or winner exists. The **24,576-case** final benchmark remains unopened and **NOT MEASURED**.
+After the nine complete public practice runs, the [candidate stopping-point report](../performance/v9/evidence/FINAL-CANDIDATE-FREEZE.md) records pushed commit `89e550923ede9cbd558c02f91b235aa17ffaff97`. The unchanged original final protocol created the [exclusive candidate freeze](../performance/v9/evidence/V9-FINAL-CANDIDATE-SELECTION-FREEZE.json) for CPython **3.14.6** and the independently written C, Rust, and Zig engines. At that stopping point it validated all three original matching, public-object, and genuine **22-stage** correctness proofs, the original no-delegation audit, and all five then-loaded native libraries. The freeze correctly records **zero** hidden cases, `opening_read=false`, and `performance_measured=false` **at the time of freezing**. The final subsequently ran once and failed. There is no final winner, and complete final speed is **NOT MEASURED**.
 
 ## The C engine safely skips impossible alternative matches
 

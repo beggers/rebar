@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="988" viewBox="0 0 1560 988" role="img" aria-labelledby="postfinal-chart-title postfinal-chart-description">
+<title id="postfinal-chart-title">Every public development win, uncertainty, and loss</title>
+<desc id="postfinal-chart-description">Public development only; final independent benchmark failed; no final winner. CPython (standard Python), C, Rust, and Zig share the same 624 public development cases and 7 paired measurements. Every engine keeps all 624 public cases; measured outcomes and confidence-supported outcomes are shown separately. Source: postfinal-rust-batched-split-01-summary.json; SHA-256 129bad3b6f651b3a7103da6059edd0a07f63468260596035baf4ecd16fd8f46c. Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:32px;font-weight:760}.subtitle{font-size:17px;fill:#475569}.heading{font-size:20px;font-weight:720}.label{font-size:15px;fill:#263449}.value{font-size:16px;font-weight:720}.note{font-size:15px;fill:#475569}.tick{font-size:14px;fill:#475569}.banner{font-size:17px;font-weight:740;fill:#7f1d1d}.status{font-size:15px;font-weight:680;fill:#7f1d1d}.grid{stroke:#e2e8f0;stroke-width:1}.baseline{stroke:#64748b;stroke-width:2.2}.panel{fill:#f8fafc;stroke:#d9e2ee;stroke-width:1}</style>
+<text x="30" y="49" class="title">Every public development win, uncertainty, and loss</text>
+<text x="31" y="83" class="subtitle">Every engine keeps all 624 public cases; measured outcomes and confidence-supported outcomes are shown separately</text>
+<rect x="23" y="103" width="1514" height="49" rx="9" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="38" y="135" class="banner">Public development only; final independent benchmark failed; no final winner</text>
+<text x="32" y="181" class="status">Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</text>
+<text x="32" y="207" class="note">Source: postfinal-rust-batched-split-01-summary.json; SHA-256 129bad3b6f651b3a7103da6059edd0a07f63468260596035baf4ecd16fd8f46c</text>
+<circle cx="391" cy="218" r="6" fill="#64748b"/>
+<text x="404" y="223" class="label">CPython (standard Python)</text>
+<circle cx="669" cy="218" r="6" fill="#2563eb"/>
+<text x="682" y="223" class="label">C</text>
+<circle cx="777" cy="218" r="6" fill="#7c3aed"/>
+<text x="790" y="223" class="label">Zig</text>
+<circle cx="885" cy="218" r="6" fill="#c2410c"/>
+<text x="898" y="223" class="label">Rust</text>
+<rect x="22" y="234" width="1516" height="215" rx="10" class="panel"/>
+<text x="37" y="263" class="heading">C: all 624/624 public cases</text>
+<text x="37" y="306" class="label">Measured case outcomes</text>
+<rect x="391.00" y="286" width="670.77" height="25" fill="#047857"/>
+<text x="726.38" y="304" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">480</text>
+<rect x="1061.77" y="286" width="201.23" height="25" fill="#dc2626"/>
+<text x="1162.38" y="304" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">144</text>
+<text x="1278" y="305" class="value">624/624</text>
+<text x="391" y="333" class="note">480/624 faster; 0/624 equal; 144/624 slower</text>
+<text x="37" y="364" class="label">95%-confidence outcomes</text>
+<rect x="391.00" y="344" width="627.45" height="25" fill="#047857"/>
+<text x="704.72" y="362" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">449</text>
+<rect x="1018.45" y="344" width="86.64" height="25" fill="#64748b"/>
+<text x="1061.77" y="362" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">62</text>
+<rect x="1105.09" y="344" width="157.91" height="25" fill="#dc2626"/>
+<text x="1184.04" y="362" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">113</text>
+<text x="1278" y="363" class="value">624/624</text>
+<text x="391" y="390" class="note">449/624 clearly faster; 62/624 uncertain; 113/624 clearly slower</text>
+<text x="37" y="425" class="label">More than 20% longer</text>
+<rect x="391" y="405" width="872" height="25" fill="#fee2e2"/>
+<rect x="391" y="405" width="65.68" height="25" fill="#dc2626"/>
+<text x="1278" y="424" class="value">47/624</text>
+<text x="391" y="453" class="note">Substantial slowdowns are a separate timing rule and are never removed from the confidence outcomes.</text>
+<rect x="22" y="462" width="1516" height="215" rx="10" class="panel"/>
+<text x="37" y="491" class="heading">Zig: all 624/624 public cases</text>
+<text x="37" y="534" class="label">Measured case outcomes</text>
+<rect x="391.00" y="514" width="564.56" height="25" fill="#047857"/>
+<text x="673.28" y="532" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">404</text>
+<rect x="955.56" y="514" width="307.44" height="25" fill="#dc2626"/>
+<text x="1109.28" y="532" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">220</text>
+<text x="1278" y="533" class="value">624/624</text>
+<text x="391" y="561" class="note">404/624 faster; 0/624 equal; 220/624 slower</text>
+<text x="37" y="592" class="label">95%-confidence outcomes</text>
+<rect x="391.00" y="572" width="505.87" height="25" fill="#047857"/>
+<text x="643.94" y="590" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">362</text>
+<rect x="896.87" y="572" width="131.36" height="25" fill="#64748b"/>
+<text x="962.55" y="590" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">94</text>
+<rect x="1028.23" y="572" width="234.77" height="25" fill="#dc2626"/>
+<text x="1145.62" y="590" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">168</text>
+<text x="1278" y="591" class="value">624/624</text>
+<text x="391" y="618" class="note">362/624 clearly faster; 94/624 uncertain; 168/624 clearly slower</text>
+<text x="37" y="653" class="label">More than 20% longer</text>
+<rect x="391" y="633" width="872" height="25" fill="#fee2e2"/>
+<rect x="391" y="633" width="124.37" height="25" fill="#dc2626"/>
+<text x="1278" y="652" class="value">89/624</text>
+<text x="391" y="681" class="note">Substantial slowdowns are a separate timing rule and are never removed from the confidence outcomes.</text>
+<rect x="22" y="690" width="1516" height="215" rx="10" class="panel"/>
+<text x="37" y="719" class="heading">Rust: all 624/624 public cases</text>
+<text x="37" y="762" class="label">Measured case outcomes</text>
+<rect x="391.00" y="742" width="436.00" height="25" fill="#047857"/>
+<text x="609.00" y="760" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">312</text>
+<rect x="827.00" y="742" width="436.00" height="25" fill="#dc2626"/>
+<text x="1045.00" y="760" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">312</text>
+<text x="1278" y="761" class="value">624/624</text>
+<text x="391" y="789" class="note">312/624 faster; 0/624 equal; 312/624 slower</text>
+<text x="37" y="820" class="label">95%-confidence outcomes</text>
+<rect x="391.00" y="800" width="364.73" height="25" fill="#047857"/>
+<text x="573.37" y="818" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">261</text>
+<rect x="755.73" y="800" width="150.92" height="25" fill="#64748b"/>
+<text x="831.19" y="818" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">108</text>
+<rect x="906.65" y="800" width="356.35" height="25" fill="#dc2626"/>
+<text x="1084.83" y="818" text-anchor="middle" style="font-size:14px;font-weight:740;fill:#ffffff">255</text>
+<text x="1278" y="819" class="value">624/624</text>
+<text x="391" y="846" class="note">261/624 clearly faster; 108/624 uncertain; 255/624 clearly slower</text>
+<text x="37" y="881" class="label">More than 20% longer</text>
+<rect x="391" y="861" width="872" height="25" fill="#fee2e2"/>
+<rect x="391" y="861" width="166.29" height="25" fill="#dc2626"/>
+<text x="1278" y="880" class="value">119/624</text>
+<text x="391" y="909" class="note">Substantial slowdowns are a separate timing rule and are never removed from the confidence outcomes.</text>
+<text x="31" y="968" class="note">All 255 recorded substantial public-development slowdowns remain visible; final outcomes are NOT MEASURED.</text>
+</svg>

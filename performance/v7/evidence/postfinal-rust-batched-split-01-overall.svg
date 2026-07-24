@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="638" viewBox="0 0 1560 638" role="img" aria-labelledby="postfinal-chart-title postfinal-chart-description">
+<title id="postfinal-chart-title">Public development speed compared with CPython</title>
+<desc id="postfinal-chart-description">Public development only; final independent benchmark failed; no final winner. CPython (standard Python), C, Rust, and Zig share the same 624 public development cases and 7 paired measurements. All four engines; the same 624 public cases; 7 paired runs; measured 95% confidence ranges. Source: postfinal-rust-batched-split-01-summary.json; SHA-256 129bad3b6f651b3a7103da6059edd0a07f63468260596035baf4ecd16fd8f46c. Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:32px;font-weight:760}.subtitle{font-size:17px;fill:#475569}.heading{font-size:20px;font-weight:720}.label{font-size:15px;fill:#263449}.value{font-size:16px;font-weight:720}.note{font-size:15px;fill:#475569}.tick{font-size:14px;fill:#475569}.banner{font-size:17px;font-weight:740;fill:#7f1d1d}.status{font-size:15px;font-weight:680;fill:#7f1d1d}.grid{stroke:#e2e8f0;stroke-width:1}.baseline{stroke:#64748b;stroke-width:2.2}.panel{fill:#f8fafc;stroke:#d9e2ee;stroke-width:1}</style>
+<text x="30" y="49" class="title">Public development speed compared with CPython</text>
+<text x="31" y="83" class="subtitle">All four engines; the same 624 public cases; 7 paired runs; measured 95% confidence ranges</text>
+<rect x="23" y="103" width="1514" height="49" rx="9" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="38" y="135" class="banner">Public development only; final independent benchmark failed; no final winner</text>
+<text x="32" y="181" class="status">Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</text>
+<text x="32" y="207" class="note">Source: postfinal-rust-batched-split-01-summary.json; SHA-256 129bad3b6f651b3a7103da6059edd0a07f63468260596035baf4ecd16fd8f46c</text>
+<line x1="389.86" y1="252" x2="389.86" y2="543" class="grid"/>
+<text x="389.86" y="242" text-anchor="middle" class="tick">0.75×</text>
+<line x1="581.10" y1="252" x2="581.10" y2="543" class="baseline"/>
+<text x="581.10" y="242" text-anchor="middle" class="tick">1× CPython</text>
+<line x1="729.44" y1="252" x2="729.44" y2="543" class="grid"/>
+<text x="729.44" y="242" text-anchor="middle" class="tick">1.25×</text>
+<line x1="850.64" y1="252" x2="850.64" y2="543" class="grid"/>
+<text x="850.64" y="242" text-anchor="middle" class="tick">1.5×</text>
+<text x="31" y="283" class="heading">CPython (standard Python)</text>
+<circle cx="581.10" cy="277" r="8" fill="#64748b" stroke="#ffffff" stroke-width="2"/>
+<text x="938" y="282" class="value">Exactly 1.000×; neutral baseline; 624/624 cases</text>
+<text x="31" y="356" class="heading">C</text>
+<line x1="748.48" y1="350" x2="799.36" y2="350" stroke="#2563eb" stroke-width="8" stroke-linecap="round"/>
+<circle cx="773.00" cy="350" r="8" fill="#2563eb" stroke="#ffffff" stroke-width="2"/>
+<text x="938" y="337" class="value">1.335×; 95% range 1.286× to 1.389×</text>
+<text x="938" y="360" class="note">Clearly faster than CPython in public development</text>
+<text x="938" y="382" class="note">449/624 clear case wins; 47/624 substantial slowdowns</text>
+<text x="31" y="442" class="heading">Zig</text>
+<line x1="720.54" y1="436" x2="771.69" y2="436" stroke="#7c3aed" stroke-width="8" stroke-linecap="round"/>
+<circle cx="746.30" cy="436" r="8" fill="#7c3aed" stroke="#ffffff" stroke-width="2"/>
+<text x="938" y="423" class="value">1.282×; 95% range 1.233× to 1.332×</text>
+<text x="938" y="446" class="note">Clearly faster than CPython in public development</text>
+<text x="938" y="468" class="note">362/624 clear case wins; 89/624 substantial slowdowns</text>
+<text x="31" y="528" class="heading">Rust</text>
+<line x1="639.06" y1="522" x2="692.60" y2="522" stroke="#c2410c" stroke-width="8" stroke-linecap="round"/>
+<circle cx="666.08" cy="522" r="8" fill="#c2410c" stroke="#ffffff" stroke-width="2"/>
+<text x="938" y="509" class="value">1.136×; 95% range 1.091× to 1.183×</text>
+<text x="938" y="532" class="note">Clearly faster than CPython in public development</text>
+<text x="938" y="554" class="note">261/624 clear case wins; 119/624 substantial slowdowns</text>
+<text x="31" y="603" class="note">Each confidence range compares one engine with CPython only; it does not prove a difference between candidate engines.</text>
+</svg>

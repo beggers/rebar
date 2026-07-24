@@ -1,0 +1,120 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1560" height="1001" viewBox="0 0 1560 1001" role="img" aria-labelledby="postfinal-chart-title postfinal-chart-description">
+<title id="postfinal-chart-title">All public regular-expression workload families</title>
+<desc id="postfinal-chart-description">Public development only; final independent benchmark failed; no final winner. CPython (standard Python), C, Rust, and Zig share the same 624 public development cases and 7 paired measurements. All 12 measured public operations; family averages are not confidence intervals. Source: postfinal-rust-batched-split-01-summary.json; SHA-256 129bad3b6f651b3a7103da6059edd0a07f63468260596035baf4ecd16fd8f46c. Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:32px;font-weight:760}.subtitle{font-size:17px;fill:#475569}.heading{font-size:20px;font-weight:720}.label{font-size:15px;fill:#263449}.value{font-size:16px;font-weight:720}.note{font-size:15px;fill:#475569}.tick{font-size:14px;fill:#475569}.banner{font-size:17px;font-weight:740;fill:#7f1d1d}.status{font-size:15px;font-weight:680;fill:#7f1d1d}.grid{stroke:#e2e8f0;stroke-width:1}.baseline{stroke:#64748b;stroke-width:2.2}.panel{fill:#f8fafc;stroke:#d9e2ee;stroke-width:1}</style>
+<text x="30" y="49" class="title">All public regular-expression workload families</text>
+<text x="31" y="83" class="subtitle">All 12 measured public operations; family averages are not confidence intervals</text>
+<rect x="23" y="103" width="1514" height="49" rx="9" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="38" y="135" class="banner">Public development only; final independent benchmark failed; no final winner</text>
+<text x="32" y="181" class="status">Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</text>
+<text x="32" y="207" class="note">Source: postfinal-rust-batched-split-01-summary.json; SHA-256 129bad3b6f651b3a7103da6059edd0a07f63468260596035baf4ecd16fd8f46c</text>
+<circle cx="454" cy="219" r="6" fill="#64748b"/>
+<text x="467" y="224" class="label">CPython (standard Python)</text>
+<circle cx="732" cy="219" r="6" fill="#2563eb"/>
+<text x="745" y="224" class="label">C</text>
+<circle cx="840" cy="219" r="6" fill="#7c3aed"/>
+<text x="853" y="224" class="label">Zig</text>
+<circle cx="948" cy="219" r="6" fill="#c2410c"/>
+<text x="961" y="224" class="label">Rust</text>
+<line x1="464.79" y1="275" x2="464.79" y2="911" class="grid"/>
+<text x="464.79" y="265" text-anchor="middle" class="tick">0.5×</text>
+<line x1="571.98" y1="275" x2="571.98" y2="911" class="grid"/>
+<text x="571.98" y="265" text-anchor="middle" class="tick">0.75×</text>
+<line x1="648.03" y1="275" x2="648.03" y2="911" class="baseline"/>
+<text x="648.03" y="265" text-anchor="middle" class="tick">1× CPython</text>
+<line x1="707.02" y1="275" x2="707.02" y2="911" class="grid"/>
+<text x="707.02" y="265" text-anchor="middle" class="tick">1.25×</text>
+<line x1="755.21" y1="275" x2="755.21" y2="911" class="grid"/>
+<text x="755.21" y="265" text-anchor="middle" class="tick">1.5×</text>
+<line x1="831.26" y1="275" x2="831.26" y2="911" class="grid"/>
+<text x="831.26" y="265" text-anchor="middle" class="tick">2×</text>
+<line x1="938.45" y1="275" x2="938.45" y2="911" class="grid"/>
+<text x="938.45" y="265" text-anchor="middle" class="tick">3×</text>
+<text x="31" y="308" class="label">Prepare a regular expression (compile); 48/48 cases</text>
+<circle cx="688.45" cy="292" r="5.6" fill="#2563eb" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1031" y="308" class="label">C 1.165×</text>
+<circle cx="979.94" cy="303" r="5.6" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1196" y="308" class="label">Zig 3.510×</text>
+<circle cx="897.59" cy="314" r="5.6" fill="#c2410c" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1361" y="308" class="label">Rust 2.570×</text>
+<text x="31" y="361" class="label">Escape special characters (escape); 48/48 cases</text>
+<circle cx="984.22" cy="345" r="5.6" fill="#2563eb" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1031" y="361" class="label">C 3.567×</text>
+<circle cx="648.31" cy="356" r="5.6" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1196" y="361" class="label">Zig 1.001×</text>
+<circle cx="645.56" cy="367" r="5.6" fill="#c2410c" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1361" y="361" class="label">Rust 0.991×</text>
+<text x="31" y="414" class="label">Find all matching results (findall); 80/80 cases</text>
+<circle cx="665.68" cy="398" r="5.6" fill="#2563eb" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1031" y="414" class="label">C 1.069×</text>
+<circle cx="711.40" cy="409" r="5.6" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1196" y="414" class="label">Zig 1.271×</text>
+<circle cx="611.39" cy="420" r="5.6" fill="#c2410c" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1361" y="414" class="label">Rust 0.871×</text>
+<text x="31" y="467" class="label">Stream matching results (finditer); 67/67 cases</text>
+<circle cx="679.63" cy="451" r="5.6" fill="#2563eb" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1031" y="467" class="label">C 1.127×</text>
+<circle cx="694.17" cy="462" r="5.6" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1196" y="467" class="label">Zig 1.191×</text>
+<circle cx="628.01" cy="473" r="5.6" fill="#c2410c" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1361" y="467" class="label">Rust 0.927×</text>
+<text x="31" y="520" class="label">Match the entire input (fullmatch); 47/47 cases</text>
+<circle cx="767.99" cy="504" r="5.6" fill="#2563eb" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1031" y="520" class="label">C 1.574×</text>
+<circle cx="658.98" cy="515" r="5.6" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1196" y="520" class="label">Zig 1.042×</text>
+<circle cx="631.47" cy="526" r="5.6" fill="#c2410c" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1361" y="520" class="label">Rust 0.939×</text>
+<text x="31" y="573" class="label">Match at the beginning (match); 48/48 cases</text>
+<circle cx="712.75" cy="557" r="5.6" fill="#2563eb" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1031" y="573" class="label">C 1.277×</text>
+<circle cx="599.41" cy="568" r="5.6" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1196" y="573" class="label">Zig 0.832×</text>
+<circle cx="622.58" cy="579" r="5.6" fill="#c2410c" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1361" y="573" class="label">Rust 0.908×</text>
+<text x="31" y="626" class="label">Read match information (match-surface); 48/48 cases</text>
+<circle cx="632.17" cy="610" r="5.6" fill="#2563eb" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1031" y="626" class="label">C 0.942×</text>
+<circle cx="647.96" cy="621" r="5.6" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1196" y="626" class="label">Zig 1.000×</text>
+<circle cx="865.40" cy="632" r="5.6" fill="#c2410c" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1361" y="626" class="label">Rust 2.276×</text>
+<text x="31" y="679" class="label">Scan repeated matches (scanner); 48/48 cases</text>
+<circle cx="642.66" cy="663" r="5.6" fill="#2563eb" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1031" y="679" class="label">C 0.980×</text>
+<circle cx="657.85" cy="674" r="5.6" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1196" y="679" class="label">Zig 1.038×</text>
+<circle cx="623.04" cy="685" r="5.6" fill="#c2410c" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1361" y="679" class="label">Rust 0.910×</text>
+<text x="31" y="732" class="label">Search for a match (search); 48/48 cases</text>
+<circle cx="715.07" cy="716" r="5.6" fill="#2563eb" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1031" y="732" class="label">C 1.289×</text>
+<circle cx="691.88" cy="727" r="5.6" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1196" y="732" class="label">Zig 1.180×</text>
+<circle cx="658.00" cy="738" r="5.6" fill="#c2410c" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1361" y="732" class="label">Rust 1.038×</text>
+<text x="31" y="785" class="label">Split around matches (split); 47/47 cases</text>
+<circle cx="785.29" cy="769" r="5.6" fill="#2563eb" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1031" y="785" class="label">C 1.681×</text>
+<circle cx="796.83" cy="780" r="5.6" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1196" y="785" class="label">Zig 1.756×</text>
+<circle cx="675.74" cy="791" r="5.6" fill="#c2410c" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1361" y="785" class="label">Rust 1.111×</text>
+<text x="31" y="838" class="label">Replace matching text (sub); 48/48 cases</text>
+<circle cx="764.45" cy="822" r="5.6" fill="#2563eb" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1031" y="838" class="label">C 1.553×</text>
+<circle cx="773.96" cy="833" r="5.6" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1196" y="838" class="label">Zig 1.610×</text>
+<circle cx="706.69" cy="844" r="5.6" fill="#c2410c" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1361" y="838" class="label">Rust 1.248×</text>
+<text x="31" y="891" class="label">Replace and count matches (subn); 47/47 cases</text>
+<circle cx="712.44" cy="875" r="5.6" fill="#2563eb" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1031" y="891" class="label">C 1.276×</text>
+<circle cx="713.84" cy="886" r="5.6" fill="#7c3aed" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1196" y="891" class="label">Zig 1.283×</text>
+<circle cx="683.50" cy="897" r="5.6" fill="#c2410c" stroke="#ffffff" stroke-width="1.2"/>
+<text x="1361" y="891" class="label">Rust 1.144×</text>
+<text x="31" y="954" class="note">Each family uses its full frozen case count for CPython, C, Rust, and Zig; all 624 public cases are retained.</text>
+<text x="31" y="979" class="note">Dots show public geometric means only; no workload-family confidence interval or candidate-to-candidate significance is claimed.</text>
+</svg>
