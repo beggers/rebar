@@ -7,6 +7,27 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## A larger public benchmark is frozen before any timing
+
+The new [post-final public protocol](../performance/postfinal-public-v1/PROTOCOL.md)
+fixes **4,096** equal-weight public cases, **260** workload categories, all
+**12** regex operations, pinned CPython **3.14.6**, and the existing
+independently written Rust, C, and Zig engines. Its
+[prospectively frozen manifest](../performance/postfinal-public-v1/manifest.json)
+uses only the audited **10,312-case public calibration archive** and its
+**9,731** safely bounded cases. It generates and decodes **zero** hidden
+records and leaves the original 700-case pilot unchanged.
+
+The protocol fixes **13** shuffled paired trials, **2,000** confidence draws,
+at most **16** real calls per sample, **212,992** complete observations, and
+**638,976** mandatory correctness checks. Its runner verifies the original
+76-control, five-native-library audit and all three frozen edge proofs before
+importing a candidate for timing. Source, seeds, coverage, candidate hashes,
+case weights, regression thresholds, and full result reporting are committed
+before the benchmark is run. Expanded speed, confidence, memory, slowdowns,
+rankings, and any winner remain **NOT MEASURED**. The old hidden final remains
+failed and is not retried.
+
 ## Post-final Rust batching is correct but does not prove a speed improvement
 
 This experiment happened strictly **after** the one-time final failure. It
@@ -35,8 +56,8 @@ links all six generated graphs and every regression. The
 [preserved independence incident](../performance/v7/evidence/POSTFINAL-RUST-BATCHED-SPLIT-INDEPENDENCE-INCIDENT.md)
 records the first actual failed audit, both failed campaign preflights, the
 observed `-9` child status, and the unchanged, authorized **22/22** passing
-retry. No failed check is removed or silently rerun. A materially larger,
-separately frozen **4,096-case public** practice run remains **NOT MEASURED**.
+retry. No failed check is removed or silently rerun. The separately frozen
+**4,096-case public** practice results remain **NOT MEASURED**.
 
 ## The one-time hidden benchmark falsifies compatibility
 

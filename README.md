@@ -73,8 +73,9 @@ sharing. Public correctness does not repair the historical hidden Zig failure.
 The [full Rust experiment](performance/v7/evidence/POSTFINAL-RUST-BATCHED-SPLIT-01.md)
 preserves all results, regressions, raw data, and rejected conclusions. The
 [experiment log](docs/EXPERIMENT-LOG.md) preserves earlier and subsequent
-designs. A separate **4,096-case** public benchmark is in preparation;
-its results are **NOT MEASURED**.
+designs. A separate **4,096-case** public benchmark has a prospectively
+[frozen protocol and case list](performance/postfinal-public-v1/PROTOCOL.md).
+Its results are **NOT MEASURED**; it cannot repair the failed hidden final.
 
 ## Reproduce and inspect
 
