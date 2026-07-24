@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Independently pass the frozen isolated-signature Python baseline
+
+First freeze and push the exact stage-ten controller and protocol in
+`0dc80fc`. Then run two independently isolated CPython 3.14.6
+processes against all **3,584** unchanged cases. The actual
+[complete passing two-Python baseline](../oracle/cpython-3.14.6/evidence/public-contract-v10-self-oracle.json)
+preserves **7,168** observations with **zero** mismatches.
+
+Its one-use, exclusively created report has SHA-256
+`5207ca3829216b9482f0b5a2928b339261e2c51d673cce7d80da0f4f4622a8f9`.
+Both independently generated observation streams have canonical
+SHA-256
+`0d6a74b1f923436c14569bfdd84431e4251f3bb8dd3129fbbcaf82a47f906b94`.
+The report binds the frozen source
+`a24cfa72f44931c76b425ea3eb6568ff67dc87236c8d5fe930837a14c2f58f08`
+and protocol
+`c0194ee2ef1e32bd64dc646e2f395bee6036b9c053e31d95ebb3cfbc52b0a543`.
+
+Preserve both historical failures: all **32** process-dependent
+pattern hashes and all **256** guard-triggered surface checks. Do
+not overwrite the new baseline; its `--self-oracle` invocation is a
+one-shot operation that rejects an existing report.
+
+Exactly **zero** candidate processes or imports run in this
+checkpoint. Rust, C, and Zig remain **NOT RUN** against the frozen
+stage-ten contract. Commit and push the passing baseline before any
+candidate. Performance remains **NOT MEASURED**, and the independent
+final test is **NOT OPENED**.
+
 ## Freeze independently isolated Python-signature inspection
 
 Preserve the exact **32**-mismatch stage-seven Python failure and

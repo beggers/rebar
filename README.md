@@ -129,10 +129,11 @@ The [new frozen, isolated-signature compatibility design](oracle/cpython-3.14.6/
 preserves all **3,584** original cases across **8** groups and all
 **256** real public-signature checks. It inspects signatures in a
 separate process, without weakening any engine's independence guard.
-Its candidate-free safety test passes **793/793** checks. This is a
-design-only checkpoint: the new two-Python self-comparison is
-**NOT RUN**, and the new Rust, C, and Zig candidate runs are all
-**NOT RUN**.
+Its candidate-free safety test passes **793/793** checks. The
+[actual isolated two-Python baseline](oracle/cpython-3.14.6/evidence/public-contract-v10-self-oracle.json)
+also passes all **3,584** cases and preserves **7,168** observations
+with **zero** mismatches. The new Rust, C, and Zig candidate runs
+remain **NOT RUN**.
 
 A fair **8,192**-case speed comparison and a separate expanded
 **33,280**-case public suite remain **BLOCKED**, **NOT FROZEN**, and
@@ -177,6 +178,9 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage08.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_universal_public_oracle_stage10.py --self-test
+# Historical one-shot baseline; never overwrites the preserved evidence.
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/python_re_universal_public_oracle_stage10.py --self-oracle
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/rust_v8_multi_candidate_campaign_postfinal_v5.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -I -B -c \
