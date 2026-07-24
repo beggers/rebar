@@ -67,7 +67,7 @@ Not yet. Every row below is a current, guarded run of the same
 
 | Engine built from scratch | Checks completed | Differences from Python | Deeper checks | Complete Python tests |
 | --- | ---: | ---: | --- | --- |
-| [Rust](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | FAIL: test-run setup | NOT RUN |
+| [Rust](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json) | NOT RUN |
 | [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | NOT RUN | NOT RUN |
 | [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | NOT RUN | NOT RUN |
 
@@ -143,12 +143,14 @@ Python's mandatory `PYTHONDONTWRITEBYTECODE=1` setting. The required
 after-run verification therefore failed. Both the
 [complete invalidated original output](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-INVALIDATED-AFTER-OWNER-FAILURE.json.gz)
 and [exact setup-failure evidence](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-PRODUCER-CRASH.json.gz)
-are preserved. The deeper result is **FAIL**, not a certified pass.
+are preserved. That first run remains **FAIL**. The separately
+authenticated [corrected Rust retry](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json)
+passes all **393** checks and proves who actually ran it.
 
 The [append-only deep-test recovery protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V12.md)
 preserves that original failure and verifies the required Python
-environment before any engine is started. Corrected deep-test runs
-are **NOT RUN**.
+environment before any engine is started. Rust passes the corrected
+deep test; the C and Zig deep tests are **NOT RUN**.
 
 The expanded public-API reference fails at case `surface16.00.14`:
 its observation recorder mistakes a valid, deeply nested Python

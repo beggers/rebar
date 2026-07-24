@@ -7,6 +7,68 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Rerun the original Rust deep test with truthful independent provenance
+
+First freeze, independently review, commit, and push the additive
+V12 recovery controller. Preserve both actual original V11 failure
+archives. Verify that all **six** new Rust success, failure, and
+retry destinations are fresh and cannot overlap either recorded
+failure.
+
+Set the genuine required environment before launching the parent
+process. Run the unchanged deep Python contract exactly once:
+
+```sh
+env \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_current_build_proofs_v12.py \
+  --qualified-deep \
+  --module candidates.rust_candidate \
+  --base-report-sha256 \
+  589321a768e10c52f039a68acb211574ec884598771ede2152f91994cc69f353 \
+  --strict-report-sha256 \
+  d8f31dd480bdba530a454b38428a23ef347c6e3cce7796f8992d6e7767381f4b
+```
+
+The actual independently owned Rust engine passes all **393**
+original deep checks, including all **64** independently seeded
+cases. Both genuine Python references and the Rust candidate return
+the exact frozen observation SHA-256
+`b184f3388320909b3c28fbd3ce9c15cefc992d3e852e9495ad8fb503d1cbaad8`,
+with **zero** Python-versus-Python or candidate mismatches.
+
+Exclusively preserve all three complete, independently validated
+records:
+
+- [Original full Rust deep-test archive](../candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-PASS.json.gz),
+  SHA-256 `9cc30b172575c83b399f680057a6d33ae952e44f920079c3d8c3b67566afb407`.
+- [Complete native ownership before and after the deep test](../candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-PASS-PROOF.json),
+  SHA-256 `2ec8b99102235e9eb251e5e7bcc2054c56ddf27fd30575f916a8f8ce70442a63`.
+- [Actual independent V12 retry-controller proof](../candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json),
+  SHA-256 `173a3a356115ce4dc9942114d194c58450302a051a8cc7091206888c45e4a1fb`.
+
+The original test output is deterministic, so its compressed bytes
+match the earlier invalidated original. The complete new retry
+proof independently establishes that V12 actually started a new
+worker, reconstructed the genuine original producer streams,
+passed both current three-engine audits, and verified the real Rust
+engine before and after matching. It explicitly preserves
+`actual_v11_first_invocation_status: FAIL` and
+`v11_executed_this_retry: false`. An identical archive alone never
+qualifies the candidate.
+
+Two independent reviewers and the project lead separately verify
+the real original **393-case** record, the complete immutable V11
+owner proof, the independently identified V12 retry proof, all
+current source and native-binary fingerprints, and the preserved
+original failure. Current Rust deep correctness is **PASS**;
+official full upstream and expanded public candidate tests are
+**NOT RUN**. Current speed and memory remain **NOT MEASURED**;
+the expanded holdout remains **NOT OPENED**.
+
 ## Freeze an append-only recovery for the real deep-test environment failure
 
 Preserve the exact original failed Rust deep-test invocation, its
