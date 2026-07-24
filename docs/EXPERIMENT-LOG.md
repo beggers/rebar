@@ -7,6 +7,74 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Repair and rebuild Zig's own native Python type
+
+First commit and push the actual twice-passing **1,376-case** Python
+reference and the independently frozen three-engine rebuild inspection.
+Keep all **26** original Zig failures and all three complete failure
+archives unchanged.
+
+The genuine public mismatch is in the project's own native Python
+pattern type, not in its regular-expression language or matcher.
+Correct the actual `PyTypeObject` and notify Python of the native
+type change:
+
+```c
+((PyTypeObject *)pattern_type)->tp_name = "re.Pattern";
+PyType_Modified((PyTypeObject *)pattern_type);
+```
+
+The original bridge source had SHA-256
+`302bfdd130db5a9e12043ccb98f4e844d320852b9f9210849c326c4341bc01e7`;
+the corrected [native bridge source](../candidates/zig/py_bridge.c)
+has SHA-256
+`f4900d04734a7c02bd766aee81c1d64114803dbefcf6f4591bfb667262658fea`.
+The project's separately authored Zig matching engine remains
+`539bf5d378e0c2845c01519fcce62f1ef5e68610f477912c44a03027fb67a346`;
+its genuine native matching binary remains
+`96b899f8c5f25e4c94fe029d6218c0408cd20f7a86d661bcc4ce891648f17cb6`.
+No external regular-expression implementation is imported.
+
+Verify the [official compiler lock](../toolchains/zig-0.16.0.lock.json).
+The actual official Zig compiler has SHA-256
+`2317bbb91798556d9d0f38aabdac23db83f0979b25f767259ae474546724087c`.
+Rebuild the real native Python bridge directly against the unchanged
+owned Zig matcher:
+
+```sh
+env ZIG_GLOBAL_CACHE_DIR=/tmp/rebar-zig-0.16.0-rebar-global-cache \
+  /tmp/rebar-zig-0.16.0.pTlEyN4d/zig-x86_64-linux-0.16.0/zig cc \
+  -std=c11 -O3 -fPIC -shared \
+  -I/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/include/python3.14 \
+  /home/dev-user/src/rebar/candidates/zig/py_bridge.c \
+  /home/dev-user/src/rebar/candidates/_zig_probe.so \
+  -Wl,--enable-new-dtags '-Wl,-rpath,$ORIGIN' \
+  -o /home/dev-user/src/rebar/candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so
+```
+
+The actual rebuilt bridge has SHA-256
+`ad1a7ea024721e329857753d288abd834fcfc029055a6274195daf00754bf65a`.
+Its only native-library dependencies are the project's own
+`_zig_probe.so` and the standard C runtime. Its search path is
+`$ORIGIN`. The native symbol table contains Python's actual
+`PyType_Modified`; it contains no Python matcher, `_sre`, external
+regular-expression engine, or other candidate.
+
+Two independent reviewers recheck the actual official compiler, all
+four source and binary fingerprints, the native library dependencies,
+and the complete original-to-repaired source difference. Reversing
+the exact two new lines reproduces the original bridge fingerprint.
+Neither review imports or executes any candidate.
+
+Rebuilding changes the complete authenticated source and native
+binary graph. The old whole-engine inspection and all graph-bound
+C, Rust, and Zig results are therefore **HISTORICAL**, never current
+proof. Fresh all-engine ownership inspections, all **223,198**
+original checks, all **393** deeper checks, all complete upstream
+tests, and the expanded real-world candidate tests remain **NOT RUN**.
+The larger holdout is **NOT OPENED**; performance remains
+**NOT MEASURED**.
+
 ## Pass the complete corrected Python compatibility reference twice
 
 First commit and push the corrected **1,376-case** reference source,

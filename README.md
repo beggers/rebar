@@ -62,21 +62,24 @@ retain the complete results, uncertainty ranges, and all regressions.
 
 ## Are the current engines compatible with Python?
 
-Not yet. Every row below is a current, guarded run of the same
-**223,198** original Python behavior checks.
+Not yet. [Zig's own native Python bridge](candidates/zig/py_bridge.c)
+has been rebuilt to correct its genuine `Pattern` versus `re.Pattern`
+bug. Changing a native binary invalidates the earlier three-engine
+inspection. The earlier results below are preserved, but none proves
+the rebuilt engines pass.
 
-| Engine built from scratch | Checks completed | Differences from Python | Deeper checks | Complete Python tests |
-| --- | ---: | ---: | --- | --- |
-| [Rust](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json) | NOT RUN |
-| [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json) | NOT RUN |
-| [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | [FAIL: 26 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-POSTFINAL-CURRENT-BUILD-V12-INVALIDATED-AFTER-OWNER-FAILURE.json.gz) | NOT RUN |
+| Engine built from scratch | Earlier original checks | Earlier deeper checks | Fresh rebuilt-engine proof | Complete Python tests |
+| --- | --- | --- | --- | --- |
+| [Rust](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-qualified-pass.json.gz) | PASS: 223,198 / 223,198 | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json) | NOT RUN | NOT RUN |
+| [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass.json.gz) | PASS: 223,198 / 223,198 | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json) | NOT RUN | NOT RUN |
+| [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-qualified-pass.json.gz) | PASS: 223,198 / 223,198 | [FAIL: 26 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-POSTFINAL-CURRENT-BUILD-V12-INVALIDATED-AFTER-OWNER-FAILURE.json.gz) | NOT RUN | NOT RUN |
 
 The [independent implementation inspection](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V10.json)
 and [separate no-delegation inspection](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V10.json)
-check all **12** engine source files and all **five** native binaries.
-They confirm that the engines perform their own matching without using
-Python's matcher, an external regex package, or one another. They do not
-prove complete Python compatibility.
+checked all **12** earlier engine source files and all **five** earlier
+native binaries. They confirmed that those versions performed their own
+matching without using Python's matcher, an external regex package, or
+one another. They do not certify the changed native binary.
 
 The [fresh rebuild-inspection protocol](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V13.md)
 requires both inspections to be repeated against the actual changed source

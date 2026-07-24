@@ -3414,6 +3414,8 @@ static PyObject *bridge_install_pattern_methods(PyObject *module,
             return NULL;
         }
     }
+    ((PyTypeObject *)pattern_type)->tp_name = "re.Pattern";
+    PyType_Modified((PyTypeObject *)pattern_type);
     Py_XSETREF(zig_generic_alias_factory, factory_ref);
     Py_RETURN_NONE;
 }
