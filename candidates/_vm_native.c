@@ -2630,7 +2630,9 @@ static PyObject *match_class_getitem(PyObject *type, PyObject *item) { return Py
 static PyObject *match_repr(MatchObject *match) {
     PyObject *value=match_piece(match,0,Py_None);
     if (!value) return NULL;
-    PyObject *result=PyUnicode_FromFormat("<re.Match object; span=(%zd, %zd), match=%.50R>",match->caps[0],match->caps[1],value);
+    PyObject *result=PyUnicode_FromFormat(
+        "<%s object; span=(%zd, %zd), match=%.50R>",
+        Py_TYPE(match)->tp_name,match->caps[0],match->caps[1],value);
     Py_DECREF(value);
     return result;
 }

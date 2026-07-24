@@ -7,6 +7,50 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Repair all three real native match representations
+
+First commit and push the exact authentic official failure in
+`87f3b31c`; never erase or rerun its 145/146 first Rust result.
+Inspect the unchanged upstream `ReTests.test_match_repr`: the expected
+display is derived from the real match type's module and qualified name.
+The failure is caused by all three genuine native bridges hardcoding
+`<re.Match object; ...>` despite correctly owning their own `Match`
+classes.
+
+Independently repair only the native display format in
+[Rust](../candidates/rust/py_bridge.c),
+[C](../candidates/_vm_native.c), and
+[Zig](../candidates/zig/py_bridge.c). Format each match using its
+actual native `Py_TYPE(match)->tp_name`, retaining the existing spans,
+50-character truncation, native ownership, and from-scratch matching
+engine. Rebuild each bridge independently against its unchanged engine.
+
+In three fresh isolated processes, directly verify all **24** official
+representation examples: text, text subclass, bytes, bytes subclass,
+bytearray, memoryview, and both iterator results for each engine.
+Independently preserve all **48** ordinary pickle checks. Verify that
+none imports Python `re`, `_sre`, another candidate, or an external
+regex engine. These are focused smoke checks, not the full official
+suite or new independence proofs.
+
+The exact source files and native binaries have changed, so the
+previously genuine V6 audits and Stage 12 results are historical and
+cannot qualify the repairs. Freeze the fresh
+[version-seven from-scratch audit](../tools/postfinal_from_scratch_audit_v7.py),
+SHA-256
+`defa306e47a0d325af7d4c7fabb54324f6cb6d4653a494c46846838f5e2cf487`.
+Its candidate-free test independently passes **468/468** checks and
+retains all **324** previous controls. It requires all **12** changed
+source files, all **five** current native binaries, **48** real pickle
+cases, and **six** exact original `test_match_repr` text-and-byte
+reproductions. It authenticates and preserves the real first official
+failure without claiming C or Zig passed.
+
+The actual V7 source audit, new no-delegation audit, full official
+suite, and performance comparison are **NOT RUN** at this source
+checkpoint. Commit and push the three fixes and frozen audit source
+before executing its one-time actual audit.
+
 ## Record the genuine first official compatibility failure
 
 Commit and push the exact failure protocol and recorder in `793ee64f`

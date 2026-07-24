@@ -419,7 +419,7 @@ static PyObject *zig_match_repr(ZigMatch *match) {
     PyObject *value = zig_match_piece(match, 0, Py_None);
     if (value == NULL) return NULL;
     size_t stride = (size_t)match->groups + 1;
-    PyObject *result = PyUnicode_FromFormat("<re.Match object; span=(%zd, %zd), match=%.50R>", (Py_ssize_t)match->spans[0], (Py_ssize_t)match->spans[stride], value);
+    PyObject *result = PyUnicode_FromFormat("<%s object; span=(%zd, %zd), match=%.50R>", Py_TYPE(match)->tp_name, (Py_ssize_t)match->spans[0], (Py_ssize_t)match->spans[stride], value);
     Py_DECREF(value);
     return result;
 }

@@ -505,7 +505,13 @@ static PyObject *rust_match_repr(RustMatch *match) {
     PyObject *piece = rust_match_piece(match, 0, Py_None);
     if (piece == NULL) return NULL;
     size_t stride = (size_t)match->groups + 1;
-    PyObject *result = PyUnicode_FromFormat("<re.Match object; span=(%zd, %zd), match=%.50R>", (Py_ssize_t)match->spans[0], (Py_ssize_t)match->spans[stride], piece);
+    PyObject *result = PyUnicode_FromFormat(
+        "<%s object; span=(%zd, %zd), match=%.50R>",
+        Py_TYPE(match)->tp_name,
+        (Py_ssize_t)match->spans[0],
+        (Py_ssize_t)match->spans[stride],
+        piece
+    );
     Py_DECREF(piece);
     return result;
 }

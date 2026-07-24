@@ -60,23 +60,23 @@ Its [preserved first Rust run](candidates/evidence/python-re-generic-alias-publi
 then exposed **16 genuine failures** in normal Python serialization. That
 run stopped before testing C or Zig; the old failure has not been erased.
 
-All three native engines have now been changed so their pattern and match
-types honestly belong to their own implementations. A targeted smoke check
-confirmed **48 successful, ordinary Python serialization round trips**
-across C, Rust, and Zig and all four tested pickle protocols, plus six
-basic text-and-bytes matches. This smoke check is **not** a full
-compatibility pass or an audit.
+All three native engines now use their genuinely owned pattern and match
+types, and their rebuilt match objects display their true native type.
+Targeted checks pass **24 exact official-style representations** and
+**48 ordinary Python serialization round trips** across C, Rust, and
+Zig. These smoke checks are **not** a full official test or a fresh audit.
 
-The [renewed 128-case compatibility suite](oracle/cpython-3.14.6/PUBLIC-GENERIC-ALIASES-V12.md)
-is now frozen against the genuinely audited, rebuilt engines. Its
+The [previous 128-case compatibility suite](oracle/cpython-3.14.6/PUBLIC-GENERIC-ALIASES-V12.md)
+was frozen against the earlier genuinely audited native builds. Its
 candidate-free design passes **86** independent safety checks and
 retains the original 16 Rust failures. Its
 [actual two-Python reference](oracle/cpython-3.14.6/evidence/public-generic-alias-v12-self-oracle.json)
 passes all **128** cases and **256** independent observations.
 The [actual three-engine comparison](candidates/evidence/python-re-generic-alias-public-oracle-v12-all.json)
-passes **128/128** cases for Rust, C, and Zig: **384/384** matching
-answers and **zero** mismatches. This does not replace the remaining
-full official Python tests.
+passes **128/128** cases for those Rust, C, and Zig builds:
+**384/384** matching answers and **zero** mismatches. Those results
+predate the latest representation fixes and do not qualify the new
+source files or native binaries.
 
 The [new official Python test design](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V2.md)
 preserves all **146** selected upstream tests, the **403-pattern**
@@ -92,18 +92,16 @@ Earlier [official Python test results](oracle/cpython-3.14.6/evidence/postfinal-
 [from-scratch audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V5.json),
 and [independent-execution audit](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V5.json)
 are real historical results for their exact earlier source files and native
-builds. **They do not qualify the newly modified engines.** A
-[fresh from-scratch audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V6.json)
-now genuinely verifies all **12** implementation files, **five** native
-binaries, **three** independent engines, and **48** normal Python
-serialization checks. A separate
-[fresh independent-execution audit](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V6.json)
-proves that each engine blocks Python's matcher, outside regex packages,
-the other engines, and all **five** foreign native-library loading
-routes. The audit designs pass **324** and **75** safety checks,
-including all **676** earlier malicious-input checks. The first complete
-official run **FAILED** for Rust; the official C and Zig runs and the
-expanded compatibility comparison are **NOT RUN**.
+builds. **They do not qualify the newly modified engines.** The
+[earlier source audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V6.json)
+and [earlier independent-execution audit](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V6.json)
+remain valid evidence for their recorded, pre-fix binaries only.
+The newly predeclared version-seven source audit passes **468**
+candidate-free safety checks and requires **48** real serialization
+checks and **six** exact official representation reproductions. Its
+actual audit is **NOT RUN**. The complete official run **FAILED** for
+the earlier Rust build; official results for the newly fixed engines
+and expanded compatibility comparisons remain **NOT RUN**.
 
 ## Larger fair speed comparison
 
@@ -135,6 +133,8 @@ benchmark-design failure can be repeated with the pinned Python:
 ```sh
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_from_scratch_audit_v7.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_from_scratch_audit_v6.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
