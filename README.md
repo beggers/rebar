@@ -156,8 +156,10 @@ The [second 33,280-case public design](performance/postfinal-public-v10/PROTOCOL
 is also **FALSIFIED**: its **8,192** distinct original test cases
 legitimately represent **7,900** different matching behaviors, but its
 actual freeze wrongly requires every behavior to be unique.
-Authenticating all **10,312** public records did not make this design
-pass. Neither larger design created a manifest or started an engine.
+The [complete recorded public failure](performance/postfinal-public-v10/evidence/postfinal-public-freeze-failure-v10.json)
+preserves the actual collisions. Authenticating all **10,312** public
+records did not make this design pass. Neither larger design created a
+manifest or started an engine.
 A corrected public comparison remains **NOT FROZEN**; new speed,
 memory, confidence intervals, and rankings remain **NOT MEASURED**.
 
@@ -203,6 +205,8 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_public_practice_v7.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_public_expansion_v8_failure.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_public_expansion_v10_failure.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_public_expansion_v10.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \

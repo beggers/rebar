@@ -7,6 +7,53 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Record all genuine original-case collisions without benchmarking
+
+The [complete recorded V10 public freeze failure](../performance/postfinal-public-v10/evidence/postfinal-public-freeze-failure-v10.json)
+has SHA-256
+`92e340bd4440ab77b59a07bfb0849c1147d3ac6dcb2adfe86888f9dd92ada38e`.
+Its [independently verified public failure recorder](../tools/postfinal_public_expansion_v10_failure.py)
+has SHA-256
+`c7af74479586f46bb120b6b0474cfd96940228f539fcc630651038dda2725e33`.
+Actual exclusive recording preserves the design verdict **FAIL** and
+all **87** original collision classes. Independent report verification
+passes all **31/31** actual-evidence checks. The recorder's
+candidate-free synthetic safety test independently passes **55/55**;
+this recorder-safety result does not turn the failed design into a
+passing benchmark.
+
+Authenticate all **10,312** public records, including **9,731**
+eligible and **581** genuine but ineligible records, while skipping all
+**10,312** opaque history values without decoding them. Preserve all
+**8,192** distinct required parent case IDs and their **7,900** actual
+matching-behavior identities: **87** collision classes, **379**
+participating cases, **292** excess cases, a maximum class of **65**,
+and **zero** inconsistent reference-result digests. Keep the first
+collision, the genuine V8 failure, and the separately passing
+stage-ten compatibility proofs independently bound to the evidence.
+
+Reproduce only the safe, isolated synthetic check and read-only public
+diagnosis:
+
+```sh
+env PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_public_expansion_v10_failure.py --self-test
+env PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_public_expansion_v10_failure.py --diagnose
+```
+
+The failure evidence is created exclusively with `--record`; the
+report now exists, so do not rerun recording. The recorded actual
+failed design command remains
+`env PYTHONPATH=. PYTHONDONTWRITEBYTECODE=1 /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 -I -B tools/postfinal_public_practice_v10.py --freeze`.
+Neither the failure nor its recorder creates a V10 manifest, runs a
+candidate, starts a reference worker, samples a clock, reads a final
+case, or measures performance. The V7 public manifest remains frozen,
+with speed **NOT MEASURED**. The independent final test remains
+**NOT OPENED**, and no winner has been established.
+
 ## Preserve the real original-case collision in the corrected design
 
 Commit and push the corrected public design in `1fe0452f` before its
