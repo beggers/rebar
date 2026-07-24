@@ -7,6 +7,33 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Verify two independent Python references for the repaired contract
+
+Commit and push the frozen Stage 12 source and protocol in `2715e306`
+before starting either reference. Run the exact real two-reference
+command once:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/python_re_generic_alias_public_oracle_stage12.py \
+  --self-oracle
+```
+
+The actual
+[passing two-Python reference](../oracle/cpython-3.14.6/evidence/public-generic-alias-v12-self-oracle.json)
+has SHA-256
+`b235bd68afbbfa9b8e7e046d0e007385617c976c6e5a5f5b614cc7d93b891aff`.
+The two separately started CPython 3.14.6 workers agree on all
+**128** frozen cases and **256/256** observations, with **zero**
+mismatches. The complete source, protocol, matrix, and both actual
+V6 independence proofs remain hash-bound. The reference starts no
+candidate and performs no timing.
+
+All three rebuilt Stage 12 candidate runs are **NOT RUN** at this
+baseline checkpoint. Commit and push the genuine Python reference
+before starting any candidate.
+
 ## Freeze the repaired public Python type contract
 
 First commit and push both real V6 source and no-delegation audits.

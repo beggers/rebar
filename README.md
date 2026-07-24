@@ -70,8 +70,10 @@ compatibility pass or an audit.
 The [renewed 128-case compatibility suite](oracle/cpython-3.14.6/PUBLIC-GENERIC-ALIASES-V12.md)
 is now frozen against the genuinely audited, rebuilt engines. Its
 candidate-free design passes **86** independent safety checks and
-retains the original 16 Rust failures. Its new two-Python reference
-run and three-engine comparison are **NOT RUN**.
+retains the original 16 Rust failures. Its
+[actual two-Python reference](oracle/cpython-3.14.6/evidence/public-generic-alias-v12-self-oracle.json)
+passes all **128** cases and **256** independent observations.
+The three-engine comparison is **NOT RUN**.
 
 Earlier [official Python test results](oracle/cpython-3.14.6/evidence/postfinal-locale-v1-all.json),
 [22-stage engine campaigns](candidates/evidence/rust-v8-rust-postfinal-locale-v5-sealed-campaign.json),
