@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a fair comparison for the newly rebuilt Rust engine
+
+Keep all **8,192** original public cases, **260** workload categories,
+**12** Python operations, equal weights, original seeds, **four** warmups,
+**13** paired trials, and **2,000** confidence resamples. Bind the pinned
+Python baseline, unchanged C and Zig engines, newly rebuilt Rust engine,
+all **12** source-bound compatibility proofs, both fresh independence
+audits, and **1,179,648** passing Python comparisons.
+
+Preserve the first failed freeze. It stops before creating a manifest,
+starting a worker, timing an operation, or accessing the final test.
+The unchanged deep-contract validator correctly requires the explicit
+`PYTHONPATH=.` environment even when isolated Python already has the
+canonical repository on `sys.path`. Independently rerun the exact
+unmodified validator with that environment: all **12** mixed Rust, C,
+and Zig proof roles pass. Change no test, evidence, engine, or validator.
+
+The corrected freeze exclusively creates the public manifest with SHA-256
+`65e024a1a79d13b03e4e5ad0f3d4ae010dbb6e4f09b52a8542837a2ea4c6198a`.
+Its source-bound runner passes **43** additional adverse-input controls,
+**seven** Unicode framing controls, all inherited safety checks, and the
+complete three-engine proof chain. It refuses timing until its runner,
+manifest, and [frozen public protocol](../performance/postfinal-public-v6/PROTOCOL.md)
+are clean, committed, and pushed to `main`.
+
+This freeze performs no benchmark. All current speed, memory, regressions,
+and confidence intervals remain **NOT MEASURED**. The **65,536**-case
+final test is **NOT OPENED**.
+
 ## Requalify Rust's first from-scratch matching-state optimization
 
 Preserve the original, exactly archived C, Rust, and Zig native engines

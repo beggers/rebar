@@ -17,6 +17,11 @@ stages, including **4,494,555** Unicode checks, **223,198** matching and
 parser checks, **393** Python-object checks, and **479** callback, buffer,
 and scanner checks. Its speed is **NOT MEASURED**.
 
+The [new, prospectively frozen speed comparison](performance/postfinal-public-v6/PROTOCOL.md)
+will test the current Rust, C, and Zig engines against Python on the exact
+same **8,192** public workloads. It cannot run before its complete protocol
+is committed and pushed. The larger final test remains **NOT OPENED**.
+
 ## Earlier public performance
 
 These graphs show the original, archived Zig, C, and Rust engines against
@@ -120,6 +125,8 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_public_native_archive_v1.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_public_native_archive_v1.py --verify
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -I -B -c \
+  'import sys;sys.path.insert(0,".");from tools.postfinal_public_practice_v6 import main;main(["--self-test"])'
 jq '{status, cases, total_comparisons, mismatches, comparison_complete}' \
   candidates/evidence/python-re-universal-public-oracle-v4-all.json
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
@@ -136,6 +143,8 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -I -B -c \
   'import resource,runpy,sys; n=192*1024*1024; resource.setrlimit(resource.RLIMIT_AS,(n,n)); sys.argv=["tools/postfinal_fresh_holdout_adapter_audit_v1.py","--validate"]; runpy.run_path(sys.argv[0],run_name="__main__")'
 
 sha256sum \
+  performance/postfinal-public-v6/manifest.json \
+  tools/postfinal_public_practice_v6.py \
   performance/postfinal-public-v5/manifest.json \
   performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-summary.json \
   performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-integrity.json \
