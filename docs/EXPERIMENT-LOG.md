@@ -7,6 +7,32 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## A broader public oracle finds real failures in all three engines
+
+The new
+[universal public oracle](../candidates/evidence/PYTHON-RE-UNIVERSAL-PUBLIC-ORACLE-V1.md)
+independently generates **8,192** cases from **16** regex families,
+**16** input and buffer strata, and **32** deterministic variants. Every case
+has exactly **48** checks covering pattern errors, all public regex
+operations, captures, replacements, scanners, Unicode, bytes, invalid
+buffers, callbacks, warning details, and observable argument evaluation.
+
+Each candidate and the pinned Python reference run in separate guarded
+processes. The complete **393,216-check** comparisons fail for Rust
+(**693** mismatches), C (**368**), and Zig (**355**). Preserve all three
+source-bound failure reports, exact seeds, mismatch digests, and bounded
+reproducers. The first recorded Rust differences concern Python's observable
+argument-conversion ordering; C and Zig also expose newline-sensitive
+lookahead and duplicate-name exception chaining.
+
+An initial Zig harness failure is
+[separately preserved with its complete traceback](../candidates/evidence/PYTHON-RE-UNIVERSAL-V1-INITIAL-ZIG-WORKER-FAILURE.md).
+It was fixed by initializing standard-library `ctypes` before installing the
+permanent native-loader guard. The subsequent **355** mismatches are genuine
+candidate results, not that harness failure. No candidate qualifies, no
+performance or hidden case was run, and the expanded benchmark intentionally
+refuses to freeze until every candidate passes all **1,179,648** checks.
+
 ## A fresh 65,536-case final is specified, not opened
 
 The new

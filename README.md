@@ -39,6 +39,13 @@ comparison and a new
 are being prepared; neither is a result or a winner. No new final case is
 generated before the engines, public checks, and test protocol are frozen.
 
+The new **8,192-pattern** compatibility test has already exposed real
+differences missed by the older suite: Rust **693**, C **368**, and Zig
+**355**, out of **393,216** comparisons per engine. All three failures are
+recorded in the
+[complete expanded correctness report](candidates/evidence/PYTHON-RE-UNIVERSAL-PUBLIC-ORACLE-V1.md).
+The larger performance comparison cannot run until every mismatch is fixed.
+
 ![Every measured win, uncertain result, and slowdown for all three independent regex engines](performance/postfinal-public-v3/evidence/postfinal-public-practice-v3-outcomes.svg)
 
 ## Detailed public results
@@ -74,7 +81,7 @@ remain unchanged.
 
 ## What is actually verified
 
-The current from-scratch direct-matching Rust passes **223,198** matching
+On the original frozen suites, from-scratch direct-matching Rust passes **223,198** matching
 checks, **393** public-object checks, **479** tracing and unusual-argument
 checks, and the original complete **22-stage** Python-compatibility campaign,
 including **4,494,555** Unicode comparisons. Its
@@ -118,6 +125,8 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.audit_from_scratch --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/postfinal_no_delegation_audit_v1.py --self-test
+PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
+  tools/python_re_universal_public_oracle_v1.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   tools/rust_postfinal_quote_parity_stage04_oracle.py --self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
