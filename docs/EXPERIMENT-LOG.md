@@ -7,6 +7,45 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze complete independently recorded public-type comparisons
+
+After all four roles pass the official upstream tests, prepare a fresh
+128-case Python type and serialization experiment for the exact repaired
+Rust, C, and Zig engines. An independent pre-freeze review rejects the
+first draft: although it ran two Python references, it retained the complete
+observations from only the first. Do not freeze that draft, execute a
+reference, create an output, or substitute a digest for the missing rows.
+
+Correct the design to preserve **both 128-row standard-Python worker
+reports**, both complete observation arrays, and both independent
+fingerprints. Require all **384** individual native observations, with both
+complete Python reference arrays, in the candidate evidence. Reject missing,
+reordered, repeated, substituted, or cross-engine records. Keep distinct,
+exclusive success and failure destinations and preserve actual partial
+observations on any genuine failure.
+
+The corrected
+[public-type protocol](../oracle/cpython-3.14.6/PUBLIC-GENERIC-ALIASES-V14.md)
+and [source-bound controller](../tools/python_re_generic_alias_public_oracle_stage14.py)
+have respective SHA-256 values
+`b20b5b3876fba06cdf41b9a99825157d0ca6ba84b8bc7abfd71b49e44fdd7505`
+and `5caba6e5d92935a1877fb34bd3c1e266d07c67385f847477041312959104ec58`.
+The independently reproduced, candidate-free self-test passes
+**237/237** checks without starting a worker, reading a clock, creating an
+evidence file, or importing a candidate.
+
+Source-only validation authenticates the genuinely executed **584/584**
+official test results, all **12** repaired source files and **five** native
+binaries, both actual independence audits, **48** pickle checks, and all
+**six** real match representations. It preserves both original compatibility
+failures without treating old candidate results as evidence for new code.
+
+At this source-freeze checkpoint, the two new Python references and all
+three candidate runs remain **NOT RUN**. The broader compatibility and fuzz
+campaigns are **NOT RUN**; expanded performance remains **NOT FROZEN** and
+**NOT MEASURED**. Commit and push this exact protocol and source before
+executing either independent Python reference.
+
 ## Pass the complete official CPython suite for all three engines
 
 First push the exact version-three official test source and protocol

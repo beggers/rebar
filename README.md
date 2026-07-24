@@ -51,73 +51,28 @@ retain the complete results, uncertainty ranges, and all regressions.
 
 ## What the current engines still need to prove
 
-Python also lets programs use and serialize types such as
-`re.Pattern[str]` and `re.Match[bytes]`. The
-[frozen 128-case compatibility test](oracle/cpython-3.14.6/PUBLIC-GENERIC-ALIASES-V11.md)
-first confirmed the expected answers in
-[two independent real Python processes](oracle/cpython-3.14.6/evidence/public-generic-alias-v11-self-oracle.json).
-Its [preserved first Rust run](candidates/evidence/python-re-generic-alias-public-oracle-v11-rust-failures.json)
-then exposed **16 genuine failures** in normal Python serialization. That
-run stopped before testing C or Zig; the old failure has not been erased.
+Python, Rust, C, and Zig have each independently passed
+[all 146 original Python compatibility tests](oracle/cpython-3.14.6/evidence/postfinal-locale-v3-all.json),
+including the official 403-pattern test collection and genuine locale
+tests. The evidence preserves all **584** individual results.
 
-All three native engines now use their genuinely owned pattern and match
-types, and their rebuilt match objects display their true native type.
-Targeted checks pass **24 exact official-style representations** and
-**48 ordinary Python serialization round trips** across C, Rust, and
-Zig. These smoke checks are **not** a full official test or a fresh audit.
+Two independent inspections verify that the three engines
+[are built from their own source code](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V7.json)
+and [cannot secretly use Python or another regex engine](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V7.json).
+These checks cover all **12** implementation files and **five** native
+binaries.
 
-The [previous 128-case compatibility suite](oracle/cpython-3.14.6/PUBLIC-GENERIC-ALIASES-V12.md)
-was frozen against the earlier genuinely audited native builds. Its
-candidate-free design passes **86** independent safety checks and
-retains the original 16 Rust failures. Its
-[actual two-Python reference](oracle/cpython-3.14.6/evidence/public-generic-alias-v12-self-oracle.json)
-passes all **128** cases and **256** independent observations.
-The [actual three-engine comparison](candidates/evidence/python-re-generic-alias-public-oracle-v12-all.json)
-passes **128/128** cases for those Rust, C, and Zig builds:
-**384/384** matching answers and **zero** mismatches. Those results
-predate the latest representation fixes and do not qualify the new
-source files or native binaries.
+The [new 128-case public type and serialization test](oracle/cpython-3.14.6/PUBLIC-GENERIC-ALIASES-V14.md)
+requires two complete, independently recorded Python reference runs and
+all **384** individual results from Rust, C, and Zig. Its new reference
+and engine runs are **NOT RUN**. The
+[original serialization failure](candidates/evidence/python-re-generic-alias-public-oracle-v11-rust-failures.json)
+and [original official-test failure](oracle/cpython-3.14.6/evidence/postfinal-locale-v2-rust-failures.json)
+remain available; older successful checks do not certify modified code.
 
-The [new official Python test design](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V2.md)
-preserves all **146** selected upstream tests, the **403-pattern**
-official corpus, and both genuine locale tests. It passes **113**
-candidate-free safety checks. Its first real run is **FALSIFIED**:
-Rust passes **145/146** tests and fails the genuine match-object
-representation test. The run stops before testing C or Zig. The
-[preserved actual failure](oracle/cpython-3.14.6/evidence/postfinal-locale-v2-rust-failures.json)
-records what was actually observed without inventing missing results.
-
-A [fresh official test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V3.md)
-binds the corrected engines to their two passing version-seven audits.
-It retains the complete **146** official tests, **403** corpus patterns,
-and both genuine locale tests. Its design passes **96** candidate-free
-safety checks. The
-[actual full official run](oracle/cpython-3.14.6/evidence/postfinal-locale-v3-all.json)
-passes **146/146** upstream tests for Python, Rust, C, and Zig,
-preserving all **584** individual results with zero skips or failures.
-
-Earlier [official Python test results](oracle/cpython-3.14.6/evidence/postfinal-locale-v1-all.json),
-[22-stage engine campaigns](candidates/evidence/rust-v8-rust-postfinal-locale-v5-sealed-campaign.json),
-[from-scratch audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V5.json),
-and [independent-execution audit](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V5.json)
-are real historical results for their exact earlier source files and native
-builds. **They do not qualify the newly modified engines.** The
-[earlier source audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V6.json)
-and [earlier independent-execution audit](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V6.json)
-remain valid evidence for their recorded, pre-fix binaries only.
-The [fresh version-seven source audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V7.json)
-now actually passes for all **12** corrected source files and
-**five** native binaries. It verifies **48** real serialization
-checks and all **six** exact official text-and-byte representation
-reproductions; its candidate-free design passes **468** controls.
-The [actual independent-execution audit](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V7.json)
-also passes, separately verifying all **48** serialization cases,
-all **six** corrected match representations, and all **five** native
-loading safeguards. Its design passes **131** controls and retains
-**676** earlier anti-delegation checks. The complete official rerun
-now passes for all four roles; the earlier genuine Rust failure is
-preserved. The newly source-bound differential and fuzz campaigns
-are **NOT RUN**.
+Broader tests of public APIs, caching, scanners, replacements, unusual
+inputs, Unicode, concurrency, and millions of generated examples are
+**NOT RUN**. A complete drop-in replacement is not yet proven.
 
 ## Larger fair speed comparison
 
@@ -143,8 +98,8 @@ SHA-256
 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`.
 [AMENDMENTS.md](AMENDMENTS.md) records later clarifications separately.
 
-Candidate-free checks of the frozen compatibility test and the preserved
-benchmark-design failure can be repeated with the pinned Python:
+The current source, isolation, upstream-test, and public-type designs can
+be checked without running any candidates or benchmarks:
 
 ```sh
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
@@ -154,19 +109,7 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_no_delegation_audit_v7.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_from_scratch_audit_v6.py --self-test
-PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_no_delegation_audit_v6.py --self-test
-PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/python_re_generic_alias_public_oracle_stage12.py --self-test
-PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_cpython_locale_oracle_v2.py --self-test
-PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_cpython_locale_oracle_v3.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_cpython_locale_v2_failure.py --self-test
-PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/python_re_generic_alias_public_oracle_stage11.py --self-test
-PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
-  tools/postfinal_public_expansion_v10_failure.py --self-test
+  tools/python_re_generic_alias_public_oracle_stage14.py --self-test
 ```
