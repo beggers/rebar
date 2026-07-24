@@ -7,6 +7,71 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the genuine failure of the first expanded Python reference
+
+First separately freeze, review, commit, and push the complete
+**1,376-case** public-API matrix and guarded runner. Create genuinely
+distinct fresh ISO-8859-1 and UTF-8 locales using the original
+system locale definitions. Independently verify the true codesets
+and restore the original process locale.
+
+Check that both exact public-reference evidence paths are unused.
+Run the genuine candidate-free Python reference with the published
+source and protocol fingerprints:
+
+```sh
+env \
+  LOCPATH=/tmp/rebar-public-surface-v18-locales.fxKbEmtUtR \
+  PYTHONDONTWRITEBYTECODE=1 \
+  PYTHONHASHSEED=0 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/python_re_public_surface_oracle_stage18.py \
+  --self-oracle \
+  --source-sha256 \
+  31419fb54be8292dd1b7ecf82e23506889fa6b03eb8e7d29e19de90287546862 \
+  --protocol-sha256 \
+  66c6f52ff50c57f4bd6c22cdb13a55a1bfe41982238c5e7742b069505e624abb \
+  --iso8859-1-locale en_US.ISO-8859-1 \
+  --utf8-locale en_US.UTF-8
+```
+
+The real first isolated Python reference exits **1**, before any
+candidate run. Exclusively preserve its original canonical
+[expanded public-reference failure](../oracle/cpython-3.14.6/evidence/public-surface-v18-self-oracle-failures.json),
+SHA-256
+`62c6e06f91c0caa44b75ccbc3c9d7ff499412f4d243634bb3a5742ef386e40d6`.
+The actual report identifies `reference_a`, the genuine return code,
+the unchanged child stdout and stderr, and zero fully completed
+reference roles. A passing Python reference is not published.
+
+Separately reproduce the original failure in memory without running
+a candidate or writing evidence. The original standard-library
+reference completes **14** cases before `surface16.00.14`, the
+ordinary ASCII-flag export in the complete-public-exports category:
+
+```text
+PublicSurfaceError: a public observation contains a recursive object
+```
+
+The frozen recorder normalizes a valid finite public match result
+twice until its hardcoded depth limit is exceeded. This is a defect
+in the observation recorder, not a Python mismatch or an unavailable
+locale. The frozen child-error handler also discards the actual
+active case and **14** partial records when it reports the generic
+failure. Those precise details come from the separate in-memory
+reproduction and source inspection; they are **NOT RECORDED** in
+the original failure report.
+
+Two independent reviewers and the project lead verify the exact
+failure archive and both immutable source versions without
+restarting a candidate. The real expanded reference remains
+**FAIL**; all expanded candidate tests remain **NOT RUN**. Do not
+rewrite the matrix, overwrite the failed report, or treat a
+source-only check as a Python reference. Any correction must use a
+separately frozen append-only protocol and preserve complete
+original worker failure details. Speed and memory remain
+**NOT MEASURED**; the expanded holdout remains **NOT OPENED**.
+
 ## Freeze 1,376 real-world cases inside the actual guarded matching process
 
 Preserve all **1,376** distinct real Python compatibility inputs,

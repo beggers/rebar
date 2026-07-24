@@ -96,8 +96,10 @@ adds **1,376** distinct cases across **43** categories. They cover
 unusual flags, all serialization protocols, live byte buffers,
 Unicode, genuine locale changes, callbacks, warnings, and complete
 public Python objects. Every future candidate observation must run
-inside that candidate's actual guarded matching process. Its
-reference and candidate runs are **NOT RUN**.
+inside that candidate's actual guarded matching process. Its first
+[real Python reference failed](oracle/cpython-3.14.6/evidence/public-surface-v18-self-oracle-failures.json)
+because the frozen observation recorder rejected a valid nested
+public export. No passing reference or candidate result exists.
 
 The [three-engine ownership inspection](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V10.json)
 and [separate strict anti-delegation inspection](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V10.json)
@@ -141,6 +143,11 @@ after-run verification therefore failed. Both the
 [complete invalidated original output](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-INVALIDATED-AFTER-OWNER-FAILURE.json.gz)
 and [exact setup-failure evidence](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-PRODUCER-CRASH.json.gz)
 are preserved. The deeper result is **FAIL**, not a certified pass.
+
+The expanded public-API reference fails at case `surface16.00.14`:
+its observation recorder mistakes a valid, deeply nested Python
+export for a recursive object. The actual failed reference is
+preserved, and the suite cannot certify any candidate.
 
 An [immutable-source verification launcher](oracle/cpython-3.14.6/POSTFINAL-PUBLISHED-PINS-V8.md)
 checks real published evidence without changing any frozen audit or
