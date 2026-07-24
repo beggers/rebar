@@ -7,6 +7,51 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the corrected real-world Python compatibility reference
+
+Freeze the corrected Python-only public compatibility source and its
+append-only protocol before running any Python reference or candidate:
+
+- [Corrected reference source](../tools/python_re_public_surface_oracle_stage19.py),
+  SHA-256 `fda386f3c00be660a41e92d8005fc287706d9dc050967cf2b708cb6f8aba113e`.
+- [Corrected reference protocol](../oracle/cpython-3.14.6/PUBLIC-SURFACE-V19.md),
+  SHA-256 `53a415c7257222602ae69870c0e4343d85f77e1a2963f508d18d227038abc2ea`.
+
+Preserve all **1,376** original compatibility examples, all **43**
+categories, and all **32** variants per category. Preserve the actual
+[failed earlier Python reference](../oracle/cpython-3.14.6/evidence/public-surface-v18-self-oracle-failures.json),
+SHA-256 `62c6e06f91c0caa44b75ccbc3c9d7ff499412f4d243634bb3a5742ef386e40d6`.
+The real earlier failure remains **FAIL** and cannot qualify any engine.
+
+The project lead and two separate reviewers each run the source-only
+checks with the pinned Python 3.14.6 in both a normal and a completely
+empty environment. Each run passes all **1,674** independent checks:
+**864** current-source checks, **474** frozen predecessor checks, and
+**336** original public-matrix checks. Every run reports zero candidate
+imports, reference or candidate workers, audit or evidence reads,
+benchmark or holdout reads, clock samples, locale changes, threads,
+and file writes.
+
+Additional real failure-preservation checks retain the complete
+**1,376-case** worker output, its original streams, genuine exit code,
+first actual mismatch, and before-and-after ownership. Malformed output,
+a real public mismatch, changed owner state, changed source fingerprints,
+and failing postflight checks are all rejected without inventing or
+silently discarding evidence.
+
+This source is a Python **reference-only** controller. It unconditionally
+blocks candidate execution before opening evidence or launching a worker.
+Rebuilding Zig changes the three-engine source and native-binary graph;
+the old V10, V11, and V12 passing records therefore cannot qualify the
+new graph. Genuine current-engine qualification requires fresh,
+independently frozen all-engine audits, new original correctness
+records, and a separately frozen current-graph public controller.
+Their future fingerprints must not be guessed.
+
+At this source-freeze commit, the corrected Python reference is
+**NOT RUN**, current candidates are **NOT QUALIFIED**, the larger
+holdout is **NOT OPENED**, and speed and memory are **NOT MEASURED**.
+
 ## Preserve all 26 real Zig public-method compatibility failures
 
 First publish the unchanged V12 recovery protocol and the passing

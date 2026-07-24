@@ -71,97 +71,30 @@ Not yet. Every row below is a current, guarded run of the same
 | [C](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json) | NOT RUN |
 | [Zig](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-qualified-pass.json.gz) | 223,198 | 0 | [FAIL: 26 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-POSTFINAL-CURRENT-BUILD-V12-INVALIDATED-AFTER-OWNER-FAILURE.json.gz) | NOT RUN |
 
-The separate [Rust ownership proof](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v11-qualified-pass-proof.json),
-[C ownership proof](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v11-qualified-pass-proof.json),
-and [Zig ownership proof](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v11-qualified-pass-proof.json)
-verify that each engine performed its own matching. All three
-complete behavior results are bound to both independently passing
-three-engine inspections. None substitutes for Python's full
-upstream tests.
+The [independent implementation inspection](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V10.json)
+and [separate no-delegation inspection](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V10.json)
+check all **12** engine source files and all **five** native binaries.
+They confirm that the engines perform their own matching without using
+Python's matcher, an external regex package, or one another. They do not
+prove complete Python compatibility.
 
-The [complete upstream-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V6.md)
-requires all **152** original public Python tests, the genuine Python
-test-support files, the full original test corpus, and real
-multi-gigabyte inputs. There are no public-test waivers; the only
-conditional skip is Python's own private-debug-build requirement.
-[Python has passed the current complete reference suite twice](oracle/cpython-3.14.6/evidence/postfinal-locale-v6-self-oracle.json):
-each independent run records all **152** original tests, **151**
-actual passes, the one original debug-only skip, both genuine
-**2 GiB** input tests, and real fresh locales. The candidate
-upstream runs are **NOT RUN**. The frozen runner verifies that each
-candidate uses its own engine immediately before and after every
-original Python test.
+Python itself has [twice passed its original complete reference tests](oracle/cpython-3.14.6/evidence/postfinal-locale-v6-self-oracle.json).
+Each run covers all **152** original public tests, including the genuine
+multi-gigabyte cases. The only skipped test requires Python's own private
+debug build. These complete tests have **NOT RUN** against the candidates.
 
-The [expanded real-world compatibility contract](oracle/cpython-3.14.6/PUBLIC-SURFACE-V18.md)
-adds **1,376** distinct cases across **43** categories. They cover
-unusual flags, all serialization protocols, live byte buffers,
-Unicode, genuine locale changes, callbacks, warnings, and complete
-public Python objects. Every future candidate observation must run
-inside that candidate's actual guarded matching process. Its first
-[real Python reference failed](oracle/cpython-3.14.6/evidence/public-surface-v18-self-oracle-failures.json)
-because the frozen observation recorder rejected a valid nested
-public export. No passing reference or candidate result exists.
+The [expanded real-world compatibility tests](oracle/cpython-3.14.6/PUBLIC-SURFACE-V19.md)
+preserve **1,376** distinct examples in **43** categories, including
+Unicode, byte buffers, callbacks, warnings, serialization, unusual flags,
+real system locales, and Python's complete public regex objects. The
+[previous reference failure](oracle/cpython-3.14.6/evidence/public-surface-v18-self-oracle-failures.json)
+is preserved. The corrected reference and all current-engine expanded
+results are **NOT RUN**. Changing an engine invalidates its earlier
+ownership and compatibility proofs; those checks must be run again.
 
-The [three-engine ownership inspection](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V10.json)
-and [separate strict anti-delegation inspection](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V10.json)
-each independently check all **12** original source files and all
-**five** native binaries. Every engine performed its own matching
-with Python's internal matcher, external regular-expression packages,
-and the other candidates blocked. Each inspection passed all **48**
-genuine serialization checks. These inspections prove independent
-implementation, not complete compatibility. The complete upstream
-candidate tests remain **NOT RUN**.
-
-The [first rebuilt Rust safety check](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v8-diagnostic-native-owner-failure.json.gz)
-found a genuine bug in the safety checker itself: a deliberately
-blocked engine was mistaken for a real import. The check stopped
-before running Rust or claiming a compatibility pass.
-
-The [first corrected Rust isolation check](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v9-diagnostic-native-owner-failure.json.gz)
-found another real safety gap: an internal Python matcher was already
-cached and could still be reached. The check correctly recorded a
-failure before importing Rust or starting the behavior tests. Rust has
-since passed the corrected edge qualification; no earlier failure was
-hidden or waived.
-
-The [cached-matcher-safe, from-scratch ownership protocol](candidates/audits/POSTFINAL-NATIVE-OWNERSHIP-V10.md)
-closes both safety gaps. It requires each C, Rust, and Zig engine to do
-its own matching, blocks Python's cached internal matchers, checks
-genuine Python pattern and match objects, and repeats all protections
-after matching. The first actual three-engine ownership inspection
-and the separate stricter anti-delegation inspection both pass.
-
-The [durable fresh-build correctness protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V11.md)
-saves both the complete original Python behavior results and a
-separate proof that the actual engine performed its own matching.
-Its stronger, three-engine-qualified Rust, C, and Zig comparisons
-all pass with zero differences from Python.
-
-The first deeper Rust run completed **393** checks with zero
-reported behavior differences, but its parent process omitted
-Python's mandatory `PYTHONDONTWRITEBYTECODE=1` setting. The required
-after-run verification therefore failed. Both the
-[complete invalidated original output](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-INVALIDATED-AFTER-OWNER-FAILURE.json.gz)
-and [exact setup-failure evidence](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V11-PRODUCER-CRASH.json.gz)
-are preserved. That first run remains **FAIL**. The separately
-authenticated [corrected Rust retry](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V12-RETRY-PASS-PROOF.json)
-passes all **393** checks and proves who actually ran it.
-
-The [append-only deep-test recovery protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V12.md)
-preserves that original failure and verifies the required Python
-environment before any engine is started. Rust and C pass the
-corrected deep test. Zig fails **26 of 393** deeper cases because
-its public method descriptions use `Pattern` where Python requires
-`re.Pattern`.
-
-The expanded public-API reference fails at case `surface16.00.14`:
-its observation recorder mistakes a valid, deeply nested Python
-export for a recursive object. The actual failed reference is
-preserved, and the suite cannot certify any candidate.
-
-An [immutable-source verification launcher](oracle/cpython-3.14.6/POSTFINAL-PUBLISHED-PINS-V8.md)
-checks real published evidence without changing any frozen audit or
-silently substituting another engine.
+The [experiment log](docs/EXPERIMENT-LOG.md) contains the full failure
+records, individual experiments, audits, reproduction commands, and
+rejected designs.
 
 ## Larger fair speed comparison
 
@@ -199,9 +132,7 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
 "$PY" -I -B \
   tools/postfinal_current_build_proofs_v12.py --self-test
 "$PY" -I -B \
-  tools/python_re_public_surface_oracle_stage17.py --self-test
-"$PY" -I -B \
-  tools/python_re_public_surface_oracle_stage18.py --self-test
+  tools/python_re_public_surface_oracle_stage19.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_published_pins_v8.py --self-test
 ```
