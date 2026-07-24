@@ -80,6 +80,12 @@ and [does not secretly call Python or another regular-expression package](candid
 These inspections prove independent implementation, not complete
 compatibility. Deeper correctness checks remain **NOT RUN**.
 
+The [stricter native ownership and serialization protocol](candidates/audits/POSTFINAL-NATIVE-OWNERSHIP-V8.md)
+now requires genuine, engine-owned `re.Pattern` and `re.Match` objects,
+ordinary Python serialization, and persistent protection against
+calling another regular-expression engine. Its complete rebuilt-engine
+audits are **NOT RUN**.
+
 ## Larger fair speed comparison
 
 A larger, **33,280-example** public comparison and a separate,

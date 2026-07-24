@@ -7,6 +7,46 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze genuine native ownership and serialization requirements
+
+Freeze the independently reviewed
+[native ownership protocol](../candidates/audits/POSTFINAL-NATIVE-OWNERSHIP-V8.md),
+[from-scratch source audit](../tools/postfinal_from_scratch_audit_v8.py),
+and [no-delegation audit](../tools/postfinal_no_delegation_audit_v8.py)
+before changing a candidate or running either real audit. Their
+respective SHA-256 hashes are
+`5c60e6ce63ff1e4c5593eaafe29971cb3557b1a0389dcd5cf41cfb00647bc399`,
+`14b8daeebfb620eafa778529f6bf11e1a4f48256dd010b25621f4e94666692c6`,
+and
+`bb22b1983c11a896d3639077050dfaac746876ccbb9e4909518fb33d19987c01`.
+
+Authenticate all three actual complete prior **223,198-case** failure
+archives: Rust **16**, C **33**, and Zig **16**. Preserve every
+original failure, seed, category, current native role, and unchanged
+original oracle. Require both actual public `re.Pattern` and
+`re.Match` names while proving the actual compiled and matched
+objects still come from each family's separately owned native source
+and mapped binary.
+
+Require all **48** real ordinary public generic-alias serialization
+observations, including Python pickle protocols 0, 2, 4, and 5.
+Preserve real failures: simply renaming a native public type is not a
+valid repair if serialization breaks. Check all **13** standard
+regular-expression entry points, independent-engine boundaries, and
+native loading protections before and after matching. Preserve any
+actual crash, timeout, or failure exclusively; never replay an
+existing report or present a source-only test as an engine run.
+
+Two separate reviewers and the project lead independently verified
+the frozen source. The source-only ownership checks genuinely pass
+**616/616**, and the stricter checks genuinely pass **827/827**, with
+zero candidate imports, worker processes, files, timing, or holdout
+access. The strict audit's actual-source hash matches the exact frozen
+source; its prerequisite report remains unpinned until genuinely
+created. Actual ownership and no-delegation reports, rebuilt
+candidates, complete upstream results, speed, and memory are all
+**NOT RUN** or **NOT MEASURED**.
+
 ## Make the current project status readable
 
 Keep the README focused on the purpose, the clearly identified
