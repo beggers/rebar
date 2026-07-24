@@ -7,6 +7,45 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze guarded, source-bound current-build correctness checks
+
+Freeze the independently reviewed
+[current-build correctness protocol](../oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V8.md)
+and [original-producer proof controller](../tools/postfinal_current_build_proofs_v8.py)
+before rebuilding or importing any candidate. Their respective
+SHA-256 hashes are
+`76e66c091ae06ad56b8f4e22c76f4db44810cdb512b839201c9cc7cb83f4cfa0`
+and
+`0f9e12847855797669206ea89de94948da66c29742d64820a625ce5a6570b313`.
+
+Preserve the unchanged original **223,198-case**, **49-category**
+edge producer and the original **393-case**, **64-seeded-case** deep
+producer. Preserve all three actual earlier Rust **16**, C **33**,
+and Zig **16** failures. Authenticate the exact current source and
+native binary for each genuinely independent family.
+
+Before launching either original producer, require a genuine passing
+isolated native-ownership worker, all **16** ordinary pickle cases
+for that family, and all **13** continuously protected Python regex
+entry points. Verify the same native owner and protections again
+after the run. Exclusively preserve every real owner, edge, deep,
+crash, timeout, or invalidated-source failure. Never rewrite a
+failing original report into an artificial passing report.
+
+Single-engine diagnostics never qualify an engine. Full correctness
+qualification remains blocked until the genuine, complete,
+three-engine source and no-delegation audit reports exist. Both
+not-yet-created report hash pins remain `None`; no stale report,
+synthetic control, or existing build can satisfy them.
+
+Both independent reviewers and the project lead reran the exact
+pinned candidate-free controls in a clean environment and with
+explicit bytecode suppression: **190/190 passed** in both modes,
+with zero candidate imports, workers, historical-evidence reads,
+file writes, timers, or holdout access. No production correctness
+proof, upstream result, benchmark, or holdout was created. Current
+speed and memory remain **NOT MEASURED**.
+
 ## Verify and pin the genuine stable Zig compiler
 
 Retrieve Zig's actual stable release metadata directly from the

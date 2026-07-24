@@ -90,6 +90,11 @@ ordinary Python serialization, and persistent protection against
 calling another regular-expression engine. Its complete rebuilt-engine
 audits are **NOT RUN**.
 
+The [fresh-build verification protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V8.md)
+requires each rebuilt engine to pass its own native-ownership and
+serialization checks before any full compatibility comparison begins.
+Those rebuilt-engine comparisons are **NOT RUN**.
+
 ## Larger fair speed comparison
 
 A larger, **33,280-example** public comparison and a separate,
