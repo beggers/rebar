@@ -76,11 +76,14 @@ builds. **They do not qualify the newly modified engines.** A
 [fresh from-scratch audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V6.json)
 now genuinely verifies all **12** implementation files, **five** native
 binaries, **three** independent engines, and **48** normal Python
-serialization checks. Its design also passes **324 candidate-free safety
-checks**. The separate independent-execution audit design passes
-**75 safety checks** and preserves all **676** previous anti-cheating
-checks; its actual audit is **NOT RUN**. The complete official Python
-tests and the expanded compatibility comparison are also **NOT RUN**.
+serialization checks. A separate
+[fresh independent-execution audit](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V6.json)
+proves that each engine blocks Python's matcher, outside regex packages,
+the other engines, and all **five** foreign native-library loading
+routes. The audit designs pass **324** and **75** safety checks,
+including all **676** earlier malicious-input checks. The complete
+official Python tests and the expanded compatibility comparison are
+**NOT RUN**.
 
 ## Larger fair speed comparison
 

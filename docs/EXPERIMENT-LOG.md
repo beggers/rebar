@@ -7,6 +7,40 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Verify the repaired engines cannot delegate matching
+
+Commit and push the independent-execution audit design in `b2196421`
+before running it. Its exact source SHA-256 is
+`a936abe91d67169ea361b6770404ffe7bc925fdb3275aef854fbe12fe68a8649`.
+Both the root and an independent reviewer verify **75/75** new,
+candidate-free controls and all **676** inherited malicious-input
+controls.
+
+Run the real, separately guarded audit exactly once:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_no_delegation_audit_v6.py --audit
+```
+
+The exclusively created
+[passing no-delegation evidence](../candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V6.json)
+has SHA-256
+`93f174f0861b0ee6e9feadf6e49bf222f0766b393ff74179219e65452b03d84f`.
+It is bound to the genuine from-scratch report
+`0314e3e5de3386d7c9c1e7f8fa4648554ff53cb53e3aafcecc4cb8e4923ddcbb`,
+all **12** current sources, all **five** actually mapped native
+binaries, and all **48** real pickle checks. Each independent engine
+blocks Python's `re` and `_sre`, external matching packages, the other
+families, all five unowned native-loading entry points, and the cached
+JSON-module access route. Both reports carry the exact same genuine
+native and dependency evidence.
+
+Complete official Python tests and the renewed full public
+compatibility suite remain **NOT RUN**. The larger comparison is
+**NOT FROZEN**, and current speed and memory remain **NOT MEASURED**.
+
 ## Predeclare independent execution for the repaired engines
 
 First commit and push the real from-scratch report in `c1ef8102`.
