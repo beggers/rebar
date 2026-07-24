@@ -7,6 +7,40 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Requalify Rust's first from-scratch matching-state optimization
+
+Preserve the original, exactly archived C, Rust, and Zig native engines
+and their **8,192** public speed measurements before changing any source.
+Keep those charts and speed results explicitly historical: they do not
+measure the new Rust engine.
+
+Change only Rust's owned matching executor. Store up to **eight** active
+recursion guards and repeat states in local stack arrays instead of
+allocating a separate heap vector for each match. Preserve the original
+heap-backed behavior for larger patterns, the unchanged Python bridge,
+independent Rust parser and executor, and zero external regex packages.
+
+Rebuild the Rust engine offline, pass all **20** owned Rust release tests,
+and qualify all three current candidates with fresh **76**-control source
+and **32**-control isolation reports.
+The frozen public Python oracle passes **1,179,648** comparisons with
+zero mismatches. The changed Rust engine separately passes **223,198**
+matching checks, **393** Python-object checks, **479** callback, buffer,
+and scanner checks, and all **22** compatibility stages, including
+**4,494,555** Unicode checks.
+
+An inherited, read-only Rust formatting check reports unrelated existing
+formatting differences; do not reformat or modify those original lines.
+The first observability invocation also rejects an incorrectly named
+output before creating a file. Preserve that failure and pass the
+unmodified suite using its required `rust-v8-observability-rust-qualified`
+output prefix. Record every passing source-bound report and exact binary
+fingerprint in the [Rust optimization report](../candidates/evidence/RUST-POSTFINAL-INLINE-STATE-V1.md).
+
+This chunk records no timings. The new Rust speed and memory remain
+**NOT MEASURED**; the **65,536**-case final test remains **NOT OPENED**.
+There is no winner.
+
 ## Preserve the exact original native binaries
 
 The five native libraries used in the 8,192-case public comparison are

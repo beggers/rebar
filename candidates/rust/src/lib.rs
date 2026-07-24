@@ -3043,15 +3043,22 @@ fn run_program(
     let mut guard_undo = InlineStack::<GuardUndo, 16>::new();
     let mut repeat_undo = InlineStack::<RepeatUndo, 16>::new();
     let mut atomic = InlineStack::<usize, 12>::new();
-    let mut guards = if program.guards == 0 {
-        Vec::new()
+    const INLINE_STATE_SLOTS: usize = 8;
+    let mut inline_guards = [usize::MAX; INLINE_STATE_SLOTS];
+    let mut overflow_guards = Vec::new();
+    let mut guards: &mut [usize] = if program.guards <= INLINE_STATE_SLOTS {
+        &mut inline_guards[..program.guards]
     } else {
-        vec![usize::MAX; program.guards]
+        overflow_guards.resize(program.guards, usize::MAX);
+        overflow_guards.as_mut_slice()
     };
-    let mut repeats = if program.repeats.is_empty() {
-        Vec::new()
+    let mut inline_repeats = [RepeatState::default(); INLINE_STATE_SLOTS];
+    let mut overflow_repeats = Vec::new();
+    let mut repeats: &mut [RepeatState] = if program.repeats.len() <= INLINE_STATE_SLOTS {
+        &mut inline_repeats[..program.repeats.len()]
     } else {
-        vec![RepeatState::default(); program.repeats.len()]
+        overflow_repeats.resize(program.repeats.len(), RepeatState::default());
+        overflow_repeats.as_mut_slice()
     };
     let mut pc = entry;
     let mut pos = start;

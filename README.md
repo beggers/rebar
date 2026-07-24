@@ -10,22 +10,21 @@ The original one-time hidden compatibility test failed and cannot be retried.
 **There is no proven drop-in replacement or final winner.** The results below
 come from a separate, completely recorded public comparison.
 
-All three independently written engines now pass a new **8,192-pattern**
-compatibility test: **1,179,648** comparisons with Python and **zero**
-differences. Each repaired engine also passes the original **223,198-check**
-matching and parser suite, a separate **393-check** object test, and a
-**479-check** callback, buffer, and scanner test. All three also pass the
-complete **22-stage** campaign, including **4,494,555** Unicode comparisons
-per engine. The public measurements below test these exact repaired engines;
-their one-time final performance remains **NOT MEASURED**.
+All three current engines pass the same **8,192-pattern** compatibility
+test: **1,179,648** comparisons with Python and **zero** differences. The
+first newly optimized Rust engine also passes all **22** compatibility
+stages, including **4,494,555** Unicode checks, **223,198** matching and
+parser checks, **393** Python-object checks, and **479** callback, buffer,
+and scanner checks. Its speed is **NOT MEASURED**.
 
-## Overall public performance
+## Earlier public performance
 
-Python 3.14.6 and the current independently written Zig, C, and Rust engines
-ran the same **8,192** public workloads. The comparison records **425,984**
-paired observations, **1,277,952** exact-answer checks, and **24,579**
-independently verified uncertainty ranges. **1× means the same speed as
-standard Python; higher is faster. The target is 1.5×.**
+These graphs show the original, archived Zig, C, and Rust engines against
+Python 3.14.6 on the same **8,192** public workloads. They do not measure
+the newly optimized Rust engine. The comparison preserves **425,984** paired
+observations, **1,277,952** exact-answer checks, and **24,579** independently
+verified uncertainty ranges. **1× means Python's speed; higher is faster.
+The target is 1.5×.**
 
 ![Overall measured speed and uncertainty for three independently written regex engines compared with standard Python](performance/postfinal-public-v5/evidence/postfinal-public-practice-v5-clear-overall.svg)
 
@@ -36,8 +35,8 @@ standard Python; higher is faster. The target is 1.5×.**
 | C | 1.136× | 1.1260–1.1464× | 4,709/8,192 (57.5%) | 1,282/8,192 |
 | Rust | 1.010× | 1.0004–1.0208× | 2,866/8,192 (35.0%) | 2,516/8,192 |
 
-**No candidate reaches the required 1.5× overall speed or the requirement to
-be clearly faster on at least 60% of cases. There is no winner.** All
+**No original candidate reached the required 1.5× overall speed or was
+clearly faster on at least 60% of cases. There is no winner.** All
 **5,173** slowdowns of more than 20% remain visible. The complete
 [public results](performance/postfinal-public-v5/RESULTS.md) and
 [predeclared protocol](performance/postfinal-public-v5/PROTOCOL.md) preserve
@@ -66,26 +65,29 @@ The original one-time hidden test found a genuine Zig `split` mismatch and
 cannot be rerun. Its [unchanged failure report](performance/v9/evidence/FINAL-HOLDOUT-FAILURE.md)
 remains part of the experiment. The separate, newly planned
 [65,536-case final test](performance/postfinal-fresh-holdout-v1/PROTOCOL.md)
-is **NOT OPENED**. Its
+is **NOT OPENED**. The
 [independently audited four-engine adapter](performance/postfinal-fresh-holdout-v1/ADAPTER-AUDIT.md)
-passes **2,176** public cases and **26,112** separate compatibility checks;
-the one-use production executor is **NOT YET INTEGRATED**. Final speed,
-final memory, and a qualified winner remain **NOT MEASURED**.
+passed **2,176** public cases and **26,112** separate checks with the
+original, archived engines; it does not qualify the newly modified Rust
+engine. The one-use final-test executor is **NOT YET INTEGRATED**. Final
+speed, final memory, and a qualified winner remain **NOT MEASURED**.
 
 ## What is actually verified
 
-The [full compatibility evidence](candidates/evidence/POSTFINAL-UNIVERSAL-STAGE05-EDGE.md)
-records the original matching suite, observable Python object behavior,
-callbacks, scanners, and complete Unicode campaign for all three engines.
-The expanded [8,192-pattern Python comparison](candidates/evidence/PYTHON-RE-UNIVERSAL-PUBLIC-ORACLE-STAGE03.md)
-preserves every original failure as well as all **1,179,648** passing checks.
+The new [8,192-pattern Python comparison](candidates/evidence/python-re-universal-public-oracle-v4-all.json)
+checks all three current engines against Python. The
+[Rust optimization and full compatibility evidence](candidates/evidence/RUST-POSTFINAL-INLINE-STATE-V1.md)
+record the exact modified source, native engine, unchanged Python bridge,
+matching tests, Python-object behavior, callbacks, scanners, and complete
+Unicode campaign.
 
-The [76-control from-scratch audit](candidates/audits/FROM-SCRATCH-AUDIT.json)
-and [32-control isolated-engine audit](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V1.json)
-confirm that production matching does not use Python's regex engine, another
-candidate, or an external regex package. Neither audit claims reproducible
-compiler builds. [Fresh, append-only checks](candidates/audits/POSTFINAL-REQUALIFICATION-V2.md)
-are required before any changed engine can reuse the same comparison.
+The fresh [from-scratch audit](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V2.json)
+and [isolated-engine audit](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V2.json)
+confirm that the current engines do not use Python's regex engine, another
+candidate, or an external regex package. Their exact control counts,
+limitations, and source fingerprints are documented in the
+[current requalification record](candidates/audits/POSTFINAL-REQUALIFICATION-V2.md).
+The original source and isolation audits remain historical evidence.
 The [five original benchmarked native libraries](performance/postfinal-public-v5/NATIVE-ARCHIVE-V1.md)
 are independently preserved and verified. The
 [experiment log](docs/EXPERIMENT-LOG.md) preserves
@@ -119,7 +121,7 @@ PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_public_native_archive_v1.py --verify
 jq '{status, cases, total_comparisons, mismatches, comparison_complete}' \
-  candidates/evidence/python-re-universal-public-oracle-v3-all.json
+  candidates/evidence/python-re-universal-public-oracle-v4-all.json
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
   -m tools.postfinal_public_practice_v5 self-test
 PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=. "$PY" -B \
