@@ -7,6 +7,32 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the exact original native binaries
+
+The five native libraries used in the 8,192-case public comparison are
+excluded by the repository's `*.so` rule. Verify their exact recorded
+contents, original `0700` modes, public source proofs, and both
+independence audits before attempting to archive them.
+
+The first archive attempt genuinely fails closed: its general **16 MiB**
+JSON bound rejects the independently recorded public results, which occupy
+exactly **18,125,531 bytes**. Neither the one-use archive directory nor its
+manifest is created. Preserve the failure and correct only the explicit,
+hash-pinned public-summary limit; do not increase the limit for other
+inputs, change any existing engine, or claim that the failed attempt
+produced an archive.
+
+The corrected, independently reviewed archiver passes all **64** in-memory
+corruption controls. Its single successful production run preserves all
+five original libraries, their exact **1,558,568** bytes and `0700`
+permissions, and all original source and proof fingerprints in **563,840**
+bytes of deterministic, timestamp-free compressed evidence. An independent
+bounded verification authenticates all five archives without reading a
+current native library, importing a candidate, or running a benchmark.
+The [complete historical archive](../performance/postfinal-public-v5/NATIVE-ARCHIVE-V1.md)
+does not claim reproducible compiler output, a current loaded engine,
+new correctness, a hidden test result, or improved performance.
+
 ## Preserve independent checks before changing any engine
 
 The complete public correctness and performance evidence authenticates
