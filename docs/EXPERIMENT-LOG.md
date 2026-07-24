@@ -7,6 +7,48 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Rebuild the independently owned C matching engine
+
+First freeze and push the version-ten cached-matcher-safe ownership
+and full original-behavior checks. Repair only the independent C
+engine's Python source and native C implementation. Give both actual
+native types the public `re.Pattern` and `re.Match` names without
+importing Python's matcher.
+
+Implement an engine-owned generic-alias type and reconstruction
+function. Keep its actual factory and resolver in interpreter-local,
+garbage-collection-safe native module state. Authenticate the exact
+C-owned Python helpers and native public types before use; preserve
+the C scanner, template handling, original descriptors, and
+unpickleable match objects. Do not delegate to another engine.
+
+Run the actual independent syntax check and full pinned build:
+
+```sh
+cc -pthread -fsyntax-only \
+  -I/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/include/python3.14 \
+  candidates/_vm_native.c
+
+cc -pthread -shared -fPIC -O3 \
+  -Wl,-z,noexecstack -Wl,--exclude-libs,ALL \
+  -I/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/include/python3.14 \
+  candidates/_vm_native.c \
+  -o candidates/_vm_native.cpython-314-x86_64-linux-gnu.so
+```
+
+Both commands actually exited **0** with no compiler diagnostics.
+The new Python source, independently owned C source, and actually
+built native module respectively have SHA-256 values
+`2bd8cd6d3844d6cd8c94f338803b41671d6aa1e999897e21a81cbe91182eb2fb`,
+`a516ae8f2409af054b456068e403df63d8fea029a516ce1adb22ee5f836a819c`,
+and
+`9308563f7541f7b9f56afc7965a47ae4d4d00b1a94db8857891e493a82ae5148`.
+
+No candidate was imported or matched during this source-and-build
+feature. Rebuilt C behavior, native ownership, complete upstream
+compatibility, speed, memory, and the final holdout remain **NOT RUN**
+or **NOT MEASURED**, as appropriate.
+
 ## Preserve Rust's complete original checks and expose missing proof evidence
 
 First independently freeze, review, commit, and push the

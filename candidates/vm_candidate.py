@@ -2,6 +2,7 @@
 
 import enum
 import os
+import types
 import unicodedata
 import warnings
 
@@ -1092,13 +1093,45 @@ def _pattern_reduce(pattern):
     return compile, (pattern.pattern, pattern.flags)
 
 
+def _restore_owned_generic_alias(name, arguments):
+    if type(name) is not str or type(arguments) is not tuple:
+        raise TypeError("invalid native generic-alias name or arguments")
+    if name == "Pattern":
+        origin = Pattern
+    elif name == "Match":
+        origin = Match
+    else:
+        raise TypeError("unknown native generic-alias origin")
+    return _OwnedGenericAlias(origin, arguments)
+
+
+class _OwnedGenericAlias(types.GenericAlias):
+    __slots__ = ()
+
+    def __reduce__(self):
+        origin = self.__origin__
+        if origin is Pattern:
+            name = "Pattern"
+        elif origin is Match:
+            name = "Match"
+        else:
+            raise TypeError("foreign native generic-alias origin")
+        return _restore_owned_generic_alias, (name, self.__args__)
+
+
+def _owned_generic_alias(origin, arguments):
+    if origin is not Pattern and origin is not Match:
+        raise TypeError("foreign native generic-alias origin")
+    return _OwnedGenericAlias(origin, arguments)
+
+
 class _PatternType(type):
     def __new__(metaclass, name, bases, namespace):
         return _vm_native.pattern_type(name, bases, namespace)
 
 
 class Pattern(_vm_native.Pattern, metaclass=_PatternType):
-    __module__ = __name__
+    __module__ = "re"
     __slots__ = ()
 
 

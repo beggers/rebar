@@ -2316,6 +2316,11 @@ typedef struct {
 static PyTypeObject PatternType;
 static PyTypeObject MatchType;
 static PyTypeObject ScannerType;
+typedef struct {
+    PyObject *generic_alias_factory;
+    PyObject *generic_alias_resolver;
+} VMModuleState;
+static struct PyModuleDef Module;
 static PyObject *template_function=NULL;
 static PyObject *template_compiler=NULL;
 static PyObject *pattern_flag_type=NULL;
@@ -2625,7 +2630,27 @@ static PyObject *substitution_template(PatternObject *pattern,
 static PyObject *match_copy(MatchObject *match, PyObject *ignored) { (void)ignored; return Py_NewRef(match); }
 static PyObject *match_deepcopy(MatchObject *match, PyObject *memo) { (void)memo; return Py_NewRef(match); }
 static PyObject *match_reduce(MatchObject *match, PyObject *ignored) { (void)match; (void)ignored; PyErr_SetString(PyExc_TypeError,"cannot pickle 're.Match' object"); return NULL; }
-static PyObject *match_class_getitem(PyObject *type, PyObject *item) { return Py_GenericAlias(type,item); }
+static PyObject *match_class_getitem(PyObject *type, PyObject *item) {
+    PyObject *module=PyState_FindModule(&Module);
+    if (!module) {
+        if (!PyErr_Occurred()) {
+            PyErr_SetString(PyExc_RuntimeError,
+                            "owned native VM module is not initialized");
+        }
+        return NULL;
+    }
+    VMModuleState *state=(VMModuleState *)PyModule_GetState(module);
+    if (!state || !state->generic_alias_factory ||
+        !state->generic_alias_resolver) {
+        if (!PyErr_Occurred()) {
+            PyErr_SetString(PyExc_RuntimeError,
+                            "native generic alias helpers are not configured");
+        }
+        return NULL;
+    }
+    return PyObject_CallFunctionObjArgs(
+        state->generic_alias_factory,type,item,NULL);
+}
 
 static PyObject *match_repr(MatchObject *match) {
     PyObject *value=match_piece(match,0,Py_None);
@@ -2730,7 +2755,7 @@ static PyMappingMethods MatchMapping={0,match_subscript,0};
 
 static PyTypeObject MatchType={
     PyVarObject_HEAD_INIT(NULL,0)
-    .tp_name="candidates._vm_native.Match", .tp_basicsize=offsetof(MatchObject,caps), .tp_itemsize=sizeof(Py_ssize_t),
+    .tp_name="re.Match", .tp_basicsize=offsetof(MatchObject,caps), .tp_itemsize=sizeof(Py_ssize_t),
     .tp_dealloc=(destructor)match_dealloc, .tp_repr=(reprfunc)match_repr, .tp_flags=Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_GC, .tp_doc="The result of re.match() and re.search().\nMatch objects always have a boolean value of True.",
     .tp_traverse=(traverseproc)match_traverse, .tp_clear=(inquiry)match_clear,
     .tp_methods=MatchMethods, .tp_getset=MatchGetSet, .tp_as_mapping=&MatchMapping
@@ -3638,7 +3663,7 @@ static PyGetSetDef PatternGetSet[]={
 
 static PyTypeObject PatternType={
     PyVarObject_HEAD_INIT(NULL,0)
-    .tp_name="candidates._vm_native.Pattern", .tp_basicsize=sizeof(PatternObject), .tp_dealloc=(destructor)pattern_dealloc,
+    .tp_name="re.Pattern", .tp_basicsize=sizeof(PatternObject), .tp_dealloc=(destructor)pattern_dealloc,
     .tp_repr=(reprfunc)pattern_repr,
     .tp_hash=pattern_hash,
     .tp_richcompare=pattern_richcompare,
@@ -3661,7 +3686,7 @@ static PyType_Slot PublicPatternSlots[]={
 };
 
 static PyType_Spec PublicPatternSpec={
-    .name="candidates.vm_candidate.Pattern",
+    .name="re.Pattern",
     .basicsize=sizeof(PatternObject),
     .itemsize=0,
     .flags=Py_TPFLAGS_DEFAULT|Py_TPFLAGS_HAVE_GC,
@@ -3681,7 +3706,7 @@ static PyObject *native_pattern_type(PyObject *self, PyObject *args) {
         PyTuple_GET_SIZE(bases)!=1 ||
         PyTuple_GET_ITEM(bases,0)!=(PyObject *)&PatternType ||
         !module || !PyUnicode_Check(module) ||
-        PyUnicode_CompareWithASCIIString(module,"candidates.vm_candidate") ||
+        PyUnicode_CompareWithASCIIString(module,"re") ||
         !qualname || !PyUnicode_Check(qualname) ||
         PyUnicode_CompareWithASCIIString(qualname,"Pattern") ||
         !slots || !PyTuple_Check(slots) || PyTuple_GET_SIZE(slots)) {
@@ -3694,7 +3719,19 @@ static PyObject *native_pattern_type(PyObject *self, PyObject *args) {
 }
 
 static PyObject *native_configure(PyObject *self, PyObject *args) {
-    (void)self;
+    if (!PyModule_Check(self) || PyModule_GetDef(self)!=&Module) {
+        PyErr_SetString(PyExc_TypeError,
+                        "native configuration requires its owned VM module");
+        return NULL;
+    }
+    VMModuleState *state=(VMModuleState *)PyModule_GetState(self);
+    if (!state) {
+        if (!PyErr_Occurred()) {
+            PyErr_SetString(PyExc_RuntimeError,
+                            "owned native VM module state is unavailable");
+        }
+        return NULL;
+    }
     PyObject *expander,*compiler;
     if (!PyArg_ParseTuple(args,"OO",&expander,&compiler)) return NULL;
     if (!PyFunction_Check(expander) || !PyFunction_Check(compiler)) {
@@ -3716,6 +3753,13 @@ static PyObject *native_configure(PyObject *self, PyObject *args) {
     PyObject *owned_compiler=PyDict_GetItemString(globals,"_template_parts");
     PyObject *flags=PyDict_GetItemString(globals,"RegexFlag");
     PyObject *reduce=PyDict_GetItemString(globals,"_pattern_reduce");
+    PyObject *alias_type=PyDict_GetItemString(globals,"_OwnedGenericAlias");
+    PyObject *alias_factory=PyDict_GetItemString(globals,
+                                                "_owned_generic_alias");
+    PyObject *alias_resolver=PyDict_GetItemString(globals,
+                                                 "_restore_owned_generic_alias");
+    PyObject *public_pattern=PyDict_GetItemString(globals,"Pattern");
+    PyObject *public_match=PyDict_GetItemString(globals,"Match");
     PyObject *reconstructor=PyDict_GetItemString(globals,
                                                  "_copy_reconstructor");
     if (!owner || !PyUnicode_Check(owner) ||
@@ -3724,6 +3768,15 @@ static PyObject *native_configure(PyObject *self, PyObject *args) {
         !flags || !PyType_Check(flags) ||
         !reduce || !PyFunction_Check(reduce) ||
         PyFunction_GetGlobals(reduce)!=globals ||
+        !alias_type || !PyType_Check(alias_type) ||
+        !PyType_IsSubtype((PyTypeObject *)alias_type,&Py_GenericAliasType) ||
+        !alias_factory || !PyFunction_Check(alias_factory) ||
+        PyFunction_GetGlobals(alias_factory)!=globals ||
+        !alias_resolver || !PyFunction_Check(alias_resolver) ||
+        PyFunction_GetGlobals(alias_resolver)!=globals ||
+        !public_pattern || !PyType_Check(public_pattern) ||
+        !PyType_IsSubtype((PyTypeObject *)public_pattern,&PatternType) ||
+        public_match!=(PyObject *)&MatchType ||
         !reconstructor || !PyFunction_Check(reconstructor)) {
         PyErr_SetString(PyExc_TypeError,
                         "native helpers must originate from the owned VM module");
@@ -3738,6 +3791,29 @@ static PyObject *native_configure(PyObject *self, PyObject *args) {
     if (!owns_flags) {
         PyErr_SetString(PyExc_TypeError,
                         "native flag type must belong to the owned VM module");
+        return NULL;
+    }
+
+    PyObject *public_pattern_module=PyObject_GetAttrString(
+        public_pattern,"__module__");
+    if (!public_pattern_module) return NULL;
+    PyObject *public_match_module=PyObject_GetAttrString(
+        public_match,"__module__");
+    if (!public_match_module) {
+        Py_DECREF(public_pattern_module);
+        return NULL;
+    }
+    int owns_public_types=
+        PyUnicode_Check(public_pattern_module) &&
+        !PyUnicode_CompareWithASCIIString(public_pattern_module,"re") &&
+        PyUnicode_Check(public_match_module) &&
+        !PyUnicode_CompareWithASCIIString(public_match_module,"re");
+    Py_DECREF(public_pattern_module);
+    Py_DECREF(public_match_module);
+    if (!owns_public_types) {
+        if (PyErr_Occurred()) return NULL;
+        PyErr_SetString(PyExc_TypeError,
+                        "native public Pattern and Match must belong to re");
         return NULL;
     }
 
@@ -3763,6 +3839,8 @@ static PyObject *native_configure(PyObject *self, PyObject *args) {
     Py_XSETREF(pattern_flag_type,Py_NewRef(flags));
     Py_XSETREF(pattern_reduce_function,Py_NewRef(reduce));
     Py_XSETREF(scanner_reconstructor,Py_NewRef(reconstructor));
+    Py_XSETREF(state->generic_alias_resolver,Py_NewRef(alias_resolver));
+    Py_XSETREF(state->generic_alias_factory,Py_NewRef(alias_factory));
     Py_RETURN_NONE;
 }
 
@@ -3880,7 +3958,39 @@ static PyMethodDef Methods[]={
     {"check_recursion",native_check_recursion,METH_O,"Check the live parser recursion budget."},
     {NULL,NULL,0,NULL}
 };
-static struct PyModuleDef Module={PyModuleDef_HEAD_INIT,"_vm_native","From-scratch bytecode regex VM.",-1,Methods,NULL,NULL,NULL,NULL};
+static int vm_module_traverse(PyObject *module, visitproc visit, void *arg) {
+    VMModuleState *state=(VMModuleState *)PyModule_GetState(module);
+    if (state) {
+        Py_VISIT(state->generic_alias_factory);
+        Py_VISIT(state->generic_alias_resolver);
+    }
+    return 0;
+}
+
+static int vm_module_clear(PyObject *module) {
+    VMModuleState *state=(VMModuleState *)PyModule_GetState(module);
+    if (state) {
+        Py_CLEAR(state->generic_alias_factory);
+        Py_CLEAR(state->generic_alias_resolver);
+    }
+    return 0;
+}
+
+static void vm_module_free(void *module) {
+    (void)vm_module_clear((PyObject *)module);
+}
+
+static struct PyModuleDef Module={
+    PyModuleDef_HEAD_INIT,
+    "_vm_native",
+    "From-scratch bytecode regex VM.",
+    sizeof(VMModuleState),
+    Methods,
+    NULL,
+    vm_module_traverse,
+    vm_module_clear,
+    vm_module_free
+};
 PyMODINIT_FUNC PyInit__vm_native(void) {
     if (PyType_Ready(&PatternType)<0 || PyType_Ready(&MatchType)<0 || PyType_Ready(&ScannerType)<0) return NULL;
     PyObject *module=PyModule_Create(&Module);
