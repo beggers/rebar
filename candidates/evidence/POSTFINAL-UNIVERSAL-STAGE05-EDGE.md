@@ -51,6 +51,23 @@ even though its Python module is named `vm_candidate`. The report is
 `RUST-V8-DEEP-CONTRACT-C-POST-FINAL-STAGE-05-UNIVERSAL-PARITY.json.gz`;
 substituting `VM` fails before creating evidence.
 
-The separate tracing and complete Unicode campaign proofs must still be
-regenerated for the current source. Expanded public speed, native memory,
-and the **65,536-case** holdout remain **NOT MEASURED**.
+## Separate callbacks, scanners, and observable argument behavior
+
+A frozen **479-check** suite independently compares callbacks, warning and
+exception details, scanner exhaustion, changing buffers, Python's observable
+argument order, and pattern and match lifetimes. Each engine also passes
+**34** native argument-binding controls. All three produce the exact Python
+observation digest
+`6e3593b963036e2381569475cac390ccbb7bc6dbc8358acda578fcbcb7e0642e`.
+
+| Engine | Correct checks | Differences | Evidence SHA-256 |
+| --- | ---: | ---: | --- |
+| Rust | 479 | 0 | `735795ca5c83ccb315db3cfbd10559575f801f2f12da4b26dbee0931ed5fed7d` |
+| C | 479 | 0 | `ff5c563614900437375068b763aa40bf6557a943d4990bc5d86d3a94faa5255c` |
+| Zig | 479 | 0 | `4e31f020a3def0f125562af9010bbb54cd299ddf81fde33dff61219fd7d6c0c3` |
+
+Each compressed proof independently verifies the candidate's passing object
+contract, full matching proof, actual source, and native libraries. The
+complete **22-stage** Unicode campaign must still be rerun on current
+source. Expanded public speed, native memory, and the **65,536-case**
+holdout remain **NOT MEASURED**.

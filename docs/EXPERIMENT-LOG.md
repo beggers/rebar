@@ -7,6 +7,20 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## All repaired engines preserve Python's visible behavior
+
+Run all **479** frozen callback, scanner, warning, buffer, error, argument,
+and object-lifetime checks independently against Rust, C, and Zig. Each
+engine matches Python's complete observation digest, passes all **34**
+native argument-binding controls, and has zero candidate, reference,
+iterator, or binder failures. The three proofs are cross-linked to the
+current matching, object, source, and native-library evidence.
+
+Record all three passing source-bound reports in the
+[matching, object, and visible-behavior evidence](../candidates/evidence/POSTFINAL-UNIVERSAL-STAGE05-EDGE.md).
+The independent full Unicode campaign remains a separate gate. No candidate
+timing, memory, hidden fixture, or fresh holdout is accessed.
+
 ## All repaired engines pass the independent object contract
 
 Run the unchanged **393-case** pattern and match object suite separately
