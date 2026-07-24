@@ -7,6 +7,30 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Predeclare independent execution for the repaired engines
+
+First commit and push the real from-scratch report in `c1ef8102`.
+Independently verify its exact SHA-256
+`0314e3e5de3386d7c9c1e7f8fa4648554ff53cb53e3aafcecc4cb8e4923ddcbb`
+and its source SHA-256
+`77e7ea97f96280019b3be9abfeeb8fc6ff27ca6ecd13189e611586af5719c18f`.
+
+Bind both real values in the independently reviewed, new
+[no-delegation audit design](../tools/postfinal_no_delegation_audit_v6.py),
+with source SHA-256
+`a936abe91d67169ea361b6770404ffe7bc925fdb3275aef854fbe12fe68a8649`.
+Its candidate-free self-test passes **75/75** checks and preserves all
+**676** genuine previous malicious-input checks. It requires each engine
+to block Python's matcher, external matching packages, the other
+candidates, all five foreign native-library entry points, and cached
+standard-library access. It authenticates the exact current source
+report, all **12** implementation files, all **five** actual native
+binaries, and both genuinely owned public type identities.
+
+The actual no-delegation audit is **NOT RUN** at this source checkpoint.
+Complete official tests, the renewed all-engine compatibility suite,
+and expanded speed measurements are also **NOT RUN**.
+
 ## Verify all three repaired engines were built from scratch
 
 Commit and push the candidate repairs and complete source-audit design

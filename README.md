@@ -77,8 +77,10 @@ builds. **They do not qualify the newly modified engines.** A
 now genuinely verifies all **12** implementation files, **five** native
 binaries, **three** independent engines, and **48** normal Python
 serialization checks. Its design also passes **324 candidate-free safety
-checks**. A fresh independent-execution audit, the complete official
-Python tests, and the expanded compatibility comparison are **NOT RUN**.
+checks**. The separate independent-execution audit design passes
+**75 safety checks** and preserves all **676** previous anti-cheating
+checks; its actual audit is **NOT RUN**. The complete official Python
+tests and the expanded compatibility comparison are also **NOT RUN**.
 
 ## Larger fair speed comparison
 
@@ -112,6 +114,8 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/postfinal_from_scratch_audit_v6.py --self-test
+PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
+  tools/postfinal_no_delegation_audit_v6.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
   tools/python_re_generic_alias_public_oracle_stage11.py --self-test
 PYTHONDONTWRITEBYTECODE=1 "$PY" -I -B \
