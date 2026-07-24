@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1640" height="906" viewBox="0 0 1640 906" role="img" aria-labelledby="public-chart-title public-chart-description">
+<title id="public-chart-title">Every expanded public win, uncertain case, and slowdown</title>
+<desc id="public-chart-description">Public development only; final independent benchmark failed; no final winner. CPython, C, Rust, and Zig ran the same 8192 calibration-only public cases, 13 paired trials, and 2000 bootstrap draws. All 8,192 cases per candidate; measured and confidence-supported outcomes remain separate. Public manifest SHA-256 c9950c87079ccc1909ba4470ed573b08afe1f275b85a8932cbfe83b547b24f96; public summary SHA-256 d9dd1e712a97d0d1716308e1e468e0c9d2b6d6058e501bccd871492bc66a6b4c. Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</desc>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;fill:#172033}.title{font-size:31px;font-weight:760}.subtitle{font-size:16px;fill:#475569}.heading{font-size:19px;font-weight:730}.label{font-size:14px}.value{font-size:15px;font-weight:720}.note{font-size:13.5px;fill:#475569}.tick{font-size:13px;fill:#475569}.banner{font-size:16px;font-weight:740;fill:#7f1d1d}.status{font-size:14px;font-weight:680;fill:#7f1d1d}.grid{stroke:#e2e8f0;stroke-width:1}.baseline{stroke:#64748b;stroke-width:2}.panel{fill:#f8fafc;stroke:#d9e2ee;stroke-width:1}</style>
+<text x="30" y="46" class="title">Every expanded public win, uncertain case, and slowdown</text>
+<text x="31" y="77" class="subtitle">All 8,192 cases per candidate; measured and confidence-supported outcomes remain separate</text>
+<rect x="23" y="93" width="1594" height="45" rx="8" fill="#fef2f2" stroke="#fca5a5"/>
+<text x="37" y="123" class="banner">Public development only; final independent benchmark failed; no final winner</text>
+<text x="31" y="163" class="status">Final speed, final memory, and final candidate ranking: NOT MEASURED. Final winner: NONE.</text>
+<text x="31" y="186" class="note">Public plan SHA-256: c9950c87079ccc1909ba4470ed573b08afe1f275b85a8932cbfe83b547b24f96</text>
+<text x="31" y="208" class="note">Public measurement SHA-256: d9dd1e712a97d0d1716308e1e468e0c9d2b6d6058e501bccd871492bc66a6b4c</text>
+<circle cx="380" cy="230" r="5.5" fill="#64748b"/>
+<text x="392" y="235" class="label">CPython (standard Python)</text>
+<circle cx="635" cy="230" r="5.5" fill="#7c3aed"/>
+<text x="647" y="235" class="label">Zig</text>
+<circle cx="740" cy="230" r="5.5" fill="#2563eb"/>
+<text x="752" y="235" class="label">C</text>
+<circle cx="845" cy="230" r="5.5" fill="#c2410c"/>
+<text x="857" y="235" class="label">Rust</text>
+<rect x="22" y="243" width="1596" height="195" rx="9" class="panel"/>
+<text x="36" y="269" class="heading">Zig; 8,192/8,192 cases</text>
+<text x="36" y="306" class="label">Measured outcomes</text>
+<rect x="390.00" y="288" width="572.30" height="22" fill="#047857"/>
+<text x="676.15" y="304" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">5,152</text>
+<rect x="962.30" y="288" width="337.70" height="22" fill="#dc2626"/>
+<text x="1131.15" y="304" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">3,040</text>
+<text x="1320" y="305" class="value">8,192/8,192</text>
+<text x="390" y="327" class="note">5,152 faster; 0 equal; 3,040 slower</text>
+<text x="36" y="360" class="label">95%-confidence outcomes</text>
+<rect x="390.00" y="342" width="520.87" height="22" fill="#047857"/>
+<text x="650.44" y="358" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">4,689</text>
+<rect x="910.87" y="342" width="110.53" height="22" fill="#64748b"/>
+<text x="966.14" y="358" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">995</text>
+<rect x="1021.40" y="342" width="278.60" height="22" fill="#dc2626"/>
+<text x="1160.70" y="358" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">2,508</text>
+<text x="1320" y="359" class="value">8,192/8,192</text>
+<text x="390" y="381" class="note">4,689 clearly faster; 995 uncertain; 2,508 clearly slower</text>
+<text x="36" y="420" class="label">More than 20% longer</text>
+<rect x="390" y="402" width="910" height="22" fill="#fee2e2"/>
+<rect x="390" y="402" width="152.74" height="22" fill="#dc2626"/>
+<text x="1320" y="419" class="value">1,375/8,192</text>
+<rect x="22" y="447" width="1596" height="195" rx="9" class="panel"/>
+<text x="36" y="473" class="heading">C; 8,192/8,192 cases</text>
+<text x="36" y="510" class="label">Measured outcomes</text>
+<rect x="390.00" y="492" width="595.30" height="22" fill="#047857"/>
+<text x="687.65" y="508" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">5,359</text>
+<rect x="985.30" y="492" width="314.70" height="22" fill="#dc2626"/>
+<text x="1142.65" y="508" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">2,833</text>
+<text x="1320" y="509" class="value">8,192/8,192</text>
+<text x="390" y="531" class="note">5,359 faster; 0 equal; 2,833 slower</text>
+<text x="36" y="564" class="label">95%-confidence outcomes</text>
+<rect x="390.00" y="546" width="523.09" height="22" fill="#047857"/>
+<text x="651.55" y="562" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">4,709</text>
+<rect x="913.09" y="546" width="129.19" height="22" fill="#64748b"/>
+<text x="977.69" y="562" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">1,163</text>
+<rect x="1042.29" y="546" width="257.71" height="22" fill="#dc2626"/>
+<text x="1171.14" y="562" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">2,320</text>
+<text x="1320" y="563" class="value">8,192/8,192</text>
+<text x="390" y="585" class="note">4,709 clearly faster; 1,163 uncertain; 2,320 clearly slower</text>
+<text x="36" y="624" class="label">More than 20% longer</text>
+<rect x="390" y="606" width="910" height="22" fill="#fee2e2"/>
+<rect x="390" y="606" width="142.41" height="22" fill="#dc2626"/>
+<text x="1320" y="623" class="value">1,282/8,192</text>
+<rect x="22" y="651" width="1596" height="195" rx="9" class="panel"/>
+<text x="36" y="677" class="heading">Rust; 8,192/8,192 cases</text>
+<text x="36" y="714" class="label">Measured outcomes</text>
+<rect x="390.00" y="696" width="375.69" height="22" fill="#047857"/>
+<text x="577.84" y="712" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">3,382</text>
+<rect x="765.69" y="696" width="534.31" height="22" fill="#dc2626"/>
+<text x="1032.84" y="712" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">4,810</text>
+<text x="1320" y="713" class="value">8,192/8,192</text>
+<text x="390" y="735" class="note">3,382 faster; 0 equal; 4,810 slower</text>
+<text x="36" y="768" class="label">95%-confidence outcomes</text>
+<rect x="390.00" y="750" width="318.37" height="22" fill="#047857"/>
+<text x="549.18" y="766" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">2,866</text>
+<rect x="708.37" y="750" width="132.97" height="22" fill="#64748b"/>
+<text x="774.85" y="766" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">1,197</text>
+<rect x="841.33" y="750" width="458.67" height="22" fill="#dc2626"/>
+<text x="1070.67" y="766" text-anchor="middle" style="font-size:12px;font-weight:730;fill:#ffffff">4,129</text>
+<text x="1320" y="767" class="value">8,192/8,192</text>
+<text x="390" y="789" class="note">2,866 clearly faster; 1,197 uncertain; 4,129 clearly slower</text>
+<text x="36" y="828" class="label">More than 20% longer</text>
+<rect x="390" y="810" width="910" height="22" fill="#fee2e2"/>
+<rect x="390" y="810" width="279.49" height="22" fill="#dc2626"/>
+<text x="1320" y="827" class="value">2,516/8,192</text>
+<text x="31" y="890" class="note">All 5,173 observed substantial public slowdowns remain visible; final outcomes are NOT MEASURED.</text>
+</svg>

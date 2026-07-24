@@ -7,6 +7,31 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Measure and independently replay all 8,192 public cases
+
+Complete the prospectively frozen, Unicode-safe public comparison against
+unmodified Python **3.14.6** and all three independently written engines.
+Record all **425,984** paired timings, **1,277,952** exact-answer checks,
+**24,579** independently recomputed confidence intervals, and **65,544**
+native-library and process-isolation guards. All **8,192** cases, all
+**12** Python regex operations, and all **260** workload categories pass
+for Rust, C, and Zig, with zero correctness failures.
+
+The verified overall public speeds are **1.217×** for Zig, **1.136×** for
+C, and **1.010×** for Rust. Their clearly faster case counts are
+**4,689/8,192**, **4,709/8,192**, and **2,866/8,192**, respectively. None
+reaches the required **1.5×** speed or **4,916/8,192** faster-case
+threshold. Preserve all **5,173** regressions of more than 20%, including
+their operation and exact case, in the raw data, independently verified
+summary, operation table, and six reproducible graphs.
+
+Record the complete results and source-bound evidence in the
+[verified 8,192-case public comparison](../performance/postfinal-public-v5/RESULTS.md).
+Keep the failed earlier run, its **310,700** original observations, and the
+historical failed one-use final unchanged. The separate **65,536-case**
+holdout remains unopened; its complete four-channel isolated executor is
+still **NOT IMPLEMENTED**. There is no final replacement or winner.
+
 ## Freeze the Unicode-safe public comparison before measuring
 
 Freeze the corrected **8,192-case** public comparison separately from its

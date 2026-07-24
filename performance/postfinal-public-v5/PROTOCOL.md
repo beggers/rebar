@@ -1,7 +1,9 @@
 # Unicode-safe public Python regex speed comparison
 
-Status: **frozen and NOT MEASURED**. This is a public development
-comparison, not the one-use final test and not a winner.
+Status: **completed and independently verified**. The
+[public results](RESULTS.md) preserve all original observations and
+slowdowns. This remains a public development comparison, not the one-use
+final test and not a winner.
 
 ## What is compared
 
