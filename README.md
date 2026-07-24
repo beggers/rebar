@@ -108,13 +108,16 @@ to its actual engine; earlier reports never qualify a changed build.
 The [next frozen public compatibility test](oracle/cpython-3.14.6/PUBLIC-CONTRACT-V7.md)
 defines **3,584** checks across **8** groups, including real locales,
 invalid patterns, buffers, callbacks, shared patterns across threads,
-and Unicode. Its candidate-free safety test passes **429/429** checks.
-This checkpoint freezes the design only: Python's self-comparison is
-**NOT RUN**, and the Rust, C, and Zig candidate checks are all
-**NOT RUN**.
+and Unicode. Its candidate-free safety test passes **429/429** checks,
+but its actual two-Python self-comparison **FAILED**: the independent
+Python processes disagree on **32** object-hash checks and agree on
+the other **3,552**. The
+[complete preserved failure report](oracle/cpython-3.14.6/evidence/public-contract-v7-self-oracle-failures.json)
+retains every result. Rust, C, and Zig have **NOT RUN** against this
+suite. The failed Python oracle blocks expanded testing.
 
 A fair **8,192**-case speed comparison and a separate expanded
-**33,280**-case public suite are planned, **NOT FROZEN**, and
+**33,280**-case public suite remain **BLOCKED**, **NOT FROZEN**, and
 **NOT MEASURED**. The expanded public suite is not a hidden final test.
 New speed and exact native memory remain **NOT MEASURED**.
 

@@ -7,6 +7,42 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the actual failed two-Python reference comparison
+
+After freezing and pushing the expanded compatibility design, run its
+two isolated CPython 3.14.6 references exactly once. The self-oracle
+**FAILS**: **32** of the **3,584** case comparisons disagree, while
+the remaining **3,552** agree. Preserve all **7,168** independent
+Python observations and all **32** mismatches in the
+[complete exclusive failure report](../oracle/cpython-3.14.6/evidence/public-contract-v7-self-oracle-failures.json).
+Its exact SHA-256 is
+`765e635745a7e332a1bd22426065c43fd52036d013add0d88d840d8fde1121e0`.
+
+All **32** failures are object-contract cases `0000`, `0008`,
+through `0248`. The two real Python processes report different raw
+hashes for the same compiled-pattern value:
+`-4908800511453295329` and `-7040912458813119187`, even with
+`PYTHONHASHSEED=0`. The other **3,552** cases agree, including
+genuine locales, threads, and callbacks. This is a mismatch between
+Python references, not a failure by any replacement engine.
+
+The failure authenticates the frozen source
+`150abcfc597658f48d64c04053889bd4b299c75ad7413bc1cafa5f864e9e7c25`,
+protocol
+`b4d719609179dde5f582695393539e7a320c09438e4bc635ca843627ac9d7524`,
+matrix
+`0233ca9bc1229b2f905192f9b8ae0c0268b7d23ba3621124192993c6d486f3db`,
+and seed `2026072437`. A strict `jq` reader separately rejects a
+retained escaped lone surrogate; pinned Python can inspect the exact
+original file without dropping or rewriting a record.
+
+Exactly **zero** candidates were imported or started. Rust, C, and
+Zig are **NOT RUN** against the failed expansion. Preserve and push
+this real failure before proposing a separate additive fix; never
+mutate the frozen stage-seven source or claim that a new suite already
+exists. Expanded benchmarks remain **BLOCKED** and
+**NOT MEASURED**. The independent final test is **NOT OPENED**.
+
 ## Freeze expanded compatibility checks only after fixing their safeguards
 
 The three complete **22**-stage, source-bound correctness campaigns
