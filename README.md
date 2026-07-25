@@ -104,6 +104,9 @@ is frozen for Python's mutable inputs, callbacks, iterators, and scanners.
 Its [first Python reference genuinely failed](oracle/cpython-3.14.6/evidence/public-buffer-exporter-v1-self-oracle-failures.json)
 because the test assumed every buffer had already been acquired and
 released. The original failure is preserved; candidate runs are **NOT RUN**.
+A [separately corrected buffer-lifetime test](oracle/cpython-3.14.6/PUBLIC-BUFFER-EXPORTER-V2.md)
+keeps all **264** original cases and checks actual object release, leaks,
+and safe cleanup. Its Python reference and candidate runs are **NOT RUN**.
 A [separate 128-case interpreter-isolation test](oracle/cpython-3.14.6/PUBLIC-SUBINTERPRETER-V1.md)
 is frozen for independent Python interpreters, pattern caches, and object
 lifetimes. [Two actual Python reference processes pass all 128 cases](oracle/cpython-3.14.6/evidence/public-subinterpreter-v1-self-oracle.json).
@@ -173,6 +176,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v16.py --self-test
 "$PY" -I -B tools/python_re_public_surface_oracle_stage27.py --self-test
 "$PY" -I -B tools/python_re_buffer_exporter_oracle_v1.py --self-test
+"$PY" -I -B tools/python_re_buffer_exporter_oracle_v2.py --self-test
 "$PY" -I -B tools/python_re_subinterpreter_oracle_v1.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --check

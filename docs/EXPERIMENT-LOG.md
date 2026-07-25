@@ -7,6 +7,36 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze phase-correct Python buffer and object lifetimes
+
+Preserve the original failed buffer test and its genuine durable receipt;
+freeze a separately versioned correction before running another Python
+reference. Keep exactly the same **264** cases, **19** operations, four
+carriers, and original matrix. Measure genuine object materialization,
+release, callback, scanner, iterator, match, and garbage-collection events
+at their actual lifetime. Explicitly reject both premature destruction
+and retained-object leaks; accept a no-acquisition result only when
+Python actually reports the correct built-in unsupported-input error.
+
+- [Separately corrected buffer-lifetime checker](../tools/python_re_buffer_exporter_oracle_v2.py),
+  SHA-256 `1db0c95669adc369e8113398576d1d3436018c1f58f1ba0facd2816adf4758cc`.
+- [Separately frozen buffer-lifetime protocol](../oracle/cpython-3.14.6/PUBLIC-BUFFER-EXPORTER-V2.md),
+  SHA-256 `a34f68399982b6ecf45a443664d290132a463dd6824d2bf797e8a470eb0c3458`.
+- Unchanged original **264-case** matrix SHA-256
+  `2d9eb4e637387bc89020d2f883f59ff03dd98cbebd2f2aaa2a30dc55d0836891`.
+
+All four ordinary and empty-environment command-line and direct-call
+source tests pass exactly **67** distinct valid controls, reject **259**
+distinct forgeries, and keep all **15** real-effect counters zero. In-memory
+checks preserve every genuine original failure, forbid deleting a complete
+durable result, reject incorrect owned-file cleanup and malformed worker
+records, and detect early-freed or leaked buffer owners. Preserve all
+**165/152/13** original methods and waivers and the genuine **1,376**
+public-reference cases without identifying the unknown original failed
+buffer case. New Python references and all candidate buffer tests remain
+**NOT RUN**. Performance is **NOT MEASURED**; the holdout remains
+**NOT ACCESSED**.
+
 ## Expand the planned blind speed comparison without opening it
 
 Increase the prospective public and independently generated final
