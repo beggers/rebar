@@ -127,16 +127,19 @@ inventing them.
 
 A separately frozen
 [original CPython test runner](tools/rust_original_cpython_suite_v1.py)
-now applies CPython's real locale and process setup. Two independent
-Python runs each pass **151 of 152** public tests, with exactly one real
+applies CPython's real locale and process setup. Two independent Python
+runs each pass **151 of 152** public tests, with exactly one real
 debug-build-only skip and no public-test waivers. The
 [first changed-Rust run](experiments/rust_public_practice_v1/rust-original-v1-native-scanner-first-run.json)
 stops before executing any original test: the anti-delegation check
 mistakes Rust's correctly named `re.Match` object for Python's matcher.
 The [complete independent receipt](experiments/rust_public_practice_v1/rust-original-v1-native-scanner-first-run-publication-receipt.json)
-preserves the exact error. Rust is **NOT QUALIFIED** against the full
-original suite until an independently reviewed test-harness correction
-is frozen and all original tests genuinely run.
+preserves the exact error. A separately frozen
+[corrected test runner](tools/rust_original_cpython_suite_v2.py)
+checks actual matcher ownership instead of public names while retaining
+all original tests and no-delegation controls. Its Rust candidate run
+is **NOT RUN** until the corrected source has been committed and
+pushed; Rust remains **NOT QUALIFIED** against the full original suite.
 A separately verified
 [full-result recorder](tools/record_rust_original_cpython_v1.py)
 preserves every original Python and Rust test result, error, traceback,
@@ -246,6 +249,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/rust_public_practice_benchmark_v1.py --self-test
 "$PY" -I -B tools/rust_scanner_differential_v1.py --self-test
 "$PY" -I -B tools/rust_original_cpython_suite_v1.py --self-test
+"$PY" -I -B tools/rust_original_cpython_suite_v2.py --self-test
 "$PY" -I -B tools/record_rust_original_cpython_v1.py --self-test
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_correctness_v1.py --self-test

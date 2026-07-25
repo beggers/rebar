@@ -7,6 +7,45 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze identity-based original-suite matcher isolation
+
+Preserve the first genuine
+[V1 original-suite guard failure](../experiments/rust_public_practice_v1/rust-original-v1-native-scanner-first-run.json)
+and its independent receipt unchanged. Create a separately versioned
+[original-method test controller](../tools/rust_original_cpython_suite_v2.py),
+SHA-256
+`569036804b557b01eb29ba404c6fea0ecc5806bdbc2b6b9eb61c1ea18aa79267`,
+which reuses only the frozen original CPython test harness, not Python's
+matching engine.
+
+Before importing a candidate, capture the actual original `re`, `_sre`,
+pattern, match, scanner, callable, descriptor, and module-dictionary
+identities. Deny both Python import routes and all cached matcher and
+holder aliases. Distinguish genuine CPython-owned objects by their real
+identity, code globals, receiver, and descriptor owner, never by public
+`re.Match`, `re.Pattern`, or `_sre.SRE_Scanner` names. Authenticate the
+actual independently owned Rust bridge before admitting its correctly
+named compatibility objects. Preserve all real before-and-after
+matcher guards and restore every module and import function on exit.
+
+Ordinary and empty-environment source gates each run **two** original
+Python references. Each reference passes the same **151** real
+original methods and reports the same legitimate debug-only skip from
+the unchanged **152** public-method matrix. The fixed original
+**165-method** inventory, exact **13** private waivers, original method
+hash, locale construction, genuine `fork`, full external corpus, and
+complete baseline digest are unchanged. The new source rejects **74**
+actual poisoning controls, including **24** direct and cached matcher
+bypasses, and accepts exactly **three** synthetic independent native
+objects with Python-compatible public names.
+
+No reference imports a candidate, opens a hidden case, records timing,
+or weakens an original test. Preserve the previous failing controller,
+full failure report, and independent receipt. The first actual V2
+candidate run remains **NOT RUN** until this source and its matching
+versioned durable recorder have each been independently reviewed,
+committed, and pushed.
+
 ## Explain both measured memory-view replacement regressions
 
 Independently inspect the already committed complete **864-case** public
