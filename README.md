@@ -83,6 +83,15 @@ C and Zig are **NOT RUN** against the original suite. The chart is
 [generated from preserved historical results](docs/evidence/current-native-correctness-v6.json);
 it is not a qualification of the changed Rust engine.
 
+A newly prepared original-suite run first exposed genuine problems in
+Python's own test environment:
+[148 passes, three skips, and one process-creation error](experiments/rust_public_practice_v1/rust-original-cpython-v1-first-reference-environment-failures.json).
+The missing locale and restricted default process mode must be corrected
+using CPython's real test setup before the suite can fairly judge Rust.
+The first run's complete per-test results and full traceback were
+**NOT CAPTURED**; the actual reported summary is preserved without
+inventing them.
+
 ## Independent engines and compatibility
 
 Each engine uses its own implementation. The frozen source and native-binary

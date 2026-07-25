@@ -7,6 +7,49 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve Python's real original-suite environment failure
+
+Authenticate the genuine CPython **3.14.6** original test source directly
+from the upstream source tree. Its unchanged `test/test_re.py` has
+SHA-256
+`879c8b562a5bddb413e73ad6d026a6199785bd08fa1c2c5db1ef831b4e1c47e2`.
+Its actual source declares **165** methods: **139** `ReTests`, **four**
+`DebugTests`, **11** `PatternReprTests`, **nine**
+`ImplementationTest`, and **two** `ExternalTests`. The **four** debug
+methods and **nine** implementation methods are the only named private
+waivers, leaving all **152** original public methods.
+
+The first actual isolated original-Python reference runs the genuine
+**152** public methods without the upstream locale and process setup.
+It actually reports **148** passes, **three** skips, and **one** error.
+The two unexpected skips are `ReTests.test_locale_caching` and
+`ReTests.test_locale_compiled`, both because `en_US.iso88591` is absent.
+The third skip is the real debug-build-only
+`ReTests.test_memory_leaks`. `ReTests.test_regression_gh94675` fails
+with the actual fork-server `PermissionError`. Preserve the
+[exact originally emitted summary and truncated traceback](../experiments/rust_public_practice_v1/rust-original-cpython-v1-first-reference-environment-failures.json),
+SHA-256 `2d59f4fd452fe88b20dde8ece47bd8a7a9da3e51b6fe35f5bb22d05ebca7d0b3`.
+
+The first worker did not preserve its process identity, exact command
+body, complete **152** per-method outcome records, or complete
+traceback; all four are **NOT CAPTURED**. Do not reconstruct or present
+them as recovered. Its captured test stdout and stderr are both
+**zero** bytes, and it imports **zero** candidates. The unchanged
+original support source is
+`519f9d36eccf2fda59f78c3480bb4b6e35b2ecb51551f11e0ac03ecbfa503159`;
+the warnings helper is
+`fc02de4d91bae3988079e3fb3fec3da96ae467fd548295745c2846af179f3870`;
+and the original external corpus is
+`ec04a2b2a77338d20b37d931693c7e588a2896d3c73c7b4b47973e24c13b5aab`.
+
+CPython's own existing test harness fixes these genuine reference
+failures by preparing real private Latin-1 and UTF-8 locales and
+selecting actual `fork` before importing or running the unchanged
+original tests. Temporary locale creation, if required, must be
+truthfully recorded rather than described as zero filesystem activity.
+The corrected original self-oracle and candidate run are **NOT RUN**.
+Current speed is **NOT MEASURED**, and the hidden test is **NOT OPENED**.
+
 ## Implement and verify a from-scratch native Rust scanner
 
 Implement a real multi-phrase scanner in the existing independently
