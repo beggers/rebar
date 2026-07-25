@@ -29,17 +29,18 @@ graphs describe older, archived builds.
 
 ## Current results
 
-![Current correctness of the three independently implemented engines, including the genuine incomplete full Python test](docs/evidence/current-native-correctness-v1.svg)
+![Current correctness of the three independently implemented engines, showing both preserved Rust test-harness failures and the actual C and Zig status](docs/evidence/current-native-correctness-v2.svg)
 
 Rust, C, and Zig each pass the same **223,198** original cases and the
 same **393** difficult cases. The complete Python test has not yet
 passed: two preserved Rust runs exposed separate test-harness
 problems before their first test, and C and Zig have not run it.
 The graph is
-[generated directly from 21 verified evidence files](docs/evidence/current-native-correctness-v1.json);
-it includes the first failure and does not contain a speed estimate.
-The [newer, fully preserved Rust failure](oracle/cpython-3.14.6/evidence/postfinal-locale-v13-rust-failures.json)
-also reached **0 / 152** Python tests.
+[generated directly from 26 verified correctness files](docs/evidence/current-native-correctness-v2.json).
+It shows both real Rust harness failures, the actual **0 / 152**
+completed Python tests and **0 / 304** owner checks, and the
+still-unrun C and Zig suites. Neither failure is counted as an engine
+mismatch. Current speed and memory remain **NOT MEASURED**.
 
 ## Headline results from the last completed comparison
 
@@ -204,4 +205,6 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/python_re_public_surface_oracle_stage27.py --self-test
 "$PY" -I -B tools/render_current_correctness_v1.py --self-test
 "$PY" -I -B tools/render_current_correctness_v1.py --check
+"$PY" -I -B tools/render_current_correctness_v2.py --self-test
+"$PY" -I -B tools/render_current_correctness_v2.py --check
 ```

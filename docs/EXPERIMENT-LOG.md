@@ -7,6 +7,69 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Generate a clear headline graph for both actual test-harness failures
+
+Keep the original headline graph and its **21** authentic correctness
+inputs unchanged. Add a separately generated, accessible current
+headline graph that independently verifies all **26** genuine
+correctness inputs: the original passing engine evidence, the frozen
+original chart and full-suite validators, the complete actual Python
+reference, and both canonical documents for the real V13 Rust
+failure.
+
+An initial graph draft passed its candidate-free synthetic checks but
+failed its first real, read-only integration: it incorrectly applied a
+synthetic reference checker to the genuine Python baseline's actual
+named debug skip. Do not create a chart, weaken that skip, or classify
+the draft's checks as production evidence. Correct the draft to use
+the independently frozen original baseline validator, verify both
+actual **152-method** reference vectors and their exact source
+identities, and preserve the authentic `skip_kind` and unchanged
+debug-test source hash.
+
+- [Independently generated V2 correctness renderer](../tools/render_current_correctness_v2.py),
+  SHA-256 `fb86e3b4a002b46cb7e5da710e3cfe515ff13eb81cec3d2537c04f3681b82784`.
+- [Generated accessible latest-correctness graph](evidence/current-native-correctness-v2.svg),
+  SHA-256 `c76e27901d642c91482943b51d9882aa3be1ba78f6c0cf594eef58a7967c4a9a`.
+- [Exact canonical 26-input correctness manifest](evidence/current-native-correctness-v2.json),
+  SHA-256 `5ec5d838165599b1ba7d6d852f7e9cfee7ca4c785d5cca1fbbb85d6192928f16`.
+
+The genuine root-run integration independently regenerates the
+complete SVG and manifest inside the real read-only native-ownership
+boundary. It verifies all **26** actual bounded, no-follow evidence
+files and all three family results while recording **zero** candidate
+imports, native workers, subprocesses, filesystem writes, and clocks.
+It confirms the real V12 bridge-wiring failure and the real V13
+anti-delegation setup failure, each before any complete Python test.
+It independently authenticates the actual **9,479-byte** failure,
+its real **11-field** durable receipt, the complete controller
+capture, and all **zero** recorded method and matcher checks.
+
+Clearly display all three **223,198 / 223,198** original results,
+all three **393 / 393** deeper results, Rust's genuine **0 / 152**
+complete tests and **0 / 304** owner checks, and C and Zig as
+**NOT RUN**. Never relabel a setup failure as a regex mismatch or
+count the three repeated case deliveries as distinct cases. Verify
+the graph's actual XML accessibility, deterministic exact bytes,
+and evidence-backed manifest.
+
+Both normal and cleared-environment renderer source tests pass all
+**66** controls: **eight** accepted conditions and **58** rejected
+malicious cases, with zero actual evidence reads, candidate imports,
+workers, writes, or clocks. The real graph files are separately
+created once through no-follow, descriptor-relative, exclusive
+writes with real file and directory synchronization. Reproduce the
+committed result without changing it:
+
+```sh
+PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+"$PY" -I -B tools/render_current_correctness_v2.py --self-test
+"$PY" -I -B tools/render_current_correctness_v2.py --check
+```
+
+No candidate is qualified. Performance remains **NOT MEASURED**;
+the holdout remains **NOT ACCESSED**.
+
 ## Preserve the actual corrected full-suite Rust import-guard failure
 
 Push the independently reviewed V13 runner, its exact protocol, and
