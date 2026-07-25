@@ -21,8 +21,20 @@ pass all 223,198 original and all 393 deeper compatibility cases without
 calling Python's matcher or another regex engine. The first complete
 Python test attempt exposed a shared test-harness bridge-wiring failure
 before Rust's first test. C and Zig have not run the complete suite. Current
-speed and memory are NOT MEASURED. There is no winner.** The headline
-graphs below describe earlier, archived builds, not the current engines.
+speed and memory are NOT MEASURED. There is no winner.** The first graph
+below shows the current engines; the later speed graphs describe older,
+archived builds.
+
+## Current results
+
+![Current correctness of the three independently implemented engines, including the genuine incomplete full Python test](docs/evidence/current-native-correctness-v1.svg)
+
+Rust, C, and Zig each pass the same **223,198** original cases and the
+same **393** difficult cases. The complete Python test has not yet
+passed: Rust exposed a test-harness wiring failure before its first
+test, and C and Zig have not run it. The graph is
+[generated directly from 21 verified evidence files](docs/evidence/current-native-correctness-v1.json);
+it does not contain a speed estimate.
 
 ## Headline results from the last completed comparison
 
@@ -168,4 +180,6 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/postfinal_current_build_proofs_v24.py --self-test
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v12.py --self-test
 "$PY" -I -B tools/python_re_public_surface_oracle_stage27.py --self-test
+"$PY" -I -B tools/render_current_correctness_v1.py --self-test
+"$PY" -I -B tools/render_current_correctness_v1.py --check
 ```
