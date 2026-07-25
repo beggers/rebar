@@ -7,6 +7,33 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Show every real full-suite setup failure in the current headline graph
+
+Generate the current correctness graph from **31** independently verified,
+unchanged source, protocol, proof, and failure files. Preserve and show all
+three real Rust setup failures separately: the missing native bridge, the
+over-strict import guard, and the ownership check running after its candidate
+was loaded. Each actual run completed **0 / 152** original Python methods and
+**0 / 304** method-adjacent engine-ownership checks. C and Zig have not run
+the full suite. None of these failures qualifies an engine or demonstrates a
+regex mismatch.
+
+Keep each engine's real **223,198 / 223,198** original and **393 / 393**
+deeper passing cases visible. Generate both outputs exclusively, verify their
+complete bytes and deterministic reproduction, and run all **67** isolated
+renderer controls in both an ordinary and an empty environment. The controls
+start no engine or worker and read no performance or holdout cases.
+
+- [Frozen correctness graph generator](../tools/render_current_correctness_v3.py),
+  SHA-256 `91055db20abf1a0b60dedca7877dc4aefb8a31bc2ff1df8be1285cbed26eef34`.
+- [Generated, accessible current correctness graph](evidence/current-native-correctness-v3.svg),
+  SHA-256 `8218d5df6cb9712d858ccd8f464095c99f4766e51d6388748359fb70d2cdbef1`.
+- [Exact 31-input correctness manifest](evidence/current-native-correctness-v3.json),
+  SHA-256 `f032f45b834e28a3f3854f07531c368e80a0104241740c1576ee537f561f9c5a`.
+
+The current engines' speed, memory, and ranking remain **NOT MEASURED**.
+The final holdout remains **NOT ACCESSED**.
+
 ## Preserve the actual V14 candidate-free ownership-boundary failure
 
 First push the exact independently reviewed V14 source, protocol,

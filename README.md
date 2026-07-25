@@ -30,19 +30,18 @@ later speed graphs describe older, archived builds.
 
 ## Current results
 
-![Current correctness of the three independently implemented engines, showing both preserved Rust test-harness failures and the actual C and Zig status](docs/evidence/current-native-correctness-v2.svg)
+![Current correctness of the independently built Rust, C, and Zig engines, including all three preserved Rust test-setup failures](docs/evidence/current-native-correctness-v3.svg)
 
 Rust, C, and Zig each pass the same **223,198** original cases and the
 same **393** difficult cases. The complete Python test has not yet
 passed: three preserved Rust runs exposed separate test-harness
 problems before their first test, and C and Zig have not run it.
 The graph is
-[generated directly from 26 verified correctness files](docs/evidence/current-native-correctness-v2.json).
-It shows the first two real Rust harness failures, the actual **0 / 152**
-completed Python tests and **0 / 304** owner checks, and the
-still-unrun C and Zig suites. Neither failure is counted as an engine
-mismatch. The [newest preserved setup failure](oracle/cpython-3.14.6/evidence/postfinal-locale-v14-rust-failures.json)
-also reached **0 / 152** tests. Current speed and memory remain
+[generated directly from 31 verified correctness files](docs/evidence/current-native-correctness-v3.json).
+It shows all three actual Rust test-setup failures, the actual **0 / 152**
+completed Python tests and **0 / 304** engine-ownership checks, and the
+still-unrun C and Zig suites. No test-setup failure is counted as an
+engine mismatch. Current speed and memory remain
 **NOT MEASURED**.
 
 ## Headline results from the last completed comparison
@@ -232,4 +231,6 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/render_current_correctness_v1.py --check
 "$PY" -I -B tools/render_current_correctness_v2.py --self-test
 "$PY" -I -B tools/render_current_correctness_v2.py --check
+"$PY" -I -B tools/render_current_correctness_v3.py --self-test
+"$PY" -I -B tools/render_current_correctness_v3.py --check
 ```
