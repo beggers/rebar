@@ -7,6 +7,74 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the actual V14 candidate-free ownership-boundary failure
+
+First push the exact independently reviewed V14 source, protocol,
+and real three-engine read-only integration. Recheck genuinely
+available memory, the unchanged **38,654,705,664-byte** original
+substitution requirement, the real **eight GiB** safety reserve,
+CPU and process resources, real `fork`, the actual exclusive
+large-memory lock, and both newly compiled and genuinely usable
+private locales.
+
+- [Actual candidate-free V14 resource and locale preflight](../oracle/cpython-3.14.6/evidence/postfinal-locale-v14-rust-resource-preflight.json),
+  SHA-256 `42467dbe4e2a49a7b814720ea0cf9ccda60294772ee14f573656bf2e07af7dea`.
+
+Run the unchanged, root-frozen original-suite controller once:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar LC_ALL=C PATH=/usr/bin:/bin \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_cpython_locale_oracle_v14.py --candidate rust \
+  --source-sha256 834abdda264bfc81ecf5d6712e524ce1c852b84ed7d8f69cfc26aba6a9ebeb42 \
+  --protocol-sha256 68d8a9044540b0bfeca86316fd4fedded23587333370903d818fce9cc8cf33f9 \
+  --reference-sha256 1c0445780b747680ff75ced694a61b43949dc1f7eb81a8e4a8c45cfa9376cebf \
+  --v21-source-sha256 ded077962416ada3bddd825d77b2e6785fe3b01184fe5d9058ec17a57b08ea4d \
+  --v21-protocol-sha256 5a78673c6b23e4781070cf5a2290d5f6cecd402fff77ff388d8795370de93a1f \
+  --v24-source-sha256 92b1f082196592e578a5fa6e09b63637c6a1304c04875e5816938ed4fc28eb52 \
+  --v24-protocol-sha256 f3ab4f5c3c697a6d39c109b743d949b980bfe0d79aeb6b58a0bc392a3f81e534 \
+  --base-report-sha256 4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4 \
+  --strict-report-sha256 6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d \
+  --rust-edge-archive-sha256 37de9f254dc3edb72bfe04f51cea8c528449064fba62df273032bb5d7b58b419 \
+  --rust-edge-proof-sha256 882c712bfed8d0a355bda14847dc78feb2b59b3609ed5f48bd0daccb4e9c33c6 \
+  --rust-deep-archive-sha256 ace3fa8d10725f71881107ace3d9e7d7132a6200723e4f1897e1d5ae6d3d0037 \
+  --rust-deep-proof-sha256 a26f0659a746838d9af72ff1beff22b91c76d83e7a426b0cc47dbe0400ce67f7
+```
+
+The real controller and actual isolated worker exit **2**. The
+authenticated owned `re` and constant-only imports are no longer
+blocked. Instead, the genuine worker encounters
+`ProofV11Error: the V11 correctness controller must never import a candidate`.
+V14 checks the three-engine source graph using a deliberately
+candidate-free ownership controller after the correct candidate
+has already been legitimately loaded. That ownership controller
+correctly rejects the wrong execution boundary. **Zero** original
+tests, native method guards, and cached-matcher guards complete.
+This is an authentic test-harness failure, not a matching
+mismatch and not an engine qualification.
+
+- [Actual exclusively created V14 Rust failure](../oracle/cpython-3.14.6/evidence/postfinal-locale-v14-rust-failures.json),
+  SHA-256 `81112de149d835befaf605419d7426355a4be5d82d97f696d956bcd82627cd8f`.
+- [Exact complete actual outer controller output](../oracle/cpython-3.14.6/evidence/postfinal-locale-v14-rust-failures-production-summary.json),
+  SHA-256 `6390b27630888ea1dc77b3d65decb7680b32f7df859dfde8f227a92dc4b1951d`.
+- [Actual root-run zero-effect read-only forensic verification](../oracle/cpython-3.14.6/evidence/postfinal-locale-v14-rust-readonly-failure-forensic.json),
+  SHA-256 `56b55549efe2ced77ec87dad5b3fcdaf77fde31b334ab98e31989b1d9f41a452`.
+
+Independently verify the complete authentic **9,023-byte**
+failure, the **9,722-byte** captured output, the sole genuine
+**11-field** receipt, its exact **9,023-to-9,023-byte**
+exclusive write, both real `fsync` calls, and the canonical
+reread. Preserve the complete **1,975-byte** actual worker stdout,
+SHA-256
+`6a9273b3fb308dad3bd803cf299f64571378ba1b1c9a545b3ee6653733348b57`,
+and genuine empty stderr. Authenticate the exact nested error and
+every actual zero method and owner observation within the real
+five-counter read-only boundary. Do not overwrite or retry the
+V14 destination or alter either earlier failure. C and Zig remain
+**NOT RUN**. Performance remains **NOT MEASURED**; the holdout
+remains **NOT ACCESSED**.
+
 ## Freeze the exact, no-delegation original Python test import correction
 
 Preserve and first push both genuine earlier Rust failures and the
