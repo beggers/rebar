@@ -6,12 +6,12 @@
 <text x="42" y="49" fill="#0f172a" font-size="24" font-weight="750">Which public examples are faster?</text>
 <text x="42" y="76" fill="#475569" font-size="13">PUBLIC DEVELOPMENT · NOT FINAL · NATIVE MEMORY NOT MEASURED</text>
 <rect x="34" y="101" width="972" height="122" rx="14" fill="#ffffff"/>
-<rect x="54" y="126" width="199" height="31" fill="#047857"/>
-<rect x="253" y="126" width="482" height="31" fill="#d97706"/>
-<rect x="735" y="126" width="249" height="31" fill="#be123c"/>
-<circle cx="59" cy="190" r="6" fill="#047857"/><text x="73" y="194" fill="#14532d" font-size="13">Faster: 185 / 864</text>
-<circle cx="334" cy="190" r="6" fill="#d97706"/><text x="348" y="194" fill="#78350f" font-size="13">Uncertain: 448 / 864</text>
-<circle cx="665" cy="190" r="6" fill="#be123c"/><text x="679" y="194" fill="#881337" font-size="13">Slower: 231 / 864</text>
+<rect x="54" y="126" width="196" height="31" fill="#047857"/>
+<rect x="250" y="126" width="503" height="31" fill="#d97706"/>
+<rect x="753" y="126" width="231" height="31" fill="#be123c"/>
+<circle cx="59" cy="190" r="6" fill="#047857"/><text x="73" y="194" fill="#14532d" font-size="13">Faster: 183 / 864</text>
+<circle cx="334" cy="190" r="6" fill="#d97706"/><text x="348" y="194" fill="#78350f" font-size="13">Uncertain: 468 / 864</text>
+<circle cx="665" cy="190" r="6" fill="#be123c"/><text x="679" y="194" fill="#881337" font-size="13">Slower: 213 / 864</text>
 <line x1="42" x2="998" y1="242" y2="242" stroke="#cbd5e1"/>
 <text x="42" y="266" fill="#475569" font-size="12">Pinned CPython 3.14.6 · all 864 public cases · 12 paired rounds · native memory not measured · no hidden benchmark or winner</text>
 </g>

@@ -7,6 +7,45 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Measure the fully correctness-qualified memory-view fix
+
+After all **151** runnable original Python tests, **864** public
+cases, **1,024** scanner cases, **768** memory-view cases, the full
+from-scratch runtime audit, and all **44** debug and release native
+tests pass, run the unchanged public development benchmark once with
+**12** counterbalanced rounds, **12** calls per round, and **two**
+warmups.
+
+Preserve the
+[complete current public measurement](../experiments/rust_public_practice_v1/rust-memoryview-native-exporter-fix-public-practice.json),
+SHA-256
+`76015482b066b613ec6290b6d0fb28bd5ea76df21a9930e64f4ea2628211c9b2`,
+including every one of its **10,368** actual paired observations.
+The unchanged frozen benchmark validates each result against
+ordinary Python and equally weights all **864** cases.
+
+The actual result is **1.0647006118093172×**, with a **95%**
+confidence interval of **1.0494737764130373×** to
+**1.0813989876156158×**. Exactly **183** cases are significantly
+faster, **213** are significantly slower, and **468** are
+inconclusive. There are **zero** regressions exceeding **20%**.
+The older engine's **two** documented memory-view regressions and
+complete **1.0579754228475804×** report remain preserved.
+
+Regenerate all four correctness-gated speed graphs and their
+independently verified manifest from the **complete**,
+source-pinned **10,368-row** report; regenerate the current
+compatibility graph from the new source-pinned **864-case**
+correctness receipt. Do not hand-edit charts, omit operations,
+remove slower examples, or infer native memory.
+
+This is a public development run; its timed interval includes
+normalization and per-call correctness-checking overhead. It does
+not open, generate, or read any final cases. The **1.5×** target,
+the **60%** faster-case target, three-candidate qualification,
+native memory, and final holdout performance remain **NOT MET** or
+**NOT MEASURED**, as applicable.
+
 ## Correct every memory-view failure without adding an external engine
 
 Fix the independently recorded **53** memory-view failures inside the
@@ -51,10 +90,10 @@ independently frozen correctness test and capture its actual result:
 
 The **44** native Rust tests pass in both debug and release mode.
 Every correctness check reads **zero** hidden cases and takes
-**zero** performance samples. Keep the previous **1.058×** speed as
-an explicitly older-build measurement. The corrected native build's
-speed, memory, regressions, and final performance remain **NOT
-MEASURED** until a separately recorded benchmark.
+**zero** performance samples. At the time the fix was frozen,
+corrected-build speed had **NOT BEEN MEASURED**. Its subsequently
+recorded public development measurement is preserved above; native
+memory and final performance remain **NOT MEASURED**.
 
 ## Freeze an independent no-external-regex Rust ownership audit
 

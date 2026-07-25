@@ -1,17 +1,12 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="274" viewBox="0 0 1040 274" role="img" aria-labelledby="public-speed-title public-speed-description">
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="240" viewBox="0 0 1040 240" role="img" aria-labelledby="public-speed-title public-speed-description">
 <title id="public-speed-title">Every public case more than 20% slower</title>
 <desc id="public-speed-description">No public regression is omitted. Values show the complete paired geometric slowdown relative to Python.</desc>
 <rect width="100%" height="100%" rx="18" fill="#f8fafc"/>
 <g font-family="system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif">
 <text x="42" y="49" fill="#0f172a" font-size="24" font-weight="750">Every public case more than 20% slower</text>
 <text x="42" y="76" fill="#475569" font-size="13">PUBLIC DEVELOPMENT · NOT FINAL · NATIVE MEMORY NOT MEASURED</text>
-<text x="45" y="115" fill="#334155" font-size="10">rust-public-practice.v1.0790 · match.expand</text>
-<rect x="477" y="104" width="410" height="14" rx="5" fill="#be123c"/>
-<text x="983" y="116" text-anchor="end" fill="#881337" font-size="11" font-weight="650">+39.4%</text>
-<text x="45" y="149" fill="#334155" font-size="10">rust-public-practice.v1.0826 · match.expand</text>
-<rect x="477" y="138" width="393" height="14" rx="5" fill="#be123c"/>
-<text x="983" y="150" text-anchor="end" fill="#881337" font-size="11" font-weight="650">+37.8%</text>
-<line x1="42" x2="998" y1="225" y2="225" stroke="#cbd5e1"/>
-<text x="42" y="249" fill="#475569" font-size="12">Pinned CPython 3.14.6 · all 864 public cases · 12 paired rounds · native memory not measured · no hidden benchmark or winner</text>
+<text x="48" y="132" fill="#065f46" font-size="15" font-weight="650">No measured public case is more than 20% slower.</text>
+<line x1="42" x2="998" y1="191" y2="191" stroke="#cbd5e1"/>
+<text x="42" y="215" fill="#475569" font-size="12">Pinned CPython 3.14.6 · all 864 public cases · 12 paired rounds · native memory not measured · no hidden benchmark or winner</text>
 </g>
 </svg>

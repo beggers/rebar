@@ -13,27 +13,32 @@ with **zero mismatches**. The Python-only debug test is skipped equally
 for Python and Rust. An independent source, native-binary, and runtime
 audit confirms **zero external regex packages or engine delegation**.
 
-The last measured, earlier Rust build was **1.058×** as fast as Python;
-the corrected build has **NOT BEEN MEASURED**. Three fully qualified
+On **864** equally weighted public examples, the corrected Rust build
+is **1.065×** as fast as Python, with **zero** slowdowns exceeding
+20%. This remains below the **1.5×** goal. Three fully qualified
 candidates, native memory use, the four-million-example final
 comparison, and a winner remain **NOT ESTABLISHED**.
 
-## Last measured speed against Python
+## Current speed against Python
 
-![The previously measured Rust build achieved 1.058 times Python's speed; the newly corrected build has not yet been measured](docs/evidence/rust-public-speed-v1-overall.svg)
+![Current independently built Rust engine: 1.065 times Python's speed across 864 public examples](docs/evidence/rust-public-speed-v1-overall.svg)
 
-Python is **1.000×**. The earlier Rust build is **1.058×**, with a
-measured **1.042× to 1.075×** confidence interval. Of **864** examples,
-**185** are clearly faster, **231** are clearly slower, and **448**
-are inconclusive. The corrected Rust build is **NOT MEASURED**.
+Python is **1.000×**. Rust is **1.065×**, with a measured **1.049× to
+1.081×** confidence interval. Of **864** examples, **183** are clearly
+faster, **213** are clearly slower, and **468** are inconclusive.
+Neither the **1.5×** overall target nor the **60%** faster-case target
+has been met.
 
 ![All 864 public examples classified as faster, slower, or inconclusive relative to Python](docs/evidence/rust-public-speed-v1-outcomes.svg)
 
 This is a development measurement, not a hidden result or a prediction
-about a final test. The [complete original measurements](experiments/rust_public_practice_v1/rust-native-scanner-v1-public-practice.json)
-contain all **10,368** paired observations.
+about a final test. The
+[complete current measurements](experiments/rust_public_practice_v1/rust-memoryview-native-exporter-fix-public-practice.json)
+contain all **10,368** paired observations, including checking overhead.
 
 ## Current compatibility
+
+![Python and the current from-scratch Rust engine both pass all 864 independently frozen general compatibility checks](docs/evidence/rust-public-correctness-v1.svg)
 
 | Python behavior | Current Rust result | Complete evidence |
 | --- | ---: | --- |
@@ -42,20 +47,17 @@ contain all **10,368** paired observations.
 | Scanners and callbacks | **1,024 / 1,024** | [Scanner comparison](experiments/rust_public_practice_v1/rust-native-scanner-v1-after-native-memoryview-exporter-fix.json) |
 | Memory views and buffer errors | **768 / 768** | [Memory-view comparison](experiments/rust_public_practice_v1/rust-memoryview-expand-v1-after-native-exporter-fix.json) |
 
-## Previously measured speed by operation
+## Current speed by operation
 
 ![All 36 tested regular-expression operations compared directly with Python, including every observed speedup and slowdown](docs/evidence/rust-public-speed-v1-operations.svg)
 
-![Every previously measured Rust example more than 20 percent slower than Python](docs/evidence/rust-public-speed-v1-regressions.svg)
+![No current Rust example is more than 20 percent slower than Python](docs/evidence/rust-public-speed-v1-regressions.svg)
 
-In the earlier build, exactly **two** examples exceed a **20%**
-slowdown. Both are `match.expand` with writable or read-only memory
-views. Their exact inputs and confidence intervals remain in the
-[complete measurements](experiments/rust_public_practice_v1/rust-native-scanner-v1-public-practice.json).
-The corrected engine now performs these operations directly in its
-owned native implementation and passes all **768** separately frozen
-buffer cases. The improvement in actual speed is **NOT MEASURED**;
-every earlier failure and intermediate result remains in the
+Across all **864** current measured examples, **zero** are more than
+20% slower than Python. The two earlier memory-view regressions now
+use the owned native engine, and all **768** buffer checks pass.
+Every earlier slowdown, failure, and intermediate result remains in
+the
 [experiment log](docs/EXPERIMENT-LOG.md).
 
 ## Original Python compatibility

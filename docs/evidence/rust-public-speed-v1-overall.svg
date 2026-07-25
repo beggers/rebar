@@ -8,9 +8,9 @@
 <rect x="34" y="99" width="972" height="168" rx="14" fill="#ffffff"/>
 <text x="54" y="132" fill="#0f172a" font-size="15" font-weight="700">Python baseline</text>
 <text x="984" y="132" text-anchor="end" fill="#334155" font-size="15" font-weight="700">1.000×</text>
-<rect x="54" y="144" width="686" height="24" rx="7" fill="#475569"/>
+<rect x="54" y="144" width="682" height="24" rx="7" fill="#475569"/>
 <text x="54" y="203" fill="#0f172a" font-size="15" font-weight="700">From-scratch current Rust</text>
-<text x="984" y="203" text-anchor="end" fill="#0f172a" font-size="15" font-weight="750">1.058× · 95% [1.042, 1.075]</text>
+<text x="984" y="203" text-anchor="end" fill="#0f172a" font-size="15" font-weight="750">1.065× · 95% [1.049, 1.081]</text>
 <rect x="54" y="215" width="726" height="24" rx="7" fill="#047857"/>
 <line x1="42" x2="998" y1="285" y2="285" stroke="#cbd5e1"/>
 <text x="42" y="309" fill="#475569" font-size="12">Pinned CPython 3.14.6 · all 864 public cases · 12 paired rounds · native memory not measured · no hidden benchmark or winner</text>

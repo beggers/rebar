@@ -7,148 +7,148 @@
 <text x="42" y="76" fill="#475569" font-size="13">PUBLIC DEVELOPMENT · NOT FINAL · NATIVE MEMORY NOT MEASURED</text>
 <text x="42" y="115" fill="#334155" font-size="11">module.compile</text>
 <rect x="42" y="121" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="121" width="149" height="12" rx="5" fill="#be123c"/>
-<text x="504" y="132" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.974× · 24 cases</text>
+<rect x="42" y="121" width="147" height="12" rx="5" fill="#be123c"/>
+<text x="504" y="132" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.983× · 24 cases</text>
 <text x="42" y="159" fill="#334155" font-size="11">module.search</text>
 <rect x="42" y="165" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="165" width="150" height="12" rx="5" fill="#be123c"/>
-<text x="504" y="176" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.982× · 24 cases</text>
+<rect x="42" y="165" width="148" height="12" rx="5" fill="#be123c"/>
+<text x="504" y="176" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.986× · 24 cases</text>
 <text x="42" y="203" fill="#334155" font-size="11">module.match</text>
 <rect x="42" y="209" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="209" width="150" height="12" rx="5" fill="#be123c"/>
-<text x="504" y="220" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.985× · 24 cases</text>
+<rect x="42" y="209" width="148" height="12" rx="5" fill="#be123c"/>
+<text x="504" y="220" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.989× · 24 cases</text>
 <text x="42" y="247" fill="#334155" font-size="11">module.fullmatch</text>
 <rect x="42" y="253" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="253" width="148" height="12" rx="5" fill="#be123c"/>
-<text x="504" y="264" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.969× · 24 cases</text>
+<rect x="42" y="253" width="146" height="12" rx="5" fill="#be123c"/>
+<text x="504" y="264" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.974× · 24 cases</text>
 <text x="42" y="291" fill="#334155" font-size="11">module.findall</text>
 <rect x="42" y="297" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="297" width="150" height="12" rx="5" fill="#be123c"/>
-<text x="504" y="308" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.979× · 24 cases</text>
+<rect x="42" y="297" width="147" height="12" rx="5" fill="#be123c"/>
+<text x="504" y="308" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.984× · 24 cases</text>
 <text x="42" y="335" fill="#334155" font-size="11">module.finditer</text>
 <rect x="42" y="341" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="341" width="151" height="12" rx="5" fill="#be123c"/>
-<text x="504" y="352" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.988× · 24 cases</text>
+<rect x="42" y="341" width="149" height="12" rx="5" fill="#be123c"/>
+<text x="504" y="352" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.993× · 24 cases</text>
 <text x="42" y="379" fill="#334155" font-size="11">module.split</text>
 <rect x="42" y="385" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="385" width="149" height="12" rx="5" fill="#be123c"/>
-<text x="504" y="396" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.973× · 24 cases</text>
+<rect x="42" y="385" width="145" height="12" rx="5" fill="#be123c"/>
+<text x="504" y="396" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.972× · 24 cases</text>
 <text x="42" y="423" fill="#334155" font-size="11">module.split.positional</text>
 <rect x="42" y="429" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="429" width="154" height="12" rx="5" fill="#047857"/>
-<text x="504" y="440" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.006× · 24 cases</text>
+<rect x="42" y="429" width="152" height="12" rx="5" fill="#047857"/>
+<text x="504" y="440" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.017× · 24 cases</text>
 <text x="42" y="467" fill="#334155" font-size="11">module.sub.literal</text>
 <rect x="42" y="473" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="473" width="160" height="12" rx="5" fill="#047857"/>
-<text x="504" y="484" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.044× · 24 cases</text>
+<rect x="42" y="473" width="157" height="12" rx="5" fill="#047857"/>
+<text x="504" y="484" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.047× · 24 cases</text>
 <text x="42" y="511" fill="#334155" font-size="11">module.sub.positional</text>
 <rect x="42" y="517" width="360" height="12" rx="5" fill="#e2e8f0"/>
 <rect x="42" y="517" width="161" height="12" rx="5" fill="#047857"/>
-<text x="504" y="528" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.053× · 24 cases</text>
+<text x="504" y="528" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.075× · 24 cases</text>
 <text x="42" y="555" fill="#334155" font-size="11">module.sub.positional_callback_error</text>
 <rect x="42" y="561" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="561" width="153" height="12" rx="5" fill="#047857"/>
-<text x="504" y="572" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.002× · 24 cases</text>
+<rect x="42" y="561" width="150" height="12" rx="5" fill="#be123c"/>
+<text x="504" y="572" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.999× · 24 cases</text>
 <text x="42" y="599" fill="#334155" font-size="11">module.subn.literal</text>
 <rect x="42" y="605" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="605" width="159" height="12" rx="5" fill="#047857"/>
+<rect x="42" y="605" width="156" height="12" rx="5" fill="#047857"/>
 <text x="504" y="616" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.042× · 24 cases</text>
 <text x="42" y="643" fill="#334155" font-size="11">module.subn.positional</text>
 <rect x="42" y="649" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="649" width="160" height="12" rx="5" fill="#047857"/>
-<text x="504" y="660" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.049× · 24 cases</text>
+<rect x="42" y="649" width="158" height="12" rx="5" fill="#047857"/>
+<text x="504" y="660" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.054× · 24 cases</text>
 <text x="42" y="687" fill="#334155" font-size="11">module.subn.positional_callback_error</text>
 <rect x="42" y="693" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="693" width="152" height="12" rx="5" fill="#be123c"/>
-<text x="504" y="704" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.992× · 24 cases</text>
+<rect x="42" y="693" width="150" height="12" rx="5" fill="#047857"/>
+<text x="504" y="704" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.004× · 24 cases</text>
 <text x="42" y="731" fill="#334155" font-size="11">module.sub.callback</text>
 <rect x="42" y="737" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="737" width="150" height="12" rx="5" fill="#be123c"/>
-<text x="504" y="748" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.979× · 24 cases</text>
+<rect x="42" y="737" width="147" height="12" rx="5" fill="#be123c"/>
+<text x="504" y="748" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.984× · 24 cases</text>
 <text x="42" y="775" fill="#334155" font-size="11">module.subn.callback</text>
 <rect x="42" y="781" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="781" width="149" height="12" rx="5" fill="#be123c"/>
-<text x="504" y="792" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.975× · 24 cases</text>
+<rect x="42" y="781" width="147" height="12" rx="5" fill="#be123c"/>
+<text x="504" y="792" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.983× · 24 cases</text>
 <text x="42" y="819" fill="#334155" font-size="11">module.sub.callback_error</text>
 <rect x="42" y="825" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="825" width="149" height="12" rx="5" fill="#be123c"/>
+<rect x="42" y="825" width="146" height="12" rx="5" fill="#be123c"/>
 <text x="504" y="836" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.978× · 24 cases</text>
 <text x="42" y="863" fill="#334155" font-size="11">pattern.search</text>
 <rect x="42" y="869" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="42" y="869" width="151" height="12" rx="5" fill="#be123c"/>
-<text x="504" y="880" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.985× · 24 cases</text>
+<rect x="42" y="869" width="148" height="12" rx="5" fill="#be123c"/>
+<text x="504" y="880" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.989× · 24 cases</text>
 <text x="552" y="115" fill="#334155" font-size="11">pattern.match</text>
 <rect x="552" y="121" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="121" width="150" height="12" rx="5" fill="#be123c"/>
-<text x="1014" y="132" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.982× · 24 cases</text>
+<rect x="552" y="121" width="148" height="12" rx="5" fill="#be123c"/>
+<text x="1014" y="132" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.987× · 24 cases</text>
 <text x="552" y="159" fill="#334155" font-size="11">pattern.fullmatch</text>
 <rect x="552" y="165" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="165" width="148" height="12" rx="5" fill="#be123c"/>
-<text x="1014" y="176" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.969× · 24 cases</text>
+<rect x="552" y="165" width="146" height="12" rx="5" fill="#be123c"/>
+<text x="1014" y="176" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.976× · 24 cases</text>
 <text x="552" y="203" fill="#334155" font-size="11">pattern.findall</text>
 <rect x="552" y="209" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="209" width="151" height="12" rx="5" fill="#be123c"/>
-<text x="1014" y="220" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.987× · 24 cases</text>
+<rect x="552" y="209" width="147" height="12" rx="5" fill="#be123c"/>
+<text x="1014" y="220" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.980× · 24 cases</text>
 <text x="552" y="247" fill="#334155" font-size="11">pattern.finditer</text>
 <rect x="552" y="253" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="253" width="153" height="12" rx="5" fill="#be123c"/>
-<text x="1014" y="264" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.998× · 24 cases</text>
+<rect x="552" y="253" width="149" height="12" rx="5" fill="#be123c"/>
+<text x="1014" y="264" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.994× · 24 cases</text>
 <text x="552" y="291" fill="#334155" font-size="11">pattern.split</text>
 <rect x="552" y="297" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="297" width="150" height="12" rx="5" fill="#be123c"/>
-<text x="1014" y="308" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.982× · 24 cases</text>
+<rect x="552" y="297" width="147" height="12" rx="5" fill="#be123c"/>
+<text x="1014" y="308" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.983× · 24 cases</text>
 <text x="552" y="335" fill="#334155" font-size="11">pattern.sub.literal</text>
 <rect x="552" y="341" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="341" width="160" height="12" rx="5" fill="#047857"/>
-<text x="1014" y="352" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.049× · 24 cases</text>
+<rect x="552" y="341" width="158" height="12" rx="5" fill="#047857"/>
+<text x="1014" y="352" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.055× · 24 cases</text>
 <text x="552" y="379" fill="#334155" font-size="11">pattern.subn.literal</text>
 <rect x="552" y="385" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="385" width="162" height="12" rx="5" fill="#047857"/>
-<text x="1014" y="396" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.060× · 24 cases</text>
+<rect x="552" y="385" width="157" height="12" rx="5" fill="#047857"/>
+<text x="1014" y="396" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.050× · 24 cases</text>
 <text x="552" y="423" fill="#334155" font-size="11">pattern.sub.callback</text>
 <rect x="552" y="429" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="429" width="149" height="12" rx="5" fill="#be123c"/>
-<text x="1014" y="440" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.974× · 24 cases</text>
+<rect x="552" y="429" width="147" height="12" rx="5" fill="#be123c"/>
+<text x="1014" y="440" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.986× · 24 cases</text>
 <text x="552" y="467" fill="#334155" font-size="11">pattern.subn.callback</text>
 <rect x="552" y="473" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="473" width="150" height="12" rx="5" fill="#be123c"/>
+<rect x="552" y="473" width="147" height="12" rx="5" fill="#be123c"/>
 <text x="1014" y="484" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.981× · 24 cases</text>
 <text x="552" y="511" fill="#334155" font-size="11">pattern.sub.callback_error</text>
 <rect x="552" y="517" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="517" width="151" height="12" rx="5" fill="#be123c"/>
-<text x="1014" y="528" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.986× · 24 cases</text>
+<rect x="552" y="517" width="147" height="12" rx="5" fill="#be123c"/>
+<text x="1014" y="528" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.985× · 24 cases</text>
 <text x="552" y="555" fill="#334155" font-size="11">pattern.scanner.search</text>
 <rect x="552" y="561" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="561" width="149" height="12" rx="5" fill="#be123c"/>
-<text x="1014" y="572" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.978× · 24 cases</text>
+<rect x="552" y="561" width="147" height="12" rx="5" fill="#be123c"/>
+<text x="1014" y="572" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.984× · 24 cases</text>
 <text x="552" y="599" fill="#334155" font-size="11">pattern.scanner.match</text>
 <rect x="552" y="605" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="605" width="151" height="12" rx="5" fill="#be123c"/>
-<text x="1014" y="616" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.990× · 24 cases</text>
+<rect x="552" y="605" width="148" height="12" rx="5" fill="#be123c"/>
+<text x="1014" y="616" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.991× · 24 cases</text>
 <text x="552" y="643" fill="#334155" font-size="11">pattern.scanner.loop</text>
 <rect x="552" y="649" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="649" width="148" height="12" rx="5" fill="#be123c"/>
-<text x="1014" y="660" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.970× · 24 cases</text>
+<rect x="552" y="649" width="149" height="12" rx="5" fill="#be123c"/>
+<text x="1014" y="660" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.993× · 24 cases</text>
 <text x="552" y="687" fill="#334155" font-size="11">scanner.scan</text>
 <rect x="552" y="693" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="693" width="306" height="12" rx="5" fill="#047857"/>
-<text x="1014" y="704" text-anchor="end" fill="#047857" font-size="11" font-weight="650">2.001× · 24 cases</text>
+<rect x="552" y="693" width="305" height="12" rx="5" fill="#047857"/>
+<text x="1014" y="704" text-anchor="end" fill="#047857" font-size="11" font-weight="650">2.035× · 24 cases</text>
 <text x="552" y="731" fill="#334155" font-size="11">scanner.scan.callback_error</text>
 <rect x="552" y="737" width="360" height="12" rx="5" fill="#e2e8f0"/>
 <rect x="552" y="737" width="360" height="12" rx="5" fill="#047857"/>
-<text x="1014" y="748" text-anchor="end" fill="#047857" font-size="11" font-weight="650">2.348× · 24 cases</text>
+<text x="1014" y="748" text-anchor="end" fill="#047857" font-size="11" font-weight="650">2.398× · 24 cases</text>
 <text x="552" y="775" fill="#334155" font-size="11">match.group</text>
 <rect x="552" y="781" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="781" width="153" height="12" rx="5" fill="#be123c"/>
-<text x="1014" y="792" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.998× · 24 cases</text>
+<rect x="552" y="781" width="149" height="12" rx="5" fill="#be123c"/>
+<text x="1014" y="792" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.996× · 24 cases</text>
 <text x="552" y="819" fill="#334155" font-size="11">match.expand</text>
 <rect x="552" y="825" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="825" width="146" height="12" rx="5" fill="#be123c"/>
-<text x="1014" y="836" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.955× · 24 cases</text>
+<rect x="552" y="825" width="147" height="12" rx="5" fill="#be123c"/>
+<text x="1014" y="836" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.981× · 24 cases</text>
 <text x="552" y="863" fill="#334155" font-size="11">compile.fresh.search</text>
 <rect x="552" y="869" width="360" height="12" rx="5" fill="#e2e8f0"/>
-<rect x="552" y="869" width="302" height="12" rx="5" fill="#047857"/>
-<text x="1014" y="880" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.976× · 24 cases</text>
+<rect x="552" y="869" width="304" height="12" rx="5" fill="#047857"/>
+<text x="1014" y="880" text-anchor="end" fill="#047857" font-size="11" font-weight="650">2.030× · 24 cases</text>
 <line x1="42" x2="998" y1="938" y2="938" stroke="#cbd5e1"/>
 <text x="42" y="962" fill="#475569" font-size="12">Pinned CPython 3.14.6 · all 864 public cases · 12 paired rounds · native memory not measured · no hidden benchmark or winner</text>
 </g>
