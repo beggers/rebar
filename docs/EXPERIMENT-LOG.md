@@ -7,6 +7,72 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the first actual complete upstream Rust bridge failure
+
+After pushing all six genuinely passing original and deeper Rust,
+C, and Zig proofs, verify the exact full upstream requirements.
+Authenticate both actual independently passing original Python
+references, all **152** original methods, all **26** official
+support modules, **403** corpus cases, **11** external fixture
+checks, and Rust's exact four original and deeper proof hashes.
+Verify actual CPU resources, real `fork`, the multiprocessing
+extension, both genuinely compiled fresh private locales, and at
+least **eight GiB** beyond the real **38,654,705,664-byte** large
+substitution requirement. Do not run a reduced method, disable a
+large input, invent a locale, or use the holdout.
+
+Execute the frozen V12 full upstream worker exactly once:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar LC_ALL=C PATH=/usr/bin:/bin \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_cpython_locale_oracle_v12.py --candidate rust \
+  --source-sha256 c678d02dd906953d320ef0da4b9f0216750c33b81663107127082a98d09e8b64 \
+  --protocol-sha256 2d3da88d31a131f3452c3a884df5285775fd9af9e794339af870f02ed249c00c \
+  --reference-sha256 1c0445780b747680ff75ced694a61b43949dc1f7eb81a8e4a8c45cfa9376cebf \
+  --v21-source-sha256 ded077962416ada3bddd825d77b2e6785fe3b01184fe5d9058ec17a57b08ea4d \
+  --v21-protocol-sha256 5a78673c6b23e4781070cf5a2290d5f6cecd402fff77ff388d8795370de93a1f \
+  --v24-source-sha256 92b1f082196592e578a5fa6e09b63637c6a1304c04875e5816938ed4fc28eb52 \
+  --v24-protocol-sha256 f3ab4f5c3c697a6d39c109b743d949b980bfe0d79aeb6b58a0bc392a3f81e534 \
+  --base-report-sha256 4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4 \
+  --strict-report-sha256 6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d \
+  --rust-edge-archive-sha256 37de9f254dc3edb72bfe04f51cea8c528449064fba62df273032bb5d7b58b419 \
+  --rust-edge-proof-sha256 882c712bfed8d0a355bda14847dc78feb2b59b3609ed5f48bd0daccb4e9c33c6 \
+  --rust-deep-archive-sha256 ace3fa8d10725f71881107ace3d9e7d7132a6200723e4f1897e1d5ae6d3d0037 \
+  --rust-deep-proof-sha256 a26f0659a746838d9af72ff1beff22b91c76d83e7a426b0cc47dbe0400ce67f7
+```
+
+The actual full upstream controller exits **2**. Its real isolated
+original worker also exits **2**, before any original method or
+method-adjacent native owner. The real exception is
+`OfficialV4Error: the current independently owned native bridge is not authenticated`.
+The reference-only upstream provenance contains an empty top-level
+`native_sha256_by_family` mapping. V12 independently authenticates
+the genuine V21/V24 native graph but leaves it nested under `graph`.
+Python's immutable original role adapter reads only the empty
+top-level mapping and correctly rejects the missing bridge.
+
+- [Actual exclusively preserved upstream Rust failure](../oracle/cpython-3.14.6/evidence/postfinal-locale-v12-rust-failures.json),
+  SHA-256 `fda1204c92f843f3610231f33f1271e113374a5dec8fcfa30e1778658655439e`.
+- [Actual complete controller output and real failure-write receipt](../oracle/cpython-3.14.6/evidence/postfinal-locale-v12-rust-failures-production-summary.json).
+
+Preserve the complete original **1,221-byte** worker stdout,
+SHA-256 `92f2d44e311de751c6caddc0f84d1c6a72c8c449522fef2dadf5a9a1a78406a7`,
+and genuine empty worker stderr. Preserve the failure report's
+actual single **6,007-byte** write, actual exclusive creation,
+file and directory synchronization, exact canonical reread and
+all **11** independent receipt fields. The original method count,
+method-adjacent native owner count, and matcher guard count are
+all exactly **zero**. No original upstream method passes.
+
+Keep the frozen V12 source and protocol unchanged; never retry
+or replace this failure path. All six previously passed original
+and deeper results remain valid. The complete upstream tests
+remain **NOT RUN** for C and Zig. The full Rust run is **FAIL**,
+not a partial pass. Performance remains **NOT MEASURED** and
+the holdout remains **NOT ACCESSED**.
+
 ## Verify rebuilt Zig against its previously failing deeper cases
 
 Push the independently passing Rust and C deeper results before

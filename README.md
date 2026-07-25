@@ -18,11 +18,11 @@ and NOT QUALIFIED**. Bindings are not extra matching engines.
 
 **Current status: all three independently rebuilt Rust, C, and Zig engines
 pass all 223,198 original and all 393 deeper compatibility cases without
-calling Python's matcher or another regex engine. The complete Python
-tests are still NOT RUN. Current speed and memory are NOT MEASURED.
-There is no winner.** The
-headline graphs below describe earlier, archived builds, not the engines
-currently under test.
+calling Python's matcher or another regex engine. The first complete
+Python test attempt exposed a shared test-harness bridge-wiring failure
+before Rust's first test. C and Zig have not run the complete suite. Current
+speed and memory are NOT MEASURED. There is no winner.** The headline
+graphs below describe earlier, archived builds, not the current engines.
 
 ## Headline results from the last completed comparison
 
@@ -66,15 +66,16 @@ retain the complete results, uncertainty ranges, and all regressions.
 ## Are the current engines compatible with Python?
 
 Not yet. The rebuilt Rust, C, and Zig engines all pass every original
-and deeper compatibility case. All three must still pass the complete
-Python compatibility tests.
+and deeper compatibility case. The first complete Python attempt failed
+to authenticate Rust's native bridge before the first original test.
+C and Zig have not yet run that suite.
 [Zig's own native Python bridge](candidates/zig/py_bridge.c) has been
 rebuilt to correct its genuine `Pattern` versus `re.Pattern` bug. The
 current results are separately verified against the rebuilt engines.
 
 | Engine built from scratch | Original cases | Deeper cases | Complete Python tests |
 | --- | --- | --- | --- |
-| Rust | [PASS: 223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v24-qualified-pass-proof.json) | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | NOT RUN |
+| Rust | [PASS: 223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v24-qualified-pass-proof.json) | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | [FAIL: bridge, 0 / 152](oracle/cpython-3.14.6/evidence/postfinal-locale-v12-rust-failures.json) |
 | C | [PASS: 223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v24-qualified-pass-proof.json) | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | NOT RUN |
 | Zig | [PASS: 223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v24-qualified-pass-proof.json) | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | NOT RUN |
 
@@ -118,7 +119,12 @@ preserves Python's exact original test suite. Python itself has
 [twice passed its complete reference tests](oracle/cpython-3.14.6/evidence/postfinal-locale-v6-self-oracle.json).
 Each run covers all **152** original public tests, including the genuine
 multi-gigabyte cases. The only skipped test requires Python's own private
-debug build. These complete tests have **NOT RUN** against the candidates.
+debug build. The first actual Rust attempt failed before running an
+original method:
+the frozen upstream harness did not pass the already authenticated
+native bridge into Python's original test adapter. Its
+[complete actual failure and synchronization receipt](oracle/cpython-3.14.6/evidence/postfinal-locale-v12-rust-failures-production-summary.json)
+are preserved. C and Zig have **NOT RUN** the complete upstream tests.
 
 The [frozen expanded compatibility tests](oracle/cpython-3.14.6/PUBLIC-SURFACE-V27.md)
 preserve the [original Python reference](oracle/cpython-3.14.6/PUBLIC-SURFACE-V19.md)
