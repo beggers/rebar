@@ -7,6 +7,60 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the corrected full Python test before testing another engine
+
+Preserve all three actual Rust test-setup failures, their complete worker
+outputs, and their durable write receipts. Keep Python 3.14.6's **152**
+original public methods, **26** support files, **403** corpus cases,
+**11** external fixture assertions, the authentic private debug-only skip,
+real locales, real `fork`, and the original large-memory requirements
+unchanged.
+
+Correct the ownership check that previously ran in a process containing
+the authenticated candidate. Verify the same independently owned **12**
+source files and **five** native binaries directly, with bounded,
+no-follow reads, inside the process running the original methods. Preserve the
+**304** separately executed native-ownership checks and **304** matching
+engine-ownership checks required for each actual candidate run. Do not
+import Python's matcher, wrap another regex package, or permit a
+cross-family engine.
+
+- [Frozen corrected full-suite source](../tools/postfinal_cpython_locale_oracle_v15.py),
+  SHA-256 `12adb54e895ac0154b1b08ea96cd73b6cbfff4713c764058c5551fe6bba68c43`.
+- [Frozen corrected full-suite protocol](../oracle/cpython-3.14.6/POSTFINAL-LOCALE-V15.md),
+  SHA-256 `d685374a6698056022aa2ef8a46f16bd3d2b8548aab2ac122a59bba7ac0e9f7a`.
+- [Actual read-only, three-engine integration](../oracle/cpython-3.14.6/evidence/postfinal-locale-v15-readonly-native-bridge-integration-pass.json),
+  SHA-256 `f2f9c3673c23054dbf2dbc92138e68a5f31d68dea5c8cfce779874188b53c948`.
+
+Independently execute all **1,273** source-only checks in an ordinary and
+an empty environment. Verify the exact immutable source hash before and
+after each check. Inside the real five-counter read-only boundary,
+authenticate both genuine original Python reference roles, each engine's
+four original and deeper proof files, and every real previous setup
+failure. Recheck all **12** sources and **five** native binaries inside
+the candidate-safe graph verifier. The complete actual integration
+starts **zero** engines, reference workers, native workers, or clocks
+and changes **zero** files.
+
+Reject the unfrozen source drafts
+`3101e1cbae8d405dcee632179fd03eacf85e4590326b60b12a7b842ed0b93038`
+and `10461a251a24ad497f715da16d5f5075b80ec12814b0bb9dd86c88cd8775c844`.
+Their current failure messages incorrectly identified the runner as an
+earlier version. Correct the first **nine** messages, then independently
+identify and correct all **23** remaining live-code and self-test messages.
+Preserve all **114** genuine historical version references and the one
+accurate, seven-version frozen-input allowlist. Neither rejected source
+was published or run against an engine.
+
+Run the final **1,273** checks through both command-line and direct-call
+entry points in both ordinary and empty environments. Independently verify
+each of the four passing runs, its **58** blocked evidence-read attempts,
+and zero actual reads, writes, workers, clocks, candidate imports, or
+holdout access. Obtain separate security and contract reviews of the exact
+final source and protocol before publication. The corrected candidate
+suites remain **NOT RUN**. Current speed and memory remain
+**NOT MEASURED**; the holdout remains **NOT ACCESSED**.
+
 ## Show every real full-suite setup failure in the current headline graph
 
 Generate the current correctness graph from **31** independently verified,

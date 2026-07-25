@@ -183,6 +183,17 @@ and [independent read-only failure verification](oracle/cpython-3.14.6/evidence/
 No Python regex matcher ran, no original test passed, and this is
 not a demonstrated regex mismatch. C and Zig remain **NOT RUN**.
 
+The [corrected full-suite test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V15.md)
+keeps all **152** original Python tests and all three real setup failures.
+It checks each engine's real source files and native binaries directly
+inside the correct process, without using Python's matcher or another
+regex package. All **1,273** test-harness checks pass in both ordinary
+and clean environments. Its [actual read-only, three-engine integration](oracle/cpython-3.14.6/evidence/postfinal-locale-v15-readonly-native-bridge-integration-pass.json)
+verifies both original Python reference runs, all **12** engine source
+files, all **five** native binaries, and each engine's original and
+deeper passing evidence. It starts **zero** engines, matchers, or tests.
+The corrected full Python test is **NOT RUN** for all three engines.
+
 The [frozen expanded compatibility tests](oracle/cpython-3.14.6/PUBLIC-SURFACE-V27.md)
 preserve the [original Python reference](oracle/cpython-3.14.6/PUBLIC-SURFACE-V19.md)
 and all **1,376** distinct examples in **43** categories, including
@@ -226,6 +237,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v12.py --self-test
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v13.py --self-test
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v14.py --self-test
+"$PY" -I -B tools/postfinal_cpython_locale_oracle_v15.py --self-test
 "$PY" -I -B tools/python_re_public_surface_oracle_stage27.py --self-test
 "$PY" -I -B tools/render_current_correctness_v1.py --self-test
 "$PY" -I -B tools/render_current_correctness_v1.py --check
