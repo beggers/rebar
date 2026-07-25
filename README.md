@@ -101,7 +101,9 @@ cover **1,376** examples across **43** categories. Python's two reference
 runs pass them; the current candidates have **NOT RUN** those tests.
 A [separate 264-case buffer-lifetime test](oracle/cpython-3.14.6/PUBLIC-BUFFER-EXPORTER-V1.md)
 is frozen for Python's mutable inputs, callbacks, iterators, and scanners.
-Its Python reference and candidate runs are **NOT RUN**.
+Its [first Python reference genuinely failed](oracle/cpython-3.14.6/evidence/public-buffer-exporter-v1-self-oracle-failures.json)
+because the test assumed every buffer had already been acquired and
+released. The original failure is preserved; candidate runs are **NOT RUN**.
 
 The [corrected original-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V16.md)
 keeps every public test and removes only the test harness's own interference.

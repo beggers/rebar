@@ -7,6 +7,33 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the first real Python buffer-reference failure
+
+Run the previously frozen **264-case** custom-buffer oracle exactly once
+against isolated Python **3.14.6**, only after its source and protocol were
+committed, pushed, and independently reviewed. The actual first worker,
+`reference_a`, exits **1**: the test's event checker incorrectly requires
+every case to have a nonzero and already balanced acquisition and release
+count. Its genuine output contains **no** completed case record, so neither
+a zero-acquisition exception nor a temporarily retained buffer can be
+claimed as the observed cause. Python never completed a reference vector,
+the second worker never ran, and no candidate ran.
+
+- [Actual first buffer-reference failure, including the complete real worker traceback](../oracle/cpython-3.14.6/evidence/public-buffer-exporter-v1-self-oracle-failures.json),
+  SHA-256 `f38c8b3dd1faaaa6197a1cf4698a51f830398a3d26c3527302607ed0136fb5ae`.
+- [Actual separately durable failure-publication receipt](../oracle/cpython-3.14.6/evidence/public-buffer-exporter-v1-self-oracle-failure-publication-receipt.json),
+  SHA-256 `f68612336528f5660805d2bec5a5c2316f891651cdef3a4ee4d3253960c80f82`.
+
+Independently authenticate the full **1,657-byte** standard-error stream,
+the genuine operating-system process, exit status, all original frozen
+source and protocol fingerprints, the **zero** completed reference roles,
+and the separate exclusively created, read-back-verified, file-synced and
+directory-synced failure receipt. Do not rerun or overwrite the failed
+oracle. Correct the buffer observation only in a separately frozen future
+version; until both real Python references pass, buffer compatibility is
+**NOT QUALIFIED**. Performance remains **NOT MEASURED** and the holdout
+**NOT ACCESSED**.
+
 ## Freeze safe custom-buffer lifetime correctness
 
 Freeze **264** original-Python buffer-lifetime cases before running a
