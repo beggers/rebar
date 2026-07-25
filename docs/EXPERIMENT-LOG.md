@@ -7,6 +7,37 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a fresh 1,024-example Python scanner compatibility check
+
+Freeze and independently review the separately written
+[scanner differential test](../tools/rust_scanner_differential_v1.py)
+before allowing any replacement scanner to see its cases. The exact test
+source has SHA-256
+`fcc82a76e7bcaaa25d92a8482d4dc611b643d887d7fd983db0906c7340b91fd7`.
+Its published seed `5999710933164053041` generates exactly **32** named
+scanner features and **32** deterministic examples per feature, for an
+unchanged **1,024-case** matrix with SHA-256
+`83a8ad125b36846c1790ca01564305b2ab9714185f972efa838740b7bbf4b55c`.
+
+Two independent, isolated Python **3.14.6** processes agree on every
+case, with baseline SHA-256
+`37de08e1991adf28990e35b72c2130ebafa78c72b04750d28550cce08555666d`.
+Ordinary and empty-environment tests independently repeat that complete
+comparison. Each observes the actual **2,807** scanner callbacks, **32**
+warnings, exact text and buffer types, local and named captures,
+backreferences, conditionals, global and scoped flags, byte locales,
+changed lexicons, zero-width matches, and real Python exceptions. All
+**41** omitted-case and forged-result controls pass.
+
+An independent static review checks the exact pinned source, original
+Python scanner, owned Rust adapter, matching engine, and native bridge;
+it finds no use of Python's matcher, an external regular-expression
+package, or another candidate. The self-tests start **zero** candidate
+workers, sample **zero** clocks, write **zero** files, and read **zero**
+hidden or benchmark cases. The first changed-candidate run remains
+**NOT RUN** until this test is separately committed and pushed. Current
+speed and memory remain **NOT MEASURED**.
+
 ## Freeze an independently verified public Rust correctness graph
 
 Freeze the [public development correctness graph generator](../tools/render_rust_public_correctness_v1.py)

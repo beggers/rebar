@@ -110,6 +110,13 @@ frozen [correctness graph generator](tools/render_rust_public_correctness_v1.py)
 accepts only complete, independently authenticated recorded results; it
 cannot invent a pass or measure speed.
 
+A separately frozen [scanner compatibility check](tools/rust_scanner_differential_v1.py)
+covers **1,024** new examples across **32** scanner features, including
+text, bytes, callbacks, warnings, flags, captures, and changed inputs.
+Two independent Python runs agree on all **1,024**. The changed Rust
+scanner has **NOT RUN** this test. This is a public development check,
+not the unopened million-example comparison.
+
 The additional [1,376 public-interface checks](oracle/cpython-3.14.6/PUBLIC-SURFACE-V27.md),
 [buffer-lifetime checks](oracle/cpython-3.14.6/PUBLIC-BUFFER-EXPORTER-V2.md),
 and [128 interpreter-isolation checks](oracle/cpython-3.14.6/PUBLIC-SUBINTERPRETER-V1.md)
@@ -165,6 +172,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/python_re_buffer_exporter_oracle_v2.py --self-test
 "$PY" -I -B tools/python_re_subinterpreter_oracle_v1.py --self-test
 "$PY" -I -B tools/rust_public_practice_benchmark_v1.py --self-test
+"$PY" -I -B tools/rust_scanner_differential_v1.py --self-test
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --self-test
