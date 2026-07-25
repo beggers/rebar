@@ -7,6 +7,38 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve every actual memory-view failure and traceback
+
+After independently freezing, reviewing, committing, and pushing the
+dedicated result recorder, run the unchanged memory-view oracle once
+under the fresh `rust-memoryview-expand-v1-before-native-fix` label.
+Durably preserve the
+[complete pre-fix result](../experiments/rust_public_practice_v1/rust-memoryview-expand-v1-before-native-fix.json),
+SHA-256
+`25c32765023177df06f2f3b8739abb442473b126007314d23f571b0c8abb2a47`,
+and the separate
+[independently verified receipt](../experiments/rust_public_practice_v1/rust-memoryview-expand-v1-before-native-fix-publication-receipt.json),
+SHA-256
+`9d5b8a11cf0f39051b0a71f243a9674ff848fd7c7ad3e4bb6f43fd6d3a719de3`.
+
+Record every one of the **53** actual mismatches, complete input and
+output records, all **24** genuine family counts, full process stdout
+and stderr, original Python baseline and candidate outcome hashes,
+the exact frozen source, and all three native owners before and
+after the run. The exact failures are **32** released memory views,
+**16** failing buffer exporters, and **five** writable-template
+errors. Both ordinary measured memory-view families retain **zero**
+mismatches. The immutable oracle does not emit complete successful
+case vectors; retain those as **NOT AVAILABLE**, never fabricated.
+
+The recorder verifies both exclusive publication files, reports the
+genuine candidate failure, and preserves the real nonzero process
+exit. It observes **zero** hidden cases, **zero** benchmark files,
+and **zero** timing trials. Preserve the separately documented
+truncated first-run summary. Do not rerun or overwrite either
+first-run label. Candidate memory-view correctness **FAILS**; speed
+effects remain **NOT MEASURED**.
+
 ## Freeze complete capture of memory-view compatibility failures
 
 Independently review and freeze the additive
@@ -31,9 +63,9 @@ Both ordinary and empty-environment synthetic tests pass **123**
 actual rejection controls and **13** positive controls, including
 all **53** deterministic example mismatches. The self-tests execute
 **zero** candidates, read **zero** hidden cases, and capture
-**zero** timing samples. The first fully recorded memory-view run
-remains **NOT RUN** until this independently reviewed recorder is
-committed and pushed.
+**zero** timing samples. The first fully recorded memory-view run had
+**NOT RUN** when this independently reviewed recorder was committed
+and pushed; its complete real result is preserved above.
 
 ## Preserve the first broader memory-view failure honestly
 

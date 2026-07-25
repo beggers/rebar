@@ -64,13 +64,12 @@ first freezes Python's actual behavior for writable, read-only,
 sliced, strided, released, and changed buffers. Its first Rust
 comparison found **53** mismatches: **32** released views, **16**
 failing buffer exporters, and **five** incorrect-template exceptions.
-The [honest first-run summary](experiments/rust_public_practice_v1/rust-memoryview-expand-v1-first-unrecorded-summary.json)
-records that the full console output was truncated, not durably
-captured. An independently verified
-[complete memory-view result recorder](tools/record_rust_memoryview_expand_v1.py)
-will preserve every failure before any fix. Its first actual
-recorded run and any resulting speed change are **NOT RUN**. Native
-memory use is **NOT MEASURED**.
+The [complete recorded failure](experiments/rust_public_practice_v1/rust-memoryview-expand-v1-before-native-fix.json)
+and its [independently verified receipt](experiments/rust_public_practice_v1/rust-memoryview-expand-v1-before-native-fix-publication-receipt.json)
+preserve every mismatch and all actual process output. The earlier
+[truncated first-run summary](experiments/rust_public_practice_v1/rust-memoryview-expand-v1-first-unrecorded-summary.json)
+is retained honestly. Correctness fixes, their resulting speed, and
+native memory remain **NOT MEASURED**.
 
 ## Earlier three-engine speed comparison
 
