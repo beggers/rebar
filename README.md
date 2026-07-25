@@ -53,7 +53,9 @@ Exactly **two** examples exceed a **20%** slowdown. Both are
 `match.expand` with mutable or read-only memory-view inputs. Their exact
 inputs and confidence intervals are retained in the
 [complete measurements](experiments/rust_public_practice_v1/rust-native-scanner-v1-public-practice.json).
-Their underlying implementation cost is **NOT YET PROFILED**. Native
+The cause is visible in the engine: both valid memory-view inputs miss
+the existing native replacement path and use a slower Python template
+fallback. The proposed native fix has **NOT BEEN MEASURED**. Native
 memory use is **NOT MEASURED**.
 
 ## Earlier three-engine speed comparison

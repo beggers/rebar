@@ -7,6 +7,37 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Explain both measured memory-view replacement regressions
+
+Independently inspect the already committed complete **864-case** public
+measurement and the exact owned C bridge; do not rerun or alter the
+benchmark. Exactly two cases are more than **20%** slower than Python:
+mutable memory-view `match.expand` is **39.3555183947629%** slower and
+read-only memory-view `match.expand` is **37.75899220464214%** slower.
+Both actual inputs, results, all **12** paired rounds, and confidence
+intervals remain in the
+[original complete measurement](../experiments/rust_public_practice_v1/rust-native-scanner-v1-public-practice.json).
+
+The frozen test first calls the engine's real native search against the
+original memory view and then expands the real bytes template. The owned
+`rust_match_expand` bridge accepts native `str`, `bytes`, and
+`bytearray` subjects, but excludes `memoryview`, even though its own
+existing `rust_subject_open` and native replacement writer already
+support readable and writable contiguous buffers. Consequently both
+observed cases enter `rust_match_expand_fallback`, reparse the template
+in Python, and reacquire the captured buffer rather than using the
+already available native cached tokens and output writer.
+
+The smallest evidence-supported experiment is to admit valid contiguous
+memory views to the existing native bytes expansion path, calculate
+their actual buffer length, and preserve exactly one balanced buffer
+acquisition and release. Invalid, released, non-contiguous, text, and
+mistyped replacement inputs must retain the existing fallback and error
+behavior. This is an implementation diagnosis, not a claimed
+improvement: the fix, its new speed, its complete original-suite
+compatibility, and its memory consumption remain **NOT MEASURED**.
+No hidden benchmark is read.
+
 ## Preserve the first changed-Rust original-suite guard failure
 
 Run the independently frozen original-suite recorder exactly once after
