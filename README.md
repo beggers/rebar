@@ -10,10 +10,14 @@ an external regular-expression package, or another candidate.
 Python on **864 of 864** general examples and **1,024 of 1,024**
 separately frozen scanner examples. It has **zero** mismatches in either
 comparison. These are genuine development checks, not the complete
-original Python test suite or the unopened final speed test. In a first
+original Python test suite or a fresh final speed test. In a first
 **864-case**, **12-round** development comparison, Rust is **1.058×**
 as fast as Python overall. This does not meet the **1.5×** target. Final
-speed and native memory are **NOT MEASURED**. There is no winner.
+speed and native memory are **NOT MEASURED**. The original Python suite
+currently records **145 passes, six warning-harness errors, and one
+debug-only skip**. Those errors occur before matching and do not
+establish a Rust incompatibility. Rust is not yet qualified as a
+drop-in replacement. There is no winner.
 
 ## Current speed against Python
 
@@ -25,9 +29,8 @@ faster, **231** are clearly slower, and **448** are inconclusive.
 
 ![All 864 public examples classified as faster, slower, or inconclusive relative to Python](docs/evidence/rust-public-speed-v1-outcomes.svg)
 
-This is a development measurement of complete Python-visible operations,
-not a hidden result or a prediction about the **1,048,576-example** final
-test. The [complete original measurements](experiments/rust_public_practice_v1/rust-native-scanner-v1-public-practice.json)
+This is a development measurement, not a hidden result or a prediction
+about a final test. The [complete original measurements](experiments/rust_public_practice_v1/rust-native-scanner-v1-public-practice.json)
 contain all **10,368** paired observations.
 
 ## Current compatibility
@@ -97,7 +100,7 @@ The [published comparison](performance/postfinal-public-v6/RESULTS.md),
 and [predeclared measurement rules](performance/postfinal-public-v6/PROTOCOL.md)
 retain the complete results, uncertainty ranges, and all regressions.
 
-## Last completed original Python tests
+## Original Python compatibility
 
 ![Last completed original Python tests: 150 historical Rust passes, one preserved pickling failure, one debug-only skip, and C and Zig not yet tested](docs/evidence/current-native-correctness-v6.svg)
 
@@ -107,14 +110,18 @@ are excluded only under the named `DebugTests` and `ImplementationTest`
 waivers. The real Python reference passes **151** public tests; the
 remaining test requires a Python debug build.
 
-The last full Rust run passed **150**, recorded the missing pickling
-hook, and had the same debug-only skip. The hook now passes Python's
-original isolated test for all six pickle formats. A fresh Rust
-original-suite attempt has **NOT QUALIFIED**; fresh independent-engine
-proofs are **NOT RUN**. C and Zig are **NOT RUN** against the original
-suite. The chart is
-[generated from preserved historical results](docs/evidence/current-native-correctness-v6.json);
-it is not a qualification of the changed Rust engine.
+The first complete, identity-verified run of the current Rust engine
+records **145 passing tests, six warning-harness errors, and the same
+debug-only skip**. All six errors come from the same test-guard problem:
+Python's warning assertions ask a quarantined object for harmless
+warning metadata before the corresponding engine operation runs. They
+do not establish a Rust substitution, splitting, or pattern defect. Its
+[complete original results](experiments/rust_public_practice_v1/rust-original-v2-native-scanner-first-run.json)
+and [independent publication receipt](experiments/rust_public_practice_v1/rust-original-v2-native-scanner-first-run-publication-receipt.json)
+preserve every result and traceback. Rust is **NOT QUALIFIED**; C and
+Zig have **NOT RUN** against these original tests. The graph above is
+[generated from earlier historical results](docs/evidence/current-native-correctness-v6.json)
+and does not describe or qualify the current Rust engine.
 
 A newly prepared original-suite run first exposed genuine problems in
 Python's own test environment:
@@ -137,9 +144,11 @@ The [complete independent receipt](experiments/rust_public_practice_v1/rust-orig
 preserves the exact error. A separately frozen
 [corrected test runner](tools/rust_original_cpython_suite_v2.py)
 checks actual matcher ownership instead of public names while retaining
-all original tests and no-delegation controls. Its Rust candidate run
-is **NOT RUN** until the corrected source has been committed and
-pushed; Rust remains **NOT QUALIFIED** against the full original suite.
+all original tests and the CPython-engine isolation controls. The
+recorded **six** warning-metadata errors must be corrected in a
+separately versioned test guard, without permitting access to any
+matching engine. Rust remains **NOT QUALIFIED** against the full
+original suite.
 A separately verified
 [identity-safe full-result recorder](tools/record_rust_original_cpython_v2.py)
 preserves every original Python and Rust test result, error, traceback,
@@ -190,8 +199,7 @@ covers **1,024** new examples across **32** scanner features, including
 text, bytes, callbacks, warnings, flags, captures, and changed inputs.
 Two independent Python runs agree on all **1,024**, and the
 [changed Rust scanner passes all 1,024](experiments/rust_public_practice_v1/rust-native-scanner-v1-independent-differential.json).
-This is a public development check, not the unopened million-example
-comparison.
+This is a public development check, not a final comparison.
 
 The additional [1,376 public-interface checks](oracle/cpython-3.14.6/PUBLIC-SURFACE-V27.md),
 [buffer-lifetime checks](oracle/cpython-3.14.6/PUBLIC-BUFFER-EXPORTER-V2.md),
@@ -204,23 +212,20 @@ not built or qualified candidates.
 
 ## Larger fair speed comparison
 
-The planned public comparison and separately generated final test will
-each cover **1,048,576 examples**: eight times the previous
-**131,072-example** plan. Both will balance everyday matching, searching,
-splitting, replacements, Unicode, bytes, compilation, cached patterns,
-iterators, callbacks, unusual inputs, memory, and the cost of calling each
-native engine from Python. Only combinations that are genuinely valid for
-the operation and input count toward the total.
+A previous final test was opened once, exposed a real Zig `split`
+failure, and is **FALSIFIED**. It cannot be reused. The previously
+proposed **1,048,576-example** replacement is a new prospective test,
+not that historical final: it is **NOT FROZEN**, **NOT GENERATED**,
+and **NOT OPENED**. A further expansion is being independently designed.
 
-Freeze and open the final test only after all three genuinely separate,
-from-scratch engines pass every required correctness and independence
-check. Run Python and each qualifying engine on exactly the same cases,
-with at least **11** paired rounds; report overall speed, uncertainty,
-memory, and every slowdown. To satisfy the 60% faster-case requirement,
-an engine must be statistically faster on at least **629,146** final
-examples. The expanded test is **NOT FROZEN** and **NOT OPENED**. Final
-speed, final uncertainty, final rankings, and native memory are
-**NOT MEASURED**.
+Freeze and generate a new final test only after three genuinely
+separate, from-scratch candidates pass all original Python tests and
+the independent no-delegation audit. Measure Python and every
+qualified candidate on exactly the same valid cases; report overall
+speed, confidence, memory, and all slowdowns. The success criteria
+remain at least **1.5×** overall and statistically faster results on
+at least **60%** of the declared cases. Final speed, confidence,
+rankings, and native memory remain **NOT MEASURED**.
 
 ## Evidence and reproduction
 

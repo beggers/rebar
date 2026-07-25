@@ -7,12 +7,49 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the first complete identity-safe original Python result
+
+Run the independently frozen V2 original-suite recorder exactly once
+after its source and controller were committed and pushed. Preserve the
+[complete first corrected result](../experiments/rust_public_practice_v1/rust-original-v2-native-scanner-first-run.json),
+SHA-256
+`ade97b9af09161b970b844230f3d5dd815169b01186ba9af43c528795c57c8a6`,
+and its separately synchronized
+[independent publication receipt](../experiments/rust_public_practice_v1/rust-original-v2-native-scanner-first-run-publication-receipt.json),
+SHA-256
+`90146b50e0dc1c17b72d5117302715768a4897dec3d9a48af878993f1871f470`.
+
+The genuine Python baseline records **151 passes** and **one
+debug-build-only skip**. The actual Rust process records **145
+passes**, **six error-status records**, and the identical genuine skip.
+Every error has the identical complete preserved traceback:
+`unittest.assertWarns` looks up `__warningregistry__` before entering
+the original test, and the V2 quarantine incorrectly raises
+`ForbiddenOriginalMatcher` on that harmless metadata lookup. These
+records do **not** prove a candidate matching, replacement, splitting,
+warning, or pattern incompatibility.
+
+Preserve all **152** real records from each process, all **six**
+complete mismatches and tracebacks, the unchanged **165**-method
+original inventory, all **13** named private waivers, and **zero**
+public waivers. The affected original tests are `test_basic_re_sub`,
+`test_qualified_re_sub`, `test_misuse_flags`, `test_re_subn`,
+`test_qualified_re_split`, and `test_possible_set_operations`.
+
+All **304** actual matcher-ownership checks use authenticated native
+object identity instead of Python-compatible public type names. Source
+and both native binaries remain unchanged before and after the run.
+The process reads **zero** hidden cases, opens **zero** benchmark
+files, collects **zero** timing samples, and does not qualify a
+candidate or select a winner. Receipt publication succeeds; candidate
+correctness **FAILS**. Do not rerun or overwrite the recorded label.
+
 ## Freeze complete identity-safe original-test result capture
 
 Independently freeze and review the additive
 [V2 original-suite result recorder](../tools/record_rust_original_cpython_v2.py),
 SHA-256
-`a3a35fac27c08121cde5ab5d0216de25b06c739e57033a5e0d2be20c99e7076e`,
+`475099a0ea5e517e177b791ba616b63c01c7da0a646b62c0b3639da14b4db817`,
 before invoking the corrected identity-based original suite. Preserve
 the frozen V1 test controller, V1 result recorder, complete first
 failed V1 run, and original failure receipt without edits.
@@ -39,8 +76,9 @@ Both ordinary and empty-environment self-tests pass **124** genuine
 tampering rejections and **16** positive controls using synthetic data
 only. They perform **zero** actual original-suite invocations,
 candidate imports, evidence writes, timing trials, and hidden-case
-reads. The first corrected candidate comparison remains **NOT RUN**
-until this independent V2 recorder is committed and pushed.
+reads. At the time the recorder was frozen, the corrected candidate
+comparison had **NOT RUN**. Its complete first result is preserved
+above.
 
 ## Freeze identity-based original-suite matcher isolation
 
