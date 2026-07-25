@@ -1,0 +1,192 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1040" height="1462" viewBox="0 0 1040 1462" role="img" aria-labelledby="rust-public-title rust-public-description">
+<title id="rust-public-title">Python and Rust: complete public regular-expression correctness</title>
+<desc id="rust-public-description">Python passes 864 of 864 independently checked public cases. Rust passes 864 of 864; 0 cases fail and are shown in red. Every frozen API and scanner failure is included. This is an untimed public development check, not a final benchmark.</desc>
+<rect width="100%" height="100%" rx="18" fill="#f8fafc"/>
+<g font-family="system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif">
+<text x="42" y="52" fill="#0f172a" font-size="26" font-weight="760">Python and Rust: public correctness</text>
+<text x="42" y="80" fill="#475569" font-size="14">PUBLIC DEVELOPMENT CHECK · NOT FINAL BENCHMARK</text>
+<rect x="34" y="103" width="972" height="174" rx="14" fill="#ffffff"/>
+<text x="54" y="137" fill="#0f172a" font-size="15" font-weight="700">Pinned Python baseline</text>
+<text x="984" y="137" text-anchor="end" fill="#065f46" font-size="15" font-weight="760">864 / 864 passed</text>
+<rect x="54" y="151" width="930" height="25" rx="8" fill="#e2e8f0"/>
+<rect x="54" y="151" width="930" height="25" rx="8" fill="#047857"/>
+<text x="54" y="210" fill="#0f172a" font-size="15" font-weight="700">From-scratch Rust</text>
+<text x="984" y="210" text-anchor="end" fill="#0f172a" font-size="15" font-weight="760">864 / 864 passed · <tspan fill="#be123c">0 failed</tspan></text>
+<rect x="54" y="224" width="930" height="25" rx="8" fill="#e2e8f0"/>
+<rect x="54" y="224" width="930" height="25" rx="8" fill="#047857"/>
+<circle cx="54" cy="298" r="6" fill="#047857"/>
+<text x="67" y="303" fill="#334155" font-size="13">Matches Python</text>
+<circle cx="204" cy="298" r="6" fill="#be123c"/>
+<text x="217" y="303" fill="#334155" font-size="13">Genuine mismatch; included in the total</text>
+<text x="984" y="303" text-anchor="end" fill="#475569" font-size="13">Rust: 100.00% correct</text>
+<rect x="34" y="322" width="972" height="190" rx="14" fill="#ffffff"/>
+<text x="54" y="354" fill="#0f172a" font-size="17" font-weight="740">Scanner and scanner-callback details</text>
+<text x="54" y="386" fill="#334155" font-size="12">pattern.scanner.search</text>
+<rect x="300" y="374" width="520" height="13" rx="8" fill="#e2e8f0"/>
+<rect x="300" y="374" width="520" height="13" rx="8" fill="#047857"/>
+<text x="984" y="386" text-anchor="end" fill="#065f46" font-size="12" font-weight="660">24/24 · 0 failed</text>
+<text x="54" y="410" fill="#334155" font-size="12">pattern.scanner.match</text>
+<rect x="300" y="398" width="520" height="13" rx="8" fill="#e2e8f0"/>
+<rect x="300" y="398" width="520" height="13" rx="8" fill="#047857"/>
+<text x="984" y="410" text-anchor="end" fill="#065f46" font-size="12" font-weight="660">24/24 · 0 failed</text>
+<text x="54" y="434" fill="#334155" font-size="12">pattern.scanner.loop</text>
+<rect x="300" y="422" width="520" height="13" rx="8" fill="#e2e8f0"/>
+<rect x="300" y="422" width="520" height="13" rx="8" fill="#047857"/>
+<text x="984" y="434" text-anchor="end" fill="#065f46" font-size="12" font-weight="660">24/24 · 0 failed</text>
+<text x="54" y="458" fill="#334155" font-size="12">scanner.scan</text>
+<rect x="300" y="446" width="520" height="13" rx="8" fill="#e2e8f0"/>
+<rect x="300" y="446" width="520" height="13" rx="8" fill="#047857"/>
+<text x="984" y="458" text-anchor="end" fill="#065f46" font-size="12" font-weight="660">24/24 · 0 failed</text>
+<text x="54" y="482" fill="#334155" font-size="12">scanner.scan.callback_error</text>
+<rect x="300" y="470" width="520" height="13" rx="8" fill="#e2e8f0"/>
+<rect x="300" y="470" width="520" height="13" rx="8" fill="#047857"/>
+<text x="984" y="482" text-anchor="end" fill="#065f46" font-size="12" font-weight="660">24/24 · 0 failed</text>
+<text x="42" y="544" fill="#0f172a" font-size="17" font-weight="740">All 36 frozen public operations · 24 original cases each</text>
+<text x="42" y="571" fill="#334155" font-size="11">module.compile</text>
+<rect x="42" y="577" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="577" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="588" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="616" fill="#334155" font-size="11">module.search</text>
+<rect x="42" y="622" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="622" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="633" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="661" fill="#334155" font-size="11">module.match</text>
+<rect x="42" y="667" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="667" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="678" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="706" fill="#334155" font-size="11">module.fullmatch</text>
+<rect x="42" y="712" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="712" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="723" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="751" fill="#334155" font-size="11">module.findall</text>
+<rect x="42" y="757" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="757" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="768" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="796" fill="#334155" font-size="11">module.finditer</text>
+<rect x="42" y="802" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="802" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="813" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="841" fill="#334155" font-size="11">module.split</text>
+<rect x="42" y="847" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="847" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="858" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="886" fill="#334155" font-size="11">module.split.positional</text>
+<rect x="42" y="892" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="892" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="903" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="931" fill="#334155" font-size="11">module.sub.literal</text>
+<rect x="42" y="937" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="937" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="948" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="976" fill="#334155" font-size="11">module.sub.positional</text>
+<rect x="42" y="982" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="982" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="993" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="1021" fill="#334155" font-size="11">module.sub.positional_callback_error</text>
+<rect x="42" y="1027" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="1027" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="1038" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="1066" fill="#334155" font-size="11">module.subn.literal</text>
+<rect x="42" y="1072" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="1072" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="1083" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="1111" fill="#334155" font-size="11">module.subn.positional</text>
+<rect x="42" y="1117" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="1117" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="1128" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="1156" fill="#334155" font-size="11">module.subn.positional_callback_error</text>
+<rect x="42" y="1162" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="1162" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="1173" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="1201" fill="#334155" font-size="11">module.sub.callback</text>
+<rect x="42" y="1207" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="1207" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="1218" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="1246" fill="#334155" font-size="11">module.subn.callback</text>
+<rect x="42" y="1252" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="1252" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="1263" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="1291" fill="#334155" font-size="11">module.sub.callback_error</text>
+<rect x="42" y="1297" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="1297" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="1308" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="42" y="1336" fill="#334155" font-size="11">pattern.search</text>
+<rect x="42" y="1342" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="42" y="1342" width="348" height="12" rx="8" fill="#047857"/>
+<text x="509" y="1353" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="571" fill="#334155" font-size="11">pattern.match</text>
+<rect x="552" y="577" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="577" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="588" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="616" fill="#334155" font-size="11">pattern.fullmatch</text>
+<rect x="552" y="622" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="622" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="633" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="661" fill="#334155" font-size="11">pattern.findall</text>
+<rect x="552" y="667" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="667" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="678" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="706" fill="#334155" font-size="11">pattern.finditer</text>
+<rect x="552" y="712" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="712" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="723" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="751" fill="#334155" font-size="11">pattern.split</text>
+<rect x="552" y="757" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="757" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="768" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="796" fill="#334155" font-size="11">pattern.sub.literal</text>
+<rect x="552" y="802" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="802" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="813" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="841" fill="#334155" font-size="11">pattern.subn.literal</text>
+<rect x="552" y="847" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="847" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="858" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="886" fill="#334155" font-size="11">pattern.sub.callback</text>
+<rect x="552" y="892" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="892" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="903" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="931" fill="#334155" font-size="11">pattern.subn.callback</text>
+<rect x="552" y="937" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="937" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="948" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="976" fill="#334155" font-size="11">pattern.sub.callback_error</text>
+<rect x="552" y="982" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="982" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="993" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="1021" fill="#334155" font-size="11">pattern.scanner.search</text>
+<rect x="552" y="1027" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="1027" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="1038" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="1066" fill="#334155" font-size="11">pattern.scanner.match</text>
+<rect x="552" y="1072" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="1072" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="1083" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="1111" fill="#334155" font-size="11">pattern.scanner.loop</text>
+<rect x="552" y="1117" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="1117" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="1128" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="1156" fill="#334155" font-size="11">scanner.scan</text>
+<rect x="552" y="1162" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="1162" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="1173" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="1201" fill="#334155" font-size="11">scanner.scan.callback_error</text>
+<rect x="552" y="1207" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="1207" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="1218" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="1246" fill="#334155" font-size="11">match.group</text>
+<rect x="552" y="1252" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="1252" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="1263" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="1291" fill="#334155" font-size="11">match.expand</text>
+<rect x="552" y="1297" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="1297" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="1308" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<text x="552" y="1336" fill="#334155" font-size="11">compile.fresh.search</text>
+<rect x="552" y="1342" width="348" height="12" rx="8" fill="#e2e8f0"/>
+<rect x="552" y="1342" width="348" height="12" rx="8" fill="#047857"/>
+<text x="1019" y="1353" text-anchor="end" fill="#065f46" font-size="11" font-weight="650">24/24 · 0 fail</text>
+<line x1="42" x2="998" y1="1381" y2="1381" stroke="#cbd5e1"/>
+<text x="42" y="1403" fill="#475569" font-size="12">Pinned CPython 3.14.6 · every case counted · performance and memory NOT MEASURED · no hidden or final benchmark</text>
+</g>
+</svg>

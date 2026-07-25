@@ -6,36 +6,27 @@ Can a regular-expression engine built from scratch replace
 Every candidate must use its own matching engine, not Python's engine,
 an external regular-expression package, or another candidate.
 
-**Last durably recorded public development result:** Rust matched Python on
-**824 of 864** examples before the scanner fix. All **40** recorded
-differences were scanner results or scanner callback errors;
-[every failing example is preserved](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner.json).
-The original missing pattern-pickling feature now passes Python's real
-test for all **six** pickle formats. A fresh complete original-test run
-and fresh independent engine proofs are **NOT RUN**. C and Zig have
-**NOT RUN** the original tests. Current speed and memory are
-**NOT MEASURED**. There is no winner.
+**Current public development result:** The from-scratch Rust engine matches
+Python on **864 of 864** general examples and **1,024 of 1,024**
+separately frozen scanner examples. It has **zero** mismatches in either
+comparison. These are genuine development checks, not the complete
+original Python test suite or the unopened final speed test. Current
+speed and memory are **NOT MEASURED**. There is no winner.
 
-## Last completed original Python tests
+## Current compatibility
 
-![Last completed original Python tests before the latest Rust compatibility fix: 150 passes, one historical pickling failure, one debug-only skip, and C and Zig not yet tested](docs/evidence/current-native-correctness-v6.svg)
+![Python and the current from-scratch Rust engine each passing all 864 frozen public development checks, with zero scanner failures](docs/evidence/rust-public-correctness-v1.svg)
 
-Python's original test file contains **165** tests. **152** test the
-public replacement interface; the other **13** test CPython's private
-implementation and are explicitly excluded in two named classes:
-`DebugTests` (**4**) and `ImplementationTest` (**9**). No public test is
-waived. Both actual Python reference runs pass **151** public tests;
-the remaining test genuinely requires a Python debug build.
+The graph is generated from the
+[complete recorded current result](experiments/rust_public_practice_v1/rust-module-v1-after-native-scanner.json),
+its [independently verified receipt](experiments/rust_public_practice_v1/rust-module-v1-after-native-scanner-publication-receipt.json),
+and the exact Rust source and native binaries. The
+[separate 1,024-example scanner result](experiments/rust_public_practice_v1/rust-native-scanner-v1-independent-differential.json)
+also passes every test. The original
+[824-pass, 40-failure result](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner.json)
+is preserved, not overwritten.
 
-In the last completed run, Rust passed **150** of the same **152**
-public-test records, exposed the missing pickling hook, and skipped the
-same debug-only test. The hook has since been fixed and checked against
-all six pickle formats; the complete original suite has **not** yet been
-rerun. The earlier **11** test-harness errors were resolved, not hidden.
-C and Zig are **NOT RUN**. The graph is
-[generated from complete, independently verified historical evidence](docs/evidence/current-native-correctness-v6.json).
-
-## Headline results from the last completed comparison
+## Last published speed comparison
 
 The archived C, Rust, and Zig builds each ran the same 8,192 public examples
 as unmodified Python. In these graphs, **1× is Python's speed, higher is
@@ -74,6 +65,24 @@ The [published comparison](performance/postfinal-public-v6/RESULTS.md),
 and [predeclared measurement rules](performance/postfinal-public-v6/PROTOCOL.md)
 retain the complete results, uncertainty ranges, and all regressions.
 
+## Last completed original Python tests
+
+![Last completed original Python tests: 150 historical Rust passes, one preserved pickling failure, one debug-only skip, and C and Zig not yet tested](docs/evidence/current-native-correctness-v6.svg)
+
+Python's original test file contains **165** tests. **152** cover the
+public replacement interface; **13** test private CPython internals and
+are excluded only under the named `DebugTests` and `ImplementationTest`
+waivers. The real Python reference passes **151** public tests; the
+remaining test requires a Python debug build.
+
+The last full Rust run passed **150**, recorded the missing pickling
+hook, and had the same debug-only skip. The hook now passes Python's
+original isolated test for all six pickle formats, but a fresh full
+original-suite run and fresh independent-engine proofs are **NOT RUN**.
+C and Zig are **NOT RUN** against the original suite. The chart is
+[generated from preserved historical results](docs/evidence/current-native-correctness-v6.json);
+it is not a qualification of the changed Rust engine.
+
 ## Independent engines and compatibility
 
 Each engine uses its own implementation. The frozen source and native-binary
@@ -102,10 +111,12 @@ An independently reviewed
 [public development check](tools/rust_public_practice_benchmark_v1.py)
 covers **864** fixed examples across **36** Python operations, equally
 split between text and bytes. Two Python reference runs agree on all
-**864**. The preserved pre-fix Rust
-[result](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner.json)
-and [receipt](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner-publication-receipt.json)
-record all **824** matches and **40** scanner failures. The separately
+**864**, and the
+[current recorded Rust result](experiments/rust_public_practice_v1/rust-module-v1-after-native-scanner.json)
+matches all **864**. The historical
+[40 scanner failures](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner.json)
+and [original durable receipt](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner-publication-receipt.json)
+remain available. The separately
 frozen [correctness graph generator](tools/render_rust_public_correctness_v1.py)
 accepts only complete, independently authenticated recorded results; it
 cannot invent a pass or measure speed.
@@ -113,9 +124,10 @@ cannot invent a pass or measure speed.
 A separately frozen [scanner compatibility check](tools/rust_scanner_differential_v1.py)
 covers **1,024** new examples across **32** scanner features, including
 text, bytes, callbacks, warnings, flags, captures, and changed inputs.
-Two independent Python runs agree on all **1,024**. The changed Rust
-scanner has **NOT RUN** this test. This is a public development check,
-not the unopened million-example comparison.
+Two independent Python runs agree on all **1,024**, and the
+[changed Rust scanner passes all 1,024](experiments/rust_public_practice_v1/rust-native-scanner-v1-independent-differential.json).
+This is a public development check, not the unopened million-example
+comparison.
 
 The additional [1,376 public-interface checks](oracle/cpython-3.14.6/PUBLIC-SURFACE-V27.md),
 [buffer-lifetime checks](oracle/cpython-3.14.6/PUBLIC-BUFFER-EXPORTER-V2.md),

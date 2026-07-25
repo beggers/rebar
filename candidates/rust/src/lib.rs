@@ -19,6 +19,7 @@ const I: u32 = 2;
 const L: u32 = 4;
 const M: u32 = 8;
 const S: u32 = 16;
+const U: u32 = 32;
 const X: u32 = 64;
 const A: u32 = 256;
 const BYTE: u32 = 1 << 31;
@@ -330,6 +331,7 @@ struct Parser {
     source: Vec<u32>,
     at: usize,
     flags: u32,
+    scanner_runtime_flags: Option<u32>,
     byte_mode: bool,
     groups: usize,
     names: Vec<(String, usize)>,
@@ -346,6 +348,11 @@ struct Parser {
 type PResult<T> = Result<T, (String, Option<usize>, bool)>;
 
 impl Parser {
+    #[inline]
+    fn leaf_flags(&self, lexical_flags: u32) -> u32 {
+        self.scanner_runtime_flags.unwrap_or(lexical_flags)
+    }
+
     fn now(&self) -> Option<char> {
         self.source
             .get(self.at)
@@ -595,9 +602,10 @@ impl Parser {
         let Some(value) = self.take() else {
             return self.fail("unexpected end of pattern".into(), Some(start), true);
         };
+        let runtime_flags = self.leaf_flags(flags);
         match value {
-            '.' => Ok(Expr::Dot(flags)),
-            '^' | '$' => Ok(Expr::Anchor(value, flags)),
+            '.' => Ok(Expr::Dot(runtime_flags)),
+            '^' | '$' => Ok(Expr::Anchor(value, runtime_flags)),
             '[' => self.class(flags, start),
             '\\' => self.escape(flags, false, start),
             '(' => self.group(flags, start),
@@ -605,7 +613,7 @@ impl Parser {
             '{' if self.brace_repeat(start) => {
                 self.fail("nothing to repeat".into(), Some(start), true)
             }
-            _ => Ok(Expr::Lit(raw, flags)),
+            _ => Ok(Expr::Lit(raw, runtime_flags)),
         }
     }
     fn escape(&mut self, flags: u32, in_class: bool, slash: usize) -> PResult<Expr> {
@@ -613,6 +621,7 @@ impl Parser {
         let Some(ch) = self.take() else {
             return self.fail("bad escape (end of pattern)".into(), Some(slash), true);
         };
+        let runtime_flags = self.leaf_flags(flags);
         let controls = match ch {
             'a' => Some(7),
             'f' => Some(12),
@@ -623,23 +632,23 @@ impl Parser {
             _ => None,
         };
         if let Some(value) = controls {
-            return Ok(Expr::Lit(value, flags));
+            return Ok(Expr::Lit(value, runtime_flags));
         }
         if ch == 'b' {
             return Ok(if in_class {
-                Expr::Lit(8, flags)
+                Expr::Lit(8, runtime_flags)
             } else {
-                Expr::Boundary(true, flags)
+                Expr::Boundary(true, runtime_flags)
             });
         }
         if ch == 'B' && !in_class {
-            return Ok(Expr::Boundary(false, flags));
+            return Ok(Expr::Boundary(false, runtime_flags));
         }
         if "dDsSwW".contains(ch) {
-            return Ok(Expr::Cat(ch, flags));
+            return Ok(Expr::Cat(ch, runtime_flags));
         }
         if "AZz".contains(ch) && !in_class {
-            return Ok(Expr::Anchor(ch, flags));
+            return Ok(Expr::Anchor(ch, runtime_flags));
         }
         if ch == 'x' {
             let end = (self.at + 2).min(self.source.len());
@@ -655,7 +664,7 @@ impl Parser {
                 return self.fail(format!("incomplete escape \\x{}", valid), Some(slash), true);
             };
             self.at += 2;
-            return Ok(Expr::Lit(value, flags));
+            return Ok(Expr::Lit(value, runtime_flags));
         }
         if matches!(ch, 'u' | 'U') && !self.byte_mode {
             let count = if ch == 'u' { 4 } else { 8 };
@@ -683,7 +692,7 @@ impl Parser {
             if value > 0x10ffff {
                 return self.fail(format!("bad escape \\{}{}", ch, text), Some(slash), true);
             }
-            return Ok(Expr::Lit(value, flags));
+            return Ok(Expr::Lit(value, runtime_flags));
         }
         if ch == 'N' && !self.byte_mode {
             if self.now() != Some('{') {
@@ -697,7 +706,7 @@ impl Parser {
                 return self.fail("missing }, unterminated name".into(), Some(slash + 2), true);
             }
             if let Some((_, value)) = self.named.iter().find(|(position, _)| *position == slash) {
-                return Ok(Expr::Lit(*value, flags));
+                return Ok(Expr::Lit(*value, runtime_flags));
             }
             return self.fail("undefined character name".into(), Some(slash), true);
         }
@@ -729,7 +738,7 @@ impl Parser {
                         true,
                     );
                 }
-                return Ok(Expr::Lit(value, flags));
+                return Ok(Expr::Lit(value, runtime_flags));
             }
             if self.now().is_some_and(|v| v.is_ascii_digit()) {
                 if let Some(digit) = self.take() {
@@ -744,12 +753,12 @@ impl Parser {
                 );
             };
             self.check_reference(number, slash, Some(slash + 1), false)?;
-            return Ok(Expr::Backref(number, flags));
+            return Ok(Expr::Backref(number, runtime_flags));
         }
         if ch.is_ascii_alphabetic() {
             return self.fail(format!("bad escape \\{}", ch), Some(slash), true);
         }
-        Ok(Expr::Lit(raw.unwrap_or(ch as u32), flags))
+        Ok(Expr::Lit(raw.unwrap_or(ch as u32), runtime_flags))
     }
     fn class(&mut self, flags: u32, start: usize) -> PResult<Expr> {
         let negate = self.now() == Some('^');
@@ -764,7 +773,7 @@ impl Parser {
             };
             if raw == b']' as u32 && !first {
                 self.at += 1;
-                return Ok(Expr::Class(values, negate, flags));
+                return Ok(Expr::Class(values, negate, self.leaf_flags(flags)));
             }
             first = false;
             let left_start = self.at;
@@ -1066,7 +1075,7 @@ impl Parser {
                     };
                     let number = *number;
                     self.check_reference(number, position, None, false)?;
-                    Ok(Expr::Backref(number, flags))
+                    Ok(Expr::Backref(number, self.leaf_flags(flags)))
                 } else {
                     self.fail(
                         format!("unknown extension ?P{}", form),
@@ -1287,7 +1296,19 @@ impl Parser {
                     self.flags = changed;
                     Ok(Expr::Seq(vec![]))
                 } else {
-                    let child = self.alt(changed)?;
+                    let previous_runtime_flags = self.scanner_runtime_flags;
+                    if let Some(runtime_flags) = previous_runtime_flags {
+                        let mut changed_runtime_flags = (runtime_flags | on) & !off;
+                        if on & (A | L) != 0 {
+                            changed_runtime_flags &= !U;
+                        } else if on & U != 0 {
+                            changed_runtime_flags &= !(A | L);
+                        }
+                        self.scanner_runtime_flags = Some(changed_runtime_flags);
+                    }
+                    let child = self.alt(changed);
+                    self.scanner_runtime_flags = previous_runtime_flags;
+                    let child = child?;
                     if self.take() != Some(')') {
                         return self.fail(
                             "missing ), unterminated subpattern".into(),
@@ -2641,6 +2662,7 @@ pub unsafe extern "C" fn rebar_compile(
         source,
         at: 0,
         flags: flags | if byte_mode != 0 { BYTE } else { 0 },
+        scanner_runtime_flags: None,
         byte_mode: byte_mode != 0,
         groups: 0,
         names: vec![],
@@ -2712,6 +2734,175 @@ pub unsafe extern "C" fn rebar_compile(
         }
     }
 }
+
+#[repr(C)]
+pub struct RebarScannerPhrase {
+    source: *const u32,
+    length: usize,
+    named_positions: *const usize,
+    named_values: *const u32,
+    named_count: usize,
+    byte_mode: u8,
+}
+
+#[unsafe(no_mangle)]
+pub unsafe extern "C" fn rebar_compile_scanner(
+    phrases: *const RebarScannerPhrase,
+    count: usize,
+    flags: u32,
+    failed_index: *mut usize,
+) -> *mut Engine {
+    if !failed_index.is_null() {
+        unsafe { *failed_index = usize::MAX };
+    }
+    if count == 0 {
+        set_error("invalid SRE code".into(), None, false);
+        return std::ptr::null_mut();
+    }
+    if phrases.is_null() {
+        set_error("null scanner lexicon".into(), None, false);
+        return std::ptr::null_mut();
+    }
+    let type_flags = A | L | U;
+    let runtime_flags = if flags & type_flags == 0 {
+        flags | A
+    } else {
+        flags
+    };
+    let recursion_limit = usize::try_from(unsafe { Py_GetRecursionLimit() })
+        .unwrap_or(1_000)
+        .saturating_sub(9)
+        / 2;
+    let mut branches = Vec::with_capacity(count);
+
+    for (index, phrase) in unsafe { slice::from_raw_parts(phrases, count) }
+        .iter()
+        .enumerate()
+    {
+        if !failed_index.is_null() {
+            unsafe { *failed_index = index };
+        }
+        let byte_mode = phrase.byte_mode != 0;
+        if byte_mode {
+            if flags & U != 0 {
+                set_error("cannot use UNICODE flag with a bytes pattern".into(), None, false);
+                return std::ptr::null_mut();
+            }
+            if flags & A != 0 && flags & L != 0 {
+                set_error("ASCII and LOCALE flags are incompatible".into(), None, false);
+                return std::ptr::null_mut();
+            }
+        } else {
+            if flags & L != 0 {
+                set_error("cannot use LOCALE flag with a str pattern".into(), None, false);
+                return std::ptr::null_mut();
+            }
+            if flags & A != 0 && flags & U != 0 {
+                set_error("ASCII and UNICODE flags are incompatible".into(), None, false);
+                return std::ptr::null_mut();
+            }
+        }
+        if phrase.source.is_null() {
+            set_error("null scanner phrase".into(), None, false);
+            return std::ptr::null_mut();
+        }
+        let named = if phrase.named_count == 0 {
+            Vec::new()
+        } else {
+            if phrase.named_positions.is_null() || phrase.named_values.is_null() {
+                set_error("null named-escape table".into(), None, false);
+                return std::ptr::null_mut();
+            }
+            unsafe { slice::from_raw_parts(phrase.named_positions, phrase.named_count) }
+                .iter()
+                .copied()
+                .zip(
+                    unsafe { slice::from_raw_parts(phrase.named_values, phrase.named_count) }
+                        .iter()
+                        .copied(),
+                )
+                .collect()
+        };
+        let mut parser = Parser {
+            source: unsafe { slice::from_raw_parts(phrase.source, phrase.length) }.to_vec(),
+            at: 0,
+            flags: flags | if byte_mode { BYTE } else { 0 },
+            scanner_runtime_flags: Some(runtime_flags),
+            byte_mode,
+            groups: 0,
+            names: Vec::new(),
+            widths: Vec::new(),
+            named,
+            global_allowed: true,
+            recursion_limit,
+            group_depth: 0,
+            open_groups: Vec::new(),
+            lookbehind_bases: Vec::new(),
+            pending_conditionals: Vec::new(),
+            invalid_lookbehind_width: false,
+        };
+        let child = match parser.parse() {
+            Ok(child) => child,
+            Err((message, position, include)) => {
+                set_error(message, position, include);
+                return std::ptr::null_mut();
+            }
+        };
+        if parser.groups > count {
+            set_error("invalid SRE code".into(), None, false);
+            return std::ptr::null_mut();
+        }
+        branches.push(Expr::Group(index + 1, Box::new(child)));
+    }
+
+    let mut root = Expr::Alt(branches);
+    let chars: [u32; 128] = std::array::from_fn(|index| index as u32);
+    let folds: [u32; 128] =
+        std::array::from_fn(|index| unicode_tables::simple_lower(index as u32));
+    let masks: [u8; 128] = std::array::from_fn(|index| unicode_category_mask(index as u32));
+    let context = Context {
+        chars: &chars,
+        folds: &folds,
+        masks: &masks,
+        bytes: None,
+        wide: None,
+        end: 128,
+    };
+    prepare_classes(&mut root, &context);
+    let lookbehind = leading_lookbehind(&root);
+    let start_anchor = required_start_anchor(&root);
+    let starts = start_table(&root, runtime_flags);
+    let start_set = starts.as_ref().map(search::StartSet::new);
+    let prefix = mandatory_literal_prefix(&root, 0);
+    let mandatory_literal_prefix = (prefix.length >= 2).then_some(prefix);
+    let even_suffix_delimiter = even_suffix_delimiter(&root, count);
+    let Some(program) = Compiler::compile(&root) else {
+        set_error("regular expression could not be compiled".into(), None, false);
+        return std::ptr::null_mut();
+    };
+    let deterministic = deterministic_program(&program, count);
+    let mandatory_run_delimiter = mandatory_run_delimiter(&program);
+    if !failed_index.is_null() {
+        unsafe { *failed_index = usize::MAX };
+    }
+    set_error(String::new(), None, false);
+    Box::into_raw(Box::new(Engine {
+        program,
+        groups: count,
+        names: Vec::new(),
+        flags,
+        starts,
+        start_set,
+        mandatory_literal_prefix,
+        mandatory_run_delimiter,
+        even_suffix_delimiter,
+        leading_lookbehind: lookbehind,
+        start_anchor,
+        byte_mode: false,
+        deterministic,
+    }))
+}
+
 #[unsafe(no_mangle)]
 pub unsafe extern "C" fn rebar_free(handle: *mut Engine) {
     if !handle.is_null() {

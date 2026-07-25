@@ -5,7 +5,17 @@
 #include <stdint.h>
 #include <string.h>
 
+typedef struct {
+    const uint32_t *source;
+    size_t length;
+    const size_t *named_positions;
+    const uint32_t *named_values;
+    size_t named_count;
+    uint8_t byte_mode;
+} RustScannerPhrase;
+
 extern void *rebar_compile(const uint32_t *, size_t, uint32_t, uint8_t, const size_t *, const uint32_t *, size_t);
+extern void *rebar_compile_scanner(const RustScannerPhrase *, size_t, uint32_t, size_t *);
 extern void rebar_free(void *);
 extern size_t rebar_groups(const void *);
 extern uint32_t rebar_flags(const void *);
@@ -1048,6 +1058,229 @@ static PyObject *bridge_compile(PyObject *module, PyObject *const *args, Py_ssiz
     }
     PyObject *result = rust_owned_tuple4(PyLong_FromVoidPtr(handle), PyLong_FromSize_t(rebar_groups(handle)), PyLong_FromUnsignedLong(rebar_flags(handle)), names);
     if (result == NULL) rebar_free(handle);
+    return result;
+}
+
+static PyObject *bridge_compile_scanner(
+    PyObject *module,
+    PyObject *const *args,
+    Py_ssize_t nargs
+) {
+    (void)module;
+    if (nargs != 4) {
+        PyErr_Format(
+            PyExc_TypeError,
+            "compile_scanner() takes exactly 4 arguments (%zd given)",
+            nargs
+        );
+        return NULL;
+    }
+    if (
+        !PyTuple_Check(args[0])
+        || !PyTuple_Check(args[2])
+        || !PyTuple_Check(args[3])
+    ) {
+        PyErr_SetString(
+            PyExc_TypeError,
+            "Rust scanner phrases and named escapes must be tuples"
+        );
+        return NULL;
+    }
+
+    unsigned long flags = PyLong_AsUnsignedLong(args[1]);
+    if (PyErr_Occurred() || flags > UINT32_MAX) {
+        if (!PyErr_Occurred()) {
+            PyErr_SetString(
+                PyExc_OverflowError,
+                "Rust regex flags exceed 32 bits"
+            );
+        }
+        return NULL;
+    }
+
+    Py_ssize_t phrase_count = PyTuple_GET_SIZE(args[0]);
+    if (
+        PyTuple_GET_SIZE(args[2]) != phrase_count
+        || PyTuple_GET_SIZE(args[3]) != phrase_count
+    ) {
+        PyErr_SetString(
+            PyExc_ValueError,
+            "Rust scanner phrase and named-escape counts differ"
+        );
+        return NULL;
+    }
+    size_t count = (size_t)phrase_count;
+    if (
+        count > SIZE_MAX / sizeof(RustScannerPhrase)
+        || count > SIZE_MAX / sizeof(uint32_t *)
+        || count > SIZE_MAX / sizeof(void *)
+    ) {
+        return PyErr_NoMemory();
+    }
+
+    RustScannerPhrase *phrases = NULL;
+    uint32_t **owned_sources = NULL;
+    void **owned_names = NULL;
+    PyObject *result = NULL;
+    void *handle = NULL;
+    if (count != 0) {
+        phrases = PyMem_Calloc(count, sizeof(*phrases));
+        owned_sources = PyMem_Calloc(count, sizeof(*owned_sources));
+        owned_names = PyMem_Calloc(count, sizeof(*owned_names));
+        if (
+            phrases == NULL
+            || owned_sources == NULL
+            || owned_names == NULL
+        ) {
+            PyErr_NoMemory();
+            goto cleanup;
+        }
+    }
+
+    for (size_t index = 0; index < count; index++) {
+        PyObject *pattern = PyTuple_GET_ITEM(args[0], (Py_ssize_t)index);
+        int byte_mode = PyBytes_Check(pattern);
+        if (!byte_mode && !PyUnicode_Check(pattern)) {
+            PyErr_SetString(
+                PyExc_TypeError,
+                "Rust scanner expects string or bytes phrases"
+            );
+            goto cleanup;
+        }
+        Py_ssize_t length = byte_mode
+            ? PyBytes_GET_SIZE(pattern)
+            : PyUnicode_GET_LENGTH(pattern);
+        size_t words = length == 0 ? 1 : (size_t)length;
+        if (words > SIZE_MAX / sizeof(uint32_t)) {
+            PyErr_NoMemory();
+            goto cleanup;
+        }
+        owned_sources[index] = PyMem_Malloc(words * sizeof(uint32_t));
+        if (owned_sources[index] == NULL) {
+            PyErr_NoMemory();
+            goto cleanup;
+        }
+        if (byte_mode) {
+            const uint8_t *source =
+                (const uint8_t *)PyBytes_AS_STRING(pattern);
+            for (Py_ssize_t at = 0; at < length; at++) {
+                owned_sources[index][at] = source[at];
+            }
+        } else {
+            int kind = PyUnicode_KIND(pattern);
+            const void *source = PyUnicode_DATA(pattern);
+            for (Py_ssize_t at = 0; at < length; at++) {
+                owned_sources[index][at] = PyUnicode_READ(kind, source, at);
+            }
+        }
+
+        PyObject *positions =
+            PyTuple_GET_ITEM(args[2], (Py_ssize_t)index);
+        PyObject *values =
+            PyTuple_GET_ITEM(args[3], (Py_ssize_t)index);
+        if (!PyTuple_Check(positions) || !PyTuple_Check(values)) {
+            PyErr_SetString(
+                PyExc_TypeError,
+                "Rust scanner named escapes must be tuples"
+            );
+            goto cleanup;
+        }
+        Py_ssize_t named_count = PyTuple_GET_SIZE(positions);
+        if (named_count != PyTuple_GET_SIZE(values)) {
+            PyErr_SetString(
+                PyExc_ValueError,
+                "Rust named-escape positions and values differ in length"
+            );
+            goto cleanup;
+        }
+        size_t *native_positions = NULL;
+        uint32_t *native_values = NULL;
+        if (named_count != 0) {
+            size_t total_names = (size_t)named_count;
+            if (
+                total_names
+                > SIZE_MAX / (sizeof(size_t) + sizeof(uint32_t))
+            ) {
+                PyErr_NoMemory();
+                goto cleanup;
+            }
+            owned_names[index] = PyMem_Malloc(
+                total_names * (sizeof(size_t) + sizeof(uint32_t))
+            );
+            if (owned_names[index] == NULL) {
+                PyErr_NoMemory();
+                goto cleanup;
+            }
+            native_positions = owned_names[index];
+            native_values = (uint32_t *)(native_positions + total_names);
+            for (Py_ssize_t at = 0; at < named_count; at++) {
+                native_positions[at] =
+                    PyLong_AsSize_t(PyTuple_GET_ITEM(positions, at));
+                unsigned long value =
+                    PyLong_AsUnsignedLong(PyTuple_GET_ITEM(values, at));
+                if (PyErr_Occurred() || value > UINT32_MAX) {
+                    if (!PyErr_Occurred()) {
+                        PyErr_SetString(
+                            PyExc_OverflowError,
+                            "Rust named escape exceeds 32 bits"
+                        );
+                    }
+                    goto cleanup;
+                }
+                native_values[at] = (uint32_t)value;
+            }
+        }
+
+        phrases[index].source = owned_sources[index];
+        phrases[index].length = (size_t)length;
+        phrases[index].named_positions = native_positions;
+        phrases[index].named_values = native_values;
+        phrases[index].named_count = (size_t)named_count;
+        phrases[index].byte_mode = (uint8_t)byte_mode;
+    }
+
+    size_t failed_index = SIZE_MAX;
+    handle = rebar_compile_scanner(
+        phrases,
+        count,
+        (uint32_t)flags,
+        &failed_index
+    );
+    if (handle == NULL) {
+        PyObject *index = PyLong_FromSize_t(
+            failed_index < count ? failed_index : 0
+        );
+        if (index != NULL) {
+            result = PyTuple_Pack(2, Py_None, index);
+            Py_DECREF(index);
+        }
+        goto cleanup;
+    }
+
+    result = rust_owned_tuple4(
+        PyLong_FromVoidPtr(handle),
+        PyLong_FromSize_t(rebar_groups(handle)),
+        PyLong_FromUnsignedLong(rebar_flags(handle)),
+        PyDict_New()
+    );
+    if (result == NULL) {
+        rebar_free(handle);
+    }
+
+cleanup:
+    if (owned_sources != NULL) {
+        for (size_t index = 0; index < count; index++) {
+            PyMem_Free(owned_sources[index]);
+        }
+    }
+    if (owned_names != NULL) {
+        for (size_t index = 0; index < count; index++) {
+            PyMem_Free(owned_names[index]);
+        }
+    }
+    PyMem_Free(owned_sources);
+    PyMem_Free(owned_names);
+    PyMem_Free(phrases);
     return result;
 }
 
@@ -4038,6 +4271,7 @@ static PyObject *bridge_bind(PyObject *module, PyObject *const *args, Py_ssize_t
 
 static PyMethodDef bridge_methods[] = {
     {"compile", (PyCFunction)(void (*)(void))bridge_compile, METH_FASTCALL, "Compile a from-scratch Rust regular expression in one native call."},
+    {"compile_scanner", (PyCFunction)(void (*)(void))bridge_compile_scanner, METH_FASTCALL, "Compile independently parsed scanner phrases into one owned Rust regular expression."},
     {"free", (PyCFunction)bridge_free, METH_O, "Free a compiled Rust regular expression."},
     {"error", (PyCFunction)bridge_error, METH_NOARGS, "Return the most recent Rust compilation error."},
     {"set_template", (PyCFunction)bridge_set_template, METH_O, "Configure the compatible Rust match-template expander."},

@@ -197,6 +197,37 @@ class _Native:
             self.error(pattern)
         return compiled
 
+    def compile_scanner(self, patterns, flags):
+        all_positions = []
+        all_values = []
+        for pattern in patterns:
+            named = (
+                _named_escapes(pattern)
+                if isinstance(pattern, str) and "\\N" in pattern
+                else ()
+            )
+            all_positions.append(tuple(item[0] for item in named))
+            all_values.append(tuple(item[1] for item in named))
+        compiled = _rust_bridge.compile_scanner(
+            patterns,
+            flags,
+            tuple(all_positions),
+            tuple(all_values),
+        )
+        if compiled[0] is None:
+            message, _, _ = self.native_error()
+            if message == "invalid SRE code":
+                raise RuntimeError(message)
+            if message in (
+                "cannot use LOCALE flag with a str pattern",
+                "cannot use UNICODE flag with a bytes pattern",
+                "ASCII and UNICODE flags are incompatible",
+                "ASCII and LOCALE flags are incompatible",
+            ):
+                raise ValueError(message)
+            self.error(patterns[compiled[1]])
+        return compiled
+
     def run(self, handle, string, groups, pos, endpos, mode, nonempty):
         return _rust_bridge.run(handle, string, groups, pos, endpos, mode, nonempty)
 
@@ -583,41 +614,51 @@ _rust_bridge.set_template(_template)
 
 class Scanner:
     def __init__(self, lexicon, flags=0):
-        self.lexicon = list(lexicon)
-        if not self.lexicon:
-            raise RuntimeError("invalid scanner lexicon")
-        phrases = [item[0] for item in self.lexicon]
-        byte_mode = isinstance(phrases[0], bytes)
-        if any(isinstance(item, bytes) != byte_mode for item in phrases):
-            raise TypeError("scanner patterns must all have the same type")
-        separator = b"|" if byte_mode else "|"
-        opening = b"(?:" if byte_mode else "(?:"
-        closing = b")" if byte_mode else ")"
-        self.scanner = compile(separator.join(opening + item + closing for item in phrases), flags)
-        self._patterns = [compile(item, flags) for item in phrases]
+        if isinstance(flags, RegexFlag):
+            flags = flags.value
+        self.lexicon = lexicon
+        phrases = tuple(phrase for phrase, _ in lexicon)
+        if not phrases:
+            raise RuntimeError("invalid SRE code")
+        for phrase in phrases:
+            if isinstance(phrase, bytes):
+                if b"[" in phrase:
+                    _warn_ambiguous(phrase)
+            elif isinstance(phrase, str):
+                if "[" in phrase:
+                    _warn_ambiguous(phrase)
+        handle, groups, effective_flags, groupindex = _NATIVE.compile_scanner(
+            phrases,
+            flags,
+        )
+        self.scanner = Pattern(
+            None,
+            effective_flags,
+            handle,
+            groups,
+            groupindex,
+        )
 
     def scan(self, string):
         result = []
+        append = result.append
+        match = self.scanner.scanner(string).match
         position = 0
-        length = _subject_length(string)
-        while position < length:
-            matched = None
-            action = None
-            for pattern, (_, candidate_action) in zip(self._patterns, self.lexicon):
-                item = pattern.match(string, position)
-                if item is not None:
-                    matched = item
-                    action = candidate_action
-                    break
-            if matched is None or matched.end() == position:
+        while True:
+            matched = match()
+            if not matched:
                 break
+            end = matched.end()
+            if position == end:
+                break
+            action = self.lexicon[matched.lastindex - 1][1]
             if callable(action):
                 self.match = matched
                 action = action(self, matched.group())
             if action is not None:
-                result.append(action)
-            position = matched.end()
-        return result, _slice(string, position, length)
+                append(action)
+            position = end
+        return result, string[position:]
 
 
 _cache = {}

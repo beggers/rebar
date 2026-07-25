@@ -7,6 +7,63 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Implement and verify a from-scratch native Rust scanner
+
+Implement a real multi-phrase scanner in the existing independently
+authored Rust regular-expression engine and its owned Python bridge.
+Parse every scanner phrase separately, preserve Python's phrase-local
+captures, names, backreferences and flags, keep the exact combined match
+and scanner pattern visible to callbacks, and retain real buffer,
+remainder, callback, warning, and mutable-lexicon behavior. Production
+never uses Python's matcher, an external regular-expression package, or
+another candidate.
+
+The exact changed Rust engine source has SHA-256
+`4ac8f3e9b96e37f5670cb610c6b031315eeedf92fd645399ac693f2f3d27ba72`;
+the owned C bridge source has SHA-256
+`ead82aa36440544f6fe8bdd36225c37c697caaa5a48d84ab01bcd7aeeb422bfa`;
+and the Python adapter has SHA-256
+`0b77ab53166159cb151728e624f51d34c5b4541dcf0e77a73ab89c94311dd87f`.
+The actual compiled Rust engine and CPython bridge respectively have
+SHA-256
+`f8cd2e8ecac5ab6a12eb933e6d1d234700a71ab64fc1578800f46ce93d25b8b4`
+and
+`83cc3a21d218e7969a7f17d4dd793e97369d60bd519c95dd1db54a5ccab91e04`.
+
+Run the independently frozen **1,024-case** scanner differential only
+after its source and both original-Python baselines are committed and
+pushed. The actual candidate matches all **1,024** cases, with **zero**
+mismatches in every one of the **32** original feature families and the
+exact original baseline digest. Preserve the
+[unchanged real process output](../experiments/rust_public_practice_v1/rust-native-scanner-v1-independent-differential.json),
+SHA-256 `e178dd3b2804ad90c80fd1c878ea7c76d554acdb77477494f1079b1dd2c7959e`.
+
+Run the separately frozen complete **864-case** public check once using
+the independently frozen durable recorder and the exact three actual
+source and binary fingerprints. Rust matches Python on all **864**
+cases, resolving all **40** previous scanner failures without removing
+or changing a case. Preserve the complete
+[actual passing result](../experiments/rust_public_practice_v1/rust-module-v1-after-native-scanner.json),
+SHA-256 `1127722b925a6df2b49fa7fc7b00207e3e0ffc407216e98be4a3cf5f85623b7a`,
+and its separately read-back-verified
+[durable receipt](../experiments/rust_public_practice_v1/rust-module-v1-after-native-scanner-publication-receipt.json),
+SHA-256 `4a8854922e6650096c7a319901eb58b4b3a1c95efc5ea93610366a05c208a917`.
+Both debug and optimized native Rust test suites pass all **44** tests.
+
+Generate the [current headline chart](evidence/rust-public-correctness-v1.svg)
+exclusively from the authenticated full result and durable receipt. Its
+[complete generated manifest](evidence/rust-public-correctness-v1.json)
+has SHA-256
+`5e0d06b19768341cf8016c946e4b927b9e5ad8d6ae86d155443609b254f67046`;
+the SVG has SHA-256
+`8534619f5afad60f3678e0e719e772305a7a59a0b555836d06a98b967d539413`.
+All **864** cases, every operation, the full source and native-binary
+identities, and zero actual mismatches remain independently verifiable.
+The chart is explicitly a public development check, not a final
+benchmark. The final test is **NOT OPENED**; the fresh full original
+Python suite and full independent-engine proofs are **NOT RUN**; speed
+and memory are **NOT MEASURED**.
+
 ## Freeze a fresh 1,024-example Python scanner compatibility check
 
 Freeze and independently review the separately written
