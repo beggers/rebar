@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1390" viewBox="0 0 1200 1390" role="img" aria-labelledby="title description">
+<title id="title">How close are we to replacing Python’s re?</title>
+<desc id="description">Three independently written Rust, C, and Zig engines passed all 223,198 original and 393 deeper checks. Rust then genuinely ran all 152 original Python methods: 139 passed, 11 failed because the test harness intercepted its own matching helpers, one exposed a real missing _compile required for pickling, and one real private-debug test was skipped. All 304 owner and matcher guards ran. C and Zig have not run the complete Python suite. Speed is not measured.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.title{font-size:35px;font-weight:760;fill:#10223b}.subtitle{font-size:16px;fill:#43536b}.metric{font-size:30px;font-weight:750;fill:#10223b}.metric-label{font-size:13px;fill:#43536b}.heading{font-size:21px;font-weight:720;fill:#10223b}.body{font-size:15px;fill:#25364e}.small{font-size:13px;fill:#43536b}.strong{font-size:16px;font-weight:720;fill:#10223b}.pass{font-size:14px;font-weight:720;fill:#116139}.warning{font-size:14px;font-weight:720;fill:#8a4b08}.fail{font-size:14px;font-weight:720;fill:#aa2831}.pending{font-size:14px;font-weight:720;fill:#485870}.footer{font-size:15px;font-weight:650;fill:#25364e}</style>
+<rect width="1200" height="1390" rx="20" fill="#f5f8fc"/>
+<text x="54" y="72" class="title">How close are we to replacing Python’s re?</text>
+<text x="56" y="104" class="subtitle">From-scratch Rust, C and Zig · compared with pinned Python 3.14.6</text>
+<rect x="54" y="130" width="240" height="92" rx="14" fill="#ffffff" stroke="#dce5ef"/>
+<text x="69" y="173" class="metric">3</text>
+<text x="69" y="199" class="metric-label">independent matching engines</text>
+<rect x="338" y="130" width="240" height="92" rx="14" fill="#ffffff" stroke="#dce5ef"/>
+<text x="353" y="173" class="metric">669,594</text>
+<text x="353" y="199" class="metric-label">original candidate-checks</text>
+<rect x="622" y="130" width="240" height="92" rx="14" fill="#ffffff" stroke="#dce5ef"/>
+<text x="637" y="173" class="metric">1,179</text>
+<text x="637" y="199" class="metric-label">deeper candidate-checks</text>
+<rect x="906" y="130" width="240" height="92" rx="14" fill="#ffffff" stroke="#dce5ef"/>
+<text x="921" y="173" class="metric">0</text>
+<text x="921" y="199" class="metric-label">original / deeper mismatches</text>
+<text x="56" y="263" class="heading">Original correctness checks</text>
+<text x="56" y="286" class="small">The same 223,198 original cases for each engine · 49 categories</text>
+<text x="67" y="324" class="strong">Rust</text>
+<rect x="158" y="304" width="685" height="26" rx="7" fill="#17844e"/>
+<text x="861" y="323" class="strong">223,198 / 223,198</text>
+<text x="1071" y="323" class="pass">100%</text>
+<text x="67" y="368" class="strong">C</text>
+<rect x="158" y="348" width="685" height="26" rx="7" fill="#17844e"/>
+<text x="861" y="367" class="strong">223,198 / 223,198</text>
+<text x="1071" y="367" class="pass">100%</text>
+<text x="67" y="412" class="strong">Zig</text>
+<rect x="158" y="392" width="685" height="26" rx="7" fill="#17844e"/>
+<text x="861" y="411" class="strong">223,198 / 223,198</text>
+<text x="1071" y="411" class="pass">100%</text>
+<text x="56" y="472" class="heading">Deeper correctness checks</text>
+<text x="56" y="494" class="small">The same 393 difficult cases · including 64 fixed-seed cases</text>
+<text x="67" y="530" class="strong">Rust</text>
+<rect x="158" y="510" width="685" height="26" rx="7" fill="#17844e"/>
+<text x="861" y="529" class="strong">393 / 393</text>
+<text x="1071" y="529" class="pass">100%</text>
+<text x="67" y="574" class="strong">C</text>
+<rect x="158" y="554" width="685" height="26" rx="7" fill="#17844e"/>
+<text x="861" y="573" class="strong">393 / 393</text>
+<text x="1071" y="573" class="pass">100%</text>
+<text x="67" y="618" class="strong">Zig</text>
+<rect x="158" y="598" width="685" height="26" rx="7" fill="#17844e"/>
+<text x="861" y="617" class="strong">393 / 393</text>
+<text x="1071" y="617" class="pass">100%</text>
+<text x="56" y="678" class="heading">Actual complete Python compatibility test</text>
+<text x="56" y="700" class="small">Rust really ran all 152 original Python tests. Its 12 errors have two different causes.</text>
+<rect x="54" y="720" width="1092" height="164" rx="13" fill="#ffffff" stroke="#dce5ef"/>
+<text x="73" y="751" class="strong">Rust</text>
+<text x="144" y="751" class="fail">NOT YET COMPATIBLE</text>
+<text x="76" y="799" class="metric">139</text>
+<text x="76" y="821" class="metric-label">passed</text>
+<text x="288" y="799" class="metric">11</text>
+<text x="288" y="821" class="metric-label">test-harness interference</text>
+<text x="548" y="799" class="metric">1</text>
+<text x="548" y="821" class="metric-label">real missing _compile</text>
+<text x="824" y="799" class="metric">1</text>
+<text x="824" y="821" class="metric-label">genuine debug-only skip</text>
+<text x="73" y="858" class="small">152 / 152 methods reached · 304 / 304 native-owner checks · 304 / 304 matcher guards</text>
+<text x="56" y="920" class="heading">What the 12 errors actually mean</text>
+<rect x="54" y="937" width="1092" height="92" rx="11" fill="#fff8eb" stroke="#f2d199"/>
+<text x="72" y="966" class="body">11 errors: the test harness blocked the regex helpers used by Python’s warning and assertion checks.</text>
+<text x="72" y="990" class="small">These are test-harness interference, not 11 proven matching incompatibilities.</text>
+<rect x="54" y="1038" width="1092" height="74" rx="11" fill="#fff1f1" stroke="#ecc6c8"/>
+<text x="72" y="1067" class="body">1 genuine engine gap: Python’s original pickling test cannot import the required _compile.</text>
+<text x="72" y="1090" class="small">This is a real drop-in compatibility failure that must be fixed.</text>
+<rect x="54" y="1128" width="530" height="65" rx="11" fill="#f1f4f9" stroke="#d9e1ec"/>
+<text x="71" y="1153" class="strong">C</text>
+<text x="145" y="1153" class="pending">NOT RUN</text>
+<text x="71" y="1175" class="small">Complete 152-method Python suite not qualified.</text>
+<rect x="615" y="1128" width="530" height="65" rx="11" fill="#f1f4f9" stroke="#d9e1ec"/>
+<text x="632" y="1153" class="strong">Zig</text>
+<text x="706" y="1153" class="pending">NOT RUN</text>
+<text x="632" y="1175" class="small">Complete 152-method Python suite not qualified.</text>
+<text x="56" y="1232" class="heading">Earlier Rust test-harness failures remain preserved</text>
+<text x="58" y="1254" class="small">1. Missing bridge wiring · 2. Anti-delegation import guard · 3. Correctness-controller isolation</text>
+<text x="58" y="1275" class="small">All three earlier runs stopped before their first Python test. None is counted as a matching failure.</text>
+<rect x="54" y="1290" width="1092" height="67" rx="11" fill="#ffffff" stroke="#dce5ef"/>
+<text x="72" y="1316" class="footer">Overall: no engine has yet passed the complete Python drop-in compatibility checks.</text>
+<text x="72" y="1339" class="small">Speed and memory: NOT MEASURED · final holdout: NOT ACCESSED.</text>
+</svg>

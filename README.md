@@ -16,33 +16,34 @@ records the three C, Rust, and Zig implementations, separately written
 compilers actually available. C++ and Go are **NOT BUILT, NOT RUN,
 and NOT QUALIFIED**. Bindings are not extra matching engines.
 
-**Current status: all three independently rebuilt Rust, C, and Zig engines
-pass all 223,198 original and all 393 deeper compatibility cases without
-calling Python's matcher or another regex engine. The first complete
-Python test attempt exposed a shared test-harness bridge-wiring failure
-before Rust's first test. A second, independently frozen run corrected
-that wiring and revealed a separate over-strict import guard, also
-before the first test. A third corrected both problems but exposed a
-separate ownership check running in the wrong process, again before
-the first test. Current speed and memory are NOT MEASURED. There is
-no winner.** The first graph below shows the current engines; the
-later speed graphs describe older, archived builds.
+**Current status: the independently built Rust, C, and Zig engines all
+pass 223,198 initial compatibility cases and 393 difficult cases
+without calling Python's matcher or wrapping another regex package.
+Rust has now run all 152 original Python tests: 139 passed, 12 failed,
+and one required a private Python debug build. Eleven failures expose
+an overly strict test-runner guard; one exposes a genuinely missing
+Rust pickling hook. C and Zig have not yet run the complete suite.
+Current speed and memory are NOT MEASURED. There is no winner.** The
+first graph shows the current engines; later speed graphs describe
+older, archived builds.
 
 ## Current results
 
-![Current correctness of the independently built Rust, C, and Zig engines, including all three preserved Rust test-setup failures](docs/evidence/current-native-correctness-v3.svg)
+![Current Python compatibility of the Rust, C, and Zig engines, including Rust's 139 passing tests and all 12 actual failures](docs/evidence/current-native-correctness-v4.svg)
 
-Rust, C, and Zig each pass the same **223,198** original cases and the
-same **393** difficult cases. The complete Python test has not yet
-passed: three preserved Rust runs exposed separate test-harness
-problems before their first test, and C and Zig have not run it.
-The graph is
-[generated directly from 31 verified correctness files](docs/evidence/current-native-correctness-v3.json).
-It shows all three actual Rust test-setup failures, the actual **0 / 152**
-completed Python tests and **0 / 304** engine-ownership checks, and the
-still-unrun C and Zig suites. No test-setup failure is counted as an
-engine mismatch. Current speed and memory remain
-**NOT MEASURED**.
+Rust, C, and Zig each pass the same **223,198** initial cases and
+**393** difficult cases. Rust's complete original Python run produced
+**139 passing tests, 12 errors, and one genuine debug-build skip**.
+Its engine was independently verified before and after every test.
+Eleven errors came from the test runner blocking Python's own warning
+and assertion helpers; the remaining error exposed the missing Rust
+`_compile` pickling hook. Neither kind of error is hidden or counted
+as a pass. C and Zig have **NOT RUN** the complete suite.
+
+The graph is [generated directly from 39 verified correctness
+records](docs/evidence/current-native-correctness-v4.json). It preserves
+the three earlier setup failures as well as the completed Rust run.
+Current speed and memory remain **NOT MEASURED**.
 
 ## Headline results from the last completed comparison
 
@@ -85,11 +86,11 @@ retain the complete results, uncertainty ranges, and all regressions.
 
 ## Are the current engines compatible with Python?
 
-Not yet. The rebuilt Rust, C, and Zig engines all pass every original
-and deeper compatibility case. The complete Python attempts exposed
-three separate harness defects before Rust's first original test:
-missing bridge wiring, an over-strict import guard, and an
-ownership check running in the wrong process.
+Not yet. Rust, C, and Zig all pass the initial and deeper compatibility
+cases. Rust's first complete original Python run finished all **152**
+tests, with **139 passes, 12 errors, and one debug-only skip**. Eleven
+errors came from the test runner; one exposed a missing Rust pickling
+hook. The three earlier setup failures remain recorded separately.
 C and Zig have not yet run the complete suite.
 [Zig's own native Python bridge](candidates/zig/py_bridge.c) has been
 rebuilt to correct its genuine `Pattern` versus `re.Pattern` bug. The
@@ -97,7 +98,7 @@ current results are separately verified against the rebuilt engines.
 
 | Engine built from scratch | Original cases | Deeper cases | Complete Python tests |
 | --- | --- | --- | --- |
-| Rust | [PASS: 223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v24-qualified-pass-proof.json) | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | [FAIL: test setup, 0 / 152](oracle/cpython-3.14.6/evidence/postfinal-locale-v14-rust-failures.json) |
+| Rust | [PASS: 223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v24-qualified-pass-proof.json) | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | [FAIL: 139 passed, 12 errors, 1 debug skip](oracle/cpython-3.14.6/evidence/postfinal-locale-v15-rust-failures-production-summary.json) |
 | C | [PASS: 223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v24-qualified-pass-proof.json) | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | NOT RUN |
 | Zig | [PASS: 223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v24-qualified-pass-proof.json) | [PASS: 393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | NOT RUN |
 
@@ -191,8 +192,20 @@ regex package. All **1,273** test-harness checks pass in both ordinary
 and clean environments. Its [actual read-only, three-engine integration](oracle/cpython-3.14.6/evidence/postfinal-locale-v15-readonly-native-bridge-integration-pass.json)
 verifies both original Python reference runs, all **12** engine source
 files, all **five** native binaries, and each engine's original and
-deeper passing evidence. It starts **zero** engines, matchers, or tests.
-The corrected full Python test is **NOT RUN** for all three engines.
+deeper passing evidence. That read-only integration starts **zero**
+engines, matchers, or tests.
+
+After [checking genuine available memory and compiling both required
+locales](oracle/cpython-3.14.6/evidence/postfinal-locale-v15-rust-resource-preflight.json),
+the complete original suite ran once against Rust. All **152** methods,
+**304** independent native-engine checks, and **304** matching-engine
+checks finished. The result was **139 passes, 12 errors, and one
+debug-only skip**. Eleven errors came from the guard interfering with
+Python's warning and assertion helpers. One genuine compatibility
+failure exposed the missing `_compile` pickling hook. The
+[complete failure and durable write receipt](oracle/cpython-3.14.6/evidence/postfinal-locale-v15-rust-failures-production-summary.json)
+and [independent, read-only verification of all 12 failures](oracle/cpython-3.14.6/evidence/postfinal-locale-v15-rust-readonly-failure-forensic.json)
+are preserved. C and Zig remain **NOT RUN**.
 
 The [frozen expanded compatibility tests](oracle/cpython-3.14.6/PUBLIC-SURFACE-V27.md)
 preserve the [original Python reference](oracle/cpython-3.14.6/PUBLIC-SURFACE-V19.md)
@@ -245,4 +258,6 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/render_current_correctness_v2.py --check
 "$PY" -I -B tools/render_current_correctness_v3.py --self-test
 "$PY" -I -B tools/render_current_correctness_v3.py --check
+"$PY" -I -B tools/render_current_correctness_v4.py --self-test
+"$PY" -I -B tools/render_current_correctness_v4.py --check
 ```

@@ -7,6 +7,114 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve Rust's first complete original Python test failure
+
+Run the independently reviewed and already-pushed full-suite oracle exactly
+once against the frozen Rust engine. First verify the genuine **40 GiB**
+upstream configuration, at least **38,654,705,664** available bytes for
+the original large substitution, a separate **8 GiB** safety reserve,
+real `fork`, the exclusive memory-worker lock, and both actually compiled
+and usable private locales.
+
+- [Actual memory, process, and private-locale preflight](../oracle/cpython-3.14.6/evidence/postfinal-locale-v15-rust-resource-preflight.json),
+  SHA-256 `2847f9f69d32da9c00546b637bd01d3c4ca58001db0a51e284096dbbfd50690e`.
+
+The actual pinned, externally authenticated invocation was:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar LC_ALL=C PATH=/usr/bin:/bin \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_cpython_locale_oracle_v15.py --candidate rust \
+  --source-sha256 12adb54e895ac0154b1b08ea96cd73b6cbfff4713c764058c5551fe6bba68c43 \
+  --protocol-sha256 d685374a6698056022aa2ef8a46f16bd3d2b8548aab2ac122a59bba7ac0e9f7a \
+  --reference-sha256 1c0445780b747680ff75ced694a61b43949dc1f7eb81a8e4a8c45cfa9376cebf \
+  --v21-source-sha256 ded077962416ada3bddd825d77b2e6785fe3b01184fe5d9058ec17a57b08ea4d \
+  --v21-protocol-sha256 5a78673c6b23e4781070cf5a2290d5f6cecd402fff77ff388d8795370de93a1f \
+  --v24-source-sha256 92b1f082196592e578a5fa6e09b63637c6a1304c04875e5816938ed4fc28eb52 \
+  --v24-protocol-sha256 f3ab4f5c3c697a6d39c109b743d949b980bfe0d79aeb6b58a0bc392a3f81e534 \
+  --base-report-sha256 4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4 \
+  --strict-report-sha256 6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d \
+  --rust-edge-archive-sha256 37de9f254dc3edb72bfe04f51cea8c528449064fba62df273032bb5d7b58b419 \
+  --rust-edge-proof-sha256 882c712bfed8d0a355bda14847dc78feb2b59b3609ed5f48bd0daccb4e9c33c6 \
+  --rust-deep-archive-sha256 ace3fa8d10725f71881107ace3d9e7d7132a6200723e4f1897e1d5ae6d3d0037 \
+  --rust-deep-proof-sha256 a26f0659a746838d9af72ff1beff22b91c76d83e7a426b0cc47dbe0400ce67f7
+```
+
+The original worker really completed all **152** source-ordered original
+methods, all **304** separate native-engine ownership checks, and all
+**304** cached-matcher checks. Its genuine result was **139 passing
+methods, 12 errors, and one authentic named private debug skip**.
+
+The **11** test-runner failures are two separately identifiable kinds.
+Python's warning helpers sweep every loaded module for non-matching
+`__warningregistry__` metadata; the Stage 07 sentinel incorrectly raised
+`ImportError` for five such checks:
+
+- `ReTests.test_basic_re_sub`.
+- `ReTests.test_qualified_re_sub`.
+- `ReTests.test_misuse_flags`.
+- `ReTests.test_re_subn`.
+- `ReTests.test_qualified_re_split`.
+
+Python's standard test assertions also compile their own expected error
+messages. The guard blocked their cached matching helper instead of
+routing it to the exact independently owned Rust engine, producing six
+more genuine original-suite errors:
+
+- `ReTests.test_symbolic_refs_errors`.
+- `ReTests.test_match_getitem`.
+- `ReTests.test_possible_set_operations`.
+- `ReTests.test_look_behind_overflow`.
+- `ReTests.test_match_repr`.
+- `ReTests.test_bug_40736`.
+
+The **twelfth** error is a real missing Rust compatibility requirement,
+not sentinel interference. `ReTests.test_pickling` explicitly imports
+`re._compile`; the from-scratch Rust module does not expose that private
+pickling hook. Do not waive, conceal, or count any of the **12** errors
+as passing. The exact sole skip is `ReTests.test_memory_leaks`, with
+`skip_kind=named-private-debug-condition` and the real `requires debug
+build` condition.
+
+- [Complete, genuine 17,338,567-byte Rust failure](../oracle/cpython-3.14.6/evidence/postfinal-locale-v15-rust-failures.json),
+  SHA-256 `fcd83830b36afd94dee6b926764a6300eaf048d5fa81404563d7e8afea2482c2`.
+- [Actual result, complete nested worker, and durable receipt summary](../oracle/cpython-3.14.6/evidence/postfinal-locale-v15-rust-failures-production-summary.json),
+  SHA-256 `d923e4687be96751e11b334cf8a37c0744552d01592cbb665bc4ec0cf9432c10`.
+- [Independent read-only verification of every original failure and guard](../oracle/cpython-3.14.6/evidence/postfinal-locale-v15-rust-readonly-failure-forensic.json),
+  SHA-256 `4613b2421b3df30c5bebdbb4ae7c0d3530d80b70d5a627396aad2a25fefe85eb`.
+- [Independently checked current-correctness graph generator](../tools/render_current_correctness_v4.py),
+  SHA-256 `9a96e8732a21381e97fd55bb983deb1884e7e1d833604cb59a8d9f0800df2287`.
+- [Generated, accessible current results graph](evidence/current-native-correctness-v4.svg),
+  SHA-256 `db8d73dfbc8b8fb90d966e7b95c338ff9be1d234106f84ae453bdaeb8cc983c1`.
+- [Exact 39-input graph evidence and reproduction manifest](evidence/current-native-correctness-v4.json),
+  SHA-256 `4d6ffa566e981215595f2ab485443a8500949fea47846aa50c8eac1f754162b3`.
+
+The full failure preserves the actual **3,474,497-byte** original worker
+stdout, SHA-256
+`bb6ed67d4cf96c2bc1be9dd64779cb5219ac3cdcf909fd5efd93dbf6da8a55ac`,
+its genuine empty stderr, and every complete original method, failure
+traceback, and native-owner observation. Its genuine **11-field**
+publication receipt records exactly one **17,338,567-byte** exclusive
+write, actual file and directory `fsync`, and a canonical reread.
+The independent forensic revalidates every record and all **304**
+native observations inside the real five-counter read-only boundary,
+without importing an engine, starting a worker, writing a file, or
+sampling a clock.
+
+Independently reproduce the full accessible graph from exactly **39**
+verified correctness inputs and preserve all four historical and current
+Rust outcomes separately. The renderer passes all **85** isolated
+source-only controls in both ordinary and empty environments. Its actual
+read-only integration has zero candidate imports, native workers,
+processes, clock samples, or filesystem writes. The graph explicitly
+distinguishes the **11** harness errors from the **one** genuine Rust
+pickling-hook gap and never calls an unrun C or Zig suite a pass.
+
+C and Zig have **NOT RUN** the full original suite. Current speed,
+memory, and ranking remain **NOT MEASURED**; holdout data remains
+**NOT ACCESSED**. Never retry or overwrite the frozen first failure.
+
 ## Freeze the corrected full Python test before testing another engine
 
 Preserve all three actual Rust test-setup failures, their complete worker
