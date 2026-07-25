@@ -7,6 +7,42 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze new correctness proofs before changing any matching engine
+
+Independently freeze the proof rules required after the source, Python
+binding, or native binary of any engine changes. The new rules require
+all **223,198** original seeded checks across **49** categories, all
+**393** deeper checks across **64** seeded cases, and separately verified
+matching work inside the correct C, Rust, or Zig engine. They never allow
+Python's matcher, an external regular-expression package, a different
+candidate, or an old source fingerprint to qualify a new build.
+
+Require all **six** independently supplied fingerprints for the new
+ownership source, ownership protocol, actual base and strict reports, and
+their two actual publication receipts. Authenticate each receipt using the
+correct generating version. Preserve the original **18-field** proof
+receipts, real partial-write and close observations, the first failure and
+every subsequent cleanup failure. Keep old unsuccessful attempts bound to
+their genuine historical engine versions.
+
+- [Frozen next-build correctness controller](../tools/postfinal_current_build_proofs_v26.py),
+  SHA-256 `c39b40f85261d519a6a40f7fc77735874e473657eef66679a8ffc849ce123b54`.
+- [Frozen next-build correctness protocol](../oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V26.md),
+  SHA-256 `71e28127d019aa94a05c18f1c33492ee296f81bdf54bb35b4911ef75fc3041a6`.
+- [Actual root-verified, read-only original-history integration](../oracle/cpython-3.14.6/evidence/postfinal-current-build-v26-root-readonly-integration-pass.json),
+  SHA-256 `e5701b664af7bbc441fea7b1abdc4865fb0e496d6b6e5d885e133fee6b3bc6c4`.
+
+Run the command-line and direct-call source gates in an ordinary
+environment and an empty environment. All four pass **13,662** checks:
+**8,330** independently inherited controls and **5,332** new controls.
+Independently reproduce the actual current **12-source, five-binary**
+graph and the preserved original failures inside the real read-only
+boundary. All five effect counters remain **zero**. All **36** future
+proof destinations remain fresh. No new ownership report, correctness
+worker, or candidate has run; all fresh build proofs are **NOT RUN**.
+Current performance remains **NOT MEASURED**; the holdout remains
+**NOT ACCESSED**.
+
 ## Freeze the next independent-engine check before changing any engine
 
 Freeze and independently verify the next from-scratch ownership check

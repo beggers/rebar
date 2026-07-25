@@ -82,6 +82,8 @@ candidate. Those checks do not establish full compatibility or speed.
 A [stricter next engine-independence check](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V23.md)
 has been frozen and independently verified before any engine changes.
 Running that check against newly changed engines is **NOT RUN**.
+A [matching correctness-proof protocol](oracle/cpython-3.14.6/POSTFINAL-EDGE-REFRESH-V26.md)
+has also been frozen. Fresh proofs for changed engines are **NOT RUN**.
 
 | From-scratch engine | Initial correctness cases | Harder correctness cases | 152 original public-test records |
 | --- | --- | --- | --- |
@@ -149,6 +151,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/postfinal_independent_engine_audit_v21.py --self-test
 "$PY" -I -B tools/postfinal_independent_engine_audit_v23.py --self-test
 "$PY" -I -B tools/postfinal_current_build_proofs_v24.py --self-test
+"$PY" -I -B tools/postfinal_current_build_proofs_v26.py --self-test
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v15.py --self-test
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v16.py --self-test
 "$PY" -I -B tools/python_re_public_surface_oracle_stage27.py --self-test
