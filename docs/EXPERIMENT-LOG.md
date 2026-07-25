@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Propose a four-times-larger independent final comparison
+
+Independently design and review a
+[new final-comparison protocol](EXPANDED-HOLDOUT-PROTOCOL-V1.md),
+SHA-256
+`f7509c60065860d30aad7939dda76f53e1c9f6ebb9db5e1298d0881f63a016eb`.
+Preserve both the historical, invalidated final test and the prior
+**1,048,576-case** prospective proposal; inspect, reuse, and generate
+**zero** old or new final cases.
+
+Expand to exactly **4,194,304** genuinely valid examples across all
+public operations, **16** operation cohorts, **16** pattern families,
+**four** subject types, **four** valid lifecycle states, and
+**1,024** unique variants. Compare unmodified Python with exactly
+three fully qualified, independently owned engines using all **24**
+four-engine execution orders. Preserve every raw observation,
+stratified confidence interval, correctness check, and slowdown.
+Require an overall lower confidence bound of **1.5×** and at least
+**2,516,583** statistically faster cases. Independently count
+**65,536** memory cases and **16,384** binding-boundary cases.
+
+Do not count external packages, Python's engine, shared matchers,
+wrappers, fallbacks, or different settings as independent candidates.
+Do not freeze the protocol, create the secret, generate a case, open
+the final comparison, or measure results before three candidates
+pass every original-test, compatibility, ownership, and
+no-delegation gate. The final remains **NOT FROZEN**, **NOT
+GENERATED**, **NOT OPENED**, and **NOT MEASURED**.
+
 ## Preserve the first complete identity-safe original Python result
 
 Run the independently frozen V2 original-suite recorder exactly once

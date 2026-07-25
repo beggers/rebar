@@ -214,18 +214,23 @@ not built or qualified candidates.
 
 A previous final test was opened once, exposed a real Zig `split`
 failure, and is **FALSIFIED**. It cannot be reused. The previously
-proposed **1,048,576-example** replacement is a new prospective test,
-not that historical final: it is **NOT FROZEN**, **NOT GENERATED**,
-and **NOT OPENED**. A further expansion is being independently designed.
+proposed **1,048,576-example** replacement was never generated. The
+[new independently reviewed proposal](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md)
+expands it fourfold to **4,194,304** separately generated, valid
+examples covering every public operation, ordinary and unusual
+patterns, text and byte inputs, native-call overhead, and lifecycles.
 
 Freeze and generate a new final test only after three genuinely
 separate, from-scratch candidates pass all original Python tests and
-the independent no-delegation audit. Measure Python and every
-qualified candidate on exactly the same valid cases; report overall
-speed, confidence, memory, and all slowdowns. The success criteria
-remain at least **1.5×** overall and statistically faster results on
-at least **60%** of the declared cases. Final speed, confidence,
-rankings, and native memory remain **NOT MEASURED**.
+the independent no-delegation audit. Measure Python and each
+qualifying candidate on the same cases in **24** fairly ordered
+rounds. Report complete results, uncertainty, memory, and every
+slowdown. Success requires at least **1.5×** overall and statistically
+faster results on **2,516,583 of 4,194,304** cases.
+
+The newly proposed final test is **NOT FROZEN**, **NOT GENERATED**,
+and **NOT OPENED**. Final speed, confidence, rankings, and native
+memory remain **NOT MEASURED**.
 
 ## Evidence and reproduction
 
