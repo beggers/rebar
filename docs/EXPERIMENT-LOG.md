@@ -7,6 +7,33 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve all current Rust scanner failures exactly once
+
+Run the frozen, separately committed Rust correctness recorder once
+against the independently pinned Python adapter, native matching engine,
+and native bridge. Its actual **864-case** result is **824** matching
+cases and **40** scanner mismatches. Preserve the full original
+baseline and Rust outputs, all **40** source-ordered failure records,
+both actual worker identities, every case input, original warnings and
+callbacks, and the exact unchanged case denominator.
+
+- [Complete actual 649,924-byte Rust correctness result](../experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner.json),
+  SHA-256 `44d6e823ce44e3bc22656737ef8a7172e6f7600dc9741d7eac751c3adb79c9b2`.
+- [Separately durable, fully read-back-verified 2,344-byte receipt](../experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner-publication-receipt.json),
+  SHA-256 `96ee191f00811e894afff7061f141224aa7921a7a47f54183fd036cd9be7986f`.
+- Original baseline-vector SHA-256
+  `0ae84d65f16976e046a267704585306c3968703194d26bbc3c5223b746304f7c`.
+- Actual Rust-vector SHA-256
+  `55532239908003c0505e69fadd481d97f20294e57cca6e0bff46f106269a6932`.
+
+The real candidate process fails the gate, as it must: **20** failures
+are in `scanner.scan` and **20** are in `scanner.scan.callback_error`.
+No case, exception, memory-view type, or callback observation is
+discarded. Authenticate both files after exclusive creation, synchronize
+their contents and directory, and read back all actual report and receipt
+bytes. Exactly one Rust comparison runs. There are **zero** clock
+samples, timing rounds, final-case reads, or candidate speed claims.
+
 ## Freeze a complete, durable Rust failure recorder
 
 Freeze and independently review a separate recorder before publishing the
@@ -33,10 +60,10 @@ exact source and binary hashes, and the actual failure exit status.
 
 Both ordinary and empty-environment source controls pass with **864**
 original Python observations, **48** malicious-input rejection checks,
-no candidate process, no clock sample, and no output file. The durable
-candidate report and receipt remain **NOT RUN** until this separately
-frozen recorder is committed and pushed. Final cases remain
-**NOT ACCESSED**; speed and memory remain **NOT MEASURED**.
+no candidate process, no clock sample, and no output file. The separately
+committed recorder subsequently produces the complete real result and
+receipt documented above. Final cases remain **NOT ACCESSED**; speed and
+memory remain **NOT MEASURED**.
 
 ## Fix the Rust module contract and expose all scanner failures
 

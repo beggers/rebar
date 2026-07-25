@@ -8,7 +8,8 @@ an external regular-expression package, or another candidate.
 
 **Current result:** Rust matches Python on **824 of 864** new public
 development examples. All **40** remaining differences are in scanner
-results or scanner callback errors; no failing example has been removed.
+results or scanner callback errors;
+[every failing example is preserved](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner.json).
 The original missing pattern-pickling feature now passes Python's real
 test for all **six** pickle formats. A fresh complete original-test run
 and fresh independent engine proofs are **NOT RUN**. C and Zig have
@@ -152,7 +153,11 @@ covers **864** fixed examples across **36** Python operations, with equal
 text and bytes coverage. Two isolated Python reference runs agree on every
 example, including scanner callbacks, memory views, and Python 3.14
 warnings. Rust agrees on **824** examples; all **40** mismatches are
-scanner or scanner-error cases. This small development check is not the
+scanner or scanner-error cases. The
+[complete actual result](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner.json)
+and its
+[independently durable receipt](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner-publication-receipt.json)
+preserve every case. This small development check is not the
 million-example public comparison or final test. Practice speed is
 **NOT MEASURED**.
 
