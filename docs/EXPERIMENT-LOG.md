@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze an independent no-external-regex Rust ownership audit
+
+Independently review and freeze the additive
+[from-scratch Rust audit](../tools/rust_from_scratch_audit_v1.py),
+SHA-256
+`536dea67430257ea38e968c98e9da50462d37fb8188a973e33775d14d7545ce0`,
+before running it against any real candidate. Require the exact
+owned **nine-file** Rust and Python source closure and both owned
+native binaries. Verify the candidate implements its own parser,
+compiler, matcher, Unicode tables, Python binding, and
+zero-external-package Rust dependency tree.
+
+Reject standard-library matching, `_sre`, third-party regex packages,
+another candidate's engine, subprocess delegation, unexpected
+dynamic linking, unapproved native symbols, imported engine aliases,
+and concealed fallback. Explicitly permit compatibility type names
+such as `re.Match` and `_sre.SRE_Scanner` only when their actual
+native identity is owned by this candidate. Permit genuine
+caller-provided replacement callbacks without mistaking user code
+for an engine fallback.
+
+Both ordinary and empty-environment candidate-free self-tests pass
+**60** positive controls and reject **89** actual ownership and
+delegation attacks. They read **zero** real candidates or native
+binaries, start **zero** actual candidate workers, read **zero**
+hidden cases, and take **zero** timing measurements. The first
+current-engine audit remains **NOT RUN** until this independently
+reviewed source is committed and pushed.
+
 ## Preserve every actual memory-view failure and traceback
 
 After independently freezing, reviewing, committing, and pushing the

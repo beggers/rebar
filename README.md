@@ -132,7 +132,16 @@ against this complete original-test controller.
 
 ## Independent engines and compatibility
 
-Each engine uses its own implementation. The frozen source and native-binary
+An independently reviewed
+[from-scratch Rust audit](tools/rust_from_scratch_audit_v1.py) checks
+the complete owned parser, compiler, matcher, Python binding, native
+libraries, and **zero** external Rust dependencies. It rejects
+Python's matcher, third-party regex packages, other candidates,
+hidden fallbacks, and dynamic-loading escapes. Its first real
+current-engine audit is **NOT RUN** until the audit source has been
+committed and pushed.
+
+Historical source and native-binary
 [ownership check](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V21.json)
 and independent
 [no-delegation check](candidates/audits/POSTFINAL-NO-DELEGATION-AUDIT-V21.json)
@@ -233,6 +242,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/python_re_buffer_exporter_oracle_v2.py --self-test
 "$PY" -I -B tools/python_re_subinterpreter_oracle_v1.py --self-test
 "$PY" -I -B tools/rust_public_practice_benchmark_v1.py --self-test
+"$PY" -I -B tools/rust_from_scratch_audit_v1.py --self-test
 "$PY" -I -B tools/rust_scanner_differential_v1.py --self-test
 "$PY" -I -B tools/rust_memoryview_expand_differential_v1.py --self-test
 "$PY" -I -B tools/record_rust_memoryview_expand_v1.py --self-test
