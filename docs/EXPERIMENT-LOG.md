@@ -7,6 +7,29 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a clearer four-implementation speed comparison
+
+Independently review and freeze the new
+[clear speed-chart generator](../tools/render_rust_public_speed_v2.py),
+SHA-256
+`442d88be3694849b1b749ec6ff8f0f15af71811b2a7c2f628f0e31a33e465077`,
+before generating any chart. Run its deterministic, synthetic self-test
+both under the pinned Python environment and under a clean environment:
+both pass **15** genuine controls and correctly reject **88** invalid
+or forged inputs. The self-tests run **zero** candidate workers, read
+**zero** final cases, take **zero** timing measurements, and write
+**zero** evidence or chart files.
+
+The frozen design displays Python at **1.000×**, the authenticated
+current Rust measurement with its full confidence interval, and the C
+and Zig candidates explicitly as **NOT MEASURED**. It visibly retains
+the independently declared **1.5×** speed goal, the **519 / 864**
+public-example threshold, all **36** operations, all slower examples,
+and all existing V1 charts. V2 graphs are **NOT YET GENERATED** at
+this source-freeze commit. C and Zig have **NOT YET RUN** against the
+complete shared original-test suite. Native memory and final
+performance remain **NOT MEASURED**; no winner is selected.
+
 ## Measure the fully correctness-qualified memory-view fix
 
 After all **151** runnable original Python tests, **864** public
