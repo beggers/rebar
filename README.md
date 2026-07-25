@@ -107,9 +107,10 @@ remaining test requires a Python debug build.
 
 The last full Rust run passed **150**, recorded the missing pickling
 hook, and had the same debug-only skip. The hook now passes Python's
-original isolated test for all six pickle formats, but a fresh full
-original-suite run and fresh independent-engine proofs are **NOT RUN**.
-C and Zig are **NOT RUN** against the original suite. The chart is
+original isolated test for all six pickle formats. A fresh Rust
+original-suite attempt has **NOT QUALIFIED**; fresh independent-engine
+proofs are **NOT RUN**. C and Zig are **NOT RUN** against the original
+suite. The chart is
 [generated from preserved historical results](docs/evidence/current-native-correctness-v6.json);
 it is not a qualification of the changed Rust engine.
 
@@ -126,8 +127,14 @@ A separately frozen
 [original CPython test runner](tools/rust_original_cpython_suite_v1.py)
 now applies CPython's real locale and process setup. Two independent
 Python runs each pass **151 of 152** public tests, with exactly one real
-debug-build-only skip and no public-test waivers. Its changed-Rust run
-is **NOT RUN** until the complete runner has been committed and pushed.
+debug-build-only skip and no public-test waivers. The
+[first changed-Rust run](experiments/rust_public_practice_v1/rust-original-v1-native-scanner-first-run.json)
+stops before executing any original test: the anti-delegation check
+mistakes Rust's correctly named `re.Match` object for Python's matcher.
+The [complete independent receipt](experiments/rust_public_practice_v1/rust-original-v1-native-scanner-first-run-publication-receipt.json)
+preserves the exact error. Rust is **NOT QUALIFIED** against the full
+original suite until an independently reviewed test-harness correction
+is frozen and all original tests genuinely run.
 A separately verified
 [full-result recorder](tools/record_rust_original_cpython_v1.py)
 preserves every original Python and Rust test result, error, traceback,

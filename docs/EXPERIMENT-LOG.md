@@ -7,6 +7,39 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the first changed-Rust original-suite guard failure
+
+Run the independently frozen original-suite recorder exactly once after
+its complete source, original-method oracle, and all three candidate
+owner fingerprints have been committed and pushed. Its sole genuine
+original-suite process exits **1** before any Rust original method is
+executed. Publish and independently read back the
+[complete first-run failure](../experiments/rust_public_practice_v1/rust-original-v1-native-scanner-first-run.json),
+SHA-256 `d9f6589fe366d87d69a129351a66dbb6bc887a779390f5b6a8222bf49cab8a4f`,
+and its distinct
+[durable failure receipt](../experiments/rust_public_practice_v1/rust-original-v1-native-scanner-first-run-publication-receipt.json),
+SHA-256 `565ac8abe66e0812c920786b673fcf18621c26f0be48cecab5731fb3e1cb293f`.
+
+The exact genuine inner error is `a captured original CPython matcher
+escaped into authenticated native adapter.Match`. The guard identifies
+objects by their public `__module__ == "re"` rather than by the actually
+pinned native owner; the legitimate Rust bridge deliberately exposes
+its independently owned match object as `re.Match` to match CPython's
+public contract. This is a real original-test-harness false positive,
+not a completed candidate correctness result.
+
+The report explicitly preserves **zero** observed baseline records,
+**zero** observed candidate records, **zero** actual method-guard
+checks, exact complete outer and inner stderr, original process exit,
+all frozen source and native hashes, the same **165/152/13** method
+denominators, **zero** public waivers, and the actual unchanged source
+and binaries. Both full original vectors remain **NOT CAPTURED**
+because no method ran; do not manufacture a pass or a failing method.
+The evidence and independent receipt are exclusively created,
+synchronized, and fully read back before returning the genuine failure.
+The changed Rust engine is **NOT QUALIFIED**; final cases are **NOT
+ACCESSED**, and original-suite timing is **NOT MEASURED**.
+
 ## Freeze a durable recorder for every original Python test outcome
 
 Independently review and freeze the
