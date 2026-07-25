@@ -145,10 +145,14 @@ preserves the exact error. A separately frozen
 [corrected test runner](tools/rust_original_cpython_suite_v2.py)
 checks actual matcher ownership instead of public names while retaining
 all original tests and the CPython-engine isolation controls. The
-recorded **six** warning-metadata errors must be corrected in a
-separately versioned test guard, without permitting access to any
-matching engine. Rust remains **NOT QUALIFIED** against the full
-original suite.
+recorded **six** warning-metadata errors are addressed by a separately
+verified [warning-safe original-test runner](tools/rust_original_cpython_suite_v3.py).
+It permits only ordinary warning metadata, continues to block the
+actual Python matching engine, and retains every original test. Two
+independent Python reference runs each pass **151** original tests
+with the same genuine debug-only skip. The new Rust run is **NOT
+RUN** until its separately verified full-result recorder is frozen.
+Rust remains **NOT QUALIFIED** against the full original suite.
 A separately verified
 [identity-safe full-result recorder](tools/record_rust_original_cpython_v2.py)
 preserves every original Python and Rust test result, error, traceback,
@@ -262,6 +266,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/rust_scanner_differential_v1.py --self-test
 "$PY" -I -B tools/rust_original_cpython_suite_v1.py --self-test
 "$PY" -I -B tools/rust_original_cpython_suite_v2.py --self-test
+"$PY" -I -B tools/rust_original_cpython_suite_v3.py --self-test
 "$PY" -I -B tools/record_rust_original_cpython_v1.py --self-test
 "$PY" -I -B tools/record_rust_original_cpython_v2.py --self-test
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test

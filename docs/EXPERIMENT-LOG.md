@@ -7,6 +7,39 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze warning-safe original Python tests without weakening isolation
+
+Independently review and freeze the additive
+[V3 original Python test controller](../tools/rust_original_cpython_suite_v3.py),
+SHA-256
+`55aced566c4ef0a236f26ddf4607dbe3e69ae9dc15ab6fd95399d4ddc346cea2`.
+Authenticate and preserve the immutable V2 identity-guard source,
+SHA-256
+`569036804b557b01eb29ba404c6fea0ecc5806bdbc2b6b9eb61c1ea18aa79267`,
+and the literal V1 original-test harness, SHA-256
+`cf0267e3766fb849891d182e5b57ced569a0634831dd494d8135e703844b6c95`.
+
+Make only the exact `__warningregistry__` metadata appear genuinely
+absent on quarantined matcher objects. Continue to block every actual
+Python matcher, original module, cached alias, descriptor, import,
+and native matching operation. Preserve all **165** original methods,
+all **152** public cases, the exact **13** named private waivers,
+**zero** public waivers, the unchanged real fork and locale setup, and
+all **304** real object-identity checks. Add **304** real
+warning-metadata checks without changing an original test.
+
+Both ordinary and empty-environment self-tests each launch exactly
+**two** pinned original Python workers. Both real references pass the
+same **151** original tests and report the identical genuine debug-only
+skip. The controller rejects **80** actual poisoning controls,
+including the inherited matcher-escape controls and **six** attempted
+warning-time matcher escapes; a real Python warning assertion and its
+caller filename are verified. The tests import **zero** candidates,
+read **zero** hidden cases, and measure **zero** timings. The first
+actual V3 candidate run remains **NOT RUN** until both this controller
+and an independently reviewed V3 result recorder are committed and
+pushed.
+
 ## Propose a four-times-larger independent final comparison
 
 Independently design and review a
