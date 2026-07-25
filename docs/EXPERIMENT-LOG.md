@@ -7,6 +7,58 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Show exactly which original Python tests actually ran
+
+Independently inspect both real, pinned Python reference runs before changing
+the current headline graph. The original test source contains **165** methods.
+Exactly **152** are public-interface obligations. The remaining **13** are
+in the two genuinely named private classes already preserved in the original
+reference: `DebugTests` (**4** private opcode-display tests) and
+`ImplementationTest` (**9** private compiler, `_sre`, type, and deprecated
+implementation tests). There are **two** named classes and **13** waived
+methods; neither number is substituted for the other. No public method is
+waived.
+
+Both actual Python references preserve **151** passing public methods and one
+real `ReTests.test_memory_leaks` skip. Its actual `skip_kind` is
+`named-private-debug-condition`; the skip is distinct from the **13** named
+private methods. Rust's actual **152** records remain **139** passes,
+**11** actual test-harness errors, **one** genuine missing `_compile`
+pickling hook, and the same genuine debug-build skip. Retain all **304**
+native-owner checks, all **304** matcher checks, the complete original
+failure, and all three earlier zero-method setup failures. C and Zig have
+**NOT RUN** the original public tests.
+
+The final chart source, output, and manifest are:
+
+- [Evidence-verified chart generator](../tools/render_current_correctness_v5.py),
+  SHA-256 `2c5bf47ca620d95c3e390a5bd882ee69f41d93cfce7dbdbdded60b435fba9d5c`.
+- [Generated current-correctness chart](evidence/current-native-correctness-v5.svg),
+  SHA-256 `9667499a6744f0531588e0b1e62f1b8d0f52583151b2e1539e1a4fedb1f8d11c`.
+- [Canonical 40-input evidence manifest](evidence/current-native-correctness-v5.json),
+  SHA-256 `60ef85b37d552af65c8bbe588b38969a51078e74e9b15d9407244cd67c794cab`.
+
+Independently reject an intermediate visualization that asserted only
+CPython could ever reproduce its private debug display. The evidence
+establishes that the tests inspect a private display, not that an independent
+engine could never reproduce it. Also reject a scope that called **13**
+waived methods the number of waived classes. The final version separately
+validates both named classes and all **13** methods.
+
+The root reviewer and two independent reviewers each reproduce all **40**
+sorted, uniquely hashed historical inputs inside the actual five-counter
+read-only guard. Candidate imports, native workers, subprocesses, filesystem
+writes, and clock samples are all **zero**. Four independent command-line
+and direct-call source checks in ordinary and empty environments each pass
+all **154** adversarial controls. Create the chart and manifest exactly once
+using the generator's exclusive, no-follow publication; then verify their
+exact hashes using `--check` in both environments. The older four current
+charts and every underlying failure remain unchanged.
+
+Speed and memory for current engines remain **NOT MEASURED**. The final
+holdout remains **NOT ACCESSED**. This graph neither runs a candidate nor
+qualifies a replacement.
+
 ## Preserve Rust's first complete original Python test failure
 
 Run the independently reviewed and already-pushed full-suite oracle exactly

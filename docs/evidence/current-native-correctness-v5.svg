@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1565" viewBox="0 0 1200 1565" role="img" aria-labelledby="title description">
+<title id="title">How close are we to replacing Python’s re?</title>
+<desc id="description">Python 3.14.6 has 165 original regular-expression test methods: 152 are public compatibility tests and 13 are explicitly waived CPython-private tests from two named classes. Both Python baseline runs pass 151 public methods and skip one genuine debug-build method. Rust processed the same 152 records: 139 pass, 11 expose test-harness interference, one exposes a real missing _compile pickling hook, and the same debug-only test is skipped. C and Zig have not run the original public tests. Current speed and memory remain unmeasured.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.title{font-size:34px;font-weight:760;fill:#10223b}.subtitle{font-size:15px;fill:#43536b}.metric{font-size:29px;font-weight:750;fill:#10223b}.metric-label{font-size:13px;fill:#43536b}.heading{font-size:20px;font-weight:730;fill:#10223b}.body{font-size:15px;fill:#25364e}.small{font-size:13px;fill:#43536b}.strong{font-size:16px;font-weight:720;fill:#10223b}.pass{font-size:14px;font-weight:720;fill:#116139}.warning{font-size:14px;font-weight:720;fill:#8a4b08}.fail{font-size:14px;font-weight:720;fill:#aa2831}.pending{font-size:14px;font-weight:720;fill:#485870}.footer{font-size:15px;font-weight:650;fill:#25364e}</style>
+<rect width="1200" height="1565" rx="20" fill="#f5f8fc"/>
+<text x="54" y="71" class="title">How close are we to replacing Python’s re?</text>
+<text x="56" y="103" class="subtitle">Three independently built engines · compared with Python 3.14.6</text>
+<rect x="54" y="131" width="240" height="91" rx="13" fill="#ffffff" stroke="#dce5ef"/>
+<text x="69" y="171" class="metric">165</text>
+<text x="69" y="198" class="metric-label">original Python test methods</text>
+<rect x="338" y="131" width="240" height="91" rx="13" fill="#ffffff" stroke="#dce5ef"/>
+<text x="353" y="171" class="metric">152</text>
+<text x="353" y="198" class="metric-label">public compatibility records</text>
+<rect x="622" y="131" width="240" height="91" rx="13" fill="#ffffff" stroke="#dce5ef"/>
+<text x="637" y="171" class="metric">13</text>
+<text x="637" y="198" class="metric-label">waived CPython-private tests</text>
+<rect x="906" y="131" width="240" height="91" rx="13" fill="#ffffff" stroke="#dce5ef"/>
+<text x="921" y="171" class="metric">0</text>
+<text x="921" y="198" class="metric-label">qualified replacement engines</text>
+<text x="56" y="261" class="heading">What is included in the Python baseline?</text>
+<rect x="54" y="278" width="1092" height="138" rx="12" fill="#ffffff" stroke="#dce5ef"/>
+<text x="72" y="305" class="body">165 original methods = 152 public compatibility records + 13 private tests from 2 named classes.</text>
+<text x="72" y="331" class="small">Public baseline: 151 passing methods + 1 genuine debug-build-only skip. No public test is waived.</text>
+<text x="72" y="356" class="small">DebugTests: 4 tests of CPython’s private matching-opcode display.</text>
+<text x="72" y="381" class="small">ImplementationTest: 9 private compiler, _sre, type-internal and deprecated implementation tests.</text>
+<text x="56" y="453" class="heading">Original correctness checks</text>
+<text x="56" y="474" class="small">The same 223,198 initial cases for each engine · 49 categories</text>
+<text x="65" y="508" class="strong">Rust</text>
+<rect x="157" y="489" width="686" height="25" rx="7" fill="#17844e"/>
+<text x="859" y="507" class="strong">223,198 / 223,198</text>
+<text x="1070" y="507" class="pass">100%</text>
+<text x="65" y="551" class="strong">C</text>
+<rect x="157" y="532" width="686" height="25" rx="7" fill="#17844e"/>
+<text x="859" y="550" class="strong">223,198 / 223,198</text>
+<text x="1070" y="550" class="pass">100%</text>
+<text x="65" y="594" class="strong">Zig</text>
+<rect x="157" y="575" width="686" height="25" rx="7" fill="#17844e"/>
+<text x="859" y="593" class="strong">223,198 / 223,198</text>
+<text x="1070" y="593" class="pass">100%</text>
+<text x="56" y="647" class="heading">Deeper correctness checks</text>
+<text x="56" y="668" class="small">The same 393 difficult cases for every engine · 64 fixed-seed cases</text>
+<text x="65" y="702" class="strong">Rust</text>
+<rect x="157" y="683" width="686" height="25" rx="7" fill="#17844e"/>
+<text x="859" y="701" class="strong">393 / 393</text>
+<text x="1070" y="701" class="pass">100%</text>
+<text x="65" y="745" class="strong">C</text>
+<rect x="157" y="726" width="686" height="25" rx="7" fill="#17844e"/>
+<text x="859" y="744" class="strong">393 / 393</text>
+<text x="1070" y="744" class="pass">100%</text>
+<text x="65" y="788" class="strong">Zig</text>
+<rect x="157" y="769" width="686" height="25" rx="7" fill="#17844e"/>
+<text x="859" y="787" class="strong">393 / 393</text>
+<text x="1070" y="787" class="pass">100%</text>
+<text x="56" y="843" class="heading">What happened in the full public Python test?</text>
+<text x="56" y="865" class="small">Rust accounted for all 152 public test records and both sets of 304 engine guards.</text>
+<rect x="54" y="878" width="1092" height="161" rx="12" fill="#ffffff" stroke="#dce5ef"/>
+<text x="72" y="907" class="strong">Rust</text>
+<text x="142" y="907" class="fail">NOT YET COMPATIBLE</text>
+<text x="77" y="954" class="metric">139</text>
+<text x="77" y="978" class="metric-label">genuinely passing methods</text>
+<text x="326" y="954" class="metric">11</text>
+<text x="326" y="978" class="metric-label">test-harness errors</text>
+<text x="585" y="954" class="metric">1</text>
+<text x="585" y="978" class="metric-label">real missing _compile</text>
+<text x="847" y="954" class="metric">1</text>
+<text x="847" y="978" class="metric-label">debug-only skip</text>
+<text x="73" y="1012" class="small">139 passes + 11 harness errors + 1 real candidate error + 1 debug-only skip = 152</text>
+<text x="56" y="1077" class="heading">Why the failures are different</text>
+<rect x="54" y="1090" width="1092" height="68" rx="10" fill="#fff8eb" stroke="#f2d199"/>
+<text x="72" y="1116" class="body">11 errors come from the test harness blocking Python’s own warning and assertion helpers.</text>
+<text x="72" y="1139" class="small">They are not 11 demonstrated regex-engine mismatches.</text>
+<rect x="54" y="1166" width="1092" height="69" rx="10" fill="#fff1f1" stroke="#ecc6c8"/>
+<text x="72" y="1192" class="body">1 real drop-in gap: Python’s pickling test cannot import Rust’s required _compile helper.</text>
+<text x="72" y="1215" class="small">This genuine original-test incompatibility still needs a fix.</text>
+<rect x="54" y="1252" width="530" height="62" rx="10" fill="#f1f4f9" stroke="#d9e1ec"/>
+<text x="70" y="1277" class="strong">C</text>
+<text x="144" y="1277" class="pending">NOT RUN</text>
+<text x="70" y="1298" class="small">No result claimed for the 152 public Python records.</text>
+<rect x="615" y="1252" width="530" height="62" rx="10" fill="#f1f4f9" stroke="#d9e1ec"/>
+<text x="631" y="1277" class="strong">Zig</text>
+<text x="705" y="1277" class="pending">NOT RUN</text>
+<text x="631" y="1298" class="small">No result claimed for the 152 public Python records.</text>
+<text x="56" y="1350" class="heading">All earlier test-setup failures remain preserved</text>
+<text x="57" y="1372" class="small">Missing bridge wiring · anti-delegation import guard · candidate-free correctness-controller guard</text>
+<text x="57" y="1393" class="small">All three stopped before the first test; none is counted as a matching-engine mismatch.</text>
+<rect x="54" y="1420" width="1092" height="90" rx="11" fill="#ffffff" stroke="#dce5ef"/>
+<text x="73" y="1451" class="footer">Overall: no from-scratch engine has yet passed every required public Python test.</text>
+<text x="73" y="1478" class="small">Current speed and memory: NOT MEASURED · final holdout: NOT ACCESSED.</text>
+</svg>
