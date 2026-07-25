@@ -56,7 +56,11 @@ inputs and confidence intervals are retained in the
 [complete measurements](experiments/rust_public_practice_v1/rust-native-scanner-v1-public-practice.json).
 The cause is visible in the engine: both valid memory-view inputs miss
 the existing native replacement path and use a slower Python template
-fallback. The proposed native fix has **NOT BEEN MEASURED**. Native
+fallback. A separately reviewed
+[768-case memory-view compatibility test](tools/rust_memoryview_expand_differential_v1.py)
+first freezes Python's actual behavior for writable, read-only,
+sliced, strided, released, and changed buffers. Its first Rust
+comparison and the proposed native speed fix are **NOT RUN**. Native
 memory use is **NOT MEASURED**.
 
 ## Earlier three-engine speed comparison
@@ -222,6 +226,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/python_re_subinterpreter_oracle_v1.py --self-test
 "$PY" -I -B tools/rust_public_practice_benchmark_v1.py --self-test
 "$PY" -I -B tools/rust_scanner_differential_v1.py --self-test
+"$PY" -I -B tools/rust_memoryview_expand_differential_v1.py --self-test
 "$PY" -I -B tools/rust_original_cpython_suite_v1.py --self-test
 "$PY" -I -B tools/rust_original_cpython_suite_v2.py --self-test
 "$PY" -I -B tools/rust_original_cpython_suite_v3.py --self-test

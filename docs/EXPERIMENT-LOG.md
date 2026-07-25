@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze Python's genuine memory-view replacement behavior
+
+Independently implement and review a
+[768-case memory-view correctness oracle](../tools/rust_memoryview_expand_differential_v1.py),
+SHA-256
+`226f129f0e90b060c977e599e6e8369f5a5285890089c69108b718cfcb2980e6`,
+before running or changing the Rust candidate. Freeze exactly **24**
+original Python `Match.expand` families with **32** deterministic
+cases each, matrix SHA-256
+`b40fb92f42c7019a73eec72800077f262f1a6be516886a6ddda372e24807eb60`.
+
+Cover the **64** genuinely measured writable and read-only cases,
+sliced and strided views, released buffers, real exporter errors,
+bytes and mutable-byte controls, empty subjects, changed sources,
+text separation, numbered and named captures, escapes, unmatched
+captures, malformed templates, and wrong input types.
+
+Ordinary and empty-environment source self-tests each run exactly
+**two** independently isolated genuine Python references. Both
+reproduce all **768** outcomes, including **474** successful returns
+and **294** genuine exceptions, with identical complete-record
+SHA-256
+`8312263785cd49f7283ab8c6fac13443befe9c5a3d739b2e068aebdcf3f59b75`.
+Reject **42** independently corrupted cases and isolation bypasses.
+Import **zero** candidates, write **zero** evidence files, read
+**zero** hidden cases, and record **zero** timings. The first actual
+Rust comparison remains **NOT RUN** until this source has been
+committed and pushed.
+
 ## Pass every runnable original Python regex test
 
 Run the independently frozen V3 original-test recorder exactly once,
