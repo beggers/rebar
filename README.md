@@ -9,14 +9,14 @@ an external regular-expression package, or another candidate.
 **Current result:** the independently built C, Rust, and Zig engines each
 pass **223,198** initial cases and **393** harder cases. Rust is the only
 engine tested against Python's **152** applicable original public-test
-records: **139 passed, 11 exposed test-harness problems, one exposed a
-real missing pickling feature, and one genuinely requires a Python debug
-build**. C and Zig have **NOT RUN** those tests. Current speed and memory
-are **NOT MEASURED**. There is no winner.
+records: **150 passed, one exposed a real missing pickling feature, and
+one genuinely requires a Python debug build**. There are **no remaining
+test-harness failures**. C and Zig have **NOT RUN** those tests. Current
+speed and memory are **NOT MEASURED**. There is no winner.
 
 ## Current results
 
-![Current Python compatibility, including all 165 original tests, 13 explicitly named private tests, and the real Rust, C, and Zig results](docs/evidence/current-native-correctness-v5.svg)
+![Current Python compatibility: Rust passes 150 original tests, one pickling test remains, one test requires a debug build, and C and Zig have not yet run the original suite](docs/evidence/current-native-correctness-v6.svg)
 
 Python's original test file contains **165** tests. **152** test the
 public replacement interface; the other **13** test CPython's private
@@ -25,10 +25,11 @@ implementation and are explicitly excluded in two named classes:
 waived. Both actual Python reference runs pass **151** public tests;
 the remaining test genuinely requires a Python debug build.
 
-Rust ran the same **152** public-test records. Its **11** test-harness
-errors and its real missing `_compile` pickling feature remain visible;
-none is counted as a pass. C and Zig are **NOT RUN**. The graph is
-[generated from 40 independently verified, preserved evidence records](docs/evidence/current-native-correctness-v5.json).
+Rust ran the same **152** public-test records: **150 passed**, one real
+pickling incompatibility remains, and the same debug-only test was
+skipped. The earlier **11** test-harness errors are resolved, not hidden.
+C and Zig are **NOT RUN**. The graph is
+[generated from the complete, independently verified current and historical evidence](docs/evidence/current-native-correctness-v6.json).
 
 ## Headline results from the last completed comparison
 
@@ -80,14 +81,15 @@ candidate. Those checks do not establish full compatibility or speed.
 
 | From-scratch engine | Initial correctness cases | Harder correctness cases | 152 original public-test records |
 | --- | --- | --- | --- |
-| Rust | [223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v24-qualified-pass-proof.json) | [393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | [139 passes, 11 harness errors, 1 incompatibility, 1 debug skip](oracle/cpython-3.14.6/evidence/postfinal-locale-v15-rust-failures-production-summary.json) |
+| Rust | [223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v24-qualified-pass-proof.json) | [393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | [150 passes, 1 incompatibility, 1 debug skip](oracle/cpython-3.14.6/evidence/postfinal-locale-v16-rust-failures-production-summary.json) |
 | C | [223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v24-qualified-pass-proof.json) | [393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | NOT RUN |
 | Zig | [223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v24-qualified-pass-proof.json) | [393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | NOT RUN |
 
 The [original Python baseline](oracle/cpython-3.14.6/evidence/postfinal-locale-v6-self-oracle.json),
-[complete Rust failure](oracle/cpython-3.14.6/evidence/postfinal-locale-v15-rust-failures.json),
-and [independent failure verification](oracle/cpython-3.14.6/evidence/postfinal-locale-v15-rust-readonly-failure-forensic.json)
-are preserved without removing any failure. The separately
+[complete current Rust failure](oracle/cpython-3.14.6/evidence/postfinal-locale-v16-rust-failures.json),
+and [independent failure verification](oracle/cpython-3.14.6/evidence/postfinal-locale-v16-rust-readonly-failure-forensic.json)
+are preserved alongside the [earlier unsuccessful run](oracle/cpython-3.14.6/evidence/postfinal-locale-v15-rust-failures.json).
+The separately
 [frozen expanded public-interface tests](oracle/cpython-3.14.6/PUBLIC-SURFACE-V27.md)
 cover **1,376** examples across **43** categories. Python's two reference
 runs pass them; the current candidates have **NOT RUN** those tests.
@@ -99,8 +101,9 @@ verifies the two Python baselines, all three from-scratch engines, and their
 preserved evidence without importing or running an engine. A
 [separate independently replayed verification](oracle/cpython-3.14.6/evidence/postfinal-locale-v16-root-verified-readonly-native-bridge-integration-pass.json)
 checks the actual historical failure, all twelve engine proofs, and both
-Python references again. Candidate results under the corrected protocol
-remain **NOT RUN**.
+Python references again. The corrected protocol has now run the full Rust
+suite; its one real incompatibility remains. C and Zig have **NOT RUN**
+that suite.
 
 The [independent-language inventory](experiments/FROM-SCRATCH-LANGUAGE-LANDSCAPE-V1.md)
 also covers separately authored
@@ -144,6 +147,6 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v15.py --self-test
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v16.py --self-test
 "$PY" -I -B tools/python_re_public_surface_oracle_stage27.py --self-test
-"$PY" -I -B tools/render_current_correctness_v5.py --self-test
-"$PY" -I -B tools/render_current_correctness_v5.py --check
+"$PY" -I -B tools/render_current_correctness_v6.py --self-test
+"$PY" -I -B tools/render_current_correctness_v6.py --check
 ```

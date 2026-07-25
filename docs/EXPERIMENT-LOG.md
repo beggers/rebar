@@ -7,6 +7,46 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Run all original Python tests against the corrected Rust harness
+
+Run the frozen, corrected original Python test suite against the existing
+independently owned Rust engine. First verify the real fresh private
+locales, a clean child process, the exclusive memory-worker lock, **40 GiB**
+of configured memory, and a separate **8 GiB** safety reserve. Do not
+benchmark an engine or open the new holdout.
+
+The real result is **150 passing original tests**, **one real failing
+pickling test**, and the **same single genuine debug-only skip** observed in
+both Python references. All **11** previous harness-interference errors are
+gone. Python's frozen original denominator remains **165** methods:
+**152** public methods and exactly **13** explicitly named private methods
+in `DebugTests` and `ImplementationTest`. No public test is waived.
+
+The sole remaining error is `ReTests.test_pickling`: Rust is missing the
+Python-compatible `_compile` hook. Its complete original error has SHA-256
+`934616163a04e76cf83532a94b397d571fb1e0679772a88ae6b3b236131e2a6e`.
+Revalidate all **304** real before-and-after Rust-native ownership checks
+and all **304** guarded-matcher checks against the complete independent
+12-source, five-binary engine graph. Preserve the entire **17,298,371-byte**
+failure and the complete **3,464,448-byte** inner-worker output.
+
+- [Real complete original-suite Rust failure](../oracle/cpython-3.14.6/evidence/postfinal-locale-v16-rust-failures.json),
+  SHA-256 `64220920e6fe852bc769205503776ccb73e27301e8decc847b2727a6e6454a91`.
+- [Actual resource and private-locale preflight](../oracle/cpython-3.14.6/evidence/postfinal-locale-v16-rust-resource-preflight.json),
+  SHA-256 `7f46a9f543cdf80b93984c2017b29474de031b239751588b64051d5f8d949c79`.
+- [Independently reconstructed result summary](../oracle/cpython-3.14.6/evidence/postfinal-locale-v16-rust-failures-production-summary.json),
+  SHA-256 `0ab38d67769888093e2988c1551b4719f28f9f724b421d3b1be83016a6cc45a4`.
+- [Independent, zero-effect verification](../oracle/cpython-3.14.6/evidence/postfinal-locale-v16-rust-readonly-failure-forensic.json),
+  SHA-256 `9cf9d98499d980db42368d7e508c68001da9e4020437976bb9216aa384e5f845`.
+
+The actual inner worker output is preserved. The outer controller's
+complete output and its failure-publication receipt are **NOT PRESERVED**;
+neither is reconstructed or counted as observed. Independent review
+confirms that the remaining pickling failure is genuine and the Rust
+engine is **NOT QUALIFIED**. C and Zig have **NOT RUN** the original
+suite. Current speed and memory remain **NOT MEASURED**, and the expanded
+holdout remains **NOT ACCESSED**.
+
 ## Independently replay the frozen original-test integration
 
 Replay the corrected, already-frozen original-test runner against the real
