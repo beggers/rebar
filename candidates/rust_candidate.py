@@ -10,15 +10,20 @@ import warnings
 from candidates import _rust_bridge
 
 
+__version__ = "2.2.1"
+
+
 class RegexFlag(enum.IntFlag):
-    ASCII = 256
-    IGNORECASE = 2
-    LOCALE = 4
-    UNICODE = 32
-    MULTILINE = 8
-    DOTALL = 16
-    VERBOSE = 64
+    NOFLAG = 0
+    ASCII = A = 256
+    IGNORECASE = I = 2
+    LOCALE = L = 4
+    UNICODE = U = 32
+    MULTILINE = M = 8
+    DOTALL = S = 16
+    VERBOSE = X = 64
     DEBUG = 128
+    _numeric_repr_ = hex
 
     def __repr__(self):
         value = int(self)
@@ -43,7 +48,7 @@ S = DOTALL = RegexFlag.DOTALL
 X = VERBOSE = RegexFlag.VERBOSE
 U = UNICODE = RegexFlag.UNICODE
 DEBUG = RegexFlag.DEBUG
-NOFLAG = RegexFlag(0)
+NOFLAG = RegexFlag.NOFLAG
 _BYTE = 1 << 31
 _ESCAPE_MAP = {ord(char): "\\" + char for char in "()[]{}?*+-|^$\\.&~# \t\n\r\v\f"}
 _MISSING = object()
@@ -615,32 +620,42 @@ class Scanner:
         return result, _slice(string, position, length)
 
 
-_CACHE = {}
-_CACHE2 = {}
-_MAX_CACHE = 512
-_MAX_CACHE2 = 256
+_cache = {}
+_cache2 = {}
+_MAXCACHE = 512
+_MAXCACHE2 = 256
+_CACHE = _cache
+_CACHE2 = _cache2
+_MAX_CACHE = _MAXCACHE
+_MAX_CACHE2 = _MAXCACHE2
 
 
 def _cache_pattern(key, pattern):
-    if len(_CACHE) >= _MAX_CACHE:
-        _CACHE.pop(next(iter(_CACHE)))
-    _CACHE[key] = pattern
-    if len(_CACHE2) >= _MAX_CACHE2:
-        _CACHE2.pop(next(iter(_CACHE2)))
-    _CACHE2[key] = pattern
+    if len(_cache) >= _MAXCACHE:
+        try:
+            del _cache[next(iter(_cache))]
+        except (StopIteration, RuntimeError, KeyError):
+            pass
+    _cache[key] = pattern
+    if len(_cache2) >= _MAXCACHE2:
+        try:
+            del _cache2[next(iter(_cache2))]
+        except (StopIteration, RuntimeError, KeyError):
+            pass
+    _cache2[key] = pattern
     return pattern
 
 
-def compile(pattern, flags=0):
+def _compile(pattern, flags):
     if isinstance(flags, RegexFlag):
         flags = flags.value
     try:
-        return _CACHE2[type(pattern), pattern, flags]
+        return _cache2[type(pattern), pattern, flags]
     except KeyError:
         pass
 
     key = (type(pattern), pattern, flags)
-    cached = _CACHE.pop(key, None)
+    cached = _cache.pop(key, None)
     if cached is not None:
         return _cache_pattern(key, cached)
 
@@ -681,29 +696,33 @@ def compile(pattern, flags=0):
     return _cache_pattern(key, result)
 
 
+def compile(pattern, flags=0):
+    return _compile(pattern, flags)
+
+
 def purge():
-    _CACHE.clear()
-    _CACHE2.clear()
+    _cache.clear()
+    _cache2.clear()
 
 
 def search(pattern, string, flags=0):
-    return compile(pattern, flags).search(string)
+    return _compile(pattern, flags).search(string)
 
 
 def match(pattern, string, flags=0):
-    return compile(pattern, flags).match(string)
+    return _compile(pattern, flags).match(string)
 
 
 def fullmatch(pattern, string, flags=0):
-    return compile(pattern, flags).fullmatch(string)
+    return _compile(pattern, flags).fullmatch(string)
 
 
 def findall(pattern, string, flags=0):
-    return compile(pattern, flags).findall(string)
+    return _compile(pattern, flags).findall(string)
 
 
 def finditer(pattern, string, flags=0):
-    return compile(pattern, flags).finditer(string)
+    return _compile(pattern, flags).finditer(string)
 
 
 def split(pattern, string, *args, maxsplit=_MISSING, flags=_MISSING):
@@ -720,7 +739,7 @@ def split(pattern, string, *args, maxsplit=_MISSING, flags=_MISSING):
             raise TypeError("split() got multiple values for argument 'flags'")
         warnings.warn("'maxsplit' is passed as positional argument", DeprecationWarning, skip_file_prefixes=_WARNING_PREFIX)
         maxsplit, flags = (args + (flags,))[:2]
-    return compile(pattern, flags).split(string, maxsplit)
+    return _compile(pattern, flags).split(string, maxsplit)
 
 
 def sub(pattern, repl, string, *args, count=_MISSING, flags=_MISSING):
@@ -737,7 +756,7 @@ def sub(pattern, repl, string, *args, count=_MISSING, flags=_MISSING):
             raise TypeError("sub() got multiple values for argument 'flags'")
         warnings.warn("'count' is passed as positional argument", DeprecationWarning, skip_file_prefixes=_WARNING_PREFIX)
         count, flags = (args + (flags,))[:2]
-    return compile(pattern, flags).sub(repl, string, count)
+    return _compile(pattern, flags).sub(repl, string, count)
 
 
 def subn(pattern, repl, string, *args, count=_MISSING, flags=_MISSING):
@@ -754,7 +773,7 @@ def subn(pattern, repl, string, *args, count=_MISSING, flags=_MISSING):
             raise TypeError("subn() got multiple values for argument 'flags'")
         warnings.warn("'count' is passed as positional argument", DeprecationWarning, skip_file_prefixes=_WARNING_PREFIX)
         count, flags = (args + (flags,))[:2]
-    return compile(pattern, flags).subn(repl, string, count)
+    return _compile(pattern, flags).subn(repl, string, count)
 
 
 split.__text_signature__ = "(pattern, string, maxsplit=0, flags=0)"

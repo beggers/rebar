@@ -6,17 +6,18 @@ Can a regular-expression engine built from scratch replace
 Every candidate must use its own matching engine, not Python's engine,
 an external regular-expression package, or another candidate.
 
-**Current result:** the independently built C, Rust, and Zig engines each
-pass **223,198** initial cases and **393** harder cases. Rust is the only
-engine tested against Python's **152** applicable original public-test
-records: **150 passed, one exposed a real missing pickling feature, and
-one genuinely requires a Python debug build**. There are **no remaining
-test-harness failures**. C and Zig have **NOT RUN** those tests. Current
-speed and memory are **NOT MEASURED**. There is no winner.
+**Current result:** Rust matches Python on **824 of 864** new public
+development examples. All **40** remaining differences are in scanner
+results or scanner callback errors; no failing example has been removed.
+The original missing pattern-pickling feature now passes Python's real
+test for all **six** pickle formats. A fresh complete original-test run
+and fresh independent engine proofs are **NOT RUN**. C and Zig have
+**NOT RUN** the original tests. Current speed and memory are
+**NOT MEASURED**. There is no winner.
 
-## Current results
+## Last completed original Python tests
 
-![Current Python compatibility: Rust passes 150 original tests, one pickling test remains, one test requires a debug build, and C and Zig have not yet run the original suite](docs/evidence/current-native-correctness-v6.svg)
+![Last completed original Python tests before the latest Rust compatibility fix: 150 passes, one historical pickling failure, one debug-only skip, and C and Zig not yet tested](docs/evidence/current-native-correctness-v6.svg)
 
 Python's original test file contains **165** tests. **152** test the
 public replacement interface; the other **13** test CPython's private
@@ -25,11 +26,13 @@ implementation and are explicitly excluded in two named classes:
 waived. Both actual Python reference runs pass **151** public tests;
 the remaining test genuinely requires a Python debug build.
 
-Rust ran the same **152** public-test records: **150 passed**, one real
-pickling incompatibility remains, and the same debug-only test was
-skipped. The earlier **11** test-harness errors are resolved, not hidden.
+In the last completed run, Rust passed **150** of the same **152**
+public-test records, exposed the missing pickling hook, and skipped the
+same debug-only test. The hook has since been fixed and checked against
+all six pickle formats; the complete original suite has **not** yet been
+rerun. The earlier **11** test-harness errors were resolved, not hidden.
 C and Zig are **NOT RUN**. The graph is
-[generated from the complete, independently verified current and historical evidence](docs/evidence/current-native-correctness-v6.json).
+[generated from complete, independently verified historical evidence](docs/evidence/current-native-correctness-v6.json).
 
 ## Headline results from the last completed comparison
 
@@ -79,6 +82,10 @@ and independent
 verify that none uses Python's matcher, an external regex package, or another
 candidate. Those checks do not establish full compatibility or speed.
 
+The recorded correctness figures below predate the latest Rust module
+changes. They do not qualify the changed Rust source; fresh checks are
+required.
+
 A [stricter next engine-independence check](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V23.md)
 has been frozen and independently verified before any engine changes.
 Running that check against newly changed engines is **NOT RUN**.
@@ -121,7 +128,9 @@ preserved evidence without importing or running an engine. A
 [separate independently replayed verification](oracle/cpython-3.14.6/evidence/postfinal-locale-v16-root-verified-readonly-native-bridge-integration-pass.json)
 checks the actual historical failure, all twelve engine proofs, and both
 Python references again. The corrected protocol has now run the full Rust
-suite; its one real incompatibility remains. C and Zig have **NOT RUN**
+suite and preserves its historical pickling failure. The current Rust
+hook now passes the exact original pickle case in isolation, but a fresh
+complete guarded run remains **NOT RUN**. C and Zig have **NOT RUN**
 that suite.
 
 The [independent-language inventory](experiments/FROM-SCRATCH-LANGUAGE-LANDSCAPE-V1.md)
@@ -142,8 +151,10 @@ An independently reviewed, public-only
 covers **864** fixed examples across **36** Python operations, with equal
 text and bytes coverage. Two isolated Python reference runs agree on every
 example, including scanner callbacks, memory views, and Python 3.14
-warnings. This small development check is not the million-example public
-comparison or final test. Rust results and practice speed are **NOT RUN**.
+warnings. Rust agrees on **824** examples; all **40** mismatches are
+scanner or scanner-error cases. This small development check is not the
+million-example public comparison or final test. Practice speed is
+**NOT MEASURED**.
 
 ## Larger fair speed comparison
 

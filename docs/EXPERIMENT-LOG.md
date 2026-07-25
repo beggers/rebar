@@ -7,6 +7,36 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Fix the Rust module contract and expose all scanner failures
+
+Give the from-scratch Rust engine Python **3.14.6**'s exact public flag
+aliases and zero flag, `__version__ = "2.2.1"`, private
+`_compile(pattern, flags)` reconstructor, dual **512**-entry and
+**256**-entry pattern caches, and exception-safe cache eviction. Route
+the public matching functions directly to the engine's own private
+compiler; never import Python's matcher or a third-party regex engine.
+The updated adapter has SHA-256
+`6341a4e2e456f0f0e28f1f51329630ef1a0c8c9f4f62b8d46b240a1b95a2a169`.
+
+Run the unchanged upstream `ReTests.test_pickling` pattern against
+pinned Python and the owned Rust engine in genuinely separate processes.
+Both reconstruct the pattern correctly under all **six** real pickle
+formats and agree on the required two-argument private reconstructor.
+This targeted pass is not a rerun of the complete original suite.
+
+Run the separately frozen **864-case** development matrix against the
+same pinned Python and Rust in separate, untimed processes. The genuine
+result is **824** matching cases and **40** mismatches. Every mismatch
+belongs to `scanner.scan` or `scanner.scan.callback_error`: **20** per
+operation across **20** actual text and byte datasets. The unchanged
+baseline record SHA-256 is
+`0ae84d65f16976e046a267704585306c3968703194d26bbc3c5223b746304f7c`;
+the actual Rust record SHA-256 is
+`55532239908003c0505e69fadd481d97f20294e57cca6e0bff46f106269a6932`.
+Neither case count nor denominator has been changed. Candidate ownership
+proofs, timings, memory, and complete original-suite reruns remain
+**NOT RUN**; final cases remain **NOT ACCESSED**.
+
 ## Freeze a small public Rust development check
 
 Freeze and independently review a new from-scratch public correctness and
@@ -35,11 +65,11 @@ final or existing benchmark case.
 The default prospective timing uses **12** exactly balanced, alternating
 paired rounds, full public-operation costs, equal case weights, one
 consistent paired geometric mean, reproducible confidence intervals, and
-every slowdown. Actual Rust correctness, timings, memory, rankings, and a
-winner remain **NOT RUN** or **NOT MEASURED**. This deliberately small
-development matrix is neither of the separately proposed
-**1,048,576-case** public and final comparisons. The final cases remain
-**NOT ACCESSED**.
+every slowdown. The actual later Rust correctness result is separately
+recorded above. Timings, memory, rankings, and a winner remain
+**NOT RUN** or **NOT MEASURED**. This deliberately small development
+matrix is neither of the separately proposed **1,048,576-case** public
+and final comparisons. The final cases remain **NOT ACCESSED**.
 
 ## Expand the next blind comparison to one million cases
 
