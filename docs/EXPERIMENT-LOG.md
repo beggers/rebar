@@ -7,6 +7,49 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the complete original CPython regular-expression test runner
+
+Independently freeze and review the
+[actual original-method runner](../tools/rust_original_cpython_suite_v1.py)
+before allowing any changed Rust source to run Python's real tests. The
+runner has SHA-256
+`cf0267e3766fb849891d182e5b57ced569a0634831dd494d8135e703844b6c95`.
+Authenticate the original upstream CPython **3.14.6** test file,
+original support package, warning helper, and complete external test
+corpus rather than reconstructing the tests.
+
+The fixed original method matrix has SHA-256
+`93f0fe07cf6cc0fbe0332b748ca61768f3b966bd5c0fdd81d024520a7deff240`.
+It contains exactly **165** source-ordered original methods: all **152**
+actual public methods and only the **13** explicitly named private
+`DebugTests` and `ImplementationTest` waivers. There are **zero**
+public-method waivers. Run each actual original method with CPython's
+own unmodified support and actual safe large-memory dry-run behavior.
+
+Both ordinary and empty-environment self-tests each start **two**
+independent, genuine original Python workers. Every worker passes
+**151** original public methods and skips only the genuine
+`ReTests.test_memory_leaks`, with the original reason `requires debug
+build`. All four original-baseline vectors equal SHA-256
+`b6f23860b340ff326347bdd103505c04bb2b84c21fc874758bd278bc90390276`.
+Each self-test actually starts **four** `localedef` subprocesses,
+creates **two** private `/tmp` directories and **four** private locale
+outputs, removes both directories, restores the locale, and uses real
+`fork` for the unchanged original multiprocessing regression. It writes
+**zero** workspace files and truthfully reports all temporary work.
+
+All **69** omitted-method, forged-outcome, and no-delegation controls
+pass. These include **19** tests that reject Python's matcher, private
+`_sre`, cached matching functions, both import routes, replacement
+modules, and mutated constants before Rust is imported. The actual
+self-tests import **zero** candidates, read **zero** hidden or benchmark
+cases, and sample **zero** performance clocks. The full candidate
+command requires exact frozen controller, method matrix, Python source,
+Rust native engine, and CPython bridge fingerprints before starting one
+isolated real candidate. The changed-Rust original-suite comparison
+remains **NOT RUN** until this separately frozen source has been
+committed and pushed. Current speed and memory remain **NOT MEASURED**.
+
 ## Freeze readable current-Rust speed charts before measurement
 
 Independently review and freeze the
