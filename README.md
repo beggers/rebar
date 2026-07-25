@@ -150,15 +150,15 @@ verified [warning-safe original-test runner](tools/rust_original_cpython_suite_v
 It permits only ordinary warning metadata, continues to block the
 actual Python matching engine, and retains every original test. Two
 independent Python reference runs each pass **151** original tests
-with the same genuine debug-only skip. The new Rust run is **NOT
-RUN** until its separately verified full-result recorder is frozen.
-Rust remains **NOT QUALIFIED** against the full original suite.
-A separately verified
-[identity-safe full-result recorder](tools/record_rust_original_cpython_v2.py)
-preserves every original Python and Rust test result, error, traceback,
-and native-engine identity before reporting success or failure. The
-original [V1 recorder and failure](tools/record_rust_original_cpython_v1.py)
-remain unchanged.
+with the same genuine debug-only skip. An independently verified
+[warning-safe full-result recorder](tools/record_rust_original_cpython_v3.py)
+preserves every original Python and Rust test result, failure,
+traceback, warning check, and native-engine identity. The first V3
+Rust run is **NOT RUN**; Rust remains **NOT QUALIFIED** against the
+full original suite. The original
+[V1 recorder](tools/record_rust_original_cpython_v1.py),
+[V2 recorder](tools/record_rust_original_cpython_v2.py), and their
+complete recorded failures remain unchanged.
 
 ## Independent engines and compatibility
 
@@ -269,6 +269,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/rust_original_cpython_suite_v3.py --self-test
 "$PY" -I -B tools/record_rust_original_cpython_v1.py --self-test
 "$PY" -I -B tools/record_rust_original_cpython_v2.py --self-test
+"$PY" -I -B tools/record_rust_original_cpython_v3.py --self-test
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_speed_v1.py --self-test

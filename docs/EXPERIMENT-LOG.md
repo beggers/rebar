@@ -7,6 +7,39 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze complete warning-safe original-test result capture
+
+Independently review and freeze the additive
+[V3 original-suite result recorder](../tools/record_rust_original_cpython_v3.py),
+SHA-256
+`ab3000efb5b6697864a3d0f12cf935ec19fae225fce0a1bf2930b34690043f9c`,
+before any V3 candidate run. Authenticate the unchanged V3 test
+controller, V2 identity guard, and V1 literal original-test harness.
+Preserve every existing V1 and V2 source, report, and receipt.
+
+Require the unchanged **165** original methods, **152** public tests,
+**13** exact private waivers, **151** original Python passes, and the
+one genuine debug-only skip. Preserve both complete **152**-record
+baseline and candidate vectors, all errors, tracebacks, original
+process output, exact native-source and binary identities, **304**
+genuine matcher-ownership checks, and **304** genuine warning-registry
+checks.
+
+Preflight two distinct, fresh, non-symlink output files before exactly
+one native-pinned original-suite process. Independently synchronize
+and reread both the full result and its separate receipt. A real
+candidate failure must produce complete durable evidence before the
+command exits unsuccessfully; never retry or overwrite an occupied
+label.
+
+Both ordinary and empty-environment synthetic-only self-tests pass
+**131** genuine tampering rejections and **17** positive controls.
+They start **zero** actual original-suite processes, import **zero**
+candidates, write **zero** evidence files, read **zero** hidden
+cases, and collect **zero** timings. The first V3 Rust candidate run
+is **NOT RUN** until this independently reviewed recorder is
+committed and pushed.
+
 ## Freeze warning-safe original Python tests without weakening isolation
 
 Independently review and freeze the additive
