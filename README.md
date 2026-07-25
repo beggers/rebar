@@ -202,6 +202,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/python_re_buffer_exporter_oracle_v2.py --self-test
 "$PY" -I -B tools/python_re_subinterpreter_oracle_v1.py --self-test
 "$PY" -I -B tools/rust_public_practice_benchmark_v1.py --self-test
+"$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --check
 ```

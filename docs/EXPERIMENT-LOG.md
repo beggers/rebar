@@ -7,6 +7,37 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a complete, durable Rust failure recorder
+
+Freeze and independently review a separate recorder before publishing the
+complete **864-case** Rust result. Preserve the already frozen development
+checker unchanged. Authenticate the exact original case matrix, pinned
+Python interpreter, actual Python adapter, native Rust matching engine,
+and CPython bridge both before and after the comparison.
+
+- [Frozen complete-result recorder](../tools/record_rust_public_correctness_v1.py),
+  SHA-256 `41b749696cc498be4e2b5d63866fb103d29d54e1277dae6a5659fd63302daa49`.
+- Unchanged public checker SHA-256
+  `d74932c13bdda64e1340c958cbea48d65db36531b849e202dfc16170de150b37`.
+- Actual Rust-engine binary SHA-256
+  `d590300720215718782227dd8da1192047b4781bdb41ed94446cac06ba880e84`.
+- Actual CPython-bridge binary SHA-256
+  `382483ce462aaf31fa067b86db606bc5d2d912796026366a6baf4bed11fb8a77`.
+
+Preflight two fresh, explicitly named result and receipt files before
+starting the single candidate worker. Create both exclusively, avoid
+symbolic links, synchronize each file and its containing directory, and
+read back and verify every byte. Preserve all successful cases, complete
+failed inputs and results, the real Python and Rust process identities,
+exact source and binary hashes, and the actual failure exit status.
+
+Both ordinary and empty-environment source controls pass with **864**
+original Python observations, **48** malicious-input rejection checks,
+no candidate process, no clock sample, and no output file. The durable
+candidate report and receipt remain **NOT RUN** until this separately
+frozen recorder is committed and pushed. Final cases remain
+**NOT ACCESSED**; speed and memory remain **NOT MEASURED**.
+
 ## Fix the Rust module contract and expose all scanner failures
 
 Give the from-scratch Rust engine Python **3.14.6**'s exact public flag
