@@ -96,8 +96,11 @@ The [corrected original-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V1
 keeps every public test and removes only the test harness's own interference.
 An [independent read-only check](oracle/cpython-3.14.6/evidence/postfinal-locale-v16-readonly-native-bridge-integration-pass.json)
 verifies the two Python baselines, all three from-scratch engines, and their
-preserved evidence without importing or running an engine. Candidate results
-under this corrected protocol are **NOT RUN**.
+preserved evidence without importing or running an engine. A
+[separate independently replayed verification](oracle/cpython-3.14.6/evidence/postfinal-locale-v16-root-verified-readonly-native-bridge-integration-pass.json)
+checks the actual historical failure, all twelve engine proofs, and both
+Python references again. Candidate results under the corrected protocol
+remain **NOT RUN**.
 
 The [independent-language inventory](experiments/FROM-SCRATCH-LANGUAGE-LANDSCAPE-V1.md)
 also covers separately authored

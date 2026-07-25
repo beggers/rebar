@@ -7,6 +7,38 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Independently replay the frozen original-test integration
+
+Replay the corrected, already-frozen original-test runner against the real
+historical evidence in both ordinary and empty environments. Enter the
+existing real five-counter read-only boundary before authenticating any
+evidence. Read and verify, without starting a candidate, the two separately
+executed Python reference roles; all **12** independently owned engine
+source files; all **five** current native binaries; and all **12** original
+and deeper correctness archives and ownership proofs for Rust, C, and Zig.
+
+Independently authenticate the complete original Rust failure, its
+**17,338,567-byte** preserved document, its complete **3,474,497-byte**
+worker stream, all **152** original records, each of the **12** exact error
+reasons, all **304** actual native-owner checks, all **304** cached-matcher
+checks, and its actual **11-field** durable publication receipt. Verify the
+authentic public denominator of **152**, the **165** original methods,
+the **13** private methods in **two** named classes, and the genuine
+debug-build skip. Ensure that Python's original assertion methods remain
+unchanged throughout.
+
+- [Root-verified, separately replayed read-only integration](../oracle/cpython-3.14.6/evidence/postfinal-locale-v16-root-verified-readonly-native-bridge-integration-pass.json),
+  SHA-256 `bd3c86b50f1efe2c020ae079f4f8be9166ebc1b83dfc9d0b9332a2b17ab31449`.
+
+Both full replays independently verify every archived edge and deeper proof
+hash against the real source and native graph. In both environments, all
+five actual effect counters remain **zero**: no candidate imports, native
+workers, subprocesses, filesystem writes, or clock samples. Preserve the
+earlier independently generated integration separately; never replace its
+path or claim that either read-only report ran a candidate. The corrected
+original candidate suites remain **NOT RUN**. Current performance remains
+**NOT MEASURED** and the larger holdout remains **NOT ACCESSED**.
+
 ## Freeze a corrected, independently owned original Python test runner
 
 Preserve the complete **165-method** original source, its **152** public
