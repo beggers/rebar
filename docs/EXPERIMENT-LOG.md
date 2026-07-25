@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve Python's actual retained-scanner buffer behavior
+
+Run the separately corrected, frozen **264-case** buffer oracle exactly
+once against isolated Python **3.14.6**, only after its source and
+protocol were committed, pushed, and independently reviewed. The genuine
+first worker passes and preserves the first **256** complete cases. It
+fails on `buffer-exporter.v1.256`, a directly exported mutable buffer
+retained by `Pattern.scanner`.
+
+- [Complete real 256-case prefix and Python scanner-lifetime failure](../oracle/cpython-3.14.6/evidence/public-buffer-exporter-v2-self-oracle-failures.json),
+  SHA-256 `33396962dbe4144fcec37d1941d3147c163273ee83592a53fe09aad61c87fea6`.
+- [Independently verified durable second-failure receipt](../oracle/cpython-3.14.6/evidence/public-buffer-exporter-v2-self-oracle-failure-publication-receipt.json),
+  SHA-256 `f81d87020e2ba5d8f7adf956ecfdbede12c3d3cf0639a290fa054e6f3fe70603`.
+
+Authenticate the genuine first worker's complete **214,865-byte**
+standard output, empty standard error, process identity, exit status,
+source-ordered **256-case** passing prefix, complete failed-case record,
+and independent **5,849-byte** durable receipt. Python's actual scanner
+keeps the owner and carrier alive after the first garbage collection;
+the exact observed ledger has **two** acquisitions and **one** release.
+The test incorrectly demands final cleanup before breaking its own
+fixture-created cycle. Preserve that actual observation, the original V1
+failure, and both separate receipts. Never retry either failed version,
+waive the scanner case, or claim a completed reference or candidate.
+A further correction must first record Python's actual retained state
+and only then safely break its own fixture cycle. Buffer compatibility
+remains **NOT QUALIFIED**; performance is **NOT MEASURED** and the
+holdout **NOT ACCESSED**.
+
 ## Freeze phase-correct Python buffer and object lifetimes
 
 Preserve the original failed buffer test and its genuine durable receipt;

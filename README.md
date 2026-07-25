@@ -106,7 +106,8 @@ because the test assumed every buffer had already been acquired and
 released. The original failure is preserved; candidate runs are **NOT RUN**.
 A [separately corrected buffer-lifetime test](oracle/cpython-3.14.6/PUBLIC-BUFFER-EXPORTER-V2.md)
 keeps all **264** original cases and checks actual object release, leaks,
-and safe cleanup. Its Python reference and candidate runs are **NOT RUN**.
+and safe cleanup. Its [first Python reference passes 256 cases before exposing real scanner-retention behavior](oracle/cpython-3.14.6/evidence/public-buffer-exporter-v2-self-oracle-failures.json).
+The genuine failure is preserved; buffer compatibility is **NOT QUALIFIED**.
 A [separate 128-case interpreter-isolation test](oracle/cpython-3.14.6/PUBLIC-SUBINTERPRETER-V1.md)
 is frozen for independent Python interpreters, pattern caches, and object
 lifetimes. [Two actual Python reference processes pass all 128 cases](oracle/cpython-3.14.6/evidence/public-subinterpreter-v1-self-oracle.json).
