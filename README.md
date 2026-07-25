@@ -20,9 +20,11 @@ and NOT QUALIFIED**. Bindings are not extra matching engines.
 pass all 223,198 original and all 393 deeper compatibility cases without
 calling Python's matcher or another regex engine. The first complete
 Python test attempt exposed a shared test-harness bridge-wiring failure
-before Rust's first test. C and Zig have not run the complete suite. Current
-speed and memory are NOT MEASURED. There is no winner.** The first graph
-below shows the current engines; the later speed graphs describe older,
+before Rust's first test. A corrected test runner is now frozen and has
+been checked against all three real native bridges without running a
+test. C and Zig have not run the complete suite. Current speed and
+memory are NOT MEASURED. There is no winner.** The first graph below
+shows the current engines; the later speed graphs describe older,
 archived builds.
 
 ## Current results
@@ -136,7 +138,15 @@ original method:
 the frozen upstream harness did not pass the already authenticated
 native bridge into Python's original test adapter. Its
 [complete actual failure and synchronization receipt](oracle/cpython-3.14.6/evidence/postfinal-locale-v12-rust-failures-production-summary.json)
-are preserved. C and Zig have **NOT RUN** the complete upstream tests.
+are preserved.
+
+The [separately frozen corrected full-suite runner](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V13.md)
+passes **1,092** checks of the test harness itself. Its
+[real read-only integration](oracle/cpython-3.14.6/evidence/postfinal-locale-v13-readonly-native-bridge-integration-pass.json)
+verifies all three independently owned bridges, all five native files,
+all twelve original and deeper proofs, and the exact preserved failure.
+It starts **zero** matchers or tests. The corrected full Python test
+remains **NOT RUN** for Rust, C, and Zig.
 
 The [frozen expanded compatibility tests](oracle/cpython-3.14.6/PUBLIC-SURFACE-V27.md)
 preserve the [original Python reference](oracle/cpython-3.14.6/PUBLIC-SURFACE-V19.md)
@@ -179,6 +189,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/postfinal_independent_engine_audit_v21.py --self-test
 "$PY" -I -B tools/postfinal_current_build_proofs_v24.py --self-test
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v12.py --self-test
+"$PY" -I -B tools/postfinal_cpython_locale_oracle_v13.py --self-test
 "$PY" -I -B tools/python_re_public_surface_oracle_stage27.py --self-test
 "$PY" -I -B tools/render_current_correctness_v1.py --self-test
 "$PY" -I -B tools/render_current_correctness_v1.py --check

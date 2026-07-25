@@ -7,6 +7,59 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze and independently check the corrected complete Python test runner
+
+Preserve the first real full-suite Rust failure and its captured output
+without changing, retrying, or replacing either original file. Its exact
+cause was an empty native-bridge mapping in Python's immutable original
+test adapter. The already authenticated mappings for all three engines
+were present in the controller but had not been passed to that adapter.
+
+Freeze an additive corrected runner before executing any engine:
+
+- [Corrected full-suite source](../tools/postfinal_cpython_locale_oracle_v13.py),
+  SHA-256 `5f9ca285ba617308dead53b97a6d6c707bd4371b7cad79345da8b99223260015`.
+- [Corrected full-suite protocol](../oracle/cpython-3.14.6/POSTFINAL-LOCALE-V13.md),
+  SHA-256 `7ab886971b63faddecb56f4403a582d48903fbb228bc0fccdca80c46f5c4c0dc`.
+- [Actual root-run three-engine, read-only integration](../oracle/cpython-3.14.6/evidence/postfinal-locale-v13-readonly-native-bridge-integration-pass.json),
+  SHA-256 `3b9df2bee6934f5298c980dc770bc721e844ab82e85d608f98efea29b8244106`.
+
+The genuine integration authenticates both independently executed
+no-delegation reports, all **12** from-scratch source files, all **five**
+native engine files, and all **12** exact, separately published passing
+original and deeper archives and owner proofs. It validates the exact
+original **6,007-byte** V12 failure, its actual **11-field**
+exclusive-write receipt, its complete **1,221-byte** worker output, and
+its genuinely zero completed tests. It verifies the actual previously
+empty original Python provenance, installs a separately deep-copied
+mapping containing every owned native file, checks all nine fresh
+candidate-specific output paths, and rejects cross-family, missing, or
+aliased mappings.
+
+Run the complete check within the actual read-only native-ownership
+boundary. All five real effects remain exactly zero: **zero** candidate
+imports, **zero** native workers, **zero** subprocesses, **zero**
+filesystem writes, and **zero** clock samples. No reference, candidate,
+upstream test, locale generation, performance workload, or holdout is
+executed.
+
+The corrected runner passes all **1,092** candidate-free adversarial
+source controls in both a normal environment and a completely cleared
+environment. Two independently completed source and contract reviews
+approve these exact frozen source and protocol hashes. Independently
+rerun the **591** ownership controls,
+**8,330** original and deeper proof controls, **1,035** immutable V12
+controls, **1,018** expanded compatibility controls, and **38**
+headline-chart controls in both environments. Revalidate the generated
+headline chart against all **21** actual evidence files in both
+environments.
+
+This chunk proves the corrected harness is frozen and connected to the
+real independently owned engines. It does **not** claim that any
+candidate has passed Python's complete suite: all three corrected
+full-suite runs remain **NOT RUN**. Performance is **NOT MEASURED**;
+the holdout is **NOT ACCESSED**.
+
 ## Generate a clear, independently reproducible current-results graph
 
 Place the current Rust, C, and Zig correctness results at the top of
