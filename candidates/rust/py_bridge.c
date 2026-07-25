@@ -3160,9 +3160,10 @@ static PyObject *rust_match_expand(RustMatch *match, PyObject *template) {
     int text = PyUnicode_CheckExact(match->string);
     int ordinary_bytes = PyBytes_CheckExact(match->string);
     int ordinary_bytearray = PyByteArray_CheckExact(match->string);
+    int ordinary_memoryview = PyMemoryView_Check(match->string);
     if (
         (text && !PyUnicode_CheckExact(template))
-        || (!text && !(ordinary_bytes || ordinary_bytearray))
+        || (!text && !(ordinary_bytes || ordinary_bytearray || ordinary_memoryview))
         || (!text && !PyBytes_CheckExact(template))
     ) {
         return rust_match_expand_fallback(match, template);
@@ -3172,7 +3173,9 @@ static PyObject *rust_match_expand(RustMatch *match, PyObject *template) {
         ? PyUnicode_GET_LENGTH(match->string)
         : ordinary_bytes
             ? PyBytes_GET_SIZE(match->string)
-            : PyByteArray_GET_SIZE(match->string);
+            : ordinary_bytearray
+                ? PyByteArray_GET_SIZE(match->string)
+                : match->endpos;
     PyObject *templates = PyObject_GetAttr(
         match->pattern,
         rust_pattern_attribute_names[RUST_PATTERN_ATTRIBUTE_TEMPLATES]

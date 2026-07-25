@@ -7,6 +7,55 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Correct every memory-view failure without adding an external engine
+
+Fix the independently recorded **53** memory-view failures inside the
+owned Rust Python bridge and owned Python replacement parser. Route
+ordinary writable and read-only memory views through the existing
+native compiled-template writer. Preserve template-validation order,
+correctly reject released buffers, hash writable replacement views
+before conversion, and acquire real Python-defined buffer exporters
+without suppressing their original exceptions.
+
+Preserve the intermediate
+[complete 16-failure result](../experiments/rust_public_practice_v1/rust-memoryview-expand-v1-after-native-fix.json),
+SHA-256
+`7b658e690dc0cb185c600b245d018c03e07aed480c283e76088d03e9a989dc01`,
+and its
+[independent intermediate receipt](../experiments/rust_public_practice_v1/rust-memoryview-expand-v1-after-native-fix-publication-receipt.json),
+SHA-256
+`0d6f74bde2548a9b8603a625b2379eeab4fe130235702ba3113e649ff6d7f628`.
+The first change fixes all **32** released-view failures and all
+**five** writable-template failures; retain all **16** remaining
+exporter mismatches rather than hiding the failed intermediate.
+
+After correcting real exporter acquisition, run each unchanged,
+independently frozen correctness test and capture its actual result:
+
+- [Memory-view result](../experiments/rust_public_practice_v1/rust-memoryview-expand-v1-after-native-exporter-fix.json):
+  **768 / 768**, zero mismatches; receipt SHA-256
+  `ab13d79716ef03e364c6a62d1453c3f43a5c75badeaf7fe143ebe57b53c324e1`.
+- [Original Python tests](../experiments/rust_public_practice_v1/rust-original-v3-memoryview-native-exporter-fix.json):
+  **151 / 151** runnable tests and the identical genuine debug-only
+  skip; receipt SHA-256
+  `18172ddeb7f99a6605aa6e0dcb940a992668eafb7b452a3f79e18863ad64f683`.
+- [General Python behavior](../experiments/rust_public_practice_v1/rust-module-v1-after-native-memoryview-exporter-fix.json):
+  **864 / 864**; receipt SHA-256
+  `77bdd72b5593de070a8031d8a2fda91d2915e0447bf2e229020d7d1822bdc425`.
+- [Independent scanner behavior](../experiments/rust_public_practice_v1/rust-native-scanner-v1-after-native-memoryview-exporter-fix.json):
+  **1,024 / 1,024** across all **32** scanner families.
+- [Complete from-scratch ownership audit](../experiments/rust_public_practice_v1/rust-from-scratch-audit-v1-memoryview-native-exporter-fix.json):
+  **zero** external Rust packages, **zero** standard-library matching,
+  **zero** external regex engines, and **zero** cross-candidate or
+  dynamic-loader escapes.
+
+The **44** native Rust tests pass in both debug and release mode.
+Every correctness check reads **zero** hidden cases and takes
+**zero** performance samples. Keep the previous **1.058×** speed as
+an explicitly older-build measurement. The corrected native build's
+speed, memory, regressions, and final performance remain **NOT
+MEASURED** until a separately recorded benchmark.
+
 ## Freeze an independent no-external-regex Rust ownership audit
 
 Independently review and freeze the additive
@@ -33,8 +82,9 @@ Both ordinary and empty-environment candidate-free self-tests pass
 delegation attacks. They read **zero** real candidates or native
 binaries, start **zero** actual candidate workers, read **zero**
 hidden cases, and take **zero** timing measurements. The first
-current-engine audit remains **NOT RUN** until this independently
-reviewed source is committed and pushed.
+current-engine audit had **NOT RUN** when this independently reviewed
+source was committed and pushed. Its independently guarded passing
+result is preserved above.
 
 ## Preserve every actual memory-view failure and traceback
 

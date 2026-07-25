@@ -299,11 +299,22 @@ def _warn_ambiguous(pattern):
 
 
 def _template(value, match, validate_only=False):
-    if isinstance(value, (bytearray, memoryview)):
-        value = bytes(value)
-    if not isinstance(value, (str, bytes)):
+    if isinstance(value, memoryview):
         hash(value)
-        raise TypeError(f"decoding to str: need a bytes-like object, {type(value).__name__} found")
+        value = str(value, "latin1").encode("latin1")
+    elif isinstance(value, bytearray):
+        value = bytes(value)
+    elif not isinstance(value, (str, bytes)):
+        hash(value)
+        try:
+            view = memoryview(value)
+        except TypeError:
+            value = str(value, "latin1").encode("latin1")
+        else:
+            try:
+                value = view.tobytes()
+            finally:
+                view.release()
     byte_mode = isinstance(value, bytes)
     text = value.decode("latin1") if isinstance(value, bytes) else value
     output = []
