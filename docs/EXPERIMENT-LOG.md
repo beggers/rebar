@@ -7,6 +7,44 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a corrected, independently owned original Python test runner
+
+Preserve the complete **165-method** original source, its **152** public
+requirements, and the **13** explicitly named CPython-private methods. Keep
+both actual **151-pass, one-debug-skip** Python references and Rust's complete
+**139-pass, 11-harness-error, one-missing-feature, one-debug-skip** result.
+The missing `_compile` pickling feature remains a real failure; the new
+runner does not install it, waive it, or change any candidate.
+
+Correct the test harness by temporarily allowing Python's own test assertions
+to call only the exact independently authenticated engine already under test.
+Authenticate the pinned Python test-runner source; block Python's regex engine,
+external regex packages, and the other two candidates; restore the original
+test-runner bindings before every ownership check. Preserve all **304**
+historical native ownership checks, all **304** matching checks, all five
+original Rust failure records, the distinct earlier ownership-audit failure,
+and every earlier unsuccessful attempt.
+
+- [Corrected original-test runner](../tools/postfinal_cpython_locale_oracle_v16.py),
+  SHA-256 `aebd9f12728ded830256daefcc52ed4531882598f70c41ac95108f0f322d5d66`.
+- [Frozen original-test protocol](../oracle/cpython-3.14.6/POSTFINAL-LOCALE-V16.md),
+  SHA-256 `88d6c8491bd910a1525125fe68af98fbaa9b71ddffaa3b7ce9539fd9a312376a`.
+- [Actual all-family, read-only integration evidence](../oracle/cpython-3.14.6/evidence/postfinal-locale-v16-readonly-native-bridge-integration-pass.json).
+
+Independently run both the command-line and direct-call source checks in an
+ordinary environment and in an empty environment. Each of the four actual
+runs passes all **1,553** checks; each blocks **79** attempted source or
+evidence reads and starts **zero** candidate, reference, or native workers.
+Separately authenticate the real two-reference baseline, all **12** current
+candidate source files, all **five** native binaries, and all **12** original
+correctness archives and ownership proofs inside the actual five-counter
+read-only boundary. All five observed effects remain zero. This integration
+does not execute an original test or a candidate.
+
+V16 original-suite results for Rust, C, and Zig remain **NOT RUN**. The
+current engines' speed and memory remain **NOT MEASURED**; the larger final
+holdout remains **NOT ACCESSED**.
+
 ## Show exactly which original Python tests actually ran
 
 Independently inspect both real, pinned Python reference runs before changing

@@ -92,6 +92,13 @@ are preserved without removing any failure. The separately
 cover **1,376** examples across **43** categories. Python's two reference
 runs pass them; the current candidates have **NOT RUN** those tests.
 
+The [corrected original-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V16.md)
+keeps every public test and removes only the test harness's own interference.
+An [independent read-only check](oracle/cpython-3.14.6/evidence/postfinal-locale-v16-readonly-native-bridge-integration-pass.json)
+verifies the two Python baselines, all three from-scratch engines, and their
+preserved evidence without importing or running an engine. Candidate results
+under this corrected protocol are **NOT RUN**.
+
 The [independent-language inventory](experiments/FROM-SCRATCH-LANGUAGE-LANDSCAPE-V1.md)
 also covers separately authored
 [C++](experiments/cpp_from_scratch_v1/STATIC-GAPS-V1.md) and
@@ -132,6 +139,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/postfinal_independent_engine_audit_v21.py --self-test
 "$PY" -I -B tools/postfinal_current_build_proofs_v24.py --self-test
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v15.py --self-test
+"$PY" -I -B tools/postfinal_cpython_locale_oracle_v16.py --self-test
 "$PY" -I -B tools/python_re_public_surface_oracle_stage27.py --self-test
 "$PY" -I -B tools/render_current_correctness_v5.py --self-test
 "$PY" -I -B tools/render_current_correctness_v5.py --check
