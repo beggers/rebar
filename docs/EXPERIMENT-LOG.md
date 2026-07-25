@@ -7,6 +7,41 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze complete identity-safe original-test result capture
+
+Independently freeze and review the additive
+[V2 original-suite result recorder](../tools/record_rust_original_cpython_v2.py),
+SHA-256
+`a3a35fac27c08121cde5ab5d0216de25b06c739e57033a5e0d2be20c99e7076e`,
+before invoking the corrected identity-based original suite. Preserve
+the frozen V1 test controller, V1 result recorder, complete first
+failed V1 run, and original failure receipt without edits.
+
+Require both the exact V2 source hash
+`569036804b557b01eb29ba404c6fea0ecc5806bdbc2b6b9eb61c1ea18aa79267`
+and the independently pinned original V1 harness hash
+`cf0267e3766fb849891d182e5b57ced569a0634831dd494d8135e703844b6c95`.
+Preserve all **165** original methods, **152** public cases, the exact
+**13** named private waivers, **zero** public waivers, all genuine
+baseline and candidate records, every mismatch, all actual error
+tracebacks, complete stdout and stderr, and all **304** real
+object-identity checks. The guard must explicitly report that public
+type names are **not** used to identify CPython's matching engine.
+
+Verify all three actual Rust component hashes before and after exactly
+one isolated original-suite process. Preflight new, distinct,
+non-symlink report and receipt paths before starting that process.
+Exclusively create, synchronize, and independently reread both
+complete evidence files. Preserve a real failing candidate before
+returning its actual failure; never retry an occupied output.
+
+Both ordinary and empty-environment self-tests pass **124** genuine
+tampering rejections and **16** positive controls using synthetic data
+only. They perform **zero** actual original-suite invocations,
+candidate imports, evidence writes, timing trials, and hidden-case
+reads. The first corrected candidate comparison remains **NOT RUN**
+until this independent V2 recorder is committed and pushed.
+
 ## Freeze identity-based original-suite matcher isolation
 
 Preserve the first genuine

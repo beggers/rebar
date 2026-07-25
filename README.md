@@ -141,9 +141,11 @@ all original tests and no-delegation controls. Its Rust candidate run
 is **NOT RUN** until the corrected source has been committed and
 pushed; Rust remains **NOT QUALIFIED** against the full original suite.
 A separately verified
-[full-result recorder](tools/record_rust_original_cpython_v1.py)
+[identity-safe full-result recorder](tools/record_rust_original_cpython_v2.py)
 preserves every original Python and Rust test result, error, traceback,
-and native-engine identity before reporting success or failure.
+and native-engine identity before reporting success or failure. The
+original [V1 recorder and failure](tools/record_rust_original_cpython_v1.py)
+remain unchanged.
 
 ## Independent engines and compatibility
 
@@ -251,6 +253,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/rust_original_cpython_suite_v1.py --self-test
 "$PY" -I -B tools/rust_original_cpython_suite_v2.py --self-test
 "$PY" -I -B tools/record_rust_original_cpython_v1.py --self-test
+"$PY" -I -B tools/record_rust_original_cpython_v2.py --self-test
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_speed_v1.py --self-test
