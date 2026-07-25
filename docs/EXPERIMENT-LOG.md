@@ -7,6 +7,40 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a small public Rust development check
+
+Freeze and independently review a new from-scratch public correctness and
+practice checker before using it on Rust. Its original, fixed matrix has
+**864** equally weighted examples: **24** datasets across **36** matching,
+compilation, replacement, callback, iterator, scanner, capture, buffer,
+and warning operations. Exactly **432** examples use text and **432** use
+bytes or genuine mutable or read-only byte buffers.
+
+- [Frozen public development checker](../tools/rust_public_practice_benchmark_v1.py),
+  SHA-256 `d74932c13bdda64e1340c958cbea48d65db36531b849e202dfc16170de150b37`.
+- Original **864-case** matrix SHA-256
+  `367d30517874745b11d6facf43685a906784dc94c0246dc6a6381c17afcc776e`.
+- Identical actual Python-reference outcome SHA-256
+  `0ae84d65f16976e046a267704585306c3968703194d26bbc3c5223b746304f7c`.
+
+Both the ordinary and empty-environment source checks independently run
+two pinned Python **3.14.6** processes. Every reference records all
+**864** results in their original order; the separate references agree
+exactly. They observe real scanner callback match identity and capture
+state, bytearray and mutable and read-only memory-view remainders,
+replacement errors, and all five positional-argument warning cases.
+They import no candidate, sample no clock, write no evidence, and read no
+final or existing benchmark case.
+
+The default prospective timing uses **12** exactly balanced, alternating
+paired rounds, full public-operation costs, equal case weights, one
+consistent paired geometric mean, reproducible confidence intervals, and
+every slowdown. Actual Rust correctness, timings, memory, rankings, and a
+winner remain **NOT RUN** or **NOT MEASURED**. This deliberately small
+development matrix is neither of the separately proposed
+**1,048,576-case** public and final comparisons. The final cases remain
+**NOT ACCESSED**.
+
 ## Expand the next blind comparison to one million cases
 
 Increase each prospective public and separately generated final

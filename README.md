@@ -137,6 +137,14 @@ Detailed experiments, rejected approaches, setup failures, commands, and
 complete evidence belong in the [experiment log](docs/EXPERIMENT-LOG.md),
 not in this overview.
 
+An independently reviewed, public-only
+[Rust development check](tools/rust_public_practice_benchmark_v1.py)
+covers **864** fixed examples across **36** Python operations, with equal
+text and bytes coverage. Two isolated Python reference runs agree on every
+example, including scanner callbacks, memory views, and Python 3.14
+warnings. This small development check is not the million-example public
+comparison or final test. Rust results and practice speed are **NOT RUN**.
+
 ## Larger fair speed comparison
 
 The planned public comparison and separately generated final test will
@@ -182,6 +190,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/python_re_buffer_exporter_oracle_v1.py --self-test
 "$PY" -I -B tools/python_re_buffer_exporter_oracle_v2.py --self-test
 "$PY" -I -B tools/python_re_subinterpreter_oracle_v1.py --self-test
+"$PY" -I -B tools/rust_public_practice_benchmark_v1.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --check
 ```
