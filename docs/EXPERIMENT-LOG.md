@@ -7,6 +7,32 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Expand the planned blind speed comparison without opening it
+
+Increase the prospective public and independently generated final
+comparisons from **33,280** to **131,072** cases each, about **3.94 times**
+the earlier planned size. Balance **16** public Python-operation groups,
+**16** operation-applicable pattern families, **four** valid input forms,
+**four** applicable compilation and object lifecycles, and **32**
+independently generated variants per cell:
+**16 × 16 × 4 × 4 × 32 = 131,072**. Predeclare genuine API applicability;
+do not invent an illegal bytes, callback, scanner, or lifecycle cross-product.
+
+The prospective minimum is **11** paired rounds for pinned Python and all
+three independently built engines, or **5,767,168** potential timing
+observations; none has been performed. Separately plan **4,096** balanced
+memory observations and **1,024** Python-to-native boundary observations.
+Preserve every case, confidence interval, and slowdown; **78,644** cases
+are required to exceed the exact **60%** faster-case threshold.
+
+Freeze the generator, exact legal strata, equal weights, confidence rules,
+engine source and binary identities, limits, and independently protected
+opening only **after** three engines pass every original, expanded,
+buffer, interpreter, and no-delegation gate. Do not generate, inspect,
+open, tune against, or time a final case in advance. This is a prospective
+expansion, **NOT** a frozen protocol or measurement: the final cases are
+**NOT ACCESSED**; speed and memory are **NOT MEASURED**.
+
 ## Validate Python's real interpreter isolation twice
 
 Run the frozen interpreter-isolation oracle exactly once, only after its

@@ -135,11 +135,19 @@ not in this overview.
 
 ## Larger fair speed comparison
 
-A larger, **33,280-example** public comparison and a separate,
-independently generated **33,280-example** final test are planned.
-Neither has been frozen or used to measure the current engines. The
-final test is **NOT OPENED**. Current speed, memory use, uncertainty,
-slowdowns, and rankings are **NOT MEASURED**.
+The planned public comparison and independently generated final test
+will each cover **131,072 examples**: nearly four times the previous
+**33,280-example** plan. The comparison will balance everyday matching,
+searching, splitting, replacements, Unicode, bytes, compilation, cached
+patterns, iterators, callbacks, unusual inputs, memory, and the cost of
+calling each native engine from Python.
+
+Freeze and open the final test only after all three genuinely separate,
+from-scratch engines pass every required correctness and independence
+check. Run Python and each qualifying engine on exactly the same cases;
+report overall speed, uncertainty, memory, and every slowdown. The
+expanded test is **NOT FROZEN** and **NOT OPENED**. Current speed, memory,
+uncertainty, slowdowns, and rankings are **NOT MEASURED**.
 
 ## Evidence and reproduction
 
