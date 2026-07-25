@@ -7,6 +7,44 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Expand the next blind comparison to one million cases
+
+Increase each prospective public and separately generated final
+comparison from **131,072** to **1,048,576** cases. Preserve the
+original operation groups, pattern families, input forms, object
+lifetimes, earlier seeds, raw evidence, and published results; increase
+the independently generated variants from **32** to **256** per legal
+cell:
+
+**16 × 16 × 4 × 4 × 256 = 1,048,576**.
+
+Define the applicable inputs, flags, replacement actions, callbacks,
+scanners, compiled-pattern states, and object lifetimes separately for
+each operation. Do not create or count unsupported combinations merely
+to fill a grid. Use independently generated cases, publish every actual
+case and its declared weight, and give Python and every eligible
+from-scratch engine precisely the same work.
+
+Predeclare at least **11** alternating paired rounds for pinned Python
+and all three independently implemented candidates. That would produce
+at least **46,137,344** timing observations; none has been collected.
+Predeclare a separately balanced minimum of **16,384** memory
+observations and **4,096** Python-to-native boundary observations. Count
+every case, publish uncertainty intervals and all slowdowns, and require
+statistical improvement on at least **629,146** cases to satisfy the
+exact **60%** faster-case threshold.
+
+The final generator, legal strata, weights, random domain, confidence
+rules, candidate source and native-binary identities, and protected
+opening must be frozen only after all three engines pass Python's
+original tests, the expanded public interface, buffer and interpreter
+lifetime tests, and independent from-scratch ownership checks. A package
+wrapper, another candidate's matcher, Python's `_sre`, and a fallback
+cannot qualify. Never generate, inspect, time, or optimize against a final
+case before that gate. This is a prospective comparison, not a frozen
+performance protocol or a result: final cases are **NOT ACCESSED**;
+current speed and memory are **NOT MEASURED**.
+
 ## Preserve Python's actual retained-scanner buffer behavior
 
 Run the separately corrected, frozen **264-case** buffer oracle exactly
