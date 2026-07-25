@@ -66,8 +66,11 @@ comparison found **53** mismatches: **32** released views, **16**
 failing buffer exporters, and **five** incorrect-template exceptions.
 The [honest first-run summary](experiments/rust_public_practice_v1/rust-memoryview-expand-v1-first-unrecorded-summary.json)
 records that the full console output was truncated, not durably
-captured. Correctness fixes and any resulting speed change are **NOT
-MEASURED**. Native memory use is **NOT MEASURED**.
+captured. An independently verified
+[complete memory-view result recorder](tools/record_rust_memoryview_expand_v1.py)
+will preserve every failure before any fix. Its first actual
+recorded run and any resulting speed change are **NOT RUN**. Native
+memory use is **NOT MEASURED**.
 
 ## Earlier three-engine speed comparison
 
@@ -233,6 +236,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/rust_public_practice_benchmark_v1.py --self-test
 "$PY" -I -B tools/rust_scanner_differential_v1.py --self-test
 "$PY" -I -B tools/rust_memoryview_expand_differential_v1.py --self-test
+"$PY" -I -B tools/record_rust_memoryview_expand_v1.py --self-test
 "$PY" -I -B tools/rust_original_cpython_suite_v1.py --self-test
 "$PY" -I -B tools/rust_original_cpython_suite_v2.py --self-test
 "$PY" -I -B tools/rust_original_cpython_suite_v3.py --self-test

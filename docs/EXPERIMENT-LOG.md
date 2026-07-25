@@ -7,6 +7,34 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze complete capture of memory-view compatibility failures
+
+Independently review and freeze the additive
+[memory-view result recorder](../tools/record_rust_memoryview_expand_v1.py),
+SHA-256
+`3650b9033bdf9fb5d2f48bf4da4e0ab71deb0aa76e2e1ef03df58a3e1e4f3931`,
+before any further memory-view candidate run. Pin the unchanged
+**768-case** oracle, exact matrix, original Python baseline, real
+Rust adapter, and both original native binaries.
+
+Preflight two genuinely fresh, exclusive, non-symlink output paths.
+Execute the unchanged frozen oracle exactly **once** in a pinned,
+isolated process. Preserve the **complete** actual standard output
+and error, every mismatch, all **24** family totals, candidate and
+baseline record hashes, and the candidate's true exit status. The
+frozen memory-view oracle does not publish complete successful-case
+vectors; report those vectors as **NOT AVAILABLE**, never invent
+them. Fully synchronize and independently reread the result and its
+separate durable publication receipt before reporting failure.
+
+Both ordinary and empty-environment synthetic tests pass **123**
+actual rejection controls and **13** positive controls, including
+all **53** deterministic example mismatches. The self-tests execute
+**zero** candidates, read **zero** hidden cases, and capture
+**zero** timing samples. The first fully recorded memory-view run
+remains **NOT RUN** until this independently reviewed recorder is
+committed and pushed.
+
 ## Preserve the first broader memory-view failure honestly
 
 Only after independently reviewing, committing, and pushing the
