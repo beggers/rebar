@@ -7,6 +7,40 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a durable recorder for every original Python test outcome
+
+Independently review and freeze the
+[complete original-suite result recorder](../tools/record_rust_original_cpython_v1.py)
+before running Rust against the real CPython methods. Its exact source
+has SHA-256
+`41b89c01c107945c1068c985cc93887ad3a88c5399c9a1be326447d7860c81bf`.
+Bind it to the independently frozen original **165-method** controller,
+its exact **152-method** public matrix, both real Python baselines,
+the actual Rust adapter, and both native Rust libraries.
+
+Preflight two distinct, new, non-symlink result and receipt destinations
+before starting exactly one unchanged original-suite subprocess. Capture
+and preserve the original complete stdout, stderr, exit status, all
+**152** Python-reference records, all **152** candidate records, all
+original errors and tracebacks, every mismatch, the **13** named private
+waivers, the real debug-only skip, and all **304** before-and-after
+matcher-guard checks. Check the exact adapter and both native hashes
+before and after the original run. Create both output files exclusively,
+synchronize their contents and containing directory, then independently
+read back and validate the entire report and receipt. Preserve an
+actual failing original run before returning its real failure status;
+never retry or discard a mismatch.
+
+Both ordinary and empty-environment source self-tests use only complete
+in-memory synthetic original results. They pass **120** distinct
+tampering controls and **15** positive controls, and start **zero**
+candidate workers, write **zero** result files, sample **zero** clocks,
+and read **zero** hidden or benchmark cases. They correctly report
+**151** baseline passes, the one genuine debug-only skip, truthful
+private locales and `fork`, and complete captured failure traces. The
+actual changed-Rust original-suite run remains **NOT RUN** until this
+recorder source is separately committed and pushed.
+
 ## Measure the current Rust engine against Python on all public cases
 
 Run the already frozen **864-case** public development comparison only

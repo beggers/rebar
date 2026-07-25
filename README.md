@@ -128,6 +128,10 @@ now applies CPython's real locale and process setup. Two independent
 Python runs each pass **151 of 152** public tests, with exactly one real
 debug-build-only skip and no public-test waivers. Its changed-Rust run
 is **NOT RUN** until the complete runner has been committed and pushed.
+A separately verified
+[full-result recorder](tools/record_rust_original_cpython_v1.py)
+preserves every original Python and Rust test result, error, traceback,
+and native-engine identity before reporting success or failure.
 
 ## Independent engines and compatibility
 
@@ -233,6 +237,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/rust_public_practice_benchmark_v1.py --self-test
 "$PY" -I -B tools/rust_scanner_differential_v1.py --self-test
 "$PY" -I -B tools/rust_original_cpython_suite_v1.py --self-test
+"$PY" -I -B tools/record_rust_original_cpython_v1.py --self-test
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_speed_v1.py --self-test
