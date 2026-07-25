@@ -79,6 +79,10 @@ and independent
 verify that none uses Python's matcher, an external regex package, or another
 candidate. Those checks do not establish full compatibility or speed.
 
+A [stricter next engine-independence check](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V23.md)
+has been frozen and independently verified before any engine changes.
+Running that check against newly changed engines is **NOT RUN**.
+
 | From-scratch engine | Initial correctness cases | Harder correctness cases | 152 original public-test records |
 | --- | --- | --- | --- |
 | Rust | [223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-rust-postfinal-current-build-v24-qualified-pass-proof.json) | [393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-RUST-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | [150 passes, 1 incompatibility, 1 debug skip](oracle/cpython-3.14.6/evidence/postfinal-locale-v16-rust-failures-production-summary.json) |
@@ -143,6 +147,7 @@ benchmarking a candidate:
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
 "$PY" -I -B tools/postfinal_independent_engine_audit_v21.py --self-test
+"$PY" -I -B tools/postfinal_independent_engine_audit_v23.py --self-test
 "$PY" -I -B tools/postfinal_current_build_proofs_v24.py --self-test
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v15.py --self-test
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v16.py --self-test

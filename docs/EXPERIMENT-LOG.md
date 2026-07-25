@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the next independent-engine check before changing any engine
+
+Freeze and independently verify the next from-scratch ownership check
+**before** adding Python's missing pickling hook or changing a C, Rust,
+or Zig source file. Preserve the real existing **12-source, five-binary**
+engine graph, both old independence checks, the actual two-reference
+original Python baseline, and both genuinely different earlier Rust
+failure records.
+
+- [Frozen independent-engine checker](../tools/postfinal_independent_engine_audit_v23.py),
+  SHA-256 `a565cff78306e9d21a97fbb301e087db7371273bc4079533517492788f70b1cc`.
+- [Frozen independence protocol](../oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V23.md),
+  SHA-256 `8b3da77ba5a659d72c940cd595726b1d9b000ed7db1fac5027745c37d504f6bd`.
+- [Root-verified, real read-only history and descriptor check](../candidates/audits/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V23-ROOT-READONLY-INTEGRATION-PASS.json),
+  SHA-256 `c50e4e5c7ecf9bb5fe09278dd21d9bdd1cf9c705208d7f72e2cbefcfdd4776d6`.
+
+Run each of the command-line and direct-call source tests in an ordinary
+environment and an empty environment. All four runs pass **567** distinct
+checks without starting an engine, reading a holdout, writing evidence,
+or measuring time. Independently check all **six** actual ordered
+file-descriptor open-and-close events, including valid descriptor-number
+reuse only after the previous descriptor closes. All five genuine
+read-only effect counters remain **zero**.
+
+No new production ownership report has run. V23 engine-independence
+results are **NOT RUN**; prior results do not qualify a changed engine.
+The larger holdout remains **NOT ACCESSED**, and current performance is
+**NOT MEASURED**.
+
 ## Run all original Python tests against the corrected Rust harness
 
 Run the frozen, corrected original Python test suite against the existing
