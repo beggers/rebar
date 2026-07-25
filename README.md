@@ -6,9 +6,9 @@ Can a regular-expression engine built from scratch replace
 Every candidate must use its own matching engine, not Python's engine,
 an external regular-expression package, or another candidate.
 
-**Current result:** Rust matches Python on **824 of 864** new public
-development examples. All **40** remaining differences are in scanner
-results or scanner callback errors;
+**Last durably recorded public development result:** Rust matched Python on
+**824 of 864** examples before the scanner fix. All **40** recorded
+differences were scanner results or scanner callback errors;
 [every failing example is preserved](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner.json).
 The original missing pattern-pickling feature now passes Python's real
 test for all **six** pickle formats. A fresh complete original-test run
@@ -74,7 +74,7 @@ The [published comparison](performance/postfinal-public-v6/RESULTS.md),
 and [predeclared measurement rules](performance/postfinal-public-v6/PROTOCOL.md)
 retain the complete results, uncertainty ranges, and all regressions.
 
-## Current engine details
+## Independent engines and compatibility
 
 Each engine uses its own implementation. The frozen source and native-binary
 [ownership check](candidates/audits/POSTFINAL-FROM-SCRATCH-AUDIT-V21.json)
@@ -83,9 +83,8 @@ and independent
 verify that none uses Python's matcher, an external regex package, or another
 candidate. Those checks do not establish full compatibility or speed.
 
-The recorded correctness figures below predate the latest Rust module
-changes. They do not qualify the changed Rust source; fresh checks are
-required.
+The recorded correctness figures below predate the latest Rust changes.
+They do not qualify a changed engine.
 
 A [stricter next engine-independence check](oracle/cpython-3.14.6/POSTFINAL-INDEPENDENT-ENGINE-AUDIT-V23.md)
 has been frozen and independently verified before any engine changes.
@@ -99,67 +98,26 @@ has also been frozen. Fresh proofs for changed engines are **NOT RUN**.
 | C | [223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-vm-postfinal-current-build-v24-qualified-pass-proof.json) | [393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-C-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | NOT RUN |
 | Zig | [223,198 / 223,198](candidates/evidence/rust-v7-edge-oracle-zig-postfinal-current-build-v24-qualified-pass-proof.json) | [393 / 393](candidates/audits/RUST-V8-DEEP-CONTRACT-ZIG-POSTFINAL-CURRENT-BUILD-V24-PASS-PROOF.json) | NOT RUN |
 
-The [original Python baseline](oracle/cpython-3.14.6/evidence/postfinal-locale-v6-self-oracle.json),
-[complete current Rust failure](oracle/cpython-3.14.6/evidence/postfinal-locale-v16-rust-failures.json),
-and [independent failure verification](oracle/cpython-3.14.6/evidence/postfinal-locale-v16-rust-readonly-failure-forensic.json)
-are preserved alongside the [earlier unsuccessful run](oracle/cpython-3.14.6/evidence/postfinal-locale-v15-rust-failures.json).
-The separately
-[frozen expanded public-interface tests](oracle/cpython-3.14.6/PUBLIC-SURFACE-V27.md)
-cover **1,376** examples across **43** categories. Python's two reference
-runs pass them; the current candidates have **NOT RUN** those tests.
-A [separate 264-case buffer-lifetime test](oracle/cpython-3.14.6/PUBLIC-BUFFER-EXPORTER-V1.md)
-is frozen for Python's mutable inputs, callbacks, iterators, and scanners.
-Its [first Python reference genuinely failed](oracle/cpython-3.14.6/evidence/public-buffer-exporter-v1-self-oracle-failures.json)
-because the test assumed every buffer had already been acquired and
-released. The original failure is preserved; candidate runs are **NOT RUN**.
-A [separately corrected buffer-lifetime test](oracle/cpython-3.14.6/PUBLIC-BUFFER-EXPORTER-V2.md)
-keeps all **264** original cases and checks actual object release, leaks,
-and safe cleanup. Its [first Python reference passes 256 cases before exposing real scanner-retention behavior](oracle/cpython-3.14.6/evidence/public-buffer-exporter-v2-self-oracle-failures.json).
-The genuine failure is preserved; buffer compatibility is **NOT QUALIFIED**.
-A [separate 128-case interpreter-isolation test](oracle/cpython-3.14.6/PUBLIC-SUBINTERPRETER-V1.md)
-is frozen for independent Python interpreters, pattern caches, and object
-lifetimes. [Two actual Python reference processes pass all 128 cases](oracle/cpython-3.14.6/evidence/public-subinterpreter-v1-self-oracle.json).
-Candidate interpreter-isolation runs are **NOT RUN**.
+An independently reviewed
+[public development check](tools/rust_public_practice_benchmark_v1.py)
+covers **864** fixed examples across **36** Python operations, equally
+split between text and bytes. Two Python reference runs agree on all
+**864**. The preserved pre-fix Rust
+[result](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner.json)
+and [receipt](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner-publication-receipt.json)
+record all **824** matches and **40** scanner failures. The separately
+frozen [correctness graph generator](tools/render_rust_public_correctness_v1.py)
+accepts only complete, independently authenticated recorded results; it
+cannot invent a pass or measure speed.
 
-The [corrected original-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V16.md)
-keeps every public test and removes only the test harness's own interference.
-An [independent read-only check](oracle/cpython-3.14.6/evidence/postfinal-locale-v16-readonly-native-bridge-integration-pass.json)
-verifies the two Python baselines, all three from-scratch engines, and their
-preserved evidence without importing or running an engine. A
-[separate independently replayed verification](oracle/cpython-3.14.6/evidence/postfinal-locale-v16-root-verified-readonly-native-bridge-integration-pass.json)
-checks the actual historical failure, all twelve engine proofs, and both
-Python references again. The corrected protocol has now run the full Rust
-suite and preserves its historical pickling failure. The current Rust
-hook now passes the exact original pickle case in isolation, but a fresh
-complete guarded run remains **NOT RUN**. C and Zig have **NOT RUN**
-that suite.
-
-The [independent-language inventory](experiments/FROM-SCRATCH-LANGUAGE-LANDSCAPE-V1.md)
-also covers separately authored
-[C++](experiments/cpp_from_scratch_v1/STATIC-GAPS-V1.md) and
-[Go](experiments/go_from_scratch_v1/STATIC-GAPS-V1.md) designs. They are
-**NOT BUILT, NOT RUN, and NOT QUALIFIED**. The
-[pinned official Zig compiler](toolchains/zig-0.16.0.lock.json) makes the
-existing Zig engine reproducible from its own source. Different bindings
-to the same matching engine never count as independent candidates.
-
-Detailed experiments, rejected approaches, setup failures, commands, and
-complete evidence belong in the [experiment log](docs/EXPERIMENT-LOG.md),
-not in this overview.
-
-An independently reviewed, public-only
-[Rust development check](tools/rust_public_practice_benchmark_v1.py)
-covers **864** fixed examples across **36** Python operations, with equal
-text and bytes coverage. Two isolated Python reference runs agree on every
-example, including scanner callbacks, memory views, and Python 3.14
-warnings. Rust agrees on **824** examples; all **40** mismatches are
-scanner or scanner-error cases. The
-[complete actual result](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner.json)
-and its
-[independently durable receipt](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner-publication-receipt.json)
-preserve every case. This small development check is not the
-million-example public comparison or final test. Practice speed is
-**NOT MEASURED**.
+The additional [1,376 public-interface checks](oracle/cpython-3.14.6/PUBLIC-SURFACE-V27.md),
+[buffer-lifetime checks](oracle/cpython-3.14.6/PUBLIC-BUFFER-EXPORTER-V2.md),
+and [128 interpreter-isolation checks](oracle/cpython-3.14.6/PUBLIC-SUBINTERPRETER-V1.md)
+do not yet qualify the current engines. The original Rust pickling failure
+and both actual Python references remain in the
+[experiment log](docs/EXPERIMENT-LOG.md). C++ and Go are
+[documented possibilities](experiments/FROM-SCRATCH-LANGUAGE-LANDSCAPE-V1.md),
+not built or qualified candidates.
 
 ## Larger fair speed comparison
 
@@ -208,6 +166,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/python_re_subinterpreter_oracle_v1.py --self-test
 "$PY" -I -B tools/rust_public_practice_benchmark_v1.py --self-test
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test
+"$PY" -I -B tools/render_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --check
 ```

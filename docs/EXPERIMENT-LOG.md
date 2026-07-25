@@ -7,6 +7,26 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze an independently verified public Rust correctness graph
+
+Freeze the [public development correctness graph generator](../tools/render_rust_public_correctness_v1.py)
+before recording or graphing the changed Rust scanner. Its source has
+SHA-256 `6f7c36c29c66c6792d578eba6907bc2ebcf869888693129382adf839af1dee4e`.
+The graph can only be generated from all **864** original cases, the
+matching durable receipt, the frozen test and recorder, and the exact
+recorded Python adapter, Rust matching engine, and native bridge. It
+derives all **36** operations, all **five** scanner operations, every
+success, and every failure from the authenticated complete case vector.
+
+An independent reviewer verified the genuine preserved **824/864**
+historical report and all **40** scanner mismatches. Both ordinary and
+empty-environment source self-tests separately pass **152** tampering
+checks. They import no candidate, run no candidate worker, write no
+chart, sample no clock, and access no hidden or performance case. The
+renderer explicitly labels its chart as a **public development check,
+not a final benchmark**; a graph of the changed scanner is **NOT
+GENERATED** until its complete result and separate receipt exist.
+
 ## Preserve all current Rust scanner failures exactly once
 
 Run the frozen, separately committed Rust correctness recorder once
