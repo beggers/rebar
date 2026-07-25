@@ -7,6 +7,38 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze readable current-Rust speed charts before measurement
+
+Independently review and freeze the
+[public Rust speed chart generator](../tools/render_rust_public_speed_v1.py)
+before taking a current Rust timing sample. Its exact source has SHA-256
+`4a1a2e434d8d327471e7fe45c2e13e4c5248ba36956242f232fe4a3c03294db6`.
+The generator accepts only a complete genuine result from the frozen
+**864-case**, **36-operation** development benchmark, all **12** paired
+Python-versus-Rust rounds, and all **10,368** individual paired rows.
+
+Independently reconstruct all **24** isolated timing-worker transcripts,
+the six-first/six-second order, every original case, the actual
+correctness observations, all geometric speed estimates, and every one
+of the predeclared **1,000** confidence draws. Reject incomplete rows,
+changed denominators, forged uncertainty, stale native binaries,
+incorrect case ordering, hidden paths, and suppressed slowdowns. Require
+the actual separately authenticated current correctness receipt, exact
+Python adapter, Rust engine, and native bridge. Publish only four
+deterministic accessible graphs—overall speed, faster and slower cases,
+individual operations, and every slowdown exceeding **20%**—and their
+complete generated manifest.
+
+The synthetic source self-test proves the complete **864-case** shape,
+all **36** operations, and **117** distinct tampering rejections without
+reading a real result, importing a candidate, starting a worker,
+sampling a clock, creating a graph, or opening a hidden case. An
+independent static reviewer verifies the exact source and frozen
+controllers. All graphs explicitly say **public development**, **not a
+final benchmark**, and **native memory not measured**. An actual current
+speed result and all current speed charts are **NOT MEASURED** and
+**NOT GENERATED** until this source has been committed and pushed.
+
 ## Preserve Python's real original-suite environment failure
 
 Authenticate the genuine CPython **3.14.6** original test source directly

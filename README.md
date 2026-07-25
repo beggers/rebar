@@ -45,6 +45,12 @@ No archived engine achieved both the 1.5× speed target and a clear speed
 improvement on at least 60% of examples. The numbers do not predict how the
 current builds will perform.
 
+A separately verified
+[current Rust speed graph generator](tools/render_rust_public_speed_v1.py)
+will show the actual overall result, uncertainty, every operation, and
+every slowdown only after all **864** public examples have been measured
+in **12** paired rounds. Current Rust speed remains **NOT MEASURED**.
+
 ![Faster, uncertain, and slower cases for every archived engine](performance/postfinal-public-v6/evidence/postfinal-public-practice-v6-clear-outcomes.svg)
 
 ## More detail from that archived comparison
@@ -196,6 +202,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/rust_scanner_differential_v1.py --self-test
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_correctness_v1.py --self-test
+"$PY" -I -B tools/render_rust_public_speed_v1.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --check
 ```
