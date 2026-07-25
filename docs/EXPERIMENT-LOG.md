@@ -7,6 +7,61 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Measure the current Rust engine against Python on all public cases
+
+Run the already frozen **864-case** public development comparison only
+after the native scanner passes both its complete **864-case** general
+gate and its separately frozen **1,024-case** scanner gate. Confirm the
+exact Python adapter, native Rust matching engine, and native bridge
+hashes both immediately before and immediately after measurement.
+Preserve the actual pinned Python baseline, equally weighted **36**
+operations, **432** text cases, **432** bytes cases, **12** paired
+trials per example, six Python-first and six Rust-first rounds, all
+**10,368** actual paired observations, and every success and slowdown.
+
+The genuine complete [public development measurement](../experiments/rust_public_practice_v1/rust-native-scanner-v1-public-practice.json)
+has SHA-256
+`f4827844d2fc7a00e45bf900ca81d3eacb8f6f9806885aebc1d963f99bfe7e60`.
+Its raw observation digest is
+`1e07a170da6b8d3926376ea2b0b7ef21a5839725b83f6d38701bf7e674ba1f30`.
+Rust achieves a **1.0579754228475804×** geometric-mean speedup over
+Python, with the actual **1,000**-draw **95%** confidence interval
+**1.04218998212522× to 1.0750964543826915×**. Exactly **185** examples
+are statistically faster, **231** are statistically slower, and **448**
+are inconclusive. This does **not** satisfy the **1.5×** target or the
+60%-faster-case target.
+
+Preserve both actual slowdowns exceeding **20%**: the mutable
+memory-view `match.expand` example is **39.3555183947629%** slower, and
+the read-only memory-view `match.expand` example is
+**37.75899220464214%** slower. Their complete original rows, exact
+inputs, observed batches, confidence intervals, and unchanged
+denominator remain in the full raw report. Their implementation cause
+is **NOT YET PROFILED**; no explanation or memory measurement is
+invented.
+
+The independently frozen chart renderer authenticates the actual
+correctness receipt, full raw measurement, adapter, Rust native engine,
+and bridge before independently replaying every paired row and all
+confidence draws. Generate and preserve the exact four graphs:
+
+- [Overall current speed against Python](evidence/rust-public-speed-v1-overall.svg),
+  SHA-256 `79fe3898a384853f751c05080e76d2dd51eded01f0a9615285a1320ce0bc48c5`.
+- [Every faster, slower, and inconclusive case](evidence/rust-public-speed-v1-outcomes.svg),
+  SHA-256 `a6499718c05ec53b38139232d4f5cc288290fc33a4f914c9a0b2e800a9b80cb5`.
+- [All 36 original public operations](evidence/rust-public-speed-v1-operations.svg),
+  SHA-256 `7d50d9f6929319468931f6df991950fd2976eba5254567c22cd3fbf8c69e3e92`.
+- [Both genuine slowdowns above 20%](evidence/rust-public-speed-v1-regressions.svg),
+  SHA-256 `fcb919c39a867126d5342f3e0f16bba08cd32d7ab3abbe0484a5d9d8864ace85`.
+
+The [complete generated speed manifest](evidence/rust-public-speed-v1.json)
+has SHA-256
+`ce4f8667e6ace2083206efcdef4bde1c66975dcc265d276a0dc218d6e45750a7`.
+All graphs truthfully state **public development**, **not final**, and
+**native memory not measured**. The original full-suite candidate run
+remains **NOT RUN**. The million-case final holdout is **NOT OPENED**,
+and no candidate is selected as a winner.
+
 ## Freeze the complete original CPython regular-expression test runner
 
 Independently freeze and review the

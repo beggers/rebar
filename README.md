@@ -10,8 +10,25 @@ an external regular-expression package, or another candidate.
 Python on **864 of 864** general examples and **1,024 of 1,024**
 separately frozen scanner examples. It has **zero** mismatches in either
 comparison. These are genuine development checks, not the complete
-original Python test suite or the unopened final speed test. Current
-speed and memory are **NOT MEASURED**. There is no winner.
+original Python test suite or the unopened final speed test. In a first
+**864-case**, **12-round** development comparison, Rust is **1.058×**
+as fast as Python overall. This does not meet the **1.5×** target. Final
+speed and native memory are **NOT MEASURED**. There is no winner.
+
+## Current speed against Python
+
+![Current from-scratch Rust engine at 1.058 times Python's speed in the public development comparison, with the complete 95 percent confidence interval and the 1.5-times target](docs/evidence/rust-public-speed-v1-overall.svg)
+
+Python is **1.000×**. Rust is **1.058×**, with a measured **1.042× to
+1.075×** confidence interval. Of **864** examples, **185** are clearly
+faster, **231** are clearly slower, and **448** are inconclusive.
+
+![All 864 public examples classified as faster, slower, or inconclusive relative to Python](docs/evidence/rust-public-speed-v1-outcomes.svg)
+
+This is a development measurement of complete Python-visible operations,
+not a hidden result or a prediction about the **1,048,576-example** final
+test. The [complete original measurements](experiments/rust_public_practice_v1/rust-native-scanner-v1-public-practice.json)
+contain all **10,368** paired observations.
 
 ## Current compatibility
 
@@ -26,7 +43,20 @@ also passes every test. The original
 [824-pass, 40-failure result](experiments/rust_public_practice_v1/rust-module-v1-before-native-scanner.json)
 is preserved, not overwritten.
 
-## Last published speed comparison
+## Current speed by operation
+
+![All 36 tested regular-expression operations compared directly with Python, including every observed speedup and slowdown](docs/evidence/rust-public-speed-v1-operations.svg)
+
+![Every current Rust example more than 20 percent slower than Python](docs/evidence/rust-public-speed-v1-regressions.svg)
+
+Exactly **two** examples exceed a **20%** slowdown. Both are
+`match.expand` with mutable or read-only memory-view inputs. Their exact
+inputs and confidence intervals are retained in the
+[complete measurements](experiments/rust_public_practice_v1/rust-native-scanner-v1-public-practice.json).
+Their underlying implementation cost is **NOT YET PROFILED**. Native
+memory use is **NOT MEASURED**.
+
+## Earlier three-engine speed comparison
 
 The archived C, Rust, and Zig builds each ran the same 8,192 public examples
 as unmodified Python. In these graphs, **1× is Python's speed, higher is
@@ -42,18 +72,12 @@ faster, and 1.5× is the target**.
 | Previous Rust | 0.957× | 2,444 / 8,192 (29.8%) | 3,106 / 8,192 |
 
 No archived engine achieved both the 1.5× speed target and a clear speed
-improvement on at least 60% of examples. The numbers do not predict how the
-current builds will perform.
-
-A separately verified
-[current Rust speed graph generator](tools/render_rust_public_speed_v1.py)
-will show the actual overall result, uncertainty, every operation, and
-every slowdown only after all **864** public examples have been measured
-in **12** paired rounds. Current Rust speed remains **NOT MEASURED**.
+improvement on at least 60% of examples. These are historical results,
+not measurements of the current engines.
 
 ![Faster, uncertain, and slower cases for every archived engine](performance/postfinal-public-v6/evidence/postfinal-public-practice-v6-clear-outcomes.svg)
 
-## More detail from that archived comparison
+## More detail from the earlier comparison
 
 ![Archived speed results by regular-expression operation and kind of workload](performance/postfinal-public-v6/evidence/postfinal-public-practice-v6-clear-api.svg)
 
@@ -176,8 +200,9 @@ check. Run Python and each qualifying engine on exactly the same cases,
 with at least **11** paired rounds; report overall speed, uncertainty,
 memory, and every slowdown. To satisfy the 60% faster-case requirement,
 an engine must be statistically faster on at least **629,146** final
-examples. The expanded test is **NOT FROZEN** and **NOT OPENED**. Current
-speed, memory, uncertainty, slowdowns, and rankings are **NOT MEASURED**.
+examples. The expanded test is **NOT FROZEN** and **NOT OPENED**. Final
+speed, final uncertainty, final rankings, and native memory are
+**NOT MEASURED**.
 
 ## Evidence and reproduction
 
