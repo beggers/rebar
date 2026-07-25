@@ -7,6 +7,79 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the actual corrected full-suite Rust import-guard failure
+
+Push the independently reviewed V13 runner, its exact protocol, and
+its passing no-worker three-engine integration before starting the
+first actual candidate. Confirm **55,087,091,712** bytes of genuinely
+available memory, the unchanged **38,654,705,664-byte** original
+large-substitution requirement, more than the separately required
+**eight GiB** reserve, a real **40 GiB** test configuration, CPU
+resources, real `fork`, the real multiprocessing extension, and the
+actual exclusive large-memory lock. Genuinely compile and verify both
+private ISO-8859-1 and UTF-8 locales. Do not lower a memory threshold,
+invent a locale, or start another complete-suite worker.
+
+- [Actual candidate-free resource and locale preflight](../oracle/cpython-3.14.6/evidence/postfinal-locale-v13-rust-resource-preflight.json),
+  SHA-256 `91a0f2861fbbb7ac4a3d95dd4c29a4ee1ffb4edd6a6426a3e0332f4c61709088`.
+
+Execute the real frozen, isolated, fully pinned Rust candidate once:
+
+```sh
+env PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 \
+  PYTHONPATH=/home/dev-user/src/rebar LC_ALL=C PATH=/usr/bin:/bin \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/postfinal_cpython_locale_oracle_v13.py --candidate rust \
+  --source-sha256 5f9ca285ba617308dead53b97a6d6c707bd4371b7cad79345da8b99223260015 \
+  --protocol-sha256 7ab886971b63faddecb56f4403a582d48903fbb228bc0fccdca80c46f5c4c0dc \
+  --reference-sha256 1c0445780b747680ff75ced694a61b43949dc1f7eb81a8e4a8c45cfa9376cebf \
+  --v21-source-sha256 ded077962416ada3bddd825d77b2e6785fe3b01184fe5d9058ec17a57b08ea4d \
+  --v21-protocol-sha256 5a78673c6b23e4781070cf5a2290d5f6cecd402fff77ff388d8795370de93a1f \
+  --v24-source-sha256 92b1f082196592e578a5fa6e09b63637c6a1304c04875e5816938ed4fc28eb52 \
+  --v24-protocol-sha256 f3ab4f5c3c697a6d39c109b743d949b980bfe0d79aeb6b58a0bc392a3f81e534 \
+  --base-report-sha256 4c1de720abb53a5baee56c36a09039e48137e83b2db103cb0d6e77866b496ce4 \
+  --strict-report-sha256 6e742e2e10cde837cb4c39ffe6d1ab12634d672924e109a727e9a558ad22194d \
+  --rust-edge-archive-sha256 37de9f254dc3edb72bfe04f51cea8c528449064fba62df273032bb5d7b58b419 \
+  --rust-edge-proof-sha256 882c712bfed8d0a355bda14847dc78feb2b59b3609ed5f48bd0daccb4e9c33c6 \
+  --rust-deep-archive-sha256 ace3fa8d10725f71881107ace3d9e7d7132a6200723e4f1897e1d5ae6d3d0037 \
+  --rust-deep-proof-sha256 a26f0659a746838d9af72ff1beff22b91c76d83e7a426b0cc47dbe0400ce67f7
+```
+
+The actual controller and its real isolated worker both exit **2**.
+The controller successfully authenticates the previously missing
+three-family native bridge. The worker then reports the authentic
+`ImportError: stage-07 blocked unowned matching import: re` while
+loading Python's unchanged test setup. The anti-delegation guard
+correctly blocks access to Python's standard-library regex engine but
+also incorrectly rejects the official test module's required import
+of the authenticated candidate. **Zero** original methods, native
+method guards, and cached-matcher method guards complete. No upstream
+method passes and no candidate is qualified.
+
+- [Actual exclusively created Rust failure](../oracle/cpython-3.14.6/evidence/postfinal-locale-v13-rust-failures.json),
+  SHA-256 `18f572e44382130fe6ae29a05bb4c063fccf95d92fc305c9548cb1a63ac01844`.
+- [Exact complete real controller output](../oracle/cpython-3.14.6/evidence/postfinal-locale-v13-rust-failures-production-summary.json),
+  SHA-256 `7ae58265f0b845b9f50b30fcb7c7c75018cbcb40d49d240760373a517c2b46c1`.
+- [Independent root-run read-only failure verification](../oracle/cpython-3.14.6/evidence/postfinal-locale-v13-rust-readonly-failure-forensic.json),
+  SHA-256 `fce6bb6302b4d05925170c0364b8190ec4ed2ff04bc9b3a4c2780ae72b3c05a0`.
+
+The actual exclusively created failure contains **9,479** exact
+bytes. Preserve its full **11-field** receipt, its real sole
+**9,479-to-9,479-byte** write, and the real file and directory
+synchronization. Preserve the full **2,089-byte** actual worker
+stdout, SHA-256
+`2df0a9a95f40a3e2dd3c3ee87ccbd4c36567b8c27b660f55ebcacd828c2ea160`,
+and its genuine empty stderr. Independently verify all bytes, both
+canonical failure shapes, the exact nested import error, all zero
+completed methods, and the real receipt inside the genuine
+read-only ownership boundary. All five boundary effects are zero.
+
+Keep the actual first V12 failure and all six passing Rust, C, and
+Zig original and deeper proofs unchanged. Do not retry or overwrite
+either V13 destination. C and Zig remain **NOT RUN** against the
+complete suite. Performance is **NOT MEASURED**; the holdout
+remains **NOT ACCESSED**.
+
 ## Freeze and independently check the corrected complete Python test runner
 
 Preserve the first real full-suite Rust failure and its captured output
