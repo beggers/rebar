@@ -99,6 +99,9 @@ The separately
 [frozen expanded public-interface tests](oracle/cpython-3.14.6/PUBLIC-SURFACE-V27.md)
 cover **1,376** examples across **43** categories. Python's two reference
 runs pass them; the current candidates have **NOT RUN** those tests.
+A [separate 264-case buffer-lifetime test](oracle/cpython-3.14.6/PUBLIC-BUFFER-EXPORTER-V1.md)
+is frozen for Python's mutable inputs, callbacks, iterators, and scanners.
+Its Python reference and candidate runs are **NOT RUN**.
 
 The [corrected original-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V16.md)
 keeps every public test and removes only the test harness's own interference.
@@ -155,6 +158,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v15.py --self-test
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v16.py --self-test
 "$PY" -I -B tools/python_re_public_surface_oracle_stage27.py --self-test
+"$PY" -I -B tools/python_re_buffer_exporter_oracle_v1.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --check
 ```

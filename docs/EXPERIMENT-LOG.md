@@ -7,6 +7,31 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze safe custom-buffer lifetime correctness
+
+Freeze **264** original-Python buffer-lifetime cases before running a
+reference or changing an engine. Cover **19** module, compiled-pattern,
+match, iterator, scanner, and replacement operations across four mutable,
+read-only, direct, and wrapped buffer types. Record real acquisition,
+same-length release, callback failure, retention, and cleanup events;
+never resize or dereference released storage.
+
+- [Frozen buffer-lifetime checker](../tools/python_re_buffer_exporter_oracle_v1.py),
+  SHA-256 `1f60401fa24717c502e147509d1aa625c05bd1cc3aa27b0d1f6ce84783309af7`.
+- [Frozen buffer-lifetime protocol](../oracle/cpython-3.14.6/PUBLIC-BUFFER-EXPORTER-V1.md),
+  SHA-256 `30587b78d2752f9e9a1eeeaa4cef89e09ad75ccd39989bd5eb2d84f136c99dad`.
+- Frozen **264-case** matrix SHA-256
+  `2d9eb4e637387bc89020d2f883f59ff03dd98cbebd2f2aaa2a30dc55d0836891`.
+
+Independently run both command-line and direct-call source checks in an
+ordinary environment and an empty environment. Each passes **42** valid
+controls and correctly rejects **68** separate invalid controls. All **15**
+real-effect counters remain zero. Preserve the original **165** methods,
+**152** required public methods, **13** named private waivers, and all
+**1,376** previously frozen public cases without changing any denominator.
+Actual buffer references and all candidates are **NOT RUN**. Performance
+is **NOT MEASURED**; the holdout is **NOT ACCESSED**.
+
 ## Freeze new correctness proofs before changing any matching engine
 
 Independently freeze the proof rules required after the source, Python
