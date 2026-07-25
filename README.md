@@ -104,6 +104,9 @@ is frozen for Python's mutable inputs, callbacks, iterators, and scanners.
 Its [first Python reference genuinely failed](oracle/cpython-3.14.6/evidence/public-buffer-exporter-v1-self-oracle-failures.json)
 because the test assumed every buffer had already been acquired and
 released. The original failure is preserved; candidate runs are **NOT RUN**.
+A [separate 128-case interpreter-isolation test](oracle/cpython-3.14.6/PUBLIC-SUBINTERPRETER-V1.md)
+is frozen for independent Python interpreters, pattern caches, and object
+lifetimes. Its Python reference and candidate runs are **NOT RUN**.
 
 The [corrected original-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V16.md)
 keeps every public test and removes only the test harness's own interference.
@@ -161,6 +164,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v16.py --self-test
 "$PY" -I -B tools/python_re_public_surface_oracle_stage27.py --self-test
 "$PY" -I -B tools/python_re_buffer_exporter_oracle_v1.py --self-test
+"$PY" -I -B tools/python_re_subinterpreter_oracle_v1.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --self-test
 "$PY" -I -B tools/render_current_correctness_v6.py --check
 ```

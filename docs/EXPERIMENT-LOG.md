@@ -7,6 +7,34 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze genuine Python interpreter-isolation correctness
+
+Independently freeze **128** real Python-interpreter compatibility cases:
+**16** categories with **eight** deterministic variants each. Cover text
+and bytes, public flags, captures, replacement callbacks, scanners,
+iterators, exported buffers, error recovery, cache isolation, simultaneous
+interpreters, repeated creation, and verified interpreter cleanup.
+
+- [Frozen interpreter-isolation checker](../tools/python_re_subinterpreter_oracle_v1.py),
+  SHA-256 `88a3600908f7090fb384fe03559e231f820d6c6c141846b738c73e89c7a69563`.
+- [Frozen interpreter-isolation protocol](../oracle/cpython-3.14.6/PUBLIC-SUBINTERPRETER-V1.md),
+  SHA-256 `38bf2b1a5b93196370bb532d98124a3de7092a56b1233a6b1731411a3a595263`.
+- Frozen **128-case** matrix SHA-256
+  `edda77658c5eef9746c6d4769734c69e40db4c9d986171fa63799093f4cb62d3`.
+
+Two independent reviewers and the root each reproduce all four ordinary
+and empty-environment command-line and direct-call source tests. Every
+run passes exactly **988** distinct controls and **25** separately
+disclosed receipt-forgery checks, with all **17** real-effect counters
+zero. Preserve all original **165/152/13** methods and waivers and all
+**1,376** existing public cases. Require **11** real interpreters and
+**394** matching calls per future Python worker; across two workers the
+predeclared counts are **22** interpreters, **788** matching calls,
+**256** independent case triples, and **768** individual case records.
+Those counts are requirements, not measurements: actual interpreter,
+reference, and candidate runs are **NOT RUN**. Performance remains
+**NOT MEASURED** and the holdout **NOT ACCESSED**.
+
 ## Preserve the first real Python buffer-reference failure
 
 Run the previously frozen **264-case** custom-buffer oracle exactly once
