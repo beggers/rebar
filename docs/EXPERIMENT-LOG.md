@@ -7,6 +7,30 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Validate Python's real interpreter isolation twice
+
+Run the frozen interpreter-isolation oracle exactly once, only after its
+independently reviewed source and protocol were committed and pushed.
+Two genuinely different isolated Python **3.14.6** worker processes each
+pass all **128** mandatory cases. Independently authenticate each
+**182,876-byte** complete original worker-output stream, both real process
+identities, and all three simultaneous interpreter-observation vectors.
+
+- [Actual two-reference interpreter-isolation result](../oracle/cpython-3.14.6/evidence/public-subinterpreter-v1-self-oracle.json),
+  SHA-256 `9a5501ac4a60f48f749c3d42216c08391b5ff03ed38f191e37588ed4fa747bfa`.
+- [Independently revalidated actual durable publication receipt](../oracle/cpython-3.14.6/evidence/public-subinterpreter-v1-self-oracle-publication-receipt.json),
+  SHA-256 `d4a3b94bc30747db44560eb052d809ee574f5b4083ff7649b05f18f91501418c`.
+
+The actual Python workers create and correctly close **22** interpreters,
+perform **788** matching operations, preserve **256** full case triples
+and **768** individual case observations, and verify repeated creation,
+isolated pattern caches, recovery, and complete teardown. Replay the
+actual descriptor-relative, exclusively created, fully read-back-verified
+and file- and directory-synced receipt against the original complete
+**858,047-byte** report. No candidate runs; interpreter compatibility of
+every engine remains **NOT RUN**. Performance is **NOT MEASURED** and
+the holdout **NOT ACCESSED**.
+
 ## Freeze genuine Python interpreter-isolation correctness
 
 Independently freeze **128** real Python-interpreter compatibility cases:

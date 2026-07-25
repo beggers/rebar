@@ -106,7 +106,8 @@ because the test assumed every buffer had already been acquired and
 released. The original failure is preserved; candidate runs are **NOT RUN**.
 A [separate 128-case interpreter-isolation test](oracle/cpython-3.14.6/PUBLIC-SUBINTERPRETER-V1.md)
 is frozen for independent Python interpreters, pattern caches, and object
-lifetimes. Its Python reference and candidate runs are **NOT RUN**.
+lifetimes. [Two actual Python reference processes pass all 128 cases](oracle/cpython-3.14.6/evidence/public-subinterpreter-v1-self-oracle.json).
+Candidate interpreter-isolation runs are **NOT RUN**.
 
 The [corrected original-test protocol](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V16.md)
 keeps every public test and removes only the test harness's own interference.
