@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Pass every runnable original Python regex test
+
+Run the independently frozen V3 original-test recorder exactly once,
+only after both the warning-safe controller and durable recorder were
+separately reviewed, committed, and pushed. Preserve the
+[complete first V3 original result](../experiments/rust_public_practice_v1/rust-original-v3-native-scanner-first-run.json),
+SHA-256
+`bb1e3bfdf2d1136549b8ba8f743660aaf223f96190b0d3687decb20a088c585c`,
+and the independently synchronized
+[first V3 publication receipt](../experiments/rust_public_practice_v1/rust-original-v3-native-scanner-first-run-publication-receipt.json),
+SHA-256
+`a3bfaa94e7a27cab83eb0641b103ba55b29892c08f3e4b055a2340cbbd0f0471`.
+
+Python and the unchanged from-scratch Rust engine both produce
+**151 original public-test passes**, the same **one** authentic
+debug-build-only skip, and **zero mismatches**. Preserve all **152**
+actual records from each process, the complete original **165**-method
+inventory, all **13** named private waivers, **zero** public waivers,
+and the unchanged original matrix and result-vector hashes.
+
+All **304** real matcher-ownership checks and **304** warning-registry
+checks pass; the genuine original Python matcher remains quarantined.
+The actual Rust source and both native binaries remain unchanged and
+independently authenticated before and after the isolated run. The
+test reads **zero** hidden cases and benchmark files, starts **zero**
+timing trials, selects **no** winner, and does not qualify a candidate
+to open the final holdout. Preserve all V1 and V2 failures and their
+receipts without rerunning an occupied label.
+
 ## Freeze complete warning-safe original-test result capture
 
 Independently review and freeze the additive
@@ -37,8 +66,8 @@ Both ordinary and empty-environment synthetic-only self-tests pass
 They start **zero** actual original-suite processes, import **zero**
 candidates, write **zero** evidence files, read **zero** hidden
 cases, and collect **zero** timings. The first V3 Rust candidate run
-is **NOT RUN** until this independently reviewed recorder is
-committed and pushed.
+had **NOT RUN** when this independently reviewed recorder was
+committed and pushed. Its complete first result is preserved above.
 
 ## Freeze warning-safe original Python tests without weakening isolation
 
@@ -69,9 +98,9 @@ including the inherited matcher-escape controls and **six** attempted
 warning-time matcher escapes; a real Python warning assertion and its
 caller filename are verified. The tests import **zero** candidates,
 read **zero** hidden cases, and measure **zero** timings. The first
-actual V3 candidate run remains **NOT RUN** until both this controller
-and an independently reviewed V3 result recorder are committed and
-pushed.
+actual V3 candidate run had **NOT RUN** when this controller and its
+independently reviewed V3 recorder were separately committed and
+pushed. Its complete first result is preserved above.
 
 ## Propose a four-times-larger independent final comparison
 

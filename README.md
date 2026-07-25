@@ -8,16 +8,14 @@ an external regular-expression package, or another candidate.
 
 **Current public development result:** The from-scratch Rust engine matches
 Python on **864 of 864** general examples and **1,024 of 1,024**
-separately frozen scanner examples. It has **zero** mismatches in either
-comparison. These are genuine development checks, not the complete
-original Python test suite or a fresh final speed test. In a first
+separately frozen scanner examples. It also passes all **151 runnable
+tests from Python's original regex suite**, with the same single
+debug-build-only skip as Python. All three comparisons have **zero**
+mismatches; none is the unopened final speed test. In a first
 **864-case**, **12-round** development comparison, Rust is **1.058×**
 as fast as Python overall. This does not meet the **1.5×** target. Final
-speed and native memory are **NOT MEASURED**. The original Python suite
-currently records **145 passes, six warning-harness errors, and one
-debug-only skip**. Those errors occur before matching and do not
-establish a Rust incompatibility. Rust is not yet qualified as a
-drop-in replacement. There is no winner.
+speed and native memory are **NOT MEASURED**. Three independently
+qualified candidates and a final winner remain **NOT ESTABLISHED**.
 
 ## Current speed against Python
 
@@ -102,63 +100,23 @@ retain the complete results, uncertainty ranges, and all regressions.
 
 ## Original Python compatibility
 
-![Last completed original Python tests: 150 historical Rust passes, one preserved pickling failure, one debug-only skip, and C and Zig not yet tested](docs/evidence/current-native-correctness-v6.svg)
-
 Python's original test file contains **165** tests. **152** cover the
 public replacement interface; **13** test private CPython internals and
 are excluded only under the named `DebugTests` and `ImplementationTest`
-waivers. The real Python reference passes **151** public tests; the
-remaining test requires a Python debug build.
+waivers. Python and Rust both pass all **151** runnable public tests
+and report the same genuine debug-build-only skip. The
+[complete current original-test result](experiments/rust_public_practice_v1/rust-original-v3-native-scanner-first-run.json)
+and its [independently verified receipt](experiments/rust_public_practice_v1/rust-original-v3-native-scanner-first-run-publication-receipt.json)
+preserve both full test vectors, **zero** mismatches, all traceback
+data, and the unchanged native engine.
 
-The first complete, identity-verified run of the current Rust engine
-records **145 passing tests, six warning-harness errors, and the same
-debug-only skip**. All six errors come from the same test-guard problem:
-Python's warning assertions ask a quarantined object for harmless
-warning metadata before the corresponding engine operation runs. They
-do not establish a Rust substitution, splitting, or pattern defect. Its
-[complete original results](experiments/rust_public_practice_v1/rust-original-v2-native-scanner-first-run.json)
-and [independent publication receipt](experiments/rust_public_practice_v1/rust-original-v2-native-scanner-first-run-publication-receipt.json)
-preserve every result and traceback. Rust is **NOT QUALIFIED**; C and
-Zig have **NOT RUN** against these original tests. The graph above is
-[generated from earlier historical results](docs/evidence/current-native-correctness-v6.json)
-and does not describe or qualify the current Rust engine.
-
-A newly prepared original-suite run first exposed genuine problems in
-Python's own test environment:
-[148 passes, three skips, and one process-creation error](experiments/rust_public_practice_v1/rust-original-cpython-v1-first-reference-environment-failures.json).
-The missing locale and restricted default process mode must be corrected
-using CPython's real test setup before the suite can fairly judge Rust.
-The first run's complete per-test results and full traceback were
-**NOT CAPTURED**; the actual reported summary is preserved without
-inventing them.
-
-A separately frozen
-[original CPython test runner](tools/rust_original_cpython_suite_v1.py)
-applies CPython's real locale and process setup. Two independent Python
-runs each pass **151 of 152** public tests, with exactly one real
-debug-build-only skip and no public-test waivers. The
-[first changed-Rust run](experiments/rust_public_practice_v1/rust-original-v1-native-scanner-first-run.json)
-stops before executing any original test: the anti-delegation check
-mistakes Rust's correctly named `re.Match` object for Python's matcher.
-The [complete independent receipt](experiments/rust_public_practice_v1/rust-original-v1-native-scanner-first-run-publication-receipt.json)
-preserves the exact error. A separately frozen
-[corrected test runner](tools/rust_original_cpython_suite_v2.py)
-checks actual matcher ownership instead of public names while retaining
-all original tests and the CPython-engine isolation controls. The
-recorded **six** warning-metadata errors are addressed by a separately
-verified [warning-safe original-test runner](tools/rust_original_cpython_suite_v3.py).
-It permits only ordinary warning metadata, continues to block the
-actual Python matching engine, and retains every original test. Two
-independent Python reference runs each pass **151** original tests
-with the same genuine debug-only skip. An independently verified
-[warning-safe full-result recorder](tools/record_rust_original_cpython_v3.py)
-preserves every original Python and Rust test result, failure,
-traceback, warning check, and native-engine identity. The first V3
-Rust run is **NOT RUN**; Rust remains **NOT QUALIFIED** against the
-full original suite. The original
-[V1 recorder](tools/record_rust_original_cpython_v1.py),
-[V2 recorder](tools/record_rust_original_cpython_v2.py), and their
-complete recorded failures remain unchanged.
+The independently reviewed
+[original-test controller](tools/rust_original_cpython_suite_v3.py)
+performs **304** real matcher-ownership checks and **304**
+warning-safety checks. It never delegates matching to Python. Earlier
+test-environment and warning-guard failures remain unchanged in the
+[experiment log](docs/EXPERIMENT-LOG.md). C and Zig have **NOT RUN**
+against this complete original-test controller.
 
 ## Independent engines and compatibility
 
