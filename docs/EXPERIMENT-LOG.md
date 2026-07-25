@@ -7,6 +7,31 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the first broader memory-view failure honestly
+
+Only after independently reviewing, committing, and pushing the
+frozen **768-case** original Python memory-view oracle, run the
+unchanged Rust candidate against it once. The actual comparison
+fails with exactly **53** incompatibilities: **32** released-after-
+match views, **16** failing buffer exporters, and **five** invalid
+template types. The previously measured **64** ordinary writable and
+read-only examples still have **zero** mismatches.
+
+The oracle prints every mismatch to standard output, but the first
+run used bounded console capture. Its complete output was truncated
+and **NOT CAPTURED**. Preserve only the exact actually observed
+[first-run failure summary](../experiments/rust_public_practice_v1/rust-memoryview-expand-v1-first-unrecorded-summary.json);
+do not fabricate the missing full mismatch vector, a raw-output
+fingerprint, or a successful result.
+
+Preserve the unchanged **768-case** matrix, genuine Python baseline
+digest, complete exact family totals, first mismatch, original native
+engine hash, zero hidden-case reads, zero benchmark-file reads, and
+zero timing samples. Freeze and independently review a durable
+memory-view result recorder before any separately labeled rerun.
+The current memory-view compatibility gate **FAILS**; native speed
+and final holdout performance remain **NOT MEASURED**.
+
 ## Freeze Python's genuine memory-view replacement behavior
 
 Independently implement and review a
@@ -33,8 +58,9 @@ SHA-256
 Reject **42** independently corrupted cases and isolation bypasses.
 Import **zero** candidates, write **zero** evidence files, read
 **zero** hidden cases, and record **zero** timings. The first actual
-Rust comparison remains **NOT RUN** until this source has been
-committed and pushed.
+Rust comparison had **NOT RUN** when this source was independently
+reviewed, committed, and pushed. Its first actual failure is
+preserved in the section above.
 
 ## Pass every runnable original Python regex test
 

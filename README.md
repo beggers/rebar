@@ -11,7 +11,9 @@ Python on **864 of 864** general examples and **1,024 of 1,024**
 separately frozen scanner examples. It also passes all **151 runnable
 tests from Python's original regex suite**, with the same single
 debug-build-only skip as Python. All three comparisons have **zero**
-mismatches; none is the unopened final speed test. In a first
+mismatches; none is the unopened final speed test. A newly expanded
+**768-case** buffer test exposes **53 additional edge-case
+incompatibilities**, so Rust is not yet a universal drop-in. In a first
 **864-case**, **12-round** development comparison, Rust is **1.058×**
 as fast as Python overall. This does not meet the **1.5×** target. Final
 speed and native memory are **NOT MEASURED**. Three independently
@@ -60,8 +62,12 @@ fallback. A separately reviewed
 [768-case memory-view compatibility test](tools/rust_memoryview_expand_differential_v1.py)
 first freezes Python's actual behavior for writable, read-only,
 sliced, strided, released, and changed buffers. Its first Rust
-comparison and the proposed native speed fix are **NOT RUN**. Native
-memory use is **NOT MEASURED**.
+comparison found **53** mismatches: **32** released views, **16**
+failing buffer exporters, and **five** incorrect-template exceptions.
+The [honest first-run summary](experiments/rust_public_practice_v1/rust-memoryview-expand-v1-first-unrecorded-summary.json)
+records that the full console output was truncated, not durably
+captured. Correctness fixes and any resulting speed change are **NOT
+MEASURED**. Native memory use is **NOT MEASURED**.
 
 ## Earlier three-engine speed comparison
 
