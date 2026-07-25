@@ -7,6 +7,74 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the exact, no-delegation original Python test import correction
+
+Preserve and first push both genuine earlier Rust failures and the
+clear, evidence-generated headline chart. Inspect the actual
+unchanged CPython test source rather than infer its imports from a
+synthetic test. Its top-level `import re` and `from re import Scanner`
+must resolve to the actual authenticated from-scratch candidate.
+Its genuine `ReTests.test_re_groupref_overflow` also executes
+`from re._constants import MAXGROUPS`. The original immutable
+adapter already creates a separately verified, constant-only
+`re._constants` module for precisely this case.
+
+Reject the first prospective correction because it denies that real
+constant import. Reject its second iteration because its direct
+callable depends on an implicitly loaded `importlib.machinery`.
+Neither rejected draft is frozen, published, run against an engine,
+or counted as a passing production result. Add the explicit import,
+preserve the unchanged original tests, and authenticate only the
+actual six-field constant shim.
+
+- [Independently reviewed final V14 full-suite source](../tools/postfinal_cpython_locale_oracle_v14.py),
+  SHA-256 `834abdda264bfc81ecf5d6712e524ce1c852b84ed7d8f69cfc26aba6a9ebeb42`.
+- [Frozen complete-suite V14 protocol](../oracle/cpython-3.14.6/POSTFINAL-LOCALE-V14.md),
+  SHA-256 `68d8a9044540b0bfeca86316fd4fedded23587333370903d818fce9cc8cf33f9`.
+- [Actual root-run three-engine read-only integration](../oracle/cpython-3.14.6/evidence/postfinal-locale-v14-readonly-native-bridge-integration-pass.json),
+  SHA-256 `8b5792707fb3ae8eff0436f4a4dd3532f8716a9cf327d77b08fb849995957ef3`.
+
+Permit only the exact active, authenticated candidate as Python's
+root `re` module. Separately permit only the original adapter's
+exact `MAXGROUPS` shim when its module identity, exactly bounded
+six fields, name, package, loader-free specification, integer value,
+absolute import, exact from-list, current engine family, and full
+owned native graph all match. Keep `_sre`, Python's matching
+engine, the parser, compiler, case-folding implementation, extra
+attributes, all relative imports, every external package, and all
+cross-family engines categorically blocked.
+
+Run both cleanly isolated entry points, in both normal and cleared
+environments: the literal source `--self-test` and direct imported
+`source_self_test()`. Each of the **four** real runs independently
+passes exactly **1,212** adversarial controls. All real candidate
+imports, candidate and reference workers, official tests, evidence
+reads, writes, clocks, performance, and holdout effects remain
+zero. Two independent final security and contract reviews approve
+only the exact final source and protocol hashes.
+
+Then execute the genuine root-run all-family integration within the
+actual five-counter read-only ownership boundary. Authenticate the
+complete **12-source, five-native** graph; both passing independent
+ownership audits; all **12** actual original and deeper archives
+and owner proofs; both separately executed original Python
+references and their **152** real records; the sole real
+debug-build skip; and the actual method requiring `MAXGROUPS`.
+Prove the exact safe root and constant-only imports for **each**
+engine. Independently reject swapped candidates, relative names,
+forged constants, matching exports, changed module metadata,
+incorrect integer values, standard matching engines, and other
+candidate families. Authenticate both entire real V12 and V13
+failure documents, their actual worker streams, and their exact
+**11-field** exclusive-write receipts. Check all nine genuinely
+fresh role-specific V14 output paths without creating a file.
+
+The integration records **zero** candidate imports, native workers,
+subprocesses, filesystem writes, and clocks. No candidate, complete
+official test, benchmark, or final holdout runs. All three actual
+V14 full-suite results remain **NOT RUN**. Performance remains
+**NOT MEASURED**; the holdout remains **NOT ACCESSED**.
+
 ## Generate a clear headline graph for both actual test-harness failures
 
 Keep the original headline graph and its **21** authentic correctness

@@ -22,10 +22,11 @@ calling Python's matcher or another regex engine. The first complete
 Python test attempt exposed a shared test-harness bridge-wiring failure
 before Rust's first test. A second, independently frozen run corrected
 that wiring and revealed a separate over-strict import guard, also
-before the first test. C and Zig have not run the complete suite.
-Current speed and memory are NOT MEASURED. There is no winner.**
-The first graph below shows the current engines; the later speed
-graphs describe older, archived builds.
+before the first test. A third runner corrects both problems and has
+passed an independently checked, three-engine, read-only gate; its
+full tests have not yet run. Current speed and memory are NOT
+MEASURED. There is no winner.** The first graph below shows the
+current engines; the later speed graphs describe older, archived builds.
 
 ## Current results
 
@@ -160,6 +161,18 @@ and [independent read-only verification](oracle/cpython-3.14.6/evidence/postfina
 are preserved. This is a harness failure, not a passed test or an
 observed regex mismatch. C and Zig remain **NOT RUN**.
 
+The [separately frozen next full-suite runner](oracle/cpython-3.14.6/POSTFINAL-LOCALE-V14.md)
+fixes both setup failures without allowing Python's matcher or any
+external regex package. It accepts only the verified candidate and
+the single non-matching Python constant needed by the original
+tests. All **1,212** isolation checks pass through both command-line
+and direct-call entry points, each in a clean and ordinary
+environment. Its [real read-only three-engine integration](oracle/cpython-3.14.6/evidence/postfinal-locale-v14-readonly-native-bridge-integration-pass.json)
+verifies both actual reference runs, all **12** real source files,
+all **five** native files, all **12** earlier correctness proofs,
+and both preserved failures. It starts **zero** matchers or tests.
+The actual V14 full suites remain **NOT RUN**.
+
 The [frozen expanded compatibility tests](oracle/cpython-3.14.6/PUBLIC-SURFACE-V27.md)
 preserve the [original Python reference](oracle/cpython-3.14.6/PUBLIC-SURFACE-V19.md)
 and all **1,376** distinct examples in **43** categories, including
@@ -202,6 +215,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/postfinal_current_build_proofs_v24.py --self-test
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v12.py --self-test
 "$PY" -I -B tools/postfinal_cpython_locale_oracle_v13.py --self-test
+"$PY" -I -B tools/postfinal_cpython_locale_oracle_v14.py --self-test
 "$PY" -I -B tools/python_re_public_surface_oracle_stage27.py --self-test
 "$PY" -I -B tools/render_current_correctness_v1.py --self-test
 "$PY" -I -B tools/render_current_correctness_v1.py --check
