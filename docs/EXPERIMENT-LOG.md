@@ -7,6 +7,30 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Verify the Rust engine does not wrap or call another matcher
+
+Execute the separately frozen no-delegation audit against the
+actual source-built Rust engine. Authenticate all **nine** owned
+Rust adapter, bridge, source, and lock files, along with the
+distinct matching-engine and Python-bridge binaries. The
+[complete Rust ownership audit](../experiments/rust_public_practice_v1/rust-from-scratch-audit-v3-owned-buffer-repair-v1.json)
+has SHA-256
+`c8c34018dbd29052f7a8f2054713a31376522b014e72f1d63168913a2b0f936d`.
+Its
+[atomic, independently validated audit receipt](../experiments/rust_public_practice_v1/rust-from-scratch-audit-v3-owned-buffer-repair-v1-publication-receipt.json)
+has SHA-256
+`8f2c00f7c8ff0cb49f9eb712892d803fa91818c8356fdf7e1aa26ad5d2122dc1`.
+
+Require one real, isolated audit process and one separately
+identified Rust candidate worker. Reject Python's regular-expression
+engine, `_sre`, external regex packages, and both independently
+owned C and Zig engines. Require all frozen source and native
+binary hashes to stay unchanged throughout execution. The actual
+Rust audit is **PASS**; the separately observed C audit is also
+**PASS**. The Zig audit remains **NOT MEASURED**. No native
+reproducibility, performance, hidden-example access, or winner is
+inferred from either result.
+
 ## Verify the C engine does not wrap or call another matcher
 
 Run the already frozen independent from-scratch ownership audit
