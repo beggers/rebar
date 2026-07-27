@@ -49,6 +49,13 @@ C and Zig are shown as **NOT MEASURED**, not as successes or failures.
 
 ## Current compatibility
 
+The frozen
+[three-candidate comparison generator](tools/render_candidate_correctness_overview_v1.py)
+uses the same **2,807** planned runnable checks for every current
+engine. It distinguishes genuine passes, genuine failures,
+unrun tests, and preserved results from earlier source versions.
+Its new combined chart has **NOT YET BEEN GENERATED**.
+
 ![Python and the current from-scratch Rust engine both pass all 864 independently frozen general compatibility checks](docs/evidence/rust-public-correctness-v1.svg)
 
 | Python behavior | Current Rust result | Complete evidence |
@@ -202,6 +209,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/record_rust_original_cpython_v3.py --self-test
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_correctness_v1.py --self-test
+"$PY" -I -B tools/render_candidate_correctness_overview_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_speed_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_speed_v2.py --self-test
 "$PY" -I -B tools/reproduce_owned_zig_source_build_v1.py --self-test

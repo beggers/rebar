@@ -7,6 +7,34 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a clear, honest three-candidate correctness graph
+
+Independently review and freeze the deterministic
+[all-candidate correctness-chart generator](../tools/render_candidate_correctness_overview_v1.py),
+SHA-256
+`2dec75908fe1332dc106968c0fccaa2d5e7a45fcf4fd3885e004492099347f60`.
+Use exactly the same **2,807** planned runnable cases per engine:
+**151** original, **864** general, **1,024** scanner, and **768**
+buffer cases.
+
+Require explicit hashes for every selected original or behavior
+report and verify each complete candidate source, native engine,
+and native bridge. Never combine an old C adapter's scanner,
+general, or buffer records with its corrected current source.
+Allow those actual failures only as clearly labeled, authenticated
+historical evidence; mark current unrun cases gray. Use green for
+observed Python-compatible behavior and red for genuine current
+mismatches. Do not silently remove a case, count the genuine
+debug-only skip as runnable, or infer speed.
+
+Both normal and clean-environment source checks pass all **109**
+synthetic controls. They read **zero** evidence or final cases,
+write **zero** charts, import **zero** candidates, and run
+**zero** references, benchmarks, or clocks. Require a separately
+hash-pinned input manifest before any graph is generated.
+At this source-freeze commit, the new chart remains
+**NOT GENERATED**.
+
 ## Preserve the first real stable-Zig build-protocol failure
 
 After separately freezing, reviewing, committing, and pushing the
