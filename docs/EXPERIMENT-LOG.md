@@ -7,6 +7,73 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Falsify the original replacement and changing-buffer callback tests
+
+Independently authenticate and replay the complete frozen Python, C, and
+Zig replacement reports, all **5,120** original observations, both
+reference process records, and both original mismatch ledgers. The
+original [replacement-and-buffer oracle](../tools/independent_substitution_buffer_semantics_v1.py),
+SHA-256
+`a325528aa62f107969b9dfdf5dea2ae8f9426607887a317fe20fcf9a1b7fd445`,
+records the defining module of its own `ReplacementCallbackError`.
+Python reference workers execute that file as `__main__`; candidate
+workers import it as
+`tools.independent_substitution_buffer_semantics_v1`.
+
+This test-runner difference produces exactly the same **128** false
+callback mismatches for both candidates. Independently verify that
+every other exception, argument, message, callback, match, result,
+and observed buffer event in those **128** cases is identical.
+The cases include **64** text and **64** bytes replacements and
+**32** each for the four module and compiled-pattern replacement
+operations. Do not alter candidate behavior or relax any user-visible
+exception identity.
+
+Preserve the complete original two-Python baseline, archive SHA-256
+`2e24e17862e75f4f2f778d15d67416f6e643eff01c0d110e750cea99b2550fab`;
+the full historical C archive, SHA-256
+`b1545e5850caaf59fd9640358527dfaf160f90b3f48fc9f80accd5a49a305111`;
+and the full historical Zig archive, SHA-256
+`8adefae4fb5248d3a95cefc852bfafa9dfca39d0d868a0b424df6394eef9a402`.
+The C ledger's **464** reported differences comprise **128**
+test-harness errors and **336** other differences. The Zig ledger's
+**192** reported differences comprise the same **128** test-harness
+errors and **64** other differences. Preserve both complete
+authenticated ledgers and receipts. The original candidate test is
+**FALSIFIED**; neither report is a correctness-qualified candidate
+result. Results under a corrected oracle are **NOT MEASURED**.
+
+Independently authenticate and replay every observation from the
+[original 10,240-case changing-buffer oracle](../tools/independent_shape_changing_buffer_semantics_v1.py),
+SHA-256
+`866dbf7bf4a48a867b3aaacd05cfa4f1346c747931543fa386835e783f0073aa`.
+Its effective error-normalization function records the module of
+its own `ShapeCallbackError` in the same incompatible script and
+import contexts.
+
+Preserve the complete historical two-Python changing-buffer
+reference, SHA-256
+`8bf48813d82966edbed05330ce26f6c8a3d80ee72c59a6dbfa104ff397906b5b`,
+and the complete fresh-process C report, SHA-256
+`8660c07a379901e4163b6204199c5a903013c2e9efa051ac67560d89085542db`.
+Exactly **496** of the C report's **1,888** differences are identical
+in every observable result, exception argument, callback, match, and
+buffer event except the test-owned exception's module. The remaining
+**1,392** differences are genuine discrepancies in the preserved
+outcomes. Preserve the original collision report, all **10,240**
+outcomes, the complete mismatch ledger, and the historical graph;
+mark that graph and the original changing-buffer candidate test
+**FALSIFIED**, not correctness-qualified.
+
+The independently frozen historical replacement-graph renderer
+also remains preserved. Do not publish a graph that portrays the
+**128** replacement or **496** changing-buffer harness errors as
+candidate failures. Freeze corrected, separately versioned
+replacement and changing-buffer tests before recording new
+references or candidate comparisons. Their corrected results are
+**NOT MEASURED**. Do not open, generate, or measure the final
+holdout.
+
 ## Freeze clear replacement correctness graph generation
 
 Independently freeze the [5,120-case replacement-and-buffer correctness graph generator](../tools/render_substitution_buffer_overview_v1.py)
