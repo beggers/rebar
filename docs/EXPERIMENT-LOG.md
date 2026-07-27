@@ -7,6 +7,37 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a reproducible build of the independently owned Zig engine
+
+Independently review and freeze
+[the Zig source-build controller](../tools/reproduce_owned_zig_source_build_v1.py),
+SHA-256
+`53df4260eee56a143d2cd9134e5c0dc336b412758218c681f59acee0a8b8644e`,
+before compiling or replacing anything. Both isolated and
+clean-environment source-only self-tests pass **14** exact positive
+controls and reject **87** forged, external, escaped, or incomplete
+builds. They run **zero** compilers or candidates, read or write
+**zero** actual build or evidence files, and take **zero** timing
+measurements.
+
+Pin the exact official stable Zig archive, compiler executable,
+owned Zig parser and matcher, owned C Python bridge, genuine
+CPython **3.14.6** headers, host C compiler, and native symbol
+inspector. Allow only the **22** owned Zig exports, **17** legitimate
+system and Python Unicode references, and **14** bridge-to-owned-
+engine references. Parse versioned native symbols correctly and
+reject Python's regex engine, external matching libraries, dynamic
+loader escapes, and cross-candidate symbols. Use Zig's actual
+`-fallow-shlib-undefined` support solely for genuine host-Python
+Unicode symbols.
+
+Future builds must use a fresh private `/tmp` destination and local
+caches, preserve complete actual compiler diagnostics and failures,
+validate the owned engine and `$ORIGIN` bridge, and never alter
+existing candidate files. At this source-freeze commit, compilation,
+native source-to-binary reproduction, Zig compatibility, and Zig
+speed remain **NOT YET RUN**.
+
 ## Freeze durable from-scratch evidence for all three engines
 
 Independently review and freeze the additive

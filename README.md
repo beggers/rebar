@@ -99,7 +99,9 @@ preserves every genuine failure and crash without claiming a native
 build has been reproduced.
 The [Zig build protocol](docs/ZIG-SOURCE-BUILD-V1.md) now pins and
 verifies the official stable compiler; rebuilding the owned Zig
-engine with it has **NOT YET RUN**.
+engine with the independently frozen
+[source-build controller](tools/reproduce_owned_zig_source_build_v1.py)
+has **NOT YET RUN**.
 
 ## Larger fair speed comparison
 
@@ -153,4 +155,5 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/render_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_speed_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_speed_v2.py --self-test
+"$PY" -I -B tools/reproduce_owned_zig_source_build_v1.py --self-test
 ```
