@@ -7,6 +7,33 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze complete replacement and buffer evidence recording
+
+Independently freeze the
+[replacement and buffer baseline and candidate recorder](../tools/record_independent_substitution_buffer_semantics_v1.py)
+before observing its **5,120-case** Python baseline or any candidate.
+Its exact source SHA-256 is
+`1dbb45e8950a0eceb966a56adcbe2f9d1da35ec04883458a780b6f08f5a4735d`.
+Pin the unchanged replacement oracle, full case matrix, both exact
+numeric and decimal seed `6004778603531028017`, and immutable
+independent-engine ownership checks.
+
+Require exactly two separately identified original Python reference
+workers for the future baseline, and one separately authenticated
+Rust, C, or Zig worker for each subsequent candidate result. Keep
+every complete replacement, callback, exception, buffer event,
+native ownership check, reference result, warning check, mismatch,
+and real process failure. Publish complete compressed reports and
+atomic non-overwriting receipts; do not treat a successfully written
+receipt as a successful test.
+
+Normal and empty-environment source-only checks pass the same
+**31** positive controls and **257** rejected attacks, including a
+genuinely denied background-thread operation. Run **zero** genuine
+references, candidates, timings, or hidden cases during the
+recorder-freeze chunk. The full replacement baseline and every
+candidate remain **NOT MEASURED**.
+
 ## Publish the independently frozen scanner baseline graph
 
 Render the separately frozen **2,854-case** scanner and pattern-comment
