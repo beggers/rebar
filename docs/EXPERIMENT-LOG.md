@@ -7,6 +7,43 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve all 1,888 genuine C changing-buffer safety failures
+
+Only after preserving and publishing the rejected process-ID
+collision, retry the same independently owned C candidate under
+a fresh evidence label. The new isolated process is distinct from
+both historical Python references. Validate every actual C outcome:
+**8,352** passes and **1,888** failures out of the unchanged
+**10,240** original changing-buffer cases.
+
+The [complete independently guarded C changing-buffer report](../experiments/rust_public_practice_v1/c-shape-changing-buffer-semantics-v1-native-lifetime-repair-pid-retry-v1.json.gz)
+has SHA-256
+`8660c07a379901e4163b6204199c5a903013c2e9efa051ac67560d89085542db`.
+Its [authenticated fresh-label C receipt](../experiments/rust_public_practice_v1/c-shape-changing-buffer-semantics-v1-native-lifetime-repair-pid-retry-v1-publication-receipt.json)
+has SHA-256
+`d4d7c6f184e3a0dbea06ab9bbf8cbe13a945dcb4914a567e17a7b25a9a74b1b2`.
+The complete ordered C outcome digest is
+`b54207667c3922e57fd1af0f209bf2e468a8f2cfb9906e83bf2ebd845e4b8295`.
+
+The [complete updated changing-buffer graph inputs](evidence/shape-changing-buffer-overview-v1.inputs.json)
+have SHA-256
+`418e89b29487caf401bc96d9e9b7ee02adde53105f0983a2298c1b910e7451b1`.
+The [full updated changing-buffer graph data](evidence/shape-changing-buffer-overview-v1.json)
+has SHA-256
+`d438b3beb510440304c94eb4ad8feb1df44531bd0390d0cbb2f66fc29b64b808`.
+The [generated C changing-buffer comparison](evidence/shape-changing-buffer-overview-v1.svg)
+has SHA-256
+`8a9d614ff111dde55ecc652502f1a92b62fd7356a4299af4d4cc97ad0c3dc3c2`.
+
+Preserve all **20,480** no-delegation checks and **20,480**
+warning checks. Include every API, buffer-release event, all
+five witnessed nested-size regressions, and the complete earlier
+inconclusive run. Refresh the frozen changing-buffer headline
+graph: Python **10,240 / 10,240**, C **8,352 / 10,240** with all
+**1,888** failures visible, and Rust and Zig **NOT MEASURED**.
+The real C candidate result is **FAIL**; receipt publication does
+not establish correctness. Performance remains **NOT MEASURED**.
+
 ## Preserve an inconclusive C changing-buffer process collision
 
 Run the separately frozen **10,240-case** changing-buffer recorder

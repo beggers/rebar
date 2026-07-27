@@ -16,14 +16,15 @@
 <rect x="43" y="259" width="997" height="25" rx="6" fill="#e2e8f0"/>
 <rect x="43" y="259" width="997" height="25" fill="#94a3b8"><title>Rust: 10,240 not yet measured out of 10,240</title></rect>
 <text x="43" y="328" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">C</text>
-<text x="1040" y="328" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<text x="1040" y="328" fill="#dc2626" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">8,352 / 10,240 match Python</text>
 <rect x="43" y="339" width="997" height="25" rx="6" fill="#e2e8f0"/>
-<rect x="43" y="339" width="997" height="25" fill="#94a3b8"><title>C: 10,240 not yet measured out of 10,240</title></rect>
+<rect x="43" y="339" width="813" height="25" fill="#15803d"><title>C: 8,352 matches python out of 10,240</title></rect>
+<rect x="856" y="339" width="184" height="25" fill="#dc2626"><title>C: 1,888 does not match python out of 10,240</title></rect>
 <text x="43" y="408" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Zig</text>
 <text x="1040" y="408" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
 <rect x="43" y="419" width="997" height="25" rx="6" fill="#e2e8f0"/>
 <rect x="43" y="419" width="997" height="25" fill="#94a3b8"><title>Zig: 10,240 not yet measured out of 10,240</title></rect>
 <text x="43" y="491" fill="#475569" font-family="system-ui,sans-serif" font-size="12">Includes all 64 ways the outer and inner buffers can differ, including empty and shorter buffers.</text>
 <text x="43" y="511" fill="#475569" font-family="system-ui,sans-serif" font-size="12">Every failure and earlier result remains in the complete evidence. Speed and the final holdout are not measured.</text>
-<text x="43" y="550" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Manifest SHA-256: 5f3648ac282c5cbd479fb92e5803884628501165a75e12b723ae82b23633d7bb &#183; renderer SHA-256: 53e76b2a99a8bfe2adc654fbcfa5be13026726227b5cc2345e2c41833116a1cb</text>
+<text x="43" y="550" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Manifest SHA-256: 418e89b29487caf401bc96d9e9b7ee02adde53105f0983a2298c1b910e7451b1 &#183; renderer SHA-256: 53e76b2a99a8bfe2adc654fbcfa5be13026726227b5cc2345e2c41833116a1cb</text>
 </svg>
