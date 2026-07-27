@@ -7,6 +7,41 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Publish all genuine current C failures in the headline graph
+
+After separately freezing, independently reviewing, committing,
+and pushing the V2 current-source graph generator, create the
+canonical
+[updated graph input manifest](evidence/candidate-correctness-overview-v2.inputs.json),
+SHA-256
+`04071395c75e23327c03439581348c643504c72fed03b9d4996894d2952162e0`.
+Select the exact current Rust, C, and Zig source hashes and pin
+every chosen complete original or V2/V3 behavior report.
+
+Publish the
+[updated headline correctness chart](evidence/candidate-correctness-overview-v2.svg),
+SHA-256
+`684597171117484911bc0a4068fe4793dd883edd4c910f8990f4118680aec456`,
+and its
+[complete generated correctness data](evidence/candidate-correctness-overview-v2.json),
+SHA-256
+`7091fef5a9d0d556757b792d81cbfc69feedc5eafd703a879326c20e69a6ea7b`.
+
+The unchanged per-candidate denominator is **2,807**. Rust
+passes **2,807** with **zero** failures. C passes **1,754**
+and fails **1,053**: **40** general, **992** scanner, and
+**21** buffer mismatches. Zig passes **151** original tests
+and retains **2,656** genuinely unrun current checks. Show all
+C failures in red; show Zig's unrun cases in gray.
+
+Preserve both the original chart and every genuine earlier C
+and Zig failure. Validate the exact V3 recorder, source
+closures, reference vectors, all owned native files, matrix
+denominators, previous graph source, and full historical pins.
+The actual graph render is **PASS**; it executes **zero**
+candidates, accesses **zero** final or benchmark cases,
+measures **zero** timings, and claims **no** winner.
+
 ## Freeze the updated current-source compatibility graph
 
 Independently review and prospectively freeze the additive

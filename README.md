@@ -28,39 +28,28 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 
 ## Do the candidates work like Python?
 
-![Side-by-side correctness of the three independently built regex engines: Rust passes all 2,807 checks; C and Zig pass all 151 original Python tests and each has 2,656 further checks not yet run on its current source](docs/evidence/candidate-correctness-overview-v1.svg)
+![Side-by-side correctness of the independently built regex engines: Rust passes all 2,807 checks; C passes 1,754 and fails 1,053; Zig passes all 151 original Python tests with 2,656 remaining checks not yet run](docs/evidence/candidate-correctness-overview-v2.svg)
 
 Every engine has the same **2,807** planned checks. Green means
 it matches Python; red means an actual mismatch; gray means the
-current build has **not yet been tested**. This frozen graph shows
-its exact recorded snapshot: Rust passes all **2,807**, and C
-and Zig each pass their **151** original Python tests. The single
-genuine Python debug-only skip is not counted.
+current build has **not yet been tested**. Rust passes all
+**2,807**. C passes **1,754** and fails **1,053**. Zig passes
+all **151** original Python tests; its other **2,656** cases
+remain **NOT YET RUN**. The genuine Python-only debug skip
+is not counted.
 
-Since this graph was frozen, a
-[new source-verified C general-behavior run](experiments/rust_public_practice_v1/c-public-contract-v3-shared-suite-v1.json)
-matched **824 / 864** Python cases and exposed **40** genuine
-scanner-callback mismatches. A separately recorded
-[C scanner comparison](experiments/rust_public_practice_v1/c-scanner-contract-v3-shared-suite-v1.json)
-matches **32 / 1,024** cases and preserves all **992** failures.
-The separately recorded
-[current C buffer comparison](experiments/rust_public_practice_v1/c-buffer-contract-v3-shared-suite-v1.json)
-matches **747 / 768** cases and preserves all **21** failures.
-The graph will be regenerated from all three exact new results.
-Zig general, scanner, and buffer results remain **NOT YET RUN**.
-
+The C mismatches are **40** general scanner-callback failures,
+**992** dedicated scanner failures, and **21** buffer failures.
 The separately frozen
-[updated three-candidate chart generator](tools/render_candidate_correctness_overview_v2.py)
-supports the newer source-pinned C and Zig results while preserving
-all previous evidence. Its updated graph has **NOT YET BEEN
-GENERATED**.
+[current-source graph generator](tools/render_candidate_correctness_overview_v2.py)
+authenticates every case and displays every failure.
 
 The older C build's **40** general, **992** scanner, and **21**
 buffer failures remain in the
-[complete chart inputs](docs/evidence/candidate-correctness-overview-v1.inputs.json)
+[complete chart inputs](docs/evidence/candidate-correctness-overview-v2.inputs.json)
 and [experiment log](docs/EXPERIMENT-LOG.md). They are never
 silently applied to the corrected C build. The
-[complete generated chart data](docs/evidence/candidate-correctness-overview-v1.json)
+[complete generated chart data](docs/evidence/candidate-correctness-overview-v2.json)
 records every denominator, source hash, and previous result.
 
 ## Current speed against Python
@@ -87,7 +76,7 @@ C and Zig are shown as **NOT MEASURED**, not as successes or failures.
 ## Detailed Rust compatibility
 
 The independently frozen
-[three-candidate chart generator](tools/render_candidate_correctness_overview_v1.py)
+[three-candidate chart generator](tools/render_candidate_correctness_overview_v2.py)
 reproduces the headline chart from complete, version-matched Python
 test results.
 
