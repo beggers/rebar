@@ -55,33 +55,6 @@ headers at
 `/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/include/python3.14`.
 Its extension suffix is `.cpython-314-x86_64-linux-gnu.so`.
 
-## Frozen source-build controller
-
-The independently reviewed build controller is
-`tools/reproduce_owned_zig_source_build_v1.py`, with SHA-256
-`53df4260eee56a143d2cd9134e5c0dc336b412758218c681f59acee0a8b8644e`.
-Its synthetic self-test passes **14** valid controls and rejects
-**87** forged archives, paths, engine symbols, native dependencies,
-or unsafe outputs under both ordinary and empty environments.
-
-```sh
-/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
-  -I -B tools/reproduce_owned_zig_source_build_v1.py --self-test
-```
-
-The self-test runs no compiler or candidate and creates no build or
-evidence files. An actual build remains an explicit, separate step.
-When authorized, the controller will compile only these authenticated
-owned sources into a fresh `/tmp` directory, retain complete compiler
-output, validate native exports and `$ORIGIN` dependencies, and
-publish a complete success or failure without overwriting any
-existing candidate.
-
-The Zig engine legitimately refers to Python-owned Unicode helpers;
-the exact source build must permit those authenticated host-Python
-symbols with `-fallow-shlib-undefined`. This is a Python interface,
-not an external regular-expression implementation.
-
 ## What is and is not proved
 
 The official compiler archive, extracted compiler version, owned

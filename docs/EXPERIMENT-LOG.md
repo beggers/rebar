@@ -7,6 +7,23 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Restore the exact source-build protocol pinned by the Zig controller
+
+Before running the frozen Zig build controller, verify every real
+input hash. Catch the fact that adding an explanatory section to
+`docs/ZIG-SOURCE-BUILD-V1.md` changed the already pinned build
+protocol after the controller had been independently reviewed.
+
+Restore that protocol byte-for-byte to its original frozen SHA-256,
+`b2f0b0c85d28ace4593ba38cac95d731fb15f05e22de5b4ffcbc7d17d41efc49`.
+Keep the exact independently frozen controller, the full
+explanation in this log, and the direct controller link and
+self-test in the README. Do not change the controller, silently
+loosen a hash, or substitute a new input after review.
+
+The source build and all Zig candidate tests remain **NOT YET RUN**;
+no existing candidate was changed and no final case was accessed.
+
 ## Freeze a reproducible build of the independently owned Zig engine
 
 Independently review and freeze
