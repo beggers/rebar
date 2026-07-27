@@ -1222,6 +1222,9 @@ def compile(pattern, flags=0):
     return result
 
 
+_compile = compile
+
+
 def purge():
     _CACHE.clear()
 

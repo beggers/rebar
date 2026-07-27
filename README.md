@@ -23,7 +23,7 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 | --- | ---: | --- |
 | Python `re` | **1.000×** | Baseline |
 | Our Rust engine | **1.065×** | Public development tests pass; speed goal not met |
-| Our C engine | **NOT MEASURED** | **150 / 151** original, **824 / 864** general, **32 / 1,024** scanner, **747 / 768** buffer cases |
+| Our C engine | **NOT MEASURED** | **151 / 151** original tests; most recent behavior results: **824 / 864** general, **32 / 1,024** scanner, **747 / 768** buffer |
 | Our Zig engine | **NOT MEASURED** | **151 / 151** original tests; general, scanner, and buffer cases not yet run |
 
 ## Current speed against Python
@@ -73,8 +73,9 @@ the
 
 Python's original test file contains **165** tests: **152** cover the
 public interface, while **13** explicitly named tests concern private
-Python internals. Python and Rust both pass all **151** runnable
-public tests and report the same genuine debug-only skip. The original
+Python internals. Python, Rust, C, and Zig now all pass the **151**
+runnable public tests and report the same genuine debug-only skip.
+The original
 test also checks engine ownership **304** times and warning safety
 **304** times. The frozen
 [corrected original Python suite](tools/independent_original_cpython_suite_v5.py)
@@ -83,13 +84,14 @@ preserve every test, failure, and genuine skip without allowing an
 external matching engine.
 
 The current
+[C original-test result](experiments/rust_public_practice_v1/c-original-v5-shared-suite-pickle-fix-v1.json)
+and
 [Zig original-test result](experiments/rust_public_practice_v1/zig-original-v5-shared-suite-pickle-fix-v1.json)
-passes **151 / 151** runnable tests. Zig now provides the private
-`_compile` name Python needs for pickling by exposing its **own**
-existing compiler; it does not call Python's or an external engine.
-The earlier genuine failure remains in the
-[experiment log](docs/EXPERIMENT-LOG.md). C still has the same
-independently recorded pickling defect. All Zig general, scanner,
+each pass **151 / 151** runnable tests. Both now expose their **own**
+existing compiler as Python's private `_compile` compatibility
+name. Neither calls Python's engine, an external package, or the
+other candidate. Their earlier failures remain preserved in the
+[experiment log](docs/EXPERIMENT-LOG.md). All Zig general, scanner,
 buffer, and speed results remain **NOT MEASURED**.
 
 The separately frozen
@@ -98,9 +100,11 @@ make all three engines face the same **864** general cases, **1,024**
 scanner cases, and **768** memory-view cases. Each category is run
 and reported separately using the
 [complete behavior-test recorder](tools/record_independent_public_contract_v2.py);
-C has completed all three categories and has **40 / 864** general,
-**992 / 1,024** scanner, and **21 / 768** buffer mismatches. Zig has
-**NOT YET RUN** these categories.
+The most recently recorded C behavior run, before its one-line
+pickling fix, exposed **40 / 864** general, **992 / 1,024** scanner,
+and **21 / 768** buffer mismatches. These failures remain visible;
+the exact updated adapter must pass fresh, frozen behavior checks.
+Zig has **NOT YET RUN** these categories.
 
 The independently reviewed
 [Rust ownership audit](tools/rust_from_scratch_audit_v1.py) and its
@@ -137,8 +141,9 @@ examples covering every public operation, ordinary and unusual
 patterns, text and byte inputs, native-call overhead, and lifecycles.
 
 Freeze and generate a new final test only after three genuinely
-separate, from-scratch candidates pass all original Python tests and
-the independent no-delegation audit. Measure Python and each
+separate, from-scratch candidates pass all original Python tests,
+all **864** general cases, all **1,024** scanner cases, all **768**
+buffer cases, and the independent no-delegation audit. Measure Python and each
 qualifying candidate on the same cases in **24** fairly ordered
 rounds. Report complete results, uncertainty, memory, and every
 slowdown. Success requires at least **1.5×** overall and statistically

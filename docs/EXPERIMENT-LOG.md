@@ -7,6 +7,38 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Fix C pickling using its own independent compiler
+
+After separately preserving the original genuine C pickling
+failure, fix exactly one owned adapter feature by exposing the
+existing C compiler as `_compile = compile`. Add no imports,
+external matcher, fallback, sibling engine, or native change.
+Freeze the resulting exact C adapter, SHA-256
+`b293cf4e9776692ad90174e6bf58ddd33ae12f90506939a02ab13c16dd4e6d61`.
+Keep the independently owned C native engine unchanged and run
+the unmodified, separately frozen V5 original Python suite.
+
+Preserve the
+[complete fixed C result](../experiments/rust_public_practice_v1/c-original-v5-shared-suite-pickle-fix-v1.json),
+SHA-256
+`9144b8a979bd6ecfa638ccb1ef48899d1cddc7cfc313066beba05fa6a35f615f`,
+and its
+[durable publication receipt](../experiments/rust_public_practice_v1/c-original-v5-shared-suite-pickle-fix-v1-publication-receipt.json),
+SHA-256
+`8223894b9b194b970cd183d59bed8cf4b1d2a24c154a04432f6fff4c576fd000`.
+
+The actual result is **PASS**: C and Python both pass all **151**
+runnable original tests and report the same genuine debug-only
+skip. Preserve all **152** reference records, all **152** C
+records, all **304** engine-ownership and **304** warning checks,
+the original baseline and native hashes, and complete isolated
+worker streams. There are **zero** mismatches. The earlier C
+failure and the **40** general, **992** scanner, and **21** buffer
+mismatches recorded against the previous adapter remain unchanged.
+This original-suite fix does **not** qualify the updated C engine
+on those separate behavior categories. No hidden case, benchmark,
+timing, or memory measurement is accessed.
+
 ## Fix Zig pickling using its own independent compiler
 
 After separately preserving, committing, and pushing Zig's genuine
