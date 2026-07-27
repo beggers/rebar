@@ -14,12 +14,12 @@ Each candidate must use its own matching engine built from scratch. Wrapping Pyt
 
 ![Overall public development speed: Python at 1.000 times, Rust at 1.065 times, the 1.5-times target, and C and Zig not yet measured](docs/evidence/rust-public-speed-v2-overall.svg)
 
-| Implementation | Checks matching Python | Speed relative to Python |
-| --- | ---: | ---: |
-| Python `re` | 2,807 / 2,807 | 1.000× |
-| Our Rust engine | 2,807 / 2,807 | 1.065× on public development examples |
-| Our C engine | 2,807 / 2,807 | NOT MEASURED |
-| Our Zig engine | 1,717 / 2,807; 1,090 failures | NOT MEASURED |
+| Implementation | Original 2,807 checks | Extra 1,024 safety checks | Speed relative to Python |
+| --- | ---: | ---: | ---: |
+| Python `re` | 2,807 / 2,807 | 1,024 / 1,024 | 1.000× |
+| Our Rust engine | 2,807 / 2,807 | NOT MEASURED | 1.065× on public development examples |
+| Our C engine | 2,807 / 2,807 | 787 / 1,024; 237 failures | NOT MEASURED |
+| Our Zig engine | 1,717 / 2,807; 1,090 failures | NOT MEASURED | NOT MEASURED |
 
 All three engines are independently built from scratch. Green indicates a real matching result; red indicates a real mismatch. Every engine faces exactly the same 2,807 checks. Failures and older results are preserved, never excluded.
 
@@ -34,12 +34,13 @@ Rust's 1.065× result is from 864 public development examples, not the final com
 | Scanners and callbacks | 1,024 | 1,024 | 1,024 | 32 |
 | Memory views and buffers | 768 | 768 | 768 | 710 |
 | Total matching checks | 2,807 | 2,807 | 2,807 | 1,717 |
+| Additional memory-lifetime safety, counted separately | 1,024 | NOT MEASURED | 787 | NOT MEASURED |
 
 Python's genuine debug-only test is skipped equally and is not included in the denominator.
 
 ![Detailed public correctness: Python and the Rust engine match on all 864 public examples](docs/evidence/rust-public-correctness-v1.svg)
 
-An additional, frozen 1,024-case memory-lifetime safety suite now has a passing two-Python baseline. **No candidate has run these extra cases.** They are not added to the 2,807-check totals until Python and each candidate have genuinely been compared.
+An additional, frozen 1,024-case memory-lifetime safety suite has a passing two-Python baseline. C matches 787 cases and fails 237; Rust and Zig are **NOT MEASURED**. These cases are counted separately and are never silently added to the 2,807 original checks.
 
 ## Detailed development speed
 

@@ -7,6 +7,48 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the first real C memory-lifetime failures
+
+After freezing, committing and pushing the generic memory-lifetime
+candidate recorder, run exactly one isolated owned C engine against
+the complete **1,024-case** Python baseline. Pin the unchanged C
+adapter
+`9fe2e30ee6be7c5daa80df0174b371b1b7074f379724aee530c1ebfa0707eb6d`,
+native source
+`86f4ec74e506b4b3e23cc4da42588b1c257bef18e4c4e7a3958e4da38bfc79f7`,
+and source-built C binary
+`1ba73d0b03228a2b8f7623a89f7c7464375d0667a758323390f16a99c01a596e`.
+
+The authentic result is **FAIL**: **787 / 1,024** cases match
+Python, and **237** differ. Preserve the entire
+[lossless C memory-lifetime result](../experiments/rust_public_practice_v1/c-managed-buffer-lifetime-v1-shared-suite-v1.json.gz),
+SHA-256
+`7a43b379cb8ade1b740663ce550eb66222fdf84890848043402064eb576908be`.
+Its exact restored **32,930,166** bytes have SHA-256
+`fd80043abde125b2c980ffe24fb0da0c1d35d453379c998d3be45c2519cd516b`.
+Retain the independent
+[durable failure receipt](../experiments/rust_public_practice_v1/c-managed-buffer-lifetime-v1-shared-suite-v1-publication-receipt.json),
+SHA-256
+`df7fd6880781bfc59e5e678aed122c61e86dfda17cbbcd3e25504bc80d2e446c`.
+
+Preserve every failing group: **32** iterator-advance,
+**32** iterator-deletion, **32** iterator-exhaustion,
+**32** scanner-match, **32** scanner-search, **16**
+retained-match, **12** buffer-acquire, **28** overwrite-on-release,
+and **21** template-exporter cases. All other **23** groups pass.
+Authenticate both original Python references, all **1,024** exact
+baseline and candidate records, **2,048** native ownership checks
+and **2,048** warning checks. There is no candidate crash, omitted
+case, timing, hidden-case access, or weakened baseline.
+
+The original **2,807-case** result still genuinely passes. The
+additional safety suite is separate and exposes a real C memory
+lifetime defect; C is **not** yet a drop-in replacement.
+Rust and Zig have **NOT YET RUN** this additional suite.
+Final speed, the expanded final holdout, native memory and any
+winner remain **NOT MEASURED**.
+
+
 ## Freeze complete three-engine memory-lifetime comparisons
 
 Freeze the independently reviewed
