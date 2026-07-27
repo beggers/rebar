@@ -7,6 +7,33 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze authenticated corrected replacement comparison inputs
+
+Freeze the [independently authored corrected comparison inputs](evidence/substitution-buffer-overview-v2.inputs.json)
+only after the corrected graph generator has separately been committed and
+pushed. The complete canonical input has SHA-256
+`1ed1eaf6959cbd8c06dc19206133a05f91552078e7cfd42e5adc245d2893e1a6`.
+
+Two independent reviewers separately reconstructed identical canonical
+bytes and verified every source, native-engine, historical-evidence,
+baseline-archive, baseline-receipt, matrix, and CPython hash. The
+**5,120**-case denominator, all **64** categories, all **80** examples
+per category, and exact full-width seed `6004778603531028017` are fixed
+before rendering. Pin Python's original passing **5,120 / 5,120**
+reference records; declare each separately owned Rust, C, and Zig
+family **NOT MEASURED** without inferring a pass, failure, or speed.
+
+Retain the exact falsified historical reports, including C **464** and
+Zig **192**, each with **128** original test-harness artifacts and
+**336** or **64** genuine remaining differences respectively. The
+historical results are explicitly **FALSIFIED**, never added to or
+subtracted from the corrected denominator, and never displayed as
+corrected candidate results.
+
+The graph itself remains **NOT GENERATED**. Run no candidate, matcher,
+reference worker, clock, timing trial, memory observation, or hidden
+case. The expanded final comparison remains **NOT OPENED**.
+
 ## Freeze a clear corrected replacement comparison graph generator
 
 Freeze the [corrected replacement comparison graph generator](../tools/render_substitution_buffer_overview_v2.py)
