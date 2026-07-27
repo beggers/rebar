@@ -7,6 +7,71 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Eliminate the last C buffer mismatches
+
+Repair only the owned native C replacement-expansion function.
+Preserve the independently built C scanner, matcher, compiler, and
+both completed-capture fixes. Authenticate C source
+`86f4ec74e506b4b3e23cc4da42588b1c257bef18e4c4e7a3958e4da38bfc79f7`,
+unchanged adapter
+`9fe2e30ee6be7c5daa80df0174b371b1b7074f379724aee530c1ebfa0707eb6d`,
+and source-built engine
+`1ba73d0b03228a2b8f7623a89f7c7464375d0667a758323390f16a99c01a596e`.
+
+Correctly preserve original writable-memory-view hashing, exporter
+errors, template conversion, custom buffer retry behavior and
+buffer release. Build the native source twice in isolation and
+verify that both compiled outputs are byte-for-byte identical.
+The resulting module exposes only `PyInit__vm_native` and links
+only the system C runtime. The recorder continues to correctly
+state that a separately frozen C source-build protocol is
+**NOT ESTABLISHED**.
+
+Rerun all four unchanged frozen categories against that exact
+source and engine:
+
+- [Original Python result](../experiments/rust_public_practice_v1/c-original-v5-native-buffer-v1.json),
+  SHA-256 `6e41c9efa35f2cadfc580a2d7640f1b0bab5cd0a6d44863389b4e477641ca660`:
+  **151 / 151** runnable checks pass; the same genuine debug-only
+  test is skipped. Its
+  [durable receipt](../experiments/rust_public_practice_v1/c-original-v5-native-buffer-v1-publication-receipt.json)
+  is `dbedb94540ae9ea3e96421810180aecf036be660000ed245c0d01e69eba2dab8`.
+- [General behavior result](../experiments/rust_public_practice_v1/c-public-contract-v3-native-buffer-v1.json),
+  SHA-256 `92efaea566a45fb8cec970cabde83f9e40319207cb24dc7a957c6552c491cd3b`:
+  **864 / 864** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/c-public-contract-v3-native-buffer-v1-publication-receipt.json)
+  is `b4c0f0ad45c95a8c2e8835d663371ad72ee00a8436c54e53dec5d6728ad62b20`.
+- [Scanner result](../experiments/rust_public_practice_v1/c-scanner-contract-v3-native-buffer-v1.json),
+  SHA-256 `3a4de29d5e2636c48aed3f804607e0d102e91e08d1d7214a95c2e65c7aff23bd`:
+  **1,024 / 1,024** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/c-scanner-contract-v3-native-buffer-v1-publication-receipt.json)
+  is `6ff3a38a4bdd70bfe3f2122838fdefe4e3eafd2562c8b665247c08cc51474962`.
+- [Buffer result](../experiments/rust_public_practice_v1/c-buffer-contract-v3-native-buffer-v1.json),
+  SHA-256 `926afd67ba40395e6acf0a42c2d4784aa625e357fedc2a59d24302dc26b9c503`:
+  **768 / 768** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/c-buffer-contract-v3-native-buffer-v1-publication-receipt.json)
+  is `c0b53850936718193e867493b592a623c8f978d0a0ad0b42b19f418638a7b099`.
+
+An independent reviewer verified all **11** complete worker streams,
+all original waivers, exact genuine Python references, source and
+native ownership, every warning check, and all **eight** result
+and receipt hashes. The fixed **2,807**-case headline now shows
+Rust **2,807 / 2,807**, C **2,807 / 2,807**, and Zig
+**1,717 / 2,807**. Every earlier C failure remains in
+source-matched superseded history.
+
+The canonical headline manifest is
+`95e7b2a83993d769be4090e7e43c8edb8806dc58b3a6644193cbb7b349c9bc82`,
+SVG
+`79d405da369b62323ce37ea6fc109d7222132703eb434663a350d17a9a29f88e`,
+and summary
+`79d0a0852e2b73ef8fd45abfa95a228f10f58ff60fc7019293142767fd530c12`.
+No candidate has run the extra **1,024** memory-lifetime cases.
+Zig's existing **1,090** compatibility failures remain visible.
+Final holdout results, C and Zig speed, native memory, rankings,
+and any winner remain **NOT MEASURED**.
+
+
 ## Validate all 1,024 memory-lifetime cases against Python
 
 Run the frozen memory-lifetime baseline exactly once after committing

@@ -2489,12 +2489,53 @@ static PyObject *match_expand_parts(MatchObject *match, PyObject *parts,
 
 static PyObject *match_expand(MatchObject *match, PyObject *template) {
     PyObject *owned_key=NULL,*template_key=template;
-    if (PyByteArray_Check(template) || PyMemoryView_Check(template)) {
-        owned_key=PyBytes_FromObject(template);
+    int text_template=PyUnicode_Check(template);
+    int buffer_template=!text_template && PyObject_CheckBuffer(template);
+    int hash_unusable=0;
+
+    if (PyObject_Hash(template)==-1 && PyErr_Occurred()) {
+        if (!PyErr_ExceptionMatches(PyExc_TypeError) ||
+            !(text_template || buffer_template)) return NULL;
+        PyErr_Clear();
+        hash_unusable=1;
+    }
+
+    if (text_template && !PyUnicode_CheckExact(template)) {
+        owned_key=PyUnicode_FromObject(template);
+        if (!owned_key) return NULL;
+        template_key=owned_key;
+    } else if (PyBytes_Check(template) &&
+               !PyBytes_CheckExact(template)) {
+        if (hash_unusable) {
+            owned_key=PyBytes_FromObject(template);
+        } else {
+            owned_key=PyBytes_FromStringAndSize(
+                PyBytes_AS_STRING(template),PyBytes_GET_SIZE(template));
+        }
+        if (!owned_key) return NULL;
+        template_key=owned_key;
+    } else if (buffer_template && !PyBytes_Check(template)) {
+        if (hash_unusable) {
+            owned_key=PyBytes_FromObject(template);
+        } else {
+            Py_buffer view;
+            if (PyObject_GetBuffer(template,&view,PyBUF_SIMPLE)<0) {
+                PyErr_Clear();
+                owned_key=PyBytes_FromObject(template);
+            } else {
+                owned_key=PyBytes_FromStringAndSize(
+                    (const char *)view.buf,view.len);
+                PyBuffer_Release(&view);
+            }
+        }
         if (!owned_key) return NULL;
         template_key=owned_key;
     }
-    if (PyObject_Hash(template_key)==-1 && PyErr_Occurred()) { Py_XDECREF(owned_key); return NULL; }
+
+    if (PyObject_Hash(template_key)==-1 && PyErr_Occurred()) {
+        Py_XDECREF(owned_key);
+        return NULL;
+    }
     int byte_mode=PyBytes_Check(template_key);
     if (!template_compiler) { Py_XDECREF(owned_key); PyErr_SetString(PyExc_RuntimeError,"native template compiler is not configured"); return NULL; }
     PyObject *parts=PyDict_GetItemWithError(match->pattern->templates,template_key);
