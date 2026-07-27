@@ -24,7 +24,7 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 | Python `re` | **1.000×** | Baseline |
 | Our Rust engine | **1.065×** | Public development tests pass; speed goal not met |
 | Our C engine | **NOT MEASURED** | **150 / 151** original Python tests; one pickling incompatibility |
-| Our Zig engine | **NOT MEASURED** | Not yet tested against the complete shared suite |
+| Our Zig engine | **NOT MEASURED** | Blocked by an independently recorded test-harness initialization bug |
 
 ## Current speed against Python
 
@@ -89,6 +89,10 @@ result for a crashed engine. The current Rust engine now passes
 The C engine passes **150 / 151**; its remaining genuine failure is
 Python-compatible pickling, which must be corrected before it can
 qualify.
+Zig's first attempt exposed a bug in the test harness: it blocked
+Python's own standard `ctypes` initialization before any Zig test
+could run. Its compatibility is therefore **NOT YET MEASURED**, not
+a claimed test failure.
 
 The separately frozen
 [shared Python behavior tests](tools/independent_public_contract_v2.py)

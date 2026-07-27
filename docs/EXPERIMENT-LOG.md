@@ -7,6 +7,43 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the genuine Zig original-test harness false positive
+
+After recording, committing, and pushing the genuine C pickling
+failure, run the independently owned Zig adapter once under the
+same frozen V4 original Python controller. Preserve the actual
+[complete Zig controller-failure result](../experiments/rust_public_practice_v1/zig-original-v4-shared-suite-v1.json),
+SHA-256
+`4d2ae0f4fdecd09ca5b67d45ee09f1a5b0ce7e3d0e022bc56839601e4f2a27bc`,
+and its independently durable
+[publication receipt](../experiments/rust_public_practice_v1/zig-original-v4-shared-suite-v1-publication-receipt.json),
+SHA-256
+`16d2063015eba10ceb7ec77feb54505cafdf9f5527c38736974e1d90dd7b5247`.
+
+The authenticated nested traceback establishes an **oracle defect**,
+not a Zig regular-expression mismatch. Python's genuine standard
+`ctypes` initializes `pythonapi = PyDLL(None)` while the V4
+controller's narrowly restricted Zig library guard is already
+active. The guard incorrectly rejects Python's own initialization
+before the owned Zig library can load or a single original test can
+run.
+
+Preserve the complete **15,944-byte** outer and **5,137-byte**
+nested failure streams, actual nonzero process exit, unchanged Zig
+source and native hashes, and correctly unknown mismatch, Python
+reference, candidate, and guard counts. Publish the actual report
+without inventing zero failures or claiming that Zig failed a
+correctness test. The remedy must be a separately frozen, additive
+V5 oracle that authenticates and preloads genuine standard Python
+`ctypes` **before** installing the unchanged strict own-engine
+guard; process-global and foreign library loads must still be
+rejected once the guard is active. Preserve V4 and both failure
+files unchanged.
+
+Zig semantic compatibility remains **NOT YET MEASURED**. This
+experiment accesses **zero** final cases and performs **zero**
+timing trials.
+
 ## Preserve the genuine C original-Python pickling incompatibility
 
 After committing and pushing the first shared Rust original-test
