@@ -7,6 +7,38 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Verify the complete 2,854-case Python scanner baseline
+
+Only after separately freezing and pushing the scanner oracle and
+its durable recorder, run exactly one frozen baseline controller.
+Start exactly **two distinct** pinned CPython **3.14.6** reference
+workers and require both to agree on every **2,854 / 2,854**
+source-ordered case. Preserve all **2,560** semantic examples,
+**294** tokenizer examples, and **102** original Python errors.
+
+The
+[complete deterministic compressed scanner baseline](../experiments/rust_public_practice_v1/scanner-verbose-comments-v1-shared-suite-v1.json.gz)
+has SHA-256
+`bd51ffb8d33ab1bc4f206706f39e4ad5d603ab5c9c9e3d881f40ec564e833637`.
+Its restored **63,497,368-byte** canonical source report has
+SHA-256
+`a252165a146ac4e20731332b120c18cc0216e94a4601bcea00bceb0a3c2f21f9`.
+The exact full Python outcome vector is
+`d7e2d499eb4dbe6ae0f8743d8b152e4835898656daa8b3167598636ef7be6012`.
+The
+[durable independently reproducible baseline receipt](../experiments/rust_public_practice_v1/scanner-verbose-comments-v1-shared-suite-v1-publication-receipt.json)
+has SHA-256
+`0ebc862ccc29356d9c35a711bd1c031db0e03b0819d6fd38945d883956518e90`.
+
+Require the exact **2,854** denominator, frozen matrix
+`01bca287cd481a5e4ae134b910911e2e2f8f1501eebb7ffd2947092ab170d17b`,
+and unrounded 64-bit seed `5999725261024810545`. Authenticate both
+reference processes and their full outcome streams. Run **zero**
+candidate workers and read **zero** hidden or performance cases.
+All Rust, C, and Zig results against this new scanner baseline
+remain **NOT MEASURED**. This suite changes neither the original
+**2,807-case** graph nor the separate **1,024-case** safety graph.
+
 ## Freeze complete 2,854-case scanner evidence recording
 
 Independently review and separately freeze the
