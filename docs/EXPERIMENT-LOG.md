@@ -7,6 +7,33 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Validate all 10,240 changing-buffer Python reference cases
+
+Run the independently frozen changing-buffer recorder only after
+publishing its complete, lossless source. Two genuinely separate
+CPython 3.14.6 reference processes, with distinct process IDs **82**
+and **83**, agree on all **10,240 / 10,240** original cases. Preserve
+all **64** changing-size cohorts, every original observation, and
+the **800** cases covering the five known nested-buffer regressions.
+
+The [complete, lossless two-Python baseline](../experiments/rust_public_practice_v1/shape-changing-buffer-semantics-v1-shared-suite-v1.json.gz)
+has SHA-256
+`8bf48813d82966edbed05330ce26f6c8a3d80ee72c59a6dbfa104ff397906b5b`.
+Its [authenticated, non-overwriting publication receipt](../experiments/rust_public_practice_v1/shape-changing-buffer-semantics-v1-shared-suite-v1-publication-receipt.json)
+has SHA-256
+`8744ebf8fb29924661d8c379b3fa1d7662e6dd44ebca49ecd7d37219f06ac7c9`.
+The archive preserves the entire **179,411,616-byte** original
+evidence in **11,933,273** compressed bytes without duplicating
+reference results. The signed, ordered observation digest is
+`0aeddfa2835be5895bc6d88edae5ecc4945241c7ea456c0487497be4c47f8373`.
+
+Authenticate the immutable oracle, exact **10,240-case** matrix,
+complete **6001118316486346290** seed, pinned Python binary, frozen
+original Python tests, no-delegation policy, and recorder both before
+and after the actual references run. The real baseline is **PASS**;
+all Rust, C, and Zig changing-buffer results, current performance,
+and hidden examples remain **NOT MEASURED** and **NOT OPENED**.
+
 ## Freeze safely bounded changing-buffer evidence recording
 
 Independently freeze the
