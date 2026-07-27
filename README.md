@@ -28,7 +28,7 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 
 ## Current speed against Python
 
-![Current independently built Rust engine: 1.065 times Python's speed across 864 public examples](docs/evidence/rust-public-speed-v1-overall.svg)
+![Overall speed comparison: Python at 1.000 times, our Rust engine at 1.065 times, the 1.5-times goal, and our C and Zig engines honestly marked not yet measured](docs/evidence/rust-public-speed-v2-overall.svg)
 
 Python is **1.000×**. Rust is **1.065×**, with a measured **1.049× to
 1.081×** confidence interval. Of **864** examples, **183** are clearly
@@ -36,15 +36,16 @@ faster, **213** are clearly slower, and **468** are inconclusive.
 Neither the **1.5×** overall target nor the **60%** faster-case target
 has been met.
 
-![All 864 public examples classified as faster, slower, or inconclusive relative to Python](docs/evidence/rust-public-speed-v1-outcomes.svg)
+![All 864 public examples and the 60-percent faster-case goal: 183 faster, 213 slower, and 468 inconclusive](docs/evidence/rust-public-speed-v2-outcomes.svg)
 
 This is a development measurement, not a hidden result or a prediction
 about a final test. The
 [complete current measurements](experiments/rust_public_practice_v1/rust-memoryview-native-exporter-fix-public-practice.json)
 contain all **10,368** paired observations, including checking overhead.
-The independently reviewed
-[clearer, four-implementation chart generator](tools/render_rust_public_speed_v2.py)
-is frozen and tested first; its new charts have **NOT YET BEEN GENERATED**.
+Every chart is reproduced from that complete, correctness-checked
+result by the independently frozen
+[plain-language comparison generator](tools/render_rust_public_speed_v2.py).
+C and Zig are shown as **NOT MEASURED**, not as successes or failures.
 
 ## Current compatibility
 
@@ -59,9 +60,9 @@ is frozen and tested first; its new charts have **NOT YET BEEN GENERATED**.
 
 ## Current speed by operation
 
-![All 36 tested regular-expression operations compared directly with Python, including every observed speedup and slowdown](docs/evidence/rust-public-speed-v1-operations.svg)
+![Every one of the 36 tested operations, showing exactly when our Rust engine is faster or slower than Python](docs/evidence/rust-public-speed-v2-operations.svg)
 
-![No current Rust example is more than 20 percent slower than Python](docs/evidence/rust-public-speed-v1-regressions.svg)
+![Slowdowns over 20 percent: zero out of all 864 measured examples, with no examples excluded](docs/evidence/rust-public-speed-v2-regressions.svg)
 
 Across all **864** current measured examples, **zero** are more than
 20% slower than Python. The two earlier memory-view regressions now

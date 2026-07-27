@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="312" viewBox="0 0 1120 312" role="img" aria-labelledby="speed-v2-outcomes-title speed-v2-outcomes-description">
+<title id="speed-v2-outcomes-title">How often is Rust convincingly faster?</title>
+<desc id="speed-v2-outcomes-description">Every public case is classified using its complete paired 95 percent confidence interval. Faster, inconclusive, and slower examples add to the unchanged denominator. The goal is at least 60 percent.</desc>
+<rect width="100%" height="100%" rx="18" fill="#f8fafc"/>
+<g font-family="system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif">
+<text x="40" y="47" fill="#0f172a" font-size="24" font-weight="750">How often is Rust convincingly faster?</text>
+<text x="40" y="74" fill="#475569" font-size="13">PUBLIC DEVELOPMENT ONLY · FINAL HOLDOUT NOT OPENED</text>
+<rect x="34" y="100" width="1052" height="137" rx="13" fill="#ffffff"/>
+<rect x="50" y="126" width="215" height="31" fill="#047857"/>
+<rect x="265" y="126" width="551" height="31" fill="#d97706"/>
+<rect x="816" y="126" width="252" height="31" fill="#be123c"/>
+<line x1="661" x2="661" y1="115" y2="167" stroke="#6d28d9" stroke-width="3"/>
+<text x="669" y="181" fill="#6d28d9" font-size="12" font-weight="700">60% goal · at least 519 of 864</text>
+<circle cx="56" cy="210" r="6" fill="#047857"/>
+<text x="71" y="214" fill="#14532d" font-size="13">Faster: 183 / 864 (21.2%)</text>
+<circle cx="363" cy="210" r="6" fill="#d97706"/>
+<text x="378" y="214" fill="#78350f" font-size="13">Inconclusive: 468 / 864</text>
+<circle cx="740" cy="210" r="6" fill="#be123c"/>
+<text x="755" y="214" fill="#881337" font-size="13">Slower: 213 / 864</text>
+<line x1="40" x2="1080" y1="266" y2="266" stroke="#cbd5e1"/>
+<text x="40" y="290" fill="#475569" font-size="12">Python 3.14.6 · 864 public examples · 12 paired rounds · full Python-call and correctness-check costs included · final speed and native memory NOT MEASURED</text>
+</g>
+</svg>

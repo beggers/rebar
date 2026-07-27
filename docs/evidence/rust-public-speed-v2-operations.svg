@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="1296" viewBox="0 0 1120 1296" role="img" aria-labelledby="speed-v2-operations-title speed-v2-operations-description">
+<title id="speed-v2-operations-title">Every kind of regular-expression work</title>
+<desc id="speed-v2-operations-description">All 36 frozen Python operations are displayed in original order, with all 24 public examples per operation. Higher is faster; the vertical lines show Python and the 1.5-times target.</desc>
+<rect width="100%" height="100%" rx="18" fill="#f8fafc"/>
+<g font-family="system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif">
+<text x="40" y="47" fill="#0f172a" font-size="24" font-weight="750">Every kind of regular-expression work</text>
+<text x="40" y="74" fill="#475569" font-size="13">PUBLIC DEVELOPMENT ONLY · FINAL HOLDOUT NOT OPENED</text>
+<text x="42" y="102" fill="#475569" font-size="12">Every row includes all 24 examples; no slow operation is hidden.</text>
+<line x1="605" x2="605" y1="113" y2="1232" stroke="#64748b" stroke-dasharray="4 4"/>
+<line x1="730" x2="730" y1="113" y2="1232" stroke="#7c3aed" stroke-dasharray="5 4"/>
+<text x="43" y="133" fill="#334155" font-size="11">module.compile</text>
+<rect x="355" y="121" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="121" width="245" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="133" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.983× · 24 examples</text>
+<text x="43" y="164" fill="#334155" font-size="11">module.search</text>
+<rect x="355" y="152" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="152" width="246" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="164" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.986× · 24 examples</text>
+<text x="43" y="195" fill="#334155" font-size="11">module.match</text>
+<rect x="355" y="183" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="183" width="247" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="195" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.989× · 24 examples</text>
+<text x="43" y="226" fill="#334155" font-size="11">module.fullmatch</text>
+<rect x="355" y="214" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="214" width="243" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="226" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.974× · 24 examples</text>
+<text x="43" y="257" fill="#334155" font-size="11">module.findall</text>
+<rect x="355" y="245" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="245" width="246" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="257" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.984× · 24 examples</text>
+<text x="43" y="288" fill="#334155" font-size="11">module.finditer</text>
+<rect x="355" y="276" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="276" width="248" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="288" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.993× · 24 examples</text>
+<text x="43" y="319" fill="#334155" font-size="11">module.split</text>
+<rect x="355" y="307" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="307" width="243" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="319" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.972× · 24 examples</text>
+<text x="43" y="350" fill="#334155" font-size="11">module.split.positional</text>
+<rect x="355" y="338" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="338" width="254" height="15" rx="5" fill="#047857"/>
+<text x="1080" y="350" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.017× · 24 examples</text>
+<text x="43" y="381" fill="#334155" font-size="11">module.sub.literal</text>
+<rect x="355" y="369" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="369" width="261" height="15" rx="5" fill="#047857"/>
+<text x="1080" y="381" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.047× · 24 examples</text>
+<text x="43" y="412" fill="#334155" font-size="11">module.sub.positional</text>
+<rect x="355" y="400" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="400" width="269" height="15" rx="5" fill="#047857"/>
+<text x="1080" y="412" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.075× · 24 examples</text>
+<text x="43" y="443" fill="#334155" font-size="11">module.sub.positional_callback_error</text>
+<rect x="355" y="431" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="431" width="250" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="443" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.999× · 24 examples</text>
+<text x="43" y="474" fill="#334155" font-size="11">module.subn.literal</text>
+<rect x="355" y="462" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="462" width="260" height="15" rx="5" fill="#047857"/>
+<text x="1080" y="474" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.042× · 24 examples</text>
+<text x="43" y="505" fill="#334155" font-size="11">module.subn.positional</text>
+<rect x="355" y="493" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="493" width="263" height="15" rx="5" fill="#047857"/>
+<text x="1080" y="505" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.054× · 24 examples</text>
+<text x="43" y="536" fill="#334155" font-size="11">module.subn.positional_callback_error</text>
+<rect x="355" y="524" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="524" width="251" height="15" rx="5" fill="#047857"/>
+<text x="1080" y="536" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.004× · 24 examples</text>
+<text x="43" y="567" fill="#334155" font-size="11">module.sub.callback</text>
+<rect x="355" y="555" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="555" width="246" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="567" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.984× · 24 examples</text>
+<text x="43" y="598" fill="#334155" font-size="11">module.subn.callback</text>
+<rect x="355" y="586" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="586" width="246" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="598" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.983× · 24 examples</text>
+<text x="43" y="629" fill="#334155" font-size="11">module.sub.callback_error</text>
+<rect x="355" y="617" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="617" width="244" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="629" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.978× · 24 examples</text>
+<text x="43" y="660" fill="#334155" font-size="11">pattern.search</text>
+<rect x="355" y="648" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="648" width="247" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="660" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.989× · 24 examples</text>
+<text x="43" y="691" fill="#334155" font-size="11">pattern.match</text>
+<rect x="355" y="679" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="679" width="247" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="691" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.987× · 24 examples</text>
+<text x="43" y="722" fill="#334155" font-size="11">pattern.fullmatch</text>
+<rect x="355" y="710" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="710" width="244" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="722" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.976× · 24 examples</text>
+<text x="43" y="753" fill="#334155" font-size="11">pattern.findall</text>
+<rect x="355" y="741" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="741" width="245" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="753" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.980× · 24 examples</text>
+<text x="43" y="784" fill="#334155" font-size="11">pattern.finditer</text>
+<rect x="355" y="772" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="772" width="248" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="784" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.994× · 24 examples</text>
+<text x="43" y="815" fill="#334155" font-size="11">pattern.split</text>
+<rect x="355" y="803" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="803" width="245" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="815" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.983× · 24 examples</text>
+<text x="43" y="846" fill="#334155" font-size="11">pattern.sub.literal</text>
+<rect x="355" y="834" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="834" width="264" height="15" rx="5" fill="#047857"/>
+<text x="1080" y="846" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.055× · 24 examples</text>
+<text x="43" y="877" fill="#334155" font-size="11">pattern.subn.literal</text>
+<rect x="355" y="865" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="865" width="262" height="15" rx="5" fill="#047857"/>
+<text x="1080" y="877" text-anchor="end" fill="#047857" font-size="11" font-weight="650">1.050× · 24 examples</text>
+<text x="43" y="908" fill="#334155" font-size="11">pattern.sub.callback</text>
+<rect x="355" y="896" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="896" width="246" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="908" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.986× · 24 examples</text>
+<text x="43" y="939" fill="#334155" font-size="11">pattern.subn.callback</text>
+<rect x="355" y="927" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="927" width="245" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="939" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.981× · 24 examples</text>
+<text x="43" y="970" fill="#334155" font-size="11">pattern.sub.callback_error</text>
+<rect x="355" y="958" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="958" width="246" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="970" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.985× · 24 examples</text>
+<text x="43" y="1001" fill="#334155" font-size="11">pattern.scanner.search</text>
+<rect x="355" y="989" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="989" width="246" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="1001" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.984× · 24 examples</text>
+<text x="43" y="1032" fill="#334155" font-size="11">pattern.scanner.match</text>
+<rect x="355" y="1020" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="1020" width="248" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="1032" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.991× · 24 examples</text>
+<text x="43" y="1063" fill="#334155" font-size="11">pattern.scanner.loop</text>
+<rect x="355" y="1051" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="1051" width="248" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="1063" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.993× · 24 examples</text>
+<text x="43" y="1094" fill="#334155" font-size="11">scanner.scan</text>
+<rect x="355" y="1082" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="1082" width="509" height="15" rx="5" fill="#047857"/>
+<text x="1080" y="1094" text-anchor="end" fill="#047857" font-size="11" font-weight="650">2.035× · 24 examples</text>
+<text x="43" y="1125" fill="#334155" font-size="11">scanner.scan.callback_error</text>
+<rect x="355" y="1113" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="1113" width="600" height="15" rx="5" fill="#047857"/>
+<text x="1080" y="1125" text-anchor="end" fill="#047857" font-size="11" font-weight="650">2.398× · 24 examples</text>
+<text x="43" y="1156" fill="#334155" font-size="11">match.group</text>
+<rect x="355" y="1144" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="1144" width="249" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="1156" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.996× · 24 examples</text>
+<text x="43" y="1187" fill="#334155" font-size="11">match.expand</text>
+<rect x="355" y="1175" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="1175" width="245" height="15" rx="5" fill="#be123c"/>
+<text x="1080" y="1187" text-anchor="end" fill="#be123c" font-size="11" font-weight="650">0.981× · 24 examples</text>
+<text x="43" y="1218" fill="#334155" font-size="11">compile.fresh.search</text>
+<rect x="355" y="1206" width="600" height="15" rx="5" fill="#e2e8f0"/>
+<rect x="355" y="1206" width="508" height="15" rx="5" fill="#047857"/>
+<text x="1080" y="1218" text-anchor="end" fill="#047857" font-size="11" font-weight="650">2.030× · 24 examples</text>
+<line x1="40" x2="1080" y1="1250" y2="1250" stroke="#cbd5e1"/>
+<text x="40" y="1274" fill="#475569" font-size="12">Python 3.14.6 · 864 public examples · 12 paired rounds · full Python-call and correctness-check costs included · final speed and native memory NOT MEASURED</text>
+</g>
+</svg>

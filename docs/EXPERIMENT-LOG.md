@@ -7,6 +7,43 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Publish the complete, clearer four-implementation comparison
+
+After pushing the independently reviewed V2 renderer freeze, generate
+and separately verify four additive charts and their complete
+measurement manifest. Read only the exact, already published
+**864-case**, **10,368-observation** public report and the exact current
+Rust correctness receipt. Run **zero** candidates, take **zero** new
+timing samples, and read **zero** final cases.
+
+- [Overall Python, Rust, C, and Zig comparison](evidence/rust-public-speed-v2-overall.svg),
+  SHA-256
+  `8270ec2f1fcd2ef58a9ee2541764b5b3e22c2ed41080f1b21867aadb33fe9b23`.
+- [All 864 outcomes and the 60% goal](evidence/rust-public-speed-v2-outcomes.svg),
+  SHA-256
+  `8ee61ffda2d913df530fd88e645800c74faeb4a09e0e5ed9df8bf648acd85c20`.
+- [Every one of the 36 operations](evidence/rust-public-speed-v2-operations.svg),
+  SHA-256
+  `c1a7dc90a524253a606657dd521827fb9aac8bb6cd509b0d87db8e70c72a1935`.
+- [Every slowdown exceeding 20%](evidence/rust-public-speed-v2-regressions.svg),
+  SHA-256
+  `9261f35de4cf7b54e04fb24cdf078ef910e871f27627629948686559905b8c68`.
+- [Complete machine-verifiable comparison](evidence/rust-public-speed-v2.json),
+  SHA-256
+  `068af588e1e0e9fcf2fc12f30fb149e76713c96f9f6ffeb4cba627d7f6f9ddab`.
+
+The baseline is **1.000×**; the current, independently owned Rust
+engine is **1.0647006118093172×**, with a **95%** confidence interval
+of **1.0494737764130373× to 1.0813989876156158×**. Preserve every
+observation: **183** faster, **213** slower, **468** inconclusive,
+and **zero** regressions exceeding **20%**. Display the **1.5×**
+overall goal and **519 / 864** faster-case goal directly. Display both
+independent C and Zig engines explicitly as **NOT MEASURED** until
+they pass the frozen shared original Python tests. Preserve all V1
+graphs. The proposed larger final comparison remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**. Native memory is **NOT
+MEASURED**, and no winner is selected.
+
 ## Freeze a clearer four-implementation speed comparison
 
 Independently review and freeze the new

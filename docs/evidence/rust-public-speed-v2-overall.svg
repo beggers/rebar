@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="420" viewBox="0 0 1120 420" role="img" aria-labelledby="speed-v2-overall-title speed-v2-overall-description">
+<title id="speed-v2-overall-title">How fast are the replacements compared with Python?</title>
+<desc id="speed-v2-overall-description">The authenticated measured Rust build is compared against Python using every public example and its complete 95 percent interval. The current C and Zig builds are explicitly not measured. Higher numbers are faster; 1.5 times is the predeclared goal.</desc>
+<rect width="100%" height="100%" rx="18" fill="#f8fafc"/>
+<g font-family="system-ui,-apple-system,BlinkMacSystemFont,Segoe UI,sans-serif">
+<text x="40" y="47" fill="#0f172a" font-size="24" font-weight="750">How fast are the replacements compared with Python?</text>
+<text x="40" y="74" fill="#475569" font-size="13">PUBLIC DEVELOPMENT ONLY · FINAL HOLDOUT NOT OPENED</text>
+<text x="42" y="103" fill="#334155" font-size="13">1.0× means the same speed as Python; higher is faster.</text>
+<rect x="32" y="118" width="1056" height="221" rx="13" fill="#ffffff"/>
+<line x1="678" x2="678" y1="130" y2="322" stroke="#64748b" stroke-dasharray="4 4"/>
+<line x1="875" x2="875" y1="130" y2="322" stroke="#7c3aed" stroke-width="2" stroke-dasharray="5 4"/>
+<text x="882" y="144" fill="#6d28d9" font-size="12" font-weight="700">1.5× goal</text>
+<text x="48" y="175" fill="#0f172a" font-size="15" font-weight="650">Python baseline</text>
+<rect x="285" y="156" width="393" height="23" rx="6" fill="#475569"/>
+<text x="1066" y="174" text-anchor="end" fill="#334155" font-size="15" font-weight="700">1.000×</text>
+<text x="48" y="225" fill="#0f172a" font-size="14" font-weight="700">Measured from-scratch Rust</text>
+<rect x="285" y="206" width="419" height="23" rx="6" fill="#047857"/>
+<line x1="698" x2="711" y1="238" y2="238" stroke="#064e3b" stroke-width="3"/>
+<text x="1066" y="218" text-anchor="end" fill="#065f46" font-size="14" font-weight="750">1.065×</text>
+<text x="1066" y="238" text-anchor="end" fill="#475569" font-size="11">95%: 1.049–1.081×</text>
+<text x="48" y="275" fill="#334155" font-size="14" font-weight="650">Current from-scratch C</text>
+<rect x="285" y="256" width="650" height="23" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-dasharray="5 4"/>
+<text x="1066" y="274" text-anchor="end" fill="#475569" font-size="13" font-weight="700">NOT MEASURED</text>
+<text x="48" y="316" fill="#334155" font-size="14" font-weight="650">Current from-scratch Zig</text>
+<rect x="285" y="297" width="650" height="23" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-dasharray="5 4"/>
+<text x="1066" y="315" text-anchor="end" fill="#475569" font-size="13" font-weight="700">NOT MEASURED</text>
+<line x1="40" x2="1080" y1="374" y2="374" stroke="#cbd5e1"/>
+<text x="40" y="398" fill="#475569" font-size="12">Python 3.14.6 · 864 public examples · 12 paired rounds · full Python-call and correctness-check costs included · final speed and native memory NOT MEASURED</text>
+</g>
+</svg>
