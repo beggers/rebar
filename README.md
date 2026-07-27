@@ -80,7 +80,10 @@ times. The independently frozen
 [shared original Python test suite](tools/independent_original_cpython_suite_v4.py)
 preserves all of those tests and protections unchanged for each
 separate Rust, C, and Zig implementation. No C or Zig test result is
-assumed before that implementation actually runs.
+assumed before that implementation actually runs. A separately frozen
+[complete original-test result recorder](tools/record_independent_original_cpython_v4.py)
+preserves every real test failure and never substitutes an invented
+result for a crashed engine.
 
 The independently reviewed
 [Rust ownership audit](tools/rust_from_scratch_audit_v1.py) and its
@@ -140,6 +143,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/record_rust_memoryview_expand_v1.py --self-test
 "$PY" -I -B tools/rust_original_cpython_suite_v3.py --self-test
 "$PY" -I -B tools/independent_original_cpython_suite_v4.py --self-test
+"$PY" -I -B tools/record_independent_original_cpython_v4.py --self-test
 "$PY" -I -B tools/record_rust_original_cpython_v3.py --self-test
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_correctness_v1.py --self-test

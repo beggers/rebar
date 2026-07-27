@@ -7,6 +7,36 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze durable, honest original-test evidence for all three engines
+
+Independently review and freeze the additive
+[shared original-test result recorder](../tools/record_independent_original_cpython_v4.py),
+SHA-256
+`eecafcae7dc27f4be7ac6b1886b51dfe54d5d83843541dca68e018d1caf1683b`,
+against the already pushed shared original Python suite. Both the
+ordinary isolated and clean-environment synthetic self-tests pass
+**32** genuine controls and reject **360** invalid, delegated, or
+incomplete reports. They launch **zero** actual standard-Python or
+candidate workers, read or write **zero** evidence files, open
+**zero** final cases, and take **zero** timing samples.
+
+For each future actual Rust, C, or Zig run, preserve the one genuine
+isolated Python reference, the one distinct actual candidate worker,
+the complete **152** paired original-test outcomes, all **13** named
+private waivers, all **304** matcher-ownership checks and **304**
+warning-safety checks, and every complete mismatch and traceback.
+Treat a candidate's complete failed test report as a real recorded
+failure. If the candidate crashes before providing valid results,
+preserve its complete actual output and mark unobservable failures,
+worker counts, guards, and other effects **NOT ESTABLISHED** rather
+than claiming zero.
+
+Publish future complete results with authenticated source and native
+hashes, no-overwrite atomic publication, full readback, and durable
+file and directory synchronization. At this source-freeze commit,
+the new recorder has run **zero** actual candidates; all three shared
+original-test results remain **NOT YET MEASURED**.
+
 ## Pin the official Zig compiler before rebuilding our own engine
 
 Verify the official stable **Zig 0.16.0** Linux x86-64 compiler
