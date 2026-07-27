@@ -24,18 +24,18 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 | Python `re` | **1.000×** | Baseline |
 | Our Rust engine | **1.065×** | **2,807 / 2,807** shared correctness checks pass; speed goal not met |
 | Our C engine | **NOT MEASURED** | **151 / 151** original; **824 / 864** general; **32 / 1,024** scanner; **747 / 768** buffer |
-| Our Zig engine | **NOT MEASURED** | **151 / 151** original tests; general, scanner, and buffer cases not yet run |
+| Our Zig engine | **NOT MEASURED** | **151 / 151** original; **824 / 864** general; scanner and buffer not yet run |
 
 ## Do the candidates work like Python?
 
-![Side-by-side correctness of the independently built regex engines: Rust passes all 2,807 checks; C passes 1,754 and fails 1,053; Zig passes all 151 original Python tests with 2,656 remaining checks not yet run](docs/evidence/candidate-correctness-overview-v2.svg)
+![Side-by-side correctness of the independently built regex engines: Rust passes all 2,807 checks; C passes 1,754 and fails 1,053; Zig passes 975, fails 40, and has 1,792 remaining checks not yet run](docs/evidence/candidate-correctness-overview-v2.svg)
 
 Every engine has the same **2,807** planned checks. Green means
 it matches Python; red means an actual mismatch; gray means the
 current build has **not yet been tested**. Rust passes all
 **2,807**. C passes **1,754** and fails **1,053**. Zig passes
-all **151** original Python tests; its other **2,656** cases
-remain **NOT YET RUN**. The genuine Python-only debug skip
+**975** cases, fails **40** scanner callbacks, and has **1,792**
+scanner and buffer cases **NOT YET RUN**. The genuine Python-only debug skip
 is not counted.
 
 The C mismatches are **40** general scanner-callback failures,
@@ -147,8 +147,9 @@ candidate. Its separately frozen
 preserves every genuine success, failure, and crash. Updated C
 general behavior has now run and exposed **40** scanner-related
 mismatches; the dedicated scanner suite independently exposes
-**992** mismatches, and buffer handling exposes **21**. Every
-Zig behavior category remains **NOT MEASURED**.
+**992** mismatches, and buffer handling exposes **21**. Zig
+general behavior exposes the same **40** callback mismatches;
+its scanner and buffer categories remain **NOT MEASURED**.
 
 A separately frozen
 [memory-lifetime safety suite](tools/independent_managed_buffer_lifetime_v1.py)

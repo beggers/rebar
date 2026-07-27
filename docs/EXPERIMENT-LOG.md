@@ -7,6 +7,48 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Record Zig's first genuine full general-behavior result
+
+After freezing the shared V3 oracle, recorder, and red-capable
+chart generator, run the independently owned current Zig engine
+against only the unchanged **864-case** general matrix. Pin all
+**three** exact Zig source files, its native engine and separate
+Python bridge, and the genuine authenticated Python foreign-
+function initialization.
+
+Preserve the
+[complete current Zig general result](../experiments/rust_public_practice_v1/zig-public-contract-v3-shared-suite-v1.json),
+SHA-256
+`ea5bd44c46bb08a7f7c83f4b7ffa1a4af73eae2130472c598f444a9b86d4888c`,
+and its
+[durable publication receipt](../experiments/rust_public_practice_v1/zig-public-contract-v3-shared-suite-v1-publication-receipt.json),
+SHA-256
+`8bdd4754001053d35ced308768999a283655fce4a58c87c68827f31cb12395de`.
+
+The genuine result is **FAIL**: **824** matching cases and
+**40** fully preserved scanner-callback mismatches: **20**
+`scanner.scan` cases and **20** callback-error cases. Retain all
+**864** cases from two independent Python references and Zig,
+all **1,728** ownership and **1,728** warning checks, genuine
+owned Zig loading, exact worker streams, and every real error.
+No Python, external, or C/Rust regex engine is called.
+
+Regenerate the current all-engine graph using canonical manifest
+SHA-256
+`465d9cbc93681e2f67ccb6ee7f07c7946e7189b46d95b4ae20bbf4d24e501037`.
+The resulting
+[updated correctness graph](evidence/candidate-correctness-overview-v2.svg),
+SHA-256
+`22cbedecbcf3cf004b64b1c7913651f46aff5f6872d693c98ec03bbe497bce96`,
+and
+[complete chart summary](evidence/candidate-correctness-overview-v2.json),
+SHA-256
+`28c135d9dbbbaae2fc1acc076a1a27fa988adc0162e561dc6ef86b604a084da4`,
+show Zig's **975** passes, **40** failures, and **1,792**
+remaining unrun cases against the unchanged **2,807**
+denominator. Preserve all older failures and graph snapshots.
+No hidden case, timing, benchmark, or winner is accessed.
+
 ## Publish all genuine current C failures in the headline graph
 
 After separately freezing, independently reviewing, committing,
