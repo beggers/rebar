@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="550" viewBox="0 0 1120 550" role="img" aria-labelledby="scanner-title scanner-desc">
+<title id="scanner-title">Extra Python Scanner compatibility checks</title>
+<desc id="scanner-desc">Python, Rust, C, and Zig are compared with the same separately frozen 2,854 original Python Scanner checks. Green matches Python; red does not; gray has not yet been measured. This graph contains no speed result or hidden benchmark.</desc>
+<rect width="1120" height="550" rx="18" fill="#f8fafc"/>
+<text x="42" y="53" fill="#0f172a" font-family="system-ui,sans-serif" font-size="26" font-weight="700">Extra Python Scanner compatibility</text>
+<text x="42" y="82" fill="#475569" font-family="system-ui,sans-serif" font-size="15">The same 2,854 extra Python checks for every engine &#183; speed not measured</text>
+<rect x="43" y="104" width="14" height="14" rx="3" fill="#15803d"/><text x="65" y="116" fill="#334155" font-family="system-ui,sans-serif" font-size="13">Matches Python</text>
+<rect x="290" y="104" width="14" height="14" rx="3" fill="#dc2626"/><text x="312" y="116" fill="#334155" font-family="system-ui,sans-serif" font-size="13">Does not match Python</text>
+<rect x="537" y="104" width="14" height="14" rx="3" fill="#94a3b8"/><text x="559" y="116" fill="#334155" font-family="system-ui,sans-serif" font-size="13">Not yet measured</text>
+<text x="43" y="168" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Python baseline</text>
+<text x="1038" y="168" fill="#15803d" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">2,854 / 2,854 match Python</text>
+<rect x="43" y="178" width="996" height="24" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="178" width="996" height="24" fill="#15803d"><title>Python baseline: 2,854 matches python out of 2,854</title></rect>
+<text x="43" y="246" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Rust</text>
+<text x="1038" y="246" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<rect x="43" y="256" width="996" height="24" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="256" width="996" height="24" fill="#94a3b8"><title>Rust: 2,854 not yet measured out of 2,854</title></rect>
+<text x="43" y="324" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">C</text>
+<text x="1038" y="324" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<rect x="43" y="334" width="996" height="24" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="334" width="996" height="24" fill="#94a3b8"><title>C: 2,854 not yet measured out of 2,854</title></rect>
+<text x="43" y="402" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Zig</text>
+<text x="1038" y="402" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<rect x="43" y="412" width="996" height="24" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="412" width="996" height="24" fill="#94a3b8"><title>Zig: 2,854 not yet measured out of 2,854</title></rect>
+<text x="43" y="474" fill="#475569" font-family="system-ui,sans-serif" font-size="12">These are 2,854 separately frozen Scanner checks. They do not change the original 2,807 checks or the 1,024 memory-safety checks.</text>
+<text x="43" y="494" fill="#475569" font-family="system-ui,sans-serif" font-size="12">All failures and older results remain in the complete evidence. Final speed and the expanded holdout remain not measured.</text>
+<text x="43" y="524" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Manifest SHA-256: ed1aeaed2b6b7c658e2325212213c578d14359c771337007b3d3057643123604 &#183; renderer SHA-256: 41093012d0e8688b33b37844dad9e7145eaebd20a870d329091f29e5a1091d6b</text>
+</svg>

@@ -7,6 +7,35 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Publish the independently frozen scanner baseline graph
+
+Render the separately frozen **2,854-case** scanner and pattern-comment
+graph only after authenticating its complete compressed two-Python
+baseline. The exact
+[canonical scanner graph inputs](evidence/scanner-verbose-overview-v1.inputs.json)
+have SHA-256
+`ed1aeaed2b6b7c658e2325212213c578d14359c771337007b3d3057643123604`.
+Preserve the original unsigned 64-bit seed
+`5999725261024810545` without floating-point rounding.
+
+Use the previously frozen
+[independent scanner graph renderer](../tools/render_scanner_verbose_overview_v1.py),
+SHA-256
+`41093012d0e8688b33b37844dad9e7145eaebd20a870d329091f29e5a1091d6b`.
+The
+[complete generated scanner graph data](evidence/scanner-verbose-overview-v1.json)
+is `d61c8e4b47c351706ab3e185c5c1445cf41e7dafb5071f22a2eabec6f14d0024`;
+the [generated scanner graph](evidence/scanner-verbose-overview-v1.svg)
+is `f2226f0972eb0afbb7f220ba97488278fcd9569543d1bd8570b159789f00ec4f`.
+
+Show Python passing **2,854 / 2,854**. Show Rust, C, and Zig
+as **NOT MEASURED**, each with the same **2,854-case** denominator;
+do not show them as zero passed or zero failed. The graph starts
+**zero** candidate workers, samples **zero** clocks, and opens
+**zero** hidden or performance cases. Keep this baseline graph
+separate from the **2,807** original tests and the **1,024**
+memory-lifetime checks.
+
 ## Repair, source-build, and independently verify Zig memory safety
 
 Repair the project's own

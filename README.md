@@ -14,6 +14,8 @@ Each candidate must use its own matching engine built from scratch. Wrapping Pyt
 
 ![Additional memory-safety checks: Python, Rust, C, and Zig all pass all 1,024 checks](docs/evidence/managed-buffer-lifetime-overview-v1.svg)
 
+![Additional scanner checks: Python passes all 2,854; Rust, C, and Zig have not yet been measured](docs/evidence/scanner-verbose-overview-v1.svg)
+
 ![Historical speed before the latest compatibility repairs: Python at 1.000 times, old Rust at 1.065 times, and the 1.5-times target](docs/evidence/rust-public-speed-v2-overall.svg)
 
 | Implementation | Original 2,807 checks | Extra 1,024 safety checks | Speed relative to Python |
@@ -72,7 +74,7 @@ The final examples will remain **NOT FROZEN**, **NOT GENERATED**, and **NOT OPEN
 - [Complete experiment log, raw results, rejected designs, and failure history](docs/EXPERIMENT-LOG.md).
 - [Authenticated headline graph inputs](docs/evidence/candidate-correctness-overview-v2.inputs.json), [generated graph data](docs/evidence/candidate-correctness-overview-v2.json), and [graph generator](tools/render_candidate_correctness_overview_v2.py).
 - [Frozen original Python compatibility tests](tools/independent_original_cpython_suite_v5.py) and [shared candidate behavior tests](tools/independent_public_contract_v3.py).
-- [Separately frozen 2,854-case scanner and pattern-comment compatibility checks](tools/independent_scanner_verbose_comments_v1.py), [complete baseline and candidate evidence recorder](tools/record_independent_scanner_verbose_comments_v1.py), [losslessly preserved two-Python scanner baseline](experiments/rust_public_practice_v1/scanner-verbose-comments-v1-shared-suite-v1.json.gz), and [independently frozen scanner graph generator](tools/render_scanner_verbose_overview_v1.py).
+- [Separately frozen 2,854-case scanner and pattern-comment compatibility checks](tools/independent_scanner_verbose_comments_v1.py), [complete baseline and candidate evidence recorder](tools/record_independent_scanner_verbose_comments_v1.py), [losslessly preserved two-Python scanner baseline](experiments/rust_public_practice_v1/scanner-verbose-comments-v1-shared-suite-v1.json.gz), [authenticated scanner graph inputs](docs/evidence/scanner-verbose-overview-v1.inputs.json), [generated scanner graph data](docs/evidence/scanner-verbose-overview-v1.json), and [independently frozen scanner graph generator](tools/render_scanner_verbose_overview_v1.py).
 - [Separately frozen 5,120-case replacement and buffer compatibility checks](tools/independent_substitution_buffer_semantics_v1.py).
 - [Separately frozen 10,240-case changing-size buffer safety checks](tools/independent_shape_changing_buffer_semantics_v1.py).
 - [Current independent from-scratch engine ownership checks](tools/independent_from_scratch_audit_v3.py), [durable no-delegation audit recorder](tools/record_independent_from_scratch_audit_v3.py), and [preserved earlier ownership rules](tools/independent_from_scratch_audit_v2.py).
