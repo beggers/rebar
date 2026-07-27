@@ -7,6 +7,45 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected replacement and buffer compatibility test
+
+Freeze the [corrected replacement and buffer oracle](../tools/independent_substitution_buffer_semantics_v2.py)
+before collecting any new Python reference or candidate result.
+The independently reviewed source has SHA-256
+`e7cc951b4fbb90b2826c3730bbb3b3e81b50e8a5eac8a3d758962358d9414573`.
+Preserve all **5,120** original cases, **64** categories, and
+**80** cases per category. The original full-width seed remains
+`6004778603531028017`; the unchanged source-ordered case matrix
+has SHA-256
+`26f46fe7f1abc5135d1265a7882ccd4a2e2b45cdec80ba293520fda510235b54`.
+
+Canonicalize the defining module only when the exception's type
+is exactly the oracle-owned `ReplacementCallbackError`. Keep
+ordinary user exceptions, identically named foreign exceptions,
+subclasses, all exception arguments, complete callback and match
+records, and all buffer-acquisition, mutation, release, and hash
+events exact. Independently authenticate all **656** complete
+original C and Zig mismatch records: C **464 = 128** harness
+artifacts **+ 336** real differences; Zig **192 = 128** harness
+artifacts **+ 64** real differences. Preserve the full original
+records and all **10** signed historical source and evidence pins.
+
+Normal and empty-environment strictly synthetic self-tests each
+pass **74** positive controls and reject **137** hostile cases.
+They independently verify all **128** script-and-import callback
+pairs without running Python's matcher. Explicit denial controls
+block preloaded `re`, `_sre`, real oracle-case execution,
+candidates, files, subprocesses, clocks, and hidden benchmarks.
+Both tests start **zero** reference or candidate workers and make
+**zero** regex-engine calls. Two independent reviewers approve
+the exact frozen source.
+
+The corrected Python reference and all three candidate results
+remain **NOT MEASURED**. Preserve the falsified original oracle,
+both full candidate archives, the complete first recorder
+failure, and all historical receipts. Keep the final performance
+holdout **NOT OPENED**.
+
 ## Freeze the corrected changing-buffer compatibility test
 
 Freeze the [corrected changing-buffer compatibility oracle](../tools/independent_shape_changing_buffer_semantics_v2.py)
