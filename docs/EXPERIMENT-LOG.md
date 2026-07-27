@@ -7,6 +7,30 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Run all shared scanner cases on Rust
+
+After committing and pushing the actual C buffer result, run
+**only** the **1,024-case** scanner category against the unchanged
+Rust engine.
+
+Preserve the actual
+[complete shared Rust scanner result](../experiments/rust_public_practice_v1/rust-scanner-contract-v2-shared-suite-v1.json),
+SHA-256
+`88eaaa8098208259ca1c4a6f577df5f8fce3a447646eed0d9dd0aad67f5a9495`,
+and its
+[durable publication receipt](../experiments/rust_public_practice_v1/rust-scanner-contract-v2-shared-suite-v1-publication-receipt.json),
+SHA-256
+`1135c4f3efb9860820fed139cacb615a991a28e344e1620ad2fe4a74d6b483e7`.
+
+The genuine result is **PASS**: both independent Python
+references and the Rust candidate produce all **1,024** complete
+scanner and callback records, with **zero** mismatches. Preserve
+all **2,048** matcher-ownership checks and **2,048** warning-safety
+checks, exact source and native hashes, process outputs, and
+original category denominator. This is correctness evidence, not
+speed: **zero** final cases are accessed and **zero** timing
+measurements are taken.
+
 ## Preserve all 21 genuine C buffer and template incompatibilities
 
 After committing and pushing the complete C scanner results, run
