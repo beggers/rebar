@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a strict from-scratch audit for Rust, C, and Zig
+
+Independently review and freeze the additive
+[three-family native ownership audit](../tools/independent_from_scratch_audit_v2.py),
+SHA-256
+`e68aaeddc8cf63a553e00ad919f3cb5c9bd584ba8c5d87214a0a36c3846dca8d`,
+before auditing any actual candidate. Both the ordinary isolated and
+empty-environment synthetic self-tests independently pass **101**
+genuine controls and reject **282** foreign-engine, escaped-loader,
+forged-binary, and cross-candidate controls. Each launches **zero**
+workers, reads **zero** candidate source or native files, opens
+**zero** final cases, writes **zero** evidence files, and takes
+**zero** performance measurements.
+
+Preserve the complete previously frozen Rust source, package,
+native-symbol, and dependency policy. Pin C's genuinely separate,
+owned Python parser and C bytecode matcher. Pin Zig's separately
+owned Zig parser, matcher, native library, and bridge. Permit only
+the exact authenticated Zig-owned library and its own **nine**
+legitimate foreign-function symbols; reject Python's matcher,
+external regex libraries, mutable loader escapes, process-global
+library handles, foreign exports, and Rust/C/Zig cross-delegation.
+
+The existing native artifacts are precisely hash-pinned, but
+source-to-binary reproducibility is truthfully **NOT ESTABLISHED**.
+No actual Rust, C, or Zig ownership audit has run under this new
+source at this freeze; no family is newly qualified and no winner
+is selected.
+
 ## Freeze the same original Python tests for all three independent engines
 
 Independently review and freeze the additive
