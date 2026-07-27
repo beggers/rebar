@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="530" viewBox="0 0 1120 530" role="img" aria-labelledby="lifetime-title lifetime-desc">
+<title id="lifetime-title">Memory and buffer safety compared with Python</title>
+<desc id="lifetime-desc">Python, Rust, C, and Zig are shown against the same separate 1,024 Python memory and buffer safety checks. Green matches Python; red does not; gray has not yet been measured. No speed or hidden benchmark is included.</desc>
+<rect width="1120" height="530" rx="18" fill="#f8fafc"/>
+<text x="42" y="53" fill="#0f172a" font-family="system-ui,sans-serif" font-size="26" font-weight="700">Memory and buffer safety</text>
+<text x="42" y="82" fill="#475569" font-family="system-ui,sans-serif" font-size="15">Same 1,024 extra Python checks for every engine · speed not measured</text>
+<rect x="43" y="104" width="14" height="14" rx="3" fill="#15803d"/><text x="65" y="116" fill="#334155" font-family="system-ui,sans-serif" font-size="13">Matches Python</text>
+<rect x="275" y="104" width="14" height="14" rx="3" fill="#dc2626"/><text x="297" y="116" fill="#334155" font-family="system-ui,sans-serif" font-size="13">Does not match Python</text>
+<rect x="507" y="104" width="14" height="14" rx="3" fill="#94a3b8"/><text x="529" y="116" fill="#334155" font-family="system-ui,sans-serif" font-size="13">Not yet measured</text>
+<text x="43" y="168" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Python baseline</text>
+<text x="1038" y="168" fill="#15803d" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">1,024 / 1,024 match Python</text>
+<rect x="43" y="178" width="996" height="24" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="178" width="996" height="24" fill="#15803d"><title>Python baseline: 1,024 matches python out of 1,024</title></rect>
+<text x="43" y="246" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Rust</text>
+<text x="1038" y="246" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<rect x="43" y="256" width="996" height="24" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="256" width="996" height="24" fill="#94a3b8"><title>Rust: 1,024 not yet measured out of 1,024</title></rect>
+<text x="43" y="324" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">C</text>
+<text x="1038" y="324" fill="#dc2626" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">787 / 1,024 match Python</text>
+<rect x="43" y="334" width="996" height="24" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="334" width="765" height="24" fill="#15803d"><title>C: 787 matches python out of 1,024</title></rect>
+<rect x="808" y="334" width="231" height="24" fill="#dc2626"><title>C: 237 does not match python out of 1,024</title></rect>
+<text x="43" y="402" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Zig</text>
+<text x="1038" y="402" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<rect x="43" y="412" width="996" height="24" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="412" width="996" height="24" fill="#94a3b8"><title>Zig: 1,024 not yet measured out of 1,024</title></rect>
+<text x="43" y="475" fill="#475569" font-family="system-ui,sans-serif" font-size="12">These are 1,024 separately frozen safety checks; they do not change the original 2,807-check comparison.</text>
+<text x="43" y="502" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Manifest SHA-256: 4f90c22a821536fe029d666c22002b1463dc3a72cc6d8cb64aa5b7b038f63293 · renderer SHA-256: 9415853895f02abd0cebdd35f8ec8b6634191c6373b96b53859ebd4e2d8195a3</text>
+</svg>

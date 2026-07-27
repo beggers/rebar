@@ -7,6 +7,31 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Publish the independently verified memory-safety comparison
+
+Render the separately frozen memory-safety graph only after pushing
+its independently reviewed generator. Authenticate the complete
+1,024-case, two-process Python baseline and every genuine C result.
+Keep the original 2,807-check denominator separate and unchanged.
+
+The [graph input manifest](evidence/managed-buffer-lifetime-overview-v1.inputs.json)
+has SHA-256
+`4f90c22a821536fe029d666c22002b1463dc3a72cc6d8cb64aa5b7b038f63293`.
+The [generated complete graph data](evidence/managed-buffer-lifetime-overview-v1.json)
+has SHA-256
+`e340e399a0789adc714ab61842e6eab91b07510cb2bc476a538c9ebef835a418`.
+The [reproducible plain-language graph](evidence/managed-buffer-lifetime-overview-v1.svg)
+has SHA-256
+`a5260b8378ea2aeedc68e65e33954f0a445dcb0e961b1b9295693fd6cf7ee1ae`.
+
+Python passes **1,024 / 1,024** checks. The from-scratch C engine
+passes **787 / 1,024** and all **237** failures remain visible.
+Rust and Zig are **NOT MEASURED** on this additional suite; neither
+is drawn as passing or failing. The graph confirms zero candidate
+workers, zero candidate imports, zero hidden or benchmark files read,
+and zero timings during rendering. Final speed, native memory, the
+expanded holdout, rankings, and a winner remain **NOT MEASURED**.
+
 ## Freeze the independent memory-safety comparison graph
 
 Freeze the separate
