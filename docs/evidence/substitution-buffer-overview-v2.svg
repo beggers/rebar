@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="594" viewBox="0 0 1120 594" role="img" aria-labelledby="substitution-buffer-title substitution-buffer-description">
+<title id="substitution-buffer-title">Does each replacement work exactly like Python?</title>
+<desc id="substitution-buffer-description">Python, Rust, C, and Zig are compared against the same 5,120 independently frozen Python replacement-and-buffer tests. Green means the result matches Python, red means it does not, and gray means the implementation has not yet been tested. This is a correctness comparison, not a speed measurement.</desc>
+<rect width="1120" height="594" rx="18" fill="#f8fafc"/>
+<text x="43" y="53" fill="#0f172a" font-family="system-ui,sans-serif" font-size="26" font-weight="700">Does each replacement work exactly like Python?</text>
+<text x="43" y="82" fill="#475569" font-family="system-ui,sans-serif" font-size="15">The same 5,120 Python tests for every implementation &#183; speed not yet measured</text>
+<rect x="43" y="105" width="14" height="14" rx="3" fill="#15803d"/><text x="65" y="117" fill="#334155" font-family="system-ui,sans-serif" font-size="13">Matches Python</text>
+<rect x="309" y="105" width="14" height="14" rx="3" fill="#dc2626"/><text x="331" y="117" fill="#334155" font-family="system-ui,sans-serif" font-size="13">Does not match Python</text>
+<rect x="575" y="105" width="14" height="14" rx="3" fill="#94a3b8"/><text x="597" y="117" fill="#334155" font-family="system-ui,sans-serif" font-size="13">Not yet measured</text>
+<text x="43" y="169" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Python baseline</text>
+<text x="1040" y="169" fill="#15803d" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">5,120 / 5,120 match Python</text>
+<rect x="43" y="181" width="997" height="26" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="181" width="997" height="26" fill="#15803d"><title>Python baseline: 5,120 matches python out of 5,120</title></rect>
+<text x="43" y="251" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Rust</text>
+<text x="1040" y="251" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<rect x="43" y="263" width="997" height="26" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="263" width="997" height="26" fill="#94a3b8"><title>Rust: 5,120 not yet measured out of 5,120</title></rect>
+<text x="43" y="333" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">C</text>
+<text x="1040" y="333" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<rect x="43" y="345" width="997" height="26" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="345" width="997" height="26" fill="#94a3b8"><title>C: 5,120 not yet measured out of 5,120</title></rect>
+<text x="43" y="415" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Zig</text>
+<text x="1040" y="415" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<rect x="43" y="427" width="997" height="26" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="427" width="997" height="26" fill="#94a3b8"><title>Zig: 5,120 not yet measured out of 5,120</title></rect>
+<text x="43" y="502" fill="#475569" font-family="system-ui,sans-serif" font-size="13">Includes text, bytes, callbacks, capture groups, invalid inputs, and nested Python buffer behavior.</text>
+<text x="43" y="523" fill="#475569" font-family="system-ui,sans-serif" font-size="13">Every failure and earlier result is preserved. Speed and the final holdout have not been measured.</text>
+<text x="43" y="562" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Manifest SHA-256: 1ed1eaf6959cbd8c06dc19206133a05f91552078e7cfd42e5adc245d2893e1a6 &#183; renderer SHA-256: cf96320692fecd2b618a98a0c651f844ff068f2a6cc81e07d49fc48b1768c616</text>
+</svg>

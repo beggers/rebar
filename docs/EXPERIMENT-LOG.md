@@ -7,6 +7,38 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Publish the clear corrected replacement comparison
+
+Only after independently freezing, committing, and pushing the corrected
+graph generator and its complete canonical input manifest, run the exact
+source-pinned graph-generation command once. Authenticate the entire
+previously signed **87,138,140**-byte Python reference before safely
+publishing the complete graph and data together.
+
+The [generated corrected replacement graph](evidence/substitution-buffer-overview-v2.svg)
+has SHA-256
+`550e007d6a69ef5f377e35b75403a56844fc966e4fbce3b69a59ac192ecbfac9`.
+The [complete generated corrected graph data](evidence/substitution-buffer-overview-v2.json)
+has SHA-256
+`41e6e282cb79d471f5b29b2abb40d9871905c2473123de3d4daa32e783cecabf`.
+Bind both outputs to graph generator SHA-256
+`cf96320692fecd2b618a98a0c651f844ff068f2a6cc81e07d49fc48b1768c616`
+and canonical input SHA-256
+`1ed1eaf6959cbd8c06dc19206133a05f91552078e7cfd42e5adc245d2893e1a6`.
+
+Show Python passing exactly **5,120 / 5,120** corrected checks. Show each
+separately owned Rust, C, and Zig family in gray as **NOT MEASURED**,
+each against the same complete **5,120**-case denominator. Preserve
+all exact baseline source records, full-width seed, all **64**
+categories, the original failed recorder, and the complete separately
+falsified historical results. Never convert unmeasured candidate cases
+into passes, failures, or speed measurements.
+
+Generation starts **zero** candidate or reference workers, imports no
+candidate, opens no hidden case or benchmark, performs no timing or
+memory trial, and selects no winner. The expanded final comparison
+remains **NOT OPENED**.
+
 ## Freeze authenticated corrected replacement comparison inputs
 
 Freeze the [independently authored corrected comparison inputs](evidence/substitution-buffer-overview-v2.inputs.json)
