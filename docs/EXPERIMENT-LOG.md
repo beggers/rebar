@@ -7,6 +7,44 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze complete three-engine memory-lifetime comparisons
+
+Freeze the independently reviewed
+[candidate memory-lifetime recorder](../tools/record_independent_managed_buffer_candidates_v1.py),
+SHA-256
+`d7f9fdeb9979eaeaa5ffdcea5a655be31c070356d93d293289b9b90de876877a`.
+Bind it to the immutable **1,024-case** oracle, two-reference
+Python baseline, lossless baseline archive, original receipt,
+and independently frozen Python ownership guard.
+
+Require the caller to pin every owned source and native binary for
+each independently implemented Rust, C, or Zig engine. Run exactly
+one real isolated candidate per invocation; compare all **1,024**
+source-ordered cases to both genuine Python references. Preserve
+every mismatch, warning, crash and unknown outcome. Publish only a
+fresh deterministic, streamed, lossless gzip report and durable
+receipt; never silently exclude an exporter or memory-lifetime case.
+
+Both ordinary and clean-environment source self-tests pass **25**
+acceptance controls and reject **257** unsafe or inaccurate
+conditions. Controls independently exercise large streaming gzip
+payloads, invalid checksums, duplicate JSON fields, truncation,
+nonfinite values, exact case ordering, anti-delegation guards,
+atomic no-overwrite publication and failure evidence. Synthetic
+tests run no candidates, open no actual archives, sample no timing
+and read no final examples.
+
+Recheck and preserve the exact full-width deterministic baseline
+seed **5567095966978627121**
+(`0x4D424C4946455631`); do not round it through a JavaScript or
+floating-point JSON parser. Correct the lossless baseline archive
+manifest to retain that exact integer.
+
+**No candidate has yet run these additional 1,024 cases.** The
+headline remains **2,807** cases; final timings, native memory,
+rankings, holdout and any winner remain **NOT MEASURED**.
+
+
 ## Freeze the stable Zig build for independently changing candidates
 
 Freeze the additive

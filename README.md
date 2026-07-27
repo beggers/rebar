@@ -63,7 +63,7 @@ The final examples will remain **NOT FROZEN**, **NOT GENERATED**, and **NOT OPEN
 - [Authenticated headline graph inputs](docs/evidence/candidate-correctness-overview-v2.inputs.json), [generated graph data](docs/evidence/candidate-correctness-overview-v2.json), and [graph generator](tools/render_candidate_correctness_overview_v2.py).
 - [Frozen original Python compatibility tests](tools/independent_original_cpython_suite_v5.py) and [shared candidate behavior tests](tools/independent_public_contract_v3.py).
 - [Independent from-scratch engine ownership checks](tools/independent_from_scratch_audit_v2.py).
-- [Additional frozen memory-lifetime safety checks](tools/independent_managed_buffer_lifetime_v1.py), [complete baseline recorder](tools/record_independent_managed_buffer_lifetime_v1.py), [verified lossless baseline evidence](docs/evidence/managed-buffer-lifetime-baseline-v1.archive.json), and [safe report restoration](tools/restore_managed_buffer_lifetime_baseline_v1.py).
+- [Additional frozen memory-lifetime safety checks](tools/independent_managed_buffer_lifetime_v1.py), [complete baseline recorder](tools/record_independent_managed_buffer_lifetime_v1.py), [independent three-candidate recorder](tools/record_independent_managed_buffer_candidates_v1.py), [verified lossless baseline evidence](docs/evidence/managed-buffer-lifetime-baseline-v1.archive.json), and [safe report restoration](tools/restore_managed_buffer_lifetime_baseline_v1.py).
 - [Reproducible, source-pinned Zig build controller](tools/reproduce_owned_zig_source_build_v4.py).
 - [Proposed expanded final-comparison protocol](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; [later clarifications](AMENDMENTS.md).
@@ -79,6 +79,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/independent_from_scratch_audit_v2.py --self-test
 "$PY" -I -B tools/independent_managed_buffer_lifetime_v1.py --self-test
 "$PY" -I -B tools/record_independent_managed_buffer_lifetime_v1.py --self-test
+"$PY" -I -B tools/record_independent_managed_buffer_candidates_v1.py --self-test
 "$PY" -I -B tools/restore_managed_buffer_lifetime_baseline_v1.py --self-test
 "$PY" -I -B tools/reproduce_owned_zig_source_build_v4.py --self-test
 "$PY" -I -B tools/render_candidate_correctness_overview_v2.py --self-test

@@ -21,7 +21,7 @@
     "sha256": "cedbab1227ea58a97d407cb339d2959a9f9be58a2085ce3106b65bb3385de489"
   },
   "performance": "NOT MEASURED",
-  "published_seed": 5567095966978628000,
+  "published_seed": 5567095966978627121,
   "receipt": {
     "bytes": 4852,
     "relative": "experiments/rust_public_practice_v1/managed-buffer-lifetime-v1-shared-suite-v1-publication-receipt.json",
