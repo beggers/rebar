@@ -7,6 +7,36 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze 5,120 replacement and buffer compatibility checks
+
+Independently freeze the
+[replacement and buffer correctness oracle](../tools/independent_substitution_buffer_semantics_v1.py)
+before running its Python baseline or any candidate. The exact source
+SHA-256 is
+`a325528aa62f107969b9dfdf5dea2ae8f9426607887a317fe20fcf9a1b7fd445`.
+The independently reproducible case matrix is
+`26f46fe7f1abc5135d1265a7882ccd4a2e2b45cdec80ba293520fda510235b54`,
+generated with the exact unsigned 64-bit seed `6004778603531028017`.
+
+Preserve **64** distinct categories and **80** cases per category,
+for exactly **5,120** cases. Cover module-level and compiled
+substitution; returning and failing callbacks; text, bytes, byte
+arrays, and memory views; release errors; Unicode and surrogates;
+replacement escapes; zero-width matches; windows and counts;
+custom Python buffer exporters; nested buffer acquisition and release;
+custom hash functions; and precise exception behavior. Keep this
+denominator separate from all previous suites.
+
+This suite deliberately does not assert coverage of exporters whose
+nested buffer changes length; freeze that newly discovered property
+as its own additional oracle rather than silently changing these
+cases. Normal and empty-environment source-only self-tests both
+pass **60** positive controls and **117** rejection controls. They
+start **zero** Python references or candidates, create **zero**
+evidence files, and run **zero** performance or hidden tests. The
+5,120-case Python baseline and all candidate results remain
+**NOT MEASURED**.
+
 ## Repair and independently rebuild Rust memory ownership
 
 Fix the project's
