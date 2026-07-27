@@ -53,6 +53,8 @@ A separate, frozen 2,854-case scanner and pattern-comment suite now has two matc
 
 A separate, frozen 5,120-case suite covers text and bytes replacements, callbacks, unusual Python buffers, released memory views, errors, and buffer lifetimes. A further 10,240-case suite covers buffers that change size between nested reads, including every exact case that exposed the Zig safety issue. Their Python baselines and candidate results are **NOT MEASURED**.
 
+The first attempt to record the 5,120-case Python baseline exceeded the recorder's safety limit. Its failure is preserved, and the baseline remains **NOT MEASURED**.
+
 ## Detailed development speed
 
 ![Results for all 864 public examples: 183 clearly faster, 213 clearly slower, and 468 inconclusive](docs/evidence/rust-public-speed-v2-outcomes.svg)

@@ -7,6 +7,31 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the actual replacement baseline size-limit failure
+
+Run the first **5,120-case** Python-to-Python baseline only after
+separately freezing and pushing its oracle and version-one recorder.
+The baseline controller starts, but its complete lossless report
+exceeds the recorder's fixed **256 MiB** uncompressed size limit.
+The recorder exits with `RecorderError`, publishes **no** baseline
+report or success receipt, and cannot establish agreement between
+the two reference workers.
+
+Preserve the complete, observed structured failure in the
+[original replacement baseline failure record](../experiments/rust_public_practice_v1/substitution-buffer-semantics-v1-shared-suite-v1-controller-failure-v1.json).
+Its SHA-256 is
+`a80316f3d1fe87808c8f16cb651393d275132d408633303da16a5142f55ba807`.
+The version-one exception envelope loses the already-started worker
+context and reports zero references; retain that exact output but
+classify the real reference-worker count and outcomes as
+**UNKNOWN**, not zero and not passing.
+
+Keep the frozen source, case matrix, and seed unchanged. A separately
+reviewed version-two recorder must safely preserve full-size
+evidence and genuine process context before retrying. The
+replacement baseline and all candidates remain **NOT MEASURED**;
+run **zero** candidate or performance tests for this failed chunk.
+
 ## Freeze complete replacement and buffer evidence recording
 
 Independently freeze the
