@@ -7,6 +7,40 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Validate all Python public-type and serialization reference cases
+
+Only after separately freezing, committing, and pushing the
+complete public-type oracle and its corrected failure-preserving
+recorder, run exactly one two-Python reference. Independent
+processes **82** and **83** agree on **6,912 / 6,912** public
+type, identity, flag, copying, weak-reference, serialization,
+cache, warning, and error cases.
+
+The [complete two-Python public-type reference archive](../experiments/rust_public_practice_v1/public-type-identity-serialization-v1-shared-suite-v1.json.gz)
+has SHA-256
+`8956c0b26e074d1537a47047062fb51e11d3f0196dc97ce4a6e24d2ae45128e2`.
+Retain all **55,903,155** uncompressed canonical evidence bytes,
+SHA-256
+`64ff0810882fd1cc0ba343de127145ae4051ab78e07a0d76f8be21cdfd7f6174`.
+The [independently authenticated public-type receipt](../experiments/rust_public_practice_v1/public-type-identity-serialization-v1-shared-suite-v1-publication-receipt.json)
+has SHA-256
+`6a8ce4334d0b605483e0f78a909f620a8bcdd0e5ad8cdb4fae4960fc237132fd`.
+The complete agreed reference records have SHA-256
+`0b78702279b7ae2eb8be493bbf04df75719f36c2943f26c9df3e950f32d68e21`.
+
+Preserve all **72** distinct categories, all **96** examples
+per category, **12** original patterns, **eight** flag settings,
+all **six** pickle protocols, both complete source-authenticated
+reference streams, exact warning and exception observations,
+all **six** immutable source owners, the original full-width
+seed and matrix, and the previously rejected unsafe recorder.
+Verify lossless bounded compression, distinct process identity,
+complete atomic readback, and zero unexplained self-oracle errors.
+
+Run **zero** candidates, clocks, timing trials, memory samples,
+benchmarks, or hidden cases. Rust, C, and Zig public-type results
+remain **NOT MEASURED**. The final comparison is **NOT OPENED**.
+
 ## Freeze failure-preserving public-type evidence recording
 
 Freeze the [lossless Python public-type evidence recorder](../tools/record_independent_public_type_identity_serialization_v1.py)
