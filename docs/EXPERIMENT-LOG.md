@@ -7,6 +7,32 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Run the shared from-scratch ownership audit on Rust
+
+After separately freezing and pushing both the shared native-engine
+ownership audit and its independently reviewed durable recorder,
+run the pinned Rust family exactly once with label
+`shared-suite-v1`.
+
+Preserve the actual
+[complete Rust ownership result](../experiments/rust_public_practice_v1/rust-from-scratch-audit-v2-shared-suite-v1.json),
+SHA-256
+`db6d525a9e42d7ce51ba5fdc1a0b9323683e8842e52c52bdfac0437c947f0978`,
+and its actual
+[independent publication receipt](../experiments/rust_public_practice_v1/rust-from-scratch-audit-v2-shared-suite-v1-publication-receipt.json),
+SHA-256
+`055156f073eef18264f5f7e9f22f0146085cfa7a0e5a749532b798a902d39ec4`.
+
+The genuine isolated audit reports **PASS**, **one** actual worker,
+**21** verified native-runtime checks, **zero** external regex
+packages, **zero** forbidden imports or execution, **zero** loaded
+Python matching engines, **zero** failures, and unchanged candidate
+hashes before and after the run. It reads **zero** final cases and
+takes **zero** timings. Record native source-to-binary reproduction
+as **NOT ESTABLISHED** rather than inferring it from a loaded
+binary. C and Zig have **NOT YET RUN** under the shared ownership
+audit at this focused result commit.
+
 ## Freeze identical general, scanner, and buffer tests for every engine
 
 Independently review and freeze the additive
