@@ -7,6 +7,35 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze complete 2,854-case scanner evidence recording
+
+Independently review and separately freeze the
+[scanner and pattern-comment baseline and candidate recorder](../tools/record_independent_scanner_verbose_comments_v1.py),
+SHA-256
+`d75934bef992e01ad5c1131a8abef997d3b540f8b150518822ad7e55c39c9191`,
+before starting its baseline or any candidate. Pin the previously
+frozen **2,854-case** oracle, exact 64-bit seed
+`5999725261024810545`, original CPython ownership checks, and
+independent from-scratch V3 audit.
+
+Require exactly **two** distinct original Python reference workers
+for the baseline, one genuinely isolated candidate worker for each
+future family, and every complete source-ordered scanner result.
+Check **5,708** before-and-after matcher guards and **5,708**
+warning guards per measured candidate. Preserve real pattern
+errors, callback results, process output, crashes, timeouts,
+mismatches, compressed reports, and durable non-overwriting
+receipts. A publication success must never count as a candidate
+success.
+
+Normal and clean source-only self-tests are byte-for-byte equal,
+with **22** positive and **134** rejection controls. Independently
+test complete synthetic baseline and candidate receipt integration
+and **72** forged or corrupted observations. No actual Python
+reference, candidate, baseline, timing, or hidden data is run or
+read in this freeze. Real baseline and candidate scanner results
+remain **NOT MEASURED**.
+
 ## Freeze durable from-scratch ownership-audit recording
 
 Freeze the independently reviewed
