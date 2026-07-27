@@ -7,6 +7,42 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the first measured Zig memory-lifetime failures
+
+Keep the first process-ID-rejected Zig run and all of its raw
+evidence. Rerun the **unchanged frozen** memory-lifetime recorder
+against the same independently source-built Zig engine, using only
+a new label so its genuinely isolated worker has a different live
+process ID. Do not weaken or bypass the original no-delegation guard.
+
+The new worker is distinct from both archived Python references.
+It executes all **1,024** frozen cases with **2,048** match guards
+and **2,048** warning guards. The actual candidate result is
+**FAIL: 977 / 1,024**, with **47** genuine differences. Preserve
+all four failing groups: **8** normal custom-buffer subjects,
+**8** custom subjects that change during release, **21** genuine
+replacement-exporter failures, and **10** noncontiguous
+replacement-template cases.
+
+The
+[complete measured Zig failure report](../experiments/rust_public_practice_v1/zig-managed-buffer-lifetime-v1-source-built-buffer-lifetime-retry-v1.json.gz)
+has SHA-256
+`95b68e8b5f306af670ceef001318d987c92cd904a295c109b8c66efb87d223a9`.
+Its [durable receipt](../experiments/rust_public_practice_v1/zig-managed-buffer-lifetime-v1-source-built-buffer-lifetime-retry-v1-publication-receipt.json)
+is `8a7f9f08514b82c9aff57486e9c7f28310b38fc11cfc439f641e371b4a0a61bc`.
+The receipt records `candidate_result_status: FAIL` and validates
+all **1,024** candidate observations. Keep Rust's **86** actual
+failures, C's passing result and its historical **237** failures,
+and both independent case denominators visible. The
+[updated safety graph manifest](evidence/managed-buffer-lifetime-overview-v1.inputs.json)
+is `2f9a5d3255899b759aa36e01857e3938a68daa590c220593315a9c3b08ebe568`;
+its [complete generated data](evidence/managed-buffer-lifetime-overview-v1.json)
+is `d08301338e8f1b39ef6030d5b7c38f8488eb220bc7163c80962403b0ce1a1d88`,
+and its [generated graph](evidence/managed-buffer-lifetime-overview-v1.svg)
+is `e6a32591fc844c240b06a6fe9776a87106062bb0af90fafd88b06c5ebcec8de8`.
+Read no benchmark or hidden data; no timing, memory ranking,
+or winner is selected.
+
 ## Build the corrected Zig engine and preserve a rejected safety run
 
 Use independently pinned stable Zig **0.16.0** to build the

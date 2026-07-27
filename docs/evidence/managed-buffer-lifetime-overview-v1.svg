@@ -21,9 +21,10 @@
 <rect x="43" y="334" width="996" height="24" rx="6" fill="#e2e8f0"/>
 <rect x="43" y="334" width="996" height="24" fill="#15803d"><title>C: 1,024 matches python out of 1,024</title></rect>
 <text x="43" y="402" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Zig</text>
-<text x="1038" y="402" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<text x="1038" y="402" fill="#dc2626" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">977 / 1,024 match Python</text>
 <rect x="43" y="412" width="996" height="24" rx="6" fill="#e2e8f0"/>
-<rect x="43" y="412" width="996" height="24" fill="#94a3b8"><title>Zig: 1,024 not yet measured out of 1,024</title></rect>
+<rect x="43" y="412" width="950" height="24" fill="#15803d"><title>Zig: 977 matches python out of 1,024</title></rect>
+<rect x="993" y="412" width="46" height="24" fill="#dc2626"><title>Zig: 47 does not match python out of 1,024</title></rect>
 <text x="43" y="475" fill="#475569" font-family="system-ui,sans-serif" font-size="12">These are 1,024 separately frozen safety checks; they do not change the original 2,807-check comparison.</text>
-<text x="43" y="502" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Manifest SHA-256: da978bc8d3f1a893234725738cbc47df184f280ea9ee7fa2be6fffc2b41282aa · renderer SHA-256: 9415853895f02abd0cebdd35f8ec8b6634191c6373b96b53859ebd4e2d8195a3</text>
+<text x="43" y="502" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Manifest SHA-256: 2f9a5d3255899b759aa36e01857e3938a68daa590c220593315a9c3b08ebe568 · renderer SHA-256: 9415853895f02abd0cebdd35f8ec8b6634191c6373b96b53859ebd4e2d8195a3</text>
 </svg>
