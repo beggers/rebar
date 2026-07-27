@@ -7,6 +7,50 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a clear corrected replacement comparison graph generator
+
+Freeze the [corrected replacement comparison graph generator](../tools/render_substitution_buffer_overview_v2.py)
+before authoring its actual input manifest or generating either graph file.
+Its independently reviewed, source-only-tested SHA-256 is
+`cf96320692fecd2b618a98a0c651f844ff068f2a6cc81e07d49fc48b1768c616`.
+
+Bind the future graph to the exact previously frozen corrected replacement
+oracle, SHA-256
+`e7cc951b4fbb90b2826c3730bbb3b3e81b50e8a5eac8a3d758962358d9414573`,
+and lossless evidence recorder, SHA-256
+`1e6bd77cea22c511ca3ee0ccdd4c02b12b4aa22c4fb79cb0df74d2894280807c`.
+Preserve the complete **5,120**-case, **64**-category,
+**80**-examples-per-category matrix, SHA-256
+`26f46fe7f1abc5135d1265a7882ccd4a2e2b45cdec80ba293520fda510235b54`,
+and full-width published seed `6004778603531028017`.
+
+Require the original two-Python baseline archive, SHA-256
+`2037e28bd452e00950819451786bc4212c6c685061f4122d27f5baa6b82dd12e`,
+its separately authenticated receipt, SHA-256
+`be2e495d1f983c7f59073490df90935562b94a241855cea0dbc870800ba73171`,
+all **87,138,140** original uncompressed bytes, SHA-256
+`1c7bde361897c44e39c44503e4fe39de48a6a6d2b7f2d6fe1fa1f615fb403561`,
+and every matching reference record, SHA-256
+`2bc65461b9ac60fd19a3c66856bd33ee48db038ab6a5de62193837800840f61b`.
+
+The future comparison must display Python's verified
+**5,120 / 5,120** passing cases in green. Rust, C, and Zig must each
+remain gray and explicitly **NOT MEASURED** across all **5,120** cases
+until their complete, separately authenticated corrected reports exist.
+Preserve the falsified historical C **464** and Zig **192** reports
+separately: each includes exactly **128** test-harness errors, leaving
+**336** and **64** real differences respectively. Never present the old
+reports as corrected results or place them in the corrected graph.
+
+Two independent reviewers verified normal and empty-environment source-only
+tests: **37** positive controls, **642** rejected attacks, **51,200**
+synthetic records, **18** compressed-stream controls, and **14** safe
+paired-publication controls. These tests ran no candidate, Python matcher,
+reference worker, timing, memory trial, or hidden case and created no files.
+The actual corrected graph, its input manifest, and all three new candidate
+results are **NOT GENERATED** or **NOT MEASURED**. The final comparison
+remains **NOT OPENED**.
+
 ## Validate all Python public-type and serialization reference cases
 
 Only after separately freezing, committing, and pushing the
