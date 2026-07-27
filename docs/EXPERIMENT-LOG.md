@@ -7,6 +7,46 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Validate every genuine simultaneous Python interpreter case
+
+Only after separately freezing, independently reviewing, committing,
+and pushing the **128**-case strengthened subinterpreter protocol and
+oracle, run exactly one full two-Python reference experiment.
+Independently identified reference processes **81** and **82** agree
+on all **128 / 128** original cases and every genuinely isolated
+**A → B → A** phase.
+
+The [complete, losslessly compressed V2 interpreter reference](../oracle/cpython-3.14.6/evidence/public-subinterpreter-v2-self-oracle.json.gz)
+has SHA-256
+`62a32bb04b69d517f2838dad9687014cce93c3734e2f45c6865e68f47101459b`
+and **80,388** compressed bytes. Preserve all **858,047** exact
+uncompressed bytes, SHA-256
+`d10c19ab13c797b8c9bf9502f854a53ca07d4ee6c6d4fee6dd5f0be5a91d524e`.
+The [complete authenticated V2 publication receipt](../oracle/cpython-3.14.6/evidence/public-subinterpreter-v2-self-oracle-publication-receipt.json)
+has SHA-256
+`4bd5768de68aeadfa6a1c4936bc9a6464c4245a573f5abc88029f9893389a24c`
+and **111,707** exact original bytes.
+
+Both references independently agree on the complete case vector,
+SHA-256
+`450fccc859099ca78aec725911b6195695cd932ad281af931ca7945cec8c51e8`,
+and the complete recreated-interpreter vector, SHA-256
+`e2b056f782f25adf423cf21e715c5373130ccdded08690ddacda6c1d4a363d0b`.
+Retain both complete worker streams, distinct PIDs, exact source
+identities, stderr records, **22** genuine creations, **22** genuine
+closures, **788** actual matching executions, **256** complete
+case triples, and **768** individually retained simultaneous phase
+observations. Keep all **16** original categories, **eight** cases
+per category, original seed `2026072501`, and frozen matrix SHA-256
+`edda77658c5eef9746c6d4769734c69e40db4c9d986171fa63799093f4cb62d3`.
+
+Preserve the original genuine V1 passing reference as separately
+authenticated history; never count its identical original cases twice.
+The new reference starts **zero** candidates, imports **zero** native
+matchers, reads **zero** hidden or performance cases, records no timing,
+and selects no winner. Rust, C, and Zig interpreter results remain
+**NOT MEASURED**. The final comparison remains **NOT OPENED**.
+
 ## Freeze genuine simultaneous Python interpreter compatibility checks
 
 Freeze the [128-case real-subinterpreter compatibility protocol](../oracle/cpython-3.14.6/PUBLIC-SUBINTERPRETER-V2.md),
