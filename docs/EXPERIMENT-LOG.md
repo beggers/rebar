@@ -7,6 +7,37 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze complete public type, identity, and serialization checks
+
+Freeze [6,912 additional Python public-compatibility checks](../tools/independent_public_type_identity_serialization_v1.py)
+before running a Python reference or any candidate. The oracle source
+has SHA-256
+`7ce0606da0d830ef8e9cf9b8e9b952a9836bf705254a23a65551832bf1d92e20`.
+Its exact full-width seed is `6077977430793212465`; the complete
+source-ordered case matrix has SHA-256
+`c315e37dfa2e79ab62519ea84c710d4e3ca41d63d34873894bf7415278b56123`.
+
+Preserve all **72** public-behavior categories and **96** distinct
+pattern-and-flag cases in each category. Cover genuine Python
+`Pattern` and `Match` types, public flag aliases, text and bytes,
+copy and deep-copy identity, weak references, all **six** pickle
+protocols, cache and purge behavior, warnings, and exact public
+errors. Keep this **6,912**-case matrix separate from all earlier
+denominators.
+
+Normal and empty-environment source-only self-tests each pass
+**31** positive controls and reject **277** hostile cases. Both
+protect the separately owned Rust, C, and Zig engines; start no
+reference or candidate worker; import no matcher or external regex
+package; read no performance or final holdout; and take no timing
+measurements. Independently review the complete frozen source
+before publication.
+
+The Python baseline and all Rust, C, and Zig outcomes for this
+new category are **NOT MEASURED**. The separately expanded final
+holdout remains **NOT FROZEN**, **NOT GENERATED**, and
+**NOT OPENED**.
+
 ## Falsify the original replacement and changing-buffer callback tests
 
 Independently authenticate and replay the complete frozen Python, C, and
