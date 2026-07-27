@@ -105,10 +105,12 @@ preserves every genuine failure and crash without claiming a native
 build has been reproduced.
 The actual shared ownership results for
 [Rust](experiments/rust_public_practice_v1/rust-from-scratch-audit-v2-shared-suite-v1.json)
-and [C](experiments/rust_public_practice_v1/c-from-scratch-audit-v2-shared-suite-v1.json)
-confirm two separately implemented engines, **zero** external regex
-packages, and **zero** Python or cross-candidate matching. Zig has
-**NOT YET RUN** under this newly shared audit.
+[C](experiments/rust_public_practice_v1/c-from-scratch-audit-v2-shared-suite-v1.json),
+and [Zig](experiments/rust_public_practice_v1/zig-from-scratch-audit-v2-shared-suite-v1.json)
+confirm **three genuinely independent, from-scratch engines**,
+**zero** external regex packages, and **zero** Python or
+cross-candidate matching. This proves ownership, not full Python
+compatibility or C/Zig performance.
 The [Zig build protocol](docs/ZIG-SOURCE-BUILD-V1.md) now pins and
 verifies the official stable compiler; rebuilding the owned Zig
 engine with the independently frozen

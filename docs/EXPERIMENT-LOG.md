@@ -7,6 +7,34 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Run the shared from-scratch ownership audit on Zig
+
+After independently recording, committing, and pushing both Rust
+and C ownership results, run the unchanged frozen ownership audit
+on Zig exactly once. Preserve the actual
+[complete Zig ownership result](../experiments/rust_public_practice_v1/zig-from-scratch-audit-v2-shared-suite-v1.json),
+SHA-256
+`0e87f2c7f1d3b38b7831b274a736528039a7850c17f06c878d4c986721ad342c`,
+and its actual
+[independent publication receipt](../experiments/rust_public_practice_v1/zig-from-scratch-audit-v2-shared-suite-v1-publication-receipt.json),
+SHA-256
+`987e7755a56faa7d65c21e3c72913b80743c9886de87f1c04ed34e182f2cee9d`.
+
+The genuine Zig result is **PASS**: **one** isolated worker,
+**21** verified native-runtime checks, **zero** external regex
+packages, **zero** forbidden imports or execution, **zero** loaded
+Python matching engines, **zero** failures, and unchanged native
+hashes before and after. The worker loads only the pinned owned Zig
+engine and own Python extension; legitimate foreign-function
+loading is not treated as an external regex package.
+
+All three implementation families have now passed the exact same
+from-scratch audit. This is evidence of **three separate engines**,
+not evidence that all three pass Python's correctness tests, run
+faster, or rebuild reproducibly. Zig's original and public Python
+tests, actual source build, and speed remain **NOT YET MEASURED**.
+The audit opens **zero** final cases and takes **zero** timings.
+
 ## Run the shared from-scratch ownership audit on C
 
 After committing and pushing the Rust ownership result, run the
