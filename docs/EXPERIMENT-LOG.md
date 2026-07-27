@@ -7,6 +7,42 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Complete the first shared Zig buffer comparison
+
+After separately recording, committing, and pushing the complete
+Zig scanner category, run only the frozen **768-case** buffer
+matrix against the same independently owned current Zig source,
+engine, and bridge. Preserve the
+[complete current Zig buffer result](../experiments/rust_public_practice_v1/zig-buffer-contract-v3-shared-suite-v1.json),
+SHA-256
+`7574745857767174dad233b439fb90bd5eeeee6d6ce7fd40294fab2925045df1`,
+and its
+[durable publication receipt](../experiments/rust_public_practice_v1/zig-buffer-contract-v3-shared-suite-v1-publication-receipt.json),
+SHA-256
+`c8a397c4892f2e9d1b58579016f38b6ef57ce5e57879f0a379d599eaec65043b`.
+
+The actual result is **FAIL**: **710** matching cases and
+**58** mismatches. Preserve **16** genuine buffer-exporter
+error failures, **32** released-after-match failures, and
+**10** invalid-template failures. Retain all **768** records
+from each Python reference and the Zig engine, all **1,536**
+matcher guards and **1,536** warning guards, all worker streams,
+exact errors, source pins, and legitimate Zig-owned bindings.
+
+Regenerate the complete current three-engine graph from canonical
+manifest SHA-256
+`bc5a5ebd1e96da2988fbcb999dedfa27c647109fef2fa1152f325bc976ec89fc`,
+SVG SHA-256
+`4deab2b375a38ec814c7ec1bee01fc381c15ff1e27a2306483e0bfb7ac97fad3`,
+and summary SHA-256
+`1c78ac2fa8513bb333c560a25940ae44758dd4344f2044db328862172bce9d32`.
+All **2,807** cases have now genuinely run for each independent
+engine: Rust passes **2,807**; C passes **1,754** and fails
+**1,053**; Zig passes **1,717** and fails **1,090**. No case
+is excluded or counted twice. No candidate is benchmark-qualified;
+performance, holdout, native memory, and any winner remain
+**NOT MEASURED**.
+
 ## Preserve every independently measured Zig scanner failure
 
 After separately publishing the first genuine Zig general

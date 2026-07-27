@@ -24,19 +24,18 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 | Python `re` | **1.000×** | Baseline |
 | Our Rust engine | **1.065×** | **2,807 / 2,807** shared correctness checks pass; speed goal not met |
 | Our C engine | **NOT MEASURED** | **151 / 151** original; **824 / 864** general; **32 / 1,024** scanner; **747 / 768** buffer |
-| Our Zig engine | **NOT MEASURED** | **151 / 151** original; **824 / 864** general; **32 / 1,024** scanner; buffer not yet run |
+| Our Zig engine | **NOT MEASURED** | **151 / 151** original; **824 / 864** general; **32 / 1,024** scanner; **710 / 768** buffer |
 
 ## Do the candidates work like Python?
 
-![Side-by-side correctness of the independently built regex engines: Rust passes all 2,807 checks; C passes 1,754 and fails 1,053; Zig passes 1,007, fails 1,032, and has 768 buffer checks not yet run](docs/evidence/candidate-correctness-overview-v2.svg)
+![Side-by-side correctness of the independently built regex engines: Rust passes all 2,807 checks; C passes 1,754 and fails 1,053; Zig passes 1,717 and fails 1,090](docs/evidence/candidate-correctness-overview-v2.svg)
 
 Every engine has the same **2,807** planned checks. Green means
 it matches Python; red means an actual mismatch; gray means the
 current build has **not yet been tested**. Rust passes all
 **2,807**. C passes **1,754** and fails **1,053**. Zig passes
-**1,007**, fails **1,032**, and has **768** buffer cases
-**NOT YET RUN**. The genuine Python-only debug skip is not
-counted.
+**1,717** and fails **1,090**. Every displayed category has
+actually run. The genuine Python-only debug skip is not counted.
 
 The C mismatches are **40** general scanner-callback failures,
 **992** dedicated scanner failures, and **21** buffer failures.
@@ -149,8 +148,8 @@ general behavior has now run and exposed **40** scanner-related
 mismatches; the dedicated scanner suite independently exposes
 **992** mismatches, and buffer handling exposes **21**. Zig
 general behavior exposes the same **40** callback mismatches;
-its scanner independently exposes **992** more. Zig buffer
-behavior remains **NOT MEASURED**.
+its scanner independently exposes **992** more, and its buffers
+expose **58**. Neither C nor Zig is fully compatible.
 
 A separately frozen
 [memory-lifetime safety suite](tools/independent_managed_buffer_lifetime_v1.py)
