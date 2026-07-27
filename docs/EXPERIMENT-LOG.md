@@ -7,6 +7,39 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the additional memory-lifetime result recorder
+
+Independently review and freeze the
+[managed-buffer baseline recorder](../tools/record_independent_managed_buffer_lifetime_v1.py),
+SHA-256
+`dddc90f3b6449deeb31098d062af9077e3bea558645b3f2d71de2cd4e6488abd`.
+Keep the previously frozen
+[memory-lifetime oracle](../tools/independent_managed_buffer_lifetime_v1.py),
+SHA-256
+`cedbab1227ea58a97d407cb339d2959a9f9be58a2085ce3106b65bb3385de489`,
+unchanged. Its deterministic **1,024-case** matrix is
+`28ef84b6989542ba8865c98e5296639c780c786078e2a99c7c0a95bfcb4b0976`.
+
+Verify the recorder's ordinary and clean-environment self-tests.
+Both independently pass **19** distinct acceptance controls and
+reject **168** distinct unsafe or inaccurate conditions. Synthetic
+tests start **zero** Python references and candidates, create
+**zero** reports, sample **zero** performance clocks, and read
+**zero** final examples.
+
+The recorder authenticates the exact frozen test and Python source,
+requires two real, separate Python references with identical complete
+1,024-case results, preserves complete successes, mismatches, errors,
+crashes and timeouts, and publishes only fresh, no-overwrite,
+fully synchronized result and receipt paths.
+
+Freezing the recorder is **not** running the baseline. The actual
+two-reference memory-lifetime baseline is **NOT YET RUN**. No
+memory-lifetime cases are added to the **2,807**-check headline;
+candidate results, final examples, memory measurements, speed, and
+a winner remain **NOT MEASURED**.
+
+
 ## Repair and rebuild the owned C conditional matcher
 
 Fix exactly two conditional-capture instructions in the independently

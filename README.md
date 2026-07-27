@@ -39,7 +39,7 @@ Python's genuine debug-only test is skipped equally and is not included in the d
 
 ![Detailed public correctness: Python and the Rust engine match on all 864 public examples](docs/evidence/rust-public-correctness-v1.svg)
 
-An additional, frozen 1,024-case memory-lifetime safety suite has **NOT YET RUN**. Its cases are not added to the totals until Python and the candidates actually run them.
+An additional, frozen 1,024-case memory-lifetime safety suite has **NOT YET RUN**. Its [independent baseline recorder](tools/record_independent_managed_buffer_lifetime_v1.py) is frozen separately. These cases are not added to the totals until Python and the candidates actually run them.
 
 ## Detailed development speed
 
@@ -63,7 +63,7 @@ The final examples will remain **NOT FROZEN**, **NOT GENERATED**, and **NOT OPEN
 - [Authenticated headline graph inputs](docs/evidence/candidate-correctness-overview-v2.inputs.json), [generated graph data](docs/evidence/candidate-correctness-overview-v2.json), and [graph generator](tools/render_candidate_correctness_overview_v2.py).
 - [Frozen original Python compatibility tests](tools/independent_original_cpython_suite_v5.py) and [shared candidate behavior tests](tools/independent_public_contract_v3.py).
 - [Independent from-scratch engine ownership checks](tools/independent_from_scratch_audit_v2.py).
-- [Additional frozen memory-lifetime safety checks](tools/independent_managed_buffer_lifetime_v1.py).
+- [Additional frozen memory-lifetime safety checks](tools/independent_managed_buffer_lifetime_v1.py) and [complete result recorder](tools/record_independent_managed_buffer_lifetime_v1.py).
 - [Reproducible Zig source-build controller](tools/reproduce_owned_zig_source_build_v3.py).
 - [Proposed expanded final-comparison protocol](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; [later clarifications](AMENDMENTS.md).
@@ -78,5 +78,6 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/record_independent_public_contract_v3.py --self-test
 "$PY" -I -B tools/independent_from_scratch_audit_v2.py --self-test
 "$PY" -I -B tools/independent_managed_buffer_lifetime_v1.py --self-test
+"$PY" -I -B tools/record_independent_managed_buffer_lifetime_v1.py --self-test
 "$PY" -I -B tools/render_candidate_correctness_overview_v2.py --self-test
 ```
