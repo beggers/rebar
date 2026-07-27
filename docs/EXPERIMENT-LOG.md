@@ -7,6 +7,26 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze clear replacement correctness graph generation
+
+Independently freeze the [5,120-case replacement-and-buffer correctness graph generator](../tools/render_substitution_buffer_overview_v1.py)
+before producing any graph. Its exact SHA-256 is
+`13183b23a77e7e4757d160d83363dd5a5be08ee287c4e2eceef8ab0c4afaa6f2`.
+Bind the complete two-Python baseline, actual C **464** and Zig
+**192** failures, every candidate's separately owned native engine,
+the exact original matrix, full-width seed, and all **64** cohorts.
+Preserve the original incomplete recorder failure and its genuinely
+**UNKNOWN** worker count.
+
+Normal and empty-environment self-tests pass **31** independent
+controls and reject **592** hostile cases. Verify all **40,960**
+complete synthetic outcomes, **18** compressed-stream attacks,
+and **14** no-clobber graph-publication and rollback scenarios.
+Keep Rust **NOT MEASURED**; display genuine C and Zig failures in
+red, never as passing publication receipts. Source-freeze the
+generator before rendering. Current speed and final holdout remain
+**NOT MEASURED** and **NOT OPENED**.
+
 ## Preserve all 1,888 genuine C changing-buffer safety failures
 
 Only after preserving and publishing the rejected process-ID
