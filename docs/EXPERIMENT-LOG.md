@@ -7,6 +7,95 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Repair, source-build, and independently verify Zig memory safety
+
+Repair the project's own
+[Zig Python bridge](../candidates/zig/py_bridge.c), SHA-256
+`05d822982787b92b305338148d90584c040f96ca8696129bfd25b2d1d02b7274`.
+Keep the independently written Zig matching engine and Python adapter
+unchanged. A legal Python exporter can return a shorter or empty
+second buffer; clamp both visible capture offsets to that actual
+buffer, safely construct empty results without null-pointer
+arithmetic, release every acquired view, and reject invalid lengths.
+
+Use the frozen
+[official Zig 0.16.0 source-build controller](../tools/reproduce_owned_zig_source_build_v4.py)
+to rebuild both native components in a fresh private directory. The
+[complete source-build report](../experiments/rust_public_practice_v1/zig-source-build-v4-stable-0160-safe-short-buffer-v1.json)
+has SHA-256
+`ae8a1d0eff026b75b9963ff9ede08db3fdd49a3dd57757fe5ce23dbc221c82fe`;
+its
+[durable source-build receipt](../experiments/rust_public_practice_v1/zig-source-build-v4-stable-0160-safe-short-buffer-v1-publication-receipt.json)
+is
+`6e062e02a1196b6be602a0f3c26f8e7d2e630bcfeea956839b5f241dee1870d3`.
+The fresh owned Zig engine is
+`b76eb6c7ecd60c1d221f6ddb822573a5f962641cf4e6f16da75d21561b104652`;
+the fresh owned Python bridge is
+`d8ac0da492d960716cbc74c25d7cb5027aea3fcfe2bf0a6fb2ec8e432345fb3b`.
+
+Record every existing frozen correctness category separately against
+the exact repaired source and newly built native pair:
+
+- [Original Python tests](../experiments/rust_public_practice_v1/zig-original-v5-owned-safe-buffer-repair-v1.json):
+  **151 passes** and the same genuine debug-only skip; full report
+  `725b5e9904da0daa0d8af62b4b5b7f244446cb03f50f769c65109875a7438426`,
+  [receipt](../experiments/rust_public_practice_v1/zig-original-v5-owned-safe-buffer-repair-v1-publication-receipt.json)
+  `b115c242978809d89642ef58dfd9ea3b77b9d213836d7f320327d1dab1c75796`.
+- [General public behavior](../experiments/rust_public_practice_v1/zig-public-contract-v3-owned-safe-buffer-repair-v1.json):
+  **864 / 864**; full report
+  `71c36fec27288fb67774a1c24c3b5819311788c95ccf91ab6780c5565e12d158`,
+  [receipt](../experiments/rust_public_practice_v1/zig-public-contract-v3-owned-safe-buffer-repair-v1-publication-receipt.json)
+  `7282684204c30040470787af3412532516c7425f1f40471b5306b105f770f5ab`.
+- [Scanners and callbacks](../experiments/rust_public_practice_v1/zig-scanner-contract-v3-owned-safe-buffer-repair-v1.json):
+  **1,024 / 1,024**; full report
+  `758dfdb6225a42dd65f1d38cac525820938c13b4b707bd80a1086072a8587ae3`,
+  [receipt](../experiments/rust_public_practice_v1/zig-scanner-contract-v3-owned-safe-buffer-repair-v1-publication-receipt.json)
+  `51f171ddafb08db4304e496410978e30b7431f574a0b38c17b0bd4a0cbb44157`.
+- [Memory views and buffers](../experiments/rust_public_practice_v1/zig-buffer-contract-v3-owned-safe-buffer-repair-v1.json):
+  **768 / 768**; full report
+  `b29fa5c193d9955044e0f09e7d4cd107286223d435d1f4c391692c0b736a1eda`,
+  [receipt](../experiments/rust_public_practice_v1/zig-buffer-contract-v3-owned-safe-buffer-repair-v1-publication-receipt.json)
+  `9f759849a12040ee538703255567df88961b09b7738d7c534fb60de09cec756a`.
+- [Additional memory-lifetime safety](../experiments/rust_public_practice_v1/zig-managed-buffer-lifetime-v1-owned-safe-buffer-repair-retry-v1.json.gz):
+  **1,024 / 1,024**; full compressed report
+  `5c5569a268de416e2fb4dda879c14000c2a829b86b2cc83cd426e6c32737a971`,
+  [receipt](../experiments/rust_public_practice_v1/zig-managed-buffer-lifetime-v1-owned-safe-buffer-repair-retry-v1-publication-receipt.json)
+  `6e127d6b655be080d03f6188de39fc19a5c739ab66f76eb1d08b0d1cc3655550`.
+
+Preserve the
+[previous source-build report](../experiments/rust_public_practice_v1/zig-source-build-v4-stable-0160-owned-lifetime-repair-v1.json)
+and all four earlier passing reports as superseded: that intermediate
+bridge passed the older frozen suites but remained unsafe on the
+subsequently discovered changing-size buffer. Preserve the earlier
+**47** genuine Zig failures. Also preserve the
+[rejected process-identity report](../experiments/rust_public_practice_v1/zig-managed-buffer-lifetime-v1-owned-safe-buffer-repair-v1.json.gz)
+and its
+[durable failure receipt](../experiments/rust_public_practice_v1/zig-managed-buffer-lifetime-v1-owned-safe-buffer-repair-v1-publication-receipt.json):
+the worker reused historical Python reference process ID `82`, so
+its candidate result is correctly **UNKNOWN**, not a semantic pass,
+mismatch, or native crash. Run the successful retry as a distinct,
+freshly authenticated process.
+
+Regenerate both graphs from their complete, validated history. The
+[original compatibility input](evidence/candidate-correctness-overview-v2.inputs.json)
+is `bcafb8d8350f03b5f2e191c717779f3b3724d28115edb4f02d1ea45b8f923581`;
+the [complete original graph data](evidence/candidate-correctness-overview-v2.json)
+is `7c7c7b5febf4b3bedb02c3d218199e16530e130572ae987beaf7de00dc1dec4d`;
+the [original graph](evidence/candidate-correctness-overview-v2.svg)
+is `518ac116e96ec1de5454318ca178c424b6627714bd3e51ca2328693c2b481a85`.
+The
+[memory-safety input](evidence/managed-buffer-lifetime-overview-v1.inputs.json)
+is `c2d9862dcee0de078df5f4314845297c557c72db5675694f2a599ccededdb396`;
+the [complete memory-safety graph data](evidence/managed-buffer-lifetime-overview-v1.json)
+is `c3e14c1f73fac922e1b79c0326228a43c7a78d3a8b302735314f1d1bebed34f1`;
+the [memory-safety graph](evidence/managed-buffer-lifetime-overview-v1.svg)
+is `1664abfffd44f0a6652c268b59ec47db1e913ea454e7324a4bfb32371851d9ab`.
+
+The additional **2,854**, **5,120**, and **10,240** compatibility
+suites have not been run against Zig in this chunk. All current
+candidate performance, native-memory rankings, hidden examples, and
+the final winner remain **NOT MEASURED**.
+
 ## Freeze safe, reproducible memory-safety graph updates
 
 Independently freeze the

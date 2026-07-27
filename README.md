@@ -12,7 +12,7 @@ Each candidate must use its own matching engine built from scratch. Wrapping Pyt
 
 ![Compatibility against the same 2,807 Python checks: all three from-scratch Rust, C, and Zig engines pass every check](docs/evidence/candidate-correctness-overview-v2.svg)
 
-![Additional memory-safety checks: Python, Rust, and C pass all 1,024; Zig fails 47](docs/evidence/managed-buffer-lifetime-overview-v1.svg)
+![Additional memory-safety checks: Python, Rust, C, and Zig all pass all 1,024 checks](docs/evidence/managed-buffer-lifetime-overview-v1.svg)
 
 ![Historical speed before the latest compatibility repairs: Python at 1.000 times, old Rust at 1.065 times, and the 1.5-times target](docs/evidence/rust-public-speed-v2-overall.svg)
 
@@ -21,11 +21,11 @@ Each candidate must use its own matching engine built from scratch. Wrapping Pyt
 | Python `re` | 2,807 / 2,807 | 1,024 / 1,024 | 1.000× |
 | Our Rust engine | 2,807 / 2,807 | 1,024 / 1,024 | NOT MEASURED |
 | Our C engine | 2,807 / 2,807 | 1,024 / 1,024 | NOT MEASURED |
-| Our Zig engine | 2,807 / 2,807 | 977 / 1,024; 47 failures | NOT MEASURED |
+| Our Zig engine | 2,807 / 2,807 | 1,024 / 1,024 | NOT MEASURED |
 
 All three engines are independently built from scratch. Green indicates a real matching result; red indicates a real mismatch. Every engine faces exactly the same 2,807 checks. Failures and older results are preserved, never excluded.
 
-The 1.065× graph is a historical result for the earlier, pre-repair Rust engine on 864 public development examples. Its measured 95% interval is 1.049×–1.081×; it does not meet the 1.5× target and does not measure the current code. Current Rust, C, and Zig speeds are **NOT MEASURED**. The final comparison remains closed until all three engines pass both the original and additional safety checks.
+The 1.065× graph is a historical result for the earlier, pre-repair Rust engine on 864 public development examples. Its measured 95% interval is 1.049×–1.081×; it does not meet the 1.5× target and does not measure the current code. Current Rust, C, and Zig speeds are **NOT MEASURED**. The final comparison remains closed until all three engines pass every frozen compatibility, safety, and ownership check.
 
 ## Detailed compatibility
 
@@ -36,7 +36,7 @@ The 1.065× graph is a historical result for the earlier, pre-repair Rust engine
 | Scanners and callbacks | 1,024 | 1,024 | 1,024 | 1,024 |
 | Memory views and buffers | 768 | 768 | 768 | 768 |
 | Total matching checks | 2,807 | 2,807 | 2,807 | 2,807 |
-| Additional memory-lifetime safety, counted separately | 1,024 | 1,024 | 1,024 | 977 |
+| Additional memory-lifetime safety, counted separately | 1,024 | 1,024 | 1,024 | 1,024 |
 | Additional scanner and pattern-comment checks, counted separately | 2,854 | NOT MEASURED | NOT MEASURED | NOT MEASURED |
 | Additional replacement and buffer checks, counted separately | 5,120 | NOT MEASURED | NOT MEASURED | NOT MEASURED |
 | Additional changing-size buffer checks, counted separately | 10,240 | NOT MEASURED | NOT MEASURED | NOT MEASURED |
@@ -45,7 +45,7 @@ Python's genuine debug-only test is skipped equally and is not included in the d
 
 ![Detailed public correctness: Python and the Rust engine match on all 864 public examples](docs/evidence/rust-public-correctness-v1.svg)
 
-An additional, frozen 1,024-case memory-lifetime safety suite has a passing two-Python baseline. Rust and C each pass all 1,024 cases. Zig passes 977 and fails 47. Rust's original 86 failures, Zig's rejected process-ID attempt, and every other actual failure remain preserved. These cases are counted separately and are never silently added to the 2,807 original checks.
+An additional, frozen 1,024-case memory-lifetime safety suite has a passing two-Python baseline. Rust, C, and the repaired Zig engine each pass all 1,024 cases. Rust's original 86 failures, Zig's earlier 47 failures, its unsafe intermediate design, and the rejected process-ID attempts all remain preserved. These cases are counted separately and are never silently added to the 2,807 original checks.
 
 A separate, frozen 2,854-case scanner and pattern-comment suite now has two matching Python baselines. Its candidate results are **NOT MEASURED**.
 
