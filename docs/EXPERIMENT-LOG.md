@@ -7,6 +7,34 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Record every current C scanner incompatibility
+
+After separately preserving, committing, and pushing the C
+general-category result, run the exact unchanged current C
+adapter against only the independently frozen **1,024-case**
+scanner matrix. Preserve the
+[complete C scanner result](../experiments/rust_public_practice_v1/c-scanner-contract-v3-shared-suite-v1.json),
+SHA-256
+`17cc126e57d32fb489c1ef766090e128ea5537dc03a698e9f15261f0fa27e58e`,
+and its
+[durable publication receipt](../experiments/rust_public_practice_v1/c-scanner-contract-v3-shared-suite-v1-publication-receipt.json),
+SHA-256
+`d5f570a499161c3fd8c96eccf62194e9a4cf801a58b63594026e361f4e8f5976`.
+
+The genuine result is **FAIL**: **32** compatible scanner cases
+and **992** mismatches. Exactly **31** independently named
+scanner-behavior groups fail **32** cases each. Preserve every
+original record from both genuine Python references and the
+source-authenticated C candidate, all **2,048** ownership checks,
+all **2,048** warning checks, all callbacks and exact errors,
+and complete original process streams.
+
+Do not remove invalid phrases, mask callback exceptions, copy
+lexicons, replace C's matching engine, or call Python's regex.
+This exposes a real architectural incompatibility to repair.
+The current C buffer category and all speed remain
+**NOT MEASURED**; no holdout, benchmark, or clock is accessed.
+
 ## Record all genuine current-source C general-behavior failures
 
 After separately freezing, reviewing, committing, and pushing
