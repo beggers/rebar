@@ -71,7 +71,7 @@ The final examples will remain **NOT FROZEN**, **NOT GENERATED**, and **NOT OPEN
 - [Complete experiment log, raw results, rejected designs, and failure history](docs/EXPERIMENT-LOG.md).
 - [Authenticated headline graph inputs](docs/evidence/candidate-correctness-overview-v2.inputs.json), [generated graph data](docs/evidence/candidate-correctness-overview-v2.json), and [graph generator](tools/render_candidate_correctness_overview_v2.py).
 - [Frozen original Python compatibility tests](tools/independent_original_cpython_suite_v5.py) and [shared candidate behavior tests](tools/independent_public_contract_v3.py).
-- [Separately frozen 2,854-case scanner and pattern-comment compatibility checks](tools/independent_scanner_verbose_comments_v1.py), [complete baseline and candidate evidence recorder](tools/record_independent_scanner_verbose_comments_v1.py), and [losslessly preserved two-Python scanner baseline](experiments/rust_public_practice_v1/scanner-verbose-comments-v1-shared-suite-v1.json.gz).
+- [Separately frozen 2,854-case scanner and pattern-comment compatibility checks](tools/independent_scanner_verbose_comments_v1.py), [complete baseline and candidate evidence recorder](tools/record_independent_scanner_verbose_comments_v1.py), [losslessly preserved two-Python scanner baseline](experiments/rust_public_practice_v1/scanner-verbose-comments-v1-shared-suite-v1.json.gz), and [independently frozen scanner graph generator](tools/render_scanner_verbose_overview_v1.py).
 - [Separately frozen 5,120-case replacement and buffer compatibility checks](tools/independent_substitution_buffer_semantics_v1.py).
 - [Current independent from-scratch engine ownership checks](tools/independent_from_scratch_audit_v3.py), [durable no-delegation audit recorder](tools/record_independent_from_scratch_audit_v3.py), and [preserved earlier ownership rules](tools/independent_from_scratch_audit_v2.py).
 - [Additional frozen memory-lifetime safety checks](tools/independent_managed_buffer_lifetime_v1.py), [complete baseline recorder](tools/record_independent_managed_buffer_lifetime_v1.py), [independent three-candidate recorder](tools/record_independent_managed_buffer_candidates_v1.py), [verified lossless baseline evidence](docs/evidence/managed-buffer-lifetime-baseline-v1.archive.json), [safe report restoration](tools/restore_managed_buffer_lifetime_baseline_v1.py), [authenticated memory-safety graph inputs](docs/evidence/managed-buffer-lifetime-overview-v1.inputs.json), [generated memory-safety graph data](docs/evidence/managed-buffer-lifetime-overview-v1.json), and [memory-safety graph generator](tools/render_managed_buffer_lifetime_overview_v1.py).
@@ -89,6 +89,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/record_independent_public_contract_v3.py --self-test
 "$PY" -I -B tools/independent_scanner_verbose_comments_v1.py --self-test
 "$PY" -I -B tools/record_independent_scanner_verbose_comments_v1.py --self-test
+"$PY" -I -B tools/render_scanner_verbose_overview_v1.py --self-test
 "$PY" -I -B tools/independent_substitution_buffer_semantics_v1.py --self-test
 "$PY" -I -B tools/independent_from_scratch_audit_v3.py --self-test
 "$PY" -I -B tools/record_independent_from_scratch_audit_v3.py --self-test

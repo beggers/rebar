@@ -7,6 +7,29 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the clear 2,854-case scanner graph generator
+
+Independently freeze the
+[expanded-scanner compatibility graph generator](../tools/render_scanner_verbose_overview_v1.py)
+before generating a chart or running any candidate against the
+scanner suite. The exact source SHA-256 is
+`41093012d0e8688b33b37844dad9e7145eaebd20a870d329091f29e5a1091d6b`.
+
+Keep Python, Rust, C, and Zig in the same plain-language order;
+show all **2,854** cases for every implementation; visibly distinguish
+passing, failing, and **NOT MEASURED** results; authenticate both
+published Python baseline workers and every current or superseded
+candidate result. Require the exact frozen source, complete case
+matrix, genuine receipt, report, and original unrounded 64-bit seed.
+Refuse a missing or forged failure and refuse silent chart replacement.
+
+Normal and empty-environment source-only tests agree byte-for-byte:
+**17** positive controls and **137** rejection controls pass. They
+read **zero** evidence files, create **zero** charts, and start
+**zero** candidates or references. No scanner result or timing is
+produced by this source-freeze step. The actual expanded scanner
+graph and all three candidate results remain **NOT MEASURED**.
+
 ## Freeze 5,120 replacement and buffer compatibility checks
 
 Independently freeze the
