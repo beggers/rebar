@@ -7,6 +7,45 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve all 116 genuine Rust scanner compatibility failures
+
+Run the frozen, independently recorded Rust engine against the
+separately frozen **2,854-case** scanner and pattern-comment
+baseline. Keep the exact **5,708** matcher-ownership checks and
+**5,708** warning checks, every original Python error, and the
+entire ordered candidate outcome vector.
+
+The
+[complete first Rust scanner report](../experiments/rust_public_practice_v1/rust-scanner-verbose-comments-v1-owned-buffer-repair-v1.json.gz)
+has SHA-256
+`ce81d0a8778cb839361e91db651b69e0c8849a728160924756449096c4093d69`;
+its
+[independent non-overwriting receipt](../experiments/rust_public_practice_v1/rust-scanner-verbose-comments-v1-owned-buffer-repair-v1-publication-receipt.json)
+is
+`e0757a7459ac996451e9a8cf9356c06f0842ba299825975f4789b3c4b79f4482`.
+The successful receipt records an actual candidate result of
+**FAIL**, not **PASS**: **2,738** matching outcomes and all
+**116** actual mismatches.
+
+Preserve **80** semantic and **36** tokenizer failures, split
+equally across **58** text and **58** byte cases. The missing
+behavior is Python's handling of an odd number of backslashes
+before a newline inside a verbose-pattern comment, including
+scoped inline flags, line endings, and exact pattern errors.
+Do not repair or rerun the candidate inside this failure chunk.
+
+Render every failure in the public comparison graph. The updated
+[complete scanner graph inputs](evidence/scanner-verbose-overview-v1.inputs.json)
+are `4ac4fce347cb1367d0c954f1d5218ddc5cd2154ad9c47a7f05b9028c0e5c77fa`;
+the [full graph data](evidence/scanner-verbose-overview-v1.json)
+is `aa61a98ef52afa9b23e6a9abd70f1a49aea6f22fe4a603a012d87c01bf57fe45`;
+the [generated scanner graph](evidence/scanner-verbose-overview-v1.svg)
+is `da52a5653c25ef85a4f635b8f7a9c5e5bba382faded52aeaf87c63097896145b`.
+C and Zig remain genuinely **NOT MEASURED** against this suite.
+The original **2,807-case** and memory **1,024-case** results
+remain unchanged. Performance and the expanded holdout are
+**NOT MEASURED** and **NOT OPENED**.
+
 ## Verify the Zig engine does not wrap or call another matcher
 
 Run the frozen live no-delegation audit against the actual rebuilt,

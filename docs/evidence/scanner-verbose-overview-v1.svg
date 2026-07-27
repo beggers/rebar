@@ -12,9 +12,10 @@
 <rect x="43" y="178" width="996" height="24" rx="6" fill="#e2e8f0"/>
 <rect x="43" y="178" width="996" height="24" fill="#15803d"><title>Python baseline: 2,854 matches python out of 2,854</title></rect>
 <text x="43" y="246" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Rust</text>
-<text x="1038" y="246" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<text x="1038" y="246" fill="#dc2626" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">2,738 / 2,854 match Python</text>
 <rect x="43" y="256" width="996" height="24" rx="6" fill="#e2e8f0"/>
-<rect x="43" y="256" width="996" height="24" fill="#94a3b8"><title>Rust: 2,854 not yet measured out of 2,854</title></rect>
+<rect x="43" y="256" width="955" height="24" fill="#15803d"><title>Rust: 2,738 matches python out of 2,854</title></rect>
+<rect x="998" y="256" width="41" height="24" fill="#dc2626"><title>Rust: 116 does not match python out of 2,854</title></rect>
 <text x="43" y="324" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">C</text>
 <text x="1038" y="324" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
 <rect x="43" y="334" width="996" height="24" rx="6" fill="#e2e8f0"/>
@@ -25,5 +26,5 @@
 <rect x="43" y="412" width="996" height="24" fill="#94a3b8"><title>Zig: 2,854 not yet measured out of 2,854</title></rect>
 <text x="43" y="474" fill="#475569" font-family="system-ui,sans-serif" font-size="12">These are 2,854 separately frozen Scanner checks. They do not change the original 2,807 checks or the 1,024 memory-safety checks.</text>
 <text x="43" y="494" fill="#475569" font-family="system-ui,sans-serif" font-size="12">All failures and older results remain in the complete evidence. Final speed and the expanded holdout remain not measured.</text>
-<text x="43" y="524" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Manifest SHA-256: ed1aeaed2b6b7c658e2325212213c578d14359c771337007b3d3057643123604 &#183; renderer SHA-256: 41093012d0e8688b33b37844dad9e7145eaebd20a870d329091f29e5a1091d6b</text>
+<text x="43" y="524" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Manifest SHA-256: 4ac4fce347cb1367d0c954f1d5218ddc5cd2154ad9c47a7f05b9028c0e5c77fa &#183; renderer SHA-256: 41093012d0e8688b33b37844dad9e7145eaebd20a870d329091f29e5a1091d6b</text>
 </svg>
