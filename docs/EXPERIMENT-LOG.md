@@ -7,6 +7,31 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze safe, reproducible memory-safety graph updates
+
+Independently freeze the
+[two-file memory-safety graph updater](../tools/render_managed_buffer_lifetime_overview_v2.py)
+before refreshing either existing graph. Its exact source SHA-256 is
+`27fb6161ae34018020cfb5cd4491a15ab34d829aa366eee86e636cdc9a7bddc9`.
+It retains the complete, frozen
+[original memory-safety renderer](../tools/render_managed_buffer_lifetime_overview_v1.py),
+SHA-256
+`9415853895f02abd0cebdd35f8ec8b6634191c6373b96b53859ebd4e2d8195a3`,
+including every original compressed-report, candidate-ownership,
+baseline, failure, and history validator.
+
+Require both exact previous graph hashes, an explicit replacement
+request, authenticated new evidence, equal **1,024-case**
+denominators, and complete rollback if either graph update fails.
+Never count a rejected process identity as a measured candidate or
+put an incomplete result in the measured history.
+
+Normal and empty-environment source-only tests agree exactly:
+**19** positive and **117** rejection controls pass. Test failure
+before either replacement and after each replacement. Read **zero**
+evidence, generate **zero** graphs, and run **zero** candidates,
+timings, or hidden cases during this source-freeze chunk.
+
 ## Freeze all 10,240 changing-size buffer safety checks
 
 Independently freeze the
