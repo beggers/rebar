@@ -7,6 +7,37 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve all 992 genuine C scanner-category incompatibilities
+
+After committing and pushing the C general-category failure, run
+the unchanged C candidate exactly once against the separately
+frozen **1,024-case** scanner category.
+
+Preserve the actual
+[complete C scanner result](../experiments/rust_public_practice_v1/c-scanner-contract-v2-shared-suite-v1.json),
+SHA-256
+`ad8a06f07f635596142d7fd942313f53666a63e8f7cdc3ed895a7b927676fcc1`,
+and its
+[failure-preserving publication receipt](../experiments/rust_public_practice_v1/c-scanner-contract-v2-shared-suite-v1-publication-receipt.json),
+SHA-256
+`548dea894db10f47703be3e15c1077e0830d964ab2d9979adf3fd390a3df31fe`.
+
+The actual result is **FAIL**: **32** matching cases and **992**
+preserved mismatches. Exactly **31** distinct scanner behavior
+groups each fail **32** cases. Both independent ordinary-Python
+references and the C candidate each produce all **1,024** full
+records; every one remains in the actual report. Preserve exactly
+**2,048** matcher-ownership checks and **2,048** warning-safety
+checks.
+
+The existing C scanner does not yet reproduce Python's combined
+scanner pattern, callback-match ownership, Unicode and byte flags,
+mutable remainder behavior, invalid-pattern errors, or full
+lexicon lifecycle. Do not replace its callback comparisons with
+returned tokens or remove any scanner cohort. C remains **NOT
+QUALIFIED**. The run opens **zero** final cases and takes **zero**
+timing measurements.
+
 ## Preserve all 40 genuine C scanner-callback mismatches
 
 After committing and pushing the Rust general-behavior result,
