@@ -99,8 +99,11 @@ could run. The separately frozen
 [corrected original Python suite](tools/independent_original_cpython_suite_v5.py)
 authenticates and initializes Python's standard bindings safely,
 while preserving the complete original tests and rejecting external
-engines. Zig compatibility remains **NOT YET MEASURED**, not a
-claimed test failure.
+engines. The
+[corrected original-test recorder](tools/record_independent_original_cpython_v5.py)
+preserves complete genuine successes, mismatches, and crashes.
+Zig compatibility remains **NOT YET MEASURED**, not a claimed test
+failure.
 
 The separately frozen
 [shared Python behavior tests](tools/independent_public_contract_v2.py)
@@ -184,6 +187,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/independent_original_cpython_suite_v4.py --self-test
 "$PY" -I -B tools/independent_original_cpython_suite_v5.py --self-test
 "$PY" -I -B tools/record_independent_original_cpython_v4.py --self-test
+"$PY" -I -B tools/record_independent_original_cpython_v5.py --self-test
 "$PY" -I -B tools/independent_public_contract_v2.py --self-test
 "$PY" -I -B tools/record_independent_public_contract_v2.py --self-test
 "$PY" -I -B tools/record_rust_original_cpython_v3.py --self-test

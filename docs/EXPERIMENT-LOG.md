@@ -7,6 +7,38 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze complete evidence for the corrected Zig-safe original suite
+
+Independently review and freeze the additive
+[V5 original-Python result recorder](../tools/record_independent_original_cpython_v5.py),
+SHA-256
+`72f5717b5e5909f5d6e521b83018797bf1abab8392c70fd95ef26d64a039c367`,
+only after the corrected V5 test controller has itself been
+separately reviewed, committed, and pushed. Preserve both immutable
+V4 sources and the complete actual V4 Zig false-positive evidence.
+
+Both isolated source-only self-tests pass **46** complete positive
+controls and reject **1,031** forged, incomplete, externally
+delegated, unsafe, or falsely reported results. Preserve the
+unchanged **165** original methods, **152** public tests, **13**
+named private waivers, exact **304** matcher-ownership checks,
+**304** warning guards, caller-pinned owned candidate hashes, and
+genuine standard `ctypes` preload evidence.
+
+Retain the complete ordered Python-reference and candidate worker
+records, process outputs, and all actual mismatch tracebacks. A
+legitimate candidate test failure remains a complete recorded
+failure; a genuinely crashed or unstarted worker has **unknown**,
+not fabricated zero, results. Publish each future report and
+receipt without replacing earlier evidence, after authenticating
+the literal directory and durably synchronizing both files.
+
+The recorder self-tests execute **zero** original Python or
+candidate workers, read or write **zero** evidence files, access
+**zero** final cases, and take **zero** performance measurements.
+At this source-freeze commit, no Rust, C, or Zig original test has
+yet run under V5.
+
 ## Run all shared scanner cases on Rust
 
 After committing and pushing the actual C buffer result, run
