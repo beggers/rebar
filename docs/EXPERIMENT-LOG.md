@@ -7,6 +7,32 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze clear changing-buffer correctness graph generation
+
+Freeze and independently review the [changing-buffer comparison graph generator](../tools/render_shape_changing_buffer_overview_v1.py)
+before generating any chart. Its exact source SHA-256 is
+`53e76b2a99a8bfe2adc654fbcfa5be13026726227b5cc2345e2c41833116a1cb`.
+Use the unchanged, independently passing **10,240-case** Python
+baseline and its complete original process records; preserve all
+**64** cohorts and **800** previously witnessed buffer-safety
+cases.
+
+Correct the independently discovered genuine archive-size boundary
+before freezing. Accept the exact proved **2,152,726,528-byte**
+compressed bound and **2,147,483,648-byte** restored bound, and
+reject every oversized, replaced, truncated, or duplicate result.
+Authenticate the real **179,411,616-byte** frozen baseline and both
+distinct Python reference workers, not just synthetic fixtures.
+
+Normal and empty-environment source-only checks each pass **30**
+positive controls and reject **171** attacks. Preserve complete
+Rust, C, and Zig history; show candidates as **NOT MEASURED**
+without real matching evidence. Require a source-pinned external
+input manifest and safely publish or roll back the SVG and complete
+data together. Freeze the generator before rendering; candidate
+results, speed, and hidden cases remain **NOT MEASURED** and
+**NOT OPENED**.
+
 ## Preserve all 464 genuine C replacement and buffer failures
 
 Test the independently owned C engine against all **5,120**
