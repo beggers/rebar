@@ -7,6 +7,31 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the independent memory-safety comparison graph
+
+Freeze the separate
+[plain-language memory-lifetime graph generator](../tools/render_managed_buffer_lifetime_overview_v1.py),
+SHA-256
+`9415853895f02abd0cebdd35f8ec8b6634191c6373b96b53859ebd4e2d8195a3`.
+Require the actual authenticated **1,024-case** Python baseline,
+the frozen candidate recorder, the complete compressed C failure
+report and its durable receipt. Keep the original **2,807-case**
+compatibility chart and denominator unchanged.
+
+Display real passing cases in green, real failures in red, and
+unmeasured candidates in gray. Verify every complete compressed
+and restored result hash, source order, native owner, warning
+check, mismatch and candidate outcome. Never misread a successful
+publication receipt as a passing candidate.
+
+Ordinary and clean-environment source self-tests both pass **10**
+genuine controls and reject **81** corrupt, missing, truncated,
+noncanonical, multi-member, wrongly owned, or misleading
+conditions. No candidate, report, chart, timing or final holdout
+is run during this separately frozen source commit. Rendering the
+actual graph remains **NOT YET RUN**.
+
+
 ## Build and test the independent Zig scanner from source
 
 Compile the matching engine from the project's own Zig source using
