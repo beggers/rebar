@@ -181,7 +181,16 @@ static PyObject *zig_match_piece(ZigMatch *match, Py_ssize_t group, PyObject *mi
     if (begin < 0) return Py_NewRef(missing);
     if (PyUnicode_Check(match->string)) return PyUnicode_Substring(match->string, (Py_ssize_t)begin, (Py_ssize_t)finish);
     Py_buffer view = {0};
-    if (PyObject_GetBuffer(match->string, &view, PyBUF_SIMPLE) != 0) return NULL;
+    if (PyObject_GetBuffer(match->string, &view, PyBUF_SIMPLE) != 0) {
+        if (PyMemoryView_Check(match->string) &&
+            PyErr_ExceptionMatches(PyExc_ValueError)) {
+            PyErr_Clear();
+            PyErr_Format(PyExc_TypeError,
+                         "expected string or bytes-like object, got '%.200s'",
+                         Py_TYPE(match->string)->tp_name);
+        }
+        return NULL;
+    }
     Py_ssize_t first = begin < 0 ? 0 : (Py_ssize_t)begin;
     Py_ssize_t last = finish < 0 ? 0 : (Py_ssize_t)finish;
     if (first > view.len) first = view.len;
@@ -331,10 +340,30 @@ static PyObject *zig_match_span(ZigMatch *match, PyObject *const *args, Py_ssize
 static PyObject *zig_match_expand(ZigMatch *match, PyObject *value) {
     PyObject *raw = value;
     PyObject *owned = NULL;
-    if (PyByteArray_Check(value) || PyMemoryView_Check(value)) {
-        owned = PyBytes_FromObject(value);
-        if (owned == NULL) return NULL;
-        raw = owned;
+    if (!PyBytes_CheckExact(value) && !PyUnicode_Check(value)) {
+        if (PyObject_CheckBuffer(value)) {
+            Py_hash_t hash = PyObject_Hash(value);
+            if (hash == -1) {
+                if (!PyErr_ExceptionMatches(PyExc_TypeError)) return NULL;
+                PyErr_Clear();
+                owned = PyBytes_FromObject(value);
+            } else {
+                Py_buffer view = {0};
+                if (PyObject_GetBuffer(value, &view, PyBUF_SIMPLE) == 0) {
+                    owned = PyBytes_FromStringAndSize(
+                        (const char *)view.buf, view.len);
+                    PyBuffer_Release(&view);
+                } else {
+                    PyErr_Clear();
+                    owned = PyBytes_FromObject(value);
+                }
+            }
+            if (owned == NULL) return NULL;
+            raw = owned;
+        } else if (Py_TYPE(value)->tp_hash == PyObject_HashNotImplemented) {
+            (void)PyObject_Hash(value);
+            return NULL;
+        }
     }
     PyObject *templates = PyObject_GetAttrString(match->pattern, "_templates");
     if (templates == NULL) {
@@ -348,9 +377,11 @@ static PyObject *zig_match_expand(ZigMatch *match, PyObject *value) {
         return NULL;
     }
     if (parts == NULL) {
+        PyObject *result = PyObject_CallMethod(
+            match->pattern, "_expand", "OO", raw, (PyObject *)match);
         Py_DECREF(templates);
         Py_XDECREF(owned);
-        return PyObject_CallMethod(match->pattern, "_expand", "OO", value, (PyObject *)match);
+        return result;
     }
     int byte_mode = PyBytes_Check(raw);
     Py_ssize_t count = PyTuple_GET_SIZE(parts);

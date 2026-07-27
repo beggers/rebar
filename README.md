@@ -10,7 +10,7 @@ Each candidate must use its own matching engine built from scratch. Wrapping Pyt
 
 ## Headline results
 
-![Compatibility against the same 2,807 Python checks: Rust and C both pass all 2,807, and Zig passes 2,749 and fails 58](docs/evidence/candidate-correctness-overview-v2.svg)
+![Compatibility against the same 2,807 Python checks: all three from-scratch Rust, C, and Zig engines pass every check](docs/evidence/candidate-correctness-overview-v2.svg)
 
 ![Additional memory-safety checks: Python and C pass all 1,024; Rust fails 86; Zig is not yet measured](docs/evidence/managed-buffer-lifetime-overview-v1.svg)
 
@@ -21,7 +21,7 @@ Each candidate must use its own matching engine built from scratch. Wrapping Pyt
 | Python `re` | 2,807 / 2,807 | 1,024 / 1,024 | 1.000× |
 | Our Rust engine | 2,807 / 2,807 | 938 / 1,024; 86 failures | 1.065× on public development examples |
 | Our C engine | 2,807 / 2,807 | 1,024 / 1,024 | NOT MEASURED |
-| Our Zig engine | 2,749 / 2,807; 58 failures | NOT MEASURED | NOT MEASURED |
+| Our Zig engine | 2,807 / 2,807 | NOT MEASURED; worker rejected | NOT MEASURED |
 
 All three engines are independently built from scratch. Green indicates a real matching result; red indicates a real mismatch. Every engine faces exactly the same 2,807 checks. Failures and older results are preserved, never excluded.
 
@@ -34,15 +34,15 @@ Rust's 1.065× result is from 864 public development examples, not the final com
 | Python's original runnable public tests | 151 | 151 | 151 | 151 |
 | General public behavior | 864 | 864 | 864 | 864 |
 | Scanners and callbacks | 1,024 | 1,024 | 1,024 | 1,024 |
-| Memory views and buffers | 768 | 768 | 768 | 710 |
-| Total matching checks | 2,807 | 2,807 | 2,807 | 2,749 |
+| Memory views and buffers | 768 | 768 | 768 | 768 |
+| Total matching checks | 2,807 | 2,807 | 2,807 | 2,807 |
 | Additional memory-lifetime safety, counted separately | 1,024 | 938 | 1,024 | NOT MEASURED |
 
 Python's genuine debug-only test is skipped equally and is not included in the denominator.
 
 ![Detailed public correctness: Python and the Rust engine match on all 864 public examples](docs/evidence/rust-public-correctness-v1.svg)
 
-An additional, frozen 1,024-case memory-lifetime safety suite has a passing two-Python baseline. C passes all 1,024 cases. Rust passes 938 and fails 86; Zig is **NOT MEASURED**. Every current Rust failure and previous C failure is preserved in the experiment log and raw data. These cases are counted separately and are never silently added to the 2,807 original checks.
+An additional, frozen 1,024-case memory-lifetime safety suite has a passing two-Python baseline. C passes all 1,024 cases. Rust passes 938 and fails 86. Zig's first attempt was rejected by the process-isolation check, so its safety result remains **NOT MEASURED**. Every failed and rejected run is preserved in the experiment log and raw data. These cases are counted separately and are never silently added to the 2,807 original checks.
 
 ## Detailed development speed
 

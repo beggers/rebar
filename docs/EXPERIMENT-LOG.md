@@ -7,6 +7,84 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Build the corrected Zig engine and preserve a rejected safety run
+
+Use independently pinned stable Zig **0.16.0** to build the
+project's own Zig matching engine and C-to-Python bridge. The owned
+engine source is
+`539bf5d378e0c2845c01519fcce62f1ef5e68610f477912c44a03027fb67a346`;
+the corrected
+[owned Zig bridge](../candidates/zig/py_bridge.c) is
+`bec325c2a0c5374125503939913508b389a643945104029b8abd22990667e7c1`.
+Pin the independently built engine
+`63979f0cfda2127e7b4bc5daa3a629c19e0f1515cdcdd6643075e9913c899f53`
+and Python bridge
+`de16d67826a23ceb22533ce7b2da75009ef77556744ff4125584eefabcb0c49e`.
+The bridge depends only on the project's own Zig engine and the
+system C runtime, exposes `PyInit__zig_bridge`, and contains no
+external matching engine or dynamic regex importer.
+
+The
+[complete authenticated Zig source-build report](../experiments/rust_public_practice_v1/zig-source-build-v4-stable-0160-buffer-lifetime-v1.json)
+has SHA-256
+`e47413e86ede88b11c3b159896ccd9b3d5722b68e5b5cc95a6a76f88848db9c5`;
+its
+[durable source-build receipt](../experiments/rust_public_practice_v1/zig-source-build-v4-stable-0160-buffer-lifetime-v1-publication-receipt.json)
+is `1e5a7bb9d84d4f951c61323750f6b170a7318445ab53f6d084ee17ceab7a2472`.
+Rerun every original correctness category against the actual new
+native artifacts:
+
+- [Original Python tests](../experiments/rust_public_practice_v1/zig-original-v5-source-built-buffer-lifetime-v1.json),
+  SHA-256
+  `feafe7de4f459e3fdfba309c050f96ef0a381e978d642e7453454728b60405bb`:
+  **151 / 151** runnable checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/zig-original-v5-source-built-buffer-lifetime-v1-publication-receipt.json)
+  is `60e23832e399e8e34a2dffc8b8f863c366d5df1deaf2c9adb76865c5f2629f65`.
+- [General public behavior](../experiments/rust_public_practice_v1/zig-public-contract-v3-source-built-buffer-lifetime-v1.json),
+  SHA-256
+  `0b141ec7ac7bbf571b4a4ee4384326e141f1b1429ba47eb7dcfd8bba36437261`:
+  **864 / 864** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/zig-public-contract-v3-source-built-buffer-lifetime-v1-publication-receipt.json)
+  is `630ebfbce12fd1090d8971123be3335c427dec60b8a38c41996c9297ab022fa6`.
+- [Scanners and callbacks](../experiments/rust_public_practice_v1/zig-scanner-contract-v3-source-built-buffer-lifetime-v1.json),
+  SHA-256
+  `52f96584b63b083184abdd34f25ba8eed95b63b0bbe0007c500d749b1074ed9e`:
+  **1,024 / 1,024** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/zig-scanner-contract-v3-source-built-buffer-lifetime-v1-publication-receipt.json)
+  is `880a78684b40cd13f612cd4225896f7de4cb370ab9aa99f099fd0669fb57a229`.
+- [Memory views and buffers](../experiments/rust_public_practice_v1/zig-buffer-contract-v3-source-built-buffer-lifetime-v1.json),
+  SHA-256
+  `bcefbbfaf062e2085c8b88b1733242d63d285c84670f131340f4aa892b698f17`:
+  **768 / 768** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/zig-buffer-contract-v3-source-built-buffer-lifetime-v1-publication-receipt.json)
+  is `b4b803cffd7bea9155fdd8e3a00440476bbe718cdcada78b54cf7d20107e64ac`.
+
+Preserve all **58** previous Zig buffer mismatches in the original
+graph's superseded evidence. The corrected Zig engine passes all
+**2,807 / 2,807** original cases. The
+[regenerated original graph manifest](evidence/candidate-correctness-overview-v2.inputs.json)
+is `ed573b64073aea325df58e2507d720f47bf18322d66fe2efb84a374bb0115c1b`,
+its [complete graph data](evidence/candidate-correctness-overview-v2.json)
+is `2dd3e4717c0364cd253e277568cf7081e25acbb5eaec5f7e30b7ec325910ddae`,
+and its [generated graph](evidence/candidate-correctness-overview-v2.svg)
+is `44ef360e8c33d2e6cc7437db5352e4ceb7b45c5feed64a4e0cba48d887a66ef9`.
+
+Do not confuse original compatibility with memory-safety
+qualification. The first additional-lifetime worker returned process
+ID **82**, which equals a preserved, already finished Python
+reference ID. The strict isolation guard correctly refuses to trust
+the ambiguous worker. The
+[complete rejected Zig safety run](../experiments/rust_public_practice_v1/zig-managed-buffer-lifetime-v1-source-built-buffer-lifetime-v1.json.gz)
+is `323de40c8378863cda5e9848b157d13461cf081918262948d37b9203a28388ed`;
+its
+[durable rejected-run receipt](../experiments/rust_public_practice_v1/zig-managed-buffer-lifetime-v1-source-built-buffer-lifetime-v1-publication-receipt.json)
+is `8db96f051bac20053c8e6f1cd0b4fc5f551174bd775e295544b144144839deb3`.
+Publication succeeded, but the candidate result is **FAIL**, the
+number of validated candidate records is unknown, and its memory
+safety remains **NOT MEASURED**. Preserve the complete run and do
+not draw a false passing or failing safety bar. Final benchmarks,
+holdout, native memory, and winner remain **NOT MEASURED**.
+
 ## Freeze 2,854 additional scanner and pattern-comment checks
 
 Freeze the independently reviewed
