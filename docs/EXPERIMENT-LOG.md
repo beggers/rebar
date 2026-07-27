@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze 1,024 additional memory-ownership safety checks
+
+Independently review and prospectively freeze the additive
+[managed-buffer and lifetime oracle](../tools/independent_managed_buffer_lifetime_v1.py),
+SHA-256
+`cedbab1227ea58a97d407cb339d2959a9f9be58a2085ce3106b65bb3385de489`.
+Freeze the exact **1,024-case** matrix, SHA-256
+`28ef84b6989542ba8865c98e5296639c780c786078e2a99c7c0a95bfcb4b0976`,
+using the exact published integer seed `0x4D424C4946455631`.
+
+Cover **32** named safety groups with **32** deterministic variants
+each: normal, writable, read-only, noncontiguous, and released
+buffers; controlled custom exporters and exact exceptions; match,
+replacement, iterator, and scanner ownership; callback and branch
+identity; byte strings, Unicode, and distinct Python return types.
+Use only safe equal-length backing-storage mutation; do not
+deliberately dereference freed memory, assume an unmeasured
+exception, or weaken a real Python lifetime guarantee.
+
+Both normal and clean-environment source checks pass **21**
+positive controls and reject **154** invalid conditions without
+reading or writing evidence, importing a candidate, opening a
+holdout, running a worker, collecting garbage, starting a thread,
+or measuring time. The independently executed two-reference
+Python baseline remains **NOT RUN** at this source-freeze commit.
+Do not count these additional **1,024** cases in the existing
+**2,807**-case headline chart or claim a candidate has passed
+them before the baseline and actual tests run.
+
 ## Publish the overall Python-compatibility comparison
 
 After separately freezing, independently reviewing, committing,
