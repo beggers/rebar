@@ -7,6 +7,33 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the exact-size stable-Zig source-build correction
+
+After preserving the complete genuine V2 compiler-size failure,
+independently review and freeze the additive
+[corrected stable-Zig build controller](../tools/reproduce_owned_zig_source_build_v3.py),
+SHA-256
+`af5a04fccf179de8629c4d9470d20accbb126c8897d3d45d3fe041138d2abfc3`.
+Keep both previous build controllers and the original failure
+unchanged.
+
+Authenticate **14** complete source, compiler, header, native,
+and predecessor inputs. Accept the official Zig **0.16.0**
+compiler only when its frozen SHA-256 and exact
+**172,641,672-byte** size both match. Allow a **268,435,456-byte**
+bound for that uniquely identified compiler only; retain the
+original **134,217,728-byte** bound for every other native input
+and fresh compiled output. Preserve exact independently owned
+engine exports, allowed Python symbols, private isolated `/tmp`
+outputs, no-follow source authentication, shell-free compiler
+commands, and failure-preserving durable reports.
+
+Both normal and clean-environment source tests pass **25**
+positive controls and reject **132** invalid conditions. All
+compile, candidate, evidence, clock, hidden-case, and
+performance activity remains **zero**. The corrected actual
+source build has **NOT RUN** at this source-freeze commit.
+
 ## Complete the first shared Zig buffer comparison
 
 After separately recording, committing, and pushing the complete

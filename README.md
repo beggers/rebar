@@ -178,13 +178,17 @@ cross-candidate matching. This proves ownership, not full Python
 compatibility, reproducible native builds, or C/Zig performance.
 The [Zig build protocol](docs/ZIG-SOURCE-BUILD-V1.md) now pins and
 verifies the official stable compiler. The independently frozen
-[current Zig source-build controller](tools/reproduce_owned_zig_source_build_v2.py)
-pins all **13** source, compiler, header, and native-build inputs
-for the corrected Zig engine. Its
+[previous Zig source-build controller](tools/reproduce_owned_zig_source_build_v2.py)
+pins **13** source, compiler, header, and native-build inputs.
+Its
 [first actual build attempt](experiments/rust_public_practice_v1/zig-source-build-v2-stable-0160-v1.json)
 exposed a real size-limit defect before compilation: the genuine
 **172,641,672-byte** stable Zig compiler exceeds the frozen
-**134,217,728-byte** input limit. Preserve the failure;
+**134,217,728-byte** input limit. The separately frozen
+[corrected Zig source-build controller](tools/reproduce_owned_zig_source_build_v3.py)
+pins all **14** inputs, accepts only the genuine exact-size
+compiler, and retains the original strict limits for every
+generated native file. Its actual build has **NOT YET RUN**;
 source-to-binary reproducibility remains **NOT ESTABLISHED**. The
 [original build controller](tools/reproduce_owned_zig_source_build_v1.py)
 remains preserved unchanged.
@@ -254,4 +258,5 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/render_rust_public_speed_v2.py --self-test
 "$PY" -I -B tools/reproduce_owned_zig_source_build_v1.py --self-test
 "$PY" -I -B tools/reproduce_owned_zig_source_build_v2.py --self-test
+"$PY" -I -B tools/reproduce_owned_zig_source_build_v3.py --self-test
 ```
