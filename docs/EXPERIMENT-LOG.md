@@ -7,6 +7,39 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve every independently measured Zig scanner failure
+
+After separately publishing the first genuine Zig general
+result, run only the frozen **1,024-case** scanner category
+against the exact unchanged owned Zig source and native files.
+Preserve the
+[complete current Zig scanner result](../experiments/rust_public_practice_v1/zig-scanner-contract-v3-shared-suite-v1.json),
+SHA-256
+`ef2cd2bf7f69482563c96b6280031e119ad217af1d912d806bd6e1115d7ef106`,
+and its
+[durable publication receipt](../experiments/rust_public_practice_v1/zig-scanner-contract-v3-shared-suite-v1-publication-receipt.json),
+SHA-256
+`a151208e2ac10c3c47234ed3b24d7ab0e092d3c771752f23e957c70cafddcc8d`.
+
+The actual result is **FAIL**: **32** compatible cases and
+**992** mismatches across **31** complete scanner groups.
+Preserve all **1,024** records from each genuine Python
+reference and the Zig engine, both **2,048** ownership and
+**2,048** warning checks, complete isolated worker streams,
+authentic owned Zig loading, and all original failures.
+
+Update the generated all-engine graph using exact canonical
+manifest SHA-256
+`e417af412d99e16bafe51a14510df102b8e23257398d13c8591312668c377cba`,
+graph SHA-256
+`86be0493b88b359390f805315fe0bf0a4b36b9501342f2f7deb3fc3e5f37b6c4`,
+and summary SHA-256
+`8478e8018358d8527d1c2d399ddf2f4fadfc3c97db3038a2fc3e688aa4ced98b`.
+The unchanged **2,807**-case denominator shows Zig's **1,007**
+passes, **1,032** failures, and **768** genuinely untested buffer
+cases. Preserve C's **1,053** failures and all older histories.
+No benchmark, hidden case, timing, or external matcher is used.
+
 ## Record Zig's first genuine full general-behavior result
 
 After freezing the shared V3 oracle, recorder, and red-capable
