@@ -7,6 +7,37 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the genuine C original-Python pickling incompatibility
+
+After committing and pushing the first shared Rust original-test
+result, run the unchanged independently owned C engine exactly
+once against the same frozen original Python suite.
+
+Preserve the actual
+[complete C original-test result](../experiments/rust_public_practice_v1/c-original-v4-shared-suite-v1.json),
+SHA-256
+`25c8097fdf8caf358eba100a62783adc407ada5a1687a285e1495ad2d110758b`,
+and its actual
+[failure-preserving publication receipt](../experiments/rust_public_practice_v1/c-original-v4-shared-suite-v1-publication-receipt.json),
+SHA-256
+`debe0219f3d3eea8690186598938c15fe835f5c4a7c462027a9c873fdb075c7a`.
+
+Python passes **151** runnable tests and reports one genuine debug
+skip; the C candidate passes **150**, reports the same genuine skip,
+and fails **exactly one** real public test:
+`ReTests.test_pickling`. The upstream test imports Python's expected
+`_compile` pickling entry point. The independently owned C adapter
+does not expose it and raises `ImportError`; the complete actual
+traceback remains in the committed report.
+
+Preserve both **152-test** vectors, one Python reference and one C
+worker, **zero** public waivers, all **304** matcher guards, all
+**304** warning guards, and the genuine failure process exit. Do
+not waive, hide, hard-code, or replace this incompatibility. C is
+**NOT QUALIFIED** until its own source is corrected and all unchanged
+tests are rerun. The experiment reads **zero** final cases and
+takes **zero** performance measurements.
+
 ## Run the full shared original Python test suite on Rust
 
 After separately freezing and pushing the candidate-independent

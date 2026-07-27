@@ -23,7 +23,7 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 | --- | ---: | --- |
 | Python `re` | **1.000×** | Baseline |
 | Our Rust engine | **1.065×** | Public development tests pass; speed goal not met |
-| Our C engine | **NOT MEASURED** | Not yet tested against the complete shared suite |
+| Our C engine | **NOT MEASURED** | **150 / 151** original Python tests; one pickling incompatibility |
 | Our Zig engine | **NOT MEASURED** | Not yet tested against the complete shared suite |
 
 ## Current speed against Python
@@ -86,6 +86,9 @@ preserves every real test failure and never substitutes an invented
 result for a crashed engine. The current Rust engine now passes
 **151 / 151** runnable tests under this exact shared suite, with
 **zero** public waivers and the same genuine Python-only debug skip.
+The C engine passes **150 / 151**; its remaining genuine failure is
+Python-compatible pickling, which must be corrected before it can
+qualify.
 
 The separately frozen
 [shared Python behavior tests](tools/independent_public_contract_v2.py)
