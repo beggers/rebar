@@ -7,6 +7,33 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve an inconclusive C changing-buffer process collision
+
+Run the separately frozen **10,240-case** changing-buffer recorder
+against the owned C engine. The first isolated C process reuses a
+recorded Python-reference process ID. Correctly reject the run;
+preserve the complete process output and all source identities
+without pretending that candidate results were validated.
+
+The [complete rejected C changing-buffer attempt](../experiments/rust_public_practice_v1/c-shape-changing-buffer-semantics-v1-native-lifetime-repair-v1.json.gz)
+has SHA-256
+`1a58c7d155a9bdf76841d0df0927b8ecb6ad496b0d190e3b9a591737783e3e5a`.
+Its [authenticated rejected-run publication receipt](../experiments/rust_public_practice_v1/c-shape-changing-buffer-semantics-v1-native-lifetime-repair-v1-publication-receipt.json)
+has SHA-256
+`1d4450c6081b4a462c14eac17a637f8c3a79490eb413fea9d796e2ec917d5df3`.
+Preserve all **38,189,626** original report bytes, the exact
+historical Python reference identities, and the recorder's
+**one** actual candidate-process invocation.
+
+All **10,240** candidate observations, mismatch counts, and native
+guard counts are genuinely **UNKNOWN**. The recorder returns
+**FAIL** for the rejected run and exits **1**; successful durable
+publication is not candidate correctness. Establish neither a C
+crash nor a C mismatch from this process-collision failure. Leave
+the authenticated changing-buffer chart unchanged with Rust, C,
+and Zig all **NOT MEASURED**. Current candidate speed and the
+final comparison remain **NOT MEASURED** and **NOT OPENED**.
+
 ## Preserve all 192 genuine Zig replacement and buffer failures
 
 Run the independently owned Zig engine against the full frozen
