@@ -7,6 +7,34 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze safely bounded changing-buffer evidence recording
+
+Independently freeze the
+[complete changing-size buffer baseline and candidate recorder](../tools/record_independent_shape_changing_buffer_semantics_v1.py)
+before observing any actual **10,240-case** reference or candidate.
+The exact source SHA-256 is
+`047bcc25a3b033fa374576c434b0e6ebcc6c97cf99965e9cc9083c012249529c`.
+Keep the previously frozen oracle, matrix, exact unsigned seed,
+and full Rust, C, and Zig source ownership policies unchanged.
+
+Preserve each complete Python or candidate process stream exactly
+once. Reconstruct every reference outcome and every genuine
+mismatch from authenticated source-order records, rather than
+duplicating the full report until it exceeds a fixed size limit.
+Full **10,240-case** synthetic evidence is exactly **48,305,310**
+baseline bytes and **25,068,609** candidate bytes. Prove a bounded
+full-size archive, enforce no-overwrite receipt publication, and
+preserve actual controller and native process identities even
+when publication fails.
+
+Normal and empty-environment source-only tests pass the same
+**93** positive controls and **338** rejected attacks. Cover all
+five actual outer-13-byte changing-buffer regressions, every
+candidate family, failed process identities, every denied external
+effect, and **zero** real reference, candidate, or performance
+workers. The genuine **10,240-case** baseline and every candidate
+result remain **NOT MEASURED**.
+
 ## Preserve all 116 genuine Rust scanner compatibility failures
 
 Run the frozen, independently recorded Rust engine against the
