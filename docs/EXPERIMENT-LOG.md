@@ -7,6 +7,34 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve all 464 genuine C replacement and buffer failures
+
+Test the independently owned C engine against all **5,120**
+frozen replacement-and-buffer reference cases. It genuinely passes
+**4,656** cases and fails **464**; preserve every complete
+candidate result, original Python observation, callback, buffer
+event, and mismatch. The C process remains continuously guarded
+by **10,240** matcher and **10,240** warning checks and cannot
+delegate to Python, another candidate, or an external matcher.
+
+The [complete original C replacement report](../experiments/rust_public_practice_v1/c-substitution-buffer-semantics-v1-native-lifetime-repair-v1.json.gz)
+has SHA-256
+`b1545e5850caaf59fd9640358527dfaf160f90b3f48fc9f80accd5a49a305111`.
+Its [complete C publication receipt](../experiments/rust_public_practice_v1/c-substitution-buffer-semantics-v1-native-lifetime-repair-v1-publication-receipt.json)
+has SHA-256
+`933852815241f3b2c82f6e5a07a5624422c323c7d4f86cebeb3f6f700cefa5b2`.
+The preserved full mismatch digest is
+`dd3662164eddb3ac983f9618f0b53a2c52fbbe31f8cc456731109ef89cad9f13`.
+
+Each of the four module and compiled-pattern replacement methods
+fails **116** cases. The failures include text and bytes callback
+errors, nested buffer lifetimes, and custom Python buffer
+exporters; `Match.expand` has **zero** mismatches. The candidate
+genuinely **FAILS** and the recorder exits **1**; evidence
+publication alone passes. Keep all previous scanner and recorder
+failures. Rust and Zig replacement results, all current speeds,
+and the final holdout remain **NOT MEASURED** and **NOT OPENED**.
+
 ## Preserve all 1,364 genuine Zig scanner compatibility failures
 
 Run the independently built, ownership-audited Zig engine against
