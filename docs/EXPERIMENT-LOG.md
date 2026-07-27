@@ -7,6 +7,42 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze identical general, scanner, and buffer tests for every engine
+
+Independently review and freeze the additive
+[three-family Python behavior controller](../tools/independent_public_contract_v2.py),
+SHA-256
+`a0ae9621e06b760477a167705cc6e521cc7e9df4d44d126e39c614df89bd3e68`,
+before running any candidate. Preserve three separate, unchanged
+previously frozen categories: **864** general public Python
+behaviors, **1,024** scanner and callback behaviors, and **768**
+memory-view and exporter behaviors.
+
+Require exactly one declared candidate and one declared category
+for each actual run. Never combine or replace the three original
+denominators. Preserve all original deterministic cases and seeds,
+all errors, all warnings, callback behavior, mutable and released
+buffers, and complete mismatch records. Each future run must
+authenticate two independently isolated ordinary-Python results and
+one genuinely owned candidate result, including complete reversible
+output, distinct process identifiers, and native hashes.
+
+Retain the frozen original warning-safe matcher-ownership checks.
+General behavior requires exactly **1,728** identity and warning
+checks; scanner behavior requires **2,048**; buffer behavior
+requires **1,536**. Verify Zig's own native library and symbols
+rather than disallowing legitimate project-owned foreign-function
+bindings.
+
+Both normal and clean-environment source-only self-tests pass
+**43** genuine controls and reject **411** forged categories,
+external engines, missing results, inaccurate guards, or substituted
+process streams. They launch **zero** reference or candidate
+workers, read **zero** candidate or native files, write **zero**
+evidence, take **zero** timing samples, and access **zero** final
+cases. Actual three-family category comparisons remain **NOT YET
+RUN** at this infrastructure-only freeze.
+
 ## Restore the exact source-build protocol pinned by the Zig controller
 
 Before running the frozen Zig build controller, verify every real
