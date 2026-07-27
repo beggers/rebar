@@ -7,6 +7,41 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze lossless corrected replacement evidence recording
+
+Freeze the [lossless corrected replacement evidence recorder](../tools/record_independent_substitution_buffer_semantics_v3.py)
+before running either reference worker. Its complete independently
+reviewed source has SHA-256
+`1e6bd77cea22c511ca3ee0ccdd4c02b12b4aa22c4fb79cb0df74d2894280807c`.
+Pin the previously published corrected oracle, SHA-256
+`e7cc951b4fbb90b2826c3730bbb3b3e81b50e8a5eac8a3d758962358d9414573`,
+all **5,120** source-ordered cases, all **64** categories,
+full-width seed `6004778603531028017`, and the unchanged matrix
+`26f46fe7f1abc5135d1265a7882ccd4a2e2b45cdec80ba293520fda510235b54`.
+
+Retain all **eight** authenticated source owners, the original
+bounded-recorder failure, the complete signed false-positive
+history, and all genuine C and Zig replacement differences.
+Require two separately isolated Python reference workers and
+independently owned, continuously guarded future Rust, C, and
+Zig candidate workers. Preserve every original case, callback,
+exception, match, warning, native-ownership guard, buffer event,
+and complete reversible worker stream. Publish complete evidence
+with deterministic, bounded, non-overwriting archives; never
+turn successful evidence publication into a candidate pass.
+
+Two independent reviewers each run normal and empty-environment
+source-only self-tests. Both pass **60** positive controls and
+reject **334** attacks. They explicitly block preloaded Python
+matcher calls, `_sre`, native extensions, real oracle execution,
+filesystem changes, workers, clocks, and hidden cases. All actual
+reference workers, candidate workers, regex calls, evidence
+writes, and performance observations remain **zero**.
+
+The corrected two-Python reference and every candidate result are
+**NOT MEASURED** until the separately committed recorder is run.
+The final holdout remains **NOT OPENED**.
+
 ## Freeze the corrected replacement and buffer compatibility test
 
 Freeze the [corrected replacement and buffer oracle](../tools/independent_substitution_buffer_semantics_v2.py)
