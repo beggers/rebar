@@ -7,6 +7,37 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze current-source, from-scratch engine ownership checks
+
+Separately freeze the
+[independent Rust, C, and Zig source-ownership audit](../tools/independent_from_scratch_audit_v3.py),
+SHA-256
+`377c63eecccea021562694e00d624d54f61adfb0d3a4700586a29ed424f389ee`,
+before running it or using it in a future correctness oracle. Keep
+the independently frozen
+[earlier ownership policy](../tools/independent_from_scratch_audit_v2.py)
+and original CPython tests unchanged. Require the exact current
+source files, dependency locks, independent native engine, and Python
+bridge for each candidate.
+
+Reject Python `re`, `_sre`, other Python matching engines,
+third-party regular-expression packages, another candidate's parser,
+foreign native regular-expression libraries, unapproved imports,
+substituted source, and mismatched binaries. Allow C's genuinely
+single native bridge and only Zig's explicitly checked binding to
+its own matching engine.
+
+Normal and clean Python environments produce exactly the same
+passing source self-test: **132** positive controls and **445**
+rejection controls. An independently designed second review also
+passes **57** positive and **52** negative checks. This source-only
+freeze performs **zero** candidate imports, candidate processes,
+evidence writes, hidden-case reads, benchmark reads, clocks, or
+timing trials. Actual candidate ownership audits and new scanner
+tests have **NOT YET RUN**; binary reproducibility remains
+**NOT ESTABLISHED**. The expanded holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Repair the independently built C engine's memory ownership
 
 Fix the C matching engine itself; do not wrap Python `re`, `_sre`,
