@@ -7,6 +7,38 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the same original Python tests for all three independent engines
+
+Independently review and freeze the additive
+[candidate-independent original Python test suite](../tools/independent_original_cpython_suite_v4.py),
+SHA-256
+`1b6b217bd6883dcfc2ff3ceafa66fa49544770bb7007d210ebbe3a57e48d24a3`,
+before running Rust, C, or Zig. Run its complete source-only
+self-test under both the exact pinned Python environment and a clean
+environment. Both pass **41** positive controls and correctly reject
+**151** forged or delegated implementations.
+
+Each self-test launches two genuinely isolated, source-pinned
+standard-Python references; both reproduce the exact original
+**165-test** inventory, **152** public tests, **13** explicitly named
+private waivers, **151** runnable passes, and the identical genuine
+debug-build-only skip. Preserve all **304** actual matcher-ownership
+checks and all **304** warning-safety checks; exercise the previous
+warning and identity rejection cases rather than replacing them with
+invented results.
+
+Reject captured Python engines inside candidate modules, classes,
+closures, instances, scanner objects, and native-bridge graphs. Allow
+C's exactly authenticated, independently owned native matcher and
+Zig's exactly authenticated owned engine through safe, narrowly
+restricted foreign-function loading. Reject spoofed library names,
+handles, cached symbols, hostile keys, external regex packages, and
+cross-candidate delegation. The source self-tests import or execute
+**zero** candidates, read **zero** candidate binaries or final cases,
+and take **zero** timing samples. Actual Rust, C, and Zig results
+under this newly shared suite are **NOT YET MEASURED** at this source
+freeze; native reproducibility is **NOT ESTABLISHED**.
+
 ## Publish the complete, clearer four-implementation comparison
 
 After pushing the independently reviewed V2 renderer freeze, generate

@@ -76,7 +76,13 @@ public interface, while **13** explicitly named tests concern private
 Python internals. Python and Rust both pass all **151** runnable
 public tests and report the same genuine debug-only skip. The original
 test checks matcher ownership **304** times and warning safety **304**
-times. The independently reviewed
+times. The independently frozen
+[shared original Python test suite](tools/independent_original_cpython_suite_v4.py)
+preserves all of those tests and protections unchanged for each
+separate Rust, C, and Zig implementation. No C or Zig test result is
+assumed before that implementation actually runs.
+
+The independently reviewed
 [Rust ownership audit](tools/rust_from_scratch_audit_v1.py) and its
 [complete current result](experiments/rust_public_practice_v1/rust-from-scratch-audit-v1-memoryview-native-exporter-fix.json)
 verify that the Rust parser, matcher, and Python binding are built
@@ -125,6 +131,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/rust_memoryview_expand_differential_v1.py --self-test
 "$PY" -I -B tools/record_rust_memoryview_expand_v1.py --self-test
 "$PY" -I -B tools/rust_original_cpython_suite_v3.py --self-test
+"$PY" -I -B tools/independent_original_cpython_suite_v4.py --self-test
 "$PY" -I -B tools/record_rust_original_cpython_v3.py --self-test
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_correctness_v1.py --self-test
