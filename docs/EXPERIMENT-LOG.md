@@ -7,6 +7,46 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Validate all 1,024 memory-lifetime cases against Python
+
+Run the frozen memory-lifetime baseline exactly once after committing
+and pushing its independently reviewed recorder. Two separate genuine
+Python 3.14.6 workers agree on **all 1,024** deterministically ordered
+cases. The exact common result vector is
+`80293f5332300220f38c3f017d38611a5514b1b686918e692a53491945b196df`;
+both workers perform all **2,048** ownership checks.
+
+The complete canonical raw report contains **108,978,141 bytes**,
+SHA-256
+`8c1acb346f476be4f05edd3e7afa73c9a4196bdafa19c2b6f90259ce6b622b68`.
+Because GitHub rejects individual files exceeding **100 MiB**, retain
+the original locally and commit its complete, deterministic,
+single-member `gzip -n -9` archive instead. The archive contains
+**4,374,362 bytes**, SHA-256
+`1840d5c5faf0422cfaaae0e277cf5d9bc5ed954fe50beca3d9794b9fd33e5fba`.
+A full streamed verification proves it restores every original byte,
+with no case omitted.
+
+Keep the original, unchanged
+[durable baseline receipt](../experiments/rust_public_practice_v1/managed-buffer-lifetime-v1-shared-suite-v1-publication-receipt.json),
+SHA-256
+`adb34ba45089983ac1857639995c51bdc3ae81e0656fa4b89fd5c0f72420b3ba`.
+Publish the
+[lossless archive manifest](evidence/managed-buffer-lifetime-baseline-v1.archive.json)
+and independently reviewed
+[safe restoration tool](../tools/restore_managed_buffer_lifetime_baseline_v1.py),
+SHA-256
+`775247b55a494b8bbe3a0c4cb42bc443f586a35fb7f3420c861498d207fa2b0d`.
+Normal and clean restorer self-tests pass **8** acceptance controls
+and reject **61** unsafe or inaccurate conditions.
+
+This establishes a Python-versus-Python correctness baseline only.
+**No candidate has run the 1,024-case memory-lifetime suite.** Do not
+add any of those cases to the current **2,807**-case comparison.
+Candidate lifetime results, final comparisons, timing, memory, and
+a winner remain **NOT MEASURED**.
+
+
 ## Freeze the additional memory-lifetime result recorder
 
 Independently review and freeze the
