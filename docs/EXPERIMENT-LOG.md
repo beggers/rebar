@@ -7,6 +7,40 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the stable Zig build for independently changing candidates
+
+Freeze the additive
+[dynamic owned Zig source-build controller](../tools/reproduce_owned_zig_source_build_v4.py),
+SHA-256
+`700c450ecb87e93ead4c866b5edcdd8a220ce6bb805f41c663b48bf1a4b118b4`.
+Preserve and authenticate the
+[previous frozen controller](../tools/reproduce_owned_zig_source_build_v3.py),
+SHA-256
+`af5a04fccf179de8629c4d9470d20accbb126c8897d3d45d3fe041138d2abfc3`,
+without changing it.
+
+Require the independently pinned stable Zig **0.16.0** compiler,
+unchanged owned Zig engine, genuine Python 3.14.6 headers, host C
+compiler and ELF inspector. Accept a changed Zig Python adapter and
+owned C bridge only when the caller explicitly supplies and
+authenticates both exact source hashes. Preserve all **14** original
+input protections and authenticate the previous controller.
+
+Build only the real owned Zig engine and native Python bridge in a
+fresh isolated temporary directory. Validate the genuine Zig exports,
+Python module initializer, allowed native dependencies, owned-only
+runtime search paths, exact size limits, complete source closure,
+and first-write durable success or failure evidence.
+
+Ordinary and clean-environment self-tests independently pass
+**34** acceptance controls and reject **165** unsafe conditions.
+Source tests do not build a candidate, import an engine, create an
+evidence file, sample time, or access final examples. The actual
+stable Zig build is **NOT YET RUN** at this separately pushed
+source-freeze step. Final performance, rankings and any winner
+remain **NOT MEASURED**.
+
+
 ## Eliminate the last C buffer mismatches
 
 Repair only the owned native C replacement-expansion function.
