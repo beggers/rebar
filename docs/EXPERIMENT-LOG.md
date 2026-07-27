@@ -7,6 +7,32 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze read-only verification of historical callback test errors
+
+Freeze the [independent historical callback-error verifier](../tools/verify_independent_callback_oracle_falsification_v1.py)
+before replaying any historical evidence. Its twice independently
+reviewed source has SHA-256
+`6fc5169edb97444d24d4bcd09ca02899f9e71df025467ed703ca17a48f11e75c`.
+
+The frozen verifier must authenticate the complete original signed
+replacement and changing-buffer archives, original receipts, source
+hashes, complete observed case records, and genuine process identities.
+For historical replacement reports, separately establish C
+**464 = 128** test-harness artifacts **+ 336** genuine remaining
+differences and Zig **192 = 128 + 64**. For the historical C
+changing-buffer report, separately establish
+**1,888 = 496 + 1,392**. Classify only the oracle's own exact callback
+exception type as an artifact; preserve all real user exception types,
+messages, case identities, mismatch records, and callback events.
+
+Normal and empty-environment source-only self-tests each pass **31**
+positive controls and reject **195** hostile controls. The tests read
+and write no real evidence, invoke no matcher, spawn no worker, import
+no candidate, sample no clock, and access no hidden or performance
+case. The actual signed historical replay is **NOT RUN** in this
+separately committed source-freeze chunk. The expanded final comparison
+remains **NOT OPENED**.
+
 ## Publish the clear corrected replacement comparison
 
 Only after independently freezing, committing, and pushing the corrected
