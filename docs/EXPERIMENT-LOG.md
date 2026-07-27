@@ -7,6 +7,34 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve the first real stable-Zig build-protocol failure
+
+After separately freezing, reviewing, committing, and pushing the
+V2 source-build controller, invoke exactly its prospectively
+declared stable Zig **0.16.0** build. Preserve the
+[complete source-build failure](../experiments/rust_public_practice_v1/zig-source-build-v2-stable-0160-v1.json),
+SHA-256
+`0e47178534a6d96da0bb0e870cf523687d861b77b3823075d0b397c220cac5f3`,
+and its
+[durable publication receipt](../experiments/rust_public_practice_v1/zig-source-build-v2-stable-0160-v1-publication-receipt.json),
+SHA-256
+`c75855bfc0a1563c1eba828f7b6450e3ea58dd5ed010b566bc79aae459961e46`.
+
+The actual result is **FAIL**: the independently verified stable
+Zig compiler is exactly **172,641,672 bytes**, exceeding the
+controller's frozen **134,217,728-byte** binary-input limit.
+The controller correctly refuses compilation instead of weakening
+its immutable bound. Preserve all **eight** fully authenticated
+inputs completed before the rejection and the exact failure.
+**Zero** compiler processes start, **zero** temporary build
+directories or native artifacts are created, and existing
+candidate binaries remain unchanged.
+
+The publication receipt confirms durable recording, not build
+success. Source-to-binary reproducibility remains
+**NOT ESTABLISHED**. No candidate, final case, benchmark, timing,
+or memory measurement is run.
+
 ## Freeze a reproducible build for the corrected owned Zig engine
 
 Independently review and prospectively freeze the additive

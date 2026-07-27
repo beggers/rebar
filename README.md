@@ -136,8 +136,12 @@ The [Zig build protocol](docs/ZIG-SOURCE-BUILD-V1.md) now pins and
 verifies the official stable compiler. The independently frozen
 [current Zig source-build controller](tools/reproduce_owned_zig_source_build_v2.py)
 pins all **13** source, compiler, header, and native-build inputs
-for the corrected Zig engine. Its actual source rebuild has
-**NOT YET RUN**; the
+for the corrected Zig engine. Its
+[first actual build attempt](experiments/rust_public_practice_v1/zig-source-build-v2-stable-0160-v1.json)
+exposed a real size-limit defect before compilation: the genuine
+**172,641,672-byte** stable Zig compiler exceeds the frozen
+**134,217,728-byte** input limit. Preserve the failure;
+source-to-binary reproducibility remains **NOT ESTABLISHED**. The
 [original build controller](tools/reproduce_owned_zig_source_build_v1.py)
 remains preserved unchanged.
 
