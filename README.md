@@ -24,7 +24,7 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 | Python `re` | **1.000×** | Baseline |
 | Our Rust engine | **1.065×** | Public development tests pass; speed goal not met |
 | Our C engine | **NOT MEASURED** | **150 / 151** original, **824 / 864** general, **32 / 1,024** scanner, **747 / 768** buffer cases |
-| Our Zig engine | **NOT MEASURED** | Corrected original test suite frozen; genuine Zig run pending |
+| Our Zig engine | **NOT MEASURED** | **150 / 151** original tests; general, scanner, and buffer cases not yet run |
 
 ## Current speed against Python
 
@@ -75,35 +75,21 @@ Python's original test file contains **165** tests: **152** cover the
 public interface, while **13** explicitly named tests concern private
 Python internals. Python and Rust both pass all **151** runnable
 public tests and report the same genuine debug-only skip. The original
-test checks matcher ownership **304** times and warning safety **304**
-times. The independently frozen
-[shared original Python test suite](tools/independent_original_cpython_suite_v4.py)
-preserves all of those tests and protections unchanged for each
-separate Rust, C, and Zig implementation. No C or Zig test result is
-assumed before that implementation actually runs. A separately frozen
-[complete original-test result recorder](tools/record_independent_original_cpython_v4.py)
-preserves every real test failure and never substitutes an invented
-result for a crashed engine. The current Rust engine now passes
-**151 / 151** runnable tests under this exact shared suite, with
-**zero** public waivers and the same genuine Python-only debug skip.
-The C engine passes **150 / 151**; its remaining genuine failure is
-Python-compatible pickling, which must be corrected before it can
-qualify. The shared general tests separately expose **40** scanner-
-callback mismatches out of **864** cases; the dedicated scanner
-tests expose **992** mismatches out of **1,024**. Every failure is
-preserved rather than removed from the comparison. The independent
-buffer tests expose **21** further genuine mismatches.
-Zig's first attempt exposed a bug in the test harness: it blocked
-Python's own standard `ctypes` initialization before any Zig test
-could run. The separately frozen
+test also checks engine ownership **304** times and warning safety
+**304** times. The frozen
 [corrected original Python suite](tools/independent_original_cpython_suite_v5.py)
-authenticates and initializes Python's standard bindings safely,
-while preserving the complete original tests and rejecting external
-engines. The
-[corrected original-test recorder](tools/record_independent_original_cpython_v5.py)
-preserves complete genuine successes, mismatches, and crashes.
-Zig compatibility remains **NOT YET MEASURED**, not a claimed test
-failure.
+and [complete result recorder](tools/record_independent_original_cpython_v5.py)
+preserve every test, failure, and genuine skip without allowing an
+external matching engine.
+
+The first genuine
+[Zig original-test result](experiments/rust_public_practice_v1/zig-original-v5-shared-suite-v1.json)
+passes **150 / 151** runnable tests. Its one remaining failure is
+the private `_compile` name Python needs for pickling; the C engine
+has the same independently recorded problem. This is an actual
+compatibility defect, not the earlier false alarm caused by the test
+harness. All Zig general, scanner, buffer, and speed results remain
+**NOT MEASURED**.
 
 The separately frozen
 [shared Python behavior tests](tools/independent_public_contract_v2.py)
@@ -111,7 +97,9 @@ make all three engines face the same **864** general cases, **1,024**
 scanner cases, and **768** memory-view cases. Each category is run
 and reported separately using the
 [complete behavior-test recorder](tools/record_independent_public_contract_v2.py);
-C and Zig have **NOT YET RUN**.
+C has completed all three categories and has **40 / 864** general,
+**992 / 1,024** scanner, and **21 / 768** buffer mismatches. Zig has
+**NOT YET RUN** these categories.
 
 The independently reviewed
 [Rust ownership audit](tools/rust_from_scratch_audit_v1.py) and its
@@ -120,19 +108,17 @@ verify that the Rust parser, matcher, and Python binding are built
 from scratch. A separately frozen
 [three-engine ownership audit](tools/independent_from_scratch_audit_v2.py)
 applies the same no-external-regex rule to the separately owned Rust,
-C, and Zig matchers. Its source is tested; actual C and Zig results
-and reproducible native builds are **NOT YET ESTABLISHED**. The
+C, and Zig matchers. The
 [complete ownership-audit recorder](tools/record_independent_from_scratch_audit_v2.py)
-preserves every genuine failure and crash without claiming a native
-build has been reproduced.
-The actual shared ownership results for
-[Rust](experiments/rust_public_practice_v1/rust-from-scratch-audit-v2-shared-suite-v1.json)
+preserves every genuine failure and crash. The actual shared ownership
+results for
+[Rust](experiments/rust_public_practice_v1/rust-from-scratch-audit-v2-shared-suite-v1.json),
 [C](experiments/rust_public_practice_v1/c-from-scratch-audit-v2-shared-suite-v1.json),
 and [Zig](experiments/rust_public_practice_v1/zig-from-scratch-audit-v2-shared-suite-v1.json)
 confirm **three genuinely independent, from-scratch engines**,
 **zero** external regex packages, and **zero** Python or
 cross-candidate matching. This proves ownership, not full Python
-compatibility or C/Zig performance.
+compatibility, reproducible native builds, or C/Zig performance.
 The [Zig build protocol](docs/ZIG-SOURCE-BUILD-V1.md) now pins and
 verifies the official stable compiler; rebuilding the owned Zig
 engine with the independently frozen

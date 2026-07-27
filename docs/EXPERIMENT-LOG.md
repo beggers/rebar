@@ -7,6 +7,37 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Record Zig's first genuine original-Python test failure
+
+After separately freezing, reviewing, committing, and pushing the
+corrected V5 suite and its complete evidence recorder, run the owned
+Zig engine against the unchanged original Python **3.14.6** tests.
+Preserve the full
+[Zig original-Python result](../experiments/rust_public_practice_v1/zig-original-v5-shared-suite-v1.json),
+SHA-256
+`568cf64f718a81f565f637433d888647d94b3b50c343610475c105aeeb51f8d4`,
+and its independent
+[durable publication receipt](../experiments/rust_public_practice_v1/zig-original-v5-shared-suite-v1-publication-receipt.json),
+SHA-256
+`22cc3e513ca342621d68cd15888503870165411fa5f1fa31974781f1e6b998aa`.
+
+The genuine result is **FAIL**: **150** matching runnable tests,
+**one** matching genuine Python-only debug skip, and **one** fully
+recorded incompatibility. Python passes
+`ReTests.test_pickling`; Zig raises
+`ImportError: cannot import name '_compile' from 'candidates.zig_candidate'`.
+Preserve all **152** reference records, all **152** candidate
+records, **304** matcher-ownership checks, **304** warning guards,
+the complete traceback, and both real worker streams. This is a
+candidate compatibility defect, not the V4 harness false positive.
+
+The receipt's publication **PASS** means only that the complete
+**702,914-byte** failing report was actually published, verified,
+and synchronized without replacing prior evidence. The candidate
+result itself remains **FAIL**. No final cases are opened, no
+benchmark files are read, and no timing or memory measurements are
+taken. Zig remains **NOT QUALIFIED**.
+
 ## Freeze complete evidence for the corrected Zig-safe original suite
 
 Independently review and freeze the additive
