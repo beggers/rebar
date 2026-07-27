@@ -1139,45 +1139,163 @@ Match = _vm_native.Match
 _vm_native.configure(_template, _template_parts)
 
 
+class _ScannerBytecodeParser(_BytecodeParser):
+    """Keep phrase-local flag scopes when building a combined scanner VM."""
+
+    def __init__(self, original, flags):
+        super().__init__(original, flags)
+        self._scanner_scopes = {}
+
+    def frame_node(self, frame):
+        node = super().frame_node(frame)
+        start = frame["start"]
+        if frame["tag"] == "plain" and not self.source.startswith("(?:", start):
+            stop = self.source.find(":", start + 2)
+            header = self.source[start + 2:stop]
+            enabled, separator, disabled = header.partition("-")
+            flag_values = {
+                "a": int(ASCII),
+                "i": int(IGNORECASE),
+                "L": int(LOCALE),
+                "m": int(MULTILINE),
+                "s": int(DOTALL),
+                "u": int(UNICODE),
+                "x": int(VERBOSE),
+            }
+            turn_on = 0
+            turn_off = 0
+            for flag in enabled:
+                turn_on |= flag_values[flag]
+            if separator:
+                for flag in disabled:
+                    turn_off |= flag_values[flag]
+            self._scanner_scopes[id(node)] = (node, turn_on, turn_off)
+        return node
+
+    def scanner_node(self, node, flags):
+        scope = self._scanner_scopes.get(id(node))
+        if scope is not None and scope[0] is node:
+            turn_on, turn_off = scope[1:]
+            flags = (flags | turn_on) & ~turn_off
+            if turn_on & int(ASCII | LOCALE):
+                flags &= ~int(UNICODE)
+            elif turn_on & int(UNICODE):
+                flags &= ~int(ASCII | LOCALE)
+
+        kind = node[0]
+        if kind in {"lit", "category", "anchor", "boundary", "backref"}:
+            return (*node[:-1], flags)
+        if kind == "dot":
+            return (kind, flags)
+        if kind == "class":
+            members = [
+                self.scanner_node(member, flags)
+                if member[0] in {"lit", "category"}
+                else member
+                for member in node[1]
+            ]
+            return (kind, members, node[2], flags)
+        if kind in {"seq", "alt"}:
+            return (kind, [self.scanner_node(child, flags) for child in node[1]])
+        if kind == "group":
+            return (kind, node[1], self.scanner_node(node[2], flags))
+        if kind == "repeat":
+            return (
+                kind,
+                self.scanner_node(node[1], flags),
+                node[2],
+                node[3],
+                node[4],
+                flags,
+            )
+        if kind == "look":
+            return (
+                kind,
+                node[1],
+                node[2],
+                self.scanner_node(node[3], flags),
+                node[4],
+            )
+        if kind == "atomic":
+            return (kind, self.scanner_node(node[1], flags))
+        if kind == "conditional":
+            return (
+                kind,
+                node[1],
+                self.scanner_node(node[2], flags),
+                self.scanner_node(node[3], flags),
+            )
+        raise RuntimeError(f"unknown scanner bytecode node {kind}")
+
+
 class Scanner:
     def __init__(self, lexicon, flags=0):
-        self.lexicon = list(lexicon)
-        if not self.lexicon:
-            raise RuntimeError("invalid scanner lexicon")
-        phrases = [item[0] for item in self.lexicon]
-        byte_mode = isinstance(phrases[0], bytes)
-        if any(isinstance(item, bytes) != byte_mode for item in phrases):
-            raise TypeError("scanner patterns must all have the same type")
-        separator = b"|" if byte_mode else "|"
-        opening = b"(?:" if byte_mode else "(?:"
-        closing = b")" if byte_mode else ")"
-        self.scanner = compile(separator.join(opening + item + closing for item in phrases), flags)
-        self._patterns = [compile(item, flags) for item in phrases]
+        flags = int(flags)
+        self.lexicon = lexicon
+        branches = []
+        for phrase, _action in lexicon:
+            phrase_flags = flags
+            if isinstance(phrase, str):
+                if flags & int(LOCALE):
+                    raise ValueError("cannot use LOCALE flag with a str pattern")
+                if flags & int(ASCII) and flags & int(UNICODE):
+                    raise ValueError("ASCII and UNICODE flags are incompatible")
+                if not flags & int(ASCII | UNICODE):
+                    phrase_flags |= int(ASCII)
+            elif isinstance(phrase, bytes):
+                if flags & int(UNICODE):
+                    raise ValueError("cannot use UNICODE flag with a bytes pattern")
+                if flags & int(ASCII) and flags & int(LOCALE):
+                    raise ValueError("ASCII and LOCALE flags are incompatible")
+
+            parser = _ScannerBytecodeParser(phrase, phrase_flags)
+            node = parser.parse()
+            branches.append(
+                ("group", len(branches) + 1, parser.scanner_node(node, parser.flags & _BYTE | phrase_flags))
+            )
+
+        if not branches:
+            raise RuntimeError("invalid SRE code")
+
+        compiler = _BytecodeCompiler()
+        compiler.emit(("alt", branches))
+        compiler.instruction(compiler.MATCH)
+        group_count = len(branches)
+        capture_operations = {
+            compiler.SAVE_START,
+            compiler.SAVE_END,
+            compiler.BACKREF,
+            compiler.COND,
+        }
+        for program in compiler.programs:
+            for opcode, argument, _second, _third in program:
+                if opcode in capture_operations and not 1 <= argument <= group_count:
+                    raise RuntimeError("invalid SRE code")
+
+        native_programs = [list(map(tuple, program)) for program in compiler.programs]
+        vm = _vm_native.build(native_programs, compiler.classes, group_count, flags)
+        self.scanner = Pattern(None, flags, vm, group_count, {})
 
     def scan(self, string):
         result = []
+        append = result.append
+        match = self.scanner.scanner(string).match
         position = 0
-        while position < len(string):
-            matched = None
-            action = None
-            for pattern, (_, candidate_action) in zip(self._patterns, self.lexicon):
-                item = pattern.match(string, position)
-                if item is not None:
-                    matched = item
-                    action = candidate_action
-                    break
-            if matched is None or matched.end() == position:
+        while True:
+            matched = match()
+            if not matched:
                 break
+            end = matched.end()
+            if position == end:
+                break
+            action = self.lexicon[matched.lastindex - 1][1]
             if callable(action):
                 self.match = matched
                 action = action(self, matched.group())
             if action is not None:
-                result.append(action)
-            position = matched.end()
-        remainder = string[position:]
-        if isinstance(remainder, (bytearray, memoryview)):
-            remainder = bytes(remainder)
-        return result, remainder
+                append(action)
+            position = end
+        return result, string[position:]
 
 
 _CACHE = {}

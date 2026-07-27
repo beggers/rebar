@@ -7,6 +7,68 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Build and fully test the C scanner from scratch
+
+Implement the C scanner as a genuinely owned, combined native matching
+program; do not call Python's matcher, import an external regular-
+expression engine, or reuse the Rust or Zig implementation. Pin the
+exact C adapter SHA-256
+`9fe2e30ee6be7c5daa80df0174b371b1b7074f379724aee530c1ebfa0707eb6d`,
+unchanged owned C source
+`a516ae8f2409af054b456068e403df63d8fea029a516ce1adb22ee5f836a819c`,
+and compiled C engine
+`9308563f7541f7b9f56afc7965a47ae4d4d00b1a94db8857891e493a82ae5148`.
+
+Run all four frozen correctness categories against that exact build
+with two independently agreeing Python references. Preserve both
+successes and failures:
+
+- [Original Python result](../experiments/rust_public_practice_v1/c-original-v5-scanner-combined-v1.json),
+  SHA-256 `a70482eb348669d704056daefd5b8d87738317105a9e4ad016993e1e00bb8991`:
+  **151 / 151** runnable checks pass; the genuine debug-only test is
+  skipped equally. Its
+  [durable receipt](../experiments/rust_public_practice_v1/c-original-v5-scanner-combined-v1-publication-receipt.json)
+  is `b89cdfcc8117bed9171a50e48c45ba07d65127f68580d3b00580581b39e3c7b1`.
+- [General behavior result](../experiments/rust_public_practice_v1/c-public-contract-v3-scanner-combined-v1.json),
+  SHA-256 `d1d20885ffe297fdf763ed5ca4967d89e6a848160bb7786bf06cf48dbff98338`:
+  **864 / 864** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/c-public-contract-v3-scanner-combined-v1-publication-receipt.json)
+  is `3fe01f0b96702370d959e5945068783ebfa669428afc9058faa0d472569e6fbe`.
+- [Scanner result](../experiments/rust_public_practice_v1/c-scanner-contract-v3-scanner-combined-v1.json),
+  SHA-256 `fdfc4438406d2bf8db487cdd7ed9ab13db225489c0482ad1a302c59a0407b507`:
+  **992 / 1,024** checks pass and **32** fail. All remaining
+  failures concern completed conditional captures. The previous
+  scanner's **992** failures remain preserved. The
+  [durable receipt](../experiments/rust_public_practice_v1/c-scanner-contract-v3-scanner-combined-v1-publication-receipt.json)
+  is `d8760973dae8e7ae256d401617acec5d84a8145ff5fbe10d22a6d085982e60d1`.
+- [Buffer result](../experiments/rust_public_practice_v1/c-buffer-contract-v3-scanner-combined-v1.json),
+  SHA-256 `ad11690d2532350d2acaebd35948ee7e01a045b3db2ed320fe2ac6caaa3db8a5`:
+  **747 / 768** checks pass and **21** fail. The
+  [durable receipt](../experiments/rust_public_practice_v1/c-buffer-contract-v3-scanner-combined-v1-publication-receipt.json)
+  is `db446919cc020956f0a97c24c8917331afaaed9ea4055a8a871caffc783fd544`.
+
+An independent reviewer authenticated every complete worker stream,
+reference, frozen matrix, case outcome, source pin, native ownership
+check, warning check, durable report, and receipt. The common total
+remains exactly **2,807**: Rust passes **2,807**; current C passes
+**2,754** and fails **53**; Zig passes **1,717** and fails
+**1,090**. Previous C results are marked as superseded, not silently
+combined with the changed source.
+
+Regenerate the complete headline graph using canonical manifest
+SHA-256
+`78ca2b74ee2e2906e6c20469407cbf86461ba067e3364451568910171c8e73ca`,
+SVG SHA-256
+`0e07573daa8f90b9a2916eec6faa4cb23fd7d00858beaff477304d1452ad3119`,
+and summary SHA-256
+`e8d99a08b89722432d4bec3e0ce281922ea15e1064558db00d0487a0e05e3424`.
+Keep the README focused on the purpose, headline graphs, detailed
+graphs, and evidence links.
+
+The C and Zig final-speed results, native memory, larger final
+comparison, and winner remain **NOT MEASURED**. No hidden examples,
+performance files, timing, or external matching engine were used.
+
 ## Freeze the exact-size stable-Zig source-build correction
 
 After preserving the complete genuine V2 compiler-size failure,
