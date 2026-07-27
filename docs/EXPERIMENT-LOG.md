@@ -7,6 +7,52 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze complete Python buffer-exporter correctness checks
+
+Freeze the [264-case direct and wrapped Python buffer-exporter protocol](../oracle/cpython-3.14.6/PUBLIC-BUFFER-EXPORTER-V4.md),
+SHA-256
+`7f7a4a274c7b59e8f0148f2eae25c5a577fea8886dedbdff27b2fa66fe742905`,
+and [independently failure-preserving buffer-exporter oracle](../tools/python_re_buffer_exporter_oracle_v4.py),
+SHA-256
+`8da0b8e5c5519e7335cd1b53ceb7042f1da1f902c486ad8ac35ddf53d8a04490`,
+before starting any genuine reference worker.
+
+Preserve the exact original **264**-case deterministic matrix, SHA-256
+`2d9eb4e637387bc89020d2f883f59ff03dd98cbebd2f2aaa2a30dc55d0836891`;
+all **19** original public module, compiled-pattern, scanner, and match
+operations; all **four** direct, wrapped, mutable, and read-only
+carriers; **76** successful, **76** unmatched, **76** repeated,
+**20** callback-error, and **16** retained-owner scenarios. This
+deterministic matrix has **no random seed**; do not invent one.
+
+Preserve the exact original V1 failed report, SHA-256
+`f38c8b3dd1faaaa6197a1cf4698a51f830398a3d26c3527302607ed0136fb5ae`,
+and receipt, SHA-256
+`f68612336528f5660805d2bec5a5c2316f891651cdef3a4ee4d3253960c80f82`.
+Preserve the V2 failure report, SHA-256
+`33396962dbe4144fcec37d1941d3147c163273ee83592a53fe09aad61c87fea6`,
+and receipt, SHA-256
+`f81d87020e2ba5d8f7adf956ecfdbede12c3d3cf0639a290fa054e6f3fe70603`.
+Retain all **256** original completed V2 cases and the exact
+first failed fixture case `buffer-exporter.v1.256`. Correct only
+the fixture's own deliberately created scanner-retention cycle and
+its own exact callback exception; never discard a real user error,
+alter a native matcher, or relabel a historical failure as a pass.
+
+Two independent reviewers verify byte-identical normal and
+empty-environment source-only self-tests: **74** positive controls,
+**405** distinct rejected attacks, and **16** guarded classes of real
+side effects. Verify complete no-follow source ownership, exact stable
+CPython and V5 pins, independently bounded deterministic gzip, safe
+exclusive two-file publication and failure retention, and all complete
+original public-reference obligations. Run **zero** buffer cases,
+reference workers, Python matchers, candidate imports, clocks, memory
+trials, or hidden cases.
+
+The actual corrected V4 two-Python reference and all candidate results
+remain **NOT RUN**. Performance is **NOT MEASURED**. The final
+comparison remains **NOT OPENED**.
+
 ## Validate every genuine simultaneous Python interpreter case
 
 Only after separately freezing, independently reviewing, committing,
