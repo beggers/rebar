@@ -7,6 +7,40 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the correction for Python's Zig foreign-function initialization
+
+After recording, committing, and pushing the full V4 Zig false
+positive, independently review and freeze the additive
+[corrected original Python test controller](../tools/independent_original_cpython_suite_v5.py),
+SHA-256
+`8e499c03d076cec59da44a2d7dac15bdec6eb49bfec562cbd3dd4893cf3bdfce`.
+Do not edit or replace the immutable V4 suite or its preserved
+failure evidence.
+
+Authenticate Python **3.14.6**'s actual standard `ctypes` source,
+SHA-256
+`349448c149c46962d6004808a214b4677267563204ec32cb6ef933effe0ee923`,
+and its genuinely built-in `_ctypes` loader. Initialize Python's
+legitimate `PyDLL(None)` exactly once **before** activating the
+unchanged strict owned-engine guard. Once guarded, actually reject
+new process-global handles, `PyDLL(None)`, `CDLL(None)`, raw
+loaders, fake cached modules, symlink substitution, foreign regex
+libraries, and other candidate engines.
+
+Both independent baseline references still reproduce the unchanged
+**165** original tests, **152** public methods, only **13** named
+private waivers, **151** real passes, one genuine debug-build skip,
+and all **304** actual matcher and **304** warning guards. Both the
+normal and clean-environment source self-tests pass **45** controls
+and reject **193** foreign, unsafe, forged, or incomplete results.
+
+V5 preserves the complete reversible outputs of genuine isolated
+workers. Its source self-tests run **zero** candidate workers,
+read **zero** candidate binaries or final cases, and take **zero**
+timing samples. No candidate has yet run under V5 at this focused
+source-freeze commit; Zig compatibility remains **NOT YET
+MEASURED**.
+
 ## Preserve all 992 genuine C scanner-category incompatibilities
 
 After committing and pushing the C general-category failure, run

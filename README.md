@@ -24,7 +24,7 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 | Python `re` | **1.000×** | Baseline |
 | Our Rust engine | **1.065×** | Public development tests pass; speed goal not met |
 | Our C engine | **NOT MEASURED** | **150 / 151** original, **824 / 864** general, **32 / 1,024** scanner cases |
-| Our Zig engine | **NOT MEASURED** | Blocked by an independently recorded test-harness initialization bug |
+| Our Zig engine | **NOT MEASURED** | Corrected original test suite frozen; genuine Zig run pending |
 
 ## Current speed against Python
 
@@ -94,8 +94,12 @@ tests expose **992** mismatches out of **1,024**. Every failure is
 preserved rather than removed from the comparison.
 Zig's first attempt exposed a bug in the test harness: it blocked
 Python's own standard `ctypes` initialization before any Zig test
-could run. Its compatibility is therefore **NOT YET MEASURED**, not
-a claimed test failure.
+could run. The separately frozen
+[corrected original Python suite](tools/independent_original_cpython_suite_v5.py)
+authenticates and initializes Python's standard bindings safely,
+while preserving the complete original tests and rejecting external
+engines. Zig compatibility remains **NOT YET MEASURED**, not a
+claimed test failure.
 
 The separately frozen
 [shared Python behavior tests](tools/independent_public_contract_v2.py)
@@ -177,6 +181,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/record_rust_memoryview_expand_v1.py --self-test
 "$PY" -I -B tools/rust_original_cpython_suite_v3.py --self-test
 "$PY" -I -B tools/independent_original_cpython_suite_v4.py --self-test
+"$PY" -I -B tools/independent_original_cpython_suite_v5.py --self-test
 "$PY" -I -B tools/record_independent_original_cpython_v4.py --self-test
 "$PY" -I -B tools/independent_public_contract_v2.py --self-test
 "$PY" -I -B tools/record_independent_public_contract_v2.py --self-test
