@@ -7,6 +7,34 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze durable from-scratch evidence for all three engines
+
+Independently review and freeze the additive
+[shared ownership-audit evidence recorder](../tools/record_independent_from_scratch_audit_v2.py),
+SHA-256
+`dabd1ef53d8a40e672f8faba1690f86283ea05f6c0207cf83bf1054c8edd1e41`,
+before running the already frozen ownership audit against Rust, C,
+or Zig. Both the ordinary isolated and clean-environment synthetic
+self-tests pass **34** complete controls and reject **219** forged,
+delegated, incomplete, or unsafe reports.
+
+Preserve the actual complete owned source, Rust package, native
+symbol, loader, dependency, and Python-binding proofs. Require all
+**18** owned Rust native references, all **14** owned Zig bridge
+references, the exact owned combined C matcher, and Zig's narrowly
+authenticated own foreign-function symbols. Record full genuine
+successful reports, failing reports, process crashes, signals,
+timeouts, process-start failures, and unchanged actual diagnostic
+streams. Publish each actual report and separate receipt atomically
+without replacing existing evidence; verify and durably synchronize
+both files.
+
+The self-tests run **zero** actual candidates or audit workers,
+read **zero** native files, write **zero** evidence files, access
+**zero** final cases, and take **zero** timing samples.
+Source-to-binary reproducibility and actual per-family ownership
+results remain **NOT ESTABLISHED** at this source-only freeze.
+
 ## Freeze durable, honest original-test evidence for all three engines
 
 Independently review and freeze the additive

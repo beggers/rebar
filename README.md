@@ -93,7 +93,10 @@ from scratch. A separately frozen
 [three-engine ownership audit](tools/independent_from_scratch_audit_v2.py)
 applies the same no-external-regex rule to the separately owned Rust,
 C, and Zig matchers. Its source is tested; actual C and Zig results
-and reproducible native builds are **NOT YET ESTABLISHED**.
+and reproducible native builds are **NOT YET ESTABLISHED**. The
+[complete ownership-audit recorder](tools/record_independent_from_scratch_audit_v2.py)
+preserves every genuine failure and crash without claiming a native
+build has been reproduced.
 The [Zig build protocol](docs/ZIG-SOURCE-BUILD-V1.md) now pins and
 verifies the official stable compiler; rebuilding the owned Zig
 engine with it has **NOT YET RUN**.
@@ -138,6 +141,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/rust_public_practice_benchmark_v1.py --self-test
 "$PY" -I -B tools/rust_from_scratch_audit_v1.py --self-test
 "$PY" -I -B tools/independent_from_scratch_audit_v2.py --self-test
+"$PY" -I -B tools/record_independent_from_scratch_audit_v2.py --self-test
 "$PY" -I -B tools/rust_scanner_differential_v1.py --self-test
 "$PY" -I -B tools/rust_memoryview_expand_differential_v1.py --self-test
 "$PY" -I -B tools/record_rust_memoryview_expand_v1.py --self-test
