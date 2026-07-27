@@ -2,10 +2,69 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
-Historical entries describe the state when they were written. In particular,
-older statements that the final benchmark was sealed or had not yet run are
-historical: that benchmark subsequently opened exactly once, found the Zig
-`split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
+Historical entries describe an earlier, retired benchmark. It opened once,
+exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
+must never be reused. The new, expanded 4,194,304-case final comparison is
+a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
+## Repair and rebuild the owned C conditional matcher
+
+Fix exactly two conditional-capture instructions in the independently
+owned C engine. A capture participates only after both its start and
+end have been recorded. Pin the exact corrected C source
+`b47b4ec73c9c7072678695f63af86cfd2606beb965f139a747e7293ea42b7893`
+and retain the unchanged from-scratch adapter
+`9fe2e30ee6be7c5daa80df0174b371b1b7074f379724aee530c1ebfa0707eb6d`.
+
+Compile the owned source **twice** in an isolated temporary directory
+using the pinned Python 3.14.6 C headers and system C compiler. Both
+outputs are byte-for-byte identical, with SHA-256
+`10e075db5b48d67e6bb9c7031cd31d5d0433a25608a7a587039ec454ec29fd58`.
+The compiled extension exports only its own
+`PyInit__vm_native`, links only to the system C runtime, and contains
+no Python, third-party, or other-candidate regex engine. Preserve the
+previous
+`9308563f7541f7b9f56afc7965a47ae4d4d00b1a94db8857891e493a82ae5148`
+binary before atomically installing the rebuilt extension. The
+independent recorder correctly still labels a separately frozen,
+durable source-build protocol as **NOT ESTABLISHED**.
+
+Run every frozen category against the same corrected source and binary:
+
+- [Original Python result](../experiments/rust_public_practice_v1/c-original-v5-native-conditional-v1.json),
+  SHA-256 `17a2c8aa745ea827d194aa11d47fb5973f072ad609349b05a97057991694eb21`:
+  **151 / 151** runnable checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/c-original-v5-native-conditional-v1-publication-receipt.json)
+  is `562389a1bb27d0758fe2cf2392184e2c082c6097d7cb6978ee82fe1916fb13bc`.
+- [General behavior result](../experiments/rust_public_practice_v1/c-public-contract-v3-native-conditional-v1.json),
+  SHA-256 `a50fecd3aa9f9dadbee2306d88e6f5460bcb2c3164be8e0cc5ed4832e576c86e`:
+  **864 / 864** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/c-public-contract-v3-native-conditional-v1-publication-receipt.json)
+  is `04f58cfba67908bc9f3e0c9e3b794a8e57f96c9b81dfbb39499ce77af6d9d9e1`.
+- [Scanner result](../experiments/rust_public_practice_v1/c-scanner-contract-v3-native-conditional-v1.json),
+  SHA-256 `78c8d5f6620d811dbcc6fdc6dd35487cba2fb98d11cc53b3e8868265521bf64b`:
+  **1,024 / 1,024** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/c-scanner-contract-v3-native-conditional-v1-publication-receipt.json)
+  is `3dcf45fc2a1b1f7a3ce7cfdead34bacf92f74ff17fdd96314ebb23a7bf9fc23a`.
+- [Buffer result](../experiments/rust_public_practice_v1/c-buffer-contract-v3-native-conditional-v1.json),
+  SHA-256 `319ca99a8f048f47ad93623a5d72551654631c13ba815eb0a340d794c46ed870`:
+  **747 / 768** checks pass and **21** fail. Its
+  [durable receipt](../experiments/rust_public_practice_v1/c-buffer-contract-v3-native-conditional-v1-publication-receipt.json)
+  is `3583fc19b161f47a0f91ff71ab3d3dca6fa603b82a7bbd6b7e0acb06552d4ee8`.
+
+The new fixed-denominator headline has Rust **2,807 / 2,807**, C
+**2,786 / 2,807**, and Zig **1,717 / 2,807**. Authenticate canonical
+manifest SHA-256
+`20d816c30cb52b81f024e6f72ce2809750334f5921303202c224b9c223f85b07`,
+SVG
+`fd98d30c9001333da47cfe40345b21fe5b09f9d248dcabdba7d120d4484bd9d5`,
+and summary
+`ca456a46e05d175c6067dc6c02ec1b060c0820db97c1a3321b68a55311fee173`.
+Preserve all previous C scanner failures as superseded evidence.
+The new expanded final holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**. Final speed, candidate
+rankings, native memory, and a winner remain **NOT MEASURED**.
+
 
 ## Build and fully test the C scanner from scratch
 

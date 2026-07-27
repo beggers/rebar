@@ -724,7 +724,7 @@ static int execute_compact_path(const VM *vm, const Code *code, const Subject *s
             case OP_JUMP:
                 pc=in.a; break;
             case OP_COND:
-                pc=caps[2*in.a]>=0 ? in.b : in.c; break;
+                pc=(caps[2*in.a]>=0 && caps[2*in.a+1]>=0) ? in.b : in.c; break;
             case OP_SPLIT: {
                 Py_ssize_t saved_caps[34],saved_last=*last,finish=-1;
                 memcpy(saved_caps,caps,(size_t)cap_count*sizeof(Py_ssize_t));
@@ -1090,7 +1090,7 @@ static int execute(const VM *vm, Py_ssize_t code_index, const Subject *subject,
                 stack_trim(&stack,current->barrier[--current->atomic_depth]);
                 current->pc++; break;
             case OP_COND:
-                current->pc = current->caps[2*in.a] >= 0 ? in.b : in.c; break;
+                current->pc = (current->caps[2*in.a] >= 0 && current->caps[2*in.a+1] >= 0) ? in.b : in.c; break;
             case OP_LOOK: {
                 PROFILE_ADD(PROFILE_LOOK,1);
                 Py_ssize_t substart = current->pos;
