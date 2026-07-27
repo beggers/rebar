@@ -14,7 +14,7 @@ Each candidate must use its own matching engine built from scratch. Wrapping Pyt
 
 ![Additional memory-safety checks: Python, Rust, C, and Zig all pass all 1,024 checks](docs/evidence/managed-buffer-lifetime-overview-v1.svg)
 
-![Additional scanner checks: Python passes all 2,854; Rust fails 116; C and Zig have not yet been measured](docs/evidence/scanner-verbose-overview-v1.svg)
+![Additional scanner checks: Python passes all 2,854; Rust and C each fail 116; Zig has not yet been measured](docs/evidence/scanner-verbose-overview-v1.svg)
 
 ![Historical speed before the latest compatibility repairs: Python at 1.000 times, old Rust at 1.065 times, and the 1.5-times target](docs/evidence/rust-public-speed-v2-overall.svg)
 
@@ -41,7 +41,7 @@ The 1.065× graph is a historical result for the earlier, pre-repair Rust engine
 | Memory views and buffers | 768 | 768 | 768 | 768 |
 | Total matching checks | 2,807 | 2,807 | 2,807 | 2,807 |
 | Additional memory-lifetime safety, counted separately | 1,024 | 1,024 | 1,024 | 1,024 |
-| Additional scanner and pattern-comment checks, counted separately | 2,854 | 2,738; 116 failures | NOT MEASURED | NOT MEASURED |
+| Additional scanner and pattern-comment checks, counted separately | 2,854 | 2,738; 116 failures | 2,738; 116 failures | NOT MEASURED |
 | Additional replacement and buffer checks, counted separately | 5,120 | NOT MEASURED | NOT MEASURED | NOT MEASURED |
 | Additional changing-size buffer checks, counted separately | 10,240 | NOT MEASURED | NOT MEASURED | NOT MEASURED |
 
@@ -51,7 +51,7 @@ Python's genuine debug-only test is skipped equally and is not included in the d
 
 An additional, frozen 1,024-case memory-lifetime safety suite has a passing two-Python baseline. Rust, C, and the repaired Zig engine each pass all 1,024 cases. Rust's original 86 failures, Zig's earlier 47 failures, its unsafe intermediate design, and the rejected process-ID attempts all remain preserved. These cases are counted separately and are never silently added to the 2,807 original checks.
 
-A separate, frozen 2,854-case scanner and pattern-comment suite has two matching Python baselines. Rust passes 2,738 cases and fails 116; its complete failures are preserved. C and Zig are **NOT MEASURED** on this suite.
+A separate, frozen 2,854-case scanner and pattern-comment suite has two matching Python baselines. Rust and C each pass 2,738 cases and fail 116; all failures are preserved. Zig is **NOT MEASURED** on this suite.
 
 A separate, frozen 5,120-case suite covers text and bytes replacements, callbacks, unusual Python buffers, released memory views, errors, and buffer lifetimes. Its Python baseline and candidate results are **NOT MEASURED**.
 

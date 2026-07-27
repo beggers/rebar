@@ -7,6 +7,40 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve all 116 genuine C scanner compatibility failures
+
+Run the independently owned C engine against the same frozen
+**2,854-case** scanner and pattern-comment baseline as Rust. The
+candidate genuinely passes **2,738** cases and fails **116**.
+Preserve every original mismatch, all **2,854** ordered candidate
+observations, the two previously authenticated Python references,
+and each of the **5,708** matcher-ownership and **5,708** warning
+checks.
+
+The [complete first C scanner report](../experiments/rust_public_practice_v1/c-scanner-verbose-comments-v1-native-lifetime-repair-v1.json.gz)
+has SHA-256
+`1e1bb56a77aca11f1524f6a3725ad7f15e92115defcd90696b69205467679c43`.
+Its [authenticated, non-overwriting publication receipt](../experiments/rust_public_practice_v1/c-scanner-verbose-comments-v1-native-lifetime-repair-v1-publication-receipt.json)
+has SHA-256
+`572f2a0634eaba4617a0b05c073aa5447f1552600ba1bcb1477f394bbcc89fca`.
+Successful evidence publication records the actual candidate outcome
+as **FAIL**, not **PASS**. The actual recorder exits with status
+**1** and preserves all **80** semantic and **36** tokenizer
+mismatches.
+
+Update the generated headline scanner graph from the authenticated
+full reports. The [complete graph inputs](evidence/scanner-verbose-overview-v1.inputs.json)
+have SHA-256
+`0b2744e14958a3be63c16e8e65cbf21d89293e603d7df600841b45a89c6827bd`;
+the [generated graph data](evidence/scanner-verbose-overview-v1.json)
+is `17229b0d4334f4eebb6efeed29f8fa928c242039db7b5978c0f4341a3a596297`;
+the [generated headline graph](evidence/scanner-verbose-overview-v1.svg)
+is `8d5d37fd8425b4f691e51ecb7a6e775784a0fcc9593f7d66ce6209a6a3e766be`.
+Keep the earlier **116** Rust failures visible, leave Zig
+**NOT MEASURED**, and do not change the **2,854-case** denominator
+or any frozen reference. Current speed and the expanded holdout
+remain **NOT MEASURED** and **NOT OPENED**.
+
 ## Validate all 10,240 changing-buffer Python reference cases
 
 Run the independently frozen changing-buffer recorder only after
