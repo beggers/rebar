@@ -133,10 +133,13 @@ confirm **three genuinely independent, from-scratch engines**,
 cross-candidate matching. This proves ownership, not full Python
 compatibility, reproducible native builds, or C/Zig performance.
 The [Zig build protocol](docs/ZIG-SOURCE-BUILD-V1.md) now pins and
-verifies the official stable compiler; rebuilding the owned Zig
-engine with the independently frozen
-[source-build controller](tools/reproduce_owned_zig_source_build_v1.py)
-has **NOT YET RUN**.
+verifies the official stable compiler. The independently frozen
+[current Zig source-build controller](tools/reproduce_owned_zig_source_build_v2.py)
+pins all **13** source, compiler, header, and native-build inputs
+for the corrected Zig engine. Its actual source rebuild has
+**NOT YET RUN**; the
+[original build controller](tools/reproduce_owned_zig_source_build_v1.py)
+remains preserved unchanged.
 
 ## Larger fair speed comparison
 
@@ -198,4 +201,5 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/render_rust_public_speed_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_speed_v2.py --self-test
 "$PY" -I -B tools/reproduce_owned_zig_source_build_v1.py --self-test
+"$PY" -I -B tools/reproduce_owned_zig_source_build_v2.py --self-test
 ```

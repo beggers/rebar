@@ -7,6 +7,34 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze a reproducible build for the corrected owned Zig engine
+
+Independently review and prospectively freeze the additive
+[corrected Zig source-build controller](../tools/reproduce_owned_zig_source_build_v2.py),
+SHA-256
+`e7a387c2281e44e67ea8e1258d00ec4e46e70fe475f1ac2e3c011953a30ed3a1`.
+Preserve the exact immutable
+[original build controller](../tools/reproduce_owned_zig_source_build_v1.py),
+SHA-256
+`53df4260eee56a143d2cd9134e5c0dc336b412758218c681f59acee0a8b8644e`.
+
+Authenticate all **13** required inputs: the independently owned
+Zig engine source and C bridge, the corrected Zig adapter, the
+unchanged documented build protocol, the corrected Python test
+oracle, the original anti-delegation audit and build predecessor,
+the official stable Zig **0.16.0** compiler and verified archive,
+both exact CPython headers, and the exact real C compiler and ELF
+inspector. Build only into a fresh, private, validated `/tmp`
+directory. Never replace an existing candidate engine or treat
+an external regex library as project-owned code.
+
+Both normal and clean-environment source checks pass **18**
+positive controls and reject **92** invalid conditions. They run
+**zero** real compilers, candidate engines, clocks, benchmarks,
+or hidden tests. Actual source compilation, artifact
+reproducibility, behavior, and performance remain **NOT MEASURED**
+at this source-freeze commit.
+
 ## Freeze full shared behavior checks for the corrected engines
 
 Independently review, prospectively freeze, and source-test the
