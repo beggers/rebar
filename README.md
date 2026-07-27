@@ -49,6 +49,12 @@ matches **747 / 768** cases and preserves all **21** failures.
 The graph will be regenerated from all three exact new results.
 Zig general, scanner, and buffer results remain **NOT YET RUN**.
 
+The separately frozen
+[updated three-candidate chart generator](tools/render_candidate_correctness_overview_v2.py)
+supports the newer source-pinned C and Zig results while preserving
+all previous evidence. Its updated graph has **NOT YET BEEN
+GENERATED**.
+
 The older C build's **40** general, **992** scanner, and **21**
 buffer failures remain in the
 [complete chart inputs](docs/evidence/candidate-correctness-overview-v1.inputs.json)
@@ -253,6 +259,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_candidate_correctness_overview_v1.py --self-test
+"$PY" -I -B tools/render_candidate_correctness_overview_v2.py --self-test
 "$PY" -I -B tools/render_rust_public_speed_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_speed_v2.py --self-test
 "$PY" -I -B tools/reproduce_owned_zig_source_build_v1.py --self-test

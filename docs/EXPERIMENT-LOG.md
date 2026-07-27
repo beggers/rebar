@@ -7,6 +7,32 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze the updated current-source compatibility graph
+
+Independently review and prospectively freeze the additive
+[updated three-engine graph generator](../tools/render_candidate_correctness_overview_v2.py),
+SHA-256
+`bef3f5f8bf0330655d92ab335acf504c59855edf79afb52749f0641f5d1fefa8`.
+Preserve the previous V1 generator and its actual generated
+snapshot unchanged. Bind the new generator to the frozen V3
+category controller,
+`9a831571c81e542d7d43ae56aea271f8e6c69550173d97ae1c9f8213eef40bf3`,
+and complete failure-preserving recorder,
+`69ebfc04b0ecc1b589a88da875372629df036e2b45613fe431e44490a00e5b08`.
+
+Retain exactly **2,807** shared runnable cases per candidate.
+Verify every complete V2 or V3 report, full source and native
+closure, genuine baseline, recorded failure, C-native alias,
+Zig foreign-function guard, historical outcome, and exact
+denominator. Show actual current C failures in red; never mix an
+old implementation into a new engine result.
+
+Both normal and clean-environment synthetic source checks pass
+all **175** controls. Source checks access **zero** real
+candidate, Python-reference worker, evidence report, hidden
+case, benchmark, or timing. The updated chart is
+**NOT GENERATED** at this source-freeze commit.
+
 ## Record every current C buffer and replacement failure
 
 After separately preserving, committing, and pushing the C
