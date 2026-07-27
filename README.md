@@ -23,7 +23,7 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 | --- | ---: | --- |
 | Python `re` | **1.000×** | Baseline |
 | Our Rust engine | **1.065×** | **2,807 / 2,807** shared correctness checks pass; speed goal not met |
-| Our C engine | **NOT MEASURED** | **151 / 151** original; **824 / 864** general; **32 / 1,024** scanner; buffer not yet run |
+| Our C engine | **NOT MEASURED** | **151 / 151** original; **824 / 864** general; **32 / 1,024** scanner; **747 / 768** buffer |
 | Our Zig engine | **NOT MEASURED** | **151 / 151** original tests; general, scanner, and buffer cases not yet run |
 
 ## Do the candidates work like Python?
@@ -43,9 +43,11 @@ matched **824 / 864** Python cases and exposed **40** genuine
 scanner-callback mismatches. A separately recorded
 [C scanner comparison](experiments/rust_public_practice_v1/c-scanner-contract-v3-shared-suite-v1.json)
 matches **32 / 1,024** cases and preserves all **992** failures.
-The graph will be regenerated from both exact new results.
-Current C buffer results and all Zig behavior results remain
-**NOT YET RUN**.
+The separately recorded
+[current C buffer comparison](experiments/rust_public_practice_v1/c-buffer-contract-v3-shared-suite-v1.json)
+matches **747 / 768** cases and preserves all **21** failures.
+The graph will be regenerated from all three exact new results.
+Zig general, scanner, and buffer results remain **NOT YET RUN**.
 
 The older C build's **40** general, **992** scanner, and **21**
 buffer failures remain in the
@@ -150,8 +152,8 @@ candidate. Its separately frozen
 preserves every genuine success, failure, and crash. Updated C
 general behavior has now run and exposed **40** scanner-related
 mismatches; the dedicated scanner suite independently exposes
-**992** mismatches. The C buffer category and every Zig behavior
-category remain **NOT MEASURED**.
+**992** mismatches, and buffer handling exposes **21**. Every
+Zig behavior category remains **NOT MEASURED**.
 
 A separately frozen
 [memory-lifetime safety suite](tools/independent_managed_buffer_lifetime_v1.py)

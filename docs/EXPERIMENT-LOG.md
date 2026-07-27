@@ -7,6 +7,36 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Record every current C buffer and replacement failure
+
+After separately preserving, committing, and pushing the C
+scanner category, run only the frozen **768-case** buffer and
+replacement-template matrix against the exact same current C
+source and independently owned native engine. Preserve the
+[complete current C buffer result](../experiments/rust_public_practice_v1/c-buffer-contract-v3-shared-suite-v1.json),
+SHA-256
+`d020632b7df2b44900bdb435ab0a16a24ae2b65b0a8bc7d04ba3b4664fa53b00`,
+and its
+[durable publication receipt](../experiments/rust_public_practice_v1/c-buffer-contract-v3-shared-suite-v1-publication-receipt.json),
+SHA-256
+`a71c3e026c70f37f039dda9c6db111412b51bb463cf27cd7da70d366f2152b32`.
+
+The actual result is **FAIL**: **747** matching cases and **21**
+fully recorded incompatibilities. Exactly **16** mishandle the
+original exception from a Python buffer exporter; **five**
+mishandle writable memory-view replacement templates. Preserve
+all **768** records from both Python references and the C engine,
+all **1,536** ownership checks, all **1,536** warning checks,
+exact original errors, full worker streams, and current source
+and native hashes.
+
+Do not suppress a `BufferError`, hash a converted writable
+template, silently copy an exporter, or access unsafe freed
+memory. The complete current C **2,807-case** result is now
+**1,754** matching cases and **1,053** mismatches. C remains
+**NOT QUALIFIED**. No timing, benchmark, or final-case access
+occurs.
+
 ## Record every current C scanner incompatibility
 
 After separately preserving, committing, and pushing the C
