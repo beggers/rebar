@@ -1194,43 +1194,219 @@ class Pattern:
 _zig_bridge.install_pattern_methods(Pattern)
 
 
+def _scanner_capture_name(branch, number):
+    return f"_rebar_scanner_inner_{branch}_{number}"
+
+
+def _scanner_phrase(phrase, branch, flags, native_outer_group):
+    if isinstance(phrase, str):
+        if flags & int(LOCALE):
+            raise ValueError("cannot use LOCALE flag with a str pattern")
+        if flags & int(ASCII) and flags & int(UNICODE):
+            raise ValueError("ASCII and UNICODE flags are incompatible")
+        text = phrase
+    elif isinstance(phrase, bytes):
+        if flags & int(UNICODE):
+            raise ValueError("cannot use UNICODE flag with a bytes pattern")
+        if flags & int(ASCII) and flags & int(LOCALE):
+            raise ValueError("ASCII and LOCALE flags are incompatible")
+        text = phrase.decode("latin1")
+    else:
+        raise TypeError("first argument must be string or compiled pattern")
+
+    _preflight_pattern(phrase, flags)
+    markers = (b"[[", b"&&", b"||", b"~~", b"--") if isinstance(phrase, bytes) else ("[[", "&&", "||", "~~", "--")
+    if any(marker in phrase for marker in markers):
+        _warn_ambiguous(phrase)
+
+    pieces = []
+    names = {}
+    group_count = 0
+    verbose = bool(flags & int(VERBOSE))
+    index = 0
+    length = len(text)
+    while index < length:
+        char = text[index]
+        if char == "[":
+            end = index + 1
+            if end < length and text[end] == "^":
+                end += 1
+            if end < length and text[end] == "]":
+                end += 1
+            while end < length:
+                if text[end] == "\\":
+                    end += 2
+                elif text[end] == "]":
+                    end += 1
+                    break
+                else:
+                    end += 1
+            pieces.append(text[index:end])
+            index = end
+            continue
+
+        if char == "\\":
+            if index + 1 >= length:
+                pieces.append(char)
+                index += 1
+                continue
+            code = text[index + 1]
+            if code in "123456789":
+                octal = (
+                    code in "1234567"
+                    and index + 3 < length
+                    and text[index + 2] in "01234567"
+                    and text[index + 3] in "01234567"
+                )
+                if octal:
+                    pieces.append(text[index:index + 4])
+                    index += 4
+                else:
+                    end = index + 2
+                    if end < length and text[end] in "0123456789":
+                        end += 1
+                    number = int(text[index + 1:end])
+                    pieces.append(
+                        f"(?P={_scanner_capture_name(branch, number)})"
+                    )
+                    index = end
+            else:
+                pieces.append(text[index:index + 2])
+                index += 2
+            continue
+
+        if text.startswith("(?#", index):
+            end = text.index(")", index + 3) + 1
+            pieces.append(text[index:end])
+            index = end
+            continue
+
+        if text.startswith("(?P<", index):
+            end = text.index(">", index + 4)
+            original_name = text[index + 4:end]
+            group_count += 1
+            names[original_name] = group_count
+            pieces.append(
+                f"(?P<{_scanner_capture_name(branch, group_count)}>"
+            )
+            index = end + 1
+            continue
+
+        if text.startswith("(?P=", index):
+            end = text.index(")", index + 4)
+            original_name = text[index + 4:end]
+            pieces.append(
+                f"(?P={_scanner_capture_name(branch, names[original_name])})"
+            )
+            index = end + 1
+            continue
+
+        if text.startswith("(?(", index):
+            end = text.index(")", index + 3)
+            reference = text[index + 3:end]
+            if reference.isascii() and reference.isdigit():
+                rewritten_reference = str(native_outer_group + int(reference))
+            else:
+                rewritten_reference = _scanner_capture_name(
+                    branch, names[reference]
+                )
+            pieces.append(f"(?({rewritten_reference})")
+            index = end + 1
+            continue
+
+        if text.startswith("(?", index):
+            cursor = index + 2
+            while cursor < length and text[cursor] in "aiLmsux-":
+                cursor += 1
+            if cursor > index + 2 and cursor < length and text[cursor] == ")":
+                enabled, separator, disabled = text[index + 2:cursor].partition("-")
+                if "x" in enabled:
+                    verbose = True
+                if separator and "x" in disabled:
+                    verbose = False
+                index = cursor + 1
+                continue
+
+        if char == "(" and not text.startswith("(?", index):
+            group_count += 1
+            pieces.append(
+                f"(?P<{_scanner_capture_name(branch, group_count)}>"
+            )
+            index += 1
+            continue
+
+        pieces.append(char)
+        index += 1
+
+    rewritten = "".join(pieces)
+    if verbose != bool(flags & int(VERBOSE)):
+        rewritten = ("(?x:" if verbose else "(?-x:") + rewritten + ")"
+    return rewritten, group_count
+
+
 class Scanner:
     def __init__(self, lexicon, flags=0):
-        self.lexicon = list(lexicon)
-        if not self.lexicon:
-            raise RuntimeError("invalid scanner lexicon")
-        phrases = [item[0] for item in self.lexicon]
-        byte_mode = isinstance(phrases[0], bytes)
-        if any(isinstance(item, bytes) != byte_mode for item in phrases):
-            raise TypeError("scanner patterns must all have the same type")
-        separator = b"|" if byte_mode else "|"
-        opening = b"(?:" if byte_mode else "(?:"
-        closing = b")" if byte_mode else ")"
-        self.scanner = compile(separator.join(opening + item + closing for item in phrases), flags)
-        self._patterns = [compile(item, flags) for item in phrases]
+        flags = int(flags)
+        self.lexicon = lexicon
+        branches = []
+        byte_mode = None
+        native_outer_group = 1
+        for phrase, _action in lexicon:
+            if byte_mode is None:
+                byte_mode = isinstance(phrase, bytes)
+            body, local_groups = _scanner_phrase(
+                phrase, len(branches), flags, native_outer_group
+            )
+            outer = f"_rebar_scanner_outer_{len(branches)}"
+            branches.append((f"(?P<{outer}>{body})", local_groups))
+            native_outer_group += 1 + local_groups
+
+        if not branches:
+            raise RuntimeError("invalid SRE code")
+        group_count = len(branches)
+        if any(local_groups > group_count for _body, local_groups in branches):
+            raise RuntimeError("invalid SRE code")
+
+        source = "|".join(body for body, _local_groups in branches)
+        if byte_mode:
+            source = source.encode("latin1")
+        handle, _native_groups, _effective_flags, _native_names = _NATIVE.compile(
+            source, flags
+        )
+        try:
+            combined = Pattern.__new__(Pattern)
+        except BaseException:
+            _zig_bridge.free(handle)
+            raise
+        try:
+            Pattern.__init__(combined, None, flags, handle, group_count, {})
+        except BaseException:
+            if getattr(combined, "_handle", None):
+                object.__setattr__(combined, "_handle", None)
+            _zig_bridge.free(handle)
+            raise
+        self.scanner = combined
 
     def scan(self, string):
         result = []
+        append = result.append
+        match = self.scanner.scanner(string).match
         position = 0
-        length = _subject_length(string)
-        while position < length:
-            matched = None
-            action = None
-            for pattern, (_, candidate_action) in zip(self._patterns, self.lexicon):
-                item = pattern.match(string, position)
-                if item is not None:
-                    matched = item
-                    action = candidate_action
-                    break
-            if matched is None or matched.end() == position:
+        while True:
+            matched = match()
+            if not matched:
                 break
+            end = matched.end()
+            if end == position:
+                break
+            action = self.lexicon[matched.lastindex - 1][1]
             if callable(action):
                 self.match = matched
                 action = action(self, matched.group())
             if action is not None:
-                result.append(action)
-            position = matched.end()
-        return result, _slice(string, position, length)
+                append(action)
+            position = end
+        return result, string[position:]
 
 
 _CACHE = {}

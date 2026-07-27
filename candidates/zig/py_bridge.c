@@ -28,6 +28,7 @@ extern intptr_t rebar_zig_collect_records_wide(const void *, const uint8_t *, si
 #define ZIG_LOCAL_SPAN_WORDS 256
 #define ZIG_ITERATOR_RECORD_WORDS 64
 #define ZIG_INITIAL_CAPTURE_COUNT 64
+#define ZIG_SCANNER_OUTER_PREFIX "_rebar_scanner_outer_"
 
 typedef struct {
     ZigOwnedCompile owned_compile;
@@ -68,6 +69,8 @@ typedef struct {
     const void *handle;
     const uint8_t *data;
     size_t groups;
+    size_t native_groups;
+    size_t *scanner_outer_groups;
     size_t length;
     size_t cursor;
     size_t endpos;
@@ -1267,14 +1270,18 @@ static PyObject *bridge_bound_fullmatch(PyObject *module, PyObject *const *args,
 static int zig_scanner_traverse(ZigIterator *iterator, visitproc visit,
                                 void *arg) {
     Py_VISIT(iterator->pattern);
+    Py_VISIT(iterator->string);
     Py_VISIT(iterator->groupindex);
     return 0;
 }
 
 static int zig_scanner_clear(ZigIterator *iterator) {
     if (iterator->view.obj != NULL) PyBuffer_Release(&iterator->view);
+    PyMem_Free(iterator->scanner_outer_groups);
+    iterator->scanner_outer_groups = NULL;
     iterator->data = NULL;
     iterator->handle = NULL;
+    iterator->native_groups = 0;
     iterator->done = 1;
     Py_CLEAR(iterator->string);
     Py_CLEAR(iterator->pattern);
@@ -1293,12 +1300,158 @@ static void zig_iterator_dealloc(ZigIterator *iterator) {
 
 static PyObject *zig_iterator_iter(PyObject *iterator) { return Py_NewRef(iterator); }
 
+static int zig_scanner_outer_groups_init(const void *handle,
+                                          size_t exposed_groups,
+                                          size_t native_groups,
+                                          size_t **result) {
+    static const uint8_t prefix[] = ZIG_SCANNER_OUTER_PREFIX;
+    const size_t prefix_length = sizeof(prefix) - 1;
+    *result = NULL;
+    if (exposed_groups == 0 || native_groups < exposed_groups ||
+        exposed_groups > SIZE_MAX / sizeof(size_t)) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "invalid owned Zig scanner capture projection");
+        return 0;
+    }
+
+    size_t *outer = PyMem_Calloc(exposed_groups, sizeof(size_t));
+    if (outer == NULL) {
+        PyErr_NoMemory();
+        return 0;
+    }
+
+    size_t name_count = rebar_zig_name_count(handle);
+    for (size_t item = 0; item < name_count; item++) {
+        size_t width = rebar_zig_name_length(handle, item);
+        uint8_t name[sizeof(prefix) + 3 * sizeof(size_t)];
+        if (width <= prefix_length || width > sizeof(name)) continue;
+        if (rebar_zig_name_copy(handle, item, name, width) != width) {
+            PyErr_SetString(PyExc_RuntimeError,
+                            "invalid owned Zig scanner branch name");
+            goto error;
+        }
+        if (memcmp(name, prefix, prefix_length) != 0) continue;
+
+        size_t branch = 0;
+        for (size_t offset = prefix_length; offset < width; offset++) {
+            uint8_t digit = name[offset];
+            if (digit < '0' || digit > '9' ||
+                branch > (SIZE_MAX - (size_t)(digit - '0')) / 10) {
+                PyErr_SetString(PyExc_RuntimeError,
+                                "invalid owned Zig scanner branch index");
+                goto error;
+            }
+            branch = branch * 10 + (size_t)(digit - '0');
+        }
+        size_t actual_group = rebar_zig_name_group(handle, item);
+        if (branch >= exposed_groups || actual_group == 0 ||
+            actual_group > native_groups || outer[branch] != 0) {
+            PyErr_SetString(PyExc_RuntimeError,
+                            "invalid owned Zig scanner branch capture");
+            goto error;
+        }
+        outer[branch] = actual_group;
+    }
+
+    for (size_t branch = 0; branch < exposed_groups; branch++) {
+        if (outer[branch] == 0 ||
+            (branch != 0 && outer[branch - 1] >= outer[branch])) {
+            PyErr_SetString(PyExc_RuntimeError,
+                            "incomplete owned Zig scanner branch captures");
+            goto error;
+        }
+    }
+
+    *result = outer;
+    return 1;
+
+error:
+    PyMem_Free(outer);
+    return 0;
+}
+
+static int zig_scanner_project_match(const ZigIterator *iterator,
+                                      ZigMatch *match,
+                                      const intptr_t *begins,
+                                      const intptr_t *ends,
+                                      intptr_t native_last) {
+    size_t exposed_stride = iterator->groups + 1;
+    if (iterator->scanner_outer_groups == NULL) {
+        memcpy(match->spans, begins,
+               exposed_stride * sizeof(intptr_t));
+        memcpy(match->spans + exposed_stride, ends,
+               exposed_stride * sizeof(intptr_t));
+        match->lastindex = native_last;
+        return 1;
+    }
+
+    if (begins[0] < 0 || ends[0] < begins[0] || native_last < 1 ||
+        (uintmax_t)native_last > (uintmax_t)iterator->native_groups) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "invalid owned Zig scanner match capture");
+        return 0;
+    }
+
+    size_t active = SIZE_MAX;
+    for (size_t branch = 0; branch < iterator->groups; branch++) {
+        size_t outer = iterator->scanner_outer_groups[branch];
+        if (outer == (size_t)native_last) {
+            if (active != SIZE_MAX || begins[outer] < 0 ||
+                ends[outer] < begins[outer]) {
+                PyErr_SetString(PyExc_RuntimeError,
+                                "ambiguous owned Zig scanner branch");
+                return 0;
+            }
+            active = branch;
+        }
+    }
+    if (active == SIZE_MAX) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "missing owned Zig scanner branch capture");
+        return 0;
+    }
+
+    for (size_t group = 0; group < exposed_stride * 2; group++) {
+        match->spans[group] = -1;
+    }
+    match->spans[0] = begins[0];
+    match->spans[exposed_stride] = ends[0];
+
+    size_t outer = iterator->scanner_outer_groups[active];
+    size_t next_outer = active + 1 < iterator->groups
+        ? iterator->scanner_outer_groups[active + 1]
+        : iterator->native_groups + 1;
+    for (size_t logical = 1; logical <= iterator->groups; logical++) {
+        if (logical > iterator->native_groups - outer) break;
+        size_t actual = outer + logical;
+        if (actual >= next_outer) break;
+        if (begins[actual] < 0) continue;
+        if (ends[actual] < begins[actual]) {
+            PyErr_SetString(PyExc_RuntimeError,
+                            "invalid owned Zig scanner local capture");
+            return 0;
+        }
+        match->spans[logical] = begins[actual];
+        match->spans[exposed_stride + logical] = ends[actual];
+    }
+
+    size_t branch_group = active + 1;
+    match->spans[branch_group] = begins[0];
+    match->spans[exposed_stride + branch_group] = ends[0];
+    match->lastindex = (Py_ssize_t)branch_group;
+    return 1;
+}
+
 static ZigMatch *zig_iterator_record(ZigIterator *iterator, const intptr_t *record) {
     ZigMatch *match = zig_match_new(iterator->pattern, iterator->string, iterator->groupindex, iterator->groups, (Py_ssize_t)iterator->original_pos, (Py_ssize_t)iterator->endpos);
     if (match == NULL) return NULL;
-    size_t stride = iterator->groups + 1;
-    memcpy(match->spans, record, stride * 2 * sizeof(intptr_t));
-    match->lastindex = record[stride * 2];
+    size_t native_stride = iterator->native_groups + 1;
+    if (!zig_scanner_project_match(iterator, match, record,
+                                   record + native_stride,
+                                   record[native_stride * 2])) {
+        Py_DECREF(match);
+        return NULL;
+    }
     return match;
 }
 
@@ -1309,7 +1462,7 @@ static PyObject *zig_iterator_next(PyObject *value) {
             iterator->done = 1;
             return NULL;
         }
-        size_t words = (iterator->groups + 1) * 2 + 1;
+        size_t words = (iterator->native_groups + 1) * 2 + 1;
         size_t capacity = ZIG_ITERATOR_RECORD_WORDS / words;
         intptr_t *records = iterator->records;
         if (capacity == 0) {
@@ -1335,12 +1488,12 @@ static PyObject *zig_iterator_next(PyObject *value) {
             return NULL;
         }
     }
-    size_t words = (iterator->groups + 1) * 2 + 1;
+    size_t words = (iterator->native_groups + 1) * 2 + 1;
     const intptr_t *record = (iterator->record_heap == NULL ? iterator->records : iterator->record_heap) + iterator->record_at * words;
     iterator->record_at += 1;
-    size_t stride = iterator->groups + 1;
-    iterator->nonempty = record[0] == record[stride];
-    iterator->cursor = (size_t)record[stride];
+    size_t native_stride = iterator->native_groups + 1;
+    iterator->nonempty = record[0] == record[native_stride];
+    iterator->cursor = (size_t)record[native_stride];
     return (PyObject *)zig_iterator_record(iterator, record);
 }
 
@@ -1377,7 +1530,7 @@ static PyObject *zig_scanner_match(ZigIterator *iterator,
     iterator->record_count = 0;
     if (iterator->done) Py_RETURN_NONE;
     ZigSpanBuffer captures;
-    if (!zig_span_buffer_init(&captures, iterator->groups)) return NULL;
+    if (!zig_span_buffer_init(&captures, iterator->native_groups)) return NULL;
     size_t stride = captures.stride;
     intptr_t *begins = captures.storage;
     intptr_t *ends = captures.storage + stride;
@@ -1387,7 +1540,7 @@ static PyObject *zig_scanner_match(ZigIterator *iterator,
         result = rebar_zig_match_inverted_wide(iterator->handle, iterator->data,
             iterator->length, iterator->kind, iterator->cursor,
             iterator->endpos, iterator->nonempty, begins, ends, &last);
-    } else if (iterator->groups == 0) {
+    } else if (iterator->native_groups == 0) {
         result = rebar_zig_match_nonempty_wide(iterator->handle, iterator->data,
             iterator->length, iterator->kind, iterator->cursor,
             iterator->endpos, 1, iterator->nonempty, &begins[0], &ends[0]);
@@ -1411,9 +1564,11 @@ static PyObject *zig_scanner_match(ZigIterator *iterator,
         zig_span_buffer_release(&captures);
         return NULL;
     }
-    memcpy(match->spans, begins, stride * sizeof(intptr_t));
-    memcpy(match->spans + stride, ends, stride * sizeof(intptr_t));
-    match->lastindex = last;
+    if (!zig_scanner_project_match(iterator, match, begins, ends, last)) {
+        Py_DECREF(match);
+        zig_span_buffer_release(&captures);
+        return NULL;
+    }
     iterator->nonempty = begins[0] == ends[0];
     iterator->cursor = (size_t)ends[0];
     zig_span_buffer_release(&captures);
@@ -1482,13 +1637,22 @@ static PyObject *bridge_pattern_iterator(PyObject *module, PyObject *const *args
     Py_ssize_t requested_end;
     int scanner = PyObject_IsTrue(args[7]);
     size_t groups = PyLong_AsSize_t(args[8]);
-    if (PyErr_Occurred() || scanner < 0 || !zig_index_arg(args[5], &pos) || groups != rebar_zig_groups(handle)) {
+    if (PyErr_Occurred() || scanner < 0 || !zig_index_arg(args[5], &pos)) {
+        return NULL;
+    }
+    size_t native_groups = rebar_zig_groups(handle);
+    int projected = pattern_value == Py_None;
+    if ((!projected && groups != native_groups) ||
+        (projected && (groups == 0 || native_groups < groups))) {
         if (!PyErr_Occurred()) PyErr_SetString(PyExc_ValueError, "Zig regex group count does not match the compiled program");
         return NULL;
     }
     if (groups > (size_t)PY_SSIZE_T_MAX / 2 - 1 ||
         groups > (SIZE_MAX - 3) / 2 ||
-        groups > SIZE_MAX / (2 * sizeof(intptr_t)) - 1) {
+        groups > SIZE_MAX / (2 * sizeof(intptr_t)) - 1 ||
+        native_groups > (size_t)PY_SSIZE_T_MAX / 2 - 1 ||
+        native_groups > (SIZE_MAX - 3) / 2 ||
+        native_groups > SIZE_MAX / (2 * sizeof(intptr_t)) - 1) {
         return PyErr_NoMemory();
     }
     if (!zig_index_arg(args[6], &requested_end)) return NULL;
@@ -1500,6 +1664,8 @@ static PyObject *bridge_pattern_iterator(PyObject *module, PyObject *const *args
     iterator->groupindex = Py_NewRef(groupindex);
     iterator->handle = handle;
     iterator->groups = groups;
+    iterator->native_groups = native_groups;
+    iterator->scanner_outer_groups = NULL;
     iterator->kind = 1;
     iterator->nonempty = 0;
     iterator->done = 0;
@@ -1507,6 +1673,12 @@ static PyObject *bridge_pattern_iterator(PyObject *module, PyObject *const *args
     iterator->record_count = 0;
     iterator->record_heap = NULL;
     iterator->view = (Py_buffer){0};
+    if (projected && !zig_scanner_outer_groups_init(
+            handle, groups, native_groups,
+            &iterator->scanner_outer_groups)) {
+        Py_DECREF(iterator);
+        return NULL;
+    }
     if (PyUnicode_Check(subject)) {
         if (PyBytes_Check(pattern_value)) {
             Py_DECREF(iterator);

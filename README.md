@@ -10,7 +10,7 @@ Each candidate must use its own matching engine built from scratch. Wrapping Pyt
 
 ## Headline results
 
-![Compatibility against the same 2,807 Python checks: Rust and C both pass all 2,807, and Zig passes 1,717 and fails 1,090](docs/evidence/candidate-correctness-overview-v2.svg)
+![Compatibility against the same 2,807 Python checks: Rust and C both pass all 2,807, and Zig passes 2,749 and fails 58](docs/evidence/candidate-correctness-overview-v2.svg)
 
 ![Overall public development speed: Python at 1.000 times, Rust at 1.065 times, the 1.5-times target, and C and Zig not yet measured](docs/evidence/rust-public-speed-v2-overall.svg)
 
@@ -19,7 +19,7 @@ Each candidate must use its own matching engine built from scratch. Wrapping Pyt
 | Python `re` | 2,807 / 2,807 | 1,024 / 1,024 | 1.000× |
 | Our Rust engine | 2,807 / 2,807 | NOT MEASURED | 1.065× on public development examples |
 | Our C engine | 2,807 / 2,807 | 787 / 1,024; 237 failures | NOT MEASURED |
-| Our Zig engine | 1,717 / 2,807; 1,090 failures | NOT MEASURED | NOT MEASURED |
+| Our Zig engine | 2,749 / 2,807; 58 failures | NOT MEASURED | NOT MEASURED |
 
 All three engines are independently built from scratch. Green indicates a real matching result; red indicates a real mismatch. Every engine faces exactly the same 2,807 checks. Failures and older results are preserved, never excluded.
 
@@ -30,10 +30,10 @@ Rust's 1.065× result is from 864 public development examples, not the final com
 | Python behavior | Cases | Rust | C | Zig |
 | --- | ---: | ---: | ---: | ---: |
 | Python's original runnable public tests | 151 | 151 | 151 | 151 |
-| General public behavior | 864 | 864 | 864 | 824 |
-| Scanners and callbacks | 1,024 | 1,024 | 1,024 | 32 |
+| General public behavior | 864 | 864 | 864 | 864 |
+| Scanners and callbacks | 1,024 | 1,024 | 1,024 | 1,024 |
 | Memory views and buffers | 768 | 768 | 768 | 710 |
-| Total matching checks | 2,807 | 2,807 | 2,807 | 1,717 |
+| Total matching checks | 2,807 | 2,807 | 2,807 | 2,749 |
 | Additional memory-lifetime safety, counted separately | 1,024 | NOT MEASURED | 787 | NOT MEASURED |
 
 Python's genuine debug-only test is skipped equally and is not included in the denominator.

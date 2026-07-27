@@ -7,6 +7,76 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Build and test the independent Zig scanner from source
+
+Compile the matching engine from the project's own Zig source using
+the independently pinned official stable Zig **0.16.0** compiler.
+Build the Python bridge from the project's own C source. Preserve
+the complete independently verified
+[official Zig source-build result](../experiments/rust_public_practice_v1/zig-source-build-v4-stable-0160-combined-scanner-v1.json),
+SHA-256
+`d5bd674e60b41c4681eed8101c1ed4b99646af2e433ec43f8f447611c83e7d52`,
+and its
+[durable build receipt](../experiments/rust_public_practice_v1/zig-source-build-v4-stable-0160-combined-scanner-v1-publication-receipt.json),
+SHA-256
+`ddc687aaff5b4585b7e6021d972235ab97a4605962107f93f01e319ed9e8c0b4`.
+
+Authenticate the from-scratch Zig source
+`539bf5d378e0c2845c01519fcce62f1ef5e68610f477912c44a03027fb67a346`,
+Python adapter
+`03a3312833252ef0a0c84df0e7e375c89b115ad772ccdd72faa51fc563950435`,
+and owned bridge C source
+`2ad10a9199dedf8b105b54b6ac49fa5f7cadcc740095f2e824db6c64d3836ddf`.
+The actual compiled engine is
+`98cd35f71e976d38568888b811b4853f5c8fe3702e8f160c9c08e094e82b5b10`;
+its actual compiled bridge is
+`2401d985d6ac7c29029cdfec9d41ba11ce6c245586e15e05cbdc8ec0840525c3`.
+Independent ELF checks show exactly **22** owned Zig exports, only
+`PyInit__zig_bridge`, only the owned Zig engine and system C
+runtime, and **zero** external regex engines.
+
+Run all four frozen correctness categories against these exact
+source-built binaries:
+
+- [Original Python result](../experiments/rust_public_practice_v1/zig-original-v5-source-built-combined-scanner-v1.json),
+  SHA-256 `155121f7a4443a52e19fbe1e7c0702c3fa3d186773da22444736114291641e58`:
+  **151 / 151** runnable checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/zig-original-v5-source-built-combined-scanner-v1-publication-receipt.json)
+  is `45482c64207131e845224fe8ea0a3578ad79165b4d265789ce872c8daf971cd3`.
+- [General behavior result](../experiments/rust_public_practice_v1/zig-public-contract-v3-source-built-combined-scanner-v1.json),
+  SHA-256 `b1f0fff9dd0a44d6b2342bca1b473d0e0602c08bfbc4c26dc306bed1191c4b03`:
+  **864 / 864** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/zig-public-contract-v3-source-built-combined-scanner-v1-publication-receipt.json)
+  is `0053676f8a1928d746bb11b7011697f04254445d9bd676309040d663f0c5c2aa`.
+- [Scanner result](../experiments/rust_public_practice_v1/zig-scanner-contract-v3-source-built-combined-scanner-v1.json),
+  SHA-256 `00cd4978193c95e6d27db2ec7b2b8a4fd9fb178e8532118c32fe3ca2a012619f`:
+  **1,024 / 1,024** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/zig-scanner-contract-v3-source-built-combined-scanner-v1-publication-receipt.json)
+  is `492af122c140f26529c160e1cf29ee08a0a0451acddbf8ba8066a916209e96f4`.
+- [Buffer result](../experiments/rust_public_practice_v1/zig-buffer-contract-v3-source-built-combined-scanner-v1.json),
+  SHA-256 `9cbfdd6b733ec3f4f4b33b9c7b13c83a916c0511e4b7f6027afd4e2c9ad97216`:
+  **710 / 768** checks pass and all **58** real failures remain
+  visible. Its
+  [durable receipt](../experiments/rust_public_practice_v1/zig-buffer-contract-v3-source-built-combined-scanner-v1-publication-receipt.json)
+  is `6523781f3546fd3ecd87a3fc4293c4f3f3061acbc08fceb317158e8eb4c4a835`.
+
+The real failures are **32** released-memory-view cases, **16**
+exporter-error cases and **10** invalid-template cases. Preserve
+every previous failed Zig scanner result as superseded history.
+The newly generated original **2,807-case** graph shows Rust and
+C **2,807 / 2,807** and Zig **2,749 / 2,807**. Authenticate manifest
+`1c8ae5b2a9b5f61e2c2250ae6abced90400dee3e39c8d559a316da6c81c203f5`,
+SVG
+`375c6b9598490f10d5bc44421588205cf8d96daf686ea3c9b9272deeeafd65ce`,
+and summary
+`8fe71a99a770f4a83eb5d039fcbdc7a9492e56a558455d8802ea3569fde4d969`.
+
+Zig has **NOT YET RUN** the separate **1,024-case** lifetime
+suite. C still fails **237** of those checks. Final holdout,
+all final speed measurements, native memory, rankings, and a
+winner remain **NOT MEASURED**.
+
+
 ## Preserve the first real C memory-lifetime failures
 
 After freezing, committing and pushing the generic memory-lifetime
