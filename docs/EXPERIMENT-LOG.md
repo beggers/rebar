@@ -7,6 +7,37 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze all 10,240 changing-size buffer safety checks
+
+Independently freeze the
+[changing-size Python buffer correctness oracle](../tools/independent_shape_changing_buffer_semantics_v1.py)
+before running a Python baseline or any candidate. Its exact source
+SHA-256 is
+`866dbf7bf4a48a867b3aaacd05cfa4f1346c747931543fa386835e783f0073aa`.
+The complete case matrix is
+`10fe3e3fd4b4650bff1da6a745b5b883f01033ed14df3f9795aa2f7a30c6d8d8`,
+generated using the exact unsigned 64-bit seed
+`6001118316486346290`.
+
+Freeze every combination of the **eight** independently changing
+buffer sizes `0`, `1`, `2`, `3`, `5`, `8`, `13`, and `19`. The
+resulting **64** equally weighted size groups each include **160**
+module-level, compiled, callback, replacement, capture, mutation,
+and failure cases: exactly **10,240** total. In particular, preserve
+all **800** cases covering the actual discovered 13-byte outer buffer
+and the `0`, `1`, `2`, `5`, and `8`-byte nested views. Verify exact
+empty-buffer behavior, visible capture bounds, acquisition flags,
+release order, callback exceptions, and failed buffer unwinding.
+
+Normal and empty-environment source-only tests both pass **462**
+positive controls and **125** rejection controls, with all genuine
+baseline workers, candidate workers, evidence writes, timing, and
+hidden-case reads held at zero. Reject attempts to start a real
+reference during source-only validation. The independent Python
+baseline and all candidate results for this suite remain
+**NOT MEASURED**. Preserve its denominator separately from all
+previous tests.
+
 ## Freeze the clear 2,854-case scanner graph generator
 
 Independently freeze the
