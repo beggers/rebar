@@ -7,6 +7,34 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Verify the C engine does not wrap or call another matcher
+
+Run the already frozen independent from-scratch ownership audit
+against the exact C source, Python adapter, and compiled native
+engine. Use one genuinely isolated audit process and one C
+candidate worker. The
+[complete C no-delegation audit report](../experiments/rust_public_practice_v1/c-from-scratch-audit-v3-native-lifetime-repair-v1.json)
+has SHA-256
+`a8ecb74f410e9cfe67d83c447eb21f5b355572309c31fb35f389b069d02e3e33`;
+the
+[atomic, independently authenticated audit receipt](../experiments/rust_public_practice_v1/c-from-scratch-audit-v3-native-lifetime-repair-v1-publication-receipt.json)
+is
+`962bed97567e27d0a3fd30dc8c7519c3fc5f51fea3f3441eea6b3450c8c1fd69`.
+
+Verify the actual audit result, not merely its successful
+publication. Confirm **21** runtime checks, **317** owned-object
+graph checks, and **10** guarded imports. Explicitly reject
+Python's regular-expression matcher, the internal `_sre` engine,
+external matching packages, and the Rust and Zig candidates. Bind
+both complete owned C sources to the exact independently built
+native C engine, and confirm the source closure stays unchanged.
+
+The actual C audit is **PASS**. Rust and Zig remain **NOT
+MEASURED** on this separately frozen V3 audit until each runs
+its own isolated process. The audit takes **zero** clock samples,
+reads **zero** hidden or performance cases, and establishes no
+candidate speed or winner.
+
 ## Preserve the actual replacement baseline size-limit failure
 
 Run the first **5,120-case** Python-to-Python baseline only after
