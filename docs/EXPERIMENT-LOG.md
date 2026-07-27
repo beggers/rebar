@@ -7,6 +7,33 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Run the common general Python behavior category on Rust
+
+After independently freezing and pushing the complete shared
+behavior oracle and its per-category durable recorder, select
+**only** the **864-case** general category and the unchanged
+owned Rust candidate. Preserve the actual
+[complete shared Rust general-behavior result](../experiments/rust_public_practice_v1/rust-public-contract-v2-shared-suite-v1.json),
+SHA-256
+`75177ba6d7ed2fa5cc1dabdd5098f4f9f56f2615ea501967f9cd1b0030577150`,
+and its
+[durable publication receipt](../experiments/rust_public_practice_v1/rust-public-contract-v2-shared-suite-v1-publication-receipt.json),
+SHA-256
+`be1249a31f7feed870bf3a53d80b845c937e5abc26d830ca183e592ad6bbc9ae`.
+
+The genuine isolated result is **PASS**: both independent Python
+references and the Rust candidate each produce all **864** complete
+observations. There are **zero** mismatches, **1,728** actual
+matcher-ownership checks, and **1,728** warning-safety checks.
+Preserve complete process outputs and case vectors, the original
+category and candidate hashes, and every exception or warning.
+
+Do not add scanner or buffer cases to this denominator. C and Zig
+have **NOT YET RUN** under the shared general category. The
+correctness run reads **zero** final cases and takes **zero**
+performance samples; speed remains **NOT MEASURED** by this
+experiment.
+
 ## Preserve the genuine Zig original-test harness false positive
 
 After recording, committing, and pushing the genuine C pickling

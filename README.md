@@ -54,7 +54,7 @@ C and Zig are shown as **NOT MEASURED**, not as successes or failures.
 | Python behavior | Current Rust result | Complete evidence |
 | --- | ---: | --- |
 | Original runnable Python tests | **151 / 151** | [Shared original Python suite](experiments/rust_public_practice_v1/rust-original-v4-shared-suite-v1.json) |
-| General public behavior | **864 / 864** | [General comparison](experiments/rust_public_practice_v1/rust-module-v1-after-native-memoryview-exporter-fix.json) |
+| General public behavior | **864 / 864** | [Shared general comparison](experiments/rust_public_practice_v1/rust-public-contract-v2-shared-suite-v1.json) |
 | Scanners and callbacks | **1,024 / 1,024** | [Scanner comparison](experiments/rust_public_practice_v1/rust-native-scanner-v1-after-native-memoryview-exporter-fix.json) |
 | Memory views and buffer errors | **768 / 768** | [Memory-view comparison](experiments/rust_public_practice_v1/rust-memoryview-expand-v1-after-native-exporter-fix.json) |
 
