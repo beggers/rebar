@@ -135,8 +135,11 @@ The independently frozen
 [updated shared behavior suite](tools/independent_public_contract_v3.py)
 retains exactly the same **864**, **1,024**, and **768** cases while
 checking the complete source and native engine of each updated
-candidate. Its candidate results are **NOT MEASURED** until each
-separate full-category run is recorded.
+candidate. Its separately frozen
+[complete-result recorder](tools/record_independent_public_contract_v3.py)
+preserves every genuine success, failure, and crash. Updated C
+and Zig behavior results remain **NOT MEASURED** until each full
+category actually runs.
 
 A separately frozen
 [memory-lifetime safety suite](tools/independent_managed_buffer_lifetime_v1.py)
@@ -230,6 +233,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/independent_public_contract_v2.py --self-test
 "$PY" -I -B tools/independent_public_contract_v3.py --self-test
 "$PY" -I -B tools/record_independent_public_contract_v2.py --self-test
+"$PY" -I -B tools/record_independent_public_contract_v3.py --self-test
 "$PY" -I -B tools/independent_managed_buffer_lifetime_v1.py --self-test
 "$PY" -I -B tools/record_rust_original_cpython_v3.py --self-test
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test

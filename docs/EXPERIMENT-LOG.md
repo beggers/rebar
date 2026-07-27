@@ -7,6 +7,38 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze complete behavior evidence for all updated engines
+
+Independently review and prospectively freeze the additive
+[complete source-pinned behavior recorder](../tools/record_independent_public_contract_v3.py),
+SHA-256
+`69ebfc04b0ecc1b589a88da875372629df036e2b45613fe431e44490a00e5b08`.
+Bind it to the already committed shared V3 behavior suite,
+SHA-256
+`9a831571c81e542d7d43ae56aea271f8e6c69550173d97ae1c9f8213eef40bf3`,
+without altering the independently frozen previous controller,
+recorder, or original Python test suite.
+
+Require every exact caller-pinned owned source: **nine** files for
+Rust, **two** for C, and **three** for Zig. Require the exact
+independent native engine and Python bridge, and permit C's
+combined native engine only for C. Authenticate all input before
+and after each future actual run. Preserve the unchanged
+**864**, **1,024**, and **768** case matrices, two independent
+Python references, all warning and matcher guards, full process
+outputs, every mismatch, and unknown outcomes from genuine
+crashes. Publish both successful and failing results atomically.
+
+Both normal and clean-environment source checks pass **161**
+uniquely named positive controls and reject **800** uniquely
+named invalid conditions. Reject cross-candidate delegation,
+missing files, stale hashes, substituted binaries, lost records,
+invented results, suppressed failures, false Zig bindings, and
+duplicate control names. Source checks run **zero** actual
+candidates, workers, timings, hidden cases, benchmarks, or
+evidence writes. At this source-freeze commit, actual V3 C and
+Zig behavior-category results remain **NOT RUN**.
+
 ## Freeze 1,024 additional memory-ownership safety checks
 
 Independently review and prospectively freeze the additive
