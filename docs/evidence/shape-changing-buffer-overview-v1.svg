@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="580" viewBox="0 0 1120 580" role="img" aria-labelledby="shape-buffer-title shape-buffer-description">
+<title id="shape-buffer-title">Python compatibility when a buffer changes size</title>
+<desc id="shape-buffer-description">Original Python, Rust, C, and Zig are compared with the same 10,240 independently frozen Python checks. Green means a result matches Python, red means it does not, and gray means it has not yet been measured. These are compatibility checks, not speed measurements.</desc>
+<rect width="1120" height="580" rx="18" fill="#f8fafc"/>
+<text x="42" y="53" fill="#0f172a" font-family="system-ui,sans-serif" font-size="26" font-weight="700">Python compatibility when buffers change size</text>
+<text x="42" y="82" fill="#475569" font-family="system-ui,sans-serif" font-size="15">The same 10,240 Python checks for every implementation &#183; speed not measured</text>
+<rect x="43" y="105" width="14" height="14" rx="3" fill="#15803d"/><text x="65" y="117" fill="#334155" font-family="system-ui,sans-serif" font-size="13">Matches Python</text>
+<rect x="305" y="105" width="14" height="14" rx="3" fill="#dc2626"/><text x="327" y="117" fill="#334155" font-family="system-ui,sans-serif" font-size="13">Does not match Python</text>
+<rect x="567" y="105" width="14" height="14" rx="3" fill="#94a3b8"/><text x="589" y="117" fill="#334155" font-family="system-ui,sans-serif" font-size="13">Not yet measured</text>
+<text x="43" y="168" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Python baseline</text>
+<text x="1040" y="168" fill="#15803d" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">10,240 / 10,240 match Python</text>
+<rect x="43" y="179" width="997" height="25" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="179" width="997" height="25" fill="#15803d"><title>Python baseline: 10,240 matches python out of 10,240</title></rect>
+<text x="43" y="248" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Rust</text>
+<text x="1040" y="248" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<rect x="43" y="259" width="997" height="25" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="259" width="997" height="25" fill="#94a3b8"><title>Rust: 10,240 not yet measured out of 10,240</title></rect>
+<text x="43" y="328" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">C</text>
+<text x="1040" y="328" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<rect x="43" y="339" width="997" height="25" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="339" width="997" height="25" fill="#94a3b8"><title>C: 10,240 not yet measured out of 10,240</title></rect>
+<text x="43" y="408" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Zig</text>
+<text x="1040" y="408" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<rect x="43" y="419" width="997" height="25" rx="6" fill="#e2e8f0"/>
+<rect x="43" y="419" width="997" height="25" fill="#94a3b8"><title>Zig: 10,240 not yet measured out of 10,240</title></rect>
+<text x="43" y="491" fill="#475569" font-family="system-ui,sans-serif" font-size="12">Includes all 64 ways the outer and inner buffers can differ, including empty and shorter buffers.</text>
+<text x="43" y="511" fill="#475569" font-family="system-ui,sans-serif" font-size="12">Every failure and earlier result remains in the complete evidence. Speed and the final holdout are not measured.</text>
+<text x="43" y="550" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Manifest SHA-256: 5f3648ac282c5cbd479fb92e5803884628501165a75e12b723ae82b23633d7bb &#183; renderer SHA-256: 53e76b2a99a8bfe2adc654fbcfa5be13026726227b5cc2345e2c41833116a1cb</text>
+</svg>

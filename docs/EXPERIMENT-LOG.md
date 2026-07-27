@@ -7,6 +7,32 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Render the complete changing-buffer baseline comparison
+
+Generate the new headline comparison only after freezing and
+publishing the independently reviewed graph renderer. Authenticate
+the entire original **179,411,616-byte**, **10,240-case** Python
+baseline; show its genuinely passing **10,240 / 10,240** results
+in green. Show Rust, C, and Zig separately in gray as
+**NOT MEASURED**, rather than turning their missing results into
+passes or failures.
+
+The [independently authenticated changing-buffer graph inputs](evidence/shape-changing-buffer-overview-v1.inputs.json)
+have SHA-256
+`5f3648ac282c5cbd479fb92e5803884628501165a75e12b723ae82b23633d7bb`.
+The [complete generated changing-buffer data](evidence/shape-changing-buffer-overview-v1.json)
+has SHA-256
+`7dfb01515fd4ff7321a3377715a69d6c66f8c6d31906fdf30454854a02a30165`.
+The [plain-language headline comparison graph](evidence/shape-changing-buffer-overview-v1.svg)
+has SHA-256
+`483f8c67f654e3be8ce8b6a908af7eba9d97d210c04099a6d057cf19fdba0123`.
+
+Preserve the exact full-width frozen seed, all **64** shape cohorts,
+all **800** previously witnessed regression cases, both genuine
+Python worker identities, and all three distinct owned candidate
+families. Start no candidate process and read no benchmark,
+holdout, or timing data while generating the baseline chart.
+
 ## Freeze clear changing-buffer correctness graph generation
 
 Freeze and independently review the [changing-buffer comparison graph generator](../tools/render_shape_changing_buffer_overview_v1.py)
