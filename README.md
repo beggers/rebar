@@ -53,7 +53,7 @@ C and Zig are shown as **NOT MEASURED**, not as successes or failures.
 
 | Python behavior | Current Rust result | Complete evidence |
 | --- | ---: | --- |
-| Original runnable Python tests | **151 / 151** | [Original Python suite](experiments/rust_public_practice_v1/rust-original-v3-memoryview-native-exporter-fix.json) |
+| Original runnable Python tests | **151 / 151** | [Shared original Python suite](experiments/rust_public_practice_v1/rust-original-v4-shared-suite-v1.json) |
 | General public behavior | **864 / 864** | [General comparison](experiments/rust_public_practice_v1/rust-module-v1-after-native-memoryview-exporter-fix.json) |
 | Scanners and callbacks | **1,024 / 1,024** | [Scanner comparison](experiments/rust_public_practice_v1/rust-native-scanner-v1-after-native-memoryview-exporter-fix.json) |
 | Memory views and buffer errors | **768 / 768** | [Memory-view comparison](experiments/rust_public_practice_v1/rust-memoryview-expand-v1-after-native-exporter-fix.json) |
@@ -83,7 +83,9 @@ separate Rust, C, and Zig implementation. No C or Zig test result is
 assumed before that implementation actually runs. A separately frozen
 [complete original-test result recorder](tools/record_independent_original_cpython_v4.py)
 preserves every real test failure and never substitutes an invented
-result for a crashed engine.
+result for a crashed engine. The current Rust engine now passes
+**151 / 151** runnable tests under this exact shared suite, with
+**zero** public waivers and the same genuine Python-only debug skip.
 
 The separately frozen
 [shared Python behavior tests](tools/independent_public_contract_v2.py)

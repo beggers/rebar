@@ -7,6 +7,36 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Run the full shared original Python test suite on Rust
+
+After separately freezing and pushing the candidate-independent
+original Python oracle and its crash-honest durable recorder, run
+the unchanged Rust engine exactly once under the new shared suite.
+
+Preserve the actual
+[complete Rust original-test result](../experiments/rust_public_practice_v1/rust-original-v4-shared-suite-v1.json),
+SHA-256
+`2740caaf5a9f287e83915e82b31c581077f8d7b8c81b3cc0876f343686bf5af4`,
+and its independently durable
+[publication receipt](../experiments/rust_public_practice_v1/rust-original-v4-shared-suite-v1-publication-receipt.json),
+SHA-256
+`d3178c3e994d6594aa0b2678854c1cac2fec4597a4f8f634c900304cd17f7830`.
+
+The actual Rust result is **PASS**: all **151** runnable original
+Python tests match ordinary Python, and both produce the same
+genuine debug-build-only skip. Preserve both complete **152-test**
+outcome vectors, exactly **165** original test methods, only the
+**13** named private waivers, **zero** public waivers, **zero**
+mismatches, one actual independent Python reference, one actual
+candidate worker, **304** matcher-ownership checks, **304**
+warning-safety checks, and the identical frozen baseline and
+candidate-record digest.
+
+The run opens **zero** final cases and takes **zero** timing
+samples. It proves Rust's shared original-suite compatibility;
+C and Zig's original-suite results remain **NOT YET RUN** at this
+focused commit.
+
 ## Freeze complete independent evidence for each Python behavior category
 
 Independently review and freeze the additive
