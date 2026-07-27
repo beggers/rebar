@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Preserve all 21 genuine C buffer and template incompatibilities
+
+After committing and pushing the complete C scanner results, run
+the independently owned C engine exactly once against the
+separately frozen **768-case** memory-view and replacement-template
+category.
+
+Preserve the actual
+[complete C buffer result](../experiments/rust_public_practice_v1/c-buffer-contract-v2-shared-suite-v1.json),
+SHA-256
+`453142b5a75ffac348056524b9cd0fb99172d883961ff37f905b51334e85d576`,
+and its
+[failure-preserving publication receipt](../experiments/rust_public_practice_v1/c-buffer-contract-v2-shared-suite-v1-publication-receipt.json),
+SHA-256
+`1923ffffa9d9d233e0715f806144c03e869ccc49934afa0e6d17bdcc48c81230`.
+
+The genuine C result is **FAIL**: **747** passing cases and **21**
+preserved incompatibilities. Exactly **16** concern Python-defined
+buffer-exporter exceptions; **five** concern invalid replacement
+template types. Both independent ordinary-Python references and
+the C candidate return all **768** observations. Retain every
+observation, exactly **1,536** matcher-ownership checks and
+**1,536** warning-safety checks, and every complete mismatch.
+
+Do not suppress exporter exceptions, weaken template validation,
+alter denominators, or infer performance. This correctness-only
+experiment reads **zero** final cases and takes **zero** timings.
+C remains **NOT QUALIFIED**.
+
 ## Freeze the correction for Python's Zig foreign-function initialization
 
 After recording, committing, and pushing the full V4 Zig false

@@ -23,7 +23,7 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 | --- | ---: | --- |
 | Python `re` | **1.000×** | Baseline |
 | Our Rust engine | **1.065×** | Public development tests pass; speed goal not met |
-| Our C engine | **NOT MEASURED** | **150 / 151** original, **824 / 864** general, **32 / 1,024** scanner cases |
+| Our C engine | **NOT MEASURED** | **150 / 151** original, **824 / 864** general, **32 / 1,024** scanner, **747 / 768** buffer cases |
 | Our Zig engine | **NOT MEASURED** | Corrected original test suite frozen; genuine Zig run pending |
 
 ## Current speed against Python
@@ -91,7 +91,8 @@ Python-compatible pickling, which must be corrected before it can
 qualify. The shared general tests separately expose **40** scanner-
 callback mismatches out of **864** cases; the dedicated scanner
 tests expose **992** mismatches out of **1,024**. Every failure is
-preserved rather than removed from the comparison.
+preserved rather than removed from the comparison. The independent
+buffer tests expose **21** further genuine mismatches.
 Zig's first attempt exposed a bug in the test harness: it blocked
 Python's own standard `ctypes` initialization before any Zig test
 could run. The separately frozen
