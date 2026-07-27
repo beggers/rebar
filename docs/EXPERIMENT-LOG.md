@@ -7,6 +7,38 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze 2,854 additional scanner and pattern-comment checks
+
+Freeze the independently reviewed
+[Python scanner and verbose-pattern compatibility oracle](../tools/independent_scanner_verbose_comments_v1.py)
+before generating any baseline or testing any candidate. Its exact
+source SHA-256 is
+`5508910eae3f5e59d2013bc9fa4f1a8948a823e27de09bf416de2fffc8e91c9d`.
+The stable **2,854-case** matrix SHA-256 is
+`01bca287cd481a5e4ae134b910911e2e2f8f1501eebb7ffd2947092ab170d17b`;
+the exact published 64-bit seed is `5999725261024810545`.
+
+Cover string and byte patterns, verbose spacing, real and escaped
+comments, nested flags, group names, escaped newlines, continued
+zero-width matches, prefix fallbacks, invalid patterns, and genuine
+Python error types. Preserve all **2,560** semantic and **294**
+tokenizer cases: **2,612** complete scans, **32** continued
+zero-width scans, **108** real prefix or fallback results, and
+**102** original Python errors.
+
+Bind every future candidate to the separately frozen
+[from-scratch V3 ownership audit](../tools/independent_from_scratch_audit_v3.py),
+SHA-256
+`377c63eecccea021562694e00d624d54f61adfb0d3a4700586a29ed424f389ee`.
+Normal and clean source self-tests agree exactly, with **30**
+positive and **101** rejection controls. An independent reviewer
+checks **192 / 192** representative cases directly against isolated
+standard Python. Source testing starts no candidate or reference
+workers, writes no evidence, and reads no benchmark or holdout.
+The complete two-Python baseline, actual candidate results,
+performance, and timing are **NOT MEASURED** in this source-only
+freeze.
+
 ## Preserve the first genuine Rust memory-lifetime failures
 
 Run the independently written Rust engine against the same separately
