@@ -89,7 +89,9 @@ The separately frozen
 [shared Python behavior tests](tools/independent_public_contract_v2.py)
 make all three engines face the same **864** general cases, **1,024**
 scanner cases, and **768** memory-view cases. Each category is run
-and reported separately; C and Zig have **NOT YET RUN**.
+and reported separately using the
+[complete behavior-test recorder](tools/record_independent_public_contract_v2.py);
+C and Zig have **NOT YET RUN**.
 
 The independently reviewed
 [Rust ownership audit](tools/rust_from_scratch_audit_v1.py) and its
@@ -165,6 +167,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/independent_original_cpython_suite_v4.py --self-test
 "$PY" -I -B tools/record_independent_original_cpython_v4.py --self-test
 "$PY" -I -B tools/independent_public_contract_v2.py --self-test
+"$PY" -I -B tools/record_independent_public_contract_v2.py --self-test
 "$PY" -I -B tools/record_rust_original_cpython_v3.py --self-test
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test
 "$PY" -I -B tools/render_rust_public_correctness_v1.py --self-test

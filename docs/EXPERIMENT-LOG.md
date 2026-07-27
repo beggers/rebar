@@ -7,6 +7,38 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze complete independent evidence for each Python behavior category
+
+Independently review and freeze the additive
+[per-category correctness result recorder](../tools/record_independent_public_contract_v2.py),
+SHA-256
+`4c3fd3c75ccc2a873f522ce297169053048b387789239e11102d7eefb1ad1432`,
+against the already frozen shared behavior-test controller. Both
+ordinary and clean-environment synthetic self-tests pass **122**
+genuine acceptance controls and reject **719** forged, incomplete,
+combined-category, cross-candidate, or unsafe results.
+
+Require exactly one actual Rust, C, or Zig candidate and exactly one
+**864-case** general, **1,024-case** scanner, or **768-case** buffer
+category. Keep every denominator separate. Preserve the complete
+ordered outputs of both actual ordinary-Python references and the
+actual owned candidate, every original case and traceback, every
+mismatch, exact native hashes, and the respective **1,728**,
+**2,048**, or **1,536** warning and identity checks.
+
+Preserve complete actual worker diagnostics when a process crashes,
+times out, or fails to start. Mark unobservable results **NOT
+ESTABLISHED** rather than inventing zero mismatches. Reauthenticate
+the exact public evidence directory at every publication step and
+atomically create a fresh complete report and separate receipt
+without overwriting earlier experiments.
+
+The strictly synthetic source self-tests launch **zero** candidate,
+reference, or controller workers, read **zero** candidate or native
+files, write **zero** evidence, take **zero** timings, and access
+**zero** final cases. The actual Rust, C, and Zig category results
+have **NOT YET RUN** under this newly frozen recorder.
+
 ## Run the shared from-scratch ownership audit on Zig
 
 After independently recording, committing, and pushing both Rust
