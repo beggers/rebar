@@ -79,8 +79,8 @@ holdout.
 Independently freeze the [5,120-case replacement-and-buffer correctness graph generator](../tools/render_substitution_buffer_overview_v1.py)
 before producing any graph. Its exact SHA-256 is
 `13183b23a77e7e4757d160d83363dd5a5be08ee287c4e2eceef8ab0c4afaa6f2`.
-Bind the complete two-Python baseline, actual C **464** and Zig
-**192** failures, every candidate's separately owned native engine,
+Bind the complete historical two-Python baseline, C **464** and Zig
+**192** reported differences, every candidate's separately owned native engine,
 the exact original matrix, full-width seed, and all **64** cohorts.
 Preserve the original incomplete recorder failure and its genuinely
 **UNKNOWN** worker count.
@@ -89,19 +89,23 @@ Normal and empty-environment self-tests pass **31** independent
 controls and reject **592** hostile cases. Verify all **40,960**
 complete synthetic outcomes, **18** compressed-stream attacks,
 and **14** no-clobber graph-publication and rollback scenarios.
-Keep Rust **NOT MEASURED**; display genuine C and Zig failures in
-red, never as passing publication receipts. Source-freeze the
-generator before rendering. Current speed and final holdout remain
-**NOT MEASURED** and **NOT OPENED**.
+Keep Rust **NOT MEASURED**. This historical generator predates the
+callback-test falsification and must not display the C and Zig
+harness errors as genuine implementation failures. Source-freeze
+and preserve the generator without publishing a misleading graph.
+Current speed and final holdout remain **NOT MEASURED** and
+**NOT OPENED**.
 
-## Preserve all 1,888 genuine C changing-buffer safety failures
+## Preserve the historical 1,888 reported C changing-buffer differences
 
 Only after preserving and publishing the rejected process-ID
 collision, retry the same independently owned C candidate under
 a fresh evidence label. The new isolated process is distinct from
-both historical Python references. Validate every actual C outcome:
-**8,352** passes and **1,888** failures out of the unchanged
-**10,240** original changing-buffer cases.
+both historical Python references. Preserve every actual C outcome:
+**8,352** reported matches and **1,888** reported differences out
+of the unchanged **10,240** original changing-buffer cases. Later
+independent replay establishes **496** test-harness errors and
+**1,392** genuine differences in this historical report.
 
 The [complete independently guarded C changing-buffer report](../experiments/rust_public_practice_v1/c-shape-changing-buffer-semantics-v1-native-lifetime-repair-pid-retry-v1.json.gz)
 has SHA-256
@@ -127,9 +131,10 @@ warning checks. Include every API, buffer-release event, all
 five witnessed nested-size regressions, and the complete earlier
 inconclusive run. Refresh the frozen changing-buffer headline
 graph: Python **10,240 / 10,240**, C **8,352 / 10,240** with all
-**1,888** failures visible, and Rust and Zig **NOT MEASURED**.
-The real C candidate result is **FAIL**; receipt publication does
-not establish correctness. Performance remains **NOT MEASURED**.
+**1,888** historical differences visible, and Rust and Zig
+**NOT MEASURED**. The graph includes the **496** later-proven
+test-harness errors and is **FALSIFIED**, not a qualified
+correctness result. Performance remains **NOT MEASURED**.
 
 ## Preserve an inconclusive C changing-buffer process collision
 
@@ -158,11 +163,13 @@ the authenticated changing-buffer chart unchanged with Rust, C,
 and Zig all **NOT MEASURED**. Current candidate speed and the
 final comparison remain **NOT MEASURED** and **NOT OPENED**.
 
-## Preserve all 192 genuine Zig replacement and buffer failures
+## Preserve the historical 192 reported Zig replacement differences
 
 Run the independently owned Zig engine against the full frozen
-**5,120-case** replacement-and-buffer Python reference. Zig passes
-**4,928** cases and fails **192**. Preserve all original candidate
+**5,120-case** replacement-and-buffer Python reference. The report
+records **4,928** matching cases and **192** differences. Independent
+replay proves that **128** are callback-test errors and **64** are
+genuine candidate differences. Preserve all original candidate
 results, the complete signed reference, all **10,240** native
 ownership and **10,240** warning safeguards, and every mismatch.
 
@@ -176,11 +183,12 @@ The complete **192-case** mismatch ledger has SHA-256
 `a01c0e3a9bbe11be08502e2469f9052f31748520fc5cd513ea20795719d4a48a`.
 
 Each of the four module and compiled-pattern substitution methods
-fails exactly **48** cases; `Match.expand` has **zero** failures.
-Preserve text and bytes callback errors and every genuinely failing
-nested buffer event. The candidate **FAILS** and the recorder exits
-**1**; successful evidence publication is not a compatibility pass.
-C's **464** replacement failures remain independently preserved.
+reports exactly **48** differences; `Match.expand` has **zero**.
+Preserve text and bytes callback-test errors and every genuine
+nested-buffer difference. The historical recorder exits **1**;
+successful evidence publication is not a compatibility pass. The
+corrected Zig replacement result remains **NOT MEASURED**. C's
+historical **464** reported differences remain independently preserved.
 Rust replacement behavior and all current candidate speed results
 remain **NOT MEASURED**; the final holdout is **NOT OPENED**.
 
@@ -236,11 +244,13 @@ data together. Freeze the generator before rendering; candidate
 results, speed, and hidden cases remain **NOT MEASURED** and
 **NOT OPENED**.
 
-## Preserve all 464 genuine C replacement and buffer failures
+## Preserve the historical 464 reported C replacement differences
 
 Test the independently owned C engine against all **5,120**
-frozen replacement-and-buffer reference cases. It genuinely passes
-**4,656** cases and fails **464**; preserve every complete
+frozen replacement-and-buffer reference cases. The historical
+report records **4,656** matching cases and **464** differences:
+later replay proves **128** callback-test errors and **336** genuine
+candidate differences. Preserve every complete
 candidate result, original Python observation, callback, buffer
 event, and mismatch. The C process remains continuously guarded
 by **10,240** matcher and **10,240** warning checks and cannot
@@ -256,13 +266,14 @@ The preserved full mismatch digest is
 `dd3662164eddb3ac983f9618f0b53a2c52fbbe31f8cc456731109ef89cad9f13`.
 
 Each of the four module and compiled-pattern replacement methods
-fails **116** cases. The failures include text and bytes callback
-errors, nested buffer lifetimes, and custom Python buffer
-exporters; `Match.expand` has **zero** mismatches. The candidate
-genuinely **FAILS** and the recorder exits **1**; evidence
-publication alone passes. Keep all previous scanner and recorder
-failures. Rust and Zig replacement results, all current speeds,
-and the final holdout remain **NOT MEASURED** and **NOT OPENED**.
+reports **116** differences. The report includes text and bytes
+callback-test errors, genuine nested-buffer lifetime differences,
+and custom Python buffer exporters; `Match.expand` has **zero**
+mismatches. The historical recorder exits **1**; publishing that
+evidence does not qualify the candidate. Keep all previous scanner
+and recorder failures. Corrected Rust, C, and Zig replacement
+results and all current speeds remain **NOT MEASURED**; the final
+holdout is **NOT OPENED**.
 
 ## Preserve all 1,364 genuine Zig scanner compatibility failures
 
