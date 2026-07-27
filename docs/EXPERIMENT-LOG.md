@@ -7,6 +7,43 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Publish the overall Python-compatibility comparison
+
+After separately freezing, independently reviewing, committing,
+and pushing the chart generator, create the exact canonical
+[three-engine evidence manifest](evidence/candidate-correctness-overview-v1.inputs.json),
+SHA-256
+`0a71dcdde329956d544a327ad42899611874371b9516a71f83fcd1474aa6bf24`.
+Authenticate every explicitly named original or behavior report,
+including every earlier C and Zig failure, without reading or
+discovering any other evidence.
+
+Generate the
+[headline compatibility graph](evidence/candidate-correctness-overview-v1.svg),
+SHA-256
+`a860d6b9da3825a8ca1ac4d84fcbe6c70674f99f91442e26c96eae096b7114c1`,
+and its
+[complete generated summary](evidence/candidate-correctness-overview-v1.json),
+SHA-256
+`b5d7ea13226f8a2f65bf09ceea9a24ca6a6b0d7f93b773a4cec35d43c33739a9`.
+
+The fixed, equal denominator is **2,807** runnable checks for
+each family. Rust passes **2,807**, fails **zero**, and leaves
+**zero** unrun. The corrected C source passes its **151**
+original tests and has **2,656** genuinely unrun current-source
+checks. Zig independently has the same **151** passes and
+**2,656** unrun. Every old C general, scanner, and buffer failure
+and both original pickling failures remain authenticated as
+history, without being counted as new-build outcomes.
+
+The renderer initially correctly rejected a human-formatted
+manifest. Preserve the exact same input values using mandatory
+sorted, compact canonical JSON; do not relax the frozen input
+validator. The final real render is **PASS**, reads **zero**
+hidden or performance files, executes **zero** candidates, and
+takes **zero** timings. Neither chart nor summary selects or
+predicts a performance winner.
+
 ## Freeze a clear, honest three-candidate correctness graph
 
 Independently review and freeze the deterministic

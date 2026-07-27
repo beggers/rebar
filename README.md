@@ -23,8 +23,27 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 | --- | ---: | --- |
 | Python `re` | **1.000×** | Baseline |
 | Our Rust engine | **1.065×** | **2,807 / 2,807** shared correctness checks pass; speed goal not met |
-| Our C engine | **NOT MEASURED** | **151 / 151** original tests; most recent behavior results: **824 / 864** general, **32 / 1,024** scanner, **747 / 768** buffer |
+| Our C engine | **NOT MEASURED** | **151 / 151** original tests; current general, scanner, and buffer cases not yet run |
 | Our Zig engine | **NOT MEASURED** | **151 / 151** original tests; general, scanner, and buffer cases not yet run |
+
+## Do the candidates work like Python?
+
+![Side-by-side correctness of the three independently built regex engines: Rust passes all 2,807 checks; C and Zig pass all 151 original Python tests and each has 2,656 further checks not yet run on its current source](docs/evidence/candidate-correctness-overview-v1.svg)
+
+Every engine has the same **2,807** planned checks. Green means
+it matches Python; red means an actual mismatch; gray means the
+current build has **not yet been tested**. Rust passes all **2,807**.
+C and Zig each pass all **151** original Python tests; their other
+**2,656** current-build checks remain **NOT YET RUN**. The single
+genuine Python debug-only skip is not counted.
+
+The older C build's **40** general, **992** scanner, and **21**
+buffer failures remain in the
+[complete chart inputs](docs/evidence/candidate-correctness-overview-v1.inputs.json)
+and [experiment log](docs/EXPERIMENT-LOG.md). They are never
+silently applied to the corrected C build. The
+[complete generated chart data](docs/evidence/candidate-correctness-overview-v1.json)
+records every denominator, source hash, and previous result.
 
 ## Current speed against Python
 
@@ -47,14 +66,12 @@ result by the independently frozen
 [plain-language comparison generator](tools/render_rust_public_speed_v2.py).
 C and Zig are shown as **NOT MEASURED**, not as successes or failures.
 
-## Current compatibility
+## Detailed Rust compatibility
 
-The frozen
-[three-candidate comparison generator](tools/render_candidate_correctness_overview_v1.py)
-uses the same **2,807** planned runnable checks for every current
-engine. It distinguishes genuine passes, genuine failures,
-unrun tests, and preserved results from earlier source versions.
-Its new combined chart has **NOT YET BEEN GENERATED**.
+The independently frozen
+[three-candidate chart generator](tools/render_candidate_correctness_overview_v1.py)
+reproduces the headline chart from complete, version-matched Python
+test results.
 
 ![Python and the current from-scratch Rust engine both pass all 864 independently frozen general compatibility checks](docs/evidence/rust-public-correctness-v1.svg)
 
