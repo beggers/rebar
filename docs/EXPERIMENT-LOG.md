@@ -7,6 +7,42 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected changing-buffer compatibility test
+
+Freeze the [corrected changing-buffer compatibility oracle](../tools/independent_shape_changing_buffer_semantics_v2.py)
+before collecting a new Python reference or running a candidate.
+The complete source has SHA-256
+`0262807f793a818307f2c8c6ecfd84bf970264a6ef5d656acf30c9d3606f0e2c`.
+Preserve all **10,240** original cases, all **64** categories,
+all **160** observations per category, and all **800** previously
+witnessed changing-buffer regressions. The full-width seed remains
+`6001118316486346290`, and the original unchanged case matrix has
+SHA-256
+`10fe3e3fd4b4650bff1da6a745b5b883f01033ed14df3f9795aa2f7a30c6d8d8`.
+
+Correct only the defining-module observation of the test's exact
+`ShapeCallbackError` class. Preserve ordinary and user-defined
+exception classes, similarly named foreign exceptions, subclasses,
+callback arguments, warning details, pattern and match identity,
+and all original buffer contents and event ordering. Keep all
+**496** historical test-harness errors and **1,392** genuine C
+differences visible in their immutable original reports.
+
+Normal and empty-environment source-only self-tests each pass
+**475** positive controls and reject **131** hostile cases. They
+prove identical script and imported callback observations for
+**512** entirely synthetic cases and explicitly block use of an
+already-loaded Python or candidate matcher. They start **zero**
+Python reference or candidate workers, make **zero** real matcher
+calls, create **zero** evidence files, and read **zero** benchmark
+or holdout cases. Two independent reviewers approve the exact
+frozen source.
+
+The corrected Python reference and all Rust, C, and Zig changing-
+buffer results remain **NOT MEASURED**. Keep the original oracle,
+baseline, failures, collision record, and historical chart intact.
+The final speed comparison remains **NOT OPENED**.
+
 ## Freeze complete public type, identity, and serialization checks
 
 Freeze [6,912 additional Python public-compatibility checks](../tools/independent_public_type_identity_serialization_v1.py)
