@@ -7,6 +7,41 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze lossless corrected changing-buffer evidence recording
+
+Freeze the [lossless corrected changing-buffer evidence recorder](../tools/record_independent_shape_changing_buffer_semantics_v2.py)
+before collecting any Python reference or candidate result.
+Its independently reviewed complete source has SHA-256
+`0ddcb154378807ce6d3b8c5726f37e72ed9fcf921fe348d7640e1a6f1a898cc9`.
+Pin the separately published corrected changing-buffer oracle,
+SHA-256
+`0262807f793a818307f2c8c6ecfd84bf970264a6ef5d656acf30c9d3606f0e2c`.
+Preserve all **10,240** original cases, **64** categories,
+**800** previously witnessed regression cases, full-width seed
+`6001118316486346290`, and the unchanged case matrix
+`10fe3e3fd4b4650bff1da6a745b5b883f01033ed14df3f9795aa2f7a30c6d8d8`.
+
+Preserve all **12** independently authenticated historical files
+and the complete original **1,888 = 496 + 1,392** C report.
+Keep every source-ordered callback, warning, nested-buffer
+acquisition, mutation, release, error, match, and guard. Require
+distinct isolated Python references and separately owned future
+Rust, C, and Zig engines. Preserve controller failures and
+unknown process outcomes without overwriting historical evidence.
+
+Both independent reviewers verify normal and empty-environment
+source-only self-tests: **99** positive controls and **349**
+rejected attacks. A genuinely bounded in-memory control restores
+all **188,743,680** original test bytes from **732,503**
+compressed bytes while retaining at most **994,647** live bytes.
+No actual Python reference, candidate, regex matcher, compiler,
+file, benchmark, hidden case, or clock is used. The complete
+large-file limits remain preserved rather than silently lowered.
+
+The corrected changing-buffer Python reference and all candidate
+results remain **NOT MEASURED**. The final speed comparison is
+**NOT OPENED**.
+
 ## Validate all corrected Python replacement reference cases
 
 Only after separately freezing, committing, and pushing both the
