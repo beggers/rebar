@@ -7,6 +7,35 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Freeze full shared behavior checks for the corrected engines
+
+Independently review, prospectively freeze, and source-test the
+additive
+[updated shared behavior oracle](../tools/independent_public_contract_v3.py),
+SHA-256
+`9a831571c81e542d7d43ae56aea271f8e6c69550173d97ae1c9f8213eef40bf3`.
+Keep the complete previous V2 oracle unchanged, SHA-256
+`a0ae9621e06b760477a167705cc6e521cc7e9df4d44d126e39c614df89bd3e68`,
+and preserve exactly the original **864** general, **1,024**
+scanner, and **768** buffer cases, matrices, seeds, baselines,
+and per-case checks.
+
+Require an explicitly pinned complete independent source closure:
+**nine** owned Rust files, **two** C files, or **three** Zig files,
+together with the exact native engine and Python bridge. Initialize
+genuine Python foreign-function bindings safely under the frozen
+V5 guard; reject foreign regex engines, cross-candidate calls,
+missing or changed source, omitted cases, lost warnings, and
+fabricated reference or candidate records. Require two genuine
+independent Python references and all **2 × case-count** ownership
+and warning checks for each future real category.
+
+Both normal and clean-environment synthetic source checks pass
+**55** positive controls and reject **556** invalid conditions.
+They read or run **zero** candidates, workers, evidence files,
+final cases, clocks, or benchmarks. No updated Rust, C, or Zig
+candidate has yet run under V3 at this source-freeze commit.
+
 ## Verify Rust against the same corrected original Python suite
 
 After separately committing and pushing the full Rust shared

@@ -107,6 +107,13 @@ and **21 / 768** buffer mismatches. These failures remain visible;
 the exact updated adapter must pass fresh, frozen behavior checks.
 Zig has **NOT YET RUN** these categories.
 
+The independently frozen
+[updated shared behavior suite](tools/independent_public_contract_v3.py)
+retains exactly the same **864**, **1,024**, and **768** cases while
+checking the complete source and native engine of each updated
+candidate. Its candidate results are **NOT MEASURED** until each
+separate full-category run is recorded.
+
 The independently reviewed
 [Rust ownership audit](tools/rust_from_scratch_audit_v1.py) and its
 [complete current result](experiments/rust_public_practice_v1/rust-from-scratch-audit-v1-memoryview-native-exporter-fix.json)
@@ -144,7 +151,8 @@ patterns, text and byte inputs, native-call overhead, and lifecycles.
 Freeze and generate a new final test only after three genuinely
 separate, from-scratch candidates pass all original Python tests,
 all **864** general cases, all **1,024** scanner cases, all **768**
-buffer cases, and the independent no-delegation audit. Measure Python and each
+buffer cases, and the independent no-delegation audit. Measure
+Python and each
 qualifying candidate on the same cases in **24** fairly ordered
 rounds. Report complete results, uncertainty, memory, and every
 slowdown. Success requires at least **1.5×** overall and statistically
@@ -182,6 +190,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/record_independent_original_cpython_v4.py --self-test
 "$PY" -I -B tools/record_independent_original_cpython_v5.py --self-test
 "$PY" -I -B tools/independent_public_contract_v2.py --self-test
+"$PY" -I -B tools/independent_public_contract_v3.py --self-test
 "$PY" -I -B tools/record_independent_public_contract_v2.py --self-test
 "$PY" -I -B tools/record_rust_original_cpython_v3.py --self-test
 "$PY" -I -B tools/record_rust_public_correctness_v1.py --self-test
