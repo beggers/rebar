@@ -7,6 +7,33 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze durable from-scratch ownership-audit recording
+
+Freeze the independently reviewed
+[source-pinned Rust, C, and Zig ownership-audit recorder](../tools/record_independent_from_scratch_audit_v3.py)
+before running any actual no-delegation audit. Its exact SHA-256 is
+`619b5736be47dadfcbb05d6d22b9579c730c45a551d4304a26ddefa9adf3be9f`.
+Require the complete frozen V3 audit, unchanged original Python
+ownership policies, every owned source and lock file, every distinct
+native engine and Python bridge, and exactly one authenticated
+isolated audit controller and candidate worker.
+
+Preserve the complete audit output, actual guard and binding
+evidence, process identities, genuine errors, and two durable,
+non-overwriting, independently verified report and receipt files.
+Never treat successful publication as successful candidate
+ownership. Report source-to-binary reproducibility as
+**NOT ESTABLISHED** unless a genuine source build has established it.
+
+Normal and clean in-memory self-tests give identical results:
+**67** positive and **373** rejection controls. Independently
+exercise all nine guarded side-effect categories, including
+candidate imports, processes, threads, files, clocks, random
+sources, and garbage collection. This separate source freeze
+starts **zero** candidate or audit workers and creates **zero**
+reports. Actual family audits, final benchmarks, hidden cases,
+and performance remain **NOT MEASURED**.
+
 ## Preserve the first measured Zig memory-lifetime failures
 
 Keep the first process-ID-rejected Zig run and all of its raw
