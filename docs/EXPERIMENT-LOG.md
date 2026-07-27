@@ -7,6 +7,32 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Verify the Zig engine does not wrap or call another matcher
+
+Run the frozen live no-delegation audit against the actual rebuilt,
+memory-safe Zig engine. Pin the independently written Zig matcher,
+Python adapter, and corrected bridge source, plus the distinct
+source-built native engine and Python bridge. The
+[complete Zig ownership audit](../experiments/rust_public_practice_v1/zig-from-scratch-audit-v3-owned-safe-buffer-repair-v1.json)
+has SHA-256
+`56f8d4efbfd4e86db5aeb92c6c3a90d19dff5dae5e07bf58606ce38e1f72e20a`;
+the
+[durable, independently authenticated Zig audit receipt](../experiments/rust_public_practice_v1/zig-from-scratch-audit-v3-owned-safe-buffer-repair-v1-publication-receipt.json)
+is
+`0fc5a96b0fcb7b478ab08bf967d3f68119a1aee01842fbdc0581443eb3bfc805`.
+
+Require exactly one isolated audit process, one independently
+guarded Zig worker, and an actual **PASS** rather than only a
+successful publication. Reject the original Python matcher, `_sre`,
+external matching packages, and both sibling implementations.
+Keep all three owned Zig sources and both native outputs unchanged
+during the run.
+
+Rust, C, and Zig have now each passed their own independent live
+no-delegation audit. All three speed results, expanded suite
+results, hidden cases, and the eventual winner remain
+**NOT MEASURED**.
+
 ## Verify the Rust engine does not wrap or call another matcher
 
 Execute the separately frozen no-delegation audit against the
