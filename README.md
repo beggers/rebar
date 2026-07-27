@@ -91,6 +91,9 @@ from scratch. A separately frozen
 applies the same no-external-regex rule to the separately owned Rust,
 C, and Zig matchers. Its source is tested; actual C and Zig results
 and reproducible native builds are **NOT YET ESTABLISHED**.
+The [Zig build protocol](docs/ZIG-SOURCE-BUILD-V1.md) now pins and
+verifies the official stable compiler; rebuilding the owned Zig
+engine with it has **NOT YET RUN**.
 
 ## Larger fair speed comparison
 

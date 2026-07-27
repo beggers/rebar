@@ -7,6 +7,29 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Pin the official Zig compiler before rebuilding our own engine
+
+Verify the official stable **Zig 0.16.0** Linux x86-64 compiler
+against the [official release index](https://ziglang.org/download/index.json),
+then download its exact **55,478,392-byte** archive into `/tmp`.
+The actual archive SHA-256 is
+`70e49664a74374b48b51e6f3fdfbf437f6395d42509050588bd49abe52ba3d00`.
+Independently validate that all **20,832** archive entries remain
+inside the expected directory before extracting them. The extracted
+compiler reports exactly `0.16.0` and has SHA-256
+`2317bbb91798556d9d0f38aabdac23db83f0979b25f767259ae474546724087c`.
+
+Freeze the complete, comprehensible
+[Zig source-build protocol](ZIG-SOURCE-BUILD-V1.md), including the
+exact owned Zig parser and engine, owned C binding, Python adapter,
+pinned CPython headers, and honest source hashes. The existing
+Zig binaries are not used as evidence of a reproducible build.
+Actual compilation, source-to-binary reproduction, original Python
+test compatibility, ownership qualification, and performance are
+**NOT YET RUN**. This compiler-pinning experiment executes **zero**
+candidate matches, reads **zero** final cases, and takes **zero**
+timing samples.
+
 ## Freeze a strict from-scratch audit for Rust, C, and Zig
 
 Independently review and freeze the additive
