@@ -7,6 +7,41 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Validate all corrected Python changing-buffer reference cases
+
+Only after separately freezing, committing, and pushing both the
+corrected changing-buffer oracle and its lossless recorder, run
+exactly one full two-Python reference observation. Isolated
+reference processes **82** and **83** agree on all
+**10,240 / 10,240** original cases, including all **800**
+previously witnessed nested-buffer regressions.
+
+The [complete corrected changing-buffer reference archive](../experiments/rust_public_practice_v1/shape-changing-buffer-semantics-v2-shared-suite-v2.json.gz)
+has SHA-256
+`251f240d5d8a96ef70b8735484d592fa3a63d07a70845d590c9cfb457bcc860e`.
+Preserve all **179,550,796** exact uncompressed evidence bytes,
+SHA-256
+`ff3b46bd6e2b6860dccc38c3fee115563cd400c5acfda02d6727d31ee35ae19b`.
+The [authenticated corrected changing-buffer reference receipt](../experiments/rust_public_practice_v1/shape-changing-buffer-semantics-v2-shared-suite-v2-publication-receipt.json)
+has SHA-256
+`fa68cd2758df8790366c988140368ec257c13b03dca49df8909cd43cb7c66de1`.
+The independently replayed complete reference record vector has
+SHA-256
+`58bbc78828ba2d4cde6b99cbebea815ce9381cda24d0acec03f6cc095b8b643c`.
+
+Retain both complete, source-authenticated reference streams,
+all **64** categories and **160** cases per category, all
+original size-changing buffer and callback events, the full-width
+seed and case matrix, and all **12** signed original V1 history
+files. Verify both distinct process identities, exact case parity,
+lossless single-stream compression, atomic non-overwriting
+publication, complete readback, and zero omitted failures.
+
+Run **zero** candidates, compiler jobs, benchmarks, clocks, or
+hidden cases. Corrected Rust, C, and Zig changing-buffer results
+remain **NOT MEASURED**. The final comparison remains
+**NOT OPENED**.
+
 ## Freeze lossless corrected changing-buffer evidence recording
 
 Freeze the [lossless corrected changing-buffer evidence recorder](../tools/record_independent_shape_changing_buffer_semantics_v2.py)
