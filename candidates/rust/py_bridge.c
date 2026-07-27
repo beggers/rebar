@@ -342,7 +342,15 @@ static PyObject *rust_match_piece(RustMatch *match, Py_ssize_t group, PyObject *
         );
     }
     Py_buffer view = {0};
-    if (PyObject_GetBuffer(match->string, &view, PyBUF_SIMPLE) != 0) return NULL;
+    if (PyObject_GetBuffer(match->string, &view, PyBUF_SIMPLE) != 0) {
+        PyErr_Clear();
+        PyErr_Format(
+            PyExc_TypeError,
+            "expected string or bytes-like object, got '%.200s'",
+            Py_TYPE(match->string)->tp_name
+        );
+        return NULL;
+    }
     Py_ssize_t first = begin < 0 ? 0 : (Py_ssize_t)begin;
     Py_ssize_t finish = end < 0 ? 0 : (Py_ssize_t)end;
     if (first > view.len) first = view.len;
@@ -3022,6 +3030,25 @@ static PyObject *rust_sub_unchanged(const RustSubject *subject) {
     return PyBytes_FromStringAndSize((const char *)subject->data, (Py_ssize_t)subject->length);
 }
 
+static int rust_output_capture(
+    RustOutputWriter *writer,
+    const RustSubject *subject,
+    size_t begin,
+    size_t end
+) {
+    if (writer->text || PyBytes_CheckExact(subject->object)) {
+        return rust_output_subject(writer, subject, begin, end);
+    }
+
+    RustSubject capture;
+    if (!rust_subject_open(&capture, NULL, subject->object, 0)) {
+        return -1;
+    }
+    int result = rust_output_subject(writer, &capture, begin, end);
+    rust_subject_release(&capture);
+    return result;
+}
+
 static int rust_output_template(RustOutputWriter *writer, const RustSubject *subject, PyObject *tokens, PyObject *raw, const intptr_t *begins, const intptr_t *ends, size_t groups) {
     if (tokens == Py_None) return rust_output_value(writer, raw);
     if (!PyTuple_Check(tokens)) {
@@ -3037,7 +3064,17 @@ static int rust_output_template(RustOutputWriter *writer, const RustSubject *sub
                 if (!PyErr_Occurred()) PyErr_SetString(PyExc_IndexError, "invalid Rust regex replacement group");
                 return -1;
             }
-            if (begins[group] >= 0 && rust_output_subject(writer, subject, (size_t)begins[group], (size_t)ends[group]) < 0) return -1;
+            if (
+                begins[group] >= 0
+                && rust_output_capture(
+                    writer,
+                    subject,
+                    (size_t)begins[group],
+                    (size_t)ends[group]
+                ) < 0
+            ) {
+                return -1;
+            }
         } else if (rust_output_value(writer, token) < 0) {
             return -1;
         }
@@ -3077,11 +3114,37 @@ static int rust_replacement_cache(PyObject *pattern, PyObject *templates, PyObje
             }
         } else {
             PyErr_Clear();
-            normalized = PyBytes_FromObject(replacement);
+            if (PyObject_CheckBuffer(replacement)) {
+                Py_buffer retry = {0};
+                if (
+                    PyObject_GetBuffer(
+                        replacement, &retry, PyBUF_SIMPLE
+                    ) == 0
+                ) {
+                    normalized = PyBytes_FromStringAndSize(
+                        (const char *)retry.buf, retry.len
+                    );
+                    PyBuffer_Release(&retry);
+                    if (normalized == NULL) return -1;
+                } else {
+                    PyErr_Clear();
+                }
+            }
             if (normalized == NULL) {
+                normalized = PyBytes_FromObject(replacement);
+            }
+            if (normalized == NULL) {
+                if (PyErr_ExceptionMatches(PyExc_BufferError)) return -1;
                 PyErr_Clear();
                 if (PyObject_Hash(replacement) == -1) return -1;
                 PyErr_Format(PyExc_TypeError, "decoding to str: need a bytes-like object, %.200s found", Py_TYPE(replacement)->tp_name);
+                return -1;
+            }
+            if (
+                PyMemoryView_Check(replacement)
+                && PyObject_Hash(replacement) == -1
+            ) {
+                Py_DECREF(normalized);
                 return -1;
             }
             Py_ssize_t size = PyBytes_GET_SIZE(normalized);
@@ -3152,6 +3215,26 @@ static int rust_replacement_cache(PyObject *pattern, PyObject *templates, PyObje
     return 0;
 }
 
+static PyObject *rust_normalize_expand_buffer(PyObject *template) {
+    if (PyObject_Hash(template) == -1) {
+        if (!PyErr_ExceptionMatches(PyExc_TypeError)) return NULL;
+        PyErr_Clear();
+        return PyBytes_FromObject(template);
+    }
+
+    Py_buffer view = {0};
+    if (PyObject_GetBuffer(template, &view, PyBUF_SIMPLE) == 0) {
+        PyObject *normalized = PyBytes_FromStringAndSize(
+            (const char *)view.buf, view.len
+        );
+        PyBuffer_Release(&view);
+        return normalized;
+    }
+
+    PyErr_Clear();
+    return PyBytes_FromObject(template);
+}
+
 static PyObject *rust_match_expand(RustMatch *match, PyObject *template) {
     if (rust_template_helper == NULL) {
         return rust_match_expand_fallback(match, template);
@@ -3166,6 +3249,17 @@ static PyObject *rust_match_expand(RustMatch *match, PyObject *template) {
         || (!text && !(ordinary_bytes || ordinary_bytearray || ordinary_memoryview))
         || (!text && !PyBytes_CheckExact(template))
     ) {
+        if (
+            !text
+            && !PyBytes_Check(template)
+            && PyObject_CheckBuffer(template)
+        ) {
+            PyObject *normalized = rust_normalize_expand_buffer(template);
+            if (normalized == NULL) return NULL;
+            PyObject *result = rust_match_expand_fallback(match, normalized);
+            Py_DECREF(normalized);
+            return result;
+        }
         return rust_match_expand_fallback(match, template);
     }
 

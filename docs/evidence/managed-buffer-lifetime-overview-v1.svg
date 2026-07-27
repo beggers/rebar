@@ -12,10 +12,9 @@
 <rect x="43" y="178" width="996" height="24" rx="6" fill="#e2e8f0"/>
 <rect x="43" y="178" width="996" height="24" fill="#15803d"><title>Python baseline: 1,024 matches python out of 1,024</title></rect>
 <text x="43" y="246" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Rust</text>
-<text x="1038" y="246" fill="#dc2626" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">938 / 1,024 match Python</text>
+<text x="1038" y="246" fill="#15803d" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">1,024 / 1,024 match Python</text>
 <rect x="43" y="256" width="996" height="24" rx="6" fill="#e2e8f0"/>
-<rect x="43" y="256" width="912" height="24" fill="#15803d"><title>Rust: 938 matches python out of 1,024</title></rect>
-<rect x="955" y="256" width="84" height="24" fill="#dc2626"><title>Rust: 86 does not match python out of 1,024</title></rect>
+<rect x="43" y="256" width="996" height="24" fill="#15803d"><title>Rust: 1,024 matches python out of 1,024</title></rect>
 <text x="43" y="324" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">C</text>
 <text x="1038" y="324" fill="#15803d" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">1,024 / 1,024 match Python</text>
 <rect x="43" y="334" width="996" height="24" rx="6" fill="#e2e8f0"/>
@@ -26,5 +25,5 @@
 <rect x="43" y="412" width="950" height="24" fill="#15803d"><title>Zig: 977 matches python out of 1,024</title></rect>
 <rect x="993" y="412" width="46" height="24" fill="#dc2626"><title>Zig: 47 does not match python out of 1,024</title></rect>
 <text x="43" y="475" fill="#475569" font-family="system-ui,sans-serif" font-size="12">These are 1,024 separately frozen safety checks; they do not change the original 2,807-check comparison.</text>
-<text x="43" y="502" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Manifest SHA-256: 2f9a5d3255899b759aa36e01857e3938a68daa590c220593315a9c3b08ebe568 · renderer SHA-256: 9415853895f02abd0cebdd35f8ec8b6634191c6373b96b53859ebd4e2d8195a3</text>
+<text x="43" y="502" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Manifest SHA-256: 330eca68d815b6e3263a884205a5fa25fb05f21a2cd4b88ac2db0f57a804a5df · renderer SHA-256: 9415853895f02abd0cebdd35f8ec8b6634191c6373b96b53859ebd4e2d8195a3</text>
 </svg>

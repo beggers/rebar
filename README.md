@@ -12,20 +12,20 @@ Each candidate must use its own matching engine built from scratch. Wrapping Pyt
 
 ![Compatibility against the same 2,807 Python checks: all three from-scratch Rust, C, and Zig engines pass every check](docs/evidence/candidate-correctness-overview-v2.svg)
 
-![Additional memory-safety checks: Python and C pass all 1,024; Rust fails 86 and Zig fails 47](docs/evidence/managed-buffer-lifetime-overview-v1.svg)
+![Additional memory-safety checks: Python, Rust, and C pass all 1,024; Zig fails 47](docs/evidence/managed-buffer-lifetime-overview-v1.svg)
 
-![Overall public development speed: Python at 1.000 times, Rust at 1.065 times, the 1.5-times target, and C and Zig not yet measured](docs/evidence/rust-public-speed-v2-overall.svg)
+![Historical speed before the latest compatibility repairs: Python at 1.000 times, old Rust at 1.065 times, and the 1.5-times target](docs/evidence/rust-public-speed-v2-overall.svg)
 
 | Implementation | Original 2,807 checks | Extra 1,024 safety checks | Speed relative to Python |
 | --- | ---: | ---: | ---: |
 | Python `re` | 2,807 / 2,807 | 1,024 / 1,024 | 1.000× |
-| Our Rust engine | 2,807 / 2,807 | 938 / 1,024; 86 failures | 1.065× on public development examples |
+| Our Rust engine | 2,807 / 2,807 | 1,024 / 1,024 | NOT MEASURED |
 | Our C engine | 2,807 / 2,807 | 1,024 / 1,024 | NOT MEASURED |
 | Our Zig engine | 2,807 / 2,807 | 977 / 1,024; 47 failures | NOT MEASURED |
 
 All three engines are independently built from scratch. Green indicates a real matching result; red indicates a real mismatch. Every engine faces exactly the same 2,807 checks. Failures and older results are preserved, never excluded.
 
-Rust's 1.065× result is from 864 public development examples, not the final comparison. Its measured 95% interval is 1.049×–1.081×. It does not meet the 1.5× target. The final comparison remains closed until all three engines pass both the original and additional safety checks.
+The 1.065× graph is a historical result for the earlier, pre-repair Rust engine on 864 public development examples. Its measured 95% interval is 1.049×–1.081×; it does not meet the 1.5× target and does not measure the current code. Current Rust, C, and Zig speeds are **NOT MEASURED**. The final comparison remains closed until all three engines pass both the original and additional safety checks.
 
 ## Detailed compatibility
 
@@ -36,14 +36,14 @@ Rust's 1.065× result is from 864 public development examples, not the final com
 | Scanners and callbacks | 1,024 | 1,024 | 1,024 | 1,024 |
 | Memory views and buffers | 768 | 768 | 768 | 768 |
 | Total matching checks | 2,807 | 2,807 | 2,807 | 2,807 |
-| Additional memory-lifetime safety, counted separately | 1,024 | 938 | 1,024 | 977 |
+| Additional memory-lifetime safety, counted separately | 1,024 | 1,024 | 1,024 | 977 |
 | Additional scanner and pattern-comment checks, counted separately | 2,854 | NOT MEASURED | NOT MEASURED | NOT MEASURED |
 
 Python's genuine debug-only test is skipped equally and is not included in the denominator.
 
 ![Detailed public correctness: Python and the Rust engine match on all 864 public examples](docs/evidence/rust-public-correctness-v1.svg)
 
-An additional, frozen 1,024-case memory-lifetime safety suite has a passing two-Python baseline. C passes all 1,024 cases. Rust passes 938 and fails 86. Zig passes 977 and fails 47. An earlier Zig attempt was rejected because an old process ID was reused; both that rejection and every actual failure are preserved. These cases are counted separately and are never silently added to the 2,807 original checks.
+An additional, frozen 1,024-case memory-lifetime safety suite has a passing two-Python baseline. Rust and C each pass all 1,024 cases. Zig passes 977 and fails 47. Rust's original 86 failures, Zig's rejected process-ID attempt, and every other actual failure remain preserved. These cases are counted separately and are never silently added to the 2,807 original checks.
 
 A separate, frozen 2,854-case scanner and pattern-comment suite now has two matching Python baselines. Its candidate results are **NOT MEASURED**.
 
@@ -55,7 +55,7 @@ A separate, frozen 2,854-case scanner and pattern-comment suite now has two matc
 
 ![Measured slowdowns greater than 20 percent: zero among all 864 public development examples](docs/evidence/rust-public-speed-v2-regressions.svg)
 
-These development graphs include every measured result. On the 864 public examples, 183 are clearly faster, 213 are clearly slower, and 468 are inconclusive. No result is hidden. Final speed, native memory use, and timings for C and Zig are **NOT MEASURED**.
+These historical development graphs include every measured result for the old Rust engine. On the 864 public examples, 183 are clearly faster, 213 are clearly slower, and 468 are inconclusive. No result is hidden. Current-candidate speed, native memory use, and final timings for Rust, C, and Zig are **NOT MEASURED**.
 
 ## Larger final comparison
 

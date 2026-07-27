@@ -7,6 +7,84 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Repair and independently rebuild Rust memory ownership
+
+Fix the project's
+[owned Rust Python bridge](../candidates/rust/py_bridge.c),
+SHA-256
+`ab0ef168f5ac22242949da58eaf2693fd2f0baf4520aaff5bd34a413cad653fc`.
+Use the exact unchanged dependency lock and a fresh isolated
+`cargo build --locked --offline --release` to rebuild the actual
+Rust engine. The independently produced matching engine is
+`f8cd2e8ecac5ab6a12eb933e6d1d234700a71ab64fc1578800f46ce93d25b8b4`.
+Two independent strict C builds produce the same owned Python
+bridge
+`6fdd114c812b63acce88ef56b8077da5a260c8719ffe2058d29e5be418a26f15`.
+The bridge links only to the project's Rust engine and the system
+C runtime; preserve both previous native artifacts before atomic
+replacement.
+
+Match genuine Python buffer retention, nested subject acquisitions,
+overwrite-on-release, replacement-exporter errors, readonly and
+writable strided memory views, and exact original error classes.
+Rerun all frozen original suites against the actual rebuilt source
+and binaries:
+
+- [Original Python tests](../experiments/rust_public_practice_v1/rust-original-v5-owned-buffer-repair-v1.json),
+  SHA-256
+  `a236bd82c9284c715b6383927157e9a9d7120de9a65b3690b79127804889d821`:
+  **151 / 151** runnable checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/rust-original-v5-owned-buffer-repair-v1-publication-receipt.json)
+  is `d442b6bab3187d7fd34b1b6408674a217cfb159a205f24a81607ff7327bedf10`.
+- [General public behavior](../experiments/rust_public_practice_v1/rust-public-contract-v3-owned-buffer-repair-v1.json),
+  SHA-256
+  `df8f2a40cc8b9d8d3c0d95bbbb9ef6fd1caed45c87916727994d9d70a21d6d11`:
+  **864 / 864** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/rust-public-contract-v3-owned-buffer-repair-v1-publication-receipt.json)
+  is `0151cb0b0896fab9fc829581c00bd91f58f835230c9d2c68449a6e784abb16ec`.
+- [Scanners and callbacks](../experiments/rust_public_practice_v1/rust-scanner-contract-v3-owned-buffer-repair-v1.json),
+  SHA-256
+  `0bc07a0b0d05bbe1dc913b081cec5a55823565f426b4506f46bb22c84c391240`:
+  **1,024 / 1,024** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/rust-scanner-contract-v3-owned-buffer-repair-v1-publication-receipt.json)
+  is `4285cf917c552e47d108d08191da7388d7b2f3feddf4d373db0d10ee5a2e2c19`.
+- [Memory views and buffers](../experiments/rust_public_practice_v1/rust-buffer-contract-v3-owned-buffer-repair-v1.json),
+  SHA-256
+  `27b64f6e15b90abf255e4e49d988960ceba6b02362548015f69f6b8fe82f9e19`:
+  **768 / 768** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/rust-buffer-contract-v3-owned-buffer-repair-v1-publication-receipt.json)
+  is `78182327da8a8ff32b044813f7d2775e22ab0ded187a51a630b308f88ee81bdb`.
+
+The repaired Rust engine also passes all **1,024 / 1,024**
+additional frozen memory-lifetime cases. Its
+[complete compressed memory-safety report](../experiments/rust_public_practice_v1/rust-managed-buffer-lifetime-v1-owned-buffer-repair-v1.json.gz)
+is `1003e444339b8688b69bf330d85ec1e98dbe6ed7cb9270e2837201fab7a050f2`;
+its
+[actual passing candidate receipt](../experiments/rust_public_practice_v1/rust-managed-buffer-lifetime-v1-owned-buffer-repair-v1-publication-receipt.json)
+is `3be89a17977239e42d9efdb540e551cbdf7bdc93e88340fa543336e02cc78930`.
+Preserve all **86** original Rust failures as superseded complete
+evidence; preserve all genuine Zig and C history.
+
+The
+[regenerated original-compatibility manifest](evidence/candidate-correctness-overview-v2.inputs.json)
+is `4422821a87b025520f07ed796f90fffbe228ecb9adde7a47f7340fc6a4ac7172`;
+its [complete original graph data](evidence/candidate-correctness-overview-v2.json)
+is `01d9cc30bc158403e084cdada4f4b7671a130438452ea64c1b7a57a898494ac3`,
+and its [generated original graph](evidence/candidate-correctness-overview-v2.svg)
+is `f9fbfa9aec1b83b38f517df614a0c351489071ace4e14e13d1b63d96d3f3ce49`.
+The [updated memory-safety manifest](evidence/managed-buffer-lifetime-overview-v1.inputs.json)
+is `330eca68d815b6e3263a884205a5fa25fb05f21a2cd4b88ac2db0f57a804a5df`;
+its [complete safety graph data](evidence/managed-buffer-lifetime-overview-v1.json)
+is `6b87fa832418138cba85d5d670f5da7b77473f126ddd1b3262c4e3226bf1a97d`,
+and its [generated safety graph](evidence/managed-buffer-lifetime-overview-v1.svg)
+is `08305cf583ed1427c1be133803ee81f5b999a86d776544a90280f50caefa8fe5`.
+
+The **1.065×** historical development graph belongs to the earlier
+Rust bridge. Do not attach that timing to the rebuilt engine:
+current Rust, C, and Zig performance remains **NOT MEASURED**.
+No final holdout, candidate timings, native-memory ranking,
+or winner is produced.
+
 ## Verify the complete 2,854-case Python scanner baseline
 
 Only after separately freezing and pushing the scanner oracle and
