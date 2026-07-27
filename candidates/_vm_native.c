@@ -17,7 +17,15 @@ typedef struct { Py_ssize_t count, atomic_capacity, suffix_width; int linear, co
 typedef struct { int kind; Py_UCS4 a, b; } ClassItem;
 typedef struct { Py_ssize_t count; ClassItem *items; unsigned char ascii[256], scoped_ascii[256], ignore_ascii[256], ignore_unicode[256]; int ready; } CharClass;
 typedef struct { Py_ssize_t code_count, class_count, groups, root_flags; Code *codes; CharClass *classes; PyObject *literal; unsigned char starts[256]; uint64_t *start_pairs; uint32_t start_triples[128]; int starts_ready, start_singleton, cache_classes, triple_count, locale_sensitive; } VM;
-typedef struct { PyObject *obj; int byte_mode, unicode_kind; Py_ssize_t length; const char *bytes; const void *unicode_data; } Subject;
+typedef struct {
+    PyObject *obj;
+    int byte_mode, unicode_kind;
+    Py_ssize_t length;
+    const char *bytes;
+    const void *unicode_data;
+    Py_buffer view;
+    int has_view;
+} Subject;
 typedef struct { Py_ssize_t pc, pos, last, repeat_step, repeat_limit, repeat_body_count; Py_ssize_t *caps, *seen, *barrier; int atomic_depth; } State;
 typedef struct { State **items; Py_ssize_t length, capacity; } Stack;
 
@@ -1858,41 +1866,55 @@ static int find_one(const VM *vm, const Subject *subject, Py_ssize_t pos,
     return 0;
 }
 
+static void subject_clear(Subject *subject) {
+    if (subject->has_view) {
+        subject->has_view=0;
+        subject->bytes=NULL;
+        PyBuffer_Release(&subject->view);
+    }
+}
+
 static int subject_init(Subject *subject, PyObject *string) {
-    subject->obj=string; subject->byte_mode=0; subject->unicode_kind=0; subject->length=0; subject->bytes=NULL; subject->unicode_data=NULL;
-    if (PyBytes_Check(string)) { subject->byte_mode=1; subject->length=PyBytes_GET_SIZE(string); subject->bytes=PyBytes_AS_STRING(string); }
-    else if (PyByteArray_Check(string)) { subject->byte_mode=1; subject->length=PyByteArray_GET_SIZE(string); subject->bytes=PyByteArray_AS_STRING(string); }
-    else if (PyMemoryView_Check(string)) {
-        Py_buffer view;
-        if (PyObject_GetBuffer(string,&view,PyBUF_SIMPLE)<0) {
-            PyErr_Clear();
-            PyErr_Format(PyExc_TypeError,"expected string or bytes-like object, got '%.80s'",Py_TYPE(string)->tp_name);
-            return 0;
-        }
-        if (!PyBuffer_IsContiguous(&view,'C')) {
-            PyBuffer_Release(&view);
-            PyErr_Format(PyExc_TypeError,"expected string or bytes-like object, got '%.80s'",Py_TYPE(string)->tp_name);
-            return 0;
-        }
-        subject->byte_mode=1; subject->length=view.len; subject->bytes=(const char *)view.buf;
-        PyBuffer_Release(&view);
+    subject->obj=string;
+    subject->byte_mode=0;
+    subject->unicode_kind=0;
+    subject->length=0;
+    subject->bytes=NULL;
+    subject->unicode_data=NULL;
+    subject->view=(Py_buffer){0};
+    subject->has_view=0;
+
+    if (PyBytes_Check(string)) {
+        subject->byte_mode=1;
+        subject->length=PyBytes_GET_SIZE(string);
+        subject->bytes=PyBytes_AS_STRING(string);
+        return 1;
     }
-    else if (PyUnicode_Check(string)) { subject->length=PyUnicode_GET_LENGTH(string); subject->unicode_kind=PyUnicode_KIND(string); subject->unicode_data=PyUnicode_DATA(string); }
-    else {
-        Py_buffer view;
-        if (PyObject_GetBuffer(string,&view,PyBUF_SIMPLE)<0) {
-            PyErr_Clear();
-            PyErr_Format(PyExc_TypeError,"expected string or bytes-like object, got '%.80s'",Py_TYPE(string)->tp_name);
-            return 0;
-        }
-        if (!PyBuffer_IsContiguous(&view,'C')) {
-            PyBuffer_Release(&view);
-            PyErr_Format(PyExc_TypeError,"expected string or bytes-like object, got '%.80s'",Py_TYPE(string)->tp_name);
-            return 0;
-        }
-        subject->byte_mode=1; subject->length=view.len; subject->bytes=(const char *)view.buf;
-        PyBuffer_Release(&view);
+    if (PyUnicode_Check(string)) {
+        subject->length=PyUnicode_GET_LENGTH(string);
+        subject->unicode_kind=PyUnicode_KIND(string);
+        subject->unicode_data=PyUnicode_DATA(string);
+        return 1;
     }
+
+    if (PyObject_GetBuffer(string,&subject->view,PyBUF_SIMPLE)<0) {
+        PyErr_Clear();
+        PyErr_Format(PyExc_TypeError,
+                     "expected string or bytes-like object, got '%.80s'",
+                     Py_TYPE(string)->tp_name);
+        return 0;
+    }
+    subject->has_view=1;
+    if (!PyBuffer_IsContiguous(&subject->view,'C')) {
+        subject_clear(subject);
+        PyErr_Format(PyExc_TypeError,
+                     "expected string or bytes-like object, got '%.80s'",
+                     Py_TYPE(string)->tp_name);
+        return 0;
+    }
+    subject->byte_mode=1;
+    subject->length=subject->view.len;
+    subject->bytes=(const char *)subject->view.buf;
     return 1;
 }
 
@@ -1908,6 +1930,18 @@ static PyObject *subject_slice(const Subject *subject, Py_ssize_t begin, Py_ssiz
         return PyBytes_FromStringAndSize(subject->bytes+begin,end-begin);
     }
     return PyUnicode_Substring(subject->obj,begin,end);
+}
+
+static PyObject *subject_capture_slice(const Subject *subject,
+                                       Py_ssize_t begin,
+                                       Py_ssize_t end) {
+    if (!subject->has_view) return subject_slice(subject,begin,end);
+
+    Subject capture;
+    if (!subject_init(&capture,subject->obj)) return NULL;
+    PyObject *result=subject_slice(&capture,begin,end);
+    subject_clear(&capture);
+    return result;
 }
 
 static PyObject *span_list(const VM *vm, const Py_ssize_t *caps) {
@@ -1933,23 +1967,45 @@ static PyObject *native_match(PyObject *self, PyObject *args) {
     if (!vm) return NULL;
     Subject subject;
     if (!subject_init(&subject,string)) return NULL;
+    PyObject *result=NULL,*spans=NULL,*last_obj=NULL;
+    Py_ssize_t *caps=NULL;
     if (pos<0) pos=0;
     if (pos>subject.length) pos=subject.length;
     if (endpos<0) endpos=0;
     if (endpos>subject.length) endpos=subject.length;
-    if (pos>endpos && mode==0) Py_RETURN_NONE;
-    Py_ssize_t *caps=PyMem_Malloc((size_t)(2*(vm->groups+1))*sizeof(Py_ssize_t));
-    if (!caps) return PyErr_NoMemory();
+    if (pos>endpos && mode==0) {
+        result=Py_NewRef(Py_None);
+        goto done;
+    }
+    caps=PyMem_Malloc((size_t)(2*(vm->groups+1))*sizeof(Py_ssize_t));
+    if (!caps) {
+        result=PyErr_NoMemory();
+        goto done;
+    }
     Py_ssize_t last=-1,found=-1,finish=-1;
     int got=find_one(vm,&subject,pos,endpos,mode,require_nonempty,caps,&last,&found,&finish);
-    if (got<0) { PyMem_Free(caps); PyErr_SetString(PyExc_RuntimeError,got==-1?"native VM allocation failed":"native VM recursion limit"); return NULL; }
-    if (!got) { PyMem_Free(caps); Py_RETURN_NONE; }
-    PyObject *spans=span_list(vm,caps);
-    if (!spans) { PyMem_Free(caps); return NULL; }
-    PyObject *last_obj=last<0 ? Py_NewRef(Py_None) : PyLong_FromSsize_t(last);
-    if (!last_obj) { Py_DECREF(spans); PyMem_Free(caps); return NULL; }
-    PyObject *result=Py_BuildValue("nnOO",found,finish,spans,last_obj);
-    Py_DECREF(spans); Py_DECREF(last_obj); PyMem_Free(caps); return result;
+    if (got<0) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        got==-1 ? "native VM allocation failed" :
+                                  "native VM recursion limit");
+        goto done;
+    }
+    if (!got) {
+        result=Py_NewRef(Py_None);
+        goto done;
+    }
+    spans=span_list(vm,caps);
+    if (!spans) goto done;
+    last_obj=last<0 ? Py_NewRef(Py_None) : PyLong_FromSsize_t(last);
+    if (!last_obj) goto done;
+    result=Py_BuildValue("nnOO",found,finish,spans,last_obj);
+
+done:
+    Py_XDECREF(spans);
+    Py_XDECREF(last_obj);
+    if (caps) PyMem_Free(caps);
+    subject_clear(&subject);
+    return result;
 }
 
 static PyObject *collect_core(VM *vm, Subject subject, Py_ssize_t pos, Py_ssize_t endpos, Py_ssize_t limit, int mode) {
@@ -2282,7 +2338,9 @@ static PyObject *native_collect(PyObject *self, PyObject *args) {
     if (!vm) return NULL;
     Subject subject;
     if (!subject_init(&subject,string)) return NULL;
-    return collect_core(vm,subject,pos,endpos,limit,mode);
+    PyObject *result=collect_core(vm,subject,pos,endpos,limit,mode);
+    subject_clear(&subject);
+    return result;
 }
 
 typedef struct {
@@ -2308,9 +2366,7 @@ typedef struct {
     PyObject *string;
     Py_ssize_t cursor, endpos, original_pos;
     int nonempty, done;
-    Py_buffer view;
     Subject subject;
-    int has_view;
 } FindIterObject;
 
 static PyTypeObject PatternType;
@@ -2330,10 +2386,16 @@ static PyObject *scanner_reconstructor=NULL;
 static int pattern_subject(PatternObject *pattern, PyObject *string, Subject *subject) {
     if (!subject_init(subject,string)) return 0;
     if (PyUnicode_Check(pattern->pattern) && subject->byte_mode) {
-        PyErr_SetString(PyExc_TypeError,"cannot use a string pattern on a bytes-like object"); return 0;
+        subject_clear(subject);
+        PyErr_SetString(PyExc_TypeError,
+                        "cannot use a string pattern on a bytes-like object");
+        return 0;
     }
     if (PyBytes_Check(pattern->pattern) && !subject->byte_mode) {
-        PyErr_SetString(PyExc_TypeError,"cannot use a bytes pattern on a string-like object"); return 0;
+        subject_clear(subject);
+        PyErr_SetString(PyExc_TypeError,
+                        "cannot use a bytes pattern on a string-like object");
+        return 0;
     }
     return 1;
 }
@@ -2371,7 +2433,9 @@ static PyObject *match_piece(MatchObject *match, Py_ssize_t number, PyObject *de
     if (begin<0) return Py_NewRef(default_value);
     Subject subject;
     if (!subject_init(&subject,match->string)) return NULL;
-    return subject_slice(&subject,begin,end);
+    PyObject *result=subject_slice(&subject,begin,end);
+    subject_clear(&subject);
+    return result;
 }
 
 static PyObject *match_group(MatchObject *match, PyObject *args) {
@@ -2585,7 +2649,20 @@ static PyObject *substitution_template(PatternObject *pattern,
                         (size_t)PyBytes_GET_SIZE(replacement))==NULL;
     } else if (PyObject_CheckBuffer(replacement)) {
         PyObject *probe=substitution_buffer_copy(replacement);
-        if (!probe) return NULL;
+        if (!probe) {
+            if (PyMemoryView_Check(replacement) ||
+                !PyErr_ExceptionMatches(PyExc_BufferError)) {
+                return NULL;
+            }
+            PyErr_Clear();
+            probe=substitution_buffer_copy(replacement);
+            if (!probe) {
+                if (!PyErr_ExceptionMatches(PyExc_BufferError)) return NULL;
+                PyErr_Clear();
+                probe=PyBytes_FromObject(replacement);
+                if (!probe) return NULL;
+            }
+        }
         *byte_mode=1;
         *literal=memchr(PyBytes_AS_STRING(probe),'\\',
                         (size_t)PyBytes_GET_SIZE(probe))==NULL;
@@ -2897,21 +2974,43 @@ static PyObject *pattern_single(PatternObject *pattern, PyObject *const *args, P
     Py_ssize_t pos,endpos;
     const char *method=mode==0 ? "search" : mode==1 ? "match" : "fullmatch";
     if (!pattern_window(pattern,args,nargs,kwnames,&subject,&pos,&endpos,method)) return NULL;
-    if (pos>endpos && mode==0) Py_RETURN_NONE;
     Py_ssize_t local_caps[34];
     Py_ssize_t cap_count=2*(pattern->groups+1);
-    Py_ssize_t *caps=cap_count<=34 ? local_caps : PyMem_Malloc((size_t)cap_count*sizeof(Py_ssize_t));
-    if (!caps) return PyErr_NoMemory();
+    Py_ssize_t *caps=NULL;
+    PyObject *result=NULL;
+    if (pos>endpos && mode==0) {
+        result=Py_NewRef(Py_None);
+        goto done;
+    }
+    caps=cap_count<=34 ? local_caps :
+        PyMem_Malloc((size_t)cap_count*sizeof(Py_ssize_t));
+    if (!caps) {
+        result=PyErr_NoMemory();
+        goto done;
+    }
     Py_ssize_t found=-1,finish=-1;
     Py_ssize_t last=-1;
     int got=find_one(pattern->vm,&subject,pos,endpos,mode,0,caps,&last,&found,&finish);
-    if (got<0) { if (caps!=local_caps) PyMem_Free(caps); PyErr_SetString(PyExc_RuntimeError,got==-1?"native VM allocation failed":"native VM recursion limit"); return NULL; }
-    if (!got) { if (caps!=local_caps) PyMem_Free(caps); Py_RETURN_NONE; }
+    if (got<0) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        got==-1 ? "native VM allocation failed" :
+                                  "native VM recursion limit");
+        goto done;
+    }
+    if (!got) {
+        result=Py_NewRef(Py_None);
+        goto done;
+    }
     MatchObject *match=match_alloc(pattern,subject.obj,pos,endpos);
-    if (!match) { if (caps!=local_caps) PyMem_Free(caps); return NULL; }
-    memcpy(match->caps,caps,(size_t)cap_count*sizeof(Py_ssize_t)); match->lastindex=last;
-    if (caps!=local_caps) PyMem_Free(caps);
-    return (PyObject *)match;
+    if (!match) goto done;
+    memcpy(match->caps,caps,(size_t)cap_count*sizeof(Py_ssize_t));
+    match->lastindex=last;
+    result=(PyObject *)match;
+
+done:
+    if (caps && caps!=local_caps) PyMem_Free(caps);
+    subject_clear(&subject);
+    return result;
 }
 
 static PyObject *pattern_search(PatternObject *pattern, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) { return pattern_single(pattern,args,nargs,kwnames,0); }
@@ -2934,7 +3033,9 @@ static PyObject *pattern_collect(PatternObject *pattern, PyObject *const *args, 
         if (!pattern_subject(pattern,string,&subject)) return NULL;
         endpos=subject.length;
     }
-    return collect_core(pattern->vm,subject,pos,endpos,limit,mode);
+    PyObject *result=collect_core(pattern->vm,subject,pos,endpos,limit,mode);
+    subject_clear(&subject);
+    return result;
 }
 
 static PyObject *pattern_findall(PatternObject *pattern, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) { return pattern_collect(pattern,args,nargs,kwnames,0); }
@@ -2943,14 +3044,16 @@ static PyObject *pattern_split(PatternObject *pattern, PyObject *const *args, Py
 static int scanner_traverse(FindIterObject *iterator, visitproc visit, void *arg) {
     Py_VISIT(Py_TYPE(iterator));
     Py_VISIT(iterator->pattern);
+    Py_VISIT(iterator->string);
+    if (iterator->subject.has_view) {
+        Py_VISIT(iterator->subject.view.obj);
+    }
     return 0;
 }
 
 static int scanner_clear(FindIterObject *iterator) {
-    if (iterator->has_view) {
-        iterator->has_view=0;
-        PyBuffer_Release(&iterator->view);
-    }
+    iterator->done=1;
+    subject_clear(&iterator->subject);
     iterator->subject.obj=NULL;
     iterator->subject.bytes=NULL;
     iterator->subject.unicode_data=NULL;
@@ -3082,19 +3185,18 @@ static PyObject *pattern_iterator(PatternObject *pattern, PyObject *const *args,
     if (!pattern_window(pattern,args,nargs,kwnames,&subject,&pos,&endpos,
                         return_iterator ? "finditer" : "scanner")) return NULL;
     FindIterObject *iterator=PyObject_GC_New(FindIterObject,&ScannerType);
-    if (!iterator) return NULL;
+    if (!iterator) {
+        subject_clear(&subject);
+        return NULL;
+    }
     iterator->pattern=NULL;
     iterator->string=NULL;
-    iterator->has_view=0;
     iterator->subject=subject;
+    subject.has_view=0;
     iterator->cursor=pos; iterator->endpos=endpos; iterator->original_pos=pos;
     iterator->nonempty=0; iterator->done=0;
     iterator->pattern=(PatternObject *)Py_NewRef(pattern);
     iterator->string=Py_NewRef(subject.obj);
-    if (subject.byte_mode && !PyBytes_Check(subject.obj)) {
-        if (PyObject_GetBuffer(subject.obj,&iterator->view,PyBUF_SIMPLE)<0) { Py_DECREF(iterator); return NULL; }
-        iterator->has_view=1;
-    }
     PyObject_GC_Track(iterator);
     if (!return_iterator) return (PyObject *)iterator;
     PyObject *search = PyCMethod_New(&ScannerMethods[0], (PyObject *)iterator, NULL, &ScannerType);
@@ -3294,7 +3396,8 @@ static PyObject *substitute_bytes(PatternObject *pattern,
                 Py_ssize_t number=PyLong_AsSsize_t(part);
                 if (PyErr_Occurred()) goto error;
                 value=caps[2*number]<0 ? subject_slice(subject,0,0) :
-                      subject_slice(subject,caps[2*number],caps[2*number+1]);
+                      subject_capture_slice(subject,caps[2*number],
+                                            caps[2*number+1]);
             } else {
                 value=Py_NewRef(part);
             }
@@ -3362,28 +3465,18 @@ static PyObject *pattern_substitute(PatternObject *pattern, PyObject *const *arg
     if (limit_value && !fast_index(limit_value,&limit)) return NULL;
     Subject subject;
     if (!pattern_subject(pattern,string,&subject)) return NULL;
+    PyObject *result=NULL;
+    PyObject *template_parts=NULL;
     if (PyCallable_Check(replacement)) {
-        if (subject.byte_mode && !PyBytes_Check(string)) {
-            Py_buffer view;
-            if (PyObject_GetBuffer(string,&view,PyBUF_SIMPLE)<0)
-                return NULL;
-            subject.bytes=(const char *)view.buf;
-            subject.length=view.len;
-            PyObject *result=substitute_callable(
-                pattern,&subject,replacement,limit,return_count);
-            PyBuffer_Release(&view);
-            return result;
-        }
-        return substitute_callable(pattern,&subject,replacement,limit,
-                                   return_count);
+        result=substitute_callable(pattern,&subject,replacement,limit,
+                                  return_count);
+        goto done;
     }
 
     int template_byte_mode=0,literal_replacement=0;
-    PyObject *template_parts=substitution_template(
+    template_parts=substitution_template(
         pattern,replacement,&template_byte_mode,&literal_replacement);
-    if (!template_parts) return NULL;
-
-    PyObject *result=NULL;
+    if (!template_parts) goto done;
     if (template_byte_mode!=subject.byte_mode) {
         Py_ssize_t cap_count=2*(pattern->groups+1);
         Py_ssize_t local_caps[34];
@@ -3457,7 +3550,8 @@ static PyObject *pattern_substitute(PatternObject *pattern, PyObject *const *arg
     }
 
 done:
-    Py_DECREF(template_parts);
+    Py_XDECREF(template_parts);
+    subject_clear(&subject);
     return result;
 }
 

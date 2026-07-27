@@ -7,6 +7,84 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Repair the independently built C engine's memory ownership
+
+Fix the C matching engine itself; do not wrap Python `re`, `_sre`,
+an external package, or another candidate. The independently reviewed
+[owned C source](../candidates/_vm_native.c) has SHA-256
+`81ea03632269d3ca758cbe7bbd79ef9c40e75de58335456f9f2b82a66b5740e9`.
+Two isolated, source-only production builds produce the identical
+native engine SHA-256
+`075350a17d4909cd6f8dbe5e808e7b6444760f54bb60af013e0f812e22cfb7fd`.
+Its only dynamic dependency is the system C runtime; its only
+defined native export is `PyInit__vm_native`.
+
+Genuinely retain and release Python buffers, preserve scanner and
+match lifetimes, account for both independently owned exporter
+references during garbage collection, and reproduce real replacement
+template errors. Rerun all four frozen original correctness
+categories against this exact source and binary:
+
+- [Original Python test results](../experiments/rust_public_practice_v1/c-original-v5-native-lifetime-v1.json),
+  SHA-256
+  `8f8c22e1fcf48238b332f6f618270fbe2d83a5b7bb15fe1a7ad43c57c8e54fff`:
+  **151 / 151** runnable checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/c-original-v5-native-lifetime-v1-publication-receipt.json)
+  is `4cb4b73a2b391a29c34abe918891f69222b2d041ee8d2a93f81f40efaad9d893`.
+- [General public behavior](../experiments/rust_public_practice_v1/c-public-contract-v3-native-lifetime-v1.json),
+  SHA-256
+  `3af03af00a5f73fc18d100ae2f6a85f2363385c5115d7bbd8a3e02eefedf1a86`:
+  **864 / 864** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/c-public-contract-v3-native-lifetime-v1-publication-receipt.json)
+  is `20fc02ffb8fb7c042f43b70f56eb5050db5a2898a8b940e4ec89e33e2052cca1`.
+- [Scanners and callbacks](../experiments/rust_public_practice_v1/c-scanner-contract-v3-native-lifetime-v1.json),
+  SHA-256
+  `2f5898e8ea63fdc6065b4844127bc3e5d9281c4d9f4c40dc0347c3bf8749c78e`:
+  **1,024 / 1,024** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/c-scanner-contract-v3-native-lifetime-v1-publication-receipt.json)
+  is `3fcbccbe325d07ef0f65b957bcb01cefec41428307fc078991326f3235fb41c6`.
+- [Memory views and buffers](../experiments/rust_public_practice_v1/c-buffer-contract-v3-native-lifetime-v1.json),
+  SHA-256
+  `d7dbda2eac26e2c39d20675cda35d00aba6f0698ef0035921d52689a215de5bc`:
+  **768 / 768** checks pass. Its
+  [durable receipt](../experiments/rust_public_practice_v1/c-buffer-contract-v3-native-lifetime-v1-publication-receipt.json)
+  is `50bdbbefca35948cbd118bc77291870134c7b7cecc77ed1277b5e26dfe33d92b`.
+
+Then independently check all **1,024 / 1,024** additional frozen
+memory-lifetime cases against the complete, two-process Python
+baseline. The
+[complete compressed C lifetime results](../experiments/rust_public_practice_v1/c-managed-buffer-lifetime-v1-native-lifetime-v1.json.gz)
+have SHA-256
+`9a4e6415c35cf712a5b2be62ac76bb10653a1526022b261f5984ac68c152031e`.
+The
+[durable candidate-correctness receipt](../experiments/rust_public_practice_v1/c-managed-buffer-lifetime-v1-native-lifetime-v1-publication-receipt.json)
+has SHA-256
+`1094f1057eab9635fcd337a6904352c979e5e755334a0ec21e98e68e2f88a6e8`.
+Its genuine candidate outcome is **PASS** with **zero** mismatches,
+one isolated C worker, **2,048** matcher guards and **2,048**
+warning guards. Preserve the previous genuine **237** failures as
+superseded complete evidence in the memory-safety graph manifest.
+
+Regenerate both headline graphs from every source-pinned report,
+including all historical losses. The original graph keeps its
+**2,807-case** denominator; the memory-safety graph keeps its
+separate **1,024-case** denominator. The
+[original graph manifest](evidence/candidate-correctness-overview-v2.inputs.json)
+is `df6fc93365f769521e7400a126dc2c02e2cec71ae73b825ff19c311f8c45c9b5`,
+its [complete generated data](evidence/candidate-correctness-overview-v2.json)
+is `c7d891284ad4876061678b9050cbb10e35a1bf531b36296d04dd4fdbcb8665e2`,
+and its [reproducible graph](evidence/candidate-correctness-overview-v2.svg)
+is `cd89029450fe2cbfced89a85b48d3e06344ac5dee7507a491b741b9ebfdcaa18`.
+The
+[memory-safety graph manifest](evidence/managed-buffer-lifetime-overview-v1.inputs.json)
+is `c35b7339204fb30ecc98f835d6be4e44aa24f0a07f93f5644f036968c46f6c3c`,
+its [complete generated data](evidence/managed-buffer-lifetime-overview-v1.json)
+is `15582d38ae1ecbfab47e761911eed5e53db3acf458a55e8c8f3d6071c01a53c9`,
+and its [reproducible graph](evidence/managed-buffer-lifetime-overview-v1.svg)
+is `bfb859c624d7688c2278d84a4aa363874f6d69dc987edfd2a5202e4c1bf207bb`.
+No holdout, benchmark, timing, speed, ranking, or winner is run
+or selected.
+
 ## Publish the independently verified memory-safety comparison
 
 Render the separately frozen memory-safety graph only after pushing

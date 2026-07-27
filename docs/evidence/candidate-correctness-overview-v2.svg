@@ -45,5 +45,5 @@
 <text x="793" y="478" fill="#475569" font-family="system-ui,sans-serif" font-size="12">Buffers and memory</text>
 <text x="793" y="497" fill="#dc2626" font-family="system-ui,sans-serif" font-size="13" font-weight="600">710/768 passed</text>
 <text x="43" y="548" fill="#475569" font-family="system-ui,sans-serif" font-size="12">Frozen original: 151 runnable + one genuine debug-only skip; 13 named private tests are excluded equally.</text>
-<text x="43" y="570" fill="#64748b" font-family="system-ui,sans-serif" font-size="11">Manifest SHA-256: 1c8ae5b2a9b5f61e2c2250ae6abced90400dee3e39c8d559a316da6c81c203f5 · renderer SHA-256: bef3f5f8bf0330655d92ab335acf504c59855edf79afb52749f0641f5d1fefa8</text>
+<text x="43" y="570" fill="#64748b" font-family="system-ui,sans-serif" font-size="11">Manifest SHA-256: df6fc93365f769521e7400a126dc2c02e2cec71ae73b825ff19c311f8c45c9b5 · renderer SHA-256: bef3f5f8bf0330655d92ab335acf504c59855edf79afb52749f0641f5d1fefa8</text>
 </svg>
