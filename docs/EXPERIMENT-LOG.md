@@ -7,6 +7,32 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve all 192 genuine Zig replacement and buffer failures
+
+Run the independently owned Zig engine against the full frozen
+**5,120-case** replacement-and-buffer Python reference. Zig passes
+**4,928** cases and fails **192**. Preserve all original candidate
+results, the complete signed reference, all **10,240** native
+ownership and **10,240** warning safeguards, and every mismatch.
+
+The [complete first Zig replacement report](../experiments/rust_public_practice_v1/zig-substitution-buffer-semantics-v1-owned-safe-buffer-repair-v1.json.gz)
+has SHA-256
+`8adefae4fb5248d3a95cefc852bfafa9dfca39d0d868a0b424df6394eef9a402`.
+Its [authenticated Zig publication receipt](../experiments/rust_public_practice_v1/zig-substitution-buffer-semantics-v1-owned-safe-buffer-repair-v1-publication-receipt.json)
+has SHA-256
+`89d5f12fb076b4152cf14a12d6fd22f18a0ba99c07a82a2a8efdb4d1ff12a03e`.
+The complete **192-case** mismatch ledger has SHA-256
+`a01c0e3a9bbe11be08502e2469f9052f31748520fc5cd513ea20795719d4a48a`.
+
+Each of the four module and compiled-pattern substitution methods
+fails exactly **48** cases; `Match.expand` has **zero** failures.
+Preserve text and bytes callback errors and every genuinely failing
+nested buffer event. The candidate **FAILS** and the recorder exits
+**1**; successful evidence publication is not a compatibility pass.
+C's **464** replacement failures remain independently preserved.
+Rust replacement behavior and all current candidate speed results
+remain **NOT MEASURED**; the final holdout is **NOT OPENED**.
+
 ## Render the complete changing-buffer baseline comparison
 
 Generate the new headline comparison only after freezing and
