@@ -7,6 +7,41 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze failure-preserving public-type evidence recording
+
+Freeze the [lossless Python public-type evidence recorder](../tools/record_independent_public_type_identity_serialization_v1.py)
+before running a reference or candidate. Its final, twice
+independently reviewed source has SHA-256
+`ee3e6fc00991758fee93b710a63dad9094f881f1ea57777cae2415397f752eae`.
+Pin the separately frozen public-compatibility oracle, SHA-256
+`7ce0606da0d830ef8e9cf9b8e9b952a9836bf705254a23a65551832bf1d92e20`.
+Keep the full **6,912**-case matrix, all **72** categories,
+all **96** examples per category, all **six** pickle protocols,
+full-width seed `6077977430793212465`, and matrix SHA-256
+`c315e37dfa2e79ab62519ea84c710d4e3ca41d63d34873894bf7415278b56123`.
+
+Reject an uncommitted intermediate recorder, source SHA-256
+`ec09b5685ae73e375127d12a7969cea1666e0f0c3e94e6b5dc02ea487e4cc347`:
+an independently reproduced Python-oracle exception could escape
+after a reference worker had started. The final source retains
+the actual process ID, available output, and exact **UNKNOWN**
+state for failed communication and catches genuine public-oracle,
+Rust, C, Zig, original-suite, and ownership-audit errors without
+swallowing interrupts. Never publish, run, or qualify the
+rejected intermediate version.
+
+Two independent reviewers verify normal and empty-environment
+source-only self-tests: **44** positive controls and **335**
+rejected attacks. Verify all **six** complete source owners,
+independently guarded future Rust, C, and Zig workers, safe
+non-overwriting evidence, and complete source-ordered success
+and failure records. Start **zero** Python references, candidates,
+matchers, compilers, clocks, or hidden benchmark observations.
+
+The actual public-type Python reference and all three candidate
+results remain **NOT MEASURED**. The final holdout remains
+**NOT OPENED**.
+
 ## Validate all corrected Python changing-buffer reference cases
 
 Only after separately freezing, committing, and pushing both the
