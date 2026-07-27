@@ -7,6 +7,40 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Record all genuine current-source C general-behavior failures
+
+After separately freezing, reviewing, committing, and pushing
+the V3 shared behavior oracle and its full-evidence recorder,
+run the corrected C engine once against the unchanged **864**
+general cases. Pin the exact current C source,
+`b293cf4e9776692ad90174e6bf58ddd33ae12f90506939a02ab13c16dd4e6d61`,
+and its independently owned native source and engine.
+
+Preserve the
+[complete current C general-behavior result](../experiments/rust_public_practice_v1/c-public-contract-v3-shared-suite-v1.json),
+SHA-256
+`851900f8d2ee47bdb4e306a01e9ecb7c98b19ae2eb90f4cc54816db0af27ef24`,
+and its
+[durable publication receipt](../experiments/rust_public_practice_v1/c-public-contract-v3-shared-suite-v1-publication-receipt.json),
+SHA-256
+`89f641df20139ebff9cf6ecf52a9fc676955019af549672671ddb4d66e40a0bf`.
+
+The genuine result is **FAIL**: **824** matching cases and
+**40** complete scanner-callback mismatches. Exactly **20**
+involve `scanner.scan`; **20** involve
+`scanner.scan.callback_error`. Preserve all **864** observations
+from each of two independent Python references and the owned C
+engine, all **1,728** matcher and **1,728** warning checks,
+complete source and native closures, and every worker stream.
+The durable receipt confirms publication, not correctness.
+
+Current C scanner and buffer categories remain separately
+**NOT RUN**. Do not claim a complete C candidate, remove or
+replace a failing case, sample a clock, open a final test, or
+infer performance. The frozen previous chart remains an
+explicitly identified prior snapshot until regenerated from
+this actual current-source result.
+
 ## Freeze complete behavior evidence for all updated engines
 
 Independently review and prospectively freeze the additive

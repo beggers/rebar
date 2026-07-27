@@ -23,7 +23,7 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 | --- | ---: | --- |
 | Python `re` | **1.000×** | Baseline |
 | Our Rust engine | **1.065×** | **2,807 / 2,807** shared correctness checks pass; speed goal not met |
-| Our C engine | **NOT MEASURED** | **151 / 151** original tests; current general, scanner, and buffer cases not yet run |
+| Our C engine | **NOT MEASURED** | **151 / 151** original tests; **824 / 864** general cases; current scanner and buffer cases not yet run |
 | Our Zig engine | **NOT MEASURED** | **151 / 151** original tests; general, scanner, and buffer cases not yet run |
 
 ## Do the candidates work like Python?
@@ -32,10 +32,17 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 
 Every engine has the same **2,807** planned checks. Green means
 it matches Python; red means an actual mismatch; gray means the
-current build has **not yet been tested**. Rust passes all **2,807**.
-C and Zig each pass all **151** original Python tests; their other
-**2,656** current-build checks remain **NOT YET RUN**. The single
+current build has **not yet been tested**. This frozen graph shows
+its exact recorded snapshot: Rust passes all **2,807**, and C
+and Zig each pass their **151** original Python tests. The single
 genuine Python debug-only skip is not counted.
+
+Since this graph was frozen, a
+[new source-verified C general-behavior run](experiments/rust_public_practice_v1/c-public-contract-v3-shared-suite-v1.json)
+matched **824 / 864** Python cases and exposed **40** genuine
+scanner-callback mismatches. The graph will be regenerated from
+that exact new evidence; current C scanner and buffer results and
+all Zig behavior results remain **NOT YET RUN**.
 
 The older C build's **40** general, **992** scanner, and **21**
 buffer failures remain in the
@@ -138,8 +145,9 @@ checking the complete source and native engine of each updated
 candidate. Its separately frozen
 [complete-result recorder](tools/record_independent_public_contract_v3.py)
 preserves every genuine success, failure, and crash. Updated C
-and Zig behavior results remain **NOT MEASURED** until each full
-category actually runs.
+general behavior has now run and exposed **40** scanner-related
+mismatches. Current C scanner and buffer categories, and every
+Zig behavior category, remain **NOT MEASURED**.
 
 A separately frozen
 [memory-lifetime safety suite](tools/independent_managed_buffer_lifetime_v1.py)
