@@ -53,7 +53,7 @@ C and Zig are shown as **NOT MEASURED**, not as successes or failures.
 
 | Python behavior | Current Rust result | Complete evidence |
 | --- | ---: | --- |
-| Original runnable Python tests | **151 / 151** | [Shared original Python suite](experiments/rust_public_practice_v1/rust-original-v4-shared-suite-v1.json) |
+| Original runnable Python tests | **151 / 151** | [Shared original Python suite](experiments/rust_public_practice_v1/rust-original-v5-shared-suite-v1.json) |
 | General public behavior | **864 / 864** | [Shared general comparison](experiments/rust_public_practice_v1/rust-public-contract-v2-shared-suite-v1.json) |
 | Scanners and callbacks | **1,024 / 1,024** | [Shared scanner comparison](experiments/rust_public_practice_v1/rust-scanner-contract-v2-shared-suite-v1.json) |
 | Memory views and buffer errors | **768 / 768** | [Shared buffer comparison](experiments/rust_public_practice_v1/rust-buffer-contract-v2-shared-suite-v1.json) |
@@ -83,11 +83,12 @@ and [complete result recorder](tools/record_independent_original_cpython_v5.py)
 preserve every test, failure, and genuine skip without allowing an
 external matching engine.
 
-The current
-[C original-test result](experiments/rust_public_practice_v1/c-original-v5-shared-suite-pickle-fix-v1.json)
+Under the same corrected, frozen suite, the current
+[Rust original-test result](experiments/rust_public_practice_v1/rust-original-v5-shared-suite-v1.json),
+[C original-test result](experiments/rust_public_practice_v1/c-original-v5-shared-suite-pickle-fix-v1.json),
 and
 [Zig original-test result](experiments/rust_public_practice_v1/zig-original-v5-shared-suite-pickle-fix-v1.json)
-each pass **151 / 151** runnable tests. Both now expose their **own**
+each pass **151 / 151** runnable tests. C and Zig expose their **own**
 existing compiler as Python's private `_compile` compatibility
 name. Neither calls Python's engine, an external package, or the
 other candidate. Their earlier failures remain preserved in the

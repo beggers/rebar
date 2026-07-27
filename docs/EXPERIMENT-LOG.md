@@ -7,6 +7,31 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Verify Rust against the same corrected original Python suite
+
+After separately committing and pushing the full Rust shared
+buffer category, run the unchanged Rust engine once against the
+exact corrected V5 original-Python suite already used for C and
+Zig. Preserve the
+[complete shared Rust original result](../experiments/rust_public_practice_v1/rust-original-v5-shared-suite-v1.json),
+SHA-256
+`fbb87e6a14f74ec045973564124b65178f83721d8f44be53ed06b728152b4428`,
+and its
+[durable publication receipt](../experiments/rust_public_practice_v1/rust-original-v5-shared-suite-v1-publication-receipt.json),
+SHA-256
+`add23d1e34761cd2cf0fd673bf344fd88fb01dab7a30e3fa5049125ea49dcdd1`.
+
+The real result is **PASS**: Python and Rust each pass all
+**151** runnable original methods and report the same genuine
+debug-only skip. Preserve the complete **152** reference and
+**152** Rust records, all **304** ownership and **304** warning
+checks, exact native and source provenance, and both isolated
+worker streams. There are **zero** mismatches, public waivers,
+external engines, hidden-case accesses, or performance
+measurements. Rust, C, and Zig have now each passed the exact same
+original-test oracle independently; only Rust has also passed
+all **2,807** current shared correctness cases.
+
 ## Complete the shared Rust buffer-compatibility category
 
 After separately committing and pushing the independent C original
