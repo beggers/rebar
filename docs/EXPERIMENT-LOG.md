@@ -7,6 +7,52 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze genuine simultaneous Python interpreter compatibility checks
+
+Freeze the [128-case real-subinterpreter compatibility protocol](../oracle/cpython-3.14.6/PUBLIC-SUBINTERPRETER-V2.md),
+SHA-256
+`8c5caccf077ec38afbad62e282f8e74aa470b5d3616ed0b6aa848dd6d97c0dee`,
+and [failure-preserving real-subinterpreter oracle](../tools/python_re_subinterpreter_oracle_v2.py),
+SHA-256
+`54735efb77a099feb2dd076723d3a93d81415226b9b9213307c32cc0f38c52c8`,
+before running its strengthened two-Python V2 reference.
+
+Preserve every original **128** case, **16** categories,
+**eight** examples per category, original seed `2026072501`, and
+matrix SHA-256
+`edda77658c5eef9746c6d4769734c69e40db4c9d986171fa63799093f4cb62d3`.
+Freeze a genuine simultaneous **A → B → A** interpreter lifecycle,
+including distinct interpreter identities, independent regex caches,
+original callback and byte-buffer records, real cleanup and interpreter
+re-creation, **11** genuine creations and closures and **394** actual
+matching executions per future reference, and **768** individually
+retained phase records across both references. Never substitute a
+main-interpreter match, synthetic event, shared process, worker
+capability check, or merely simulated interpreter.
+
+Retain the genuinely passing original V1 reference, SHA-256
+`9a5501ac4a60f48f749c3d42216c08391b5ff03ed38f191e37588ed4fa747bfa`,
+and its authenticated receipt, SHA-256
+`d4a3b94bc30747db44560eb052d809ee574f5b4083ff7649b05f18f91501418c`.
+Preserve all **165** upstream test methods, **152** public methods,
+the single genuine debug-only public skip, all **13** individually
+waived private methods, all **1,376** separately witnessed public
+cases, real locale transitions, and genuine lone-surrogate data.
+
+Three independent reviewers ran source-only self-tests under normal
+and empty environments. Both results are byte-identical, with SHA-256
+`98850566b750362ed27c007f018bf7f9600573fff1921492904fd3ac13a958c9`.
+All **995** controls pass, including **25** forged-publication controls
+and **11** compressed-evidence attacks. Verify bounded deterministic
+compression, descriptor-owned non-overwriting evidence publication,
+complete process and output records, and safe failure retention without
+running an interpreter, Python matcher, reference worker, candidate,
+clock, memory trial, or hidden case.
+
+The strengthened V2 Python reference and all three candidate results
+are **NOT RUN**. Performance is **NOT MEASURED**. The expanded final
+comparison remains **NOT OPENED**.
+
 ## Verify and preserve every historical callback-test error
 
 Only after separately freezing, committing, and pushing the read-only
