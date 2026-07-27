@@ -103,10 +103,12 @@ and reproducible native builds are **NOT YET ESTABLISHED**. The
 [complete ownership-audit recorder](tools/record_independent_from_scratch_audit_v2.py)
 preserves every genuine failure and crash without claiming a native
 build has been reproduced.
-The [first actual shared ownership result](experiments/rust_public_practice_v1/rust-from-scratch-audit-v2-shared-suite-v1.json)
-confirms that the current Rust engine uses **zero** external regex
-packages and **zero** Python or cross-candidate matching. C and Zig
-have **NOT YET RUN** under this newly shared audit.
+The actual shared ownership results for
+[Rust](experiments/rust_public_practice_v1/rust-from-scratch-audit-v2-shared-suite-v1.json)
+and [C](experiments/rust_public_practice_v1/c-from-scratch-audit-v2-shared-suite-v1.json)
+confirm two separately implemented engines, **zero** external regex
+packages, and **zero** Python or cross-candidate matching. Zig has
+**NOT YET RUN** under this newly shared audit.
 The [Zig build protocol](docs/ZIG-SOURCE-BUILD-V1.md) now pins and
 verifies the official stable compiler; rebuilding the owned Zig
 engine with the independently frozen

@@ -7,6 +7,34 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Run the shared from-scratch ownership audit on C
+
+After committing and pushing the Rust ownership result, run the
+same prospectively frozen audit against the genuinely separate C
+bytecode engine exactly once. Use the unchanged `shared-suite-v1`
+label and the exact hash of the single owned native C engine and
+Python bridge.
+
+Preserve the actual
+[complete C ownership result](../experiments/rust_public_practice_v1/c-from-scratch-audit-v2-shared-suite-v1.json),
+SHA-256
+`edfaaa2faa5621d8f43bfed5dc48bf67cc438ed03c6353fcbc53791e9ad60d43`,
+and its actual
+[independent publication receipt](../experiments/rust_public_practice_v1/c-from-scratch-audit-v2-shared-suite-v1-publication-receipt.json),
+SHA-256
+`e32c794ba340bd87dadae367e0a6859a64ac307453267847f67cd841a59a1a97`.
+
+The actual C result is **PASS**: **one** isolated worker, **21**
+verified native-runtime checks, **zero** external regex packages,
+**zero** forbidden imports or execution, **zero** loaded Python
+matching engines, **zero** failures, and unchanged candidate files.
+Its distinct candidate modules are the owned C adapter and owned C
+native bytecode engine, not the Rust or Zig engines. Preserve
+source-to-binary reproducibility as **NOT ESTABLISHED**. No final
+case or timing is read. C's original Python correctness, broader
+behavior, and performance remain **NOT YET MEASURED**; Zig's
+shared ownership result has **NOT YET RUN** at this focused commit.
+
 ## Run the shared from-scratch ownership audit on Rust
 
 After separately freezing and pushing both the shared native-engine
