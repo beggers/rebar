@@ -7,6 +7,36 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze lossless replacement-and-buffer evidence recording
+
+Freeze the [independently reviewed replacement-and-buffer recorder](../tools/record_independent_substitution_buffer_semantics_v2.py)
+before retrying the **5,120-case** Python reference. Its exact
+SHA-256 is
+`a7cf45ce72a178fead7eb0d0789fd1f0f37ed63789fe086070eefa613e959a33`.
+Retain the [original frozen recorder](../tools/record_independent_substitution_buffer_semantics_v1.py)
+and [complete genuine first recording failure](../experiments/rust_public_practice_v1/substitution-buffer-semantics-v1-shared-suite-v1-controller-failure-v1.json)
+unchanged. The preserved failure is independently authenticated as
+one of the replacement recorder's six mandatory source owners;
+its exact SHA-256 remains
+`a80316f3d1fe87808c8f16cb651393d275132d408633303da16a5142f55ba807`.
+
+Keep each complete reference or native-candidate process stream
+exactly once. Authenticate and reconstruct all **5,120** cases,
+**64** cohorts, all five Python APIs, every callback, buffer
+operation, and mismatch; never duplicate whole results merely to
+pass a recorder. Enforce the proved **96 MiB** raw-stream,
+**128 MiB** encoded-stream, **288 MiB** compact-report, and
+**320 MiB** complete-report bounds. Preserve actual started-process
+identities and label unknown results **UNKNOWN** after a failure.
+
+Both normal and empty-environment source-only checks pass all
+**51** positive controls and reject all **326** attacks. Synthetic
+checks cover complete passing and failing Rust, C, and Zig records;
+no real reference or candidate is executed during this freeze.
+The genuine **5,120-case** Python baseline, all three candidate
+results, performance, and the final holdout remain **NOT MEASURED**
+and **NOT OPENED**.
+
 ## Preserve all 116 genuine C scanner compatibility failures
 
 Run the independently owned C engine against the same frozen
