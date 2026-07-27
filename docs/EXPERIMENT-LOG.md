@@ -7,6 +7,40 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve all 1,364 genuine Zig scanner compatibility failures
+
+Run the independently built, ownership-audited Zig engine against
+the same frozen **2,854-case** scanner and pattern-comment baseline
+used for Rust and C. The actual Zig matcher passes **1,490** cases
+and fails **1,364**. Retain every complete original mismatch, all
+candidate records, both authenticated reference workers, and the
+actual **5,708** matcher and **5,708** warning checks.
+
+The [complete first Zig scanner report](../experiments/rust_public_practice_v1/zig-scanner-verbose-comments-v1-owned-safe-buffer-repair-v1.json.gz)
+has SHA-256
+`faea5b1cbd7cadfaff40a97ee237c381a36ed07d80f9b122d29cb53a7ccd8aac`.
+Its [authenticated, non-overwriting publication receipt](../experiments/rust_public_practice_v1/zig-scanner-verbose-comments-v1-owned-safe-buffer-repair-v1-publication-receipt.json)
+has SHA-256
+`2aaa09acf2bbac6248b94a72d64009eb80176a9169cd754b148d3575b5ebefa5`.
+The archive retains all **17,270,941** original report bytes and
+the exact Zig outcome digest
+`bb631259ebb089a76667b0bb7dd30ae1d4aaa07e342b52e88fb65ecd2197005a`.
+
+The Zig candidate genuinely **FAILS** and the recorder exits **1**,
+even though the durable evidence publication independently passes.
+Keep all **1,244** semantic and **120** tokenizer failures. The
+[complete three-candidate graph inputs](evidence/scanner-verbose-overview-v1.inputs.json)
+have SHA-256
+`9c7245ea117fbc065b76cbee1b5758ab7bf3b67ffd84905b7b914d90b6ebaf8d`;
+the [generated comparison data](evidence/scanner-verbose-overview-v1.json)
+is `fb490985811b9afa2c63aa638fe18253d05852aa50e749d858f8f678cb618aff`;
+the [complete public comparison graph](evidence/scanner-verbose-overview-v1.svg)
+is `8fc504befcbdba8115733d0791938eda39f7264a2829f9c0970443f16fc815c3`.
+Preserve the earlier **116** Rust and **116** C failures in the
+generated comparison. None of the three candidate implementations
+qualifies for final speed testing; current performance and the
+expanded holdout remain **NOT MEASURED** and **NOT OPENED**.
+
 ## Validate all 5,120 replacement-and-buffer Python reference cases
 
 After independently freezing and publishing the corrected recorder,

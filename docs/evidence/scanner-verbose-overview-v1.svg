@@ -22,10 +22,11 @@
 <rect x="43" y="334" width="955" height="24" fill="#15803d"><title>C: 2,738 matches python out of 2,854</title></rect>
 <rect x="998" y="334" width="41" height="24" fill="#dc2626"><title>C: 116 does not match python out of 2,854</title></rect>
 <text x="43" y="402" fill="#0f172a" font-family="system-ui,sans-serif" font-size="17" font-weight="700">Zig</text>
-<text x="1038" y="402" fill="#64748b" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">NOT MEASURED</text>
+<text x="1038" y="402" fill="#dc2626" text-anchor="end" font-family="system-ui,sans-serif" font-size="14" font-weight="600">1,490 / 2,854 match Python</text>
 <rect x="43" y="412" width="996" height="24" rx="6" fill="#e2e8f0"/>
-<rect x="43" y="412" width="996" height="24" fill="#94a3b8"><title>Zig: 2,854 not yet measured out of 2,854</title></rect>
+<rect x="43" y="412" width="519" height="24" fill="#15803d"><title>Zig: 1,490 matches python out of 2,854</title></rect>
+<rect x="562" y="412" width="477" height="24" fill="#dc2626"><title>Zig: 1,364 does not match python out of 2,854</title></rect>
 <text x="43" y="474" fill="#475569" font-family="system-ui,sans-serif" font-size="12">These are 2,854 separately frozen Scanner checks. They do not change the original 2,807 checks or the 1,024 memory-safety checks.</text>
 <text x="43" y="494" fill="#475569" font-family="system-ui,sans-serif" font-size="12">All failures and older results remain in the complete evidence. Final speed and the expanded holdout remain not measured.</text>
-<text x="43" y="524" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Manifest SHA-256: 0b2744e14958a3be63c16e8e65cbf21d89293e603d7df600841b45a89c6827bd &#183; renderer SHA-256: 41093012d0e8688b33b37844dad9e7145eaebd20a870d329091f29e5a1091d6b</text>
+<text x="43" y="524" fill="#64748b" font-family="system-ui,sans-serif" font-size="10">Manifest SHA-256: 9c7245ea117fbc065b76cbee1b5758ab7bf3b67ffd84905b7b914d90b6ebaf8d &#183; renderer SHA-256: 41093012d0e8688b33b37844dad9e7145eaebd20a870d329091f29e5a1091d6b</text>
 </svg>
