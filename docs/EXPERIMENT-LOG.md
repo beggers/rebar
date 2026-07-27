@@ -7,6 +7,47 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the first genuine Rust memory-lifetime failures
+
+Run the independently written Rust engine against the same separately
+frozen **1,024-case** Python memory-safety baseline as C. Pin the
+original Rust adapter
+`6fb66ef6c3f143475426dd3d5b97c52dbe251f8d2ddd0ef3d5de7ec553a0351b`,
+owned Rust bridge source
+`6f4401a8e9205e3e7b9797dd655f1a0b3d51190b8bd5239f77c5ad1534707f2d`,
+engine `f8cd2e8ecac5ab6a12eb933e6d1d234700a71ab64fc1578800f46ce93d25b8b4`,
+bridge `a7ef601a91527d7dcefcacb4c602afb972e4adbbed7d112239e7896530416c02`,
+and all remaining owned Rust sources and dependency locks.
+
+The real result is **FAIL: 938 / 1,024**, with **86** complete
+mismatches. The
+[complete compressed Rust failure report](../experiments/rust_public_practice_v1/rust-managed-buffer-lifetime-v1-shared-suite-v1.json.gz)
+has SHA-256
+`7bc8046a263538add79eba89ef75ffd0992401352a86b9fe686b46fa64f447b8`.
+Its
+[complete durable publication receipt](../experiments/rust_public_practice_v1/rust-managed-buffer-lifetime-v1-shared-suite-v1-publication-receipt.json)
+has SHA-256
+`ea931a0da6529cda33b439a35479e90bcd9797df4d179a84d809e18b62300dd4`.
+A successful publication is **not** a passing candidate: its true
+`candidate_result_status` is `FAIL`.
+
+All failing groups are preserved: **32** released-match group cases,
+**32** custom replacement-buffer errors, **8** normal custom subject
+acquisitions, **8** subject-overwrite and release cases, and **6**
+noncontiguous replacement-template cases. The run performs exactly
+**2,048** match-ownership guards and **2,048** warning guards.
+Update the separate memory-safety graph without changing either
+denominator, concealing C's original **237** failures, or claiming
+that Zig has run. The
+[updated graph manifest](evidence/managed-buffer-lifetime-overview-v1.inputs.json)
+has SHA-256
+`da978bc8d3f1a893234725738cbc47df184f280ea9ee7fa2be6fffc2b41282aa`;
+its [complete graph data](evidence/managed-buffer-lifetime-overview-v1.json)
+is `0f7b9e86b6aff46424d57f541d51938d9b2a3f3ac6e61da2366951b04eb80756`,
+and its [generated graph](evidence/managed-buffer-lifetime-overview-v1.svg)
+is `03f0c61abc8efae8f37348808f3bcc97df80b08c085f869aeee6bca2872f2a68`.
+No hidden cases, benchmarks, clocks, timings, or winner are accessed.
+
 ## Freeze current-source, from-scratch engine ownership checks
 
 Separately freeze the
