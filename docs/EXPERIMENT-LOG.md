@@ -7,6 +7,33 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Validate all 5,120 replacement-and-buffer Python reference cases
+
+After independently freezing and publishing the corrected recorder,
+run its first genuine **5,120-case** Python reference. Two distinct
+CPython 3.14.6 workers, with process IDs **82** and **83**, agree
+on every **5,120 / 5,120** original result. Keep all **64** equally
+weighted cohorts, all five replacement and expansion APIs, every
+buffer event, callback, release, and recorded Python exception.
+
+The [complete two-Python substitution baseline](../experiments/rust_public_practice_v1/substitution-buffer-semantics-v1-shared-suite-v1.json.gz)
+has SHA-256
+`2e24e17862e75f4f2f778d15d67416f6e643eff01c0d110e750cea99b2550fab`.
+Its [authenticated baseline publication receipt](../experiments/rust_public_practice_v1/substitution-buffer-semantics-v1-shared-suite-v1-publication-receipt.json)
+has SHA-256
+`9a707f4953b8ed23d1f3e0cb5f4f6fd6e2e104e675fe502a3e991ebb2e884cd2`.
+Losslessly retain all **87,081,836** original report bytes in
+**6,340,529** compressed bytes, with full ordered-record digest
+`3e74498c0c6997bcb86fab81a4be2962809c77b49d7214837633c9539c42ad18`.
+
+The original failed reference attempt remains independently pinned
+as one of the six before-and-after source owners and is never
+deleted or relabeled. Authenticate the unchanged **5,120-case**
+matrix, exact **6004778603531028017** seed, frozen original tests,
+ownership policy, and corrected recorder. The actual reference
+result is **PASS**; all three candidate results, current speed,
+and the final comparison remain **NOT MEASURED** and **NOT OPENED**.
+
 ## Freeze lossless replacement-and-buffer evidence recording
 
 Freeze the [independently reviewed replacement-and-buffer recorder](../tools/record_independent_substitution_buffer_semantics_v2.py)
