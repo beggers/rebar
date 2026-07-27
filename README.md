@@ -24,7 +24,7 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 | Python `re` | **1.000×** | Baseline |
 | Our Rust engine | **1.065×** | Public development tests pass; speed goal not met |
 | Our C engine | **NOT MEASURED** | **150 / 151** original, **824 / 864** general, **32 / 1,024** scanner, **747 / 768** buffer cases |
-| Our Zig engine | **NOT MEASURED** | **150 / 151** original tests; general, scanner, and buffer cases not yet run |
+| Our Zig engine | **NOT MEASURED** | **151 / 151** original tests; general, scanner, and buffer cases not yet run |
 
 ## Current speed against Python
 
@@ -82,14 +82,15 @@ and [complete result recorder](tools/record_independent_original_cpython_v5.py)
 preserve every test, failure, and genuine skip without allowing an
 external matching engine.
 
-The first genuine
-[Zig original-test result](experiments/rust_public_practice_v1/zig-original-v5-shared-suite-v1.json)
-passes **150 / 151** runnable tests. Its one remaining failure is
-the private `_compile` name Python needs for pickling; the C engine
-has the same independently recorded problem. This is an actual
-compatibility defect, not the earlier false alarm caused by the test
-harness. All Zig general, scanner, buffer, and speed results remain
-**NOT MEASURED**.
+The current
+[Zig original-test result](experiments/rust_public_practice_v1/zig-original-v5-shared-suite-pickle-fix-v1.json)
+passes **151 / 151** runnable tests. Zig now provides the private
+`_compile` name Python needs for pickling by exposing its **own**
+existing compiler; it does not call Python's or an external engine.
+The earlier genuine failure remains in the
+[experiment log](docs/EXPERIMENT-LOG.md). C still has the same
+independently recorded pickling defect. All Zig general, scanner,
+buffer, and speed results remain **NOT MEASURED**.
 
 The separately frozen
 [shared Python behavior tests](tools/independent_public_contract_v2.py)

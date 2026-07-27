@@ -7,6 +7,38 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Fix Zig pickling using its own independent compiler
+
+After separately preserving, committing, and pushing Zig's genuine
+original-test failure, expose its already-owned compiler under
+Python's private compatibility name: `_compile = compile`. Add no
+new engine, imports, external package, fallback, or native wrapper.
+Freeze the exact changed Zig adapter, SHA-256
+`66d9f98cabeeb1e00f16880534e817b0e79075b8afd97ea86c9e2ab08d2682c1`.
+Keep the existing independently owned native engine and bridge
+unchanged and use the exact already-frozen V5 test suite.
+
+Run all original Python **3.14.6** tests again and preserve the
+[complete fixed Zig result](../experiments/rust_public_practice_v1/zig-original-v5-shared-suite-pickle-fix-v1.json),
+SHA-256
+`4b91aa49e98fee6d87d23b7047280641657efdeb2b5372efc92beb0a8a048379`,
+and its
+[durable publication receipt](../experiments/rust_public_practice_v1/zig-original-v5-shared-suite-pickle-fix-v1-publication-receipt.json),
+SHA-256
+`e5ab6a690e5c2da1d897f861fb1405e922cc8c86e265ff83004ac7d1047fb5c1`.
+
+The genuine result is **PASS**: Python and Zig both pass all
+**151** runnable original tests and report the same authentic
+debug-only skip. Preserve all **152** reference and **152** Zig
+records, all **304** ownership and **304** warning checks,
+the authenticated standard foreign-function initialization, and
+both complete isolated worker streams. There are **zero**
+mismatches, external regular-expression engines, cross-candidate
+calls, or public waivers. The full earlier Zig failure remains
+unchanged. No final case, performance file, timing, or memory
+measurement is accessed. Zig's separate general, scanner, and
+buffer categories remain **NOT RUN**.
+
 ## Record Zig's first genuine original-Python test failure
 
 After separately freezing, reviewing, committing, and pushing the
