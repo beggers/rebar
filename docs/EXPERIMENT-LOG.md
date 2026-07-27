@@ -7,6 +7,36 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Verify and preserve every historical callback-test error
+
+Only after separately freezing, committing, and pushing the read-only
+callback-falsification verifier, replay all **five** original compressed
+archives and all **five** authenticated historical receipts. Preserve the
+[complete independently reproducible historical callback-error proof](evidence/callback-oracle-falsification-v1.json),
+SHA-256
+`e468780076a8489340cc87e1adf8b2bbf8b2eafd87deacd9f5af544d9bab0727`.
+
+Verify all **2,544** original mismatch records without excluding a case.
+Exactly **752** came from the test harness's own callback exception;
+preserve every one alongside the **1,792** genuine remaining
+implementation differences. The exact original category results remain
+C replacement **464 = 128 + 336**, Zig replacement
+**192 = 128 + 64**, and C changing-buffer **1,888 = 496 + 1,392**.
+
+Rebuild the complete signed, source-ordered case and event vectors from
+the real original records. Retain both distinct original Python process
+identities, every native source pin, both full-width matrix seeds,
+original process output, user exception identity, warning observations,
+callback events, and each original candidate's genuine failure status.
+Classify only the oracle's own exact callback exception; never classify
+a real user error or subclass as a harness error.
+
+The actual replay launches **zero** reference or candidate workers,
+imports **zero** candidates, runs **zero** Python or native matchers,
+samples **zero** clocks, and reads **zero** performance or holdout cases.
+Current candidate correctness and speed remain **NOT MEASURED** for the
+corrected categories. The final comparison remains **NOT OPENED**.
+
 ## Freeze read-only verification of historical callback test errors
 
 Freeze the [independent historical callback-error verifier](../tools/verify_independent_callback_oracle_falsification_v1.py)
