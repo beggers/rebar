@@ -7,6 +7,41 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Validate all corrected Python replacement reference cases
+
+Only after separately freezing, committing, and pushing both the
+corrected oracle and its lossless recorder, run exactly one
+two-Python reference observation. Independently isolated reference
+processes **82** and **83** agree on all **5,120 / 5,120**
+replacement, callback, warning, match, and buffer-lifetime cases.
+
+The [complete corrected replacement reference archive](../experiments/rust_public_practice_v1/substitution-buffer-semantics-v2-shared-suite-v2.json.gz)
+has SHA-256
+`2037e28bd452e00950819451786bc4212c6c685061f4122d27f5baa6b82dd12e`.
+Preserve all **87,138,140** uncompressed source-ordered evidence
+bytes, with SHA-256
+`1c7bde361897c44e39c44503e4fe39de48a6a6d2b7f2d6fe1fa1f615fb403561`.
+The [authenticated corrected reference receipt](../experiments/rust_public_practice_v1/substitution-buffer-semantics-v2-shared-suite-v2-publication-receipt.json)
+has SHA-256
+`be2e495d1f983c7f59073490df90935562b94a241855cea0dbc870800ba73171`.
+The complete, separately reproduced reference record vector has
+SHA-256
+`2bc65461b9ac60fd19a3c66856bd33ee48db038ab6a5de62193837800840f61b`.
+
+Preserve all **64** categories, all **80** cases per category,
+the full original seed and case matrix, both complete guarded
+reference streams, immutable oracle and recorder source pins,
+and every historical genuine and false-positive failure. Verify
+lossless compression, both distinct process identities, atomic
+non-overwriting publication, unchanged source ownership, and
+complete readback. Start **zero** candidate workers; take
+**zero** timing or memory measurements; read **zero** hidden or
+benchmark cases.
+
+The corrected Rust, C, and Zig replacement results remain
+**NOT MEASURED**. The final performance comparison is
+**NOT OPENED**.
+
 ## Freeze lossless corrected replacement evidence recording
 
 Freeze the [lossless corrected replacement evidence recorder](../tools/record_independent_substitution_buffer_semantics_v3.py)
