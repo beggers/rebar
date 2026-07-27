@@ -7,6 +7,29 @@ older statements that the final benchmark was sealed or had not yet run are
 historical: that benchmark subsequently opened exactly once, found the Zig
 `split` mismatch recorded below, and remains irreversibly **FALSIFIED**.
 
+## Complete the shared Rust buffer-compatibility category
+
+After separately committing and pushing the independent C original
+test fix, run the unchanged Rust engine once against exactly the
+frozen shared **768-case** buffer category. Retain its
+[complete Rust buffer result](../experiments/rust_public_practice_v1/rust-buffer-contract-v2-shared-suite-v1.json),
+SHA-256
+`546fa8dd7844df4199fff2ec475f87f8fb30dbe098c57117c8ac0892f4900962`,
+and its
+[durable publication receipt](../experiments/rust_public_practice_v1/rust-buffer-contract-v2-shared-suite-v1-publication-receipt.json),
+SHA-256
+`3b1897729bf657c426eb0a30a259c0bb495af98670848c2fb8a2f771a8504d71`.
+
+The genuine result is **PASS**. Two independently executed Python
+references and the separately owned Rust engine produce all
+**768** complete records with **zero** mismatches. Preserve all
+**1,536** matcher-ownership checks, **1,536** warning-safety
+checks, source and native hashes, and complete process outputs.
+With the already preserved original, general, and scanner results,
+Rust now passes all **2,807** currently shared runnable checks.
+This is compatibility evidence, not a new speed measurement;
+no final case, benchmark, or clock is accessed.
+
 ## Fix C pickling using its own independent compiler
 
 After separately preserving the original genuine C pickling

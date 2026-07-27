@@ -22,7 +22,7 @@ comparison, and a winner remain **NOT ESTABLISHED**.
 | Implementation | Speed relative to Python | Status |
 | --- | ---: | --- |
 | Python `re` | **1.000×** | Baseline |
-| Our Rust engine | **1.065×** | Public development tests pass; speed goal not met |
+| Our Rust engine | **1.065×** | **2,807 / 2,807** shared correctness checks pass; speed goal not met |
 | Our C engine | **NOT MEASURED** | **151 / 151** original tests; most recent behavior results: **824 / 864** general, **32 / 1,024** scanner, **747 / 768** buffer |
 | Our Zig engine | **NOT MEASURED** | **151 / 151** original tests; general, scanner, and buffer cases not yet run |
 
@@ -56,7 +56,7 @@ C and Zig are shown as **NOT MEASURED**, not as successes or failures.
 | Original runnable Python tests | **151 / 151** | [Shared original Python suite](experiments/rust_public_practice_v1/rust-original-v4-shared-suite-v1.json) |
 | General public behavior | **864 / 864** | [Shared general comparison](experiments/rust_public_practice_v1/rust-public-contract-v2-shared-suite-v1.json) |
 | Scanners and callbacks | **1,024 / 1,024** | [Shared scanner comparison](experiments/rust_public_practice_v1/rust-scanner-contract-v2-shared-suite-v1.json) |
-| Memory views and buffer errors | **768 / 768** | [Memory-view comparison](experiments/rust_public_practice_v1/rust-memoryview-expand-v1-after-native-exporter-fix.json) |
+| Memory views and buffer errors | **768 / 768** | [Shared buffer comparison](experiments/rust_public_practice_v1/rust-buffer-contract-v2-shared-suite-v1.json) |
 
 ## Current speed by operation
 
