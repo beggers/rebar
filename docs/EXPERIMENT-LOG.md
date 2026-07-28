@@ -7,6 +7,40 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Verify the independent Python buffer reference
+
+Only after separately committing and pushing the general and scanner
+references, run the frozen **768**-case Python-only buffer reference.
+Genuine, isolated Python processes **81** and **82** each pass all
+**768 / 768** original source-ordered cases. Preserve all **24 × 32**
+cases, the full-width seed `5567953616029762609`, the original matrix
+SHA-256
+`b40fb92f42c7019a73eec72800077f262f1a6be516886a6ddda372e24807eb60`,
+and the complete matching observation vector
+`8312263785cd49f7283ab8c6fac13443befe9c5a3d739b2e068aebdcf3f59b75`.
+There are **zero** reference mismatches or worker failures.
+
+The [complete reproducibly compressed buffer reference](../oracle/cpython-3.14.6/evidence/public-contract-baseline-v1-buffer-phase1-v1.json.gz)
+has SHA-256
+`7c6013c47c7640279e2fabed2b322d754153a04551062b8bf1669696aacdf43d`
+and **120,234** compressed bytes. Its **3,456,017** complete
+uncompressed bytes have SHA-256
+`acc43b3df8e70b4185f41574f17a0ad9fccbaa7bf7135cb4389419aeaa094da8`.
+The [separately durable buffer reference receipt](../oracle/cpython-3.14.6/evidence/public-contract-baseline-v1-buffer-phase1-v1-publication-receipt.json)
+has SHA-256
+`8272806b2aa5ff944d083cdac1885e4be17df3c729bb2663c1c310117d0f7ac2`
+and **3,770** bytes.
+
+Independently reproduce both complete Python process streams, every frozen
+source owner, all buffer observations, deterministic compressed evidence,
+and the archive and receipt publication ledgers. Ordinary and
+empty-environment read-only replays agree exactly and start no new worker.
+
+The additional **512**-case simultaneous-thread reference is **NOT RUN**.
+No candidate is run or imported. Full candidate compatibility and
+performance remain **NOT MEASURED**. The final comparison remains
+**NOT OPENED**.
+
 ## Verify the independent Python scanner reference
 
 Only after separately committing and pushing the general Python reference,
