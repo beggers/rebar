@@ -7,6 +7,68 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected six-engine test producer
+
+Correct the single shared original-suite test producer before
+attempting any replacement. The [independently owned corrected
+producer](../tools/run_owned_six_family_original_p0_producer_v4.py)
+has SHA-256
+`e0bab3833f6b8274b79e19b1dd7ca28c45931ef3efea8eefcc5cdfb0505af3d8`.
+Its [frozen six-engine protocol](../oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md)
+has SHA-256
+`e82b3469853406bf36812f016688aa3e6403b8d98d025a29fb9d0a9704ea2aa5`.
+The [complete versioned producer contract](../oracle/phase2/six-family-p0-producer-v4.json)
+has SHA-256
+`c22ff77b4947659510634e3fb802f82b559b8938dd26ba2d58552f3e761fa1d5`.
+
+Preserve the **13** original groups, **31,237** original cases,
+**13** named private waivers, six independently owned engine families,
+and their **25** independently identified source files. Keep the
+original script-context public reference as immutable historical
+evidence, SHA-256
+`0b78702279b7ae2eb8be493bbf04df75719f36c2943f26c9df3e950f32d68e21`.
+Use the genuinely passing candidate-context Python reference, SHA-256
+`6b26ac4eff9ec64cc3ae79872b3195b303a12bf40b96b55850b627857e614aa2`,
+for all **6,912** public-type cases. Validate both actual reference
+worker process IDs, the complete **96** previously falsified cases,
+their original identifiers, and the separately durable actual
+reference receipt. Do not waive the genuine C pattern-equality error.
+
+Ordinary and empty-environment self-tests and complete frozen-context
+checks all pass. Each source-only test accepts **113** genuine controls
+and rejects **413** hostile controls. Direct native-extension loading,
+process creation, archive inflation, matching delegation, candidate
+imports, clocks, networking, and changes to original cases are blocked.
+All checks start **zero** candidate or reference workers and open
+**zero** matching or reference archives.
+
+The [current six-engine reference and test-producer graph](evidence/candidate-current-overview-v39.svg)
+shows the corrected producer as frozen while keeping every candidate
+run visibly blocked. Its [reproducible graph generator](../tools/render_candidate_current_overview_v39.py)
+has SHA-256
+`8adb7202644da2d19a4d2f50fe191de8d84007ce9b654a427a61fb4ea883c6b5`.
+The [complete authenticated graph inputs](evidence/candidate-current-overview-v39.inputs.json)
+have SHA-256
+`22e740d2f7a22e4bd485c5d6e83204bfd2c529f1b87dd041d4ed604849b69d6b`;
+the [machine-readable current results](evidence/candidate-current-overview-v39.json)
+have SHA-256
+`d25c486e36d82069c718f82a1f6281295d539606dcd72a0a6c2c295f5a4e4ca6`;
+and the generated graph has SHA-256
+`eecc366a7e14e3bee67a801cbf4b07e848af3659a82cc0715a90525c05652a9a`.
+Ordinary and empty-environment graph checks all pass. Each self-test
+rejects **382** hostile controls; each complete graph check accurately
+records **one** read of the corrected Python reference and **zero**
+candidate-archive reads. Authenticated lower bounds remain **164**
+evidence owners and **169** historical references.
+
+This is a corrected source freeze, not a candidate result. The old
+engine-specific workers still bind the superseded producer. Their
+corrected successors have **NOT RUN** and must be separately frozen
+before a full matching campaign starts. Runtime no-delegation remains
+**NOT ESTABLISHED**; speed, memory, confidence, and undefined behavior
+remain **NOT MEASURED**. The **4,194,304** final examples remain
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Record the corrected Python-to-Python reference
 
 After committing and pushing the independently reviewed reference

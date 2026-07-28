@@ -20,7 +20,10 @@ context. Replacement testing remains paused until the runners use these
 verified answers. No case has been removed. There is no compatible
 replacement, measured speedup, or winner.
 
-![Two independent Python processes pass all 6,912 corrected reference checks; all six replacement engines remain blocked until their test runner uses the corrected answers; no replacement qualifies and performance is not measured](docs/evidence/candidate-current-overview-v38.svg)
+The shared test producer now preserves both the original reference and
+the corrected answers. Engine-specific test runners have **NOT RUN**.
+
+![Two independent Python processes pass all 6,912 corrected reference checks; the corrected six-engine test cases are frozen, but replacement runners have not yet run; no replacement qualifies and performance is not measured](docs/evidence/candidate-current-overview-v39.svg)
 
 Each language below uses its own, independently written matching engine;
 the source and build checks reject outside matching packages and shared
@@ -88,6 +91,7 @@ slowdown greater than **20%**. There is no winner.
 - [Experiment log, original reports, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Frozen Python compatibility checks](oracle/phase1/P0-COMPLETENESS-V1.md).
 - [Frozen correction for the Python reference](oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md).
+- [Corrected six-engine test producer](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md).
 - [Separately frozen public-signature checks](oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md).
 - [Frozen two-process Python signature reference](oracle/phase1/CALLABLE-INTROSPECTION-REFERENCE-V2.md).
 - [Independent, from-scratch engine and no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
