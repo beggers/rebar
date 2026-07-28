@@ -7,6 +7,55 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete original Python test for corrected Rust
+
+Run the independently rebuilt Rust engine against all **13** original
+Python groups and all **31,237** unchanged checks. Every real worker
+completes; no test infrastructure fails. The corrected Rust implementation
+has **1,036** matching differences and **8,965** verified passing checks.
+The earlier build had **1,087** differences and **7,438** verified passes:
+the change removes **51** measured differences and adds **1,527** verified
+passes. The candidate still **FAILS** and is not qualified.
+
+Before temporarily installing any engine file, the real controller
+announces and saves recovery journal SHA-256
+`726e81e5d2ee255e1f46d3029290ae9486fbd23711c9a45a691d091d088f3278`.
+All four original source and native-file inodes, hashes, permissions, and
+contents are restored exactly before the matching result is published.
+
+The [complete corrected Rust matching-failure archive](../oracle/phase2/evidence/repaired-rust-original-campaign-v4-rust-phase2-v12-rust-flag-original-p0-failures.json.gz)
+has SHA-256
+`2ab266d193728e1297382ed233a813c7ef62c0aa407355cf44fef6aaeffa134f`.
+Its [independently durable matching and recovery receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v4-rust-phase2-v12-rust-flag-original-p0-failures-publication-receipt.json)
+has SHA-256
+`201b7edc94d54f9ea2054f2eab98a68c83850def841ceade6a14c8db7d05cdd3`.
+Receipt **PASS** means successful publication and restoration; the real
+Rust candidate result is **FAIL**. Verify the **4,674-byte** receipt
+without inflating the matching archive.
+
+Exactly two real result files increase the evidence count from **151** to
+**153** owners and from **156** to **158** authenticated references.
+
+The [generated headline graph](evidence/candidate-current-overview-v32.svg)
+has SHA-256
+`6366260bf300fab10893d9be20f1b5a2e181acb64db9776ee9e0fce3fcb699aa`.
+Its [frozen inputs](evidence/candidate-current-overview-v32.inputs.json)
+have SHA-256
+`1739b0c1b785b93f9f47522a22bc844e9ce5c898bd6580ec01157ce7bdd9a82d`;
+the [complete machine-readable result](evidence/candidate-current-overview-v32.json)
+has SHA-256
+`394ba794ce6bcad9d04da271d45f4465adcada8c4e00e3a75138ae9c257c71d2`;
+and the [reproducible graph generator](../tools/render_candidate_current_overview_v32.py)
+has SHA-256
+`998c8589cd1fb5a2d309603991e4b377c75cfb3dc85057ea597c6b08e9045df7`.
+
+Preserve the previous Rust failure, C's **1,230** differences, Zig's
+**2,172**, the separately frozen **50** unrun signature checks, and the
+source-only corrected Zig experiment. No candidate qualifies. Speed,
+memory, and undefined behavior remain **NOT MEASURED**; the expanded
+**4,194,304**-case comparison remains **NOT FROZEN**, **NOT GENERATED**,
+and **NOT OPENED**.
+
 ## Freeze the complete Python test for corrected Rust
 
 Freeze the complete original **13**-group, **31,237**-case matching test for

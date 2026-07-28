@@ -19,25 +19,20 @@ An additional **50** public function and method signature checks are now
 frozen separately. Neither Python's new reference run nor a candidate's
 result for those extra checks has been measured.
 
-![Python passes all 31,237 checks; previously tested Rust has 1,087 differences, C has 1,230, Zig has 2,172, and the newly corrected Rust build is not yet compatibility-tested](docs/evidence/candidate-current-overview-v31.svg)
+![Python passes all 31,237 checks; corrected Rust has 1,036 differences, 51 fewer than before; C has 1,230 and Zig has 2,172; no replacement is compatible and speed is not measured](docs/evidence/candidate-current-overview-v32.svg)
 
-Rust, C, Zig, C++, and Go each use an independently written engine.
-The most recently tested Rust and Zig engines completed all **13** Python
-test groups without worker failures. That Rust build has **1,087**
-compatibility differences; Zig has **2,172**. Neither is a replacement.
-Zig's earlier zero-test setup failure remains separately preserved.
+Rust, C, Zig, C++, Go, and Fortran each use a separately written engine.
+The newly rebuilt Rust engine completed all **13** Python test groups and
+has **1,036** differences, down from **1,087**. Its verified passing
+checks increased from **7,438** to **8,965**. It is still not a drop-in
+replacement.
 
 A separate source-only Zig fix restores the complete scanner match found
 in a real Python failure. Its rebuilt compatibility is **NOT MEASURED**.
 
-A further Rust correction fixes the exact Python flag-display failure in
-**5,128** source-only checks. Its effect on a rebuilt engine and the full
-compatibility test remains **NOT MEASURED**.
-
-The corrected Rust source has now been independently built twice using
-**28** offline compiler and inspection steps. Both builds agree and use no
-outside regular-expression engine. Their full compatibility test has
-**NOT YET RUN**; its complete, recovery-safe **13**-group test is frozen.
+Both Rust source builds agree, use no outside regular-expression engine,
+and were compiled and inspected in **28** offline steps. The full test
+restored all four original source and engine files.
 
 The latest from-scratch C engine was built independently twice and tested
 against all **13** original Python groups. It has **1,230** matching
@@ -51,7 +46,7 @@ only after three independent engines pass all compatibility checks.
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
-| Rust | Two identical corrected first-party builds | Earlier build: 1,087 differences; corrected build: NOT YET TESTED | NOT MEASURED |
+| Rust | Two identical corrected first-party builds | 8,965 verified; 1,036 differences; no worker failures; not qualified | NOT MEASURED |
 | C | Two identical first-party builds; all 13 groups tested | 7,325 verified; 1,230 differences; no worker failures; not qualified | NOT MEASURED |
 | Zig | Two identical independently repaired builds | All 13 groups completed; 2,172 differences; not qualified | NOT MEASURED |
 | C++ | Two matching source builds | 128 verified; 12 groups failed; not qualified | NOT MEASURED |
@@ -61,7 +56,7 @@ only after three independent engines pass all compatibility checks.
 ## Detailed compatibility
 
 The per-group columns preserve earlier development results. The latest
-complete results are **1,087** Rust differences, **1,230** C differences,
+complete results are **1,036** Rust differences, **1,230** C differences,
 and **2,172** Zig differences. Their durable matching receipts do not
 contain a new per-group breakdown, so none is invented below.
 
@@ -117,6 +112,7 @@ slowdown greater than **20%**. There is no winner.
 - [Source-only correction of the observed Zig scanner failure](oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V2.md).
 - [Recoverable original Python compatibility tests for repaired Rust](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V3.md).
 - [Frozen full Python test for the newly rebuilt Rust engine](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V4.md).
+- [Actual complete corrected Rust test and recovery receipt](oracle/phase2/evidence/repaired-rust-original-campaign-v4-rust-phase2-v12-rust-flag-original-p0-failures-publication-receipt.json).
 - [Source-only correction of the observed Rust flag-display failure](oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V2.md).
 - [Frozen first-party build rules for the corrected Rust engine](oracle/phase2/RUST-FLAG-SOURCE-BUILD-V12.md).
 - [Actual corrected Rust build evidence and durable receipt](oracle/phase2/evidence/native-source-build-v12-rust-phase2-v12-rust-flag-original-p0-publication-receipt.json).

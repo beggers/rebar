@@ -31,7 +31,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Separate first-party Rust repair](../oracle/phase2/RUST-SOURCE-REPAIR-V1.md), [exact Rust repair and preserved evidence](../oracle/phase2/rust-source-repair-v1.json), and [private Rust-snapshot-only repair tool](../tools/apply_owned_rust_source_repair_v1.py); the existing Rust engine and all its previous failures remain unchanged.
 - [Independent Rust public-compatibility repair](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V1.md), [exact three-block private-source contract](../oracle/phase2/rust-public-contract-source-repair-v1.json), and [first-party Rust public-source verifier](../tools/apply_owned_rust_public_contract_source_repair_v1.py); the repaired source was independently applied to both private builds. Its later complete compatibility test found **1,087** differences.
 - [Source-only correction for the observed Rust flag-display failure](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V2.md), [exact private-source and genuine-Python flag contract](../oracle/phase2/rust-public-contract-source-repair-v2.json), and [independently written Rust repair verifier](../tools/apply_owned_rust_public_contract_source_repair_v2.py); all six upstream assertions and **5,128** Python flag values agree. A rebuilt engine and its complete compatibility remain **NOT MEASURED**.
-- [Independently reproducible corrected Rust build rules](../oracle/phase2/RUST-FLAG-SOURCE-BUILD-V12.md), [exact first-party toolchain and two-phase build contract](../oracle/phase2/rust-flag-source-build-v12.json), and [offline corrected Rust build verifier](../tools/reproduce_owned_rust_flag_source_build_v12.py); both independent builds and all **28** real compiler and inspection processes succeeded. Complete matching remains **NOT MEASURED**.
+- [Independently reproducible corrected Rust build rules](../oracle/phase2/RUST-FLAG-SOURCE-BUILD-V12.md), [exact first-party toolchain and two-phase build contract](../oracle/phase2/rust-flag-source-build-v12.json), and [offline corrected Rust build verifier](../tools/reproduce_owned_rust_flag_source_build_v12.py); both independent builds and all **28** real compiler and inspection processes succeeded. A separately recorded full matching run finds **1,036** differences.
 - [Actual corrected Rust two-build evidence](../oracle/phase2/evidence/native-source-build-v12-rust-phase2-v12-rust-flag-original-p0.json.gz) and [separately durable corrected-build receipt](../oracle/phase2/evidence/native-source-build-v12-rust-phase2-v12-rust-flag-original-p0-publication-receipt.json); the receipt proves **28** real processes, two identical first-party builds, the corrected adapter, no outside matcher, and **zero** candidate tests. Its **PASS** means the build succeeded, not that the replacement passes Python's tests.
 - [Reproducible first-party C build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V8.md), [exact build inventory](../oracle/phase2/native-source-build-v8.json), and [independent two-build verifier](../tools/reproduce_owned_native_source_build_v8.py).
 - [Reproducible offline build rules for both C repairs](../oracle/phase2/C-PICKLE-SOURCE-BUILD-V12.md), [exact two-phase source-build contract](../oracle/phase2/c-pickle-source-build-v12.json), and [independent repaired C native-build verifier](../tools/reproduce_owned_c_pickle_source_build_v12.py); its 14 compiler and inspection steps have not yet run.
@@ -43,7 +43,8 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Current reproducible independent Rust build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V11.md), [exact dual-repair Rust build inventory](../oracle/phase2/native-source-build-v11.json), and [offline two-build verifier](../tools/reproduce_owned_native_source_build_v11.py); both first-party repaired builds match exactly and use no external regex package. Their later complete matching test recorded **1,087** differences.
 - [Complete original Python tests for repaired Rust](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V2.md), [exact four-file recovery and original-suite contract](../oracle/phase2/repaired-rust-original-campaign-v2.json), and [first-party Rust correctness controller](../tools/run_owned_repaired_rust_original_campaign_v2.py); all 13 groups and 31,237 checks are frozen against the actual repaired Rust implementation. The matching campaign has **NOT YET RUN**.
 - [Safely recoverable complete Rust tests](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V3.md), [exact recovery and original-suite contract](../oracle/phase2/repaired-rust-original-campaign-v3.json), and [first-party recoverable Rust controller](../tools/run_owned_repaired_rust_original_campaign_v3.py); all **13** workers actually completed and found **1,087** differences with **zero** infrastructure failures. The [complete compressed Rust matching-failure archive](../oracle/phase2/evidence/repaired-rust-original-campaign-v3-rust-phase2-v11-rust-dual-overlay-original-p0-failures.json.gz) and [separate durable recovery and publication receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v3-rust-phase2-v11-rust-dual-overlay-original-p0-failures-publication-receipt.json) prove restoration of all four original files.
-- [Frozen complete Python test for the newly rebuilt Rust engine](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V4.md), [exact corrected-source, 31,237-case, and four-file recovery contract](../oracle/phase2/repaired-rust-original-campaign-v4.json), and [independent recovery-safe corrected Rust controller](../tools/run_owned_repaired_rust_original_campaign_v4.py); the original **13**-worker test is frozen but has **NOT YET RUN**.
+- [Complete original Python test for the newly rebuilt Rust engine](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V4.md), [exact corrected-source, 31,237-case, and four-file recovery contract](../oracle/phase2/repaired-rust-original-campaign-v4.json), and [independent recovery-safe corrected Rust controller](../tools/run_owned_repaired_rust_original_campaign_v4.py); all **13** original workers actually completed with **1,036** differences, **8,965** verified passing checks, **zero** infrastructure failures, and exact restoration of all four original files.
+- [Complete corrected Rust matching-failure archive](../oracle/phase2/evidence/repaired-rust-original-campaign-v4-rust-phase2-v12-rust-flag-original-p0-failures.json.gz) and [separately durable full-test and recovery receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v4-rust-phase2-v12-rust-flag-original-p0-failures-publication-receipt.json); receipt **PASS** records durable publication of the actual Rust matching **FAIL** and exact original-file restoration.
 - [Safe reversible C-engine loading rules](../oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V5.md), [exact recovery and build checks](../oracle/phase2/verified-native-activation-v5.json), and [first-party engine recovery tool](../tools/activate_verified_native_candidate_v5.py); the original native file was restored exactly.
 - [Complete repaired-engine Python test rules](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V8.md), [all original groups and seeds](../oracle/phase2/p0-candidate-protocol-v8.json), [isolated original-test worker](../tools/run_frozen_p0_candidate_worker_v6.py), and [complete test and recovery recorder](../tools/run_frozen_p0_candidate_v8.py); all **31,237** original cases remain unchanged.
 - [Fail-safe full C test rules](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V1.md), [exact recovery and test contract](../oracle/phase2/repaired-c-original-campaign-v1.json), and [recovered original-test runner](../tools/run_owned_repaired_c_original_campaign_v1.py); the original native file was restored before the genuine failure was recorded.
@@ -58,7 +59,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Complete repaired C compatibility evidence](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures.json.gz), [independent safe-restoration receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures-publication-receipt.json), [all 13 original worker reports](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures.json.gz), and [original-suite aggregate receipt](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures-publication-receipt.json); eight complete groups pass, five retain 1,262 genuine differences, and no infrastructure failure occurred.
 - [Actual independent repaired Zig builds](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner.json.gz) and [complete native build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner-publication-receipt.json); exactly 26 genuine processes produce two identical first-party engine and bridge binaries without testing matching or measuring speed.
 - [Actual independent repaired Rust builds](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay.json.gz) and [complete offline-build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay-publication-receipt.json); exactly 28 genuine processes produce two identical dependency-free Rust engines and bridges without testing matching or measuring speed.
-- [Current headline graph inputs](../docs/evidence/candidate-current-overview-v31.inputs.json), [complete machine-readable Python baseline, build, and candidate failures](../docs/evidence/candidate-current-overview-v31.json), and [reproducible graph generator](../tools/render_candidate_current_overview_v31.py); the graph authenticates all **151** evidence files and **156** references. It separately shows the newly built but untested Rust engine, the previous **1,087** Rust differences, **1,230** C differences, and **2,172** Zig differences. The previous **1,262** C differences remain visible as historical results.
+- [Current headline graph inputs](../docs/evidence/candidate-current-overview-v32.inputs.json), [complete machine-readable Python baseline and independently measured candidate failures](../docs/evidence/candidate-current-overview-v32.json), and [reproducible graph generator](../tools/render_candidate_current_overview_v32.py); the graph authenticates all **153** evidence files and **158** references. It shows the corrected Rust engine's **1,036** genuine differences and **8,965** passing checks, the previous **1,087** Rust differences, **1,230** C differences, and **2,172** Zig differences. The previous C result and unrun additional signature checks remain separately visible.
 - [Full experiment log, build reports, previous graphs, failures, and rejected designs](../docs/EXPERIMENT-LOG.md).
 - [Proposed 4,194,304-case final comparison](../docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); examples remain **NOT GENERATED** and **NOT OPENED**.
 - [Original objective](../GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; [later clarifications](../AMENDMENTS.md).
@@ -138,6 +139,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/render_candidate_current_overview_v29.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v30.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v31.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v32.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v6.py --self-test \
   --source-sha256 d3a9b08c1bf7e3408719a0e92b8c1965aa6160dd2e18ab1501bb8662aaf8e4a1 \
   --protocol-sha256 0e736d575835fa22388841a527e22b62eef1ddf39eac9415bd7c518ba985b1d0 \
@@ -213,14 +215,14 @@ Verify the current headline graph without rerunning a candidate or
 opening a benchmark:
 
 ```sh
-"$PY" -I -B tools/render_candidate_current_overview_v31.py \
+"$PY" -I -B tools/render_candidate_current_overview_v32.py \
   --verify-frozen-context \
-  --source-sha256 daea5423d47bc84ec0ff503c14bae17ecdff392a60db14c5c66c575e978de588 \
-  --build-archive-sha256 840a6403699fec44d4f725f737fc9538c997b818a48d167398ad1b95cbb9828d \
-  --build-receipt-sha256 1cd7e538098711ddac017ee3375d302d4b1ba4e6da52d10d2a524103db500a2f \
-  --inputs-sha256 25f1ef2cdf7f3443f5924b9c9814c4f0864148ebdf243c92a1df12d1c5754900 \
-  --summary-sha256 6d6f8fa23022b9198255cd0836961d4f78cd2d4c5d4041734a82a1d9f9d2ec90 \
-  --svg-sha256 23f89b7983d5154d9275dcfa029bfe2a5599ad339c80675efb7c5eabda587d1a
+  --source-sha256 998c8589cd1fb5a2d309603991e4b377c75cfb3dc85057ea597c6b08e9045df7 \
+  --campaign-archive-sha256 2ab266d193728e1297382ed233a813c7ef62c0aa407355cf44fef6aaeffa134f \
+  --campaign-receipt-sha256 201b7edc94d54f9ea2054f2eab98a68c83850def841ceade6a14c8db7d05cdd3 \
+  --inputs-sha256 1739b0c1b785b93f9f47522a22bc844e9ce5c898bd6580ec01157ce7bdd9a82d \
+  --summary-sha256 394ba794ce6bcad9d04da271d45f4465adcada8c4e00e3a75138ae9c257c71d2 \
+  --svg-sha256 6366260bf300fab10893d9be20f1b5a2e181acb64db9776ee9e0fce3fcb699aa
 
 "$PY" -I -B tools/verify_python_re_callable_introspection_v1.py \
   --verify-frozen-context \
@@ -334,8 +336,8 @@ opening a benchmark:
 The earlier pinned context checks below reproduce historical source freezes.
 Each intentionally authenticates the exact evidence inventory that existed
 when it was committed. Run one against its corresponding historical commit;
-it is not a verification of the current **151** evidence files and
-**156** authenticated references.
+it is not a verification of the current **153** evidence files and
+**158** authenticated references.
 
 ```sh
 
@@ -556,6 +558,38 @@ candidate, benchmark the engine, or test compatibility.
   --owned-source-sha256 candidates/rust/src/stack.rs=5198a056e99bde5632169cfc5b07ad913910cdb1b30785dad4744ccb9a30809e \
   --owned-source-sha256 candidates/rust/src/unicode_tables.rs=f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af \
   --owned-source-sha256 candidates/rust_candidate.py=6fb66ef6c3f143475426dd3d5b97c52dbe251f8d2ddd0ef3d5de7ec553a0351b
+```
+
+## Reproduce the complete corrected Rust compatibility test
+
+This exact command temporarily activates four Rust files and creates a
+durable recovery journal before the first replacement. Run it only in a
+fresh environment where its recovery root and evidence do not already
+exist. It runs the original **31,237** checks, restores all four original
+inodes, and reports an unsuccessful candidate truthfully; an exit status
+of **1** means the matching test found real differences.
+
+```sh
+"$PY" -I -B tools/run_owned_repaired_rust_original_campaign_v4.py \
+  --run \
+  --source-sha256 7d63b397deddd5c23af075754fcb50f7b3bdfb44390269383aae7903d46b4dd0 \
+  --protocol-sha256 5296b7ed7c3ba37ce4e299924e9e9edae849bebcd0e92e828977ae9ac6c9e26b \
+  --contract-sha256 26e86429e1e437fc791401197fb8c6dd9cf399bb025bd027af5f9c2554d6f60b \
+  --family rust \
+  --label phase2-v12-rust-flag-original-p0 \
+  --activation-root /tmp/rebar-phase2-repaired-rust-original-campaign-v2-safe-v4-phase2-v12-rust-flag-original-p0 \
+  --producer-source-sha256 7415192cf5ad83ca643c2c8aaa58222394d62f98bc35f15c301007947b46b23c \
+  --producer-protocol-sha256 88fef0ad32b43697edc48d921bb8d5c086c24125ca7f4934834f311e8d65bb76 \
+  --producer-contract-sha256 47b3f6c1850cab7190c095fdb4384fd70813c8d27d43dfbbf2960d58a816efb1 \
+  --build-source-sha256 1b3f8333f36a6262e962647719ed99b00dd1519a704bf7f07a5d1f1d56377db6 \
+  --build-protocol-sha256 822857ed434cf1273c0d5eaf14f540d0398c744fee8e14b7b7734238dc2d9950 \
+  --build-contract-sha256 c1c68590a1b45005fb709dc00a6a5f86e6564ed494e179fff9480ea5bed7b592 \
+  --build-archive-sha256 840a6403699fec44d4f725f737fc9538c997b818a48d167398ad1b95cbb9828d \
+  --build-receipt-sha256 1cd7e538098711ddac017ee3375d302d4b1ba4e6da52d10d2a524103db500a2f \
+  --native-engine-sha256 5e79f92b10d47f73919796af2349e44e7d16eceb515cc07571d0beaaec4a405f \
+  --native-bridge-sha256 7f5dfb587fc7f53ce3a7b6cfa568a6e49c009a4d0015929b4dada28cb5425c54 \
+  --native-engine-bytes 658344 \
+  --native-bridge-bytes 148656
 ```
 
 The [complete compatibility standard](../oracle/phase1/P0-COMPLETENESS-V1.md)
