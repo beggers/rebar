@@ -24,16 +24,17 @@ other **5** groups contain **1,262** actual compatibility differences.
 All test workers completed, with **0** test-runner failures. Earlier
 failed attempts are preserved. C is not yet a drop-in replacement.
 Speed and memory remain **NOT MEASURED**. The final comparison remains
-**NOT OPENED**. Separate Rust and Zig repairs have not yet been built.
+**NOT OPENED**. The repaired Zig engine now builds identically twice;
+its compatibility remains **NOT MEASURED**. Repaired Rust is not yet built.
 
-![Python passes all 31,237 compatibility checks; repaired C passes eight complete groups but has 1,262 real remaining differences; independent Rust, Zig, C++, and Go engines are not yet compatible; speed is unmeasured](docs/evidence/candidate-current-overview-v23.svg)
+![Python passes all 31,237 compatibility checks; repaired C passes eight complete groups but has 1,262 remaining differences; repaired Zig builds reproducibly but has not yet been retested; speed is unmeasured](docs/evidence/candidate-current-overview-v24.svg)
 
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
 | Rust | Two matching builds | 7,461 verified; five groups failed; not qualified | NOT MEASURED |
 | C | Independently repeated repaired native build | 7,325 verified; 1,262 differences; five groups failed; not qualified | NOT MEASURED |
-| Zig | Two matching original builds; capture repair not built | 3,583 verified; seven groups failed; not qualified | NOT MEASURED |
+| Zig | Two identical independently repaired builds | Original: 3,583 verified; seven groups failed. Repair: matching not measured | NOT MEASURED |
 | C++ | Two matching source builds | 128 verified; 12 groups failed; not qualified | NOT MEASURED |
 | Go | Two matching first-party builds | 128 verified; 4,518 differences; four worker failures | NOT MEASURED |
 | Fortran | Three attempts; engines differ | NOT TESTED | NOT MEASURED |
@@ -41,8 +42,8 @@ Speed and memory remain **NOT MEASURED**. The final comparison remains
 ## Detailed compatibility
 
 The table shows the last completed matching results for each engine. The C
-column uses the latest independently built repair; both earlier C runner
-failures remain preserved in the experiment log.
+column uses its latest repair; the Zig column shows the original engine
+because the newly built repair has not yet been tested.
 
 | Python behavior | Cases | Rust | C | Zig | C++ | Go |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -95,14 +96,15 @@ slowdown greater than **20%**. There is no winner.
 - [Frozen correction for the C test coordinator](oracle/phase2/P0-V9-LIVE-CONTEXT-ADAPTER-V1.md), [exact original-worker contract](oracle/phase2/p0-v9-live-context-adapter-v1.json), and [independent coordinator adapter](tools/run_owned_frozen_p0_v9_live_context_adapter_v1.py); the earlier coordinator failure is preserved.
 - [Recovery-safe corrected C test rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V2.md), [exact recovery contract](oracle/phase2/repaired-c-original-campaign-v2.json), and [complete safely recovered runner](tools/run_owned_repaired_c_original_campaign_v2.py); its one recorded test-runner failure is preserved.
 - [Complete corrected C rerun](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V3.md), [exact original-test and safe-restoration contract](oracle/phase2/repaired-c-original-campaign-v3.json), and [recovery-safe original-suite controller](tools/run_owned_repaired_c_original_campaign_v3.py); all 13 workers and all 1,262 mismatches are preserved.
-- [Frozen first-party Zig capture repair](oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V1.md), [exact one-change contract](oracle/phase2/zig-scanner-capture-source-repair-v1.json), and [private-snapshot-only repair tool](tools/apply_owned_zig_scanner_capture_source_repair_v1.py); the repaired Zig engine has not been built or tested.
-- [Current reproducible from-scratch Zig build rules](oracle/phase2/ZIG-SCANNER-SOURCE-BUILD-V11.md), [exact independent two-build contract](oracle/phase2/zig-scanner-source-build-v11.json), and [source-only Zig build verifier](tools/reproduce_owned_zig_scanner_source_build_v11.py); the repaired Zig engine has not been built or tested.
+- [Frozen first-party Zig capture repair](oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V1.md), [exact one-change contract](oracle/phase2/zig-scanner-capture-source-repair-v1.json), and [private-snapshot-only repair tool](tools/apply_owned_zig_scanner_capture_source_repair_v1.py); the repair was applied to two independent private builds.
+- [Current reproducible from-scratch Zig build rules](oracle/phase2/ZIG-SCANNER-SOURCE-BUILD-V11.md), [exact independent two-build contract](oracle/phase2/zig-scanner-source-build-v11.json), and [Zig build verifier](tools/reproduce_owned_zig_scanner_source_build_v11.py); both native builds are identical, but matching remains untested.
 - [Frozen first-party Rust public-compatibility repair](oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V1.md), [exact three-change contract](oracle/phase2/rust-public-contract-source-repair-v1.json), and [private-snapshot-only Rust repair](tools/apply_owned_rust_public_contract_source_repair_v1.py); the repaired Rust engine has not been built or tested.
 - [Current offline first-party Rust build rules](oracle/phase2/NATIVE-SOURCE-BUILD-V10.md), [exact dual-repair, two-build contract](oracle/phase2/native-source-build-v10.json), and [independent Rust source-build verifier](tools/reproduce_owned_native_source_build_v10.py); the repaired Rust engine has not been built or tested.
 - [Complete original C test-runner failure](oracle/phase2/evidence/frozen-p0-candidate-v8-c-phase2-v8-original-p0-failures.json.gz) and [independently recovered failure and original-file proof](oracle/phase2/evidence/repaired-c-original-campaign-v1-c-phase2-v8-original-p0-failures.json.gz).
 - [Complete corrected C runner failure](oracle/phase2/evidence/repaired-c-original-campaign-v2-c-phase2-v9-original-p0-failures.json.gz) and [independent failure and exact-restoration receipt](oracle/phase2/evidence/repaired-c-original-campaign-v2-c-phase2-v9-original-p0-failures-publication-receipt.json).
 - [Actual complete corrected C compatibility result](oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures.json.gz), [independent safe-restoration receipt](oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures-publication-receipt.json), and [all 13 original worker results](oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures.json.gz).
-- [Current graph inputs](docs/evidence/candidate-current-overview-v23.inputs.json), [machine-readable results](docs/evidence/candidate-current-overview-v23.json), and [graph generator](tools/render_candidate_current_overview_v23.py).
+- [Actual independent repaired Zig builds](oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner.json.gz) and [independent source-build receipt](oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner-publication-receipt.json).
+- [Current graph inputs](docs/evidence/candidate-current-overview-v24.inputs.json), [machine-readable results](docs/evidence/candidate-current-overview-v24.json), and [graph generator](tools/render_candidate_current_overview_v24.py).
 - [Full reproduction instructions and source-pinned checks](docs/REPRODUCING.md).
 - [Experiment log, raw evidence, previous graphs, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Expanded final-comparison plan](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
@@ -121,13 +123,13 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_owned_frozen_p0_v9_live_context_adapter_v1.py --self-test
 "$PY" -I -B tools/run_owned_repaired_c_original_campaign_v2.py --self-test
 "$PY" -I -B tools/run_owned_repaired_c_original_campaign_v3.py --self-test
-"$PY" -I -B tools/render_candidate_current_overview_v23.py --self-test
-"$PY" -I -B tools/render_candidate_current_overview_v23.py \
+"$PY" -I -B tools/render_candidate_current_overview_v24.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v24.py \
   --verify-frozen-context \
-  --source-sha256 a7f90986e1020d4cccd0b7eac19779a68a5dac28a33a2a7b5776a5508c91b213 \
-  --campaign-archive-sha256 8dae792944509b4e8879d42b149a723d629c237b40c387a577fac5443bd2e4c7 \
-  --campaign-receipt-sha256 f3383b6c00ab28d4466332b99c759e981b423a9f427757b0524f7a85f0cf253d \
-  --inputs-sha256 e203be81e2ebafa23bd91e41902dd1949fa2245cb8d818e76444982021bfba68 \
-  --summary-sha256 6368a2c900e2ed656830ba773bd454a603f547f3f21f9eabac3490140d687098 \
-  --svg-sha256 853d3084beb85df634437f3e9198f85c3d28f455c82c94550ae98cb453e561a4
+  --source-sha256 a639a39a2b476777e47aecb6850617213491d99698b391a4f905dc1653f25b4e \
+  --zig-build-archive-sha256 e4a1f369b647f588ac5b12585f7d0e30c4ee3409adc88f660081fb7a59a8df5c \
+  --zig-build-receipt-sha256 d53766d0dad571f8b72288cece15fb1ad0892db32c3b3b6b512027db94ca4fcc \
+  --inputs-sha256 9a01881fca3d090d0b0a95b392b73d2941b330a5acd5144ffaf6a865e5f0cc34 \
+  --summary-sha256 719a3dec863e5f7c78c1c2bc37f7ee06057f9de0ed9cefca74dee0c6dceeceac \
+  --svg-sha256 44f56757ca5c908412668c7679006dab288655ab0a419da59ac9265e7cb3aed1
 ```

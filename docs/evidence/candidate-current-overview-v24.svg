@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1660" height="2180" viewBox="0 0 1660 2180" role="img" aria-labelledby="v24-title v24-description">
+<title id="v24-title">Building a faster Python re: the repaired Zig engine builds, but matching and speed have not been tested</title>
+<desc id="v24-description">Python passes all 31,237 original reference checks. The newly repaired, independently implemented Zig engine completed 26 real build and inspection steps and produced byte-identical engine and bridge files in two separate builds. This new Zig engine has not run matching tests and is not a qualified candidate. The previously tested Zig engine still has 1,764 recorded differences. The latest C engine really ran all 13 test groups and has 1,262 real matching differences and no infrastructure failures. No replacement qualifies. The complete record contains 137 actual evidence files and 142 distinct signed history references. Speed, memory, confidence intervals and rankings have not been measured. The final holdout remains unopened.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.title{font-size:33px;font-weight:760;fill:#16324f}.heading{font-size:24px;font-weight:740;fill:#16324f}.body{font-size:15px;fill:#42556c}.name{font-size:17px;font-weight:720;fill:#16324f}.pass{font-size:15px;font-weight:750;fill:#00794c}.fail{font-size:15px;font-weight:740;fill:#a15e00}.pending{font-size:15px;font-weight:740;fill:#53667b}.big{font-size:25px;font-weight:760;fill:#16324f}.foot{font-size:12px;fill:#53667b}.small{font-size:13px;fill:#42556c}</style>
+<rect width="1660" height="2180" rx="22" fill="#f4f7fb"/>
+<text x="54" y="66" class="title">Can we build a faster replacement for Python re?</text>
+<text x="56" y="96" class="body">The repaired Zig engine now genuinely builds twice. Whether it matches Python is NOT MEASURED.</text>
+<rect x="54" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="68" y="163" class="big">31,237</text>
+<text x="68" y="198" class="body">original Python reference checks</text>
+<rect x="374" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="388" y="163" class="big">26 of 26</text>
+<text x="388" y="198" class="body">real Zig build steps succeeded</text>
+<rect x="694" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="708" y="163" class="big">2 of 2</text>
+<text x="708" y="198" class="body">separate identical Zig builds</text>
+<rect x="1014" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="1028" y="163" class="big">1,262</text>
+<text x="1028" y="198" class="body">recorded C matching differences</text>
+<rect x="1334" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="1348" y="163" class="big">NOT MEASURED</text>
+<text x="1348" y="198" class="body">speed and memory</text>
+<rect x="54" y="241" width="1552" height="782" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="77" y="282" class="heading">1. Does each replacement behave exactly like Python?</text>
+<text x="78" y="309" class="body">Building successfully is not passing a matching test. A replacement qualifies only after every original check agrees.</text>
+<rect x="75" y="326" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="349" class="name">Python re — reference</text>
+<text x="1564" y="349" class="pass" text-anchor="end">PASSED</text>
+<text x="96" y="372" class="small">All 31,237 original Python reference checks pass.</text>
+<rect x="75" y="395" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="418" class="name">Zig — newly repaired engine</text>
+<text x="1564" y="418" class="pending" text-anchor="end">BUILT; MATCHING NOT MEASURED</text>
+<text x="96" y="441" class="small">26 real build and inspection steps; two separate byte-identical engine and bridge builds; no matching tests yet.</text>
+<rect x="75" y="464" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="487" class="name">Zig — previously tested engine</text>
+<text x="1564" y="487" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="510" class="small">3,583 fully verified passing checks; 1,764 recorded matching differences.</text>
+<rect x="75" y="533" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="556" class="name">C — latest repaired engine</text>
+<text x="1564" y="556" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="579" class="small">All 13 groups ran: 8 completely passed (7,325 checks); 1,262 differences; 0 runner failures.</text>
+<rect x="75" y="602" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="625" class="name">C — earlier matching engine</text>
+<text x="1564" y="625" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="648" class="small">7,197 fully verified passing checks; 2,094 matching differences.</text>
+<rect x="75" y="671" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="694" class="name">Rust</text>
+<text x="1564" y="694" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="717" class="small">7,461 fully verified passing checks; 2,042 matching differences.</text>
+<rect x="75" y="740" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="763" class="name">C++</text>
+<text x="1564" y="763" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="786" class="small">128 fully verified passing checks; 2,308 matching differences and 5 earlier runner failures.</text>
+<rect x="75" y="809" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="832" class="name">Go</text>
+<text x="1564" y="832" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="855" class="small">128 fully verified passing checks; 4,518 matching differences and 4 runner failures.</text>
+<rect x="75" y="878" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="901" class="name">Fortran</text>
+<text x="1564" y="901" class="pending" text-anchor="end">NOT READY</text>
+<text x="96" y="924" class="small">Its independently built engine is not yet compatible. Matching: NOT MEASURED.</text>
+<text x="78" y="983" class="body">Earlier C attempts remain recorded separately: 13 old runner failures, then one runner failure before matching.</text>
+<rect x="54" y="1040" width="1552" height="648" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="77" y="1081" class="heading">2. Which C test groups still differ?</text>
+<text x="78" y="1108" class="body">All 13 groups and original case records are preserved; these are observed matching results, not build results.</text>
+<text x="92" y="1135" class="small">TEST GROUP</text>
+<text x="1225" y="1135" class="small" text-anchor="end">ORIGINAL CHECKS</text>
+<text x="1562" y="1135" class="small" text-anchor="end">RESULT</text>
+<rect x="77" y="1148" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1169" class="body">Core Python behavior</text>
+<text x="1225" y="1169" class="body" text-anchor="end">151</text>
+<text x="1562" y="1169" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1183" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1204" class="body">Everyday public methods</text>
+<text x="1225" y="1204" class="body" text-anchor="end">864</text>
+<text x="1562" y="1204" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1218" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1239" class="body">Scanning and callbacks</text>
+<text x="1225" y="1239" class="body" text-anchor="end">1,024</text>
+<text x="1562" y="1239" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1253" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1274" class="body">Buffers and memory views</text>
+<text x="1225" y="1274" class="body" text-anchor="end">768</text>
+<text x="1562" y="1274" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1288" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1309" class="body">Buffer lifetime</text>
+<text x="1225" y="1309" class="body" text-anchor="end">1,024</text>
+<text x="1562" y="1309" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1323" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1344" class="body">Verbose patterns</text>
+<text x="1225" y="1344" class="body" text-anchor="end">2,854</text>
+<text x="1562" y="1344" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1358" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1379" class="body">Public types and serialization</text>
+<text x="1225" y="1379" class="body" text-anchor="end">6,912</text>
+<text x="1562" y="1379" class="fail" text-anchor="end">248 DIFFERENCES</text>
+<rect x="77" y="1393" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1414" class="body">Substitutions</text>
+<text x="1225" y="1414" class="body" text-anchor="end">5,120</text>
+<text x="1562" y="1414" class="fail" text-anchor="end">224 DIFFERENCES</text>
+<rect x="77" y="1428" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1449" class="body">Result shapes</text>
+<text x="1225" y="1449" class="body" text-anchor="end">10,240</text>
+<text x="1562" y="1449" class="fail" text-anchor="end">672 DIFFERENCES</text>
+<rect x="77" y="1463" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1484" class="body">Full public interface</text>
+<text x="1225" y="1484" class="body" text-anchor="end">1,376</text>
+<text x="1562" y="1484" class="fail" text-anchor="end">114 DIFFERENCES</text>
+<rect x="77" y="1498" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1519" class="body">Subinterpreters</text>
+<text x="1225" y="1519" class="body" text-anchor="end">128</text>
+<text x="1562" y="1519" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1533" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1554" class="body">Python buffer exporters</text>
+<text x="1225" y="1554" class="body" text-anchor="end">264</text>
+<text x="1562" y="1554" class="fail" text-anchor="end">4 DIFFERENCES</text>
+<rect x="77" y="1568" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1589" class="body">Patterns across threads</text>
+<text x="1225" y="1589" class="body" text-anchor="end">512</text>
+<text x="1562" y="1589" class="pass" text-anchor="end">PASSED</text>
+<text x="79" y="1632" class="body">Eight complete C groups pass. The 7,325 checks count only those completely passing groups.</text>
+<text x="79" y="1658" class="body">Five C groups contain 1,262 recorded differences. The newly built Zig engine has not run these groups.</text>
+<rect x="54" y="1704" width="1552" height="275" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="77" y="1745" class="heading">3. Is any replacement faster?</text>
+<text x="79" y="1777" class="body">NOT MEASURED. No candidate has first passed every correctness test.</text>
+<text x="79" y="1807" class="body">There is no speed or memory comparison, confidence interval, ranking, winner, or opened final holdout.</text>
+<text x="79" y="1837" class="body">Real evidence: 135 earlier files + 2 new genuine Zig build files = 137 verified files; 142 signed references.</text>
+<text x="79" y="1867" class="body">Zig source was repaired only in separate private build snapshots; the original candidate files were not changed.</text>
+<text x="79" y="1897" class="body">Engine and Python bridge were independently verified to use no external or standard-library regex engine.</text>
+<text x="79" y="1927" class="body">The original C binary, its exact inode, and its 0755 permissions remain restored.</text>
+<text x="58" y="2016" class="foot">Inputs SHA-256: 9a01881fca3d090d0b0a95b392b73d2941b330a5acd5144ffaf6a865e5f0cc34</text>
+<text x="58" y="2041" class="foot">Renderer SHA-256: a639a39a2b476777e47aecb6850617213491d99698b391a4f905dc1653f25b4e</text>
+<text x="58" y="2066" class="foot">Actual Zig build archive SHA-256: e4a1f369b647f588ac5b12585f7d0e30c4ee3409adc88f660081fb7a59a8df5c</text>
+<text x="58" y="2091" class="foot">Actual Zig build receipt SHA-256: d53766d0dad571f8b72288cece15fb1ad0892db32c3b3b6b512027db94ca4fcc</text>
+<text x="58" y="2116" class="foot">Independently rebuilt Zig engine SHA-256: caeb5ee7f5f9035f85e3ea2eb1d11396a1ca27f3c15ba585d7bbad40d9a87071</text>
+<text x="58" y="2141" class="foot">Independently rebuilt Zig bridge SHA-256: 75032107c7769f24f0c80a6e473a26dad3c74f99290e3d89bf46767e07ec3681</text>
+</svg>

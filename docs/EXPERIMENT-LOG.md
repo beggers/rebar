@@ -7,6 +7,40 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Build the repaired first-party Zig engine twice
+
+Run the separately frozen current-history Zig build once using the pinned
+official Zig compiler, first-party Zig matching engine, authentic native
+bridge, and independently frozen scanner-capture repair. Create two
+distinct private, owner-only source and build directories. Apply the
+repair exactly once in each private snapshot; do not change the original
+checked-in engine or bridge.
+
+Both independent engine binaries match exactly, SHA-256
+`caeb5ee7f5f9035f85e3ea2eb1d11396a1ca27f3c15ba585d7bbad40d9a87071`,
+**108,888** bytes. Both independent bridge binaries match exactly,
+SHA-256
+`75032107c7769f24f0c80a6e473a26dad3c74f99290e3d89bf46767e07ec3681`,
+**133,656** bytes. All **26** actual compiler and inspection processes
+finish successfully. Both binary audits confirm zero external,
+stdlib, or cross-candidate regular-expression engines.
+
+Preserve the [complete actual first-party Zig build result](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner.json.gz),
+SHA-256
+`e4a1f369b647f588ac5b12585f7d0e30c4ee3409adc88f660081fb7a59a8df5c`;
+and [independent durable build and exact-process receipt](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner-publication-receipt.json),
+SHA-256
+`d53766d0dad571f8b72288cece15fb1ad0892db32c3b3b6b512027db94ca4fcc`.
+These two genuine build owners bring the complete history to **137**
+evidence files and **142** authenticated references. Retain all
+**30** C correctness records and all historical Zig failures.
+
+The build result is **PASS**. The repaired Zig engine has not run the
+**31,237**-case Python correctness suite. Its compatibility, speed,
+memory, and undefined behavior remain **NOT MEASURED**. No candidate
+qualifies. The **4,194,304**-case final comparison remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze reproducible offline Rust builds with both first-party repairs
 
 Prepare one independently implemented Rust engine using both separately
