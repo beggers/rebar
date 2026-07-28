@@ -7,6 +7,51 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected original Python test producer
+
+Preserve every original test after the repaired C run exposes three
+test-harness problems. Keep all **13** original groups, all **31,237**
+cases, the **13** named private exceptions, all **25** independent engine
+source files, and all **103** already recorded evidence files. Do not
+change, skip, or substitute a Python compatibility case.
+
+Verify the actual native module and its code instead of rejecting the
+Python-compatible public names `re.Pattern` and `re.Match`. Authenticate
+each of the six genuinely independent engines against its own first-party
+native interface; the C engine's parser owns `compile` and its native
+module owns `build`. Neither Python's matcher nor another candidate is
+accepted as an engine.
+
+Recover the frozen **6,912** public-type reference records from the two
+actual original Python processes, with separately verified process IDs,
+output hashes, saved archive, and publication receipt. Do not recreate a
+baseline, start a reference process, fabricate a record, or open the
+final comparison. Keep the genuine **12** public-type ownership failures
+and **1** saved-reference decoding failure in the published history.
+
+Freeze the [corrected original test producer](../tools/run_owned_six_family_original_p0_producer_v3.py),
+SHA-256
+`7415192cf5ad83ca643c2c8aaa58222394d62f98bc35f15c301007947b46b23c`;
+[unchanged complete-test and native ownership rules](../oracle/phase2/SIX-FAMILY-P0-PRODUCER-V3.md),
+SHA-256
+`88fef0ad32b43697edc48d921bb8d5c086c24125ca7f4934834f311e8d65bb76`;
+and [machine-readable original-case and evidence contract](../oracle/phase2/six-family-p0-producer-v3.json),
+SHA-256
+`47b3f6c1850cab7190c095fdb4384fd70813c8d27d43dfbbf2960d58a816efb1`.
+
+Both normal and clean-environment source-only checks accept **111** valid
+controls and reject **346** spoofed, weakened, or incomplete alternatives.
+Both exact-pinned, read-only historical checks authenticate the **103**
+evidence owners, **108** separately pinned historical paths, all **30**
+repaired-C failure owners, the restored original native file, and both
+complete Python reference streams. These checks do not import or run
+any replacement.
+
+Matching through the corrected producer, speed, memory, and undefined
+behavior remain **NOT MEASURED**. No candidate is qualified. The
+**4,194,304**-case final
+comparison remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Preserve the complete repaired C correctness-run failure
 
 Run the separately frozen, fail-safe first-party C campaign once against
