@@ -7,6 +7,45 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze safe recovery for the corrected full C run
+
+Preserve all **13** original Python test groups, all **31,237** original
+cases, the **13** named private exceptions, and both independently recorded
+Python references. Keep all **103** existing evidence files, **108** exact
+historical evidence references, and all **30** records from the previous
+repaired C run, including its **13** test-runner failures.
+
+Use the reproducibly built first-party C engine, not an external package
+or Python's matching implementation. Its exact independently repeated
+native build has SHA-256
+`60e50499c34267927e8d312908d7d86b536106b32f418f76453833df7e91694f`.
+Verify the corrected original-test producer and full **13**-suite runner
+before temporarily loading that engine. Start protected restoration before
+any replacement, preserve every complete test outcome, and restore the
+exact original C file before publishing a result.
+
+Freeze the [recovery-safe corrected C controller](../tools/run_owned_repaired_c_original_campaign_v2.py),
+SHA-256
+`047eb7acb5a9febd8172f386061a20de5f17be36e9798d55c1c1e30e813594ab`;
+[corrected original-test and restoration rules](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V2.md),
+SHA-256
+`bd89b3e09b1268a65475ad992b2858e2167368a82ee97d1b90b1fa36b32438b0`;
+and [exact first-party build, complete-suite, and recovery contract](../oracle/phase2/repaired-c-original-campaign-v2.json),
+SHA-256
+`b3c16de03165b5e95529923a2475c73c51fce9a48a871aa61804b97fcca782de`.
+
+Both normal and clean-environment self-tests reject **78** unsafe
+controls. Both pinned, read-only context checks independently preserve
+the complete corrected producer, the complete corrected runner, the
+actual reproducible C build, and every existing test and failure record.
+No source check loads a candidate, changes the original C file, runs
+a compatibility test, samples a clock, or opens the final comparison.
+
+Repaired C correctness through the corrected original tests, speed,
+memory, and undefined behavior remain **NOT MEASURED**. No candidate
+qualifies. The **4,194,304**-case final comparison remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze a first-party Zig scanner-capture repair
 
 Preserve all **1,764** previous Zig matching failures before changing

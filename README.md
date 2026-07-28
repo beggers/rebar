@@ -92,6 +92,7 @@ slowdown greater than **20%**. There is no winner.
 - [Independent, from-scratch engine audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Corrected original-test and ownership rules](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V3.md), [exact frozen contract](oracle/phase2/six-family-p0-producer-v3.json), and [source-only test producer](tools/run_owned_six_family_original_p0_producer_v3.py); all original tests and both Python references are preserved.
 - [Complete corrected-suite protocol](oracle/phase2/P0-CANDIDATE-PROTOCOL-V9.md), [frozen test contract](oracle/phase2/p0-candidate-protocol-v9.json), [isolated original-test worker](tools/run_frozen_p0_candidate_worker_v7.py), and [full-suite runner](tools/run_frozen_p0_candidate_v9.py); no candidate has yet been run through this corrected path.
+- [Recovery-safe corrected C test rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V2.md), [exact recovery contract](oracle/phase2/repaired-c-original-campaign-v2.json), and [complete safely recovered runner](tools/run_owned_repaired_c_original_campaign_v2.py); the repaired candidate has not yet been rerun.
 - [Frozen first-party Zig capture repair](oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V1.md), [exact one-change contract](oracle/phase2/zig-scanner-capture-source-repair-v1.json), and [private-snapshot-only repair tool](tools/apply_owned_zig_scanner_capture_source_repair_v1.py); the repaired Zig engine has not been built or tested.
 - [Complete original C test-runner failure](oracle/phase2/evidence/frozen-p0-candidate-v8-c-phase2-v8-original-p0-failures.json.gz) and [independently recovered failure and original-file proof](oracle/phase2/evidence/repaired-c-original-campaign-v1-c-phase2-v8-original-p0-failures.json.gz).
 - [Current graph inputs](docs/evidence/candidate-current-overview-v21.inputs.json), [machine-readable results](docs/evidence/candidate-current-overview-v21.json), and [graph generator](tools/render_candidate_current_overview_v21.py).
@@ -110,6 +111,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_owned_six_family_original_p0_producer_v3.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_worker_v7.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v9.py --self-test
+"$PY" -I -B tools/run_owned_repaired_c_original_campaign_v2.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v21.py --verify \
   --source-sha256 617a64691bf9da7730e44bfed96fe20dbd9c8e38b575e0daf8a3432dbf2625e9 \
   --campaign-archive-sha256 a8319a686c2486e27374bfb9c6ada4e4ec104c27c1cafdbc2205c98f40fa9fb7 \
