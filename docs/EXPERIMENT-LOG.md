@@ -7,6 +7,77 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Build the from-scratch Zig engine reproducibly
+
+Run only the already committed version-three Zig source-build protocol
+with the exact official compiler, frozen three-file owner closure, and
+the supported compiler-native `-fstrip` correction. Keep the genuine
+earlier non-reproducing Zig report and both previous C correctness
+failures unchanged. Independently recover and validate all **39**
+historical C, Rust, and Zig compiler and native-audit process records
+before trusting the new build.
+
+Both genuinely separate source, output, and cache directories now
+produce the identical **108,888-byte** Zig engine, SHA-256
+`caeb5ee7f5f9035f85e3ea2eb1d11396a1ca27f3c15ba585d7bbad40d9a87071`,
+at distinct inodes **11384138** and **11384981**. Both independently
+compiled **133,656-byte** native bridges match, SHA-256
+`c579cf52b767b84ecc3d0a60f837d526978ace4e7739fe4cf51c2d2c8cfd90d9`,
+at distinct inodes **11384142** and **11384985**. Preserve all **15**
+real compiler, version, and native-symbol processes; both actual Zig
+compile commands contain exactly one `-fstrip`. The owned engine
+exports **22** matching functions and no outside regex engine; the
+bridge resolves only its adjacent owned engine and normal C runtime.
+
+Preserve the complete, exclusive
+[successful Zig source-build report](../oracle/phase2/evidence/native-source-build-v3-zig-phase2-v3.json.gz),
+**25,102 bytes**, SHA-256
+`485fcf3434d2c46088f8e358ce43a34aee63e3f4aacb878e63109279afb2c46c`.
+Its **238,586-byte** uncompressed report has SHA-256
+`9f1f5b6e4b4003fc1ddcfd5139953f1b6eb63d02bfc5bd8ed4decbcbe7bb696f`.
+Keep the complete, independently verified
+[successful Zig publication receipt](../oracle/phase2/evidence/native-source-build-v3-zig-phase2-v3-publication-receipt.json),
+**1,748 bytes**, SHA-256
+`050f0156647c90ed03ebffe7d530e0a9f56d605f3728df618c85dc2f8ae570e8`.
+
+Update the readable headline graph from the exact evidence in this
+same focused change. Pin the
+[version-four current-results renderer](../tools/render_candidate_current_overview_v4.py),
+SHA-256
+`dc07a756de1b06e7fcd0bb6a5c82412ec05878f728af36c14bec7a62f184a84d`,
+the
+[exact graph input manifest](../docs/evidence/candidate-current-overview-v4.inputs.json),
+SHA-256
+`bf31a5a0972c9c79eeb4756a5101052578bb8cc86e1d66b1fbc230256d3db38b`,
+the
+[reproducible current-results summary](../docs/evidence/candidate-current-overview-v4.json),
+SHA-256
+`02982487dda24ee584c1e01080f3dcd4ee85fb245b651c14f91b35f793122f84`,
+and the
+[generated updated headline graph](../docs/evidence/candidate-current-overview-v4.svg),
+SHA-256
+`593754d14c7f6529c35fc5c3f55f77e18d6a8aa44762bbf787fe533a062183a8`.
+
+Show all three genuinely reproducible C, Rust, and Zig builds. Label
+the actual C failure **WORKER FAILED; 0 QUALIFIED**: one real isolated
+worker did start, so the older version-three label **PREFLIGHT FAILED;
+0 RUN** applies only to its distinct historical failure. Preserve the
+rejected intermediate renderer, SHA-256
+`ab075a9854efb7ad9cd7eb577e5edc06e485f19017cdd79587fc9c7c89c2cb89`:
+one inherited hostile control incorrectly expected current Zig to
+remain unsuccessful after its independently verified fix. Require the
+real original Zig failure to remain preserved rather than falsifying
+the current successful result. The corrected source-only renderer
+passes **29** accepted and **231** rejected controls identically in
+ordinary and empty environments.
+
+The current Zig binary has not been activated and no Zig compatibility
+case has run. Existing frozen native activation accepts only
+version-two build records, so an independently verified version-three
+activation successor is still required. All complete candidate
+compatibility, runtime memory, and speed remain **NOT MEASURED**; the
+expanded final comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Preserve the inherited complete-case worker failure
 
 Run the frozen version-four C gate with a genuinely fresh, reversible

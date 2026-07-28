@@ -13,21 +13,22 @@ Python, another regular-expression package, or another candidate does not count.
 ## Headline results
 
 Python passes all **31,237** frozen compatibility checks. No replacement
-has yet passed them. Rust and C each have two independently matching,
-from-scratch builds. C's first full-test preflight failed before any
-case ran. Zig compiled twice but its original builds did not match.
+has yet passed them. Rust, C, and Zig now each have two independently
+matching, from-scratch builds. C's full-test worker failed before
+completing any compatibility case. Zig's original non-reproducible
+build remains preserved alongside its successful corrected build.
 C++ and Go have independently written source but have not been built.
 Every replacement's speed is **NOT MEASURED**; the final comparison
 remains **NOT OPENED**.
 
-![Current results: Python passes 31,237 checks; Rust and C have matching source builds but no full test result; Zig's build did not reproduce; C++ and Go are not built; every replacement's speed remains unmeasured](docs/evidence/candidate-current-overview-v3.svg)
+![Current results: Python passes all 31,237 compatibility checks; Rust, C, and Zig each have two matching from-scratch builds; C's worker completed no tests; C++ and Go have not been built; every replacement's speed remains unmeasured](docs/evidence/candidate-current-overview-v4.svg)
 
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
 | Rust | Two matching builds | NOT MEASURED | NOT MEASURED |
-| C | Two matching builds; test preflight failed | NOT MEASURED; zero tests ran | NOT MEASURED |
-| Zig | Original builds do not match | NOT MEASURED | NOT MEASURED |
+| C | Two matching builds; test worker failed | NOT MEASURED; zero qualified cases | NOT MEASURED |
+| Zig | Two matching builds; original failure preserved | NOT MEASURED | NOT MEASURED |
 | C++ | Source only | NOT MEASURED | NOT MEASURED |
 | Go | Source only | NOT MEASURED | NOT MEASURED |
 
@@ -115,6 +116,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Corrected C, Rust, and Zig source-build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V2.md), [version-safe offline native-build verifier](tools/reproduce_phase2_native_builds_v2.py), and [preserved original build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V1.md).
 - [Deterministic, failure-preserving version-three native-build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V3.md) and [independently verified native build recorder](tools/reproduce_phase2_native_builds_v3.py); a corrected Zig rebuild has not yet run.
 - [Crash-safe verified native activation protocol](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V1.md) and [reversible, source-authenticated native activation and recovery](tools/activate_verified_native_candidate_v1.py).
+- [Complete reproducible Zig source-build record](oracle/phase2/evidence/native-source-build-v3-zig-phase2-v3.json.gz) and [independently verified Zig build receipt](oracle/phase2/evidence/native-source-build-v3-zig-phase2-v3-publication-receipt.json).
 - [Complete preserved Zig reproducibility failure](oracle/phase2/evidence/native-source-build-v2-zig-phase2-v2-failures.json.gz) and [independently verified Zig failure receipt](oracle/phase2/evidence/native-source-build-v2-zig-phase2-v2-failures-publication-receipt.json).
 - [Complete corrected Rust source-build record](oracle/phase2/evidence/native-source-build-v2-rust-phase2-v2.json.gz) and [independently verified corrected Rust build receipt](oracle/phase2/evidence/native-source-build-v2-rust-phase2-v2-publication-receipt.json).
 - [Complete corrected C source-build record](oracle/phase2/evidence/native-source-build-v2-c-phase2-v2.json.gz) and [independently verified corrected C build receipt](oracle/phase2/evidence/native-source-build-v2-c-phase2-v2-publication-receipt.json).
@@ -127,7 +129,8 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Independently written Zig matching engine](candidates/zig/mini_regex.zig), [owned interpreter-safe Zig Python bridge](candidates/zig/py_bridge.c), and [experimental Zig-backed Python interface](candidates/zig_candidate.py); full compatibility is not yet measured.
 - [Independently written C++ matching engine](candidates/cpp/engine.cpp), [native Python bridge](candidates/cpp/py_bridge.cpp), and [experimental Python interface](candidates/cpp_candidate.py); source checks only.
 - [Independently written Go matching engine](candidates/go/engine.go), [strictly portable Unicode-aware Python bridge](candidates/go/py_bridge.c), and [experimental Python interface](candidates/go_candidate.py); source checks only, not an executed compatibility result.
-- [Current source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v3.inputs.json), [complete current graph summary](docs/evidence/candidate-current-overview-v3.json), and [reproducible current-results graph generator](tools/render_candidate_current_overview_v3.py).
+- [Current source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v4.inputs.json), [complete current graph summary](docs/evidence/candidate-current-overview-v4.json), and [reproducible current-results graph generator](tools/render_candidate_current_overview_v4.py).
+- [Preserved earlier source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v3.inputs.json), [earlier headline summary](docs/evidence/candidate-current-overview-v3.json), and [earlier headline graph generator](tools/render_candidate_current_overview_v3.py).
 - [Preserved historical development-graph inputs](docs/evidence/candidate-correctness-overview-v2.inputs.json) and [historical graph generator](tools/render_candidate_correctness_overview_v2.py).
 - [Complete experiment log, raw evidence, rejected approaches, and preserved failures](docs/EXPERIMENT-LOG.md).
 - [Proposed expanded final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); the final cases remain **NOT GENERATED** and **NOT OPENED**.
@@ -154,16 +157,17 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/python_re_threaded_pattern_oracle_v1.py --self-test
 "$PY" -I -B tools/render_candidate_correctness_overview_v2.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v3.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v4.py --self-test
 ```
 
 Verify the current headline graph without rerunning a candidate or
 opening a benchmark:
 
 ```sh
-"$PY" -I -B tools/render_candidate_current_overview_v3.py --verify \
-  --source-sha256 a7ce3f6cc11d4f242400a70767b3cb34f9f97ddfdc21d286a1f746073ae00333 \
+"$PY" -I -B tools/render_candidate_current_overview_v4.py --verify \
+  --source-sha256 dc07a756de1b06e7fcd0bb6a5c82412ec05878f728af36c14bec7a62f184a84d \
   --go-bridge-sha256 52101f0afe29a568e3c2e22a06d47c89c051e08a0e2024ad4891c5ae2d60fb6a \
-  --manifest-sha256 f57f0c355c4de20b7fb4f985b17eabb01bd91f09575d2de27c7b7995f016d411
+  --manifest-sha256 bf31a5a0972c9c79eeb4756a5101052578bb8cc86e1d66b1fbc230256d3db38b
 ```
 
 The [complete compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md)
