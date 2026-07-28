@@ -7,6 +7,54 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the first C-engine replacement-buffer repair
+
+The unchanged original C-engine result records **2,094** genuine matching
+differences. Its changing-buffer and replacement groups expose an exact,
+reproducible error: non-callable replacement data is prepared after the
+subject buffer, but Python prepares the replacement first. Define one
+first-party C-source correction before rebuilding or running the engine.
+
+Preserve the original **218,185**-byte checked-in C source, SHA-256
+`bc937bdd3945a111d7929439dfd4a660a55b70593b19ee807c82325d9e6f1e55`,
+and the original independent Python adapter. Replace exactly one
+authenticated block inside the existing substitution function. The
+derived **218,308**-byte private C source has SHA-256
+`f44694759174c1c3975423e07095ae91a853e66242c4e55d11836df03a730c4d`.
+
+Prepare non-callable replacement data before opening the subject.
+Preserve the existing argument and count checks, buffer flags,
+replacement parser and cache, callable-replacement order, original
+matching engine, and successful cleanup. A failed replacement opens
+no subject; a failed subject releases its replacement exactly once.
+The repair does not change `match.expand` or use Python's regex engine,
+an external package, or another candidate.
+
+Freeze the [private, first-party C-source repair tool](../tools/apply_owned_first_party_source_repair_v1.py),
+SHA-256
+`c04bbc8e7bc45bdbe1fb9eb93942286f5b32b39aef554db15b8b1acd9cc8cd99`;
+[source-repair rules](../oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V1.md),
+SHA-256
+`1a2e83caaca5cb43fc82445c2a4fc3097bc3d51bdfc568783b8815797b8c63f5`;
+and [machine-readable exact repair](../oracle/phase2/first-party-source-repair-v1.json),
+SHA-256
+`8f1a5676bbef5f2ef560d03fef910bf4ed3a4df029ecc0c638e3fa971206dab5`.
+The four ordinary and empty-environment source-only checks each pass.
+Each synthetic check accepts **13** genuine controls, rejects **60**
+hostile modifications, and blocks **26** real effects.
+
+Independently verify all **25** original sources, all **13** original
+groups, all **31,237** frozen cases, all **13** named private exceptions,
+and the unchanged headline graph. Authenticate all **76** files
+referenced by that graph without changing its separate **71**-file
+evidence count. The graph remains accurate and unchanged.
+
+No repaired source is written, built, activated, or tested in this
+chunk. The original C failure remains visible. There are **0**
+qualified engines; speed, memory, safety, and corrected compatibility
+are **NOT MEASURED**. The expanded **4,194,304**-case comparison
+remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Run and preserve the complete original Go compatibility campaign
 
 Run one genuine, source-built Go engine using the separately frozen

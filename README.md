@@ -23,7 +23,8 @@ report is now fully preserved by a lossless streaming recorder, and the
 earlier failed recording attempt remains documented. Fortran compiles,
 but its two builds still differ. No candidate wraps an external regex
 engine. Speed and memory are **NOT MEASURED**; the final comparison is
-**NOT OPENED**.
+**NOT OPENED**. A first-party C-engine buffer repair has been defined,
+but has not yet been built or retested.
 
 ![Python passes all 31,237 checks; all five independently built replacement engines remain incompatible; the complete C++ and Go matching differences and separate worker failures are preserved; speed is not measured](docs/evidence/candidate-current-overview-v19.svg)
 
@@ -114,6 +115,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 
 - [Frozen Python compatibility tests](oracle/phase1/P0-COMPLETENESS-V1.md), [all 31,237 test cases](oracle/phase1/p0-completeness-v1.json), and [independent test verifier](tools/verify_p0_completeness_v1.py).
 - [First-party engine ownership and no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md), [exact source inventory](oracle/phase2/candidate-independence-v2.json), and [source verifier](tools/audit_candidate_independence_v2.py).
+- [Frozen first-party C repair](oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V1.md), [exact repair and preserved evidence](oracle/phase2/first-party-source-repair-v1.json), and [private-snapshot-only repair tool](tools/apply_owned_first_party_source_repair_v1.py); no original engine, matching result, or final comparison has been changed.
 - [Complete original-test rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V1.md), [frozen test inventory](oracle/phase2/six-family-p0-campaign-v1.json), and [reproducible candidate test runner](tools/run_owned_six_family_original_p0_campaign_v1.py).
 - [Lossless original-test recording rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V2.md), [frozen streaming-test inventory](oracle/phase2/six-family-p0-campaign-v2.json), and [complete streaming test recorder](tools/run_owned_six_family_original_p0_campaign_v2.py); the original tests, first-party engines, and preserved Go failure remain unchanged.
 - [Complete first-party C++ failure](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures.json.gz) and [independent publication and recovery receipt](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures-publication-receipt.json).
@@ -154,12 +156,22 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/activate_verified_native_candidate_v4.py --verify-frozen-context
 "$PY" -I -B tools/audit_candidate_independence_v2.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v19.py --self-test
+"$PY" -I -B tools/apply_owned_first_party_source_repair_v1.py --self-test \
+  --source-sha256 c04bbc8e7bc45bdbe1fb9eb93942286f5b32b39aef554db15b8b1acd9cc8cd99 \
+  --protocol-sha256 1a2e83caaca5cb43fc82445c2a4fc3097bc3d51bdfc568783b8815797b8c63f5 \
+  --contract-sha256 8f1a5676bbef5f2ef560d03fef910bf4ed3a4df029ecc0c638e3fa971206dab5
 ```
 
 Verify the current headline graph without rerunning a candidate or
 opening a benchmark:
 
 ```sh
+"$PY" -I -B tools/apply_owned_first_party_source_repair_v1.py \
+  --verify-frozen-context \
+  --source-sha256 c04bbc8e7bc45bdbe1fb9eb93942286f5b32b39aef554db15b8b1acd9cc8cd99 \
+  --protocol-sha256 1a2e83caaca5cb43fc82445c2a4fc3097bc3d51bdfc568783b8815797b8c63f5 \
+  --contract-sha256 8f1a5676bbef5f2ef560d03fef910bf4ed3a4df029ecc0c638e3fa971206dab5
+
 "$PY" -I -B tools/run_frozen_p0_candidate_v7.py --verify-frozen-context \
   --source-sha256 08ab73a0d42a2bb3bb658cf6924786a7ba396aacd229957a710866572e178690 \
   --worker-source-sha256 66f869e71e1aaf77944f4b7115e91ab34f6bc9b06fb4d17f097ea26c97c9c780 \
