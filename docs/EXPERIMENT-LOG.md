@@ -7,6 +7,73 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Build the corrected first-party C engine twice
+
+Run the independently frozen C build exactly once after freezing and
+pushing the repair, two-phase build, reversible recovery, and complete
+**31,237**-case original-test protocol. Apply the authenticated
+first-party C source correction only to two distinct private source
+directories. Never replace the checked-in C source or import another
+regular-expression engine.
+
+Both private builds complete successfully. The original C adapter is
+copied twice without changes. Each repaired source has SHA-256
+`f44694759174c1c3975423e07095ae91a853e66242c4e55d11836df03a730c4d`
+and **218,308** bytes. Both resulting native binaries have SHA-256
+`60e50499c34267927e8d312908d7d86b536106b32f418f76453833df7e91694f`
+and **163,136** identical bytes. Their private source and binary
+inodes are independently verified. Exactly **14** genuine compiler
+and binary-inspection processes succeed.
+
+The existing canonical C extension remains present and unchanged:
+SHA-256
+`075350a17d4909cd6f8dbe5e808e7b6444760f54bb60af013e0f812e22cfb7fd`,
+**149,976** bytes, mode `0755`, and inode **430300**. It is not the
+new **163,136**-byte binary. No candidate is loaded, promoted,
+activated, or tested by this build.
+
+Preserve the [complete actual first-party C build](../oracle/phase2/evidence/native-source-build-v8-c-phase2-v8.json.gz),
+SHA-256
+`69a795af6c407c0719b68dfa9fd4cb6dcfca2595271f72b83bc43678521f2598`,
+**37,452** compressed bytes; and the [independent durable C-build receipt](../oracle/phase2/evidence/native-source-build-v8-c-phase2-v8-publication-receipt.json),
+SHA-256
+`3b0983af9729b3150ae239a83dd0fdb37c6e790b3c03ebea48c77215f51456b8`,
+**1,848** bytes. The complete canonical build report contains
+**306,580** bytes, SHA-256
+`504e8535f23eb71ed643cc71d48d1b289c304536c487729aaba40c8df8fe522b`.
+The report and receipt are distinct owner-only, synchronized files.
+
+Generate the [actual-build headline graph](../tools/render_candidate_current_overview_v20.py),
+SHA-256
+`3f4b63de113743204f2b6736c5486e9160f4f4c029575052676f68943a3210d2`;
+[complete graph and actual-build inputs](evidence/candidate-current-overview-v20.inputs.json),
+SHA-256
+`bf09019d4a8df9ab5519a0b6bbbe9c4aaa8574dbcc4a9eafc1b424ba1961f021`;
+[machine-readable baseline, previous failures, and C build](evidence/candidate-current-overview-v20.json),
+SHA-256
+`89e89c27a9295bc5c2f0ddb1141bb9969b1fda32a82c546e4afd55bc9c758544`;
+and [clear overall Python-versus-candidate chart](evidence/candidate-current-overview-v20.svg),
+SHA-256
+`44d62f5c497178a404950d7e71d604aafcf41349f621396bf32f2112fa685061`.
+Normal and clean-environment source checks accept **16** valid
+controls, reject **94** false claims, and block **12** real effects;
+both exact-pinned, read-only graph checks pass.
+
+Preserve all **71** previous evidence files and add the **2** actual
+C-build owners, for **73**. Preserve all **76** previous historical
+references and add **2**, for **78**. Preserve the **169** original
+compiler processes; the **14** real C-build processes bring the
+recorded total to **183**. All **25** checked-in engine source files,
+**13** original test groups, **31,237** cases, and **13** private
+exceptions remain unchanged.
+
+The graph visibly preserves the five last-tested C, Rust, Zig, C++,
+and Go failures. The repaired C build is a separate result:
+**BUILT; NOT YET RETESTED**. No candidate is qualified. Speed,
+memory, safety, and corrected matching remain **NOT MEASURED**;
+the expanded **4,194,304**-case final comparison remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze complete original tests for the repaired C engine
 
 Freeze a complete correctness recorder before building or testing a

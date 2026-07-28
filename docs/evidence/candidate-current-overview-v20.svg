@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1660" height="1650" viewBox="0 0 1660 1650" role="img" aria-labelledby="v20-title v20-description">
+<title id="v20-title">Building a faster Python re: honest compatibility and repaired C build</title>
+<desc id="v20-description">Python passes all 31,237 original checks. None of six replacements is yet fully compatible. The original C, Rust, Zig, C++, and Go failures are preserved. The corrected C engine was genuinely built twice with identical native bytes, but its full matching tests have not yet been rerun and its existing canonical binary has not been replaced. There are 73 distinct evidence owners. Speed, memory, and confidence are not measured, and the proposed 4,194,304-case holdout remains unopened.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.title{font-size:34px;font-weight:760;fill:#16324f}.heading{font-size:25px;font-weight:740;fill:#16324f}.body{font-size:15px;fill:#42556c}.name{font-size:18px;font-weight:720;fill:#16324f}.pass{font-size:15px;font-weight:750;fill:#00794c}.fail{font-size:15px;font-weight:740;fill:#a15e00}.pending{font-size:15px;font-weight:740;fill:#53667b}.big{font-size:27px;font-weight:760;fill:#16324f}.foot{font-size:12px;fill:#53667b}</style>
+<rect width="1660" height="1650" rx="22" fill="#f4f7fb"/>
+<text x="54" y="69" class="title">Can we build a faster replacement for Python re?</text>
+<text x="56" y="100" class="body">The C repair now builds reproducibly. Whether it matches Python is not yet known.</text>
+<rect x="54" y="124" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="68" y="168" class="big">31,237</text>
+<text x="68" y="203" class="body">original Python checks</text>
+<rect x="374" y="124" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="388" y="168" class="big">0 of 6</text>
+<text x="388" y="203" class="body">fully compatible replacements</text>
+<rect x="694" y="124" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="708" y="168" class="big">2 of 2</text>
+<text x="708" y="203" class="body">identical repaired C builds</text>
+<rect x="1014" y="124" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="1028" y="168" class="big">73</text>
+<text x="1028" y="203" class="body">actual evidence files</text>
+<rect x="1334" y="124" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="1348" y="168" class="big">NOT MEASURED</text>
+<text x="1348" y="203" class="body">speed and memory</text>
+<rect x="54" y="248" width="1552" height="910" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="76" y="290" class="heading">1. Does it behave like Python?</text>
+<text x="77" y="318" class="body">Every last-tested result below uses the same 13 original groups and 31,237 Python checks.</text>
+<rect x="75" y="343" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="370" class="name">Python re</text>
+<text x="1564" y="370" class="pass" text-anchor="end">PASSED</text>
+<text x="96" y="397" class="body">31,237 of 31,237 original reference checks passed.</text>
+<rect x="75" y="427" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="454" class="name">C - last fully tested version</text>
+<text x="1564" y="454" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="481" class="body">7,197 verified passes; 2,094 recorded matching differences. This failure is preserved.</text>
+<rect x="75" y="511" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="538" class="name">C repair - new reproducible build</text>
+<text x="1564" y="538" class="pending" text-anchor="end">NOT YET RETESTED</text>
+<text x="96" y="565" class="body">Built twice with identical first-party native bytes; full matching and speed have not been tested.</text>
+<rect x="75" y="595" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="622" class="name">Rust</text>
+<text x="1564" y="622" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="649" class="body">7,461 verified passes; 2,042 recorded matching differences.</text>
+<rect x="75" y="679" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="706" class="name">Zig</text>
+<text x="1564" y="706" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="733" class="body">3,583 verified passes; 1,764 recorded matching differences.</text>
+<rect x="75" y="763" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="790" class="name">C++</text>
+<text x="1564" y="790" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="817" class="body">128 verified passes; 2,308 recorded matching differences and five infrastructure failures.</text>
+<rect x="75" y="847" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="874" class="name">Go</text>
+<text x="1564" y="874" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="901" class="body">128 verified passes; 4,518 recorded matching differences and four infrastructure failures.</text>
+<rect x="75" y="931" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="958" class="name">Fortran</text>
+<text x="1564" y="958" class="pending" text-anchor="end">NOT READY</text>
+<text x="96" y="985" class="body">Its two native builds differed; matching remains NOT MEASURED.</text>
+<text x="77" y="1047" class="body">No repaired C candidate has been activated or run. The different existing canonical C binary remains in place.</text>
+<text x="77" y="1076" class="body">All five previous failed matching results remain unchanged; 0 of 6 replacements is qualified.</text>
+<text x="77" y="1105" class="body">73 actual evidence owners = 71 previous owners + the new build report and receipt.</text>
+<rect x="54" y="1176" width="1552" height="278" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="76" y="1219" class="heading">2. Is it faster than Python?</text>
+<text x="78" y="1250" class="body">NOT MEASURED. No candidate speed, memory result, confidence interval, or ranking exists.</text>
+<text x="78" y="1285" class="body">A successful build proves that the C source compiles; it does not prove matching, safety, or speed.</text>
+<text x="78" y="1320" class="body">The proposed 4,194,304-case final comparison has not been generated or opened.</text>
+<text x="78" y="1355" class="body">The next step is to retest the repaired C build against all 31,237 frozen checks.</text>
+<text x="78" y="1390" class="body">Recorded build: 2 fresh private phases, 14 actual processes, identical native bytes.</text>
+<text x="58" y="1502" class="foot">Inputs SHA-256: bf09019d4a8df9ab5519a0b6bbbe9c4aaa8574dbcc4a9eafc1b424ba1961f021</text>
+<text x="58" y="1528" class="foot">Renderer SHA-256: 3f4b63de113743204f2b6736c5486e9160f4f4c029575052676f68943a3210d2</text>
+<text x="58" y="1554" class="foot">C build archive SHA-256: 69a795af6c407c0719b68dfa9fd4cb6dcfca2595271f72b83bc43678521f2598</text>
+<text x="58" y="1580" class="foot">C build receipt SHA-256: 3b0983af9729b3150ae239a83dd0fdb37c6e790b3c03ebea48c77215f51456b8</text>
+</svg>
