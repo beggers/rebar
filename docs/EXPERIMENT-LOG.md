@@ -7,6 +7,57 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Build the corrected from-scratch Zig engine independently twice
+
+Run the separately frozen first-party Zig build exactly once. Both
+independent private phases build the project's own regular-expression engine
+and its own corrected Python bridge. The **26** actual compiler and native
+inspection processes have distinct, recorded process identities. Each phase
+uses its own source and output files. Both native engines and both bridges
+are respectively byte-identical; no external regular-expression engine,
+Python matcher, or other candidate is linked or used.
+
+The exact original scanner correction is privately applied once per phase.
+The corrected **173,026**-byte bridge has SHA-256
+`67edae144290254ba25f67f73350ff5d52ccfb2a209e3fbcc555fc4b3d4efd4b`.
+The checked-in Zig engine, original bridge, and Python-facing adapter all
+retain their exact original hashes. No candidate matching worker is run.
+
+The [complete corrected Zig source-build report](../oracle/phase2/evidence/native-source-build-v12-zig-phase2-v12-zig-scanner-v2.json.gz)
+is **48,371** compressed bytes with SHA-256
+`3e0ccc41de392c17eaec64100776eacecafb3f0bb3355e18ef4d65fcdc79ea8d`.
+Its complete **299,800** uncompressed bytes have SHA-256
+`7a912e1221412e969e21400703bb95d15746a07b5776ee4530493cc3c8512b32`.
+The [separately durable corrected Zig build receipt](../oracle/phase2/evidence/native-source-build-v12-zig-phase2-v12-zig-scanner-v2-publication-receipt.json)
+is **2,029** bytes with SHA-256
+`6269fb49b67919e772ffbcdd211c696aae871971ab524bc0b1612a797d4c2f9b`.
+
+The [regenerated current comparison graph](evidence/candidate-current-overview-v33.svg)
+has SHA-256
+`203c15b16b74cf1dd8be3308677ddd67fa94a7a8411e5de38b43186647ccf858`.
+Its [independently authenticated graph inputs](evidence/candidate-current-overview-v33.inputs.json)
+have SHA-256
+`1f98790a6a31d8cdf298bf5fd13c6d4d14cfb44785e1e445d791c83557de921e`.
+The [complete machine-readable graph evidence](evidence/candidate-current-overview-v33.json)
+has SHA-256
+`b56b5f0e09ff3aa3990b210934e1d73d1989bd03c6bb479a8a7abd66eb93a9a6`.
+The [reproducible read-only graph generator](../tools/render_candidate_current_overview_v33.py)
+has SHA-256
+`e81a1c032c550475c4a4ece9ae11b903d105d62e8666ce46b69138b260ca91d5`.
+
+Exactly two distinct private evidence files change the actual inventory
+from **153** to **155** owners and from **158** to **160** authenticated
+references. Receipt **PASS** means both source builds succeeded; it does
+not mean Zig passes Python's matching tests. The previous fully tested Zig
+build retains **2,172** differences and **2,847** verified passing checks.
+The corrected build's matching is **NOT MEASURED**.
+
+Rust remains at **1,036** actual differences and C at **1,230**. The
+original **31,237** checks, **13** groups, and **50** separately frozen
+unrun signature checks remain unchanged. Speed, memory, and undefined
+behavior are **NOT MEASURED**. The planned **4,194,304**-case final
+comparison remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the actual C++ public-argument correction
 
 Preserve the independently implemented C++ candidate's real failure:

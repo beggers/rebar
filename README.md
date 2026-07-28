@@ -19,7 +19,7 @@ An additional **50** public function and method signature checks are now
 frozen separately. Neither Python's new reference run nor a candidate's
 result for those extra checks has been measured.
 
-![Python passes all 31,237 checks; corrected Rust has 1,036 differences, 51 fewer than before; C has 1,230 and Zig has 2,172; no replacement is compatible and speed is not measured](docs/evidence/candidate-current-overview-v32.svg)
+![Python passes all 31,237 checks; Rust has 1,036 differences, C has 1,230, and the earlier Zig has 2,172; the corrected Zig is built twice but not yet tested; speed is not measured](docs/evidence/candidate-current-overview-v33.svg)
 
 Rust, C, Zig, C++, Go, and Fortran each use a separately written engine.
 The newly rebuilt Rust engine completed all **13** Python test groups and
@@ -27,8 +27,10 @@ has **1,036** differences, down from **1,087**. Its verified passing
 checks increased from **7,438** to **8,965**. It is still not a drop-in
 replacement.
 
-Targeted, from-scratch Zig, Go, and C++ fixes are frozen. Their rebuilt
-compatibility is **NOT MEASURED**.
+The corrected from-scratch Zig engine has now been independently built
+twice; both native builds are identical. Its complete Python compatibility
+test has **NOT RUN**. Targeted Go and C++ corrections are frozen, and their
+rebuilt compatibility is **NOT MEASURED**.
 
 Both Rust source builds agree, use no outside regular-expression engine,
 and were compiled and inspected in **28** offline steps. The full test
@@ -48,7 +50,7 @@ only after three independent engines pass all compatibility checks.
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
 | Rust | Two identical corrected first-party builds | 8,965 verified; 1,036 differences; no worker failures; not qualified | NOT MEASURED |
 | C | Two identical first-party builds; all 13 groups tested | 7,325 verified; 1,230 differences; no worker failures; not qualified | NOT MEASURED |
-| Zig | Earlier independent builds; next correction not yet built | All 13 groups completed; 2,172 differences; not qualified | NOT MEASURED |
+| Zig | Corrected engine built independently twice; not yet retested | Earlier build: all 13 groups; 2,172 differences; not qualified | NOT MEASURED |
 | C++ | Earlier first-party builds; argument correction not yet built | 128 verified; 2,308 differences; five worker failures | NOT MEASURED |
 | Go | Earlier first-party builds; Unicode correction not yet built | 128 verified; 4,518 differences; four worker failures | NOT MEASURED |
 | Fortran | Three attempts; engines differ | NOT TESTED | NOT MEASURED |
@@ -113,6 +115,7 @@ slowdown greater than **20%**. There is no winner.
 - [Evidence-backed correction of Unicode names in the first-party Go engine](oracle/phase2/GO-UNICODE-NAME-SOURCE-REPAIR-V1.md).
 - [Source-only correction of the observed Zig scanner failure](oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V2.md).
 - [Frozen independent build rules for the corrected from-scratch Zig engine](oracle/phase2/ZIG-SCANNER-SOURCE-BUILD-V12.md).
+- [Actual corrected Zig builds and their independent publication receipt](oracle/phase2/evidence/native-source-build-v12-zig-phase2-v12-zig-scanner-v2-publication-receipt.json).
 - [Recoverable original Python compatibility tests for repaired Rust](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V3.md).
 - [Frozen full Python test for the newly rebuilt Rust engine](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V4.md).
 - [Actual complete corrected Rust test and recovery receipt](oracle/phase2/evidence/repaired-rust-original-campaign-v4-rust-phase2-v12-rust-flag-original-p0-failures-publication-receipt.json).
