@@ -15,7 +15,7 @@ Python, another regular-expression package, or another candidate does not count.
 Python passes all **31,237** frozen compatibility checks. No replacement
 has passed them, so there is not yet a drop-in alternative or a speed winner.
 
-![Python passes all 31,237 checks; Rust has 1,087 differences, C 1,262, and Zig 2,172; no replacement qualifies and speed is not measured](docs/evidence/candidate-current-overview-v28.svg)
+![Python passes all 31,237 checks; Rust has 1,087 differences, C 1,262, and Zig 2,172; no replacement qualifies and speed is not measured](docs/evidence/candidate-current-overview-v29.svg)
 
 Rust, C, Zig, C++, and Go each use an independently written engine.
 Both repaired Rust and repaired Zig now produce two identical builds
@@ -25,10 +25,11 @@ Python test groups without test-worker failures. Repaired Rust has
 is a replacement. Zig's earlier zero-test setup failure remains
 separately preserved.
 
-The repaired C engine completed all **13** test groups: **8** groups
-passed, **5** contained **1,262** differences, and no test worker
-crashed. Its **7,325** passing checks are not a passing full suite.
-A further first-party C fix is frozen but has not yet been built or tested.
+The latest fully tested C engine completed all **13** groups: **8** passed,
+**5** contained **1,262** differences, and no test worker crashed. Its
+**7,325** passing checks do not qualify it. A newer from-scratch C engine
+has now been built independently twice, producing identical native files.
+Whether that newer engine matches Python is **NOT MEASURED**.
 
 Overall speed relative to Python: **NOT MEASURED**. Benchmarking starts
 only after three independent engines pass all compatibility checks.
@@ -37,7 +38,7 @@ only after three independent engines pass all compatibility checks.
 | --- | --- | --- | --- |
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
 | Rust | Two identical repaired first-party builds | All 13 groups completed; 1,087 differences; not qualified | NOT MEASURED |
-| C | Independently repeated repaired native build | 7,325 verified; 1,262 differences; five groups failed; not qualified | NOT MEASURED |
+| C | Two identical newer first-party builds; not yet compatibility-tested | Previous build: 7,325 verified; 1,262 differences; not qualified | NOT MEASURED |
 | Zig | Two identical independently repaired builds | All 13 groups completed; 2,172 differences; not qualified | NOT MEASURED |
 | C++ | Two matching source builds | 128 verified; 12 groups failed; not qualified | NOT MEASURED |
 | Go | Two matching first-party builds | 128 verified; 4,518 differences; four worker failures | NOT MEASURED |

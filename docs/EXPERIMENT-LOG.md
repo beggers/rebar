@@ -7,6 +7,43 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Build the repaired C engine twice from scratch
+
+Run the frozen C experiment once. Fourteen recorded compiler and inspection
+processes produce two independently built native engines with the same
+SHA-256,
+`aed6e9c2fbe31ee3798c74bc6fe896494f1a3bfed41ff25dcfef6905e7b8e610`.
+Neither build wraps an external regular-expression engine. The existing C
+source, Python adapter, and installed native engine remain unchanged.
+
+The [complete reproducible build evidence](../oracle/phase2/evidence/native-source-build-v15-c-phase2-v15-c-pickle-original-p0.json.gz)
+has SHA-256
+`7e95decc5937b76b2f1aa86706663a57edcea8d3a705ad9b3710c4ec2b61a4de`.
+Its [separately published durable receipt](../oracle/phase2/evidence/native-source-build-v15-c-phase2-v15-c-pickle-original-p0-publication-receipt.json)
+has SHA-256
+`ad196290f8f08b1547ffefc02bd1cdaff52557f792b8a32ea93c67f6ee857643`.
+
+A successful build is not a passing compatibility test. The newer C
+engine's matching is **NOT MEASURED**. The last fully tested C engine
+still has **1,262** differences; Rust has **1,087**, and Zig has
+**2,172**. No candidate qualifies. The current graph accounts for all
+**147** evidence files and **152** separately authenticated references.
+Speed, memory, and undefined behavior remain **NOT MEASURED**. The
+expanded holdout is **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
+The [generated headline graph](evidence/candidate-current-overview-v29.svg)
+has SHA-256
+`58725ecef05a1adf01d6c354512bf7101c212bf87f63c40cfdd9e225267f91ff`.
+Its [frozen inputs](evidence/candidate-current-overview-v29.inputs.json)
+have SHA-256
+`f6d306dfc08b89604d9d89896a899049c1ba03b0ebfe674ebba036cc80898894`;
+the [machine-readable results](evidence/candidate-current-overview-v29.json)
+have SHA-256
+`48eaf71facc4e7bba79e6b8c6c2ad45ed56eaeecf553afd82e8fe402c0aa6160`;
+and the [reproducible graph renderer](../tools/render_candidate_current_overview_v29.py)
+has SHA-256
+`788ea53f59b77a1670d4617ab1dde21aef0a5b5e2528a48a46b0e2315ac03c27`.
+
 ## Freeze the C build against all Rust and Zig results
 
 Freeze two independent first-party C builds against all **145** evidence

@@ -23,14 +23,15 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Recovery-safe corrected C campaign rules](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V2.md), [exact restoration and full-test contract](../oracle/phase2/repaired-c-original-campaign-v2.json), and [complete recovery-safe original-suite controller](../tools/run_owned_repaired_c_original_campaign_v2.py); its one genuine runner failure and exact restoration are independently preserved.
 - [Complete repaired C original-suite rerun rules](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V3.md), [exact original-worker and recovery contract](../oracle/phase2/repaired-c-original-campaign-v3.json), and [safe complete-suite controller](../tools/run_owned_repaired_c_original_campaign_v3.py); all 13 original workers completed with 1,262 preserved semantic mismatches and zero infrastructure failures.
 - [Frozen first-party C repair](../oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V1.md), [exact repair and preserved evidence](../oracle/phase2/first-party-source-repair-v1.json), and [private-snapshot-only repair tool](../tools/apply_owned_first_party_source_repair_v1.py); the original checked-in engine, all historical results, and the sealed final comparison remain unchanged.
-- [Evidence-backed C match-pickling repair](../oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V2.md), [exact private-source and original-evidence contract](../oracle/phase2/first-party-source-repair-v2.json), and [first-party C source-repair verifier](../tools/apply_owned_first_party_source_repair_v2.py); all 32 observed protocol-0/1 failures and all 64 higher-protocol observations are preserved, but the new source has not yet been built or tested.
+- [Evidence-backed C match-pickling repair](../oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V2.md), [exact private-source and original-evidence contract](../oracle/phase2/first-party-source-repair-v2.json), and [first-party C source-repair verifier](../tools/apply_owned_first_party_source_repair_v2.py); all 32 observed protocol-0/1 failures and all 64 higher-protocol observations are preserved. The later V15 experiment builds the repaired source twice; its matching remains **NOT MEASURED**.
 - [Separate first-party Rust repair](../oracle/phase2/RUST-SOURCE-REPAIR-V1.md), [exact Rust repair and preserved evidence](../oracle/phase2/rust-source-repair-v1.json), and [private Rust-snapshot-only repair tool](../tools/apply_owned_rust_source_repair_v1.py); the existing Rust engine and all its previous failures remain unchanged.
-- [Independent Rust public-compatibility repair](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V1.md), [exact three-block private-source contract](../oracle/phase2/rust-public-contract-source-repair-v1.json), and [first-party Rust public-source verifier](../tools/apply_owned_rust_public_contract_source_repair_v1.py); the repaired source was independently applied to both private builds, but matching has not yet been tested.
+- [Independent Rust public-compatibility repair](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V1.md), [exact three-block private-source contract](../oracle/phase2/rust-public-contract-source-repair-v1.json), and [first-party Rust public-source verifier](../tools/apply_owned_rust_public_contract_source_repair_v1.py); the repaired source was independently applied to both private builds. Its later complete compatibility test found **1,087** differences.
 - [Reproducible first-party C build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V8.md), [exact build inventory](../oracle/phase2/native-source-build-v8.json), and [independent two-build verifier](../tools/reproduce_owned_native_source_build_v8.py).
 - [Reproducible offline build rules for both C repairs](../oracle/phase2/C-PICKLE-SOURCE-BUILD-V12.md), [exact two-phase source-build contract](../oracle/phase2/c-pickle-source-build-v12.json), and [independent repaired C native-build verifier](../tools/reproduce_owned_c_pickle_source_build_v12.py); its 14 compiler and inspection steps have not yet run.
 - [Independently verified C build rules](../oracle/phase2/C-PICKLE-SOURCE-BUILD-V13.md), [exact historical-evidence and two-build contract](../oracle/phase2/c-pickle-source-build-v13.json), and [first-party repaired C build verifier](../tools/reproduce_owned_c_pickle_source_build_v13.py); the frozen two-build, 14-process experiment preserves its original 141-file evidence history but has **NOT YET RUN**.
 - [Current independently verified C build rules](../oracle/phase2/C-PICKLE-SOURCE-BUILD-V14.md), [exact 143-file evidence and two-build contract](../oracle/phase2/c-pickle-source-build-v14.json), and [first-party corrected C build verifier](../tools/reproduce_owned_c_pickle_source_build_v14.py); both independent source builds and all 14 compiler steps have **NOT YET RUN**.
-- [Current C build including both Rust and Zig results](../oracle/phase2/C-PICKLE-SOURCE-BUILD-V15.md), [exact 145-file evidence and two-build contract](../oracle/phase2/c-pickle-source-build-v15.json), and [independent first-party C source builder](../tools/reproduce_owned_c_pickle_source_build_v15.py); both builds and all 14 compiler steps have **NOT YET RUN**.
+- [Current C build including both Rust and Zig results](../oracle/phase2/C-PICKLE-SOURCE-BUILD-V15.md), [exact 145-file historical evidence and two-build contract](../oracle/phase2/c-pickle-source-build-v15.json), and [independent first-party C source builder](../tools/reproduce_owned_c_pickle_source_build_v15.py); both builds and all **14** real compiler and inspection steps completed and produced identical native engines. Compatibility remains **NOT MEASURED**.
+- [Complete actual first-party C15 build evidence](../oracle/phase2/evidence/native-source-build-v15-c-phase2-v15-c-pickle-original-p0.json.gz) and [independently durable C15 build receipt](../oracle/phase2/evidence/native-source-build-v15-c-phase2-v15-c-pickle-original-p0-publication-receipt.json); two distinct private builds produce the same native C engine without an external regular-expression package. A successful build is not a passing compatibility result.
 - [Actual matching first-party C builds](../oracle/phase2/evidence/native-source-build-v8-c-phase2-v8.json.gz) and [independent build receipt](../oracle/phase2/evidence/native-source-build-v8-c-phase2-v8-publication-receipt.json); two private builds produced identical native binaries.
 - [Current reproducible independent Rust build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V11.md), [exact dual-repair Rust build inventory](../oracle/phase2/native-source-build-v11.json), and [offline two-build verifier](../tools/reproduce_owned_native_source_build_v11.py); both first-party repaired builds match exactly and use no external regex package, but matching has not yet been retested.
 - [Complete original Python tests for repaired Rust](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V2.md), [exact four-file recovery and original-suite contract](../oracle/phase2/repaired-rust-original-campaign-v2.json), and [first-party Rust correctness controller](../tools/run_owned_repaired_rust_original_campaign_v2.py); all 13 groups and 31,237 checks are frozen against the actual repaired Rust implementation. The matching campaign has **NOT YET RUN**.
@@ -49,7 +50,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Complete repaired C compatibility evidence](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures.json.gz), [independent safe-restoration receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures-publication-receipt.json), [all 13 original worker reports](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures.json.gz), and [original-suite aggregate receipt](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures-publication-receipt.json); eight complete groups pass, five retain 1,262 genuine differences, and no infrastructure failure occurred.
 - [Actual independent repaired Zig builds](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner.json.gz) and [complete native build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner-publication-receipt.json); exactly 26 genuine processes produce two identical first-party engine and bridge binaries without testing matching or measuring speed.
 - [Actual independent repaired Rust builds](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay.json.gz) and [complete offline-build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay-publication-receipt.json); exactly 28 genuine processes produce two identical dependency-free Rust engines and bridges without testing matching or measuring speed.
-- [Current headline graph inputs](../docs/evidence/candidate-current-overview-v28.inputs.json), [complete machine-readable Python baseline and candidate failures](../docs/evidence/candidate-current-overview-v28.json), and [reproducible graph generator](../tools/render_candidate_current_overview_v28.py); the current graph authenticates all **145** evidence files and **150** references, including the actual **1,087** Rust, **1,262** C, and **2,172** Zig matching differences.
+- [Current headline graph inputs](../docs/evidence/candidate-current-overview-v29.inputs.json), [complete machine-readable Python baseline and candidate failures](../docs/evidence/candidate-current-overview-v29.json), and [reproducible graph generator](../tools/render_candidate_current_overview_v29.py); the current graph authenticates all **147** evidence files and **152** references, including the actual **1,087** Rust, **1,262** C, and **2,172** Zig matching differences. Compatibility for the newer C build remains **NOT MEASURED**.
 - [Full experiment log, build reports, previous graphs, failures, and rejected designs](../docs/EXPERIMENT-LOG.md).
 - [Proposed 4,194,304-case final comparison](../docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); examples remain **NOT GENERATED** and **NOT OPENED**.
 - [Original objective](../GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; [later clarifications](../AMENDMENTS.md).
@@ -107,6 +108,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/render_candidate_current_overview_v26.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v27.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v28.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v29.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v6.py --self-test \
   --source-sha256 d3a9b08c1bf7e3408719a0e92b8c1965aa6160dd2e18ab1501bb8662aaf8e4a1 \
   --protocol-sha256 0e736d575835fa22388841a527e22b62eef1ddf39eac9415bd7c518ba985b1d0 \
@@ -172,14 +174,14 @@ Verify the current headline graph without rerunning a candidate or
 opening a benchmark:
 
 ```sh
-"$PY" -I -B tools/render_candidate_current_overview_v28.py \
+"$PY" -I -B tools/render_candidate_current_overview_v29.py \
   --verify-frozen-context \
-  --source-sha256 bd0f3311157128dcb4d9d17e79353bbd73d50ad08a61cce8bde65b17beef08bf \
-  --campaign-archive-sha256 3ac7736c127d13d3fad579c4ab9974c6a83612b4253f7921ed3e44269f3a82ad \
-  --campaign-receipt-sha256 97f0b8c47823b20cd04740e3fe2883189cc648d49769015800c0998e6698c281 \
-  --inputs-sha256 6d64de8b7b364afd1281d0c4be2a444bf7146a2a232df4c8bc27dd77895dc97d \
-  --summary-sha256 8ec3034aff9c4830686a6946f340be729f2eb2b606b74cdf18c9a7f816a0d754 \
-  --svg-sha256 dd78e23ad42599da713f2f204967f981ce694f91e4e70a8da341b7aa91f9c597
+  --source-sha256 788ea53f59b77a1670d4617ab1dde21aef0a5b5e2528a48a46b0e2315ac03c27 \
+  --campaign-archive-sha256 7e95decc5937b76b2f1aa86706663a57edcea8d3a705ad9b3710c4ec2b61a4de \
+  --campaign-receipt-sha256 ad196290f8f08b1547ffefc02bd1cdaff52557f792b8a32ea93c67f6ee857643 \
+  --inputs-sha256 f6d306dfc08b89604d9d89896a899049c1ba03b0ebfe674ebba036cc80898894 \
+  --summary-sha256 48eaf71facc4e7bba79e6b8c6c2ad45ed56eaeecf553afd82e8fe402c0aa6160 \
+  --svg-sha256 58725ecef05a1adf01d6c354512bf7101c212bf87f63c40cfdd9e225267f91ff
 
 "$PY" -I -B tools/activate_verified_native_candidate_v6.py \
   --verify-frozen-context \
@@ -257,8 +259,8 @@ opening a benchmark:
 The earlier pinned context checks below reproduce historical source freezes.
 Each intentionally authenticates the exact evidence inventory that existed
 when it was committed. Run one against its corresponding historical commit;
-it is not a verification of the current **145** evidence files and
-**150** authenticated references.
+it is not a verification of the current **147** evidence files and
+**152** authenticated references.
 
 ```sh
 
