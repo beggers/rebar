@@ -7,6 +7,62 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a separate, from-scratch Go matching engine
+
+Preserve Go as a fifth, separately implemented architecture, not a Go
+regular-expression wrapper. The [dependency-free Go module](../candidates/go/go.mod)
+has SHA-256
+`9297c4e8fe4649196150400d23a4da584d7ef721347f7095399a7382edad669b`.
+The [independently written Go parser and matching engine](../candidates/go/engine.go)
+has SHA-256
+`bf4efefbd260d349df312aca5d6201477f358675a6e3cc0474de900d90e74715`.
+Its [interpreter-local Python bridge](../candidates/go/py_bridge.c) has
+SHA-256
+`9109229413775f54bc9cfae5909c6f540d0521c46938bbdbb8e53e99838662d0`,
+and its [experimental Python interface](../candidates/go_candidate.py)
+has SHA-256
+`816d21527b9806afbc9457122f72f8f6b62c39b8b791d3f363745d412cbe3d20`.
+The engine owns its parser, expression representation, matching,
+backtracking, captures, and Go-to-C handles. It never imports Go `regexp`,
+Python `re` or `_sre`, another candidate, or any external regex package.
+
+Independent review identified and corrected two genuine initial source
+problems: escaped closing parentheses in inline comments and a missing
+garbage-collection visit to the owning native Python heap type. The exact
+full initial source hashes were **NOT CAPTURED**; do not invent them.
+The reviewer's first checker also mistakenly stopped at an inner Go
+`case` and mishandled a synthetic removed-module token. Preserve both
+reviewer errors as checker defects, not as failures in the corrected Go
+source; require the corrected checker to reject each hostile substitution.
+
+Both normal and empty-environment reviews accept **four** source-only
+controls and reject **16** hostile substitutions. Clang and GCC each
+verify the native Python bridge with strict warnings in both environments,
+for **four** passing syntax checks. Both formatting checks are clean. These
+are source-only results: no Go engine, Python extension, or candidate has
+been compiled, linked, installed, imported, or run.
+
+Preserve concrete gaps identified without running a candidate. The pinned
+CPython **3.14.6** reports Unicode **16.0.0**, while the installed Go
+**1.26.3** `unicode` package declares Unicode **15.0.0**. The Go engine
+currently uses those older tables for pattern case-folding and group names;
+for example, Python **16.0.0** accepts `U+1C89` as an identifier and
+lowercases it to `U+1C8A`, while the installed Go **15.0.0** tables do
+not contain that letter or case mapping. The Go engine therefore cannot
+claim complete Python Unicode equivalence. Source
+inspection also identifies unresolved fixed-width lookbehind references,
+forward conditional groups, character-class warnings, exact public type and
+flag representations, scanner combined-pattern identity, exact scanner
+branch captures, mutable scanner actions, and Python buffer
+export, template-hashing, and lifetime behavior. Fixing those requires
+additional, separately recorded engine work, not a Python or external regex
+fallback. These source findings are not counted as executed oracle cases.
+
+Go is an extra exploration, not one of the frozen C, Rust, and Zig
+correctness candidates. Its full **31,237**-case compatibility, native
+memory safety, speed, and memory use are **NOT MEASURED**. The expanded
+final comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze a separate, from-scratch C++ matching engine
 
 Preserve C++ as an additional, separately implemented architecture. Its

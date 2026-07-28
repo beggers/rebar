@@ -13,7 +13,7 @@ Python, another regular-expression package, or another candidate does not count.
 ## Headline results
 
 The Python baseline covers **31,237** frozen compatibility checks. Independent
-C, Rust, Zig, and C++ engines are being explored; none is yet a fully
+C, Rust, Zig, C++, and Go engines are being explored; none is yet a fully
 qualified replacement. Earlier scanner
 tests found **116** failures for previous Rust and C builds and **1,364** for
 an earlier Zig build. The repaired C engine has now produced **two identical,
@@ -36,12 +36,14 @@ is **NOT OPENED**.
 | C | PASS | 2,807 / 2,807 | 1,024 / 1,024 | 2,738 / 2,854 | NOT MEASURED | NOT MEASURED |
 | Zig | PASS | 2,807 / 2,807 | 1,024 / 1,024 | 1,490 / 2,854 | NOT MEASURED | NOT MEASURED |
 | C++ | PASS | NOT MEASURED | NOT MEASURED | NOT MEASURED | NOT MEASURED | NOT MEASURED |
+| Go | PASS | NOT MEASURED | NOT MEASURED | NOT MEASURED | NOT MEASURED | NOT MEASURED |
 
 All starting, memory, and scanner numbers are earlier development
 measurements, not results for the repaired C, Rust, or Zig engines. The
 current C source has produced two matching clean builds; current Rust and
-Zig rebuilds have **NOT RUN**. The new C++ engine has passed source and
-compiler checks but has **NOT BEEN BUILT**. No engine has passed all
+Zig rebuilds have **NOT RUN**. The new C++ and Go engines have passed
+source and compiler checks but have **NOT BEEN BUILT**. Go still has known
+Unicode, lookbehind, and buffer-lifetime gaps. No engine has passed all
 **31,237** checks.
 Python's baseline is not a timing result.
 
@@ -114,6 +116,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Real simultaneous-thread reference protocol](oracle/cpython-3.14.6/PUBLIC-THREADED-PATTERN-V1.md), [complete thread reference](oracle/cpython-3.14.6/evidence/public-threaded-pattern-v1-self-oracle.json.gz), and [original publication receipt](oracle/cpython-3.14.6/evidence/public-threaded-pattern-v1-self-oracle-publication-receipt.json).
 - [From-scratch engine ownership and no-delegation protocol](oracle/phase2/CANDIDATE-INDEPENDENCE-V1.md) and [independently tested static ownership audit](tools/audit_candidate_independence_v1.py).
 - [Independently written C++ matching engine](candidates/cpp/engine.cpp), [native Python bridge](candidates/cpp/py_bridge.cpp), and [experimental Python interface](candidates/cpp_candidate.py); source checks only.
+- [Independently written Go matching engine](candidates/go/engine.go), [native Python bridge](candidates/go/py_bridge.c), and [experimental Python interface](candidates/go_candidate.py); source checks only.
 - [Reproducible headline graph inputs](docs/evidence/candidate-correctness-overview-v2.inputs.json) and [headline graph generator](tools/render_candidate_correctness_overview_v2.py).
 - [Complete experiment log, raw evidence, rejected approaches, and preserved failures](docs/EXPERIMENT-LOG.md).
 - [Proposed expanded final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); the final cases remain **NOT GENERATED** and **NOT OPENED**.
