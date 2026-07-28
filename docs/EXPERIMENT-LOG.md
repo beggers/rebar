@@ -7,6 +7,57 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze complete original tests for the repaired C engine
+
+Freeze a complete correctness recorder before building or testing a
+repaired first-party C engine. Use the original CPython **3.14.6**
+reference, all **13** unchanged test groups and seeds, all **31,237**
+cases, and all **13** named private exceptions. Do not introduce an
+alternative evaluator, reduce a test group, run a speed test, or
+open the final comparison.
+
+Bind each future matching observation to the exact original
+first-party suite evaluator, SHA-256
+`36451c10221857cca8c77fad7533382f4e3969a20a5cdf73c055beea1d315d33`.
+Retain the original C source fingerprint while independently
+authenticating the privately repaired C source, two actual matching
+builds, and the separately frozen reversible native loader. Ensure
+the interpreter test receives the original evaluator fingerprint.
+
+Run one future isolated worker for every original group. Preserve
+the complete genuine records, all mismatches, worker failures,
+standard output, and error output in separate reproducible private
+archives and receipts. Keep the final result within its original
+**32 MiB** bound. Finish all groups and restore the original C
+extension before publishing a result. A successfully written result
+receipt does not qualify a failing candidate.
+
+Freeze the [complete original-suite worker](../tools/run_frozen_p0_candidate_worker_v6.py),
+SHA-256
+`4fbe0885e78797ca9c46d81477229252fb7e2e85801cfe35304457cd39d141c1`;
+[full C-candidate recorder and recovery](../tools/run_frozen_p0_candidate_v8.py),
+SHA-256
+`3081c956f5933e03b42ca2d33c9801c58cde6a05ff332b9ef6560e00afc73b60`;
+[complete original Python test protocol](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V8.md),
+SHA-256
+`db0741f73f08602e92de435333201c9010e6eab123733e21d33f30dcac2cdf96`;
+and [machine-readable original test and evidence inventory](../oracle/phase2/p0-candidate-protocol-v8.json),
+SHA-256
+`3bdbbe85d0c823b2cf2142d686ca581ef51cef439c4fc880d56bf0bc2cae32cc`.
+All **8** ordinary and clean-environment source-only and read-only
+checks pass. The worker rejects **61** unsafe changes; the full
+recorder rejects **58**. Neither starts a process or reads a
+benchmark.
+
+Preserve all **25** original first-party source owners, all **76**
+authenticated graph references, and the separate **71** genuine
+evidence files. The repaired engine has **not** been built, loaded,
+or tested; the original C failure and headline graph remain
+unchanged. No engine qualifies. Speed, memory, safety, and corrected
+compatibility remain **NOT MEASURED**. The proposed **4,194,304**-case
+final comparison remains **NOT FROZEN**, **NOT GENERATED**, and
+**NOT OPENED**.
+
 ## Freeze reproducible, dependency-free Rust engine builds
 
 Define how to build the independently authored Rust engine and its own

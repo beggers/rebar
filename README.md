@@ -120,6 +120,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Reproducible first-party C build rules](oracle/phase2/NATIVE-SOURCE-BUILD-V8.md), [exact build inventory](oracle/phase2/native-source-build-v8.json), and [independent two-build verifier](tools/reproduce_owned_native_source_build_v8.py); the repaired engine has not yet been built or retested.
 - [Reproducible independent Rust build rules](oracle/phase2/NATIVE-SOURCE-BUILD-V9.md), [exact Rust build inventory](oracle/phase2/native-source-build-v9.json), and [offline two-build verifier](tools/reproduce_owned_native_source_build_v9.py); the repaired Rust engine has no external regex dependency and has not yet been built or retested.
 - [Safe reversible C-engine loading rules](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V5.md), [exact recovery and build checks](oracle/phase2/verified-native-activation-v5.json), and [first-party engine recovery tool](tools/activate_verified_native_candidate_v5.py); no repaired engine has been loaded or tested.
+- [Complete repaired-engine Python test rules](oracle/phase2/P0-CANDIDATE-PROTOCOL-V8.md), [all original groups and seeds](oracle/phase2/p0-candidate-protocol-v8.json), [isolated original-test worker](tools/run_frozen_p0_candidate_worker_v6.py), and [complete test and recovery recorder](tools/run_frozen_p0_candidate_v8.py); all **31,237** existing cases remain unchanged and the repaired engine has not yet been run.
 - [Complete original-test rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V1.md), [frozen test inventory](oracle/phase2/six-family-p0-campaign-v1.json), and [reproducible candidate test runner](tools/run_owned_six_family_original_p0_campaign_v1.py).
 - [Lossless original-test recording rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V2.md), [frozen streaming-test inventory](oracle/phase2/six-family-p0-campaign-v2.json), and [complete streaming test recorder](tools/run_owned_six_family_original_p0_campaign_v2.py); the original tests, first-party engines, and preserved Go failure remain unchanged.
 - [Complete first-party C++ failure](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures.json.gz) and [independent publication and recovery receipt](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures-publication-receipt.json).
@@ -140,6 +141,8 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_frozen_p0_candidate_v6.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_worker_v5.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v7.py --self-test
+"$PY" -I -B tools/run_frozen_p0_candidate_worker_v6.py --self-test
+"$PY" -I -B tools/run_frozen_p0_candidate_v8.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_producer_v1.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_producer_v2.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v1.py --self-test
@@ -177,6 +180,20 @@ Verify the current headline graph without rerunning a candidate or
 opening a benchmark:
 
 ```sh
+"$PY" -I -B tools/run_frozen_p0_candidate_worker_v6.py \
+  --verify-frozen-context \
+  --source-sha256 4fbe0885e78797ca9c46d81477229252fb7e2e85801cfe35304457cd39d141c1 \
+  --runner-source-sha256 3081c956f5933e03b42ca2d33c9801c58cde6a05ff332b9ef6560e00afc73b60 \
+  --protocol-sha256 db0741f73f08602e92de435333201c9010e6eab123733e21d33f30dcac2cdf96 \
+  --document-sha256 3bdbbe85d0c823b2cf2142d686ca581ef51cef439c4fc880d56bf0bc2cae32cc
+
+"$PY" -I -B tools/run_frozen_p0_candidate_v8.py \
+  --verify-frozen-context \
+  --source-sha256 3081c956f5933e03b42ca2d33c9801c58cde6a05ff332b9ef6560e00afc73b60 \
+  --worker-source-sha256 4fbe0885e78797ca9c46d81477229252fb7e2e85801cfe35304457cd39d141c1 \
+  --protocol-sha256 db0741f73f08602e92de435333201c9010e6eab123733e21d33f30dcac2cdf96 \
+  --document-sha256 3bdbbe85d0c823b2cf2142d686ca581ef51cef439c4fc880d56bf0bc2cae32cc
+
 "$PY" -I -B tools/reproduce_owned_native_source_build_v9.py \
   --verify-context \
   --source-sha256 c4a4b85b92ef0d600528732c9e0acb8f8303b7b2fbfc320e84c9b9e2d384219f \
