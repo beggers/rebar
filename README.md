@@ -33,7 +33,7 @@ first-party ownership audit; this does not qualify their behavior.
 Every replacement's speed is **NOT MEASURED**; the final comparison
 remains **NOT OPENED**.
 
-![Python passes all 31,237 checks; Rust, C, and Zig remain incompatible; C++ and Go build reproducibly but are untested; three Fortran attempts produce different engine files; and speed is not measured](docs/evidence/candidate-current-overview-v15.svg)
+![Python passes all 31,237 checks; Rust, C, and Zig remain incompatible; C++ and Go build reproducibly with safe activation rules but remain untested; Fortran engines remain nonreproducible; and speed is not measured](docs/evidence/candidate-current-overview-v16.svg)
 
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
@@ -139,9 +139,10 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Frozen first-party Go and Fortran build corrections](oracle/phase2/NATIVE-SOURCE-BUILD-V6.md), [exact correction and source inventory](oracle/phase2/native-source-build-v6.json), and [independently verified build recorder](tools/reproduce_owned_native_source_build_v6.py); the Go correction produces matching builds, while the Fortran correction is experimentally falsified; neither is a Python compatibility result.
 - [Corrected from-scratch build rules for all six languages](oracle/phase2/NATIVE-SOURCE-BUILD-V5.md), [exact source and compiler inventory](oracle/phase2/native-source-build-v5.json), and [independent source-build recorder](tools/reproduce_owned_native_source_build_v5.py); preserves the real isolated-Go bridge failure and the independently repeated Fortran reproducibility failure without claiming either candidate is compatible.
 - [Preserved original six-language build rules](oracle/phase2/NATIVE-SOURCE-BUILD-V4.md), [original frozen inventory](oracle/phase2/native-source-build-v4.json), and [original source-build recorder](tools/reproduce_owned_native_source_build_v4.py); retains the actual C++, Go, and Fortran build outcomes unchanged.
+- [Reversible, first-party-only engine activation rules](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V4.md), [frozen activation and recovery inventory](oracle/phase2/verified-native-activation-v4.json), and [independently verified safe activation recorder](tools/activate_verified_native_candidate_v4.py); admits only actually reproducible source builds, safely restores each existing file, rejects failed Fortran, and does not activate or qualify any candidate by itself.
 - [Reversible six-engine native-loading rules](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V3.md), [frozen source and recovery inventory](oracle/phase2/verified-native-activation-v3.json), and [verified native activation and crash recovery](tools/activate_verified_native_candidate_v3.py); only a genuinely reproducible, independently source-built engine may be loaded, and no candidate is claimed to have been run.
 - [Six-engine first-party ownership and no-wrapping standard](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md), [complete source and dependency inventory](oracle/phase2/candidate-independence-v2.json), and [independent six-language ownership audit](tools/audit_candidate_independence_v2.py); verifies all 25 engine sources, both project dependency files, and all 34 actual C and Rust failure artifacts without claiming that a source audit proves correctness.
-- [Current source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v15.inputs.json), [complete current graph summary](docs/evidence/candidate-current-overview-v15.json), and [reproducible current-results graph generator](tools/render_candidate_current_overview_v15.py); the graph independently authenticates all six engine designs, the C/Rust/Zig compatibility results, C++ and Go's reproducible builds, both earlier Go failures, all three Fortran failures, and all **65** preserved evidence files.
+- [Current source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v16.inputs.json), [complete current graph summary](docs/evidence/candidate-current-overview-v16.json), and [reproducible current-results graph generator](tools/render_candidate_current_overview_v16.py); the graph independently authenticates all six engine designs, C++ and Go's reproducible builds and unexecuted safe activation rules, every earlier Go and Fortran failure, the C/Rust/Zig compatibility results, and all **65** preserved evidence files.
 - [Complete experiment log, raw evidence, rejected approaches, and preserved failures](docs/EXPERIMENT-LOG.md).
 - [Proposed expanded final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); the final cases remain **NOT GENERATED** and **NOT OPENED**.
 - [Original objective](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; [later clarifications](AMENDMENTS.md).
@@ -167,8 +168,10 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/activate_verified_native_candidate_v2.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v3.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v3.py --verify-frozen-context
+"$PY" -I -B tools/activate_verified_native_candidate_v4.py --self-test
+"$PY" -I -B tools/activate_verified_native_candidate_v4.py --verify-frozen-context
 "$PY" -I -B tools/audit_candidate_independence_v2.py --self-test
-"$PY" -I -B tools/render_candidate_current_overview_v15.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v16.py --self-test
 ```
 
 Verify the current headline graph without rerunning a candidate or
@@ -187,10 +190,10 @@ opening a benchmark:
   --protocol-sha256 1e7ed2cbd63e080c563dd49b4ea2a2be284d831d75739c47edecfae50373ce17 \
   --document-sha256 5206bcc097cd399cddd91a8d0356fd780b44ef7c173d70605d28a175dac71c0b
 
-"$PY" -I -B tools/render_candidate_current_overview_v15.py --verify \
-  --source-sha256 6de4254ce7ebe5b74f78108cedcfc1c201abc6bb1f0aab93f7996f8db63cf074 \
+"$PY" -I -B tools/render_candidate_current_overview_v16.py --verify \
+  --source-sha256 4228b6b74708ecd3ba143b1556ae9e6c0592b118ce22285751f7b53d976a95c4 \
   --go-bridge-sha256 52101f0afe29a568e3c2e22a06d47c89c051e08a0e2024ad4891c5ae2d60fb6a \
-  --manifest-sha256 a5417c7fe0c7954a9a3e6791e20265512f681bdc3ab6e8178ae2cc0129c6ac82
+  --manifest-sha256 d96cc1b22b7ef87c1717cfcddefb98b5ec73b9d7a746cdf09e7556f05969c754
 ```
 
 The [complete compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md)

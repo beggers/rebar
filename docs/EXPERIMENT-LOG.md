@@ -7,6 +7,73 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze safe activation for independently source-built engines
+
+Freeze a fail-closed, reversible native-loading protocol before
+running a Go, C++, or other candidate. Preserve the exact pinned
+Python reference, all **13** suites and **31,237** cases, all **25**
+independent source files, all **65** historical evidence files, and
+all **169** separately recorded historical build processes. Do not
+activate a library, start a candidate, run a matching case, or open
+the final comparison.
+
+Independently authenticate both fresh source-build phases, compiler
+arguments, native dependencies, complete symbols, binary hashes,
+distinct file owners, and the matching build version. Accept C++'s
+real combined engine and bridge, Go's real separate engine and bridge,
+and their genuine Python-owned match objects. The generated Go
+interface is source-build evidence only; it is never installed or
+treated as a loadable native library. Reject the nonreproducible
+Fortran output and every Python-regex, package-wrapper, foreign
+candidate, stale build, or missing recovery record.
+
+Journal and synchronize each intended replacement before touching
+its target. Preserve original contents and permissions and recover
+each individual replacement in reverse order. A two-file change is
+**not** falsely described as group-atomic. Never overwrite a target
+that a user has changed.
+
+Freeze the independently reviewed
+[reversible six-engine activation recorder](../tools/activate_verified_native_candidate_v4.py),
+SHA-256
+`f22106dab1e4a2f66178cdda66388c12dda83ad09254b045b447759615bf5cd7`;
+[source-pinned activation and crash-recovery protocol](../oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V4.md),
+SHA-256
+`3b4d463103380e30b7eb324598b4d39edb66e29f6ad483f7783cf51e4456621d`;
+and [canonical activation inventory](../oracle/phase2/verified-native-activation-v4.json),
+SHA-256
+`b1ba6cccfea423f562056e1813c8fe6c1e0ef24c2beabb099809dd1669982cf5`.
+
+Each strictly source-only test passes **97** positive controls and
+rejects **217** separate attacks in ordinary and empty environments.
+Both read-only context checks authenticate all **65** evidence owners
+and **169** real process records without starting a compiler,
+candidate, thread, interpreter, or clock. The isolated independent
+review confirms the canonical **144,057-byte** context, SHA-256
+`c3e3b56eb3956e2afb97a4abed4a187bf5685f80ac46356915d0d8237cbfa186`.
+
+The updated headline graph independently authenticates the activation
+source freeze without pretending it ran or counting its **3** source
+files as new experiment results. Its historical evidence count remains
+exactly **65**. Preserve the
+[source-bound headline graph generator](../tools/render_candidate_current_overview_v16.py),
+SHA-256
+`4228b6b74708ecd3ba143b1556ae9e6c0592b118ce22285751f7b53d976a95c4`;
+[exact activation-aware graph inputs](evidence/candidate-current-overview-v16.inputs.json),
+SHA-256
+`d96cc1b22b7ef87c1717cfcddefb98b5ec73b9d7a746cdf09e7556f05969c754`;
+[complete current graph summary](evidence/candidate-current-overview-v16.json),
+SHA-256
+`8d11c93210e53a8b4b40eb51f14894a97d7351f5030acd1819aca75c9b39a3fc`;
+and [accessible current graph](evidence/candidate-current-overview-v16.svg),
+SHA-256
+`0d72d79ae4efdd79cc0e98495fd8f946d26ead704d594f96b43145fc5f29fd65`.
+
+Actual native activation remains **NOT RUN**. Compatibility,
+undefined behavior, speed, and memory remain **NOT MEASURED**.
+Qualified candidates remain **0**. The final comparison remains
+**NOT GENERATED** and **NOT OPENED**.
+
 ## Falsify the Fortran build-identifier reproducibility hypothesis
 
 Run exactly one previously frozen, committed first-party Fortran
