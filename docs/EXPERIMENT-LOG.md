@@ -7,6 +7,40 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Verify the independent general Python reference
+
+After freezing and pushing the Python-only reference protocol and recorder,
+run exactly the separately authorized **864**-case general reference.
+Genuine, isolated Python processes **81** and **82** each pass all
+**864 / 864** source-ordered cases. Both preserve the complete **36 × 24**
+case matrix, **432** text cases, **432** byte cases, exact full-width seed
+`5928217332825411633`, and matching reference vector
+`0ae84d65f16976e046a267704585306c3968703194d26bbc3c5223b746304f7c`.
+There are **zero** unexplained reference mismatches or worker failures.
+
+The [complete reproducibly compressed general reference](../oracle/cpython-3.14.6/evidence/public-contract-baseline-v1-public-phase1-v1.json.gz)
+has SHA-256
+`44fb033b4ce771e218e798f8a4b4b3dc87a939c1545a87c11fb2e307964c612f`
+and **240,972** compressed bytes. Its **7,665,109** exact uncompressed
+bytes have SHA-256
+`84b3f354bf67d6ca9ed55f2ff1edeebc0ffe19b6c9de85ce129306e5678428b0`.
+The [independently verified publication receipt](../oracle/cpython-3.14.6/evidence/public-contract-baseline-v1-public-phase1-v1-publication-receipt.json)
+has SHA-256
+`9d9fe750460179539b534c113354ddd8d9c64ad2a4bd3672fe2691d974f509ce`
+and **3,785** bytes.
+
+Independently replay and reproduce both complete Python process streams,
+all frozen source owners, every original result, the deterministic archive,
+and the complete receipt in both ordinary and empty environments without
+starting another worker. Verify the real, separately returned archive and
+receipt publication ledgers: each has one complete write, verified file
+readback, one file synchronization, two directory synchronizations, and a
+safe non-overwriting publication.
+
+The separate **1,024** scanner and **768** buffer references remain
+**NOT RUN**. No candidate is run or imported. Performance is
+**NOT MEASURED** and the final comparison remains **NOT OPENED**.
+
 ## Freeze independent Python-only public, scanner, and buffer references
 
 Freeze the [three-category Python-only reference protocol](../oracle/cpython-3.14.6/PUBLIC-CONTRACT-BASELINES-V1.md),
