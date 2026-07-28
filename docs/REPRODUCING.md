@@ -20,6 +20,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Corrected Zig file-owner verification and safe recovery](../oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V7.md), [exact descriptor-verification contract](../oracle/phase2/verified-native-activation-v7.json), and [independently verified first-party activation source](../tools/activate_verified_native_candidate_v7.py); the actual corrected campaign restored both original engine-file inodes before publishing its matching failures.
 - [Complete original Python tests for repaired Zig](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V1.md), [exact 13-group original-suite and safe-restoration contract](../oracle/phase2/repaired-zig-original-campaign-v1.json), and [independent repaired-Zig original-suite controller](../tools/run_owned_repaired_zig_original_campaign_v1.py); all 31,237 original checks remain frozen, and the first controller attempt stopped during setup before any candidate test started.
 - [Corrected complete original Python tests for repaired Zig](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V2.md), [exact original-suite and preserved-failure contract](../oracle/phase2/repaired-zig-original-campaign-v2.json), and [corrected first-party Zig correctness controller](../tools/run_owned_repaired_zig_original_campaign_v2.py); all **13** groups actually ran, revealing **2,172** matching differences and **zero** infrastructure failures. The [complete lossless matching-failure archive](../oracle/phase2/evidence/repaired-zig-original-campaign-v2-zig-phase2-v11-zig-scanner-original-p0-failures.json.gz) and [separate durable publication receipt](../oracle/phase2/evidence/repaired-zig-original-campaign-v2-zig-phase2-v11-zig-scanner-original-p0-failures-publication-receipt.json) preserve every worker and both restored original files.
+- [Recovery-safe full Python test for the newly built first-party Zig engine](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V3.md), [exact actual-build, original-case, and safe-restoration contract](../oracle/phase2/repaired-zig-original-campaign-v3.json), and [independently frozen corrected Zig original-suite controller](../tools/run_owned_repaired_zig_original_campaign_v3.py); all **31,237** cases and **13** original workers remain unchanged. The new matching run has **NOT RUN**.
 - [First repaired-Zig setup failure](../oracle/phase2/ZIG-CAMPAIGN-PREFLIGHT-FAILURE-V1.md), [complete pinned traceback and failure contract](../oracle/phase2/zig-campaign-preflight-failure-v1.json), and [failure preservation verifier](../tools/preserve_owned_zig_campaign_preflight_failure_v1.py); one controller exited 1 before any Zig test worker began. Its exact traceback is preserved in the [compressed original-failure archive](../oracle/phase2/evidence/zig-campaign-preflight-failure-v1-zig-phase2-v11-zig-scanner-original-p0-failures.json.gz) and [separate durable publication receipt](../oracle/phase2/evidence/zig-campaign-preflight-failure-v1-zig-phase2-v11-zig-scanner-original-p0-failures-publication-receipt.json). Receipt success verifies preservation, not a successful Zig test.
 - [Corrected original Python test producer](../tools/run_owned_six_family_original_p0_producer_v3.py), [unchanged original-test and first-party ownership protocol](../oracle/phase2/SIX-FAMILY-P0-PRODUCER-V3.md), and [exact source-pinned contract](../oracle/phase2/six-family-p0-producer-v3.json); both real Python reference processes and all 31,237 cases are preserved.
 - [Corrected complete original-suite protocol](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V9.md), [exact case and worker inventory](../oracle/phase2/p0-candidate-protocol-v9.json), [corrected isolated-suite worker](../tools/run_frozen_p0_candidate_worker_v7.py), and [complete 13-suite runner](../tools/run_frozen_p0_candidate_v9.py); all 13 repaired C candidate workers ran and preserved their complete results.
@@ -176,6 +177,10 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
   --source-sha256 a9f62061f709583c60a4d0b72ba1150931132a66b80b6eed1081e017fd389795 \
   --protocol-sha256 fe17a8fc4e5fb5638ff92caa6e1b6d625e93dfb27ced02ba7b1490b830356db3 \
   --contract-sha256 0112748e8dbca769625ea2643643fad81ced069e20ed87a458bebe0a922d2851
+"$PY" -I -B tools/run_owned_repaired_zig_original_campaign_v3.py --self-test \
+  --source-sha256 e4efad7dfbe921bec9f7160cd33dbbed0376b1373037a78de8bcaabdcd2ece98 \
+  --protocol-sha256 0463e23aaed9de6e1b50db7f106a1f175b504eefdbf868fa1f03ed5b313776d1 \
+  --contract-sha256 4d20518685e2db7b80c9a1936f4ae480cff85c2a3b672562f6d4fded20b8328d
 "$PY" -I -B tools/run_owned_repaired_rust_original_campaign_v2.py --self-test \
   --source-sha256 a6ffce3eb9ff09f27f3e35f84b35b9d1aba6e29dae225c56c036de85e089b7b3 \
   --protocol-sha256 9b9a246a08c0e89667899a6317df41424320617f7c4ac6cb84ef210fabee1ca0 \
@@ -331,6 +336,12 @@ opening a benchmark:
   --source-sha256 a9f62061f709583c60a4d0b72ba1150931132a66b80b6eed1081e017fd389795 \
   --protocol-sha256 fe17a8fc4e5fb5638ff92caa6e1b6d625e93dfb27ced02ba7b1490b830356db3 \
   --contract-sha256 0112748e8dbca769625ea2643643fad81ced069e20ed87a458bebe0a922d2851
+
+"$PY" -I -B tools/run_owned_repaired_zig_original_campaign_v3.py \
+  --verify-frozen-context \
+  --source-sha256 e4efad7dfbe921bec9f7160cd33dbbed0376b1373037a78de8bcaabdcd2ece98 \
+  --protocol-sha256 0463e23aaed9de6e1b50db7f106a1f175b504eefdbf868fa1f03ed5b313776d1 \
+  --contract-sha256 4d20518685e2db7b80c9a1936f4ae480cff85c2a3b672562f6d4fded20b8328d
 
 "$PY" -I -B tools/run_owned_repaired_rust_original_campaign_v2.py \
   --verify-frozen-context \
@@ -642,3 +653,45 @@ of **1** means the matching test found real differences.
 
 The [complete compatibility standard](../oracle/phase1/P0-COMPLETENESS-V1.md)
 contains the source-pinned, read-only full-verification command.
+
+## Reproduce the complete corrected Zig compatibility test
+
+The next command activates the actual independently rebuilt Zig engine and
+its corrected bridge only after publicly saving a durable recovery journal.
+It runs all **31,237** unchanged checks in **13** isolated workers and
+restores both original native-file inodes before publishing the result.
+Run it only after committing the frozen source, in an environment where its
+recovery root and result files do not already exist. At this source-only
+freeze, the command has **NOT RUN**; exit status **1** means the complete
+matching test genuinely failed, not that publication necessarily failed.
+
+```sh
+"$PY" -I -B tools/run_owned_repaired_zig_original_campaign_v3.py \
+  --run \
+  --source-sha256 e4efad7dfbe921bec9f7160cd33dbbed0376b1373037a78de8bcaabdcd2ece98 \
+  --protocol-sha256 0463e23aaed9de6e1b50db7f106a1f175b504eefdbf868fa1f03ed5b313776d1 \
+  --contract-sha256 4d20518685e2db7b80c9a1936f4ae480cff85c2a3b672562f6d4fded20b8328d \
+  --family zig \
+  --label phase2-v12-zig-scanner-v2-original-p0 \
+  --normalized-activation-source-sha256 98002a0a283ffec24670bcb9f35546c5720d2a7a1d098257729d244918022f8e \
+  --normalized-activation-protocol-sha256 f333b50f9810cf246ae659c6d07eb4c63b8e2114d07b485b50d570ab272f22f8 \
+  --normalized-activation-contract-sha256 62375f7d013b7b02a160b9492e5aa249b7af556041f2c86f20e7bfd5ad6885b1 \
+  --activation-source-sha256 d3a9b08c1bf7e3408719a0e92b8c1965aa6160dd2e18ab1501bb8662aaf8e4a1 \
+  --activation-protocol-sha256 0e736d575835fa22388841a527e22b62eef1ddf39eac9415bd7c518ba985b1d0 \
+  --activation-contract-sha256 e0d486cc6d621e963f8af5db1c4f7a47d590ad679837db1f53e11d05b670332e \
+  --producer-source-sha256 7415192cf5ad83ca643c2c8aaa58222394d62f98bc35f15c301007947b46b23c \
+  --producer-protocol-sha256 88fef0ad32b43697edc48d921bb8d5c086c24125ca7f4934834f311e8d65bb76 \
+  --producer-contract-sha256 47b3f6c1850cab7190c095fdb4384fd70813c8d27d43dfbbf2960d58a816efb1 \
+  --publication-source-sha256 6b06931ff64c5fe5b6bbbc3e970e56c0a94a24c28dfa6d3aa6140fc4d8fb54a1 \
+  --publication-protocol-sha256 e47cce8a6f60971bd3c18a4bfe248039ed9abd5b4144ec4355a77825a1435d4e \
+  --publication-contract-sha256 e44960e46c590cb5ab482ef323f3ae8598900f144b53a2377f62b3bb827935d7 \
+  --build-source-sha256 5192fa35dd0b13cb3bdddfc8f24c37d7e797d0b8463d000c4692c8131f33d1b6 \
+  --build-protocol-sha256 f80743d8109402e5876792b6713237b1ab770e3286874dd5ae47fb56381131b1 \
+  --build-contract-sha256 5abb6f60c7a9672e32d6f2980a109ccb15b7ef56e5cc3a81abda458109552c1a \
+  --build-archive-sha256 3e0ccc41de392c17eaec64100776eacecafb3f0bb3355e18ef4d65fcdc79ea8d \
+  --build-receipt-sha256 6269fb49b67919e772ffbcdd211c696aae871971ab524bc0b1612a797d4c2f9b \
+  --native-engine-sha256 caeb5ee7f5f9035f85e3ea2eb1d11396a1ca27f3c15ba585d7bbad40d9a87071 \
+  --native-bridge-sha256 e5809566a166f469e7f95fc1a43e814a3beeeffa2a6e848c00a3a48215ee6726 \
+  --native-engine-bytes 108888 \
+  --native-bridge-bytes 133656
+```

@@ -28,9 +28,10 @@ checks increased from **7,438** to **8,965**. It is still not a drop-in
 replacement.
 
 The corrected from-scratch Zig engine has now been independently built
-twice; both native builds are identical. Its complete Python compatibility
-test has **NOT RUN**. Further evidence-backed Rust, Go, and C++ corrections
-are frozen; their rebuilt compatibility is **NOT MEASURED**.
+twice; both native builds are identical. Its complete, recovery-safe Python
+compatibility test is frozen but has **NOT RUN**. Further evidence-backed
+Rust, Go, and C++ corrections are frozen; their rebuilt compatibility is
+**NOT MEASURED**.
 
 Both Rust source builds agree, use no outside regular-expression engine,
 and were compiled and inspected in **28** offline steps. The full test
@@ -50,7 +51,7 @@ only after three independent engines pass all compatibility checks.
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
 | Rust | Two first-party builds; next representation fix not yet built | 8,965 verified; 1,036 differences; no worker failures; not qualified | NOT MEASURED |
 | C | Two identical first-party builds; all 13 groups tested | 7,325 verified; 1,230 differences; no worker failures; not qualified | NOT MEASURED |
-| Zig | Corrected engine built independently twice; not yet retested | Earlier build: all 13 groups; 2,172 differences; not qualified | NOT MEASURED |
+| Zig | Corrected engine built twice; full test frozen, not yet run | Earlier build: all 13 groups; 2,172 differences; not qualified | NOT MEASURED |
 | C++ | Earlier first-party builds; argument correction not yet built | 128 verified; 2,308 differences; five worker failures | NOT MEASURED |
 | Go | Earlier first-party builds; Unicode correction not yet built | 128 verified; 4,518 differences; four worker failures | NOT MEASURED |
 | Fortran | Three attempts; engines differ | NOT TESTED | NOT MEASURED |
@@ -116,6 +117,7 @@ slowdown greater than **20%**. There is no winner.
 - [Source-only correction of the observed Zig scanner failure](oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V2.md).
 - [Frozen independent build rules for the corrected from-scratch Zig engine](oracle/phase2/ZIG-SCANNER-SOURCE-BUILD-V12.md).
 - [Actual corrected Zig builds and their independent publication receipt](oracle/phase2/evidence/native-source-build-v12-zig-phase2-v12-zig-scanner-v2-publication-receipt.json).
+- [Frozen recovery-safe complete Python test for the corrected Zig engine](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V3.md).
 - [Recoverable original Python compatibility tests for repaired Rust](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V3.md).
 - [Frozen full Python test for the newly rebuilt Rust engine](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V4.md).
 - [Actual complete corrected Rust test and recovery receipt](oracle/phase2/evidence/repaired-rust-original-campaign-v4-rust-phase2-v12-rust-flag-original-p0-failures-publication-receipt.json).

@@ -7,6 +7,47 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the full original Python test for the corrected Zig engine
+
+Freeze a recovery-safe compatibility run for the genuinely rebuilt,
+from-scratch Zig engine. Authenticate both independent build phases, all
+**26** actual compiler and inspection processes, all corrected source and
+native snapshots, and the exact first-party engine and Python bridge.
+Preserve every one of the **31,237** original checks, all **13** separately
+isolated Python workers, and all **13** named private waivers. No actual
+compatibility worker starts in this source-only experiment.
+
+The [complete corrected Zig original-test controller](../tools/run_owned_repaired_zig_original_campaign_v3.py)
+has SHA-256
+`e4efad7dfbe921bec9f7160cd33dbbed0376b1373037a78de8bcaabdcd2ece98`.
+The [original-test and safe-recovery protocol](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V3.md)
+has SHA-256
+`0463e23aaed9de6e1b50db7f106a1f175b504eefdbf868fa1f03ed5b313776d1`.
+The [exact actual-build, original-suite, and recovery contract](../oracle/phase2/repaired-zig-original-campaign-v3.json)
+has SHA-256
+`4d20518685e2db7b80c9a1936f4ae480cff85c2a3b672562f6d4fded20b8328d`.
+
+All four independently pinned ordinary and empty-environment gates pass.
+They reject **184** hostile controls and block **21** attempted effects
+across **14** categories. The read-only context authenticates only the
+exact **299,800-byte** real source-build report; it does not decompress a
+matching archive.
+
+An actual future run must publish and synchronize its recovery journal
+before touching either original Zig native file. It restores the original
+bridge inode before the original engine inode, and publishes a complete
+success or failure only after both are restored. Unexpected termination
+still requires the separately documented manual recovery; separate file
+replacements are not incorrectly claimed to be an atomic group.
+
+Evidence remains at **155** files and **160** references. Last-tested
+Zig still has **2,172** differences; the corrected Zig build's complete
+matching is **NOT MEASURED**. Preserve Rust's **1,036** differences,
+C's **1,230**, and all **50** separately frozen unrun signature checks.
+Speed, memory, and undefined behavior remain **NOT MEASURED**. The
+**4,194,304**-case comparison remains **NOT FROZEN**, **NOT GENERATED**,
+and **NOT OPENED**.
+
 ## Freeze the first actual remaining Rust representation correction
 
 Inspect the real corrected Rust compatibility evidence without inflating a
