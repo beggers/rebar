@@ -7,6 +7,69 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the independently isolated Go bridge build failure
+
+Run the previously committed corrected six-language source-build
+standard against the four unchanged, independently owned Go source
+files. Keep the matching engine in the exact frozen, private
+two-file Go package; compile the original Python-facing C bridge
+separately. Pin the actual Go, GCC, and Python toolchains and all
+four original source hashes. Never import a candidate, activate
+the native engine, run a matching test, or open a benchmark.
+
+The first **3** compiler identity checks succeed. Unlike the original
+failed Go experiment, the isolated `build_go_engine` process now
+genuinely succeeds. The separate `build_go_bridge` process then
+fails: Python's `pyport.h` reports that `SSIZE_MAX` is undeclared
+at the original C bridge's group-index, compile, and execute checks.
+Preserve the complete **2,640-byte** compiler output, SHA-256
+`6477560bffdde31d9422ba4c8addbb1a733cb0becbd09b5815d51d837caf477a`.
+
+There are exactly **5** actually recorded processes: **4** succeed,
+and the independent bridge compilation fails with exit status
+**1**. There are **0** complete source-build phases, **0**
+reproducible Go engines, and **0** compatibility cases. Do not
+misreport the successful engine compilation as the original
+`Python.h` failure; do not claim that the generated header or final
+native output was preserved as an independently authenticated
+artifact. The correction improves the real build stage but does not
+yet produce a qualified Go candidate.
+
+Preserve the complete
+[isolated Go source-build failure](../oracle/phase2/evidence/native-source-build-v5-go-phase2-v5-failures.json.gz),
+SHA-256
+`ff92f5f182307b5e6e123ab883e630c6aca63f8c75318fa4ac083b1d72db6169`,
+and its independent
+[durable isolated-Go failure publication receipt](../oracle/phase2/evidence/native-source-build-v5-go-phase2-v5-failures-publication-receipt.json),
+SHA-256
+`00a126f6c462913ad00ea9961334bbeb5aa2bfd1301d02d8f8c5d55c2e239db0`.
+The receipt is a successfully published record of an actual
+`build_status: FAIL`. Its complete canonical failure report is
+**18,380 bytes**, SHA-256
+`7dfa02625cb532d2dd65491a65ca8a04848041fc6dc2fd5547bac2e3c8b7a685`.
+
+The independently reproduced headline graph includes all **59** actual
+evidence owners and keeps the preceding **57** independently visible.
+Preserve its source-pinned
+[graph generator](../tools/render_candidate_current_overview_v12.py),
+SHA-256
+`3d8d65430003a72efb0dec8ec17d989cfaf2dac67a2160528366b01243d22de7`;
+[exact graph inputs](evidence/candidate-current-overview-v12.inputs.json),
+SHA-256
+`1ef4fc004ffdb12e93890d67b3ebe2c94471984a1e0a8bf6d6e9389ae3958739`;
+[complete machine-readable summary](evidence/candidate-current-overview-v12.json),
+SHA-256
+`894320de80c287d714ad29e750ff6adbaaa2e4e68a81b7a8c66dc5db573eaa8f`;
+and [accessible headline graph](evidence/candidate-current-overview-v12.svg),
+SHA-256
+`5b4cbbe7ce8b51882ec79592f91f57b8f10587c47b30241c42618f874db8c3e9`.
+
+Preserve the original Go `Python.h` failure and Fortran's unequal
+engines separately. The current complete evidence count is **59**;
+the previous count is **57**. Go matching, memory, interpreter
+safety, and speed remain **NOT MEASURED**. The expanded final
+comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze isolated, from-scratch builds for all six languages
 
 Freeze a new, independently reviewed source-build standard before
