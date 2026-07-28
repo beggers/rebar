@@ -19,7 +19,8 @@ previous Rust and C builds and **1,364** for an earlier Zig build. The
 repaired C and Rust engines have now each produced **two fresh, matching
 builds with no outside regex dependency**. Zig also compiled twice, but
 its engine retained two build-directory-dependent bytes, so its
-reproducibility check failed. No current binary has yet run the full
+reproducibility check failed. A separately frozen deterministic Zig
+retry has not yet run. No current binary has yet run the full
 compatibility test. Current speed is
 **NOT MEASURED**. The final comparison is **NOT OPENED**.
 
@@ -127,6 +128,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Crash-verified real-interpreter correctness protocol](oracle/phase2/CANDIDATE-SUBINTERPRETERS-V2.md), [corrected interpreter test inventory](oracle/phase2/candidate-subinterpreters-v2.json), and [corrected real-interpreter candidate runner](tools/run_owned_candidate_subinterpreters_v2.py).
 - [Real isolated-interpreter compatibility protocol](oracle/phase2/CANDIDATE-SUBINTERPRETERS-V1.md), [exact interpreter test inventory](oracle/phase2/candidate-subinterpreters-v1.json), and [independently checked interpreter test runner](tools/run_owned_candidate_subinterpreters_v1.py).
 - [Corrected C, Rust, and Zig source-build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V2.md), [version-safe offline native-build verifier](tools/reproduce_phase2_native_builds_v2.py), and [preserved original build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V1.md).
+- [Deterministic, failure-preserving version-three native-build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V3.md) and [independently verified native build recorder](tools/reproduce_phase2_native_builds_v3.py); a corrected Zig rebuild has not yet run.
 - [Crash-safe verified native activation protocol](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V1.md) and [reversible, source-authenticated native activation and recovery](tools/activate_verified_native_candidate_v1.py).
 - [Complete preserved Zig reproducibility failure](oracle/phase2/evidence/native-source-build-v2-zig-phase2-v2-failures.json.gz) and [independently verified Zig failure receipt](oracle/phase2/evidence/native-source-build-v2-zig-phase2-v2-failures-publication-receipt.json).
 - [Complete corrected Rust source-build record](oracle/phase2/evidence/native-source-build-v2-rust-phase2-v2.json.gz) and [independently verified corrected Rust build receipt](oracle/phase2/evidence/native-source-build-v2-rust-phase2-v2-publication-receipt.json).
@@ -158,6 +160,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_owned_candidate_subinterpreters_v2.py --self-test
 "$PY" -I -B tools/reproduce_phase2_native_builds_v1.py --self-test
 "$PY" -I -B tools/reproduce_phase2_native_builds_v2.py --self-test
+"$PY" -I -B tools/reproduce_phase2_native_builds_v3.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v1.py --self-test
 "$PY" -I -B tools/audit_candidate_independence_v1.py --self-test
 "$PY" -I -B tools/record_independent_public_contract_baselines_v1.py --self-test

@@ -7,6 +7,60 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a deterministic Zig build without erasing the failure
+
+Keep the original version-two native recorder, its complete successful
+C and Rust reports, and the real Zig reproducibility failure
+unchanged. Independently recheck all **39** previously recorded
+compiler, version, and native-symbol processes. The pinned official
+Zig compiler supports `-fstrip`, which omits the two non-runtime debug
+sections containing fresh-directory paths. Preserve independently
+created source trees, local and global caches, output inodes, complete
+native byte equality, versioned symbol audits, source ownership, and
+all regex anti-delegation checks.
+
+Freeze the standalone
+[version-three native-build recorder](../tools/reproduce_phase2_native_builds_v3.py),
+SHA-256
+`c33d8e89c4b86f06e7cc06ecef9bca7052af86191d2e09ac89e665500147ba6f`,
+and its
+[deterministic source-build protocol](../oracle/phase2/NATIVE-SOURCE-BUILDS-V3.md),
+SHA-256
+`273e5de944b661ec1f5cfbe3a26bcabc2e9b8c04353891fcfb822b07955eace3`.
+Require exactly one compiler-native `-fstrip` in each independently
+owned Zig build command; reject missing stripping, duplicated options,
+`-fno-strip`, shared caches, altered owners, incomplete compiler
+records, swapped versioned symbols, outside regex engines, and
+non-identical output.
+
+Preserve every **71** accepted and **451** rejected original build
+control, with their exact names and relative order. The new self-test
+passes **87** accepted controls and **501** rejected attacks,
+byte-identically in an ordinary and an empty environment. All actual
+file, compiler, process, candidate, native-loading, thread, clock,
+network, benchmark, and hidden-case effects remain zero.
+
+Preserve the first rejected version-three source, SHA-256
+`2d4b39cc4bd2d336921b0502b84c216a9ac79bde349fa3dac31fa9bf74ca5108`:
+adding new checks too early shifted **40** original numbered attack
+names. Preserve the first rejected protocol, SHA-256
+`5a0aff6cf916e930b0ae6ceefc28e4b606c0d06bdd164006804676673a2af65d`,
+which contained six malformed Markdown hash links. A second rejected
+protocol, SHA-256
+`8e8e4c9b35610227f1a2d06adf80f190e663cedf6e1da7db1d576176c7de1036`,
+incorrectly stated that retained candidate source hashes are
+invalid. Version three correctly retains the existing family source
+hashes while rejecting old recorder, protocol, report, and schema
+identities for new version-three evidence.
+
+The frozen earlier activation and full-suite controllers accept only
+version-two build evidence. They do not yet accept a version-three
+Zig build; preserve that integration boundary. This chunk freezes the
+source and protocol only. An actual version-three build, complete
+candidate correctness, runtime memory, and performance remain
+**NOT MEASURED**. The larger final comparison remains **NOT GENERATED**
+and **NOT OPENED**.
+
 ## Correct the independent Go Unicode engine and portable bridge
 
 Keep Go as a genuinely separate from-scratch parser and matching
