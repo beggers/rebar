@@ -7,6 +7,30 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze simultaneous Python-thread compatibility checks
+
+Freeze the [simultaneous-thread and public module-version protocol](../oracle/cpython-3.14.6/PUBLIC-THREADED-PATTERN-V1.md),
+SHA-256
+`df0a6ef32b805f8ccac6c98c505eec7e5aadc13efcad66ee1f5daf86cc823aaf`,
+and [genuine, failure-preserving shared-pattern thread oracle](../tools/python_re_threaded_pattern_oracle_v1.py),
+SHA-256
+`05226e59736d8721a975eda8afa10247213999690c2766a7b3235c567b9f8276`,
+before starting any thread or reference process.
+
+Freeze exactly **512** cases: **16** public-behavior groups with **32**
+variants each, base seed `2026072701`, and exact case-matrix SHA-256
+`a7d467e3e529204946fe00ddb819e734421e7087ea909af9ec24b757e42afa0b`.
+The **32** module-version checks are already part of those **512** thread
+cases; never count them a second time.
+
+Ordinary and empty-environment source-only self-tests agree on all
+**3,973 / 3,973** distinct positive and adversarial checks. They start
+**zero** threads, reference workers, or candidate workers; perform
+**zero** matching operations; read **zero** evidence or hidden cases;
+and measure **zero** time. The actual two-Python thread reference and
+every candidate result are **NOT RUN**. Performance is **NOT MEASURED**;
+the final comparison remains **NOT OPENED**.
+
 ## Verify the independent Python buffer reference
 
 Only after separately committing and pushing the general and scanner
