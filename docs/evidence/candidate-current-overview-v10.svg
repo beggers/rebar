@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1800" viewBox="0 0 1600 1800" role="img" aria-labelledby="current-overview-title current-overview-description">
+<title id="current-overview-title">Can a from-scratch engine replace Python's re, and is it faster?</title>
+<desc id="current-overview-description">Python 3.14.6 passes its complete 31,237-check reference. The current Rust, C, and corrected Zig engines were each independently built identically twice; this is build evidence, not a passed compatibility test. Rust has 7,461 verified passing checks, 2,042 actual matching differences, and five failed groups. C has 7,197 verified passes, 2,094 matching differences, and six failed groups. Zig has 3,583 verified passes, 1,764 actual matching differences, and seven failed groups. Its parent controller rejected the nested publication field. The separately authenticated interpreter child really ran 385 calls but failed to restore the original matcher during cleanup; neither infrastructure failure adds an invented matching difference. All failed engines, previous C failures, and Zig build history remain preserved. The independently owned C++ engine was source-built twice to byte-identical bridge bytes, but it has not been activated or tested for compatibility and is not qualified. The owned Go source-build attempt failed: its C bridge could not find Python.h; the exact failed compiler and stderr are preserved, no phase completed, and Go was not built, activated, or compatibility tested. Fortran remains unbuilt. No replacement is qualified. Candidate speed, memory, confidence intervals, and the final holdout have not been measured or opened. The 1.5-times marker is a goal, never a result.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}.title{font-size:38px;font-weight:780;fill:#16324f}.subtitle{font-size:19px;fill:#46586e}.section{font-size:27px;font-weight:740;fill:#16324f}.body{font-size:17px;fill:#34465b}.label{font-size:19px;font-weight:700;fill:#16324f}.small{font-size:15px;fill:#52657a}.metric{font-size:34px;font-weight:790;fill:#16324f}.metriclabel{font-size:15px;fill:#52657a}.pass{font-size:16px;font-weight:760;fill:#00794c}.pending{font-size:16px;font-weight:720;fill:#52657a}.warning{font-size:16px;font-weight:760;fill:#956200}.foot{font-size:13px;fill:#52657a}</style>
+<rect width="1600" height="1800" rx="24" fill="#f4f7fb"/>
+<text x="64" y="77" class="title">Can these engines replace Python re?</text>
+<text x="66" y="112" class="subtitle">Current source-built evidence against Python 3.14.6  |  no outside regex engines</text>
+<rect x="64" y="141" width="364" height="111" rx="15" fill="#ffffff" stroke="#d8e3ed"/>
+<text x="84" y="192" class="metric">31,237</text>
+<text x="84" y="226" class="metriclabel">full Python compatibility checks</text>
+<rect x="450" y="141" width="364" height="111" rx="15" fill="#ffffff" stroke="#d8e3ed"/>
+<text x="470" y="192" class="metric">6</text>
+<text x="470" y="226" class="metriclabel">from-scratch candidate families</text>
+<rect x="836" y="141" width="364" height="111" rx="15" fill="#ffffff" stroke="#d8e3ed"/>
+<text x="856" y="192" class="metric">4</text>
+<text x="856" y="226" class="metriclabel">families built identically twice</text>
+<rect x="1222" y="141" width="364" height="111" rx="15" fill="#ffffff" stroke="#d8e3ed"/>
+<text x="1242" y="192" class="metric">0</text>
+<text x="1242" y="226" class="metriclabel">qualified or speed-tested replacements</text>
+<rect x="64" y="278" width="1472" height="840" rx="18" fill="#ffffff" stroke="#d8e3ed"/>
+<text x="89" y="322" class="section">1. Does it work exactly like Python?</text>
+<text x="91" y="355" class="body">The same complete 31,237-check test applies to every engine. Grey means not tested, never zero passes.</text>
+<rect x="90" y="392" width="1420" height="79" rx="11" fill="#f8fafd" stroke="#e3eaf1"/>
+<rect x="90" y="392" width="7" height="79" rx="3" fill="#009e73"/>
+<text x="111" y="423" class="label">Python re</text>
+<text x="1485" y="423" class="pass" text-anchor="end">31,237 / 31,237</text>
+<rect x="282" y="436" width="895" height="12" rx="6" fill="#dfe7ef"/>
+<text x="282" y="427" class="small">Reference implementation; complete frozen test passed</text>
+<rect x="282" y="436" width="895" height="12" rx="6" fill="#009e73"><title>Python reference: 31,237 of 31,237 complete compatibility checks passed</title></rect>
+<rect x="90" y="488" width="1420" height="79" rx="11" fill="#f8fafd" stroke="#e3eaf1"/>
+<rect x="90" y="488" width="7" height="79" rx="3" fill="#e69f00"/>
+<text x="111" y="519" class="label">Rust</text>
+<text x="1485" y="519" class="warning" text-anchor="end">FAILED; NOT QUALIFIED</text>
+<rect x="282" y="532" width="895" height="12" rx="6" fill="#dfe7ef"/>
+<text x="282" y="523" class="small">7,461 / 31,237 checked successfully; five test groups failed; 2,042 mismatches</text>
+<rect x="282" y="532" width="213" height="12" rx="6" fill="#e69f00"><title>Rust: exactly 7,461 verified passing checks; five test groups failed; failed-group executed case counts were not recorded</title></rect>
+<rect x="90" y="584" width="1420" height="79" rx="11" fill="#f8fafd" stroke="#e3eaf1"/>
+<rect x="90" y="584" width="7" height="79" rx="3" fill="#e69f00"/>
+<text x="111" y="615" class="label">C</text>
+<text x="1485" y="615" class="warning" text-anchor="end">FAILED; NOT QUALIFIED</text>
+<rect x="282" y="628" width="895" height="12" rx="6" fill="#dfe7ef"/>
+<text x="282" y="619" class="small">7,197 / 31,237 checked successfully; six test groups failed; 2,094 mismatches</text>
+<rect x="282" y="628" width="206" height="12" rx="6" fill="#e69f00"><title>C: exactly 7,197 verified passing checks; six test groups failed; failed-group executed case counts were not recorded</title></rect>
+<rect x="90" y="680" width="1420" height="79" rx="11" fill="#f8fafd" stroke="#e3eaf1"/>
+<rect x="90" y="680" width="7" height="79" rx="3" fill="#e69f00"/>
+<text x="111" y="711" class="label">Zig</text>
+<text x="1485" y="711" class="warning" text-anchor="end">FAILED; NOT QUALIFIED</text>
+<rect x="282" y="724" width="895" height="12" rx="6" fill="#dfe7ef"/>
+<text x="282" y="715" class="small">3,583 / 31,237 verified; seven failed groups; 1,764 matching differences</text>
+<rect x="282" y="724" width="102" height="12" rx="6" fill="#e69f00"><title>Zig: exactly 3,583 verified passing checks; seven test groups failed; six failed matching-group case counts were recorded; 1,764 actual matching differences; the parent rejected a nested publication-field mismatch; a separately signed child ran 385 real interpreter calls before matcher-restoration cleanup failed</title></rect>
+<rect x="90" y="776" width="1420" height="79" rx="11" fill="#f8fafd" stroke="#e3eaf1"/>
+<rect x="90" y="776" width="7" height="79" rx="3" fill="#0072b2"/>
+<text x="111" y="807" class="label">C++</text>
+<text x="1485" y="807" class="pending" text-anchor="end">BUILT; MATCHING NOT MEASURED</text>
+<rect x="282" y="820" width="895" height="12" rx="6" fill="#dfe7ef"/>
+<text x="282" y="811" class="small">Two reproducible source builds; not activated, tested, or qualified</text>
+<title>C++: two independently source-built, byte-identical bridge artifacts; four first-party sources; ten authenticated compiler and ELF checks; matching NOT MEASURED; not activated; NOT QUALIFIED; no speed or hidden benchmark</title>
+<rect x="90" y="872" width="1420" height="79" rx="11" fill="#f8fafd" stroke="#e3eaf1"/>
+<rect x="90" y="872" width="7" height="79" rx="3" fill="#e69f00"/>
+<text x="111" y="903" class="label">Go</text>
+<text x="1485" y="903" class="warning" text-anchor="end">BUILD FAILED; NOT QUALIFIED</text>
+<rect x="282" y="916" width="895" height="12" rx="6" fill="#dfe7ef"/>
+<text x="282" y="907" class="small">Owned build failed (Python.h missing); not built; matching NOT MEASURED</text>
+<title>Go: genuine owned source-build attempt FAILED; Go engine compiler could not find Python.h; exactly four complete process streams and original compiler error are preserved; no complete build phase, no engine, header, or bridge; NOT BUILT; matching NOT MEASURED; not activated; NOT QUALIFIED; no speed or holdout</title>
+<rect x="90" y="968" width="1420" height="79" rx="11" fill="#f8fafd" stroke="#e3eaf1"/>
+<rect x="90" y="968" width="7" height="79" rx="3" fill="#0072b2"/>
+<text x="111" y="999" class="label">Fortran</text>
+<text x="1485" y="999" class="pending" text-anchor="end">SOURCE ONLY; NOT BUILT; NOT TESTED; NOT QUALIFIED</text>
+<rect x="282" y="1012" width="895" height="12" rx="6" fill="#dfe7ef"/>
+<text x="282" y="1003" class="small">Independent Fortran engine and Python bridge; no frozen-gate coverage</text>
+<title>Fortran: all 31,237 current-build checks are NOT MEASURED</title>
+<text x="92" y="1065" class="small">Matching differences: Rust 2,042; C 2,094; Zig 1,764; both earlier C failures are preserved.</text>
+<text x="92" y="1086" class="small">Zig: identical engine and bridge; parent receipt-field rejection; signed child ran 385 real interpreter calls; cleanup failed.</text>
+<text x="92" y="1108" class="small">Fortran is source only: outside the frozen independence audit V1 and correctness gate; the newer V2 source-only audit includes it.</text>
+<rect x="64" y="1145" width="1472" height="548" rx="18" fill="#ffffff" stroke="#d8e3ed"/>
+<text x="89" y="1190" class="section">2. Is it faster than Python?</text>
+<text x="91" y="1224" class="body">Speed has not been measured. There are no candidate speed bars, rankings, or hidden benchmark results.</text>
+<text x="109" y="1282" class="label">Python re</text>
+<line x1="304" y1="1276" x2="1170" y2="1276" stroke="#edf1f5" stroke-width="2"/>
+<text x="1480" y="1282" class="small" text-anchor="end">REFERENCE ONLY - NOT TIMED</text>
+<text x="109" y="1325" class="label">Rust</text>
+<line x1="304" y1="1319" x2="1170" y2="1319" stroke="#edf1f5" stroke-width="2"/>
+<text x="1480" y="1325" class="pending" text-anchor="end">NOT MEASURED</text>
+<text x="109" y="1368" class="label">C</text>
+<line x1="304" y1="1362" x2="1170" y2="1362" stroke="#edf1f5" stroke-width="2"/>
+<text x="1480" y="1368" class="pending" text-anchor="end">NOT MEASURED</text>
+<text x="109" y="1411" class="label">Zig</text>
+<line x1="304" y1="1405" x2="1170" y2="1405" stroke="#edf1f5" stroke-width="2"/>
+<text x="1480" y="1411" class="pending" text-anchor="end">NOT MEASURED</text>
+<text x="109" y="1454" class="label">C++</text>
+<line x1="304" y1="1448" x2="1170" y2="1448" stroke="#edf1f5" stroke-width="2"/>
+<text x="1480" y="1454" class="pending" text-anchor="end">NOT MEASURED</text>
+<text x="109" y="1497" class="label">Go</text>
+<line x1="304" y1="1491" x2="1170" y2="1491" stroke="#edf1f5" stroke-width="2"/>
+<text x="1480" y="1497" class="pending" text-anchor="end">NOT MEASURED</text>
+<text x="109" y="1540" class="label">Fortran</text>
+<line x1="304" y1="1534" x2="1170" y2="1534" stroke="#edf1f5" stroke-width="2"/>
+<text x="1480" y="1540" class="pending" text-anchor="end">NOT MEASURED</text>
+<line x1="358" y1="1584" x2="1162" y2="1584" stroke="#98a8b9" stroke-width="2"/>
+<line x1="626" y1="1570" x2="626" y2="1598" stroke="#0072b2" stroke-width="3"/>
+<line x1="1028" y1="1561" x2="1028" y2="1598" stroke="#e69f00" stroke-width="3" stroke-dasharray="6 5"/>
+<text x="626" y="1621" class="small" text-anchor="middle">1.0x reference (not timed)</text>
+<text x="1028" y="1621" class="warning" text-anchor="middle">1.5x goal</text>
+<text x="91" y="1659" class="small">4,194,304 final examples: NOT GENERATED and NOT OPENED. 1.5x is a future goal, not an observation; speed: NOT MEASURED.</text>
+<text x="66" y="1730" class="foot">Generated only from complete, hash-pinned current source and published build evidence.</text>
+<text x="66" y="1754" class="foot">Input SHA-256: bfc68aa4f6c97d9e4571d4cd062cd1cb706d9d50fdd9f1ea6ccb329081037989</text>
+<text x="66" y="1776" class="foot">Renderer SHA-256: 959a233f745758f488427e37f22307a55d8a408f43231892b3df544672202c62</text>
+</svg>

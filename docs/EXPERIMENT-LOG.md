@@ -7,6 +7,63 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the first independent Go source-build failure
+
+Run the frozen six-language source-build rules against the four
+independently written Go owners: the matching engine, Go module,
+Python-facing C bridge, and separate Python interface. Require the
+exact pinned Go compiler, GCC, Python, and private offline build
+environment. Never import the Go candidate, activate native code, run
+a compatibility test, or open a benchmark.
+
+The first real source build **FAILS**. Its first three actual compiler
+checks succeed, but the fourth process, `build_go_engine`, exits with
+status **1**. Building the Go package accidentally includes the
+adjacent, Python-facing `py_bridge.c`; Go's C compiler therefore
+rejects the missing `Python.h` before it can build an engine. Preserve
+the complete **175-byte** compiler error, SHA-256
+`4173a7583fe0358c92056da596f06837bd7a888aa56d6e66cb2920d806600862`.
+There are exactly **4** actual processes, **0** completed build phases,
+**0** generated Go headers, **0** native outputs, and **0** executed
+matching checks. A later correction must isolate the Go-only source
+files and compile the Python bridge separately; adding Python's header
+to the Go engine would violate the separation this experiment tests.
+
+Preserve the complete
+[actual Go source-build failure](../oracle/phase2/evidence/native-source-build-v4-go-phase2-v4-failures.json.gz),
+SHA-256
+`fcf643b7b8e9fbe80bd3b40c7ed884695a844f46e1117f5ebdb130135e5db4bb`,
+and its independent
+[durable Go failure publication receipt](../oracle/phase2/evidence/native-source-build-v4-go-phase2-v4-failures-publication-receipt.json),
+SHA-256
+`215e9680bbe0f8d2250fcca8bae0335017606288e13e7636224b7c76336b5e41`.
+The receipt's successful publication proves that the failure was
+preserved; its `build_status` is **FAIL** and must never be presented
+as a successful Go build. The uncompressed canonical failure report
+is **12,214 bytes**, SHA-256
+`aded8de4563397acef41697abbb91d73c3214daa2054a0f118e4946bd982b105`.
+
+Regenerate the complete headline graph from all **55** independently
+preserved evidence owners and all **25** first-party engine sources.
+Pin the [graph renderer](../tools/render_candidate_current_overview_v10.py)
+to SHA-256
+`959a233f745758f488427e37f22307a55d8a408f43231892b3df544672202c62`,
+the [complete graph inputs](evidence/candidate-current-overview-v10.inputs.json)
+to
+`bfc68aa4f6c97d9e4571d4cd062cd1cb706d9d50fdd9f1ea6ccb329081037989`,
+the [generated summary](evidence/candidate-current-overview-v10.json)
+to
+`a1590b65c44039c61b7bd0cef6c36f4788f2b506de458fcd70e66c457ac81028`,
+and the [readable results graph](evidence/candidate-current-overview-v10.svg)
+to
+`c34c04b9c5db3a5f72e11d104f5962dffed894930451727ab25632e643aa98ae`.
+
+Go remains **NOT BUILT**, **NOT ACTIVATED**, and **NOT QUALIFIED**.
+Its compatibility, interpreter safety, memory, and speed are
+**NOT MEASURED**. Retain all **53** earlier C, Rust, Zig, and C++
+evidence owners unchanged. The expanded final comparison remains
+**NOT GENERATED** and **NOT OPENED**.
+
 ## Build the independently written C++ engine from source
 
 Use only the already frozen six-language source-build protocol, exact
