@@ -7,6 +7,73 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze reversible, crash-safe, source-verified native activation
+
+Freeze the [verified native activation and recovery controller](../tools/activate_verified_native_candidate_v1.py),
+SHA-256
+`ebc2427f6981e12c136b7f9371e5c72bccd89e1362930ad63245751d76fef164`,
+and its [crash-safe native activation protocol](../oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V1.md),
+SHA-256
+`8f69bc751ac07e6d0a55fe9563c0038838976873991e45c5a0967f0d21a989d2`,
+before running a corrected native source build or activating a candidate.
+
+Never treat an old project binary, historical version-one build, or
+uncorrected native-symbol report as source provenance. Require the exact
+corrected version-two recorder, its original protocol, independently
+published compressed evidence and receipt, both genuinely distinct fresh
+native build outputs, every actual compiler and symbol-audit process,
+all owned source hashes, and unchanged original matcher guards.
+
+Preserve the rejected initial activation source, SHA-256
+`7b10c1b8ac7b1b62557c1ba655c2ac6bd95b10772ceaa764797a398a0de54372`,
+and initial protocol, SHA-256
+`c4b0d67c84420d0a13b3b3d57bd8cc085bf1ff22347c183a6ecb59f7ce20a0da`.
+Independent review found a genuine crash-recovery gap: if a process was
+killed after installing a native binary but before writing its activation
+receipt, the original report-dependent recovery could not restore the
+previous file. A second defect allowed a different file with the same
+contents to be mistaken for the exact original inode. Neither initial
+source nor receipt-based recovery is counted as passing.
+
+Before changing any fixed native target, the corrected controller saves
+each existing exact binary into an owner-only, synchronized **0700**
+recovery directory. Preserve the exact original source, bytes, device,
+inode, mode, **0600** backup, and complete recovery journal. Before each
+individual same-directory atomic replacement, separately synchronize a
+**0600** promotion-intent record containing that target's exact staged
+bytes, digest, size, device, inode, and journal hash. Never claim that
+two distinct Rust or Zig files are installed by one atomic operation.
+
+Support both normal restoration and separately journal-pinned `--recover`
+after a real interrupted activation. Authenticate the original objective,
+the **31,237**-case oracle, every original matcher guard, both corrected
+source builds, the complete archive and receipt, all source owners, each
+exact backup, and the staged-inode intent before restoring any target.
+Reject a replaced file even if its bytes match; never overwrite an
+unrelated file, follow a symlink, remove a broad directory, or fabricate
+a receipt. Restore verified previous files in reverse order and durably
+preserve the full recovery evidence.
+
+Both ordinary and empty-environment source-only checks pass identically:
+**132** positive controls, **1,387** rejected hostile controls, and zero
+actual candidate, compiler, process, filesystem, native-load, network,
+holdout, or timing operations. Correctly distinguish counters actually
+present in the version-two report from the separately frozen receipt;
+reject Boolean values, floats, fabricated counters, and hidden matching
+symbols without making genuine build evidence impossible to validate.
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/activate_verified_native_candidate_v1.py --self-test
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/activate_verified_native_candidate_v1.py --self-test
+```
+
+No version-two native build has yet run. No binary has been activated,
+imported, restored, or measured. Candidate correctness and performance
+remain **NOT MEASURED**, and the final holdout remains **NOT OPENED**.
+
 ## Freeze the complete shared native-candidate correctness runner
 
 Freeze the [complete version-two candidate runner](../tools/run_frozen_p0_candidate_v2.py),
