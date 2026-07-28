@@ -7,6 +7,61 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Test the corrected from-scratch Zig engine against all original Python checks
+
+Run the independently frozen corrected Zig compatibility test exactly once.
+All **13** real, isolated Python test workers completed the unchanged
+**31,237**-check suite. There were **zero** worker or infrastructure
+failures. The candidate failed with **1,764** genuine behavior differences
+and **3,711** individually verified passing checks. The previous Zig engine
+had **2,172** differences, so the correction removes **408** observed
+differences. This improvement does not make Zig a compatible replacement.
+
+The [complete, preserved corrected Zig failure archive](../oracle/phase2/evidence/repaired-zig-original-campaign-v3-zig-phase2-v12-zig-scanner-v2-original-p0-failures.json.gz)
+is **3,722,337** bytes with SHA-256
+`ab857c82369ea0c1a443d2d140c8009d7f4b5216b5ee6a0bb4e9280000cb9d6b`.
+Its complete uncompressed record is **5,367,720** bytes with SHA-256
+`5f33a22258baee31c972a13bbcb1f4be30c486982284a3c1f3cd6085ca1cd3f0`;
+those independently recorded values come from the actual publication
+receipt, not from reopening the matching archive.
+
+The [separately durable corrected Zig matching and recovery receipt](../oracle/phase2/evidence/repaired-zig-original-campaign-v3-zig-phase2-v12-zig-scanner-v2-original-p0-failures-publication-receipt.json)
+is **4,111** bytes with SHA-256
+`40be94851ae23d8c4a9d2ac759d28231605247a499b0703e727c757d25b2fb96`.
+Receipt **PASS** means the full failed result was safely preserved; the
+candidate result is **FAIL**. Both exact original Zig native-file contents,
+owners, modes, and inode identities were restored before publication.
+
+The [regenerated current Python-versus-candidates graph](evidence/candidate-current-overview-v34.svg)
+has SHA-256
+`59ff6affa120980c8d25206a71d2b2377619e93796a6ca0f15a65229a87dffce`.
+Its [independently authenticated graph inputs](evidence/candidate-current-overview-v34.inputs.json)
+have SHA-256
+`d191ad36dd230b97c3d017f0d775a185c0a7f449adb27f7412c54c4d4308c8fc`.
+The [complete current machine-readable graph evidence](evidence/candidate-current-overview-v34.json)
+has SHA-256
+`09236e77646160009b322bb02f60652eeb0b13f2b1f9440bfef2e176644e9df4`.
+The [reproducible, read-only current graph generator](../tools/render_candidate_current_overview_v34.py)
+has SHA-256
+`cf4f7b0749d0e3aa6c15d4e5444762441265773fbb90c1ebbceff0f65e3e841f`.
+Both normal and empty-environment graph safety and verification checks
+pass. They authenticate the compressed matching evidence without
+decompressing it or starting another candidate worker.
+
+First-party source and build ownership are verified; comprehensive proof
+that running candidate code never delegates matching to Python or another
+engine remains **NOT ESTABLISHED**. Do not treat the source-ownership
+audit as proof that the separate runtime audit has run.
+
+The two new evidence files bring the authenticated inventory to **157**
+owners and **162** references. Preserve the actual Rust result of **1,036**
+differences and **8,965** verified passing checks and the actual C result
+of **1,230** differences and **7,325** verified passing checks. The **50**
+additional signature checks are separately frozen and have **NOT RUN**.
+Speed, memory, confidence intervals, and undefined behavior are
+**NOT MEASURED**. The **4,194,304**-case final comparison remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the full original Python test for the corrected Zig engine
 
 Freeze a recovery-safe compatibility run for the genuinely rebuilt,
