@@ -1,0 +1,170 @@
+{
+  "activation_policy": {
+    "accepted_family": "c",
+    "actual_v8_build_required": true,
+    "adjacent_backup": "SAME-DIRECTORY ORIGINAL INODE; NEVER A BYTE COPY",
+    "candidate_source_mutation": "FORBIDDEN",
+    "canonical_target": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+    "completed_report_requirement": "TWO ACTUAL INDEPENDENT PRIVATE PHASES AND A DISTINCT DURABLE RECEIPT",
+    "external_engine": "FORBIDDEN",
+    "fallback": "FORBIDDEN",
+    "group_atomic": false,
+    "hardlinks": "FORBIDDEN FOR ORIGINAL, BACKUP, STAGE, AND PROMOTED TARGET",
+    "native_output": "COMPLETE BYTE-IDENTICAL AUTHENTICATED C ELF",
+    "network": "FORBIDDEN",
+    "original_inode_restoration": "EXACT DEVICE, INODE, MODE, CONTENT, AND OWNER",
+    "private_directory_mode": "0700",
+    "private_native_file_mode": "0700",
+    "private_root_prefix": "/tmp/rebar-phase2-native-activation-v5-c-",
+    "private_source_and_evidence_file_mode": "0600",
+    "promotion": "INDIVIDUALLY ATOMIC; NEVER GROUP-ATOMIC",
+    "recovery": "DURABLE JOURNAL AND EACH PRE-OPERATION INTENTION",
+    "recovery_without_activation_report": true,
+    "stdlib_regex_engine": "FORBIDDEN",
+    "v8_compiler_process_count": 14,
+    "v8_independent_source_phase_count": 2
+  },
+  "family": "c",
+  "first_party_source_repair": {
+    "adapter": {
+      "bytes": 60707,
+      "path": "candidates/vm_candidate.py",
+      "sha256": "b37d3e634b10c37ded2de3c59af9ef477e1d12125ab1b52cfc57915305ff7096"
+    },
+    "derived_c_source": {
+      "bytes": 218308,
+      "materialized_during_activation_freeze": false,
+      "path": "candidates/_vm_native.c",
+      "sha256": "f44694759174c1c3975423e07095ae91a853e66242c4e55d11836df03a730c4d"
+    },
+    "original_c_source": {
+      "bytes": 218185,
+      "path": "candidates/_vm_native.c",
+      "sha256": "bc937bdd3945a111d7929439dfd4a660a55b70593b19ee807c82325d9e6f1e55"
+    },
+    "owners": {
+      "contract": {
+        "bytes": 5650,
+        "path": "oracle/phase2/first-party-source-repair-v1.json",
+        "sha256": "8f1a5676bbef5f2ef560d03fef910bf4ed3a4df029ecc0c638e3fa971206dab5"
+      },
+      "protocol": {
+        "bytes": 4308,
+        "path": "oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V1.md",
+        "sha256": "1a2e83caaca5cb43fc82445c2a4fc3097bc3d51bdfc568783b8815797b8c63f5"
+      },
+      "source": {
+        "bytes": 45783,
+        "path": "tools/apply_owned_first_party_source_repair_v1.py",
+        "sha256": "c04bbc8e7bc45bdbe1fb9eb93942286f5b32b39aef554db15b8b1acd9cc8cd99"
+      }
+    }
+  },
+  "frozen_v8_source_build": {
+    "contract": {
+      "bytes": 6207,
+      "path": "oracle/phase2/native-source-build-v8.json",
+      "sha256": "7f463b70367156d65e73b561629bd1e14ae265b2273afae9b0a984608492019b"
+    },
+    "protocol": {
+      "bytes": 4498,
+      "path": "oracle/phase2/NATIVE-SOURCE-BUILD-V8.md",
+      "sha256": "376aae2bdcbeb0c399369c2a15e7e39efb2b1bcce53129a20c229fbbb995cda2"
+    },
+    "source": {
+      "bytes": 63656,
+      "path": "tools/reproduce_owned_native_source_build_v8.py",
+      "sha256": "afc4f8070cb3c1bccf312b77b019cbb6d71f8dcf976f4a2e921e18cc7c063dd4"
+    }
+  },
+  "historical_v19": {
+    "actual_activation_count": 3,
+    "actual_candidate_and_native_evidence_owner_count": 71,
+    "authenticated_digest_addressed_history_paths": 76,
+    "cpp_inclusive_evidence_owner_count": 55,
+    "current_active_target_count": 0,
+    "go_full_campaign_infrastructure_failure_count": 4,
+    "go_full_campaign_semantic_mismatch_count": 4518,
+    "go_full_campaign_status": "FAIL",
+    "go_restoration_status": "PASS",
+    "original_source_owner_count": 25,
+    "overview_inputs": {
+      "bytes": 2264,
+      "path": "docs/evidence/candidate-current-overview-v19.inputs.json",
+      "sha256": "8f1eb51ff477f0b59934ee503d9bf795f472fd6674180e2af244c7ad4504560c"
+    },
+    "overview_renderer": {
+      "bytes": 38801,
+      "path": "tools/render_candidate_current_overview_v19.py",
+      "sha256": "8144272f7c91e3821306a4d3963c8e201c68b275cecacf80d5000dd98c502494"
+    },
+    "overview_summary": {
+      "bytes": 64819,
+      "path": "docs/evidence/candidate-current-overview-v19.json",
+      "sha256": "504de87d091c555eb53d664fbfaaa70660ff4dd2f9abc22803246f8a5e18287f"
+    },
+    "qualified_candidate_count": 0
+  },
+  "oracle": {
+    "case_execution_count": 31237,
+    "implementation": "CPython",
+    "manifest": {
+      "bytes": 45632,
+      "path": "oracle/phase1/p0-completeness-v1.json",
+      "sha256": "cc703915bf08b4a4d3caf399729d6afd4b583287633bd5db25db3a20671cd47f"
+    },
+    "private_waiver_count": 13,
+    "python": {
+      "path": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+      "sha256": "255e900f44ce87c630e83b637a79435f9ae7778dd72f6e2a2f18a486e501d016"
+    },
+    "suite_count": 13,
+    "suite_ids": [
+      "original_bounded_v5",
+      "public_v3",
+      "scanner_v3",
+      "buffer_v3",
+      "managed_v1",
+      "scanner_verbose_v1",
+      "public_types_v1",
+      "substitution_v2",
+      "shape_v2",
+      "public_surface_v19",
+      "subinterpreter_v2",
+      "pep688_v4",
+      "threaded_pattern_v1"
+    ],
+    "version": "3.14.6"
+  },
+  "phase": "ACTIVATION FREEZE; NO V8 BUILD, CANDIDATE RUN, OR PROMOTION",
+  "phase_boundary": {
+    "actual_v5_activations": "NOT RUN",
+    "actual_v8_builds": "NOT RUN",
+    "candidate_correctness": "NOT MEASURED",
+    "candidate_imports": 0,
+    "candidate_processes_started": 0,
+    "canonical_promotions": 0,
+    "clock_samples": 0,
+    "compiler_processes_started": 0,
+    "final_comparison_cases_generated": false,
+    "final_comparison_planned_case_count": 4194304,
+    "final_holdout_authorized": false,
+    "hidden_cases_read": 0,
+    "holdout": "NOT OPENED",
+    "holdout_opened": false,
+    "memory": "NOT MEASURED",
+    "native_builds_started": 0,
+    "native_libraries_loaded": 0,
+    "network_requests": 0,
+    "performance": "NOT MEASURED",
+    "performance_files_read": 0,
+    "qualified_candidate_count": 0,
+    "recovery_roots_created": 0,
+    "source_apply_count": 0,
+    "timing_trials_run": 0,
+    "undefined_behavior": "NOT MEASURED",
+    "winner_selected": false
+  },
+  "schema": "rebar-phase2-verified-native-activation-v5-source-freeze",
+  "version": 5
+}

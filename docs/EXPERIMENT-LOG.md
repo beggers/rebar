@@ -7,6 +7,56 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze safe loading and recovery for the repaired C engine
+
+Before running any corrected C engine, define exactly how its native
+binary will be identified, loaded, and restored. Accept only a genuine,
+first-party C build that produced identical binary files from two
+independent private source snapshots. Require its complete **14**
+compiler and binary-inspection records, its separately authenticated
+report and receipt, the original C adapter, and the exact frozen
+replacement-order repair. Reject external regex packages, other
+candidates, unverified binaries, and failed build reports.
+
+The only future loadable file is the original C engine's Python
+extension. Record and synchronize a recovery journal before changing
+it. Reject symbolic links, extra hard links, unexpected files, and
+changed user files. Preserve an existing original file by moving its
+exact inode into a unique adjacent backup and restoring that same
+inode. Preserve an originally absent extension as absent. Each
+individual file operation is safely recorded and synchronized; multiple
+operations are not represented as atomic.
+
+An independent prepublication review rejected the first draft because
+it treated compiler-generated executable files as ordinary private
+source files. The frozen version checks the actual executable's
+owner-only mode separately from the source and evidence files and
+rejects unsafe modes, changed inodes, and extra links. No draft was
+loaded, committed, or used as candidate evidence.
+
+Freeze the [safe first-party C-engine loader and recovery tool](../tools/activate_verified_native_candidate_v5.py),
+SHA-256
+`bdfcb93e4ac3f436474cf82725165c92b61c8982efff0bf113900cbce3e8aff5`;
+[reversible C-engine loading rules](../oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V5.md),
+SHA-256
+`4693558f9796a0fbf38326fda3a86b2cf19348598b21eab60610df6ee7f241bc`;
+and [machine-readable loading and recovery contract](../oracle/phase2/verified-native-activation-v5.json),
+SHA-256
+`a580c6b745c867a69f1f017506c1feec8310aa3070bfd58abd006740b01948da`.
+Both normal and clean-environment source checks reject **183** unsafe
+changes and block **12** real effects. Both independently pinned,
+read-only build and history checks pass.
+
+Retain all **71** genuine evidence files, **76** authenticated
+historical references, **25** original source files, **3** earlier
+completed and restored engine loads, and **0** currently loaded
+candidates. The **13** original test groups, **31,237** cases,
+**13** private exceptions, and unchanged headline graph remain frozen.
+No repaired source is built, loaded, run, or tested. No candidate is
+qualified. Speed, memory, and corrected compatibility remain
+**NOT MEASURED**; the expanded **4,194,304**-case final comparison is
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the independent Rust-engine replacement-buffer repair
 
 The preserved first-party Rust result records **2,042** genuine matching
