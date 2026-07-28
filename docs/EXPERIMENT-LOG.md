@@ -7,6 +7,38 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze reproducible builds for the corrected from-scratch Zig engine
+
+Freeze the first-party Zig engine and its independently written Python
+bridge before compiling the observed scanner correction. The exact corrected
+bridge is **173,026** bytes and has SHA-256
+`67edae144290254ba25f67f73350ff5d52ccfb2a209e3fbcc555fc4b3d4efd4b`.
+Neither an external regular-expression package nor Python's matcher is
+permitted. The two planned private builds are separate; their **26**
+compiler and inspection steps have **NOT RUN**.
+
+The [source-pinned Zig build verifier](../tools/reproduce_owned_zig_scanner_source_build_v12.py)
+has SHA-256
+`5192fa35dd0b13cb3bdddfc8f24c37d7e797d0b8463d000c4692c8131f33d1b6`.
+The [from-scratch corrected Zig build protocol](../oracle/phase2/ZIG-SCANNER-SOURCE-BUILD-V12.md)
+has SHA-256
+`f80743d8109402e5876792b6713237b1ab770e3286874dd5ae47fb56381131b1`.
+The [complete frozen source and independent-build contract](../oracle/phase2/zig-scanner-source-build-v12.json)
+has SHA-256
+`5abb6f60c7a9672e32d6f2980a109ccb15b7ef56e5cc3a81abda458109552c1a`.
+
+All four ordinary and empty-environment source-only checks pass. They
+reject **173** unsafe controls and physically block **33** forbidden
+effects. No source is installed, no compiler or candidate is started, and
+no compressed matching evidence is inflated.
+
+The current headline graph and its **153** evidence files and **158**
+references are unchanged. Rust still has **1,036** measured differences,
+C has **1,230**, and the previous Zig build has **2,172**. Corrected Zig
+build and matching: **NOT RUN**. Speed, memory, and undefined behavior:
+**NOT MEASURED**. The **4,194,304**-case final comparison remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Run the complete original Python test for corrected Rust
 
 Run the independently rebuilt Rust engine against all **13** original

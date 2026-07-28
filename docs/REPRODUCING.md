@@ -13,7 +13,8 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [First-party engine ownership and no-wrapping audit](../oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md), [exact source inventory](../oracle/phase2/candidate-independence-v2.json), and [source verifier](../tools/audit_candidate_independence_v2.py).
 - [Independent Zig scanner-capture repair](../oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V1.md), [single-block private-snapshot contract](../oracle/phase2/zig-scanner-capture-source-repair-v1.json), and [source-pinned first-party repair tool](../tools/apply_owned_zig_scanner_capture_source_repair_v1.py); the repair was independently applied to both private native builds.
 - [Source-only correction for the actual Zig whole-branch scanner failure](../oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V2.md), [exact corrected private-bridge contract](../oracle/phase2/zig-scanner-capture-source-repair-v2.json), and [independently owned source verifier](../tools/apply_owned_zig_scanner_capture_source_repair_v2.py); the source fix restores the original `alpha42` span without changing the previous **2,172** measured differences. A new Zig build and its compatibility remain **NOT MEASURED**.
-- [Current reproducible independent Zig build protocol](../oracle/phase2/ZIG-SCANNER-SOURCE-BUILD-V11.md), [exact private two-build contract](../oracle/phase2/zig-scanner-source-build-v11.json), and [first-party Zig build verifier](../tools/reproduce_owned_zig_scanner_source_build_v11.py); both repaired native outputs build identically. Their later complete matching test recorded **2,172** differences.
+- [Previous reproducible independent Zig build protocol](../oracle/phase2/ZIG-SCANNER-SOURCE-BUILD-V11.md), [exact private two-build contract](../oracle/phase2/zig-scanner-source-build-v11.json), and [first-party Zig build verifier](../tools/reproduce_owned_zig_scanner_source_build_v11.py); both previous native outputs build identically. Their later complete matching test recorded **2,172** differences.
+- [Current corrected from-scratch Zig build protocol](../oracle/phase2/ZIG-SCANNER-SOURCE-BUILD-V12.md), [exact independent private-build contract](../oracle/phase2/zig-scanner-source-build-v12.json), and [source-pinned first-party Zig build verifier](../tools/reproduce_owned_zig_scanner_source_build_v12.py); the corrected bridge and two independent future builds are frozen, but compiling and compatibility testing have **NOT RUN**.
 - [Original two-file Zig activation and exact-inode recovery](../oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V6.md), [frozen dual-role safety contract](../oracle/phase2/verified-native-activation-v6.json), and [original Zig loading and recovery tool](../tools/activate_verified_native_candidate_v6.py); its nine-field safety check rejected genuine seven-field records for the unchanged original files before any engine loaded or matching test ran.
 - [Corrected Zig file-owner verification and safe recovery](../oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V7.md), [exact descriptor-verification contract](../oracle/phase2/verified-native-activation-v7.json), and [independently verified first-party activation source](../tools/activate_verified_native_candidate_v7.py); the actual corrected campaign restored both original engine-file inodes before publishing its matching failures.
 - [Complete original Python tests for repaired Zig](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V1.md), [exact 13-group original-suite and safe-restoration contract](../oracle/phase2/repaired-zig-original-campaign-v1.json), and [independent repaired-Zig original-suite controller](../tools/run_owned_repaired_zig_original_campaign_v1.py); all 31,237 original checks remain frozen, and the first controller attempt stopped during setup before any candidate test started.
@@ -209,6 +210,10 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
   --source-sha256 b908f12d14fb8ebc5f17c62dfc00d48a1a5ee3717a3144aed437059e21c0f097 \
   --protocol-sha256 15fd222876407be72d36c0b9cf2ce581d8b73a954358df192c2a083a08973539 \
   --contract-sha256 92979e4bfacd6d23e7f54f4fdce7a7707cc54dba2512753029fdcd479150464c
+"$PY" -I -B tools/reproduce_owned_zig_scanner_source_build_v12.py --self-test \
+  --source-sha256 5192fa35dd0b13cb3bdddfc8f24c37d7e797d0b8463d000c4692c8131f33d1b6 \
+  --protocol-sha256 f80743d8109402e5876792b6713237b1ab770e3286874dd5ae47fb56381131b1 \
+  --contract-sha256 5abb6f60c7a9672e32d6f2980a109ccb15b7ef56e5cc3a81abda458109552c1a
 ```
 
 Verify the current headline graph without rerunning a candidate or
@@ -235,6 +240,12 @@ opening a benchmark:
   --source-sha256 87a4cf8895b5d52c346213ef8277c17b66af44eba695bc37fac5198e0169b6ff \
   --protocol-sha256 eb71f594968a497ddeef5aaf0ab9f221d46153be47e69402a1f0090fa6597879 \
   --contract-sha256 3afc80a62a50ee55d059b6a19fc74915ca0a8cbdeddd9efa723722b2629ee85e
+
+"$PY" -I -B tools/reproduce_owned_zig_scanner_source_build_v12.py \
+  --verify-frozen-context \
+  --source-sha256 5192fa35dd0b13cb3bdddfc8f24c37d7e797d0b8463d000c4692c8131f33d1b6 \
+  --protocol-sha256 f80743d8109402e5876792b6713237b1ab770e3286874dd5ae47fb56381131b1 \
+  --contract-sha256 5abb6f60c7a9672e32d6f2980a109ccb15b7ef56e5cc3a81abda458109552c1a
 
 "$PY" -I -B tools/run_owned_repaired_rust_original_campaign_v4.py \
   --verify-frozen-context \
