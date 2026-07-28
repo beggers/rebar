@@ -7,6 +7,79 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Add a separate, from-scratch Fortran matching engine
+
+Expand the language search with a genuinely independent Fortran
+regular-expression parser, compiler, instruction program, and
+backtracking executor. The implementation uses its own ISO C binding,
+its own native Python bridge, and its own Python-facing module. It does
+not import Python `re`, `_sre`, C, Rust, Zig, or an external
+regular-expression package.
+
+Preserve the exact
+[independent Fortran engine source](../candidates/fortran/engine.f90),
+SHA-256
+`5180da085487b9932e3f769e6baded6a8409a0b778890e6197aaea6dad1923a5`;
+the
+[Fortran-owned CPython extension bridge](../candidates/fortran/py_bridge.c),
+SHA-256
+`8540b708de4819f1b3340c32e78eaf083c1cad35f016c0f7af33a27773694b0d`;
+and the
+[separate Fortran Python interface](../candidates/fortran_candidate.py),
+SHA-256
+`8db564771d38c0896a5207f1241a44463432dc5bf75dfcf657740d8bcfefd194`.
+
+Keep the initial rejected native bridge, SHA-256
+`a2d0028b5e3b6d49d0db476ee52762cf8d7b46d0fd1e9d8cfa88b7e5e1e36303`,
+in the failure record: strict ISO C rejects its five non-portable
+function-pointer conversions. The preserved final bridge uses the
+correct portable callback declarations. No real compiler, linker,
+native loader, or candidate test has run for this architecture.
+
+The inspected Fortran parser currently rejects lookahead, lookbehind,
+conditional patterns, Python named backreferences, named Unicode
+characters, and non-ASCII capture-group names. Its capture-slot
+arithmetic also requires separately verified overflow guards. These
+are explicit source-review limitations, not invented executed test
+counts. The unchanged original native-build and independence protocols
+cover C, Rust, and Zig only; they cannot qualify Fortran. A future
+Fortran build requires a separately frozen complete owner closure,
+compiler and ABI, two fresh private builds, actual native-symbol
+audits, and the unchanged **31,237**-case Python gate.
+
+Generate a readable seven-row comparison from the original Python
+baseline, the actual C and Rust compatibility evidence, the
+source-built Zig result, and the separately written C++, Go, and
+Fortran designs. Authenticate all **34** prior C and Rust report and
+restoration files, the exact **25** source-owner files, all previous
+chart outputs, and all historical losses. Show Fortran as source only,
+not built or tested; never imply that the original native ownership
+protocol already supports it.
+
+Pin the
+[six-architecture current-results renderer](../tools/render_candidate_current_overview_v7.py),
+SHA-256
+`1f5a5baa82ecb0fd5de53094f1c97ae33c5ac2b71d91c920849c92f5e92217cf`,
+the
+[complete six-architecture graph inputs](../docs/evidence/candidate-current-overview-v7.inputs.json),
+SHA-256
+`744f86e241e3489cf07c5fccccf291eb68c44a50605d79723dd1ae1092d8511f`,
+the
+[generated six-architecture graph summary](../docs/evidence/candidate-current-overview-v7.json),
+SHA-256
+`50aafe8c56c21dc95fca2f7ddaead623ef5cf7151db9f28e6c47de7630764f3b`,
+and the
+[generated readable Python and candidate comparison](../docs/evidence/candidate-current-overview-v7.svg),
+SHA-256
+`8f66eba59478b825bcdea8f8dce393e7376694e7d948c2faef95e847bf75f4d9`.
+Source-only tests independently pass **32** valid controls and reject
+**322** hostile controls in both normal and clean environments.
+
+Fortran remains **SOURCE ONLY**, **NOT BUILT**, **NOT TESTED**, and
+**NOT QUALIFIED**. Its speed and memory remain **NOT MEASURED**. Keep
+all **34** previously committed C and Rust candidate and restoration
+artifacts unchanged. Never open the expanded performance holdout.
+
 ## Correct interpreter tests without replacing the original Python guard
 
 Preserve both genuine original isolated-interpreter failures. The

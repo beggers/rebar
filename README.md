@@ -20,11 +20,12 @@ Python-compatibility failures, and both encounter separately documented
 interpreter-test setup failures. Neither is a compatible replacement.
 Zig's original non-reproducible build remains preserved alongside its
 successful corrected build.
-C++ and Go have independently written source but have not been built.
+C++, Go, and Fortran have independently written source but have not
+been built.
 Every replacement's speed is **NOT MEASURED**; the final comparison
 remains **NOT OPENED**.
 
-![Current results: Python passes all 31,237 compatibility checks; Rust passes 7,461 verified cases and C passes 7,197, but both have compatibility failures and separately documented interpreter-test setup failures; Zig has matching from-scratch builds but has not completed the compatibility test; no replacement is qualified or timed](docs/evidence/candidate-current-overview-v6.svg)
+![Current results: Python passes all 31,237 compatibility checks; Rust passes 7,461 verified cases and C passes 7,197, but neither is compatible; Zig has matching source builds; C++, Go, and Fortran are unbuilt independent designs; no replacement is qualified or timed](docs/evidence/candidate-current-overview-v7.svg)
 
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
@@ -34,6 +35,7 @@ remains **NOT OPENED**.
 | Zig | Two matching builds; original failure preserved | NOT MEASURED | NOT MEASURED |
 | C++ | Source only | NOT MEASURED | NOT MEASURED |
 | Go | Source only | NOT MEASURED | NOT MEASURED |
+| Fortran | Source only; not built | NOT MEASURED | NOT MEASURED |
 
 Historical graphs below describe earlier binaries. They do not qualify
 the current implementations. The complete history and rejected
@@ -140,7 +142,9 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Independently written Zig matching engine](candidates/zig/mini_regex.zig), [owned interpreter-safe Zig Python bridge](candidates/zig/py_bridge.c), and [experimental Zig-backed Python interface](candidates/zig_candidate.py); full compatibility is not yet measured.
 - [Independently written C++ matching engine](candidates/cpp/engine.cpp), [native Python bridge](candidates/cpp/py_bridge.cpp), and [experimental Python interface](candidates/cpp_candidate.py); source checks only.
 - [Independently written Go matching engine](candidates/go/engine.go), [strictly portable Unicode-aware Python bridge](candidates/go/py_bridge.c), and [experimental Python interface](candidates/go_candidate.py); source checks only, not an executed compatibility result.
-- [Current source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v6.inputs.json), [complete current graph summary](docs/evidence/candidate-current-overview-v6.json), and [reproducible current-results graph generator](tools/render_candidate_current_overview_v6.py); the graph independently verifies the complete Rust and C evidence and both restoration receipts.
+- [Independently written Fortran matching engine](candidates/fortran/engine.f90), [Fortran-owned native Python bridge](candidates/fortran/py_bridge.c), and [experimental Fortran interface](candidates/fortran_candidate.py); source only, not built, tested, or qualified.
+- [Current source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v7.inputs.json), [complete current graph summary](docs/evidence/candidate-current-overview-v7.json), and [reproducible current-results graph generator](tools/render_candidate_current_overview_v7.py); the graph independently verifies all six source-built or source-only engine designs and every published Rust and C result.
+- [Preserved earlier five-design headline graph inputs](docs/evidence/candidate-current-overview-v6.inputs.json), [earlier Rust and C headline summary](docs/evidence/candidate-current-overview-v6.json), and [earlier headline graph generator](tools/render_candidate_current_overview_v6.py).
 - [Preserved earlier Rust-unmeasured headline graph inputs](docs/evidence/candidate-current-overview-v5.inputs.json), [earlier C-only headline summary](docs/evidence/candidate-current-overview-v5.json), and [earlier headline graph generator](tools/render_candidate_current_overview_v5.py).
 - [Preserved earlier source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v4.inputs.json), [earlier headline summary](docs/evidence/candidate-current-overview-v4.json), and [earlier headline graph generator](tools/render_candidate_current_overview_v4.py).
 - [Preserved earlier source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v3.inputs.json), [earlier headline summary](docs/evidence/candidate-current-overview-v3.json), and [earlier headline graph generator](tools/render_candidate_current_overview_v3.py).
@@ -177,16 +181,17 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/render_candidate_current_overview_v4.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v5.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v6.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v7.py --self-test
 ```
 
 Verify the current headline graph without rerunning a candidate or
 opening a benchmark:
 
 ```sh
-"$PY" -I -B tools/render_candidate_current_overview_v6.py --verify \
-  --source-sha256 d7e70cb56809781b11e869a4537ff02ab84ee88a29111a5e7002f2c9d24b16fb \
+"$PY" -I -B tools/render_candidate_current_overview_v7.py --verify \
+  --source-sha256 1f5a5baa82ecb0fd5de53094f1c97ae33c5ac2b71d91c920849c92f5e92217cf \
   --go-bridge-sha256 52101f0afe29a568e3c2e22a06d47c89c051e08a0e2024ad4891c5ae2d60fb6a \
-  --manifest-sha256 f05a05d55ebd8cad6cc62c15756d1254c680c20a3ed76d4bf3862905e91f0b52
+  --manifest-sha256 744f86e241e3489cf07c5fccccf291eb68c44a50605d79723dd1ae1092d8511f
 ```
 
 The [complete compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md)
