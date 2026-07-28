@@ -7,6 +7,61 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Correct interpreter tests without replacing the original Python guard
+
+Preserve both genuine original isolated-interpreter failures. The
+source-built C worker creates two interpreters, starts one matcher-guard
+initialization, and fails before any of the **128** matching cases:
+the old wrapper passes a **256 MiB** bound to an unchanged original
+guard with a **128 MiB** limit. The source-built Rust worker fails a
+different earlier static audit:
+`candidates/_rust_engine.so: unexpected native library identity`.
+No Rust interpreter matching case starts. Neither failure is a
+demonstrated regex mismatch or a qualifying interpreter result.
+
+An initial independently reviewed candidate controller, source SHA-256
+`19eddb31bb9956fc20f7b735b50f95887264f151c1c2cf554f339dc94eec011f`,
+with protocol SHA-256
+`8282377171b0de73d80a138d6038b3de0c0615da395dadb219a793f4bd045d75`
+and machine inventory SHA-256
+`481d0ef7f0ea76831c68200bad1807b0ce7fe379f3433e9d05a60b542c2bce19`,
+is **rejected**. Its independent reviewer identified a non-operative
+adapter-owner condition, an unverified summary of the **39** genuine
+previous build processes, and missing direct recovery-backup reads.
+Do not commit or run that candidate; fix all three security failures
+before publishing its replacement.
+
+Freeze the independently corrected
+[version-three isolated-interpreter candidate runner](../tools/run_owned_candidate_subinterpreters_v3.py),
+SHA-256
+`21febe241549963a2818af2a20782da81bdf952fb7be8affc4289d9ccc9ad5b4`,
+its
+[complete source-owned interpreter protocol](../oracle/phase2/CANDIDATE-SUBINTERPRETERS-V3.md),
+SHA-256
+`97354130b4d1ab97ee2c684b43b72e29a0a68439c2a1ead5a4f45edc20e6c9b4`,
+and its
+[exact frozen machine-readable interpreter inventory](../oracle/phase2/candidate-subinterpreters-v3.json),
+SHA-256
+`17dac72e6a0ae75bf1f013656b9779a1e948e71439cf336499c1e680beb19284`.
+
+Retain every original interpreter case identity, all **394** required
+interpreter calls, all **11** original initialization and cleanup
+operations, and the unchanged **31,237**-case main denominator. Pass
+only the actual independently authenticated positive source and native
+file sizes into the original unchanged guard. Explicitly bind the
+correct independent Rust, C, or Zig source-built engine, bridge and
+adapter; reread every actual crash-safe private backup; and replay all
+**39** genuinely preserved historical native-build processes.
+
+The source-only tests independently pass **438** valid controls and
+reject **744** hostile controls in ordinary and clean environments.
+The real read-only context separately authenticates the complete C
+and Rust failure histories, original restoration receipts, original
+source owners, and both exact native-build versions. No source test
+creates an interpreter, imports a candidate, loads a native library,
+activates a build, reads a holdout, or starts a timing trial. No
+candidate is qualified. Performance and memory remain **NOT MEASURED**.
+
 ## Run the complete independently written Rust compatibility test
 
 Verify all nine original Rust source owners, the frozen package manifest
