@@ -113,7 +113,8 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 ## Evidence and reproduction
 
 - [Complete 31,237-check compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md), [machine-readable test inventory](oracle/phase1/p0-completeness-v1.json), and [independent fail-closed verifier](tools/verify_p0_completeness_v1.py).
-- [Independently corrected complete compatibility protocol](oracle/phase2/P0-CANDIDATE-PROTOCOL-V5.md), [frozen machine-readable test inventory](oracle/phase2/p0-candidate-protocol-v5.json), [corrected full-test worker](tools/run_frozen_p0_candidate_worker_v3.py), and [complete candidate test runner](tools/run_frozen_p0_candidate_v5.py); both independently authenticate the unchanged 31,237-check freeze without running a candidate.
+- [Current complete Zig-capable compatibility standard](oracle/phase2/P0-CANDIDATE-PROTOCOL-V6.md), [frozen 31,237-case test inventory](oracle/phase2/p0-candidate-protocol-v6.json), [independently verified full-test worker](tools/run_frozen_p0_candidate_worker_v4.py), and [complete candidate test runner](tools/run_frozen_p0_candidate_v6.py); retains every original test and actual C/Rust failure, and supports the separately source-built Zig engine without claiming that Zig has passed.
+- [Preserved earlier full compatibility protocol](oracle/phase2/P0-CANDIDATE-PROTOCOL-V5.md), [original version-five test inventory](oracle/phase2/p0-candidate-protocol-v5.json), [earlier full-test worker](tools/run_frozen_p0_candidate_worker_v3.py), and [earlier complete candidate test runner](tools/run_frozen_p0_candidate_v5.py); their actual C and Rust failures are retained unchanged.
 - [Complete actual C compatibility failure](oracle/phase2/evidence/frozen-p0-candidate-v5-c-phase2-v5-failures.json.gz), [verified publication receipt](oracle/phase2/evidence/frozen-p0-candidate-v5-c-phase2-v5-failures-publication-receipt.json), [complete 13-group worker evidence](oracle/phase2/evidence/frozen-p0-candidate-worker-v3-c-phase2-v5-failures.json.gz), and [independent worker receipt](oracle/phase2/evidence/frozen-p0-candidate-worker-v3-c-phase2-v5-failures-publication-receipt.json); all six failed groups are preserved.
 - [Byte-identical preserved C restoration receipt](oracle/phase2/evidence/frozen-p0-candidate-v5-c-phase2-v5-restoration-receipt.json); the original native library was verified and restored.
 - [Complete actual Rust compatibility failure](oracle/phase2/evidence/frozen-p0-candidate-v5-rust-phase2-v5-failures.json.gz), [verified Rust publication receipt](oracle/phase2/evidence/frozen-p0-candidate-v5-rust-phase2-v5-failures-publication-receipt.json), [complete 13-group Rust worker evidence](oracle/phase2/evidence/frozen-p0-candidate-worker-v3-rust-phase2-v5-failures.json.gz), and [independent Rust worker receipt](oracle/phase2/evidence/frozen-p0-candidate-worker-v3-rust-phase2-v5-failures-publication-receipt.json); all five failed groups are preserved.
@@ -169,6 +170,8 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_frozen_p0_candidate_v4.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_worker_v3.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v5.py --self-test
+"$PY" -I -B tools/run_frozen_p0_candidate_worker_v4.py --self-test
+"$PY" -I -B tools/run_frozen_p0_candidate_v6.py --self-test
 "$PY" -I -B tools/run_owned_candidate_subinterpreters_v1.py --self-test
 "$PY" -I -B tools/run_owned_candidate_subinterpreters_v2.py --self-test
 "$PY" -I -B tools/run_owned_candidate_subinterpreters_v3.py --self-test
@@ -195,6 +198,12 @@ Verify the current headline graph without rerunning a candidate or
 opening a benchmark:
 
 ```sh
+"$PY" -I -B tools/run_frozen_p0_candidate_v6.py --verify-frozen-context \
+  --source-sha256 53c5abd71ba46384204f628238dfc4b91a9adf6c75f8edd838e6523300677a9c \
+  --worker-source-sha256 b0111d76df52ead959863c4459ea1b78f78ab6b1e0d0417624df268860918d8b \
+  --protocol-sha256 b1d50f9778257d25e22df7ddba493e6830c514365d25ded518ea832b5e175c39 \
+  --document-sha256 73cbdf73f94de18496793bafe4ab29c613d694bfde8c47e7ec8430d27a23b521
+
 "$PY" -I -B tools/render_candidate_current_overview_v7.py --verify \
   --source-sha256 1f5a5baa82ecb0fd5de53094f1c97ae33c5ac2b71d91c920849c92f5e92217cf \
   --go-bridge-sha256 52101f0afe29a568e3c2e22a06d47c89c051e08a0e2024ad4891c5ae2d60fb6a \

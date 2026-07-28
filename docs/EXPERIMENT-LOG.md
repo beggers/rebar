@@ -7,6 +7,62 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the complete correctness test before running Zig
+
+Retain the original **13** Python compatibility suites and all
+**31,237** runnable cases. The original **152** upstream records
+contain **151** runnable cases and exactly one genuine debug-only skip;
+do not silently count that skip or change a denominator. Keep all
+**13** named private waivers private.
+
+The earlier whole-candidate runner incorrectly reported zero verified
+passing cases when a candidate published a complete failure. Correct
+that accounting without changing or hiding the original reports. C
+really passed **7,197** cases across **7** suites and had **2,094**
+actual behavior differences. Rust really passed **7,461** cases across
+**8** suites and had **2,042** differences. Their separately archived
+interpreter failures are setup failures, not invented matching
+differences. Directly authenticate all **32** original report and
+receipt artifacts and both original restoration receipts.
+
+Pin the independently corrected
+[complete source-owned test worker](../tools/run_frozen_p0_candidate_worker_v4.py),
+SHA-256
+`b0111d76df52ead959863c4459ea1b78f78ab6b1e0d0417624df268860918d8b`,
+the
+[whole-candidate correctness recorder](../tools/run_frozen_p0_candidate_v6.py),
+SHA-256
+`53c5abd71ba46384204f628238dfc4b91a9adf6c75f8edd838e6523300677a9c`,
+the
+[plain-language complete correctness protocol](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V6.md),
+SHA-256
+`b1d50f9778257d25e22df7ddba493e6830c514365d25ded518ea832b5e175c39`,
+and its
+[exact canonical 31,237-case inventory](../oracle/phase2/p0-candidate-protocol-v6.json),
+SHA-256
+`73cbdf73f94de18496793bafe4ab29c613d694bfde8c47e7ec8430d27a23b521`.
+
+Independently replay each real case, preserve the complete expected and
+actual differences, distinguish durable publication from a passing
+candidate, and bind reports to predetermined exclusive file paths. Use
+the corrected real **128** original interpreter cases, not an added
+test denominator. Require actual independently built C/Rust
+version-two binaries or the genuine separately built Zig version-three
+binaries and their recorded atomic activation and recovery evidence.
+
+The corrected worker passes **69** positive controls and rejects
+**237** attacks. The whole-candidate recorder passes **7** positive
+controls and rejects **41** attacks. Both independently reproduced
+source checks and authenticated read-only context checks pass under
+ordinary and clean environments. No candidate, reference process,
+build, activation, benchmark, clock, or hidden case runs during those
+checks.
+
+Zig correctness remains **NOT MEASURED** until its actual complete
+candidate run. No replacement is qualified. Speed and memory remain
+**NOT MEASURED**; the expanded final benchmark remains
+**NOT GENERATED** and **NOT OPENED**.
+
 ## Verify that all six engines really are built from scratch
 
 Audit the exact separate source trees for C, Rust, Zig, C++, Go, and
