@@ -7,6 +7,156 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run and preserve Zig's complete Python compatibility failure
+
+Activate only the genuinely reproducible, separately source-built Zig
+version-three engine. Verify its **108,888-byte** engine,
+SHA-256
+`caeb5ee7f5f9035f85e3ea2eb1d11396a1ca27f3c15ba585d7bbad40d9a87071`,
+and **133,656-byte** native Python bridge, SHA-256
+`c579cf52b767b84ecc3d0a60f837d526978ace4e7739fe4cf51c2d2c8cfd90d9`,
+against the original two independently reproduced clean source builds.
+Require the frozen Zig source owners, exact pinned Python, complete
+version-six candidate test, immutable original matcher guard, and a
+separately authenticated rollback journal.
+
+Run all **13** original compatibility suites with the unchanged
+**31,237-case** denominator. Zig passes exactly **6** complete groups
+and **3,583** verified cases. Its original tests, public behavior,
+ordinary buffers, memory lifetimes, PEP 688 buffer exporters, and
+threaded compiled patterns pass. The other **7** groups fail; six have
+exactly **1,764** distinct actual behavior differences:
+
+- Scanners: **64**.
+- Verbose scanners and pattern comments: **620**.
+- Public types, representations, and serialization: **248**.
+- Replacements and buffers: **64**.
+- Changing-size buffer lifetimes: **672**.
+- Complete public behavior and locales: **96**.
+
+The seventh failed suite is a real interpreter-cleanup failure. Decode
+the complete signed child output, SHA-256
+`2da4af1e62facbe6565bb127a0920f647ec04c3f0005d02f58b233229277721d`;
+it is **1,126,801** bytes. The actual worker runs **385** matcher calls,
+creates and destroys **3** interpreters, runs **3** initializations and
+**4** cleanup calls, and fails during
+`cleanup-real-independent-fresh-interpreter`. The active case is
+`repeated-interpreter-creation-and-destruction:00`, original ordinal
+**96**, with full 64-bit seed **16650482535507372878**. Its actual
+failure is `ExecutionFailed` caused by
+`AssertionError: the authentic original matcher was not restored`.
+This is not zero interpreter calls and is not a regex mismatch; the
+original **128-case** interpreter suite is **NOT QUALIFIED**.
+
+The actual Zig run also falsifies one claim of the version-six whole-test
+worker. The independently frozen nested-interpreter recorder publishes
+`file_fsync: true`, but the version-six worker incorrectly requires a
+different field, `file_fsync_completed: true`. Consequently the parent
+suite separately records
+`CandidateGateError: authenticate original nested exclusive same-inode publication`;
+it reports zero verified interpreter cases and never authenticates the
+nested report itself. Verify that complete nested archive and the
+**385** matcher calls directly from its independently signed report.
+Preserve both the real Zig cleanup failure and the harness field-name
+failure; do not attribute the nested lifecycle to the broken parent
+validator or count either infrastructure error as a semantic regex
+mismatch. Repair this in a separately frozen new correctness protocol;
+never edit the already-published version-six evidence.
+
+Preserve every actual, independently signed full report and receipt:
+
+- [Whole Zig failure report](../oracle/phase2/evidence/frozen-p0-candidate-v6-zig-phase2-v6-failures.json.gz),
+  `2ca2a253e4148c4232327cf89f1306c1c4e83639714f3b036ebdd7bd0225aaa3`;
+  [publication receipt](../oracle/phase2/evidence/frozen-p0-candidate-v6-zig-phase2-v6-failures-publication-receipt.json),
+  `72c2635850273543eded2e9f541cb64529f2ce22a9d6fe5b14c30705fa474c95`.
+- [Complete 13-suite Zig worker report](../oracle/phase2/evidence/frozen-p0-candidate-worker-v4-zig-phase2-v6-failures.json.gz),
+  `07a1be40b4aba273bdec1f5d567aad0c6fbbf860189ade527eb90cfed1aab594`;
+  [worker receipt](../oracle/phase2/evidence/frozen-p0-candidate-worker-v4-zig-phase2-v6-failures-publication-receipt.json),
+  `8c5f69411600781dca1efd3965b98fcecf9a1fec00afb4e5f7d319c2afa86cf4`.
+- [Actual interpreter-cleanup failure](../oracle/phase2/evidence/owned-candidate-subinterpreters-v3-zig-phase2-v6-subinterpreters-failures.json.gz),
+  `ded1049f0d1979b6a71c80fcd86fe411e400603b02bbe28ed8b3634f513612f4`;
+  [independent interpreter receipt](../oracle/phase2/evidence/owned-candidate-subinterpreters-v3-zig-phase2-v6-subinterpreters-failures-publication-receipt.json),
+  `8fc8e0753458e69751fd45b820764e7c085ec6111c9dcda64ee90ef227b0ce21`.
+- [Passing Zig memory-lifetime report](../experiments/rust_public_practice_v1/zig-managed-buffer-lifetime-v1-phase2-v6-managed.json.gz),
+  `43a8cf60484c46e85ba7b5853f38ee4c250f4383186dc33eb08162b30d0c897a`;
+  [memory-lifetime receipt](../experiments/rust_public_practice_v1/zig-managed-buffer-lifetime-v1-phase2-v6-managed-publication-receipt.json),
+  `d28c95236df9b19e5ab27a1174d5b8616cf2ba22394314ee2dcb78c13034d516`.
+- [Actual verbose-scanner failures](../experiments/rust_public_practice_v1/zig-scanner-verbose-comments-v1-phase2-v6-verbose.json.gz),
+  `ec5b4e20e05bdd068d065cf9ace9d4d988220565b29db0be91c15b1fa5a0403f`;
+  [verbose-scanner receipt](../experiments/rust_public_practice_v1/zig-scanner-verbose-comments-v1-phase2-v6-verbose-publication-receipt.json),
+  `3e8d850af3ad191c24b92182ed4e694c44c23716b37c607a31c50c45659428d9`.
+- [Actual public-type failures](../experiments/rust_public_practice_v1/zig-public-type-identity-serialization-v1-phase2-v6-types.json.gz),
+  `482dc8ba52e091e909a4d4acf6d57f964fc2e6fe8a729a105e8aca2b9448c2c6`;
+  [public-type receipt](../experiments/rust_public_practice_v1/zig-public-type-identity-serialization-v1-phase2-v6-types-publication-receipt.json),
+  `82f96615d0894b99ed1316df6fde2c713e3d7d4b19f18cf71a7e97e82a2352df`.
+- [Actual replacement failures](../experiments/rust_public_practice_v1/zig-substitution-buffer-semantics-v2-phase2-v6-substitution.json.gz),
+  `d83cdc6bb1b5bb878e55e5fea866eaec6c07e9dd78f983858cecc15463ac6de2`;
+  [replacement receipt](../experiments/rust_public_practice_v1/zig-substitution-buffer-semantics-v2-phase2-v6-substitution-publication-receipt.json),
+  `9b4c4daaf775bb585a3dcfbe693b91c14d49eb09aafd79360fb41ed5cd083791`.
+- [Actual changing-buffer failures](../experiments/rust_public_practice_v1/zig-shape-changing-buffer-semantics-v2-phase2-v6-shape.json.gz),
+  `b4766c3c3547ea347421bf4784ac11eb2b63e6065135002139fdb17ca69bc7c8`;
+  [changing-buffer receipt](../experiments/rust_public_practice_v1/zig-shape-changing-buffer-semantics-v2-phase2-v6-shape-publication-receipt.json),
+  `e020e83774064cb9c9c9f9a70229ad3bcd04b0e417942317be4fbdb33f365ba9`.
+
+The changing-buffer report contains **43,172,825** uncompressed bytes.
+Authenticate its complete contents using an independently bounded
+**64 MiB** specialist-report limit; never clip the archive, relax the
+separate **32 MiB** whole-candidate limit, or omit actual failures.
+
+Restore both originally present Zig native files through the real
+authenticated activation journal. The restored **478,432-byte** engine
+has SHA-256
+`b76eb6c7ecd60c1d221f6ddb822573a5f962641cf4e6f16da75d21561b104652`;
+the restored **134,112-byte** bridge has SHA-256
+`d8ac0da492d960716cbc74c25d7cb5027aea3fcfe2bf0a6fb2ec8e432345fb3b`.
+Both keep their original `0700` permissions. Commit the exact
+[byte-identical original restoration receipt](../oracle/phase2/evidence/frozen-p0-candidate-v6-zig-phase2-v6-restoration-receipt.json),
+SHA-256
+`c415ba80c055d39a933617a839624037b557adbe30c418c2a0e859131fbe9028`.
+
+Generate a readable seven-row Python and six-engine comparison from
+all **51** exact historical and current candidate artifacts. Verify
+all **25** separate engine-source owners, retain all **34** earlier C
+and Rust records, and independently decode all **17** Zig reports,
+receipts, and restoration evidence. Distinguish the parent
+interpreter-report field-name bug from the separately verified actual
+**385-call** child cleanup failure.
+
+Reject the preliminary graph renderer,
+`82f6a82fc9ac6da79bbf7ab7809d2e127dedd9ef8e1cdb79b08239c19f43a88e`:
+its inherited Zig accessibility label incorrectly says that executed
+cases in failed groups are not recorded. Zig's six failed matching
+groups do record their exact case counts. Preserve the older label
+only for C and Rust, whose historical failed-group case counts really
+are not recorded.
+
+Pin the corrected
+[independent complete-results graph renderer](../tools/render_candidate_current_overview_v8.py),
+SHA-256
+`fd487c67608dd63a2ec4a96acc4a9a0b425e54994e3bc7d14b271ae2dd35103c`,
+the
+[complete authenticated seven-row graph inputs](../docs/evidence/candidate-current-overview-v8.inputs.json),
+SHA-256
+`a7abd22c7d4e79ffe83a963f983de29c42cfb383e54ed6b917a2e6a14aea50c2`,
+the
+[complete generated current-results summary](../docs/evidence/candidate-current-overview-v8.json),
+SHA-256
+`669286612fc618cd97aa44d17f01d539f147b674a3109c83a84e61ceb13c23d4`,
+and the
+[accessible Python-versus-six-engines chart](../docs/evidence/candidate-current-overview-v8.svg),
+SHA-256
+`4a2924eeeb5fe6d6fba0d4bea4cb6f9c57ad6fefdd259cdeb8371588dd76b154`.
+Ordinary and clean-environment source checks pass **36** positive
+controls and reject **364** attacks without running an engine,
+starting a benchmark, opening the holdout, or using a timer.
+
+A durable publication receipt's **PASS** means that its actual **FAIL**
+was safely preserved; it never qualifies the candidate. Preserve all
+**34** earlier C and Rust artifacts unchanged. Zig is **NOT
+QUALIFIED**. Performance and memory are **NOT MEASURED**. The
+**4,194,304-case** final benchmark remains **NOT GENERATED** and
+**NOT OPENED**.
+
 ## Freeze the complete correctness test before running Zig
 
 Retain the original **13** Python compatibility suites and all
