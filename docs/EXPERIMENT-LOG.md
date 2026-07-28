@@ -7,6 +7,47 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a reproducible, independent repaired Zig build
+
+Freeze the exact native build before running the corrected first-party
+Zig engine. Preserve the unchanged original Zig engine, its Python
+adapter, all **1,764** original compatibility failures, the **620**
+verbose-scanner differences, and every previous independently verified
+C, Rust, C++, and Go result. Do not load an external regular-expression
+package or delegate matching to Python.
+
+Pin the actual installed Zig compiler, independently checked first-party
+Zig sources, existing Python 3.14.6 headers, native C bridge, and the
+separately frozen single-block scanner-capture repair. A future explicit
+build must use two distinct owner-private snapshots and apply the repair
+only to the previously absent bridge in each private build directory.
+It must record the actual two compiler runs and all **26** genuine build
+and verification processes, and compare the independently produced native
+files. Those processes are planned, not already run.
+
+Freeze the [source-only reproducible Zig build verifier](../tools/reproduce_owned_zig_scanner_source_build_v10.py),
+SHA-256
+`4d2bf61385c310bc95fc353492ad3b9a4a1687ee1cd46c5822cf2a8eb6d61578`;
+[first-party private-build and scanner-capture rules](../oracle/phase2/ZIG-SCANNER-SOURCE-BUILD-V10.md),
+SHA-256
+`99d8144cd083663145f2924ae96a285b32fffb05a11a37d35ec81c81142c9148`;
+and [exact pinned two-build and historical-evidence contract](../oracle/phase2/zig-scanner-source-build-v10.json),
+SHA-256
+`7192419e64dd460f78977bd92afea0bfe7871bd10788500de699d7d89b2961c7`.
+
+Both normal and clean-environment synthetic checks explicitly accept
+concrete private filesystem paths and reject unsafe private-root
+substitutions. Both independent read-only context checks authenticate
+all **105** actual evidence files and **110** historical references,
+preserve the corrected C runner's exact single failure, and keep all
+**13** Python compatibility groups, **31,237** cases, and **13** named
+private exceptions unchanged.
+
+No repaired Zig engine has been built, loaded, or run. Its compatibility,
+speed, memory, and undefined behavior remain **NOT MEASURED**. No
+candidate qualifies. The **4,194,304**-case final comparison remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Preserve the corrected C runner's actual one-process failure
 
 Run the separately frozen, recovery-safe corrected C controller exactly
