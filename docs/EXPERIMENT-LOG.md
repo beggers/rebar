@@ -7,6 +7,69 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Build the independent Go engine and Python bridge from scratch
+
+Run exactly one previously frozen, committed, and independently
+reviewed Go source-build experiment. Retain the original private
+two-file Go package, separate first-party C bridge, pinned offline Go
+and C compilers, and the previously frozen `-D_GNU_SOURCE` correction.
+Run no candidate, reference matcher, native activation, compatibility
+case, or benchmark.
+
+All **26 of 26** real compiler and inspection processes succeed.
+Two independent, fresh source-build phases each generate the same
+three native artifacts. The **2,712,912-byte** Go matching engine has
+SHA-256
+`38ab223b8ef88340a7be86f2195c417ee7d2dd9deead48cc6495a5b4e3c31b27`.
+The **41,904-byte** first-party Python bridge has SHA-256
+`dd71ab6cb15a98e1a07c38965cdb178da0dbba2a26db937975e0d6435a2a5d0c`.
+The genuinely Go-generated **3,086-byte** interface header has SHA-256
+`481ebb65cc587749677ce28abeb4f3de111e2f87a18ac547ff0157fce85d2c23`
+and supplies all **9** required first-party matching functions.
+Each artifact is independently byte-identical across two fresh
+directories and distinct file owners. Neither Go package contains the
+Python bridge, a foreign regex package, or another candidate's engine.
+
+Preserve the complete
+[successful first-party Go build](../oracle/phase2/evidence/native-source-build-v6-go-phase2-v6.json.gz),
+SHA-256
+`05c24a5fff228d8eab8bec961d825b0e65504072e11e8c574ec580d9f3e6e245`,
+and its independent
+[durable successful-build receipt](../oracle/phase2/evidence/native-source-build-v6-go-phase2-v6-publication-receipt.json),
+SHA-256
+`f3adcb20bb591946600e1e2b1db037fb3b4828c3d4a628a0347cfed40f262fca`.
+The complete expanded build report is **262,323 bytes**, SHA-256
+`37c97e72530ffc1022741429be2ffc9eebe7afaec6063c763d7ff86f6f7bd8ae`.
+The build report's `status: PASS` and receipt's `build_status: PASS`
+independently record the successful source build.
+
+The independently reproduced headline graph preserves all **63**
+evidence files, including all **61** preceding files. Preserve the
+source-pinned
+[graph generator](../tools/render_candidate_current_overview_v14.py),
+SHA-256
+`5e36b3a9b52a91f8dec816e02dc65119af9f4592a6e5ff1a7252dd08df3c0547`;
+[exact graph inputs](evidence/candidate-current-overview-v14.inputs.json),
+SHA-256
+`dd462470bdfba7a92bbd7ff254790969fd781d53eb9bc6a01cd8519afcc6bab6`;
+[complete machine-readable summary](evidence/candidate-current-overview-v14.json),
+SHA-256
+`fc7699ff9e1c3e74af6922629cd60b8404f44b02055d01c26d4e0925df5abb55`;
+and [accessible headline graph](evidence/candidate-current-overview-v14.svg),
+SHA-256
+`307b705da4017c9b91f1affa2b394d338fcc2a7b0dcb017ddb096ef4e3660c83`.
+
+Keep all **61** previously signed evidence files and both earlier Go
+failures; the two new independently signed Go evidence files bring the
+actual evidence count to **63**. Five families now have reproducible
+source-build evidence; the frozen six-family compatibility standard
+still records only **3** historically runnable complete-test families.
+Do not silently substitute source-build success for candidate
+activation or any executed Python compatibility case. Go correctness,
+interpreter safety, undefined behavior, memory, and speed remain
+**NOT MEASURED**. The final comparison remains **NOT GENERATED** and
+**NOT OPENED**.
+
 ## Freeze Python's complete original test for six independent engines
 
 Extend the unchanged Python 3.14.6 compatibility standard to each
