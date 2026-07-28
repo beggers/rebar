@@ -7,6 +7,51 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete original Python test for the rebuilt C engine
+
+Run the independently built C engine exactly once against all **13**
+original Python test groups. Every worker completes; there are **1,230**
+genuine matching differences, **7,325** verified passing checks, **zero**
+worker infrastructure failures, and **zero** candidate-execution failures.
+The candidate result is **FAIL**. The previous C run had **1,262**
+differences: the repair removes exactly **32** observed differences, but
+does not increase the verified passing total or qualify the engine.
+
+The [complete C matching-failure archive](../oracle/phase2/evidence/repaired-c-original-campaign-v4-c-phase2-v15-c-pickle-original-p0-failures.json.gz)
+has SHA-256
+`8515dfecc873eaea60d0f945e1081ff59a65bda39802e65605198617462a1c9d`.
+Its [separately durable result receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v4-c-phase2-v15-c-pickle-original-p0-failures-publication-receipt.json)
+has SHA-256
+`c4099d537475b250e15c6d696fead132889422aa3cfe445d86e27c5cc19f2ba9`.
+A successful receipt preserves the failed matching result; it does not
+make the C engine pass. Verify its **3,482-byte** receipt without
+decompressing the **193,291,659-byte** original matching record.
+
+The exact original C native file is restored before publication, with
+device **2064**, inode **430300**, mode **0755**, and SHA-256
+`075350a17d4909cd6f8dbe5e808e7b6444760f54bb60af013e0f812e22cfb7fd`.
+The announced recovery journal has SHA-256
+`5844213bb1a986766ac5036e3de3e1795295540709710bc87c6383f08cdb23bd`.
+Keep all **31,237** original checks, the previous C result, Rust's
+**1,087** differences, Zig's **2,172**, and Zig's original setup failure.
+The current evidence includes **149** real owners and **154** authenticated
+references. No candidate qualifies. Speed, memory, and undefined behavior
+remain **NOT MEASURED**; the expanded holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
+The [generated current headline graph](evidence/candidate-current-overview-v30.svg)
+has SHA-256
+`a3dbbb69c5140d15588463e0e3579d5bea5d95587f1abf444b6679cd3361d4c6`.
+Its [frozen graph inputs](evidence/candidate-current-overview-v30.inputs.json)
+have SHA-256
+`ea2ea381a22a9a23344ff40505d975aba8d25704d2ad90e03b58018fda44ca0f`;
+the [complete machine-readable results](evidence/candidate-current-overview-v30.json)
+have SHA-256
+`b04db4e93dc74bb9200c13133c0a33bd33961b5f35e5810e74de65b29fcab534`;
+and the [reproducible graph renderer](../tools/render_candidate_current_overview_v30.py)
+has SHA-256
+`a8c2bb2e0ccfab0b76b5387437fe48279e01ca1034739a67967f543f1930c507`.
+
 ## Freeze the complete original Python test for the rebuilt C engine
 
 Freeze a recovery-safe test of the newly built first-party C engine against
