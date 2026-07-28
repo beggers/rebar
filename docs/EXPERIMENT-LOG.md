@@ -7,6 +7,70 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Build the independent Rust engine twice, offline
+
+Build the exact, already published Rust engine twice from nine frozen,
+independently owned source files. Use the pinned Rust 1.95.0 compiler,
+the complete pinned compiler driver, a one-package lockfile, frozen
+offline Cargo, the pinned C compiler, and the original audited build
+protocol. Do not download a package, load a candidate, promote a native
+file, run a compatibility test, or open the final comparison.
+
+Both genuinely fresh source directories produce the same Rust engine,
+SHA-256
+`5e79f92b10d47f73919796af2349e44e7d16eceb515cc07571d0beaaec4a405f`,
+**658,344 bytes**, with distinct actual file inodes **10908103** and
+**10908143**. Their independently compiled Python bridges also match,
+SHA-256
+`9e13396f93872222f77577ac7658609f5e2d3e77c0655a27c83572f0a1a06b4c`,
+**148,536 bytes**, at distinct inodes **10908109** and **10908149**.
+The bridge's only regex engine is its adjacent owned engine; neither file depends
+on Python's regex engine, an outside regex package, or another candidate.
+
+Preserve all **16** real compiler, toolchain, and symbol-audit processes,
+including the successful Cargo diagnostic output from both phases.
+Independently verify all **14** pinned build inputs, all **18** fresh
+source copies, the genuine library versions, all **18** required Rust
+engine exports, and both parsers' rejection of **48** actual hostile
+symbol-stream changes. A normal environment and an empty environment
+produce byte-identical independent verification reports.
+
+The complete, exclusively published
+[corrected Rust build record](../oracle/phase2/evidence/native-source-build-v2-rust-phase2-v2.json.gz)
+is **33,741 bytes**, SHA-256
+`69b645c14ca3e566256f5a5b393a6d18554ad347b97b542383db3d86681bb35d`.
+Its genuinely recovered uncompressed report is **279,925 bytes**,
+SHA-256
+`389a833d6a3ce6c7aed3216759278d97d8d02dd901f758815e002f7a0031d4ec`.
+The independently verified
+[Rust publication receipt](../oracle/phase2/evidence/native-source-build-v2-rust-phase2-v2-publication-receipt.json)
+is **2,346 bytes**, SHA-256
+`15580e4441ce651c21800df187fcfaa88ec9336322348a07d84544094d5b050e`.
+
+```sh
+PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+
+"$PY" -I -B tools/reproduce_phase2_native_builds_v2.py \
+  --build --family rust --label phase2-v2 \
+  --source-sha256 e822e22cf6a5bbbdc2b634209c6e185ca74ebc55d86828ebea77bb5d44ce3796 \
+  --protocol-sha256 f383c2ca419c18cf77451c855b53593bb97ea7fa83c90d5d133a80de043aa603 \
+  --owned-source-sha256 candidates/rust_candidate.py=6fb66ef6c3f143475426dd3d5b97c52dbe251f8d2ddd0ef3d5de7ec553a0351b \
+  --owned-source-sha256 candidates/rust/py_bridge.c=f8a0918aaf8a78f363f6d755770636d26acd45fb83c9abcf997a6e052748ea8b \
+  --owned-source-sha256 candidates/rust/Cargo.toml=2e57ff8ad346ffc850d50eab429a0f05c14825c4984fd8c9bc36eab03239a966 \
+  --owned-source-sha256 candidates/rust/Cargo.lock=267c3b21dc41432f7c5ee036b50b48d81f9228384780b4d13a6b41a8ad2cef63 \
+  --owned-source-sha256 candidates/rust/src/lib.rs=c4901e83e359191badc39fbf42ea65f0eb07a3db870172acf8cae65ffb1eaf2d \
+  --owned-source-sha256 candidates/rust/src/newline.rs=13216ffbea967af121c77d57abe14906030e7f3a6906c554399511154a3d6d8b \
+  --owned-source-sha256 candidates/rust/src/search.rs=4612c86424b9cbcb193d7ace521f359d7e3507281e83d3bf7e7ef7d189dd68fe \
+  --owned-source-sha256 candidates/rust/src/stack.rs=5198a056e99bde5632169cfc5b07ad913910cdb1b30785dad4744ccb9a30809e \
+  --owned-source-sha256 candidates/rust/src/unicode_tables.rs=f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af
+```
+
+Evidence paths are exclusively created, so reproduce in a clean checkout
+without overwriting the original archives. The build proves source
+ownership and reproducibility only. Full Rust compatibility, actual
+runtime memory safety, and speed remain **NOT MEASURED**. The expanded
+final comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze the complete, crash-verified candidate correctness gate
 
 Preserve the original version-one and version-two full candidate runners,
