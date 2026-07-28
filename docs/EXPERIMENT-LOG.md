@@ -7,6 +7,45 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a separate, from-scratch C++ matching engine
+
+Preserve C++ as an additional, separately implemented architecture. Its
+[native interface](../candidates/cpp/engine.hpp), SHA-256
+`66998fed1839f5e5f7f09382830ed9fda1a62b80bd545305c4eee95ed9a13df9`,
+[matching engine](../candidates/cpp/engine.cpp), SHA-256
+`a9ceb37cfde77447a01a36a8882f7713faf5f201d7a15a193dd17e7b91d118f5`,
+[Python bridge](../candidates/cpp/py_bridge.cpp), SHA-256
+`1d930b63b2f9493dd4759b7521f75d8846daf2580a5699337fcf82540484ab6d`,
+and [Python interface](../candidates/cpp_candidate.py), SHA-256
+`8dcece29b1a194eea023143148af37bb679a9df4c39c01153f5ee23f778e16d5`,
+own their parser, compiler, matching instructions, backtracking, captures,
+and interpreter-local native objects. They never invoke C++ `std::regex`,
+Python `re` or `_sre`, another candidate, or an external matching package.
+
+Retain the genuine rejected initial matching-engine SHA-256
+`f80a81455ece3de0bcf4de1bf5b0d9fd9fa0f274026d35b2c0dc403daa73b232`
+and initial bridge SHA-256
+`c48453dded324958d9d3214a202595b95144f5c36953a97f7d01cf3dc231610c`.
+Independent review found that the original comment parser incorrectly
+treated an escaped closing parenthesis as the end of a comment and that
+the original bridge failed to visit the owning Python heap type during
+garbage collection. Correct both problems in the engine and bridge above;
+never relabel either initial source as passing.
+
+Independently verify the engine and bridge with Clang and GCC using
+C++20 and strict warnings, both normally and with an empty environment.
+All **eight** compiler checks pass. The source-only ownership review
+accepts **four** valid controls and rejects **15** hostile substitutions.
+Its initial checker also produced a false result for a separate Go
+tokenization detector; fix the checker and preserve that fact rather than
+presenting it as a defect in either corrected engine.
+
+C++ is an extra exploration, not one of the frozen C, Rust, and Zig
+correctness candidates. No C++ binary has been built, installed, imported,
+or matched. Its full **31,237**-case compatibility, native memory safety,
+speed, and memory use are **NOT MEASURED**. The expanded final comparison
+remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze the corrected native-symbol source-build verifier
 
 Keep the original C source-build report, receipt, compiler output, frozen
