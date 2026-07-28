@@ -7,6 +7,53 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze complete, lossless original-test recording
+
+Freeze a corrected test recorder before running any candidate again.
+Preserve the exact original Python **3.14.6** test suite: **13** groups,
+**31,237** cases, the original random seeds, **13** explicitly named
+private exceptions, and the authentic debug-only skipped case. Keep all
+**25** independently owned engine source files and all **6** first-party
+implementation families unchanged.
+
+Version one of the recorder rejected a complete Go report above its
+**268,435,456**-byte limit. Preserve both verified failure-evidence
+files, all **5** original signed Go activation records, and all **67**
+previous repository evidence files. The current evidence total remains
+**69**. A successfully published failure receipt does not establish
+Go correctness; the original Go matching results remain **NOT VERIFIED**.
+
+Version two reuses the exact, source-authenticated original test
+evaluator, candidate isolation, and safe native-file recovery. It
+streams complete, canonical test results directly into a deterministic
+compressed archive and independently verifies the complete raw and
+compressed hashes. Its **4,294,967,296**-byte limits are enforced
+incrementally. The archive and receipt must be distinct, exclusively
+created, owner-only files, each independently synchronized to disk.
+Incomplete streams, modified evidence, unsafe files, fabricated
+candidate passes, changed historical totals, and missing recovery are
+rejected.
+
+Freeze the [complete, lossless original-test recorder](../tools/run_owned_six_family_original_p0_campaign_v2.py),
+SHA-256
+`6b06931ff64c5fe5b6bbbc3e970e56c0a94a24c28dfa6d3aa6140fc4d8fb54a1`;
+[streaming original-test protocol](../oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V2.md),
+SHA-256
+`e47cce8a6f60971bd3c18a4bfe248039ed9abd5b4144ec4355a77825a1435d4e`;
+and [machine-readable original-test inventory](../oracle/phase2/six-family-p0-campaign-v2.json),
+SHA-256
+`e44960e46c590cb5ab482ef323f3ae8598900f144b53a2377f62b3bb827935d7`.
+Ordinary and clean-environment source-only tests pass **44** positive
+controls and reject **446** hostile modifications without activating
+a candidate, starting a compiler, running a benchmark, or accessing
+the final comparison.
+
+Freezing the recorder is not a Go rerun. No additional regex results
+have been recorded, no candidate is qualified, the unchanged headline
+graph remains accurate, and speed and memory remain **NOT MEASURED**.
+The **4,194,304**-case final comparison remains **NOT GENERATED** and
+**NOT OPENED**.
+
 ## Preserve the failed first Go test-recording attempt
 
 Run the independently built, first-party Go engine against the unchanged
