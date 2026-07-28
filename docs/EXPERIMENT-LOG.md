@@ -7,6 +7,72 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Replace historical headline graphs with actual current results
+
+Older headline graphs correctly described their historical source
+hashes, but the C, Rust, and Zig binaries have since changed. Do not
+present their old **2,807** starting checks or **1,024** memory checks
+as results for current sources. Preserve every original graph and
+failure below the new headline and in this log.
+
+Freeze the independently reviewed
+[current-result graph generator](../tools/render_candidate_current_overview_v3.py),
+SHA-256
+`a7ce3f6cc11d4f242400a70767b3cb34f9f97ddfdc21d286a1f746073ae00333`.
+Authenticate all **22** current source owners across the five
+from-scratch C, Rust, Zig, C++, and Go families. Bind every input to
+the immutable objective, the **13** complete original Python suites,
+all **31,237** real Python checks, the actual corrected C and Rust
+source-build reports, the preserved Zig failure, the corrected Go
+bridge, and the actual C preflight failure with zero executed cases.
+
+Render a readable **1,600 × 1,660** graph with two plainly named
+panels: “Does it work exactly like Python?” and “Is it faster than
+Python?” Show only Python passing all **31,237** checks. Distinguish
+Rust and C's successful source builds from their unmeasured complete
+compatibility, display C's real preflight failure, mark Zig's genuine
+non-reproducing build, and identify C++ and Go as source only. Mark
+every replacement speed **NOT MEASURED**; show **1.5×** only as a
+future goal and the baseline as a reference, not a timing.
+
+Preserve the complete generated
+[exact graph input manifest](../docs/evidence/candidate-current-overview-v3.inputs.json),
+SHA-256
+`f57f0c355c4de20b7fb4f985b17eabb01bd91f09575d2de27c7b7995f016d411`,
+the
+[reproducible source-linked graph summary](../docs/evidence/candidate-current-overview-v3.json),
+SHA-256
+`8c0e3f605813d381cdc7cd0e8c7717239fe6b2acdc9ea8732ee473b88a79a238`,
+and the
+[generated current headline SVG](../docs/evidence/candidate-current-overview-v3.svg),
+SHA-256
+`8238fec6f629c83e0a0c202f31a8520bf1932a3f5dbad91ba6b11116df7f5061`.
+
+The first attempted renderer, SHA-256
+`e661168c4829dedd8df85261455a64aa4445abce9cb1068da943f51423bc20a6`,
+incorrectly rejected the genuine, frozen pretty-printed version-three
+candidate inventory. Its real render produced no output. Correct only
+the exact path-and-hash-authenticated pretty-printed input; retain
+strict duplicate-key, finite-number, and canonical generated-output
+checks. The corrected source self-tests pass **26** valid cases and
+reject **221** attacks byte-identically in ordinary and empty
+environments. Independent read-only verification reproduces all four
+output hashes without rewriting any chart.
+
+Preserve a reviewer-scope failure as well: an initial delegated
+reviewer omitted the target filename in a read-only `rg` command and
+searched the workspace recursively, producing a truncated response of
+approximately **230 MB**. It changed no file and ran no build,
+candidate, or benchmark. The larger final holdout did not exist and
+was not opened. Because unrelated historical evidence may have been
+read, exclude that reviewer from hidden-holdout generation and all
+blinding-sensitive decisions. A separate reviewer performed the final
+strictly path-scoped independent verification.
+
+Current candidate speed, memory, confidence intervals, and complete
+compatibility remain **NOT MEASURED**. The final comparison remains
+**NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze a deterministic Zig build without erasing the failure
 
 Keep the original version-two native recorder, its complete successful

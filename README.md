@@ -12,53 +12,28 @@ Python, another regular-expression package, or another candidate does not count.
 
 ## Headline results
 
-The Python baseline covers **31,237** frozen compatibility checks. Independent
-C, Rust, Zig, C++, and Go engines are being explored; none is yet a fully
-qualified replacement. Earlier scanner tests found **116** failures for
-previous Rust and C builds and **1,364** for an earlier Zig build. The
-repaired C and Rust engines have now each produced **two fresh, matching
-builds with no outside regex dependency**. Zig also compiled twice, but
-its engine retained two build-directory-dependent bytes, so its
-reproducibility check failed. A separately frozen deterministic Zig
-retry has not yet run. No current binary has yet run the full
-compatibility test. Current speed is
-**NOT MEASURED**. The final comparison is **NOT OPENED**.
+Python passes all **31,237** frozen compatibility checks. No replacement
+has yet passed them. Rust and C each have two independently matching,
+from-scratch builds. C's first full-test preflight failed before any
+case ran. Zig compiled twice but its original builds did not match.
+C++ and Go have independently written source but have not been built.
+Every replacement's speed is **NOT MEASURED**; the final comparison
+remains **NOT OPENED**.
 
-The first full-suite C attempt exposed a recovery-record verification
-bug before any compatibility check ran. Its original binary was safely
-restored; the failed attempt is preserved.
+![Current results: Python passes 31,237 checks; Rust and C have matching source builds but no full test result; Zig's build did not reproduce; C++ and Go are not built; every replacement's speed remains unmeasured](docs/evidence/candidate-current-overview-v3.svg)
 
-![Previously recorded starting checks: Python and the independently built Rust, C, and Zig engines each pass 2,807 out of 2,807; full compatibility remains unmeasured](docs/evidence/candidate-correctness-overview-v2.svg)
+| Engine | Current build | Complete compatibility | Speed against Python |
+| --- | --- | --- | --- |
+| Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
+| Rust | Two matching builds | NOT MEASURED | NOT MEASURED |
+| C | Two matching builds; test preflight failed | NOT MEASURED; zero tests ran | NOT MEASURED |
+| Zig | Original builds do not match | NOT MEASURED | NOT MEASURED |
+| C++ | Source only | NOT MEASURED | NOT MEASURED |
+| Go | Source only | NOT MEASURED | NOT MEASURED |
 
-![Expanded replacement checks: Python passes all 5,120 checks; Rust, C, and Zig have not yet been measured](docs/evidence/substitution-buffer-overview-v2.svg)
-
-![Historical scanner checks: Python passes all 2,854; earlier Rust and C builds each fail 116; an earlier Zig build fails 1,364](docs/evidence/scanner-verbose-overview-v1.svg)
-
-![Additional memory-safety checks: Python, Rust, C, and Zig all pass all 1,024 checks](docs/evidence/managed-buffer-lifetime-overview-v1.svg)
-
-| Engine | From scratch | Current build | Earlier starting checks | Earlier memory checks | Earlier scanner checks | Full compatibility | Speed vs Python |
-| --- | --- | --- | ---: | ---: | ---: | ---: | ---: |
-| Python `re` | Baseline | Baseline | 2,807 / 2,807 | 1,024 / 1,024 | 2,854 / 2,854 | 31,237 / 31,237 | 1.000× reference |
-| Rust | PASS | Two matching builds | 2,807 / 2,807 | 1,024 / 1,024 | 2,738 / 2,854 | NOT MEASURED | NOT MEASURED |
-| C | PASS | Two matching builds | 2,807 / 2,807 | 1,024 / 1,024 | 2,738 / 2,854 | NOT MEASURED | NOT MEASURED |
-| Zig | PASS | Different build bytes | 2,807 / 2,807 | 1,024 / 1,024 | 1,490 / 2,854 | NOT MEASURED | NOT MEASURED |
-| C++ | PASS | NOT BUILT | NOT MEASURED | NOT MEASURED | NOT MEASURED | NOT MEASURED | NOT MEASURED |
-| Go | PASS | NOT BUILT | NOT MEASURED | NOT MEASURED | NOT MEASURED | NOT MEASURED | NOT MEASURED |
-
-All starting, memory, and scanner numbers are earlier development
-measurements, not results for the repaired C, Rust, or Zig engines. The
-current C and Rust sources have each produced two matching, independently
-verified builds with no external regex dependencies. Both current Zig
-builds compiled without an external regex dependency, but their debug
-data recorded different build paths. Its reproducibility gate therefore
-**FAILED**. The Rust and Zig engines and bridges have now passed
-both frozen ownership checks and strict compiler checks. The new C++ and Go engines have passed
-source and compiler checks but have **NOT BEEN BUILT**. Go's Unicode
-case handling and strict C portability have been corrected at source
-level; its actual build, complete compatibility, memory, and speed are
-still **NOT MEASURED**. No engine has passed all
-**31,237** checks.
-Python's baseline is not a timing result.
+Historical graphs below describe earlier binaries. They do not qualify
+the current implementations. The complete history and rejected
+experiments are preserved in the [experiment log](docs/EXPERIMENT-LOG.md).
 
 ## Detailed compatibility
 
@@ -81,6 +56,14 @@ Python's baseline is not a timing result.
 | Full frozen compatibility gate | 31,237 | NOT MEASURED | NOT MEASURED | NOT MEASURED |
 
 Python's genuine debug-only test is skipped equally and is not included in the denominator.
+
+![Historical starting checks: earlier Python, Rust, C, and Zig binaries each pass 2,807 starting cases; these are not results for the current candidate sources](docs/evidence/candidate-correctness-overview-v2.svg)
+
+![Historical replacement checks: Python passes all 5,120 checks; current Rust, C, and Zig engines have not been measured](docs/evidence/substitution-buffer-overview-v2.svg)
+
+![Historical scanner checks: Python passes all 2,854; earlier Rust and C each fail 116, and earlier Zig fails 1,364](docs/evidence/scanner-verbose-overview-v1.svg)
+
+![Historical memory-safety checks: earlier Python, Rust, C, and Zig binaries each pass 1,024 cases; these are not results for the current candidate sources](docs/evidence/managed-buffer-lifetime-overview-v1.svg)
 
 ![Detailed public correctness: Python and the Rust engine match on all 864 public examples](docs/evidence/rust-public-correctness-v1.svg)
 
@@ -142,7 +125,8 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Independently written Zig matching engine](candidates/zig/mini_regex.zig), [owned interpreter-safe Zig Python bridge](candidates/zig/py_bridge.c), and [experimental Zig-backed Python interface](candidates/zig_candidate.py); full compatibility is not yet measured.
 - [Independently written C++ matching engine](candidates/cpp/engine.cpp), [native Python bridge](candidates/cpp/py_bridge.cpp), and [experimental Python interface](candidates/cpp_candidate.py); source checks only.
 - [Independently written Go matching engine](candidates/go/engine.go), [strictly portable Unicode-aware Python bridge](candidates/go/py_bridge.c), and [experimental Python interface](candidates/go_candidate.py); source checks only, not an executed compatibility result.
-- [Reproducible headline graph inputs](docs/evidence/candidate-correctness-overview-v2.inputs.json) and [headline graph generator](tools/render_candidate_correctness_overview_v2.py).
+- [Current source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v3.inputs.json), [complete current graph summary](docs/evidence/candidate-current-overview-v3.json), and [reproducible current-results graph generator](tools/render_candidate_current_overview_v3.py).
+- [Preserved historical development-graph inputs](docs/evidence/candidate-correctness-overview-v2.inputs.json) and [historical graph generator](tools/render_candidate_correctness_overview_v2.py).
 - [Complete experiment log, raw evidence, rejected approaches, and preserved failures](docs/EXPERIMENT-LOG.md).
 - [Proposed expanded final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); the final cases remain **NOT GENERATED** and **NOT OPENED**.
 - [Original objective](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; [later clarifications](AMENDMENTS.md).
@@ -166,6 +150,17 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/record_independent_public_contract_baselines_v1.py --self-test
 "$PY" -I -B tools/python_re_threaded_pattern_oracle_v1.py --self-test
 "$PY" -I -B tools/render_candidate_correctness_overview_v2.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v3.py --self-test
+```
+
+Verify the current headline graph without rerunning a candidate or
+opening a benchmark:
+
+```sh
+"$PY" -I -B tools/render_candidate_current_overview_v3.py --verify \
+  --source-sha256 a7ce3f6cc11d4f242400a70767b3cb34f9f97ddfdc21d286a1f746073ae00333 \
+  --go-bridge-sha256 52101f0afe29a568e3c2e22a06d47c89c051e08a0e2024ad4891c5ae2d60fb6a \
+  --manifest-sha256 f57f0c355c4de20b7fb4f985b17eabb01bd91f09575d2de27c7b7995f016d411
 ```
 
 The [complete compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md)
