@@ -7,6 +7,60 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze reproducible builds of each native engine
+
+After separately publishing the Python standard, the no-wrapping audit,
+and the common candidate correctness gate, freeze the
+[independent native-source build protocol](../oracle/phase2/NATIVE-SOURCE-BUILDS-V1.md),
+SHA-256
+`33c495f6852155130c92af73422b7a6c6aae26b1c7012e65e2ddddab028064a2`,
+and the [offline, two-build source verifier](../tools/reproduce_phase2_native_builds_v1.py),
+SHA-256
+`e4cee196fcd6ff0908f46c26ef66363aa059e3003f2e89b302df10f35f9a3afd`.
+
+For each separately selected candidate, require every exact current owned
+source hash: **2** C sources, **9** Rust sources, or **3** Zig sources.
+Reject missing pins, stale sources, a reused binary, another candidate's
+source, registry downloads, outside regex packages, hidden tests, and
+unapproved dynamic dependencies. Require two genuinely fresh, isolated
+offline builds with matching independently produced native artifacts,
+complete compiler output, actual process evidence, and safe publication.
+
+Pin the real CPython **3.14.6** executable and headers, the official
+Zig **0.16.0** compiler and release archive, and Rust **1.95.0**. Include
+Rust's actual **153,621,360-byte** compiler driver, SHA-256
+`ae69468875215df490fde685ec1f1b969743482ba7e0251f4074a222606a5484`;
+hashing only the smaller `rustc` launcher cannot authenticate the real
+compiler. Prior C, C++, and Rust syntax-only checks are not described as
+completed native builds.
+
+Keep the actual rejected initial verifier source,
+SHA-256
+`af68c92b108f479f5074c08ec5ab0afd429fc9701204ed4a6ccb4d682ef9b330`.
+Independent source review showed that its native tokenizer would wrongly
+reject the legitimate Python `Match.re` property and misread Rust
+lifetimes such as `'a`; its earliest compiler list also omitted Rust's
+real compiler driver. Correct the tokenizer and full toolchain pins; add
+positive controls for real bridge properties and Rust lifetimes, and
+retain the genuine hostile controls.
+
+Ordinary and empty-environment source-only checks now agree: **65**
+positive controls and **259** rejected attacks. They start no compiler,
+candidate, reference, process, thread, or native build; perform no file
+access, networking, or timings; and never open the final comparison.
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/reproduce_phase2_native_builds_v1.py --self-test
+env -i /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/reproduce_phase2_native_builds_v1.py --self-test
+```
+
+The separately authorized native builds are **NOT RUN** at this source
+freeze. Full candidate correctness, runtime absence of delegation, native
+memory safety, and speed remain **NOT MEASURED**. The expanded final
+comparison remains **NOT OPENED**.
+
 ## Freeze the common compatibility test for every native candidate
 
 After separately publishing the complete Python reference and the
