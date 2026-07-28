@@ -7,6 +7,40 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze safe loading and exact recovery for both Zig native files
+
+The repaired Zig candidate consists of two first-party native files:
+its own matching engine and its own Python bridge. Both original
+user-owned files already exist. They must not be overwritten,
+silently removed, or restored as different file identities.
+
+Freeze a two-file recovery procedure against the actual successful
+**26**-step Zig build, the current **139** evidence files and
+**144** authenticated references. A future explicitly authorized
+activation first records each exact original device, inode, mode,
+contents, and ownership. It creates a same-directory hard-link backup,
+writes and synchronizes a separate recovery intention, then replaces
+each file individually. Recovery restores the original bridge inode
+first and the original engine inode second. The two replacements are
+not group-atomic.
+
+Preserve the [first-party dual-file Zig loading and recovery tool](../tools/activate_verified_native_candidate_v6.py),
+SHA-256
+`d3a9b08c1bf7e3408719a0e92b8c1965aa6160dd2e18ab1501bb8662aaf8e4a1`;
+[safe Zig activation protocol](../oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V6.md),
+SHA-256
+`0e736d575835fa22388841a527e22b62eef1ddf39eac9415bd7c518ba985b1d0`;
+and [exact original-inode recovery contract](../oracle/phase2/verified-native-activation-v6.json),
+SHA-256
+`e0d486cc6d621e963f8af5db1c4f7a47d590ad679837db1f53e11d05b670332e`.
+
+Both normal and clean-environment source tests and frozen-context
+checks pass. They read, alter, and activate neither Zig file.
+The repaired Zig matching tests are **NOT MEASURED**; the **31,237**
+original cases and all past failures are unchanged. Speed, memory,
+and undefined behavior remain **NOT MEASURED**. The expanded final
+holdout remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Build the repaired Rust engine twice without external packages
 
 Run the committed Rust build exactly once against the pinned original

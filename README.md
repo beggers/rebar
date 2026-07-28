@@ -93,6 +93,7 @@ slowdown greater than **20%**. There is no winner.
 - [Full experiment log, raw reports, past results, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Frozen Python compatibility tests](oracle/phase1/P0-COMPLETENESS-V1.md).
 - [Proof the candidate engines are independently built](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
+- [Safe recovery rules for both existing Zig engine files](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V6.md).
 - [Expanded, still-unopened final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256
   `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`;
