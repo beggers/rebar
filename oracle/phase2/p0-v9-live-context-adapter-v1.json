@@ -1,0 +1,228 @@
+{
+  "adapter": {
+    "contract": {
+      "path": "oracle/phase2/p0-v9-live-context-adapter-v1.json"
+    },
+    "protocol": {
+      "path": "oracle/phase2/P0-V9-LIVE-CONTEXT-ADAPTER-V1.md",
+      "sha256": "51f9cede20828da51f127ee9e34c814d306c52252804f77d5c2e95ced2bf4f2c"
+    },
+    "source": {
+      "path": "tools/run_owned_frozen_p0_v9_live_context_adapter_v1.py",
+      "sha256": "82d9ba024400b73ec8d99866609241871ba6e4b057a4c2c0fcd9ebf225b621cb"
+    }
+  },
+  "case_execution_denominator": 31237,
+  "current_v22_overview": {
+    "inputs": {
+      "path": "docs/evidence/candidate-current-overview-v22.inputs.json",
+      "sha256": "6843292a1f1d62d4635be4737a1565554cee8ec9f359506bc95a94cb80af7b58",
+      "size_bytes": 16526
+    },
+    "source": {
+      "path": "tools/render_candidate_current_overview_v22.py",
+      "sha256": "a07bf3d6e6d8dc28c206218f14e2ed6f6089e31c66dbab2961979409b30fc955",
+      "size_bytes": 59289
+    },
+    "summary": {
+      "path": "docs/evidence/candidate-current-overview-v22.json",
+      "sha256": "5dc6229696e5aba546c38e3d1d1bd4ce422a892a57ec562ccea8cb75cbbfb21f",
+      "size_bytes": 100772
+    },
+    "svg": {
+      "path": "docs/evidence/candidate-current-overview-v22.svg",
+      "sha256": "7314d28286b90ee8161c02fee175904ba2ddd2c67dd78163f93b04fef2d0a26c",
+      "size_bytes": 7898
+    }
+  },
+  "goal": {
+    "path": "GOAL.md",
+    "sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+    "size_bytes": 3756
+  },
+  "history": {
+    "appended_failed_v2_evidence_owner_count": 2,
+    "preserved_original_failed_campaign_owner_count": 30,
+    "preserved_v21_authenticated_reference_path_count": 108,
+    "preserved_v21_evidence_owner_count": 103,
+    "total_authenticated_reference_path_count": 110,
+    "total_distinct_evidence_owner_count": 105
+  },
+  "immutable_v3_original_evaluator": {
+    "document": {
+      "path": "oracle/phase2/six-family-p0-producer-v3.json",
+      "sha256": "47b3f6c1850cab7190c095fdb4384fd70813c8d27d43dfbbf2960d58a816efb1",
+      "size_bytes": 26909
+    },
+    "protocol": {
+      "path": "oracle/phase2/SIX-FAMILY-P0-PRODUCER-V3.md",
+      "sha256": "88fef0ad32b43697edc48d921bb8d5c086c24125ca7f4934834f311e8d65bb76",
+      "size_bytes": 5522
+    },
+    "source": {
+      "path": "tools/run_owned_six_family_original_p0_producer_v3.py",
+      "sha256": "7415192cf5ad83ca643c2c8aaa58222394d62f98bc35f15c301007947b46b23c",
+      "size_bytes": 195555
+    }
+  },
+  "immutable_v9": {
+    "document": {
+      "path": "oracle/phase2/p0-candidate-protocol-v9.json",
+      "sha256": "a9609b0576aab4e0ea7ff6f9ae2a466c0d77d0af134a7f0bddf83ed01f61d631",
+      "size_bytes": 13869
+    },
+    "protocol": {
+      "path": "oracle/phase2/P0-CANDIDATE-PROTOCOL-V9.md",
+      "sha256": "afbb933eb022efaca7cb9604bc1614d3d2de7e3faf33f446234f725cd331771f",
+      "size_bytes": 4413
+    },
+    "runner": {
+      "path": "tools/run_frozen_p0_candidate_v9.py",
+      "sha256": "1511dac06dab5ce319b4dd09cb6f8c5a12160c48cc0dbbdfa7e7fe3f0d426702",
+      "size_bytes": 43680
+    },
+    "worker": {
+      "path": "tools/run_frozen_p0_candidate_worker_v7.py",
+      "sha256": "855c59acdc0b5270493ece8fc39548a89e0febf94d6b186ac9f0e5a50754f68f",
+      "size_bytes": 79184
+    }
+  },
+  "live_bridge": {
+    "candidate_matching_delegation_added": false,
+    "candidate_matching_engine_modified": false,
+    "external_regex_package_allowed": false,
+    "frozen_context_after_activation": false,
+    "immutable_original_runner_code_object": true,
+    "immutable_original_runner_global_dictionary": true,
+    "live_context_uses_genuine_v7_namespace": true,
+    "original_suite_worker_count": 13,
+    "original_v9_publication_schema_preserved": true,
+    "original_v9_restoration_and_finally_preserved": true,
+    "single_authenticated_worker_load": true,
+    "stdlib_regex_engine_allowed": false,
+    "verified_process_prefix_length": 4,
+    "worker_argument_parser": "immutable V7 parse_arguments",
+    "worker_argument_source": "immutable V9 actual_worker_arguments"
+  },
+  "named_private_waiver_count": 13,
+  "original_suites": [
+    {"case_execution_count": 151, "id": "original_bounded_v5"},
+    {"case_execution_count": 864, "id": "public_v3"},
+    {"case_execution_count": 1024, "id": "scanner_v3"},
+    {"case_execution_count": 768, "id": "buffer_v3"},
+    {"case_execution_count": 1024, "id": "managed_v1"},
+    {"case_execution_count": 2854, "id": "scanner_verbose_v1"},
+    {"case_execution_count": 6912, "id": "public_types_v1"},
+    {"case_execution_count": 5120, "id": "substitution_v2"},
+    {"case_execution_count": 10240, "id": "shape_v2"},
+    {"case_execution_count": 1376, "id": "public_surface_v19"},
+    {"case_execution_count": 128, "id": "subinterpreter_v2"},
+    {"case_execution_count": 264, "id": "pep688_v4"},
+    {"case_execution_count": 512, "id": "threaded_pattern_v1"}
+  ],
+  "phase_boundary": {
+    "actual_candidate_imports": 0,
+    "actual_candidate_workers": 0,
+    "actual_native_activations": 0,
+    "actual_reference_workers": 0,
+    "actual_source_builds": 0,
+    "benchmark_files_read": 0,
+    "candidate_qualified_count": 0,
+    "clock_samples": 0,
+    "hidden_cases_read": 0,
+    "holdout": "NOT OPENED",
+    "memory": "NOT MEASURED",
+    "performance": "NOT MEASURED",
+    "timing_trials_run": 0,
+    "winner_selected": false
+  },
+  "phase_one": {
+    "case_execution_denominator": 31237,
+    "named_private_waiver_count": 13,
+    "path": "oracle/phase1/p0-completeness-v1.json",
+    "sha256": "cc703915bf08b4a4d3caf399729d6afd4b583287633bd5db25db3a20671cd47f",
+    "size_bytes": 45632,
+    "suite_count": 13
+  },
+  "pinned_runtime": {
+    "bytecode_writes": false,
+    "implementation": "cpython",
+    "isolated": true,
+    "path": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+    "sha256": "255e900f44ce87c630e83b637a79435f9ae7778dd72f6e2a2f18a486e501d016",
+    "version": "3.14.6"
+  },
+  "preserved_failed_v2_controller": {
+    "document": {
+      "path": "oracle/phase2/repaired-c-original-campaign-v2.json",
+      "sha256": "b3c16de03165b5e95529923a2475c73c51fce9a48a871aa61804b97fcca782de",
+      "size_bytes": 14075
+    },
+    "protocol": {
+      "path": "oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V2.md",
+      "sha256": "bd89b3e09b1268a65475ad992b2858e2167368a82ee97d1b90b1fa36b32438b0",
+      "size_bytes": 3475
+    },
+    "source": {
+      "path": "tools/run_owned_repaired_c_original_campaign_v2.py",
+      "sha256": "047eb7acb5a9febd8172f386061a20de5f17be36e9798d55c1c1e30e813594ab",
+      "size_bytes": 78193
+    }
+  },
+  "preserved_failed_v2_evidence": {
+    "aggregate_child_error_message": "'Namespace' object has no attribute 'runner_source_sha256'",
+    "aggregate_child_error_type": "AttributeError",
+    "aggregate_child_stdout_sha256": "93899f2cfc24a638785af66e683ca2f0866488be9cfbcdc2ffdd73be1b8e3f65",
+    "archive": {
+      "path": "oracle/phase2/evidence/repaired-c-original-campaign-v2-c-phase2-v9-original-p0-failures.json.gz",
+      "sha256": "a37a70f7ab9e4dcc72b176ca51fb1bfe8514d906431e8f02f269871a8b946810",
+      "size_bytes": 2496
+    },
+    "archive_uncompressed_bytes": 5941,
+    "archive_uncompressed_sha256": "5aa8b513eec30c7ab13bc4b638a5b5026a6f03821f8cd411f6ea3201b0813cfd",
+    "candidate_workers_started": 0,
+    "completed_original_suites": 0,
+    "original_native_restored": true,
+    "receipt": {
+      "path": "oracle/phase2/evidence/repaired-c-original-campaign-v2-c-phase2-v9-original-p0-failures-publication-receipt.json",
+      "sha256": "8a16520de9ac80aac1a6ea6d9a6cec3778379d35a611a52a2bca692685645c81",
+      "size_bytes": 934
+    },
+    "semantic_mismatches": "NOT MEASURED"
+  },
+  "preserved_v21_overview": {
+    "inputs": {
+      "path": "docs/evidence/candidate-current-overview-v21.inputs.json",
+      "sha256": "704b2e07e32260ac741b0a914e2ae04a3deb583de317ba170432f85126af5139",
+      "size_bytes": 14631
+    },
+    "source": {
+      "path": "tools/render_candidate_current_overview_v21.py",
+      "sha256": "617a64691bf9da7730e44bfed96fe20dbd9c8e38b575e0daf8a3432dbf2625e9",
+      "size_bytes": 75566
+    },
+    "summary": {
+      "path": "docs/evidence/candidate-current-overview-v21.json",
+      "sha256": "d2143b09bbf35a7a83977c08a35f6a0c87435a50e478df517099aa719e8fa28c",
+      "size_bytes": 96376
+    },
+    "svg": {
+      "path": "docs/evidence/candidate-current-overview-v21.svg",
+      "sha256": "ba7b82d7552603eb836a0c18e47546390c4e1398bbb74951616e309135b9ce5c",
+      "size_bytes": 8074
+    }
+  },
+  "required_future_crash_safe_controller": {
+    "contract_path": "oracle/phase2/repaired-c-original-campaign-v3.json",
+    "independent_caller_pins_required_for_run": true,
+    "original_native_restored_before_publication": true,
+    "outer_recovery_required": true,
+    "protocol_path": "oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V3.md",
+    "source_path": "tools/run_owned_repaired_c_original_campaign_v3.py"
+  },
+  "schema": "rebar-owned-frozen-p0-v9-live-context-adapter-v1-source-freeze",
+  "source_family_count": 6,
+  "source_owner_count": 25,
+  "suite_count": 13,
+  "version": 1
+}

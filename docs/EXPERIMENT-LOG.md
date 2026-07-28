@@ -7,6 +7,45 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze an independently verified correction for the C test coordinator
+
+Preserve the corrected C attempt's complete genuine one-process failure.
+Its original test coordinator passed its own argument object to a worker
+that needed independently pinned worker and coordinator fields. Do not
+change the frozen Python tests, original test worker, original aggregate
+runner, first-party C engine, or previously published evidence.
+
+Derive the exact real worker arguments from the frozen aggregate runner,
+verify the pinned Python interpreter and its exact four-part process
+prefix, and let the unchanged original worker parse its own arguments.
+Run the unchanged aggregate runner's original code through an
+independently authenticated, identity-checked worker adapter. Require
+a separately frozen, recovery-safe controller before any actual candidate
+can start; never verify a frozen original-file context after temporarily
+replacing the native module.
+
+Freeze the [independent immutable-runner context adapter](../tools/run_owned_frozen_p0_v9_live_context_adapter_v1.py),
+SHA-256
+`82d9ba024400b73ec8d99866609241871ba6e4b057a4c2c0fcd9ebf225b621cb`;
+[original-test and coordinator correction rules](../oracle/phase2/P0-V9-LIVE-CONTEXT-ADAPTER-V1.md),
+SHA-256
+`51f9cede20828da51f127ee9e34c814d306c52252804f77d5c2e95ced2bf4f2c`;
+and [exact original-worker and preserved-evidence contract](../oracle/phase2/p0-v9-live-context-adapter-v1.json),
+SHA-256
+`a404db028e2d5bd1ea246e58c11e5a40af2d990909a8d69fac9dbb881bf169b8`.
+
+Both normal and clean-environment self-tests reject **128** unsafe
+changes without starting a candidate, loading a native module, reading
+the final comparison, or sampling a clock. Both independently pinned
+read-only checks authenticate all **105** real evidence files, **110**
+historical references, **13** suites, **31,237** original cases, **13**
+named private exceptions, and all previous failed C records.
+
+The repaired C engine has not been retested through this adapter.
+Compatibility, speed, memory, and undefined behavior remain
+**NOT MEASURED**. No candidate qualifies. The **4,194,304**-case final
+comparison remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze a reproducible, independent repaired Zig build
 
 Freeze the exact native build before running the corrected first-party

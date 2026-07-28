@@ -14,6 +14,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Reproducible independent Zig build protocol](../oracle/phase2/ZIG-SCANNER-SOURCE-BUILD-V10.md), [exact private two-build contract](../oracle/phase2/zig-scanner-source-build-v10.json), and [first-party Zig build verifier](../tools/reproduce_owned_zig_scanner_source_build_v10.py); the repaired native engine has not been built, loaded, or tested.
 - [Corrected original Python test producer](../tools/run_owned_six_family_original_p0_producer_v3.py), [unchanged original-test and first-party ownership protocol](../oracle/phase2/SIX-FAMILY-P0-PRODUCER-V3.md), and [exact source-pinned contract](../oracle/phase2/six-family-p0-producer-v3.json); both real Python reference processes and all 31,237 cases are preserved.
 - [Corrected complete original-suite protocol](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V9.md), [exact case and worker inventory](../oracle/phase2/p0-candidate-protocol-v9.json), [corrected isolated-suite worker](../tools/run_frozen_p0_candidate_worker_v7.py), and [complete 13-suite runner](../tools/run_frozen_p0_candidate_v9.py); source frozen only, with no repaired candidate result.
+- [Frozen correction for the original C test coordinator](../oracle/phase2/P0-V9-LIVE-CONTEXT-ADAPTER-V1.md), [exact immutable original-worker adapter contract](../oracle/phase2/p0-v9-live-context-adapter-v1.json), and [independently verified original-worker adapter](../tools/run_owned_frozen_p0_v9_live_context_adapter_v1.py); no matching test or repaired candidate has been run.
 - [Recovery-safe corrected C campaign rules](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V2.md), [exact restoration and full-test contract](../oracle/phase2/repaired-c-original-campaign-v2.json), and [complete recovery-safe original-suite controller](../tools/run_owned_repaired_c_original_campaign_v2.py); its one genuine runner failure and exact restoration are independently preserved.
 - [Frozen first-party C repair](../oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V1.md), [exact repair and preserved evidence](../oracle/phase2/first-party-source-repair-v1.json), and [private-snapshot-only repair tool](../tools/apply_owned_first_party_source_repair_v1.py); no original engine, matching result, or final comparison has been changed.
 - [Separate first-party Rust repair](../oracle/phase2/RUST-SOURCE-REPAIR-V1.md), [exact Rust repair and preserved evidence](../oracle/phase2/rust-source-repair-v1.json), and [private Rust-snapshot-only repair tool](../tools/apply_owned_rust_source_repair_v1.py); the existing Rust engine and all its previous failures remain unchanged.
@@ -54,6 +55,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_owned_six_family_original_p0_producer_v3.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_worker_v7.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v9.py --self-test
+"$PY" -I -B tools/run_owned_frozen_p0_v9_live_context_adapter_v1.py --self-test
 "$PY" -I -B tools/run_owned_repaired_c_original_campaign_v2.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v1.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v2.py --self-test
@@ -106,6 +108,12 @@ opening a benchmark:
   --campaign-archive-sha256 a37a70f7ab9e4dcc72b176ca51fb1bfe8514d906431e8f02f269871a8b946810 \
   --campaign-receipt-sha256 8a16520de9ac80aac1a6ea6d9a6cec3778379d35a611a52a2bca692685645c81 \
   --manifest-sha256 6843292a1f1d62d4635be4737a1565554cee8ec9f359506bc95a94cb80af7b58
+
+"$PY" -I -B tools/run_owned_frozen_p0_v9_live_context_adapter_v1.py \
+  --verify-frozen-context \
+  --adapter-source-sha256 82d9ba024400b73ec8d99866609241871ba6e4b057a4c2c0fcd9ebf225b621cb \
+  --adapter-protocol-sha256 51f9cede20828da51f127ee9e34c814d306c52252804f77d5c2e95ced2bf4f2c \
+  --adapter-contract-sha256 a404db028e2d5bd1ea246e58c11e5a40af2d990909a8d69fac9dbb881bf169b8
 
 "$PY" -I -B tools/reproduce_owned_zig_scanner_source_build_v10.py \
   --verify-context \

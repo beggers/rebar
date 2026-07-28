@@ -92,6 +92,7 @@ slowdown greater than **20%**. There is no winner.
 - [Independent, from-scratch engine audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Corrected original-test and ownership rules](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V3.md), [exact frozen contract](oracle/phase2/six-family-p0-producer-v3.json), and [source-only test producer](tools/run_owned_six_family_original_p0_producer_v3.py); all original tests and both Python references are preserved.
 - [Complete corrected-suite protocol](oracle/phase2/P0-CANDIDATE-PROTOCOL-V9.md), [frozen test contract](oracle/phase2/p0-candidate-protocol-v9.json), [isolated original-test worker](tools/run_frozen_p0_candidate_worker_v7.py), and [full-suite runner](tools/run_frozen_p0_candidate_v9.py); no candidate has yet been run through this corrected path.
+- [Frozen correction for the C test coordinator](oracle/phase2/P0-V9-LIVE-CONTEXT-ADAPTER-V1.md), [exact original-worker contract](oracle/phase2/p0-v9-live-context-adapter-v1.json), and [independent coordinator adapter](tools/run_owned_frozen_p0_v9_live_context_adapter_v1.py); the complete repaired-engine test has not yet been rerun.
 - [Recovery-safe corrected C test rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V2.md), [exact recovery contract](oracle/phase2/repaired-c-original-campaign-v2.json), and [complete safely recovered runner](tools/run_owned_repaired_c_original_campaign_v2.py); its one recorded test-runner failure is preserved.
 - [Frozen first-party Zig capture repair](oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V1.md), [exact one-change contract](oracle/phase2/zig-scanner-capture-source-repair-v1.json), and [private-snapshot-only repair tool](tools/apply_owned_zig_scanner_capture_source_repair_v1.py); the repaired Zig engine has not been built or tested.
 - [Reproducible from-scratch Zig build rules](oracle/phase2/ZIG-SCANNER-SOURCE-BUILD-V10.md), [exact independent two-build contract](oracle/phase2/zig-scanner-source-build-v10.json), and [source-only Zig build verifier](tools/reproduce_owned_zig_scanner_source_build_v10.py); the repaired Zig engine has not been built or tested.
@@ -113,6 +114,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_owned_six_family_original_p0_producer_v3.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_worker_v7.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v9.py --self-test
+"$PY" -I -B tools/run_owned_frozen_p0_v9_live_context_adapter_v1.py --self-test
 "$PY" -I -B tools/run_owned_repaired_c_original_campaign_v2.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v22.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v22.py --verify \
