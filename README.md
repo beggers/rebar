@@ -37,7 +37,7 @@ compatibility test remains **NOT MEASURED**.
 The corrected Rust source has now been independently built twice using
 **28** offline compiler and inspection steps. Both builds agree and use no
 outside regular-expression engine. Their full compatibility test has
-**NOT YET RUN**.
+**NOT YET RUN**; its complete, recovery-safe **13**-group test is frozen.
 
 The latest from-scratch C engine was built independently twice and tested
 against all **13** original Python groups. It has **1,230** matching
@@ -116,6 +116,7 @@ slowdown greater than **20%**. There is no winner.
 - [Proof the candidate engines are independently built](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Source-only correction of the observed Zig scanner failure](oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V2.md).
 - [Recoverable original Python compatibility tests for repaired Rust](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V3.md).
+- [Frozen full Python test for the newly rebuilt Rust engine](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V4.md).
 - [Source-only correction of the observed Rust flag-display failure](oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V2.md).
 - [Frozen first-party build rules for the corrected Rust engine](oracle/phase2/RUST-FLAG-SOURCE-BUILD-V12.md).
 - [Actual corrected Rust build evidence and durable receipt](oracle/phase2/evidence/native-source-build-v12-rust-phase2-v12-rust-flag-original-p0-publication-receipt.json).

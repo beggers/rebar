@@ -7,6 +7,45 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the complete Python test for corrected Rust
+
+Freeze the complete original **13**-group, **31,237**-case matching test for
+the actually rebuilt, first-party Rust engine. Authenticate both real private
+builds, the exact corrected `f8afb…` public adapter, the `4436…` bridge
+source, the original Rust engine, and the independently compiled Python
+bridge. Start **zero** candidate workers during this source-only chunk.
+
+The future test uses a newly owned Rust worker for every original group.
+Each isolated process first binds the actual corrected adapter and complete
+first-party Rust source. Do not silently run the earlier failing adapter,
+the C-only coordinator, Zig's native loader, Python's regular-expression
+engine, or another candidate.
+
+Require a separately announced, durable recovery journal before temporarily
+installing the four Rust source and native files. Authenticate each original
+inode, use individually recorded no-follow hardlinks, and restore the
+original bridge, engine, adapter, and bridge source in reverse order.
+Catchable signals trigger documented recovery; `SIGKILL` and power failures
+require the separately pinned public recovery command.
+
+The [complete corrected Rust test runner](../tools/run_owned_repaired_rust_original_campaign_v4.py)
+has SHA-256
+`7d63b397deddd5c23af075754fcb50f7b3bdfb44390269383aae7903d46b4dd0`.
+The [original-suite and safe recovery protocol](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V4.md)
+has SHA-256
+`5296b7ed7c3ba37ce4e299924e9e9edae849bebcd0e92e828977ae9ac6c9e26b`.
+The [exact corrected-source and recovery contract](../oracle/phase2/repaired-rust-original-campaign-v4.json)
+has SHA-256
+`26e86429e1e437fc791401197fb8c6dd9cf399bb025bd027af5f9c2554d6f60b`.
+
+Normal and empty-environment safety checks reject **167** unsafe controls.
+The corrected Rust's complete matching remains **NOT MEASURED**; the
+previously tested Rust still has **1,087** differences. Keep C's **1,230**
+differences, Zig's **2,172**, the separately frozen **50** signature checks,
+and the exact **151** evidence owners and **156** references. Performance,
+memory, and undefined behavior remain **NOT MEASURED**; the expanded final
+comparison remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the correction for a real Zig scanner failure
 
 The already-tested first-party Zig engine reports **2,172** genuine
