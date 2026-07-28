@@ -25,6 +25,12 @@ Each candidate must use its own matching engine built from scratch. Wrapping Pyt
 | Our C engine | PASS | 2,807 / 2,807 | 1,024 / 1,024 | 2,738 / 2,854 | NOT MEASURED | NOT MEASURED |
 | Our Zig engine | PASS | 2,807 / 2,807 | 1,024 / 1,024 | 1,490 / 2,854 | NOT MEASURED | NOT MEASURED |
 
+The starting checks and graphs are previously recorded development results.
+New, independent two-Python references for the **864** general, **1,024**
+scanner, and **768** buffer checks are **NOT RUN**. Each must be verified
+separately before a candidate can pass the final compatibility gate. Current
+speed and final results are **NOT MEASURED**.
+
 All three engines are independently built from scratch and face the same 2,807 original checks. The scanner graph shows verified mismatches. The changing-buffer graph preserves a falsified historical test and does not establish **1,888** implementation failures. Original results and test-harness errors are preserved, never excluded.
 
 A separate live audit confirms that each Rust, C, and Zig engine uses its own matching implementation. None calls Python's matcher, an external regular-expression package, or another candidate.
@@ -100,6 +106,7 @@ The final examples will remain **NOT FROZEN**, **NOT GENERATED**, and **NOT OPEN
 - [Authenticated headline graph inputs](docs/evidence/candidate-correctness-overview-v2.inputs.json), [generated graph data](docs/evidence/candidate-correctness-overview-v2.json), and [graph generator](tools/render_candidate_correctness_overview_v2.py).
 - [Frozen original Python compatibility tests](tools/independent_original_cpython_suite_v5.py) and [shared candidate behavior tests](tools/independent_public_contract_v3.py).
 - [Complete accounting for Python's original regex tests](oracle/cpython-3.14.6/UPSTREAM-ACCOUNTING-V5.md), [source-ordered original-test manifest](oracle/cpython-3.14.6/manifest-v5.json), and [read-only original-test and reference verifier](tools/verify_original_cpython_accounting_v1.py); all **165** original methods, **152** public methods, and the only **13** named private waivers are preserved.
+- [Separately frozen Python-only reference protocol](oracle/cpython-3.14.6/PUBLIC-CONTRACT-BASELINES-V1.md) and [failure-preserving public, scanner, and buffer reference recorder](tools/record_independent_public_contract_baselines_v1.py); the independent **864**, **1,024**, and **768**-case two-Python reference runs are **NOT RUN**, and new candidate results are **NOT MEASURED**.
 - [Separately frozen 6,912-case Python public types, copying, identity, and serialization compatibility checks](tools/independent_public_type_identity_serialization_v1.py), [lossless, failure-preserving public-type evidence recorder](tools/record_independent_public_type_identity_serialization_v1.py), [complete matching two-Python public-type reference](experiments/rust_public_practice_v1/public-type-identity-serialization-v1-shared-suite-v1.json.gz), and [authenticated public-type reference receipt](experiments/rust_public_practice_v1/public-type-identity-serialization-v1-shared-suite-v1-publication-receipt.json); all candidate results **NOT MEASURED**.
 - [Separately frozen 2,854-case scanner and pattern-comment compatibility checks](tools/independent_scanner_verbose_comments_v1.py), [complete baseline and candidate evidence recorder](tools/record_independent_scanner_verbose_comments_v1.py), [losslessly preserved two-Python scanner baseline](experiments/rust_public_practice_v1/scanner-verbose-comments-v1-shared-suite-v1.json.gz), [authenticated scanner graph inputs](docs/evidence/scanner-verbose-overview-v1.inputs.json), [generated scanner graph data](docs/evidence/scanner-verbose-overview-v1.json), and [independently frozen scanner graph generator](tools/render_scanner_verbose_overview_v1.py).
 - [Corrected, separately frozen 5,120-case replacement and buffer compatibility checks](tools/independent_substitution_buffer_semantics_v2.py), [lossless, independently guarded replacement evidence recorder](tools/record_independent_substitution_buffer_semantics_v3.py), [complete matching two-Python reference](experiments/rust_public_practice_v1/substitution-buffer-semantics-v2-shared-suite-v2.json.gz), [authenticated replacement reference receipt](experiments/rust_public_practice_v1/substitution-buffer-semantics-v2-shared-suite-v2-publication-receipt.json), [independently frozen corrected graph inputs](docs/evidence/substitution-buffer-overview-v2.inputs.json), [generated corrected graph data](docs/evidence/substitution-buffer-overview-v2.json), and [corrected replacement comparison graph generator](tools/render_substitution_buffer_overview_v2.py); all three candidate results **NOT MEASURED**.
@@ -122,6 +129,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
 "$PY" -I -B tools/independent_original_cpython_suite_v5.py --self-test
 "$PY" -I -B tools/independent_public_contract_v3.py --self-test
+"$PY" -I -B tools/record_independent_public_contract_baselines_v1.py --self-test
 "$PY" -I -B tools/independent_public_type_identity_serialization_v1.py --self-test
 "$PY" -I -B tools/record_independent_public_type_identity_serialization_v1.py --self-test
 "$PY" -I -B tools/record_independent_public_contract_v3.py --self-test

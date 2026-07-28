@@ -7,6 +7,32 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze independent Python-only public, scanner, and buffer references
+
+Freeze the [three-category Python-only reference protocol](../oracle/cpython-3.14.6/PUBLIC-CONTRACT-BASELINES-V1.md),
+SHA-256
+`f3b9094f03067c0afe818f85f2c9e7c6b8764db0e84e0a896ba0063258859cf0`,
+and the [independent, failure-preserving reference recorder](../tools/record_independent_public_contract_baselines_v1.py),
+SHA-256
+`7ede1a1c81d624664561f89bcc7214ae7232cb742b9a4ebd4628d3d4914c7135`,
+before starting any reference process.
+
+Preserve the independently frozen **864** general public cases, **1,024**
+scanner cases, and **768** buffer cases, including every original seed,
+source owner, ordered input, expected observation, and complete case
+denominator. Each later baseline must use two genuinely separate,
+unchanged Python 3.14.6 processes and publish its own complete evidence
+and durable, non-overwriting receipt.
+
+The ordinary and empty-environment source-only self-tests return
+byte-identical passing results: **197** controls, comprising **40**
+positive checks and **157** rejected attacks. They start **zero**
+reference or candidate processes, read or write **zero** workspace
+files, import **zero** project or candidate modules, and take **zero**
+time measurements. The three actual two-Python reference runs are
+**NOT RUN**. Candidate results and performance are **NOT MEASURED**.
+The final comparison remains **NOT OPENED**.
+
 ## Account for every original Python regex test
 
 Freeze the [complete original CPython 3.14.6 test-accounting protocol](../oracle/cpython-3.14.6/UPSTREAM-ACCOUNTING-V5.md),
