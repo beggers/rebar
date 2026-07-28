@@ -7,6 +7,51 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze an independently derived first-party Rust public-contract repair
+
+Compare both original Python references with all signed records from the
+original Rust engine. Preserve its existing **2,042** real compatibility
+differences: **1,392** changing-buffer differences, **336** substitution
+differences, **248** public-type differences, and **66** public-surface
+differences. Do not count an individual proposed fix as a passing test.
+
+Independently identify exactly three uniquely anchored blocks in the
+first-party Rust Python adapter: the public error's module name, standalone
+unknown-flag display and known-flag order, and compiled-pattern display,
+value-based equality, and hashing. Preserve Python's different formatting
+for standalone unknown flags and unknown flags within a compiled pattern.
+Keep the original type-sensitive compilation cache unchanged.
+
+The checked-in Rust adapter remains unmodified, SHA-256
+`6fb66ef6c3f143475426dd3d5b97c52dbe251f8d2ddd0ef3d5de7ec553a0351b`.
+Freeze only a future private snapshot with derived SHA-256
+`81089bab906c9bb511fe0779d8e1ddf735850fce62eaac06ca1e6c678856578c`.
+The Rust native bridge, independent Rust engine, one-package lockfile,
+zero external regex dependencies, scanner, matching implementation,
+buffer behavior, and pickling remain unchanged.
+
+Freeze the [private-only Rust public-contract source repair](../tools/apply_owned_rust_public_contract_source_repair_v1.py),
+SHA-256
+`ac98ad24c6a4962fb38535cbaa470ae5cd4983643e7e8962e9fc9a1b6a0e12a0`;
+[first-party Rust public-compatibility rules](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V1.md),
+SHA-256
+`a297cbccfe4d4a2a321e7f8fe518662f451fd84f90e17bf86c62cf579875955f`;
+and [exact three-block source, reference, and evidence contract](../oracle/phase2/rust-public-contract-source-repair-v1.json),
+SHA-256
+`a3b4670c3e321cefd6a1ec65ba80b9aa1a06534a73e30ba56654cc75f6f11431`.
+
+Both normal and clean-environment self-tests reject **58** unsafe
+controls without changing the real candidate or starting a process.
+Both pinned read-only checks independently preserve all nine first-party
+Rust sources, the zero-dependency Cargo lock, all **16** Rust evidence
+owners, both original Python references, **105** actual total evidence
+files, and **110** authenticated historical references.
+
+The derived adapter has not been written, built, or tested. Rust
+compatibility, speed, memory, and undefined behavior remain
+**NOT MEASURED**. No candidate qualifies. The **4,194,304**-case final
+comparison remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze an independently verified correction for the C test coordinator
 
 Preserve the corrected C attempt's complete genuine one-process failure.

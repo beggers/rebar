@@ -18,6 +18,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Recovery-safe corrected C campaign rules](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V2.md), [exact restoration and full-test contract](../oracle/phase2/repaired-c-original-campaign-v2.json), and [complete recovery-safe original-suite controller](../tools/run_owned_repaired_c_original_campaign_v2.py); its one genuine runner failure and exact restoration are independently preserved.
 - [Frozen first-party C repair](../oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V1.md), [exact repair and preserved evidence](../oracle/phase2/first-party-source-repair-v1.json), and [private-snapshot-only repair tool](../tools/apply_owned_first_party_source_repair_v1.py); no original engine, matching result, or final comparison has been changed.
 - [Separate first-party Rust repair](../oracle/phase2/RUST-SOURCE-REPAIR-V1.md), [exact Rust repair and preserved evidence](../oracle/phase2/rust-source-repair-v1.json), and [private Rust-snapshot-only repair tool](../tools/apply_owned_rust_source_repair_v1.py); the existing Rust engine and all its previous failures remain unchanged.
+- [Independent Rust public-compatibility repair](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V1.md), [exact three-block private-source contract](../oracle/phase2/rust-public-contract-source-repair-v1.json), and [first-party Rust public-source verifier](../tools/apply_owned_rust_public_contract_source_repair_v1.py); the repaired source has not been materialized, built, or tested.
 - [Reproducible first-party C build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V8.md), [exact build inventory](../oracle/phase2/native-source-build-v8.json), and [independent two-build verifier](../tools/reproduce_owned_native_source_build_v8.py).
 - [Actual matching first-party C builds](../oracle/phase2/evidence/native-source-build-v8-c-phase2-v8.json.gz) and [independent build receipt](../oracle/phase2/evidence/native-source-build-v8-c-phase2-v8-publication-receipt.json); two private builds produced identical native binaries.
 - [Reproducible independent Rust build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V9.md), [exact Rust build inventory](../oracle/phase2/native-source-build-v9.json), and [offline two-build verifier](../tools/reproduce_owned_native_source_build_v9.py); the repaired Rust engine has no external regex dependency and has not yet been built or retested.
@@ -57,6 +58,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_frozen_p0_candidate_v9.py --self-test
 "$PY" -I -B tools/run_owned_frozen_p0_v9_live_context_adapter_v1.py --self-test
 "$PY" -I -B tools/run_owned_repaired_c_original_campaign_v2.py --self-test
+"$PY" -I -B tools/apply_owned_rust_public_contract_source_repair_v1.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v1.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v2.py --self-test
 "$PY" -I -B tools/preserve_owned_go_campaign_publication_failure_v1.py --self-test
@@ -114,6 +116,12 @@ opening a benchmark:
   --adapter-source-sha256 82d9ba024400b73ec8d99866609241871ba6e4b057a4c2c0fcd9ebf225b621cb \
   --adapter-protocol-sha256 51f9cede20828da51f127ee9e34c814d306c52252804f77d5c2e95ced2bf4f2c \
   --adapter-contract-sha256 a404db028e2d5bd1ea246e58c11e5a40af2d990909a8d69fac9dbb881bf169b8
+
+"$PY" -I -B tools/apply_owned_rust_public_contract_source_repair_v1.py \
+  --verify-frozen-context \
+  --source-sha256 ac98ad24c6a4962fb38535cbaa470ae5cd4983643e7e8962e9fc9a1b6a0e12a0 \
+  --protocol-sha256 a297cbccfe4d4a2a321e7f8fe518662f451fd84f90e17bf86c62cf579875955f \
+  --contract-sha256 a3b4670c3e321cefd6a1ec65ba80b9aa1a06534a73e30ba56654cc75f6f11431
 
 "$PY" -I -B tools/reproduce_owned_zig_scanner_source_build_v10.py \
   --verify-context \
