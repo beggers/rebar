@@ -7,6 +7,39 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze two independent builds of the corrected Rust engine
+
+Freeze a reproducible, entirely first-party Rust build before starting a
+compiler. The future experiment will independently build the corrected
+engine and Python bridge twice, using the previously pinned Rust 1.95
+toolchain and a project-owned Cargo package with no outside dependencies.
+
+Each separate private build must use the exact corrected flag adapter,
+SHA-256 `f8afb6c6e020faad3452b59ceb84abc957ee74d1397397008b3178856abe01a5`,
+and preserve the independently repaired bridge,
+SHA-256 `4436bbb8ad180ee8f02dd4418187506ec0d5a33bdb5a79c424fc736253fa0257`.
+Its **28** compiler and inspection processes are prospective; none has run.
+The original Rust files and native engine remain unchanged.
+
+The [frozen Rust build source](../tools/reproduce_owned_rust_flag_source_build_v12.py)
+has SHA-256
+`1b3f8333f36a6262e962647719ed99b00dd1519a704bf7f07a5d1f1d56377db6`.
+The [offline, independently reproduced build rules](../oracle/phase2/RUST-FLAG-SOURCE-BUILD-V12.md)
+have SHA-256
+`822857ed434cf1273c0d5eaf14f540d0398c744fee8e14b7b7734238dc2d9950`.
+The [exact Rust toolchain and two-build contract](../oracle/phase2/rust-flag-source-build-v12.json)
+has SHA-256
+`c1c68590a1b45005fb709dc00a6a5f86e6564ed494e179fff9480ea5bed7b592`.
+
+Normal and empty-environment safety and context tests pass without
+compiling, loading a candidate, changing a native file, or opening the final
+comparison. The current headline graph remains unchanged: **149** evidence
+files, **154** references, Rust **1,087** differences, C **1,230**, and Zig
+**2,172**. The new Rust build and its matching are **NOT MEASURED**; no
+candidate qualifies. Speed, memory, and undefined behavior are
+**NOT MEASURED**. The expanded final comparison remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the Rust fix for Python flag display
 
 The original, complete Rust compatibility test recorded **1,087** differences.

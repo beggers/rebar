@@ -29,6 +29,9 @@ A further Rust correction fixes the exact Python flag-display failure in
 **5,128** source-only checks. Its effect on a rebuilt engine and the full
 compatibility test remains **NOT MEASURED**.
 
+The exact recipe for independently rebuilding that corrected Rust engine
+twice is frozen. Neither build nor its compatibility test has run.
+
 The latest from-scratch C engine was built independently twice and tested
 against all **13** original Python groups. It has **1,230** matching
 differences, down from **1,262** in the previous C engine. All workers
@@ -105,6 +108,7 @@ slowdown greater than **20%**. There is no winner.
 - [Proof the candidate engines are independently built](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Recoverable original Python compatibility tests for repaired Rust](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V3.md).
 - [Source-only correction of the observed Rust flag-display failure](oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V2.md).
+- [Frozen first-party build rules for the corrected Rust engine](oracle/phase2/RUST-FLAG-SOURCE-BUILD-V12.md).
 - [Evidence-backed C match-pickling compatibility repair](oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V2.md).
 - [Reproducible offline build rules for the corrected C engine](oracle/phase2/C-PICKLE-SOURCE-BUILD-V15.md).
 - [Recovery-safe complete Python tests for the rebuilt C engine](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V4.md).
