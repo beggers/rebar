@@ -22,7 +22,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Independent Rust public-compatibility repair](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V1.md), [exact three-block private-source contract](../oracle/phase2/rust-public-contract-source-repair-v1.json), and [first-party Rust public-source verifier](../tools/apply_owned_rust_public_contract_source_repair_v1.py); the repaired source has not been materialized, built, or tested.
 - [Reproducible first-party C build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V8.md), [exact build inventory](../oracle/phase2/native-source-build-v8.json), and [independent two-build verifier](../tools/reproduce_owned_native_source_build_v8.py).
 - [Actual matching first-party C builds](../oracle/phase2/evidence/native-source-build-v8-c-phase2-v8.json.gz) and [independent build receipt](../oracle/phase2/evidence/native-source-build-v8-c-phase2-v8-publication-receipt.json); two private builds produced identical native binaries.
-- [Reproducible independent Rust build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V9.md), [exact Rust build inventory](../oracle/phase2/native-source-build-v9.json), and [offline two-build verifier](../tools/reproduce_owned_native_source_build_v9.py); the repaired Rust engine has no external regex dependency and has not yet been built or retested.
+- [Current reproducible independent Rust build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V10.md), [exact dual-repair Rust build inventory](../oracle/phase2/native-source-build-v10.json), and [offline two-build verifier](../tools/reproduce_owned_native_source_build_v10.py); the repaired Rust engine has no external regex dependency and has not yet been built or retested.
 - [Safe reversible C-engine loading rules](../oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V5.md), [exact recovery and build checks](../oracle/phase2/verified-native-activation-v5.json), and [first-party engine recovery tool](../tools/activate_verified_native_candidate_v5.py); the original native file was restored exactly.
 - [Complete repaired-engine Python test rules](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V8.md), [all original groups and seeds](../oracle/phase2/p0-candidate-protocol-v8.json), [isolated original-test worker](../tools/run_frozen_p0_candidate_worker_v6.py), and [complete test and recovery recorder](../tools/run_frozen_p0_candidate_v8.py); all **31,237** original cases remain unchanged.
 - [Fail-safe full C test rules](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V1.md), [exact recovery and test contract](../oracle/phase2/repaired-c-original-campaign-v1.json), and [recovered original-test runner](../tools/run_owned_repaired_c_original_campaign_v1.py); the original native file was restored before the genuine failure was recorded.
@@ -62,6 +62,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_owned_repaired_c_original_campaign_v2.py --self-test
 "$PY" -I -B tools/run_owned_repaired_c_original_campaign_v3.py --self-test
 "$PY" -I -B tools/apply_owned_rust_public_contract_source_repair_v1.py --self-test
+"$PY" -I -B tools/reproduce_owned_native_source_build_v10.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v1.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v2.py --self-test
 "$PY" -I -B tools/preserve_owned_go_campaign_publication_failure_v1.py --self-test
@@ -123,6 +124,12 @@ opening a benchmark:
   --source-sha256 b908f12d14fb8ebc5f17c62dfc00d48a1a5ee3717a3144aed437059e21c0f097 \
   --protocol-sha256 15fd222876407be72d36c0b9cf2ce581d8b73a954358df192c2a083a08973539 \
   --contract-sha256 92979e4bfacd6d23e7f54f4fdce7a7707cc54dba2512753029fdcd479150464c
+
+"$PY" -I -B tools/reproduce_owned_native_source_build_v10.py \
+  --verify-context \
+  --source-sha256 e2e9163968aa8c07dfa2cd5d05451e580eab1a1641edc4c53fd804ba51840d7b \
+  --protocol-sha256 1edd8ebf3705cd58d27b78b9ff14a751ae0efe4471f1eb2ad25895380448485a \
+  --contract-sha256 0ba4cf203f876cd9c75a5d76b88186e571c8963eba83f6ccecad3f03d662e7f4
 ```
 
 The earlier pinned context checks below reproduce historical source freezes.

@@ -7,6 +7,50 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze reproducible offline Rust builds with both first-party repairs
+
+Prepare one independently implemented Rust engine using both separately
+frozen, evidence-backed repairs: correct replacement-buffer ordering in
+its own C bridge and correct public Python error types, regular-expression
+flags, and compiled-pattern behavior in its own Python adapter. Preserve
+the original Rust source, all **2,042** previously observed differences,
+and its dependency-free, single-package Cargo lock.
+
+Authenticate the current results graph, **135** evidence owners,
+**140** history references, and all **30** actual C correctness records.
+Preserve the C engine's **13** complete workers, **7,325** verified
+passing cases, **1,262** remaining differences, zero infrastructure
+failures, and restored original native library.
+
+Keep the original sealed Rust private-root prefix. Construct two distinct
+owner-only Rust source snapshots; each must contain seven unchanged
+first-party sources, one exclusively created corrected bridge, and one
+exclusively created corrected Python adapter. Only a future explicit
+offline build can execute the **28** genuine compiler and native-file
+inspection processes. No external regular-expression package, downloaded
+crate, Python regex engine, or other candidate is permitted.
+
+Freeze the [first-party offline dual-repair Rust build verifier](../tools/reproduce_owned_native_source_build_v10.py),
+SHA-256
+`e2e9163968aa8c07dfa2cd5d05451e580eab1a1641edc4c53fd804ba51840d7b`;
+[independent offline Rust source-build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V10.md),
+SHA-256
+`1edd8ebf3705cd58d27b78b9ff14a751ae0efe4471f1eb2ad25895380448485a`;
+and [exact two-overlay, two-build evidence contract](../oracle/phase2/native-source-build-v10.json),
+SHA-256
+`0ba4cf203f876cd9c75a5d76b88186e571c8963eba83f6ccecad3f03d662e7f4`.
+
+Both normal and clean-environment self-tests reject **86** unsafe
+controls. Both pinned read-only checks independently authenticate the
+complete current C campaign, all original Rust source, both separately
+frozen first-party repairs, zero external Cargo dependencies, and the
+unchanged **13**-group, **31,237**-case Python compatibility gate.
+
+No repaired Rust engine has been built, loaded, or tested. Correctness,
+speed, memory, and undefined behavior remain **NOT MEASURED**. No
+candidate qualifies. The **4,194,304**-case final comparison remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze an independent Zig build against all current C evidence
 
 The earlier Zig build rules were frozen when the complete evidence
