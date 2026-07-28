@@ -7,6 +7,63 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze original Python tests for verified C++ and Go builds
+
+Freeze the next complete original-Python test runner before activating
+or testing another engine. Preserve every original Python 3.14.6
+test: all **13** frozen suites, **31,237** original cases, **13**
+explicitly named private waivers, and the one genuine debug-only skip.
+Do not substitute an easier suite, weaken an expectation, change a
+seed, borrow another engine, or use an external regex package.
+
+Keep the real Python memory exporters, callback and scanner behavior,
+**64** locale cases, **192** locale transitions, and shared-pattern
+threads. Keep the unchanged isolated-interpreter test's **128** cases,
+**394** actual calls, and **11** created and destroyed interpreters.
+The earlier **385**-call Zig interpreter failure remains a failure.
+
+Authenticate all **25** distinct first-party sources, **65** actual
+historical evidence owners, and **169** recorded historical build
+processes. Preserve the separately recorded C++, Go, and Fortran
+source-build successes and failures. Five engine families build
+reproducibly; only three have historical complete-test runs, and none
+has qualified.
+
+Reuse the original test evaluator without modification. A future C++
+run must prove its actual reproducible combined native engine and
+bridge. A future Go run must prove its separately built native engine
+and Python bridge; its compiler-generated header remains build
+evidence, not an installed matcher. Either run must first authenticate
+the real passing source-build report, two independent build phases,
+reversible activation report, publication receipt, recovery journal,
+promotion intentions, and current native file identities. Failed
+Fortran builds and nonexistent activations are rejected.
+
+Preserve the independently reviewed
+[original six-engine compatibility runner](../tools/run_owned_six_family_original_p0_producer_v2.py),
+SHA-256
+`fe6e82306852517580dcb90f289c643a55db8c01421230a4d7d05d6df365f9c1`;
+[source-pinned original Python test protocol](../oracle/phase2/SIX-FAMILY-P0-PRODUCER-V2.md),
+SHA-256
+`3add264a113550d141379229a333d19e375f66429c2b7eb47dc3193a67f7b598`;
+and [canonical six-engine original-test inventory](../oracle/phase2/six-family-p0-producer-v2.json),
+SHA-256
+`a210e9cac8d06b47cfc745019e4f4ab3a0c465ff63a38add0bc2b83b1cd986e3`.
+
+Both ordinary and clean-environment source-only checks pass **25**
+positive controls and reject **493** hostile mutations. Both complete
+read-only context checks authenticate the unchanged original test
+runner, all six independent source families, the reversible native
+activation rules, all **65** real evidence owners, and all **169**
+historical processes. Neither check starts a candidate, compiler,
+native activation, reference process, thread, clock, or benchmark.
+
+The headline graph remains unchanged because freezing the next test
+runner does not create a test result. C++ and Go remain **NOT TESTED**;
+there are **0** fully compatible replacements. Speed, memory, and
+undefined behavior remain **NOT MEASURED**. The expanded final
+comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze first-party build forensics before retrying Fortran
 
 Freeze a way to record exactly where two native engine files differ,
