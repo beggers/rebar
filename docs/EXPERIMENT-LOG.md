@@ -7,6 +7,59 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Build the corrected Rust engine twice from scratch
+
+Run the previously frozen first-party Rust build exactly once. Two separate
+private phases each apply the corrected flag adapter and original bridge
+repair, then independently compile and inspect the complete engine and Python
+bridge. All **28** real processes succeed. Both builds produce identical
+native outputs, and all four native-file inspections confirm **zero**
+external regular-expression engines and **zero** dependencies on another
+candidate. None of the original Rust source or installed native files is
+changed.
+
+The corrected adapter is
+`f8afb6c6e020faad3452b59ceb84abc957ee74d1397397008b3178856abe01a5`.
+The bridge repair is
+`4436bbb8ad180ee8f02dd4418187506ec0d5a33bdb5a79c424fc736253fa0257`.
+The reproducible engine is
+`5e79f92b10d47f73919796af2349e44e7d16eceb515cc07571d0beaaec4a405f`,
+and the reproducible native bridge is
+`7f5dfb587fc7f53ce3a7b6cfa568a6e49c009a4d0015929b4dada28cb5425c54`.
+Because the correction is in the Python adapter, the native output can
+legitimately match the earlier native build.
+
+The [complete corrected Rust build record](../oracle/phase2/evidence/native-source-build-v12-rust-phase2-v12-rust-flag-original-p0.json.gz)
+has SHA-256
+`840a6403699fec44d4f725f737fc9538c997b818a48d167398ad1b95cbb9828d`.
+Its [independently durable build receipt](../oracle/phase2/evidence/native-source-build-v12-rust-phase2-v12-rust-flag-original-p0-publication-receipt.json)
+has SHA-256
+`1cd7e538098711ddac017ee3375d302d4b1ba4e6da52d10d2a524103db500a2f`.
+Receipt **PASS** proves the source build succeeded; it does not prove
+matching compatibility. The two new result files increase the evidence
+count transparently from **149** to **151** owners and from **154** to
+**156** authenticated references.
+
+The [generated headline graph](evidence/candidate-current-overview-v31.svg)
+has SHA-256
+`23f89b7983d5154d9275dcfa029bfe2a5599ad339c80675efb7c5eabda587d1a`.
+Its [frozen inputs](evidence/candidate-current-overview-v31.inputs.json)
+have SHA-256
+`25f1ef2cdf7f3443f5924b9c9814c4f0864148ebdf243c92a1df12d1c5754900`;
+the [complete machine-readable result](evidence/candidate-current-overview-v31.json)
+has SHA-256
+`6d6f8fa23022b9198255cd0836961d4f78cd2d4c5d4041734a82a1d9f9d2ec90`;
+and the [reproducible chart generator](../tools/render_candidate_current_overview_v31.py)
+has SHA-256
+`daea5423d47bc84ec0ff503c14bae17ecdff392a60db14c5c66c575e978de588`.
+
+The corrected Rust build's complete compatibility is **NOT MEASURED**.
+The previously tested Rust engine retains **1,087** differences; C retains
+**1,230**, and Zig retains **2,172**. No replacement is qualified. Speed,
+memory, and undefined behavior remain **NOT MEASURED**. The expanded
+**4,194,304**-case comparison remains **NOT FROZEN**, **NOT GENERATED**,
+and **NOT OPENED**.
+
 ## Freeze two independent builds of the corrected Rust engine
 
 Freeze a reproducible, entirely first-party Rust build before starting a

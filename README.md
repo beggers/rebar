@@ -15,22 +15,22 @@ Python, another regular-expression package, or another candidate does not count.
 Python passes all **31,237** frozen compatibility checks. No replacement
 has passed them, so there is not yet a drop-in alternative or a speed winner.
 
-![Python passes all 31,237 checks; Rust has 1,087 differences, rebuilt C has 1,230, and Zig has 2,172; no replacement qualifies and speed is not measured](docs/evidence/candidate-current-overview-v30.svg)
+![Python passes all 31,237 checks; previously tested Rust has 1,087 differences, C has 1,230, Zig has 2,172, and the newly corrected Rust build is not yet compatibility-tested](docs/evidence/candidate-current-overview-v31.svg)
 
 Rust, C, Zig, C++, and Go each use an independently written engine.
-Both repaired Rust and repaired Zig now produce two identical builds
-without an external regular-expression package. Both completed all **13**
-Python test groups without test-worker failures. Repaired Rust has
-**1,087** compatibility differences; repaired Zig has **2,172**. Neither
-is a replacement. Zig's earlier zero-test setup failure remains
-separately preserved.
+The most recently tested Rust and Zig engines completed all **13** Python
+test groups without worker failures. That Rust build has **1,087**
+compatibility differences; Zig has **2,172**. Neither is a replacement.
+Zig's earlier zero-test setup failure remains separately preserved.
 
 A further Rust correction fixes the exact Python flag-display failure in
 **5,128** source-only checks. Its effect on a rebuilt engine and the full
 compatibility test remains **NOT MEASURED**.
 
-The exact recipe for independently rebuilding that corrected Rust engine
-twice is frozen. Neither build nor its compatibility test has run.
+The corrected Rust source has now been independently built twice using
+**28** offline compiler and inspection steps. Both builds agree and use no
+outside regular-expression engine. Their full compatibility test has
+**NOT YET RUN**.
 
 The latest from-scratch C engine was built independently twice and tested
 against all **13** original Python groups. It has **1,230** matching
@@ -44,7 +44,7 @@ only after three independent engines pass all compatibility checks.
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
-| Rust | Two identical repaired first-party builds | All 13 groups completed; 1,087 differences; not qualified | NOT MEASURED |
+| Rust | Two identical corrected first-party builds | Earlier build: 1,087 differences; corrected build: NOT YET TESTED | NOT MEASURED |
 | C | Two identical first-party builds; all 13 groups tested | 7,325 verified; 1,230 differences; no worker failures; not qualified | NOT MEASURED |
 | Zig | Two identical independently repaired builds | All 13 groups completed; 2,172 differences; not qualified | NOT MEASURED |
 | C++ | Two matching source builds | 128 verified; 12 groups failed; not qualified | NOT MEASURED |
@@ -109,6 +109,7 @@ slowdown greater than **20%**. There is no winner.
 - [Recoverable original Python compatibility tests for repaired Rust](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V3.md).
 - [Source-only correction of the observed Rust flag-display failure](oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V2.md).
 - [Frozen first-party build rules for the corrected Rust engine](oracle/phase2/RUST-FLAG-SOURCE-BUILD-V12.md).
+- [Actual corrected Rust build evidence and durable receipt](oracle/phase2/evidence/native-source-build-v12-rust-phase2-v12-rust-flag-original-p0-publication-receipt.json).
 - [Evidence-backed C match-pickling compatibility repair](oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V2.md).
 - [Reproducible offline build rules for the corrected C engine](oracle/phase2/C-PICKLE-SOURCE-BUILD-V15.md).
 - [Recovery-safe complete Python tests for the rebuilt C engine](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V4.md).
