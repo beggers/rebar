@@ -7,6 +7,55 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze Python's complete original test for six independent engines
+
+Extend the unchanged Python 3.14.6 compatibility standard to each
+first-party C, Rust, Zig, C++, Go, and Fortran engine. Preserve all
+**13** original reference suites, their exact **31,237** cases,
+full-width random seeds, recorded reference answers, and **13** named
+private waivers. Keep the engines' **25** independently owned source
+files separate. Reject every Python regex, external regex package,
+cross-engine dependency, wrapper, fallback, and shared matching engine.
+
+Use the original case evaluators instead of imitating their expected
+answers. Preserve real Python-managed buffers and exporter callbacks,
+actual locale transitions, the original concurrent thread barriers,
+and the full isolated-interpreter lifecycle: **128** cases, **394**
+matching calls, **11** created and destroyed interpreters, and **8**
+fresh temporary interpreters. Retain the separately observed Zig
+cleanup failure after **385** calls; never substitute that failed
+result for a successful interpreter test.
+
+C++ genuinely owns one combined native bridge and a Python-owned
+match class. Go and Fortran also expose their own Python match
+classes. Accept those legitimate independent architectures without
+reusing another candidate's matcher. Keep the actual Go and Fortran
+build failures; only **3** families currently have historically
+runnable full-test build evidence. No candidate is called compatible
+simply because the six-family runner was frozen.
+
+Freeze the independently reviewed
+[original six-family compatibility runner](../tools/run_owned_six_family_original_p0_producer_v1.py),
+SHA-256
+`36451c10221857cca8c77fad7533382f4e3969a20a5cdf73c055beea1d315d33`;
+[complete public test protocol](../oracle/phase2/SIX-FAMILY-P0-PRODUCER-V1.md),
+SHA-256
+`1e7ed2cbd63e080c563dd49b4ea2a2be284d831d75739c47edecfae50373ce17`;
+and [canonical six-family test inventory](../oracle/phase2/six-family-p0-producer-v1.json),
+SHA-256
+`5206bcc097cd399cddd91a8d0356fd780b44ef7c173d70605d28a175dac71c0b`.
+
+The source-only test passes **95** positive controls and rejects
+**279** distinct hostile changes in both ordinary and empty
+environments. Both independently verified, read-only frozen-context
+checks authenticate all **61** historical evidence owners, all
+**25** first-party source files, the complete original case inventory,
+and both preserved Go and Fortran failure records. No candidate,
+reference, compiler, interpreter, thread, or benchmark is started.
+Candidate qualification, undefined behavior, memory, and speed remain
+**NOT MEASURED**. The final comparison remains **NOT GENERATED** and
+**NOT OPENED**.
+
 ## Freeze the evidence-backed Go and Fortran build corrections
 
 Freeze the next source-only build experiment before invoking a compiler.

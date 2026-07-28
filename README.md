@@ -128,6 +128,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 ## Evidence and reproduction
 
 - [Complete 31,237-check compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md), [machine-readable test inventory](oracle/phase1/p0-completeness-v1.json), and [independent fail-closed verifier](tools/verify_p0_completeness_v1.py).
+- [Original Python compatibility tests for all six first-party engines](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V1.md), [frozen six-language test inventory](oracle/phase2/six-family-p0-producer-v1.json), and [independently verified six-language test runner](tools/run_owned_six_family_original_p0_producer_v1.py); preserves all **31,237** original cases, real buffer, thread, and interpreter behavior, six separate matching engines, and all **61** evidence files without claiming an untested engine has passed.
 - [Corrected complete candidate standard](oracle/phase2/P0-CANDIDATE-PROTOCOL-V7.md), [frozen 31,237-case candidate inventory](oracle/phase2/p0-candidate-protocol-v7.json), [independently verified full-test worker](tools/run_frozen_p0_candidate_worker_v5.py), and [complete candidate runner](tools/run_frozen_p0_candidate_v7.py); all **13** original suites, all **57** evidence records, the real Zig interpreter failure, and every candidate mismatch remain unchanged.
 - [Preserved earlier complete candidate standard](oracle/phase2/P0-CANDIDATE-PROTOCOL-V6.md), [original inventory](oracle/phase2/p0-candidate-protocol-v6.json), and [earlier candidate runner](tools/run_frozen_p0_candidate_v6.py); its original Zig failure and discovered interpreter-report defect remain available.
 - Complete actual compatibility failures for [C](oracle/phase2/evidence/frozen-p0-candidate-v5-c-phase2-v5-failures.json.gz), [Rust](oracle/phase2/evidence/frozen-p0-candidate-v5-rust-phase2-v5-failures.json.gz), and [Zig](oracle/phase2/evidence/frozen-p0-candidate-v6-zig-phase2-v6-failures.json.gz); the [experiment log](docs/EXPERIMENT-LOG.md) links every independent worker report, publication receipt, failure, and restoration.
@@ -157,6 +158,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_frozen_p0_candidate_v6.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_worker_v5.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v7.py --self-test
+"$PY" -I -B tools/run_owned_six_family_original_p0_producer_v1.py --self-test
 "$PY" -I -B tools/run_owned_candidate_subinterpreters_v3.py --self-test
 "$PY" -I -B tools/reproduce_owned_native_source_build_v4.py --self-test
 "$PY" -I -B tools/reproduce_owned_native_source_build_v4.py --verify-context
@@ -180,6 +182,12 @@ opening a benchmark:
   --worker-source-sha256 66f869e71e1aaf77944f4b7115e91ab34f6bc9b06fb4d17f097ea26c97c9c780 \
   --protocol-sha256 ed595cbb3d5f040454da7efff3d8330befb09dda2ac6eebc681b630b96f32733 \
   --document-sha256 16f24a46113e0a120fc5cf7fea2122d78e76445665959a9553b610a27b8843b1
+
+"$PY" -I -B tools/run_owned_six_family_original_p0_producer_v1.py \
+  --verify-frozen-context \
+  --source-sha256 36451c10221857cca8c77fad7533382f4e3969a20a5cdf73c055beea1d315d33 \
+  --protocol-sha256 1e7ed2cbd63e080c563dd49b4ea2a2be284d831d75739c47edecfae50373ce17 \
+  --document-sha256 5206bcc097cd399cddd91a8d0356fd780b44ef7c173d70605d28a175dac71c0b
 
 "$PY" -I -B tools/render_candidate_current_overview_v13.py --verify \
   --source-sha256 427a68b34e34aa203bc695a93f887ed7b4daa89bdb3d4aa00e4c92e8429e3922 \
