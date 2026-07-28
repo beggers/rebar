@@ -7,6 +7,36 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the C repair for Python's original match-pickling behavior
+
+Inspect all **6,912** original public-type records and retain all
+**248** measured differences. Python successfully pickles matches
+using protocols **0** and **1** in **32** recorded cases. The C engine
+incorrectly rejects those cases. All **64** recorded cases using
+protocols **2** through **5** are already correctly rejected.
+
+Freeze one private-source-only C correction. Layer it on the complete
+previously repaired C source without changing its existing buffer fix.
+Reuse the engine's own already authenticated match type and Python
+reconstructor; change no other matcher, scanner, or candidate.
+
+Preserve the [first-party C source-repair verifier](../tools/apply_owned_first_party_source_repair_v2.py),
+SHA-256
+`1bb4f21cca20928b1c8993b3646825ac04ad46a231633105e5cb2469fd8434c0`;
+[original-match compatibility repair protocol](../oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V2.md),
+SHA-256
+`a91fd1615d25597109c11605fdbeadd1673137cdd819b326bfff5dfb5699b611`;
+and [exact private C source and evidence contract](../oracle/phase2/first-party-source-repair-v2.json),
+SHA-256
+`875b9402f535b94a1391bc3a1821ac347f67f09b2341c9a7a489a79b7dd9cf48`.
+
+Both ordinary and clean-environment source-only self-tests and
+frozen-context checks pass without applying or building the repair.
+The actual C result remains **1,262** differences. Compatibility of
+the proposed correction, speed, memory, and undefined behavior remain
+**NOT MEASURED**. All **31,237** tests and the unopened final
+comparison are unchanged.
+
 ## Freeze safe loading and exact recovery for both Zig native files
 
 The repaired Zig candidate consists of two first-party native files:
