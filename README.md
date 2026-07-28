@@ -23,7 +23,8 @@ two test-runner problems before matching: **12** groups rejected
 Python-compatible public type names, and **1** could not decode its
 saved Python reference. All **13** failures are preserved. Repaired C matching,
 speed, and memory are **NOT MEASURED**. The final comparison remains
-**NOT OPENED**. The separate Rust repair has not yet been built.
+**NOT OPENED**. Separate Rust and Zig source repairs have not yet
+been built.
 
 ![Python passes all 31,237 original checks; the five previous replacements remain incompatible; the rebuilt C engine hit 13 recorded test-runner failures before matching; speed and memory are not measured](docs/evidence/candidate-current-overview-v21.svg)
 
@@ -32,7 +33,7 @@ speed, and memory are **NOT MEASURED**. The final comparison remains
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
 | Rust | Two matching builds | 7,461 verified; five groups failed; not qualified | NOT MEASURED |
 | C | Original and repaired builds match independently | Original: 7,197 verified; six groups failed. Repair: 13 test-runner failures; matching not measured | NOT MEASURED |
-| Zig | Two matching builds; original failure preserved | 3,583 verified; seven groups failed; not qualified | NOT MEASURED |
+| Zig | Two matching original builds; capture repair not built | 3,583 verified; seven groups failed; not qualified | NOT MEASURED |
 | C++ | Two matching source builds | 128 verified; 12 groups failed; not qualified | NOT MEASURED |
 | Go | Two matching first-party builds | 128 verified; 4,518 differences; four worker failures | NOT MEASURED |
 | Fortran | Three attempts; engines differ | NOT TESTED | NOT MEASURED |
@@ -91,6 +92,7 @@ slowdown greater than **20%**. There is no winner.
 - [Independent, from-scratch engine audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Corrected original-test and ownership rules](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V3.md), [exact frozen contract](oracle/phase2/six-family-p0-producer-v3.json), and [source-only test producer](tools/run_owned_six_family_original_p0_producer_v3.py); all original tests and both Python references are preserved.
 - [Complete corrected-suite protocol](oracle/phase2/P0-CANDIDATE-PROTOCOL-V9.md), [frozen test contract](oracle/phase2/p0-candidate-protocol-v9.json), [isolated original-test worker](tools/run_frozen_p0_candidate_worker_v7.py), and [full-suite runner](tools/run_frozen_p0_candidate_v9.py); no candidate has yet been run through this corrected path.
+- [Frozen first-party Zig capture repair](oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V1.md), [exact one-change contract](oracle/phase2/zig-scanner-capture-source-repair-v1.json), and [private-snapshot-only repair tool](tools/apply_owned_zig_scanner_capture_source_repair_v1.py); the repaired Zig engine has not been built or tested.
 - [Complete original C test-runner failure](oracle/phase2/evidence/frozen-p0-candidate-v8-c-phase2-v8-original-p0-failures.json.gz) and [independently recovered failure and original-file proof](oracle/phase2/evidence/repaired-c-original-campaign-v1-c-phase2-v8-original-p0-failures.json.gz).
 - [Current graph inputs](docs/evidence/candidate-current-overview-v21.inputs.json), [machine-readable results](docs/evidence/candidate-current-overview-v21.json), and [graph generator](tools/render_candidate_current_overview_v21.py).
 - [Full reproduction instructions and source-pinned checks](docs/REPRODUCING.md).

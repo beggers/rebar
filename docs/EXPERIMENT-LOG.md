@@ -7,6 +7,46 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a first-party Zig scanner-capture repair
+
+Preserve all **1,764** previous Zig matching failures before changing
+anything. The verbose-scanner group contains **620** recorded failures;
+their capture-handling evidence identifies one exact first-party bridge
+block that overwrites a real local capture with the complete match.
+The separate **64** scanner failures have a different cause and are not
+claimed to be fixed.
+
+Preserve the original checked-in Zig bridge, SHA-256
+`67edae144290254ba25f67f73350ff5d52ccfb2a209e3fbcc555fc4b3d4efd4b`,
+**173,026** bytes. Freeze a single future private-snapshot-only change:
+retain an already populated capture and copy the full match only when
+the capture slot is empty. The exact derived bridge would have SHA-256
+`a5ab490d0cfcbba295b68f3f738a1c6371ef3314e9a6c01cdcc0bb5978e3b148`
+and **173,082** bytes. It has **not** been written, compiled, loaded, or
+tested. The original Zig engine and Python adapter remain unchanged.
+
+Freeze the [first-party Zig snapshot-only source repair](../tools/apply_owned_zig_scanner_capture_source_repair_v1.py),
+SHA-256
+`963f306373753b9fef84c9a9784668f42067cb905b84347a0bcc99e1e8692515`;
+[single-change scanner-capture rules](../oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V1.md),
+SHA-256
+`7a40b58bcc69744fc6b749368ec307be7d05d742de3d921410fd2753a4f5c8d0`;
+and [exact first-party bridge and evidence contract](../oracle/phase2/zig-scanner-capture-source-repair-v1.json),
+SHA-256
+`c48fcd9cb40cbe15442c2dd197627d7f4ccc341b3edfbbe0c645405015c8ea87`.
+
+Both normal and clean-environment source-only checks accept **17** valid
+controls, reject **70** unsafe changes, and block **27** attempted side
+effects. Both exact-pinned, read-only checks preserve all **103**
+evidence owners, all **108** reference paths, all **1,764** genuine
+Zig mismatches, the **620** unchanged scanner failures, the three
+first-party Zig source owners, and the exact installed Zig compiler.
+They do not materialize the repair or start a compiler.
+
+Repaired Zig matching, speed, memory, and undefined behavior remain
+**NOT MEASURED**. No candidate is qualified. The **4,194,304**-case final
+comparison remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze a complete corrected Python test worker and runner
 
 Connect the corrected original Python test producer to all **13** frozen
