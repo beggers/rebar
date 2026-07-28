@@ -43,9 +43,9 @@ a failed test group does not prove that its remaining cases pass. All
 failures and worker errors remain in the published evidence.
 
 An additional **50** checks of Python's public function and method
-signatures are frozen separately. Python's reference results and the
-candidates' results for those additional checks are **NOT MEASURED**;
-they are not added to the original **31,237** checks.
+signatures are frozen separately. The reproducible, two-process Python
+reference is frozen but **NOT RUN**; candidate results are **NOT MEASURED**.
+These checks are not added to the original **31,237** checks.
 
 ## Detailed compatibility
 
@@ -78,6 +78,7 @@ slowdown greater than **20%**. There is no winner.
 - [Experiment log, original reports, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Frozen Python compatibility checks](oracle/phase1/P0-COMPLETENESS-V1.md).
 - [Separately frozen public-signature checks](oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md).
+- [Frozen two-process Python signature reference](oracle/phase1/CALLABLE-INTROSPECTION-REFERENCE-V2.md).
 - [Independent, from-scratch engine and no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Expanded, still-unopened final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256

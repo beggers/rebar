@@ -10,6 +10,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
 - [Frozen Python compatibility tests](../oracle/phase1/P0-COMPLETENESS-V1.md), [all 31,237 test cases](../oracle/phase1/p0-completeness-v1.json), and [independent test verifier](../tools/verify_p0_completeness_v1.py).
 - [Separately frozen public callable signature checks](../oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md), [all 50 additional function, pattern, match, and scanner cases](../oracle/phase1/p0-callable-introspection-v1.json), and [independent source-only verifier](../tools/verify_python_re_callable_introspection_v1.py); the original **31,237** cases are unchanged, and the new independent-reference and candidate runs have **NOT YET RUN**.
+- [Frozen two-process Python signature reference](../oracle/phase1/CALLABLE-INTROSPECTION-REFERENCE-V2.md), [exact independently isolated reference and publication contract](../oracle/phase1/callable-introspection-reference-v2.json), and [source-pinned Python reference controller](../tools/run_owned_callable_introspection_reference_v2.py); the independently reproducible reference for the **50** additional cases is frozen but has **NOT RUN**.
 - [First-party engine ownership and no-wrapping source audit](../oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md), [exact six-family source inventory](../oracle/phase2/candidate-independence-v2.json), and [source verifier](../tools/audit_candidate_independence_v2.py); independent matching-engine ownership passes, but a complete execution-time no-delegation audit remains **NOT ESTABLISHED**.
 - [Independent Zig scanner-capture repair](../oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V1.md), [single-block private-snapshot contract](../oracle/phase2/zig-scanner-capture-source-repair-v1.json), and [source-pinned first-party repair tool](../tools/apply_owned_zig_scanner_capture_source_repair_v1.py); the repair was independently applied to both private native builds.
 - [First-party correction for the observed Zig scanner failure](../oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V2.md), [exact corrected private-bridge contract](../oracle/phase2/zig-scanner-capture-source-repair-v2.json), and [independently owned source verifier](../tools/apply_owned_zig_scanner_capture_source_repair_v2.py); the corrected engine was independently built twice and its subsequent complete test reduced observed Zig differences from **2,172** to **1,764**.
@@ -84,6 +85,11 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
   --source-sha256 5a64fb4546bdccd13b6d8d9ba32a7472b01cb86dd0d9f2c643678e6bbf919653 \
   --protocol-sha256 1c3082048fc13338e86a055a577128ba678f1a18abde3465a08552d1295b90e8 \
   --contract-sha256 e7415894dcc3920d49cf5e14206b4cfd59c4aa4380cb9d960430f688e97f7349
+"$PY" -I -B tools/run_owned_callable_introspection_reference_v2.py \
+  --self-test \
+  --source-sha256 00c543077bfbe38e5c48e9970f7881119d21cb32cf91e838d21587f8f820ada4 \
+  --protocol-sha256 1e316b848e5d7a44b83a8f44605f08370faacb33074c2b79c042c76d9390a59f \
+  --contract-sha256 0f87ef8926771cfe39e33d95b3b871f03c9f1c44fe932615f7067d391eb68f42
 "$PY" -I -B tools/run_frozen_p0_candidate_worker_v4.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v6.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_worker_v5.py --self-test
@@ -271,6 +277,12 @@ decompressing a matching archive, or opening the final comparison:
   --source-sha256 5a64fb4546bdccd13b6d8d9ba32a7472b01cb86dd0d9f2c643678e6bbf919653 \
   --protocol-sha256 1c3082048fc13338e86a055a577128ba678f1a18abde3465a08552d1295b90e8 \
   --contract-sha256 e7415894dcc3920d49cf5e14206b4cfd59c4aa4380cb9d960430f688e97f7349
+
+"$PY" -I -B tools/run_owned_callable_introspection_reference_v2.py \
+  --verify-frozen-context \
+  --source-sha256 00c543077bfbe38e5c48e9970f7881119d21cb32cf91e838d21587f8f820ada4 \
+  --protocol-sha256 1e316b848e5d7a44b83a8f44605f08370faacb33074c2b79c042c76d9390a59f \
+  --contract-sha256 0f87ef8926771cfe39e33d95b3b871f03c9f1c44fe932615f7067d391eb68f42
 
 "$PY" -I -B tools/apply_owned_zig_scanner_capture_source_repair_v2.py \
   --verify-frozen-context \
@@ -707,4 +719,21 @@ and recovery directory.
   --native-bridge-sha256 e5809566a166f469e7f95fc1a43e814a3beeeffa2a6e848c00a3a48215ee6726 \
   --native-engine-bytes 108888 \
   --native-bridge-bytes 133656
+```
+
+## Reproduce the separate Python signature reference
+
+Only run the command below after the three signature-reference source owners
+and their protocol have been committed and pushed. It starts exactly two
+independent, isolated Python reference workers and compares all **50**
+separately frozen signatures. It does not change the original **31,237**
+checks, run a candidate, measure performance, or open the final holdout.
+Do not reuse or overwrite an already published reference-evidence path.
+
+```sh
+"$PY" -I -B tools/run_owned_callable_introspection_reference_v2.py \
+  --run-reference \
+  --source-sha256 00c543077bfbe38e5c48e9970f7881119d21cb32cf91e838d21587f8f820ada4 \
+  --protocol-sha256 1e316b848e5d7a44b83a8f44605f08370faacb33074c2b79c042c76d9390a59f \
+  --contract-sha256 0f87ef8926771cfe39e33d95b3b871f03c9f1c44fe932615f7067d391eb68f42
 ```

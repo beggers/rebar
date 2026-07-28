@@ -7,6 +7,41 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze two independent Python references for the additional signature checks
+
+Freeze a separately reproducible Python-versus-Python reference for all
+**50** additional public function and method signature checks. Preserve the
+original **31,237** checks, **13** suites, and **13** named private waivers
+without changing their denominator. No reference worker or candidate runs
+during this source-freeze experiment.
+
+The [independently frozen two-process reference controller](../tools/run_owned_callable_introspection_reference_v2.py)
+has SHA-256
+`00c543077bfbe38e5c48e9970f7881119d21cb32cf91e838d21587f8f820ada4`.
+The [Python signature-reference protocol](../oracle/phase1/CALLABLE-INTROSPECTION-REFERENCE-V2.md)
+has SHA-256
+`1e316b848e5d7a44b83a8f44605f08370faacb33074c2b79c042c76d9390a59f`.
+The [exact immutable reference and publication contract](../oracle/phase1/callable-introspection-reference-v2.json)
+has SHA-256
+`0f87ef8926771cfe39e33d95b3b871f03c9f1c44fe932615f7067d391eb68f42`.
+
+All four independently pinned ordinary and empty-environment safety and
+context checks pass. Their synthetic tests reject **124** hostile controls
+and physically block **13** categories of outside effects. They authenticate
+the actual corrected Zig result of **1,764** differences, **3,711** passing
+observations, and **13** completed workers without decompressing its
+matching archive.
+
+An actual later reference run must start exactly **two** independently
+isolated CPython 3.14.6 workers. It must preserve all **50** observations
+from each worker, require identical complete results and distinct process
+identities, and publish exactly one exclusive full evidence archive and one
+durable receipt. The frozen procedure itself has **NOT RUN**. Evidence
+remains at **157** owners and **162** references; candidate speed, memory,
+runtime no-delegation, and undefined behavior remain **NOT ESTABLISHED**
+or **NOT MEASURED**. The expanded **4,194,304**-case final holdout remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Test the corrected from-scratch Zig engine against all original Python checks
 
 Run the independently frozen corrected Zig compatibility test exactly once.
