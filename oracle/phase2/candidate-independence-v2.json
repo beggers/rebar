@@ -1,0 +1,165 @@
+{
+  "schema": "rebar-phase2-six-candidate-independence-static-audit-v2",
+  "version": 2,
+  "phase": "CANDIDATES",
+  "goal_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+  "family_count": 6,
+  "source_owner_count": 25,
+  "python_baseline_is_a_candidate": false,
+  "python_project_support_owners": {
+    "count": 2,
+    "external_dependency_count": 0,
+    "owners": [
+      {
+        "path": "pyproject.toml",
+        "sha256": "7d50e8c6c2bc76a0e3ddcac6b5f157b013bcfd76944fdeb2c1c81e0181ae7825"
+      },
+      {
+        "path": "uv.lock",
+        "sha256": "1f8402bb3fdda2c1ba57b5cfdcb1f8b835a4528784d553fe1219ca157f0750f2"
+      }
+    ]
+  },
+  "phase1": {
+    "inventory": "oracle/phase1/p0-completeness-v1.json",
+    "inventory_sha256": "cc703915bf08b4a4d3caf399729d6afd4b583287633bd5db25db3a20671cd47f",
+    "suite_count": 13,
+    "case_execution_count": 31237,
+    "private_waiver_count": 13
+  },
+  "pushed_graph_v7": {
+    "inputs": {
+      "path": "docs/evidence/candidate-current-overview-v7.inputs.json",
+      "sha256": "744f86e241e3489cf07c5fccccf291eb68c44a50605d79723dd1ae1092d8511f"
+    },
+    "summary": {
+      "path": "docs/evidence/candidate-current-overview-v7.json",
+      "sha256": "50aafe8c56c21dc95fca2f7ddaead623ef5cf7151db9f28e6c47de7630764f3b"
+    },
+    "renderer": {
+      "path": "tools/render_candidate_current_overview_v7.py",
+      "sha256": "1f5a5baa82ecb0fd5de53094f1c97ae33c5ac2b71d91c920849c92f5e92217cf"
+    },
+    "is_a_p0_candidate_protocol": false
+  },
+  "predecessor": {
+    "source": {
+      "path": "tools/audit_candidate_independence_v1.py",
+      "sha256": "f18d9b99a3f11fdf20c47d6cb43cb353532c894ababbdaeb7088c14e397ae3b5"
+    },
+    "protocol": {
+      "path": "oracle/phase2/CANDIDATE-INDEPENDENCE-V1.md",
+      "sha256": "a7ee45f0ea76ee7fedacc564c3122b7f37272d918ef28f1c527c9e8adf351292"
+    },
+    "json_manifest": "NOT PRODUCED"
+  },
+  "published_candidate_protocol": {
+    "version": 5,
+    "inventory": {
+      "path": "oracle/phase2/p0-candidate-protocol-v5.json",
+      "sha256": "f0ae8a783a3091cb2f59fdb7f82cb012fe34eceffbead347ff3ee2e11ec1724b"
+    },
+    "protocol": {
+      "path": "oracle/phase2/P0-CANDIDATE-PROTOCOL-V5.md",
+      "sha256": "a943eb9d8d9dbc8ca13562c274b9a96b340ddc531423d6669a00d2aeba65ead8"
+    }
+  },
+  "historical_receipts": {
+    "source": "docs/evidence/candidate-current-overview-v7.inputs.json",
+    "count": 24,
+    "scope": "all historical families and build, failure, worker, specialist, and restoration receipts",
+    "current_v5_archive_payloads": "RAW SHA-256 VERIFIED; NOT DECOMPRESSED",
+    "receipt_publication_does_not_qualify_a_candidate": true
+  },
+  "historical_c_rust_v5_evidence_owners": {
+    "source": "docs/evidence/candidate-current-overview-v7.inputs.json",
+    "count": 34,
+    "compressed_report_archive_count": 16,
+    "durable_receipt_count": 18,
+    "compressed_report_bytes_sha256_verified": true,
+    "report_archives_are_not_decompressed": true,
+    "failure_results_are_preserved": true
+  },
+  "families": [
+    {
+      "name": "c_vm",
+      "graph_family": "c",
+      "bridge": "_vm_native",
+      "owners": [
+        {"path": "candidates/vm_candidate.py", "kind": "python", "role": "owned parser and compiler", "sha256": "b37d3e634b10c37ded2de3c59af9ef477e1d12125ab1b52cfc57915305ff7096"},
+        {"path": "candidates/_vm_native.c", "kind": "c", "role": "owned virtual machine and bridge", "sha256": "bc937bdd3945a111d7929439dfd4a660a55b70593b19ee807c82325d9e6f1e55"}
+      ]
+    },
+    {
+      "name": "rust",
+      "graph_family": "rust",
+      "bridge": "_rust_bridge",
+      "owners": [
+        {"path": "candidates/rust_candidate.py", "kind": "python", "role": "owned public adapter", "sha256": "6fb66ef6c3f143475426dd3d5b97c52dbe251f8d2ddd0ef3d5de7ec553a0351b"},
+        {"path": "candidates/rust/py_bridge.c", "kind": "c", "role": "owned Python C bridge", "sha256": "f8a0918aaf8a78f363f6d755770636d26acd45fb83c9abcf997a6e052748ea8b"},
+        {"path": "candidates/rust/src/lib.rs", "kind": "rust", "role": "owned parser, compiler and executor", "sha256": "c4901e83e359191badc39fbf42ea65f0eb07a3db870172acf8cae65ffb1eaf2d"},
+        {"path": "candidates/rust/src/newline.rs", "kind": "rust", "role": "owned newline operations", "sha256": "13216ffbea967af121c77d57abe14906030e7f3a6906c554399511154a3d6d8b"},
+        {"path": "candidates/rust/src/search.rs", "kind": "rust", "role": "owned search operations", "sha256": "4612c86424b9cbcb193d7ace521f359d7e3507281e83d3bf7e7ef7d189dd68fe"},
+        {"path": "candidates/rust/src/stack.rs", "kind": "rust", "role": "owned executor stack", "sha256": "5198a056e99bde5632169cfc5b07ad913910cdb1b30785dad4744ccb9a30809e"},
+        {"path": "candidates/rust/src/unicode_tables.rs", "kind": "rust", "role": "owned Unicode data", "sha256": "f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af"},
+        {"path": "candidates/rust/Cargo.toml", "kind": "cargo_manifest", "role": "first-party dependency manifest", "sha256": "2e57ff8ad346ffc850d50eab429a0f05c14825c4984fd8c9bc36eab03239a966"},
+        {"path": "candidates/rust/Cargo.lock", "kind": "cargo_lock", "role": "first-party dependency lock", "sha256": "267c3b21dc41432f7c5ee036b50b48d81f9228384780b4d13a6b41a8ad2cef63"}
+      ]
+    },
+    {
+      "name": "zig",
+      "graph_family": "zig",
+      "bridge": "_zig_bridge",
+      "owners": [
+        {"path": "candidates/zig_candidate.py", "kind": "python", "role": "owned public adapter and anchored native loader", "sha256": "2d7ec411bc035091fea3f20857a4793b21092d3f490d20a9a0efaa418cda0862"},
+        {"path": "candidates/zig/mini_regex.zig", "kind": "zig", "role": "owned parser, compiler and executor", "sha256": "a917e7b1a06008be400e4c4a74b6caee5a552624dc46a7d67c932758f594ef28"},
+        {"path": "candidates/zig/py_bridge.c", "kind": "c", "role": "owned Python C bridge", "sha256": "67edae144290254ba25f67f73350ff5d52ccfb2a209e3fbcc555fc4b3d4efd4b"}
+      ]
+    },
+    {
+      "name": "cpp",
+      "graph_family": "cpp",
+      "bridge": "_cpp_bridge",
+      "owners": [
+        {"path": "candidates/cpp_candidate.py", "kind": "python", "role": "owned public adapter", "sha256": "8dcece29b1a194eea023143148af37bb679a9df4c39c01153f5ee23f778e16d5"},
+        {"path": "candidates/cpp/engine.hpp", "kind": "cpp", "role": "owned engine declarations", "sha256": "66998fed1839f5e5f7f09382830ed9fda1a62b80bd545305c4eee95ed9a13df9"},
+        {"path": "candidates/cpp/engine.cpp", "kind": "cpp", "role": "owned parser, compiler and executor", "sha256": "a9ceb37cfde77447a01a36a8882f7713faf5f201d7a15a193dd17e7b91d118f5"},
+        {"path": "candidates/cpp/py_bridge.cpp", "kind": "cpp", "role": "owned Python C bridge", "sha256": "1d930b63b2f9493dd4759b7521f75d8846daf2580a5699337fcf82540484ab6d"}
+      ]
+    },
+    {
+      "name": "go",
+      "graph_family": "go",
+      "bridge": "_go_bridge",
+      "generated_header": "NOT GENERATED; NOT BUILT",
+      "owners": [
+        {"path": "candidates/go_candidate.py", "kind": "python", "role": "owned public adapter", "sha256": "816d21527b9806afbc9457122f72f8f6b62c39b8b791d3f363745d412cbe3d20"},
+        {"path": "candidates/go/engine.go", "kind": "go", "role": "owned parser, compiler and executor", "sha256": "6472c4413921f3a877455315400c532e7632a871a96d46de9583fa6170a43192"},
+        {"path": "candidates/go/py_bridge.c", "kind": "c", "role": "owned Python C bridge", "sha256": "52101f0afe29a568e3c2e22a06d47c89c051e08a0e2024ad4891c5ae2d60fb6a"},
+        {"path": "candidates/go/go.mod", "kind": "go_mod", "role": "first-party Go module", "sha256": "9297c4e8fe4649196150400d23a4da584d7ef721347f7095399a7382edad669b"}
+      ]
+    },
+    {
+      "name": "fortran",
+      "graph_family": "fortran",
+      "bridge": "_fortran_bridge",
+      "build": "NOT BUILT",
+      "owners": [
+        {"path": "candidates/fortran_candidate.py", "kind": "python", "role": "owned public adapter", "sha256": "8db564771d38c0896a5207f1241a44463432dc5bf75dfcf657740d8bcfefd194"},
+        {"path": "candidates/fortran/engine.f90", "kind": "fortran", "role": "owned parser, compiler and executor", "sha256": "5180da085487b9932e3f769e6baded6a8409a0b778890e6197aaea6dad1923a5"},
+        {"path": "candidates/fortran/py_bridge.c", "kind": "c", "role": "owned Python C bridge", "sha256": "8540b708de4819f1b3340c32e78eaf083c1cad35f016c0f7af33a27773694b0d"}
+      ]
+    }
+  ],
+  "boundaries": {
+    "static_audit_qualifies_correctness": false,
+    "candidate_correctness_qualified_count": 0,
+    "candidate_correctness": "NOT MEASURED",
+    "source_to_binary_provenance": "NOT ESTABLISHED",
+    "runtime_no_delegation": "NOT ESTABLISHED",
+    "candidate_builds": "NOT RUN",
+    "performance": "NOT MEASURED",
+    "holdout": "NOT ACCESSED",
+    "winner": "NOT SELECTED"
+  }
+}

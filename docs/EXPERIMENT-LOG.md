@@ -7,6 +7,52 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Verify that all six engines really are built from scratch
+
+Audit the exact separate source trees for C, Rust, Zig, C++, Go, and
+Fortran. Require **25** distinct engine, parser, compiler, matching,
+bridge, and adapter owners. Separately verify `pyproject.toml` and
+`uv.lock`; a project dependency must not secretly install an external
+matching engine. Preserve the original C++ header, both Rust dependency
+files, and Go's dependency-free module.
+
+Pin the
+[six-family first-party ownership verifier](../tools/audit_candidate_independence_v2.py),
+SHA-256
+`57168db3df64414a7dc27f1793d9c22b7c493a8b37c025dc57243796e892d93c`,
+the
+[readable six-engine anti-delegation protocol](../oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md),
+SHA-256
+`80a1de729c067da36648dcfb9751f7bd3833ff561956df9ad82fc6106a19a16b`,
+and the
+[complete source and project-dependency inventory](../oracle/phase2/candidate-independence-v2.json),
+SHA-256
+`89662570a643d94ae1581393ed48015c6fa78d5dbe5ad0419e9a2032e4609659`.
+
+The independently corrected audit rejects Python `re`, `_sre`, foreign
+regex packages, another candidate's engine, native library tricks,
+versioned external regex symbols, C++ and Boost regex, dynamically
+assembled Python imports, Go's executable C preamble and foreign linker
+directives, and Fortran foreign includes or replacement C bindings.
+Comments and public display strings are not mistaken for executable
+engine imports. Go's generated native header is **NOT GENERATED**;
+C++, Go, and Fortran are **NOT BUILT**.
+
+Both ordinary and clean-environment synthetic runs pass **27** positive
+controls and reject **382** attacks. Both independently repeated
+read-only runs physically authenticate all **34** current C and Rust
+compatibility artifacts: **16** unopened compressed reports and **18**
+current receipts. They separately verify all **24** historical
+publication and restoration receipts, the **13-suite, 31,237-case**
+Python reference, all six candidate source trees, and both project
+dependency files. Genuine failures remain failures.
+
+This is a source-ownership result, not a runtime no-delegation proof or
+a candidate correctness result. The audit executes no candidate,
+compiler, reference, timer, or performance case. Candidate
+qualification, speed, and memory remain **NOT MEASURED**. The final
+holdout remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze independent builds for all six source-written engines
 
 Fix the complete, separate source and offline build rules for C, Rust,

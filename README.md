@@ -22,6 +22,8 @@ Zig's original non-reproducible build remains preserved alongside its
 successful corrected build.
 C++, Go, and Fortran have independently written source but have not
 been built.
+All six candidate source trees pass the independently frozen
+first-party ownership audit; this does not qualify their behavior.
 Every replacement's speed is **NOT MEASURED**; the final comparison
 remains **NOT OPENED**.
 
@@ -139,6 +141,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Independent general, scanner, and buffer reference protocol](oracle/cpython-3.14.6/PUBLIC-CONTRACT-BASELINES-V1.md) and [Python-only reference recorder](tools/record_independent_public_contract_baselines_v1.py).
 - [Real simultaneous-thread reference protocol](oracle/cpython-3.14.6/PUBLIC-THREADED-PATTERN-V1.md), [complete thread reference](oracle/cpython-3.14.6/evidence/public-threaded-pattern-v1-self-oracle.json.gz), and [original publication receipt](oracle/cpython-3.14.6/evidence/public-threaded-pattern-v1-self-oracle-publication-receipt.json).
 - [From-scratch engine ownership and no-delegation protocol](oracle/phase2/CANDIDATE-INDEPENDENCE-V1.md) and [independently tested static ownership audit](tools/audit_candidate_independence_v1.py).
+- [Six-engine first-party ownership and no-wrapping standard](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md), [complete source and dependency inventory](oracle/phase2/candidate-independence-v2.json), and [independent six-language ownership audit](tools/audit_candidate_independence_v2.py); verifies all 25 engine sources, both project dependency files, and all 34 actual C and Rust failure artifacts without claiming that a source audit proves correctness.
 - [Dependency-free Rust matching engine](candidates/rust/src/lib.rs), [native Rust Python bridge](candidates/rust/py_bridge.c), [frozen Rust lockfile](candidates/rust/Cargo.lock), and [Rust-backed Python interface](candidates/rust_candidate.py); full compatibility fails four behavioral groups and one interpreter-test setup check.
 - [Independently written Zig matching engine](candidates/zig/mini_regex.zig), [owned interpreter-safe Zig Python bridge](candidates/zig/py_bridge.c), and [experimental Zig-backed Python interface](candidates/zig_candidate.py); full compatibility is not yet measured.
 - [Independently written C++ matching engine](candidates/cpp/engine.cpp), [native Python bridge](candidates/cpp/py_bridge.cpp), and [experimental Python interface](candidates/cpp_candidate.py); source checks only.
@@ -177,6 +180,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/activate_verified_native_candidate_v1.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v2.py --self-test
 "$PY" -I -B tools/audit_candidate_independence_v1.py --self-test
+"$PY" -I -B tools/audit_candidate_independence_v2.py --self-test
 "$PY" -I -B tools/record_independent_public_contract_baselines_v1.py --self-test
 "$PY" -I -B tools/python_re_threaded_pattern_oracle_v1.py --self-test
 "$PY" -I -B tools/render_candidate_correctness_overview_v2.py --self-test
