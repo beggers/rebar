@@ -54,6 +54,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Complete original-test rules](../oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V1.md), [frozen test inventory](../oracle/phase2/six-family-p0-campaign-v1.json), and [reproducible candidate test runner](../tools/run_owned_six_family_original_p0_campaign_v1.py).
 - [Lossless original-test recording rules](../oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V2.md), [frozen streaming-test inventory](../oracle/phase2/six-family-p0-campaign-v2.json), and [complete streaming test recorder](../tools/run_owned_six_family_original_p0_campaign_v2.py); the original tests, first-party engines, and preserved Go failure remain unchanged.
 - [Complete first-party C++ failure](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures.json.gz) and [independent publication and recovery receipt](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures-publication-receipt.json).
+- [Observed first-party C++ public-argument correction](../oracle/phase2/CPP-PUBLIC-ARGUMENT-SOURCE-REPAIR-V1.md), [exact original and corrected public-adapter contract](../oracle/phase2/cpp-public-argument-source-repair-v1.json), and [independent source-only argument verifier](../tools/apply_owned_cpp_public_argument_source_repair_v1.py); all **336** Python argument examples and **three** signatures are preserved, but corrected compilation and matching have **NOT RUN**.
 - [Complete first-party Go matching failure](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v2-go-phase2-v2-failures.json.gz) and [independent streamed-result and native-recovery receipt](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v2-go-phase2-v2-failures-publication-receipt.json); all **13** groups, **4,518** genuine differences, **4** separate worker failures, and both restored native files are preserved.
 - [Observed first-party Go Unicode group-name correction](../oracle/phase2/GO-UNICODE-NAME-SOURCE-REPAIR-V1.md), [exact byte-accurate original and corrected Go source contract](../oracle/phase2/go-unicode-name-source-repair-v1.json), and [independent source-only Go repair verifier](../tools/apply_owned_go_unicode_name_source_repair_v1.py); the corrected source is derived only in memory, and its build and compatibility have **NOT RUN**.
 - [Complete Go result-recording failure](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-publication-failure-evidence.json.gz), [independent evidence receipt](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-publication-failure-evidence-publication-receipt.json), and [reproducible failure-preservation tool](../tools/preserve_owned_go_campaign_publication_failure_v1.py). This is not a Go compatibility result.
@@ -110,6 +111,10 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/reproduce_owned_native_source_build_v11.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v1.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v2.py --self-test
+"$PY" -I -B tools/apply_owned_cpp_public_argument_source_repair_v1.py --self-test \
+  --source-sha256 05681d65d080ff7c67d9afbf8dd22275123dbd0542afa8079121c4134c542d65 \
+  --protocol-sha256 3d97db34bbbe41ee7a841bb9e5eef7737415749bbc5645a6ab90f70f42a24271 \
+  --contract-sha256 ff3918853438e80778f1179057ebdf3618b395f999fe6a88494d3575b03be765
 "$PY" -I -B tools/apply_owned_go_unicode_name_source_repair_v1.py --self-test \
   --source-sha256 a32f1062ef507903edc3a7cb5d0462853528e57582dd61e24e97fd1cc7737561 \
   --protocol-sha256 fa738f2365a087d07d3860b23278fb20da00300e0d3eb3df09b6d3584f3b4c95 \
@@ -257,6 +262,12 @@ opening a benchmark:
   --source-sha256 a32f1062ef507903edc3a7cb5d0462853528e57582dd61e24e97fd1cc7737561 \
   --protocol-sha256 fa738f2365a087d07d3860b23278fb20da00300e0d3eb3df09b6d3584f3b4c95 \
   --contract-sha256 b48d52c712288b037f2b2f88a69e658d8a389fd9ab469fb1999f80debc582d33
+
+"$PY" -I -B tools/apply_owned_cpp_public_argument_source_repair_v1.py \
+  --verify-frozen-context \
+  --source-sha256 05681d65d080ff7c67d9afbf8dd22275123dbd0542afa8079121c4134c542d65 \
+  --protocol-sha256 3d97db34bbbe41ee7a841bb9e5eef7737415749bbc5645a6ab90f70f42a24271 \
+  --contract-sha256 ff3918853438e80778f1179057ebdf3618b395f999fe6a88494d3575b03be765
 
 "$PY" -I -B tools/run_owned_repaired_rust_original_campaign_v4.py \
   --verify-frozen-context \

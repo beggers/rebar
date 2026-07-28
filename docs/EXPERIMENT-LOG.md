@@ -7,6 +7,45 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the actual C++ public-argument correction
+
+Preserve the independently implemented C++ candidate's real failure:
+**2,308** matching differences, **128** verified passing checks, **seven**
+semantically failing groups, and **five** separately failed workers. The
+original Python test `ReTests.test_qualified_re_sub` also exposes a precise
+public-contract difference: Python reports
+`sub() takes from 3 to 5 positional arguments but 6 were given`, whereas
+the C++ adapter reports `sub() takes at most 5 arguments`.
+
+Freeze the smallest first-party correction to `split`, `sub`, and `subn`.
+Preserve Python's exact positional argument limits, duplicate-argument
+checks, warnings, and all three public function signatures. Do not import
+or wrap Python's matching engine or any external regular-expression package.
+
+The [first-party C++ argument-repair verifier](../tools/apply_owned_cpp_public_argument_source_repair_v1.py)
+has SHA-256
+`05681d65d080ff7c67d9afbf8dd22275123dbd0542afa8079121c4134c542d65`.
+The [observed C++ argument-failure and source-repair protocol](../oracle/phase2/CPP-PUBLIC-ARGUMENT-SOURCE-REPAIR-V1.md)
+has SHA-256
+`3d97db34bbbe41ee7a841bb9e5eef7737415749bbc5645a6ab90f70f42a24271`.
+The [exact original-adapter and corrected-source contract](../oracle/phase2/cpp-public-argument-source-repair-v1.json)
+has SHA-256
+`ff3918853438e80778f1179057ebdf3618b395f999fe6a88494d3575b03be765`.
+
+All four pinned normal and empty-environment source checks pass. They
+verify **336** genuine argument examples and all **three** exact Python
+signatures, reject **104** hostile controls, and block **11** kinds of
+external effects. The uniquely corrected in-memory adapter has SHA-256
+`aa4256725c75635d4e4e932b173d6d74ccd059bd867461ad6b0f5939306891c1`
+and is **28,109** bytes. The checked-in adapter and engine remain unchanged.
+
+Evidence remains at **153** files and **158** references. The original
+**31,237** checks, **13** groups, and separately frozen **50** unrun
+signature cases are unchanged. Corrected C++ build and matching:
+**NOT MEASURED**. Speed, memory, and undefined behavior:
+**NOT MEASURED**. The planned **4,194,304**-case comparison remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the actual Go Unicode group-name correction
 
 Preserve the original from-scratch Go result: **4,518** genuine matching
