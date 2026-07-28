@@ -52,8 +52,10 @@ builds compiled without an external regex dependency, but their debug
 data recorded different build paths. Its reproducibility gate therefore
 **FAILED**. The Rust and Zig engines and bridges have now passed
 both frozen ownership checks and strict compiler checks. The new C++ and Go engines have passed
-source and compiler checks but have **NOT BEEN BUILT**. Go still has known
-Unicode, lookbehind, and buffer-lifetime gaps. No engine has passed all
+source and compiler checks but have **NOT BEEN BUILT**. Go's Unicode
+case handling and strict C portability have been corrected at source
+level; its actual build, complete compatibility, memory, and speed are
+still **NOT MEASURED**. No engine has passed all
 **31,237** checks.
 Python's baseline is not a timing result.
 
@@ -137,7 +139,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Dependency-free Rust matching engine](candidates/rust/src/lib.rs), [interpreter-safe Rust Python bridge](candidates/rust/py_bridge.c), [frozen Rust lockfile](candidates/rust/Cargo.lock), and [Rust-backed Python interface](candidates/rust_candidate.py); full compatibility is not yet measured.
 - [Independently written Zig matching engine](candidates/zig/mini_regex.zig), [owned interpreter-safe Zig Python bridge](candidates/zig/py_bridge.c), and [experimental Zig-backed Python interface](candidates/zig_candidate.py); full compatibility is not yet measured.
 - [Independently written C++ matching engine](candidates/cpp/engine.cpp), [native Python bridge](candidates/cpp/py_bridge.cpp), and [experimental Python interface](candidates/cpp_candidate.py); source checks only.
-- [Independently written Go matching engine](candidates/go/engine.go), [native Python bridge](candidates/go/py_bridge.c), and [experimental Python interface](candidates/go_candidate.py); source checks only.
+- [Independently written Go matching engine](candidates/go/engine.go), [strictly portable Unicode-aware Python bridge](candidates/go/py_bridge.c), and [experimental Python interface](candidates/go_candidate.py); source checks only, not an executed compatibility result.
 - [Reproducible headline graph inputs](docs/evidence/candidate-correctness-overview-v2.inputs.json) and [headline graph generator](tools/render_candidate_correctness_overview_v2.py).
 - [Complete experiment log, raw evidence, rejected approaches, and preserved failures](docs/EXPERIMENT-LOG.md).
 - [Proposed expanded final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); the final cases remain **NOT GENERATED** and **NOT OPENED**.

@@ -16,7 +16,8 @@ import (
 	"fmt"
 	"runtime/cgo"
 	"strconv"
-	"unicode"
+	"sync"
+	"sync/atomic"
 	"unsafe"
 )
 
@@ -46,6 +47,9 @@ const (
 	unlimitedRepeat = -1
 	maxRepeat       = uint64(4294967295)
 	maxParseDepth   = 1000
+	unicodeScalars  = 0x110000
+	maxUnicodeRune  = rune(0x10ffff)
+	maxASCIIRune    = rune(0x7f)
 )
 
 type failure struct {
@@ -132,16 +136,18 @@ type namedGroup struct {
 }
 
 type parser struct {
-	source      []rune
-	offset      int
-	flags       uint32
-	byteMode    bool
-	groupCount  int
-	groupByName map[string]int
-	namedGroups []namedGroup
-	namedRunes  map[int]rune
-	openGroups  []int
-	depth       int
+	source              []rune
+	identifierStarts    []uint8
+	identifierContinues []uint8
+	offset              int
+	flags               uint32
+	byteMode            bool
+	groupCount          int
+	groupByName         map[string]int
+	namedGroups         []namedGroup
+	namedRunes          map[int]rune
+	openGroups          []int
+	depth               int
 }
 
 func (p *parser) invalid(message string, position int) *failure {
@@ -322,7 +328,7 @@ func (p *parser) hexadecimal(position int, count int, prefix string) (*expressio
 		result = result<<4 | digit
 	}
 	p.offset += count
-	if result > unicode.MaxRune {
+	if result > uint32(maxUnicodeRune) {
 		return nil, p.invalid("bad escape "+prefix, position)
 	}
 	return &expression{kind: nodeLiteral, character: rune(result), flags: p.flags}, nil
@@ -540,24 +546,22 @@ func (p *parser) characterSet(opening int) (*expression, *failure) {
 	return nil, p.invalid("unterminated character set", opening)
 }
 
-func validGroupName(source []rune, byteMode bool) bool {
-	if len(source) == 0 {
+func (p *parser) validGroupName(beginning int, end int) bool {
+	if beginning < 0 || end > len(p.source) || beginning >= end ||
+		len(p.identifierStarts) != len(p.source) ||
+		len(p.identifierContinues) != len(p.source) {
 		return false
 	}
-	for index, value := range source {
-		if byteMode && value > unicode.MaxASCII {
+	for position := beginning; position < end; position++ {
+		value := p.source[position]
+		if p.byteMode && value > maxASCIIRune {
 			return false
 		}
-		if value == '_' {
-			continue
-		}
-		if index == 0 {
-			if !unicode.IsLetter(value) {
+		if position == beginning {
+			if p.identifierStarts[position] == 0 {
 				return false
 			}
-		} else if !unicode.IsLetter(value) && !unicode.IsDigit(value) &&
-			!unicode.Is(unicode.Mn, value) && !unicode.Is(unicode.Mc, value) &&
-			!unicode.Is(unicode.Pc, value) {
+		} else if p.identifierContinues[position] == 0 {
 			return false
 		}
 	}
@@ -678,9 +682,10 @@ func (p *parser) readGroupName(delimiter rune, opening int) (string, int, *failu
 	if p.offset >= len(p.source) {
 		return "", begin, p.invalid("missing "+string(delimiter)+", unterminated name", begin)
 	}
-	source := p.source[begin:p.offset]
+	end := p.offset
+	source := p.source[begin:end]
 	p.offset++
-	if !validGroupName(source, p.byteMode) {
+	if !p.validGroupName(begin, end) {
 		return "", begin, p.invalid(
 			fmt.Sprintf("bad character in group name %q", string(source)),
 			begin,
@@ -729,16 +734,33 @@ func (p *parser) conditionalGroup(opening int) (*expression, *failure) {
 		return nil, p.invalid("missing ), unterminated name", begin)
 	}
 	identity := string(p.source[begin:p.offset])
+	identityEnd := p.offset
 	p.offset++
+	asciiDecimal := identityEnd > begin
+	for position := begin; position < identityEnd; position++ {
+		if p.source[position] < '0' || p.source[position] > '9' {
+			asciiDecimal = false
+			break
+		}
+	}
 	number, numberErr := strconv.Atoi(identity)
-	if numberErr != nil {
+	if !asciiDecimal || numberErr != nil {
+		if !p.validGroupName(begin, identityEnd) {
+			return nil, p.invalid(
+				fmt.Sprintf("bad character in group name %q", identity),
+				begin,
+			)
+		}
 		var ok bool
 		number, ok = p.groupByName[identity]
 		if !ok {
 			return nil, p.invalid(fmt.Sprintf("unknown group name %q", identity), begin)
 		}
 	}
-	if number < 1 || number > p.groupCount {
+	if number == 0 {
+		return nil, p.invalid("bad group number", begin)
+	}
+	if number < 0 || number > p.groupCount {
 		return nil, p.invalid(fmt.Sprintf("invalid group reference %d", number), begin)
 	}
 	yes, err := p.sequence()
@@ -1301,6 +1323,8 @@ func compileProgram(
 	flags uint32,
 	byteMode bool,
 	namedRunes map[int]rune,
+	identifierStarts []uint8,
+	identifierContinues []uint8,
 ) (*program, *failure) {
 	known := flagTemplate | flagIgnoreCase | flagLocale | flagMultiline |
 		flagDotAll | flagUnicode | flagVerbose | flagDebug | flagASCII
@@ -1312,11 +1336,13 @@ func compileProgram(
 		}
 	}
 	p := parser{
-		source:      source,
-		flags:       flags,
-		byteMode:    byteMode,
-		groupByName: make(map[string]int),
-		namedRunes:  namedRunes,
+		source:              source,
+		identifierStarts:    identifierStarts,
+		identifierContinues: identifierContinues,
+		flags:               flags,
+		byteMode:            byteMode,
+		groupByName:         make(map[string]int),
+		namedRunes:          namedRunes,
 	}
 	tree, err := p.parse()
 	if err != nil {
@@ -1343,36 +1369,95 @@ func compileProgram(
 	}, nil
 }
 
+type ownedUnicodeTables struct {
+	once     sync.Once
+	ready    atomic.Bool
+	simple   []uint32
+	expanded []uint32
+}
+
+var pythonUnicodeTables ownedUnicodeTables
+
+func installUnicodeTables(
+	simple *C.uint32_t,
+	expanded *C.uint32_t,
+	length C.size_t,
+) bool {
+	if uint64(length) != unicodeScalars ||
+		simple == nil ||
+		expanded == nil {
+		return false
+	}
+	if pythonUnicodeTables.ready.Load() {
+		return true
+	}
+
+	simpleSource := unsafe.Slice(simple, unicodeScalars)
+	expandedSource := unsafe.Slice(expanded, unicodeScalars)
+	for position := 0; position < unicodeScalars; position++ {
+		if uint32(simpleSource[position]) > uint32(maxUnicodeRune) ||
+			uint32(expandedSource[position]) > uint32(maxUnicodeRune) {
+			return false
+		}
+	}
+	pythonUnicodeTables.once.Do(func() {
+		simpleOwned := make([]uint32, unicodeScalars)
+		expandedOwned := make([]uint32, unicodeScalars)
+		for position := 0; position < unicodeScalars; position++ {
+			simpleOwned[position] = uint32(simpleSource[position])
+			expandedOwned[position] = uint32(expandedSource[position])
+		}
+		pythonUnicodeTables.simple = simpleOwned
+		pythonUnicodeTables.expanded = expandedOwned
+		pythonUnicodeTables.ready.Store(true)
+	})
+	return pythonUnicodeTables.ready.Load()
+}
+
+func expandedUnicode(value rune) rune {
+	if value < 0 || value > maxUnicodeRune ||
+		!pythonUnicodeTables.ready.Load() {
+		return value
+	}
+	return rune(pythonUnicodeTables.expanded[value])
+}
+
 type subject struct {
-	characters []C.uint32_t
-	lowercase  []C.uint32_t
-	traits     []C.uint8_t
-	byteMode   bool
-	beginning  int
-	end        int
+	characters  []C.uint32_t
+	lowercase   []C.uint32_t
+	localeLower []C.uint32_t
+	traits      []C.uint8_t
+	byteMode    bool
+	beginning   int
+	end         int
 }
 
 func (s *subject) character(index int) rune {
 	return rune(s.characters[index])
 }
 
-func foldedRune(value rune, flags uint32, byteMode bool) rune {
+func asciiLower(value rune) rune {
+	if value >= 'A' && value <= 'Z' {
+		return value + ('a' - 'A')
+	}
+	return value
+}
+
+func (s *subject) expandedFold(value rune, flags uint32) rune {
 	if flags&flagIgnoreCase == 0 {
 		return value
 	}
-	if flags&flagASCII != 0 || (byteMode && flags&flagLocale == 0) {
-		if value >= 'A' && value <= 'Z' {
-			return value + ('a' - 'A')
+	if flags&flagASCII != 0 ||
+		(s.byteMode && flags&flagLocale == 0) {
+		return asciiLower(value)
+	}
+	if s.byteMode {
+		if value < 0 || value > 255 || len(s.localeLower) != 256 {
+			return value
 		}
-		return value
+		return rune(s.localeLower[value])
 	}
-	switch value {
-	case '\u0130', '\u0131':
-		return 'i'
-	case '\u017f':
-		return 's'
-	}
-	return unicode.ToLower(value)
+	return expandedUnicode(value)
 }
 
 func (s *subject) folded(index int, flags uint32) rune {
@@ -1381,7 +1466,7 @@ func (s *subject) folded(index int, flags uint32) rune {
 		return value
 	}
 	if flags&flagASCII != 0 || (s.byteMode && flags&flagLocale == 0) {
-		return foldedRune(value, flags|flagASCII, s.byteMode)
+		return asciiLower(value)
 	}
 	return rune(s.lowercase[index])
 }
@@ -1436,19 +1521,19 @@ func (s *subject) classAt(value *characterClass, index int, flags uint32) bool {
 			break
 		}
 		if flags&flagIgnoreCase != 0 {
-			fold := s.folded(index, flags)
+			fold := s.expandedFold(current, flags)
 			if item.first == item.last {
-				if foldedRune(item.first, flags, s.byteMode) == fold {
+				if s.expandedFold(item.first, flags) == fold {
 					matched = true
 					break
 				}
 			} else {
 				for candidate := item.first; candidate <= item.last; candidate++ {
-					if foldedRune(candidate, flags, s.byteMode) == fold {
+					if s.expandedFold(candidate, flags) == fold {
 						matched = true
 						break
 					}
-					if candidate == unicode.MaxRune {
+					if candidate == maxUnicodeRune {
 						break
 					}
 				}
@@ -1606,11 +1691,11 @@ func (value *program) executeAt(
 				}
 				continue
 			}
-			actual := input.character(current.position)
-			if op.flags&flagIgnoreCase != 0 {
-				actual = input.folded(current.position, op.flags)
-			}
-			expected := foldedRune(op.character, op.flags, value.byteMode)
+			actual := input.expandedFold(
+				input.character(current.position),
+				op.flags,
+			)
+			expected := input.expandedFold(op.character, op.flags)
 			if actual != expected {
 				if !failed() {
 					return thread{}, false
@@ -1841,6 +1926,11 @@ func rebar_go_compile(
 	length C.size_t,
 	flags C.uint32_t,
 	byteMode C.uint8_t,
+	simpleUnicode *C.uint32_t,
+	expandedUnicodeData *C.uint32_t,
+	unicodeLength C.size_t,
+	identifierStarts *C.uint8_t,
+	identifierContinues *C.uint8_t,
 	namedPositions *C.size_t,
 	namedValues *C.uint32_t,
 	namedCount C.size_t,
@@ -1869,27 +1959,50 @@ func rebar_go_compile(
 	}
 	count := int(length)
 	characters := make([]rune, count)
+	startTraits := make([]uint8, count)
+	continueTraits := make([]uint8, count)
+	if byteMode == 0 &&
+		!installUnicodeTables(
+			simpleUnicode,
+			expandedUnicodeData,
+			unicodeLength,
+		) {
+		setFailure(errorMessage, errorPosition, errorKind, &failure{
+			message:  "Python Unicode 16 metadata was missing or invalid",
+			position: 0,
+			kind:     compileLimit,
+		})
+		return 0
+	}
 	if count != 0 {
-		if source == nil {
+		if source == nil ||
+			identifierStarts == nil ||
+			identifierContinues == nil {
 			setFailure(errorMessage, errorPosition, errorKind, &failure{
-				message:  "missing regular-expression source",
+				message:  "missing regular-expression source or identifier traits",
 				position: 0,
 				kind:     compileLimit,
 			})
 			return 0
 		}
 		values := unsafe.Slice(source, count)
+		starts := unsafe.Slice(identifierStarts, count)
+		continues := unsafe.Slice(identifierContinues, count)
 		for index, value := range values {
-			if uint32(value) > unicode.MaxRune ||
-				(byteMode != 0 && uint32(value) > 255) {
+			if uint32(value) > uint32(maxUnicodeRune) ||
+				(byteMode != 0 && uint32(value) > 255) ||
+				uint8(starts[index]) > 1 ||
+				uint8(continues[index]) > 1 {
 				setFailure(errorMessage, errorPosition, errorKind, &failure{
-					message:  "invalid regular-expression character",
+					message:  "invalid regular-expression character or identifier trait",
 					position: index,
 					kind:     compileInvalid,
 				})
 				return 0
 			}
 			characters[index] = rune(value)
+			startTraits[index] = uint8(starts[index])
+			continueTraits[index] = uint8(continues[index])
 		}
 	}
 	resolved := make(map[int]rune, int(namedCount))
@@ -1906,7 +2019,7 @@ func rebar_go_compile(
 		values := unsafe.Slice(namedValues, int(namedCount))
 		for index, position := range positions {
 			if uint64(position) >= uint64(length) ||
-				uint32(values[index]) > unicode.MaxRune {
+				uint32(values[index]) > uint32(maxUnicodeRune) {
 				setFailure(errorMessage, errorPosition, errorKind, &failure{
 					message:  "invalid resolved Unicode character name",
 					position: 0,
@@ -1917,7 +2030,14 @@ func rebar_go_compile(
 			resolved[int(position)] = rune(values[index])
 		}
 	}
-	value, err := compileProgram(characters, uint32(flags), byteMode != 0, resolved)
+	value, err := compileProgram(
+		characters,
+		uint32(flags),
+		byteMode != 0,
+		resolved,
+		startTraits,
+		continueTraits,
+	)
 	if err != nil {
 		setFailure(errorMessage, errorPosition, errorKind, err)
 		return 0
@@ -2014,6 +2134,7 @@ func rebar_go_execute(
 	raw C.uint64_t,
 	characters *C.uint32_t,
 	lowercase *C.uint32_t,
+	localeLower *C.uint32_t,
 	traits *C.uint8_t,
 	length C.size_t,
 	beginning C.size_t,
@@ -2040,6 +2161,8 @@ func rebar_go_execute(
 		uint64(spanCount) != uint64(2*(value.groups+1)) ||
 		lastIndex == nil ||
 		(length != 0 && (characters == nil || lowercase == nil || traits == nil)) ||
+		(!value.byteMode && !pythonUnicodeTables.ready.Load()) ||
+		(value.byteMode && localeLower == nil) ||
 		(spanCount != 0 && spans == nil) {
 		return -1
 	}
@@ -2052,6 +2175,9 @@ func rebar_go_execute(
 		input.characters = unsafe.Slice(characters, int(length))
 		input.lowercase = unsafe.Slice(lowercase, int(length))
 		input.traits = unsafe.Slice(traits, int(length))
+	}
+	if value.byteMode {
+		input.localeLower = unsafe.Slice(localeLower, 256)
 	}
 	found, matched := value.run(
 		&input,

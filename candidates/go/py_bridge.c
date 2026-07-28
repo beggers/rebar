@@ -6,6 +6,13 @@
 #include <stdlib.h>
 #include <string.h>
 
+_Static_assert(
+    sizeof(void (*)(void)) == sizeof(uintptr_t),
+    "the pinned Python extension ABI requires address-sized function pointers"
+);
+
+#define GO_FUNCTION_SLOT(function) ((void *)(uintptr_t)(function))
+
 /*
  * This module owns the Python boundary for candidates/go/engine.go. Its
  * module state, exception, Unicode helper, and heap type are separately
@@ -27,6 +34,8 @@ enum {
     GO_FAILURE_PATTERN = 1,
     GO_FAILURE_UNICODE_NAME = 2,
     GO_FAILURE_LIMIT = 3,
+    GO_UNICODE_SCALAR_COUNT = 0x110000,
+    GO_UNICODE_CASE_SEQUENCE = 3,
 };
 
 extern uint64_t rebar_go_compile(
@@ -34,6 +43,11 @@ extern uint64_t rebar_go_compile(
     size_t length,
     uint32_t flags,
     uint8_t byte_mode,
+    uint32_t *unicode_simple,
+    uint32_t *unicode_expanded,
+    size_t unicode_count,
+    uint8_t *identifier_starts,
+    uint8_t *identifier_continues,
     size_t *named_positions,
     uint32_t *named_values,
     size_t named_count,
@@ -57,6 +71,7 @@ extern int rebar_go_execute(
     uint64_t handle,
     uint32_t *characters,
     uint32_t *lowercase,
+    uint32_t *locale_lower,
     uint8_t *traits,
     size_t length,
     size_t beginning,
@@ -73,7 +88,18 @@ typedef struct {
     PyObject *program_type;
     PyObject *syntax_error;
     PyObject *unicode_module;
+    uint32_t *unicode_simple;
+    uint32_t *unicode_expanded;
+    size_t unicode_count;
 } GoModuleState;
+
+typedef struct {
+    uint32_t codepoint;
+    uint32_t fold[GO_UNICODE_CASE_SEQUENCE];
+    uint32_t uppercase[GO_UNICODE_CASE_SEQUENCE];
+    uint8_t fold_length;
+    uint8_t uppercase_length;
+} GoUnicodeCase;
 
 typedef struct {
     PyObject_HEAD
@@ -117,6 +143,327 @@ static void *go_allocate(Py_ssize_t count, size_t item_size) {
         PyErr_NoMemory();
     }
     return result;
+}
+
+static uint32_t go_unicode_component(
+    uint32_t *components,
+    uint32_t value
+) {
+    uint32_t root = value;
+    while (components[root] != root) {
+        root = components[root];
+    }
+    while (components[value] != value) {
+        uint32_t parent = components[value];
+        components[value] = root;
+        value = parent;
+    }
+    return root;
+}
+
+static void go_unicode_join(
+    uint32_t *components,
+    uint32_t first,
+    uint32_t second
+) {
+    uint32_t first_root = go_unicode_component(components, first);
+    uint32_t second_root = go_unicode_component(components, second);
+    if (first_root < second_root) {
+        components[second_root] = first_root;
+    } else if (second_root < first_root) {
+        components[first_root] = second_root;
+    }
+}
+
+static int go_unicode_sequence(
+    PyObject *character,
+    const char *method,
+    uint32_t output[GO_UNICODE_CASE_SEQUENCE],
+    uint8_t *length
+) {
+    PyObject *converted = PyObject_CallMethod(
+        character,
+        method,
+        NULL
+    );
+    if (converted == NULL) {
+        return -1;
+    }
+    if (!PyUnicode_Check(converted)) {
+        Py_DECREF(converted);
+        PyErr_SetString(
+            PyExc_SystemError,
+            "Python Unicode character mapping returned a non-string"
+        );
+        return -1;
+    }
+    Py_ssize_t count = PyUnicode_GET_LENGTH(converted);
+    if (count < 1 || count > GO_UNICODE_CASE_SEQUENCE) {
+        Py_DECREF(converted);
+        PyErr_SetString(
+            PyExc_SystemError,
+            "Python Unicode character mapping exceeded its frozen scalar width"
+        );
+        return -1;
+    }
+    int kind = PyUnicode_KIND(converted);
+    const void *data = PyUnicode_DATA(converted);
+    for (Py_ssize_t index = 0; index < count; index++) {
+        output[index] = (uint32_t)PyUnicode_READ(
+            kind,
+            data,
+            index
+        );
+    }
+    for (
+        Py_ssize_t index = count;
+        index < GO_UNICODE_CASE_SEQUENCE;
+        index++
+    ) {
+        output[index] = 0;
+    }
+    *length = (uint8_t)count;
+    Py_DECREF(converted);
+    return 0;
+}
+
+/*
+ * Derive the entire Unicode equivalence relation from Python character data.
+ * No matching engine, Unicode-15 Go table, frozen pattern, or sampled case
+ * participates. Scalar lower is intentionally kept separate: backreferences
+ * use it, while literal and class instructions use the transitive relation.
+ */
+static int go_prepare_unicode_tables(GoModuleState *state) {
+    if (state->unicode_count == GO_UNICODE_SCALAR_COUNT &&
+        state->unicode_simple != NULL &&
+        state->unicode_expanded != NULL) {
+        return 0;
+    }
+    if (state->unicode_count != 0 ||
+        state->unicode_simple != NULL ||
+        state->unicode_expanded != NULL) {
+        PyErr_SetString(
+            PyExc_SystemError,
+            "interpreter-local Unicode metadata was incompletely initialized"
+        );
+        return -1;
+    }
+    uint32_t *simple = go_allocate(
+        GO_UNICODE_SCALAR_COUNT,
+        sizeof(*simple)
+    );
+    if (simple == NULL) {
+        return -1;
+    }
+    uint32_t *expanded = go_allocate(
+        GO_UNICODE_SCALAR_COUNT,
+        sizeof(*expanded)
+    );
+    if (expanded == NULL) {
+        PyMem_Free(simple);
+        return -1;
+    }
+    for (uint32_t codepoint = 0;
+        codepoint < GO_UNICODE_SCALAR_COUNT;
+        codepoint++) {
+        expanded[codepoint] = codepoint;
+    }
+
+    GoUnicodeCase *active = NULL;
+    size_t active_count = 0;
+    size_t capacity = 0;
+    for (uint32_t codepoint = 0;
+        codepoint < GO_UNICODE_SCALAR_COUNT;
+        codepoint++) {
+        Py_UCS4 lower = Py_UNICODE_TOLOWER((Py_UCS4)codepoint);
+        Py_UCS4 upper = Py_UNICODE_TOUPPER((Py_UCS4)codepoint);
+        if (lower >= GO_UNICODE_SCALAR_COUNT ||
+            upper >= GO_UNICODE_SCALAR_COUNT) {
+            PyErr_SetString(
+                PyExc_SystemError,
+                "Python Unicode scalar mapping exceeded the Unicode range"
+            );
+            goto failure;
+        }
+        simple[codepoint] = (uint32_t)lower;
+        go_unicode_join(expanded, codepoint, (uint32_t)lower);
+        if ((uint32_t)lower == codepoint &&
+            (uint32_t)upper == codepoint) {
+            continue;
+        }
+        if (active_count == capacity) {
+            size_t next = capacity == 0 ? 64 : capacity * 2;
+            if (next < capacity ||
+                next > SIZE_MAX / sizeof(*active)) {
+                PyErr_NoMemory();
+                goto failure;
+            }
+            GoUnicodeCase *grown = PyMem_Realloc(
+                active,
+                next * sizeof(*active)
+            );
+            if (grown == NULL) {
+                PyErr_NoMemory();
+                goto failure;
+            }
+            active = grown;
+            capacity = next;
+        }
+        PyObject *character = PyUnicode_FromOrdinal(
+            (int)codepoint
+        );
+        if (character == NULL) {
+            goto failure;
+        }
+        GoUnicodeCase *entry = &active[active_count];
+        entry->codepoint = codepoint;
+        int folded = go_unicode_sequence(
+            character,
+            "casefold",
+            entry->fold,
+            &entry->fold_length
+        );
+        int uppercase = folded < 0
+            ? -1
+            : go_unicode_sequence(
+                character,
+                "upper",
+                entry->uppercase,
+                &entry->uppercase_length
+            );
+        Py_DECREF(character);
+        if (folded < 0 || uppercase < 0) {
+            goto failure;
+        }
+        active_count++;
+    }
+
+    for (size_t first = 0; first < active_count; first++) {
+        const GoUnicodeCase *left = &active[first];
+        for (size_t second = 0; second < first; second++) {
+            const GoUnicodeCase *right = &active[second];
+            int same_fold =
+                left->fold_length == right->fold_length &&
+                memcmp(
+                    left->fold,
+                    right->fold,
+                    (size_t)left->fold_length * sizeof(left->fold[0])
+                ) == 0;
+            int same_single_upper =
+                left->uppercase_length == 1 &&
+                right->uppercase_length == 1 &&
+                left->uppercase[0] == right->uppercase[0];
+            if (same_fold || same_single_upper) {
+                go_unicode_join(
+                    expanded,
+                    left->codepoint,
+                    right->codepoint
+                );
+            }
+        }
+    }
+    for (uint32_t codepoint = 0;
+        codepoint < GO_UNICODE_SCALAR_COUNT;
+        codepoint++) {
+        expanded[codepoint] = go_unicode_component(
+            expanded,
+            codepoint
+        );
+    }
+    PyMem_Free(active);
+    state->unicode_simple = simple;
+    state->unicode_expanded = expanded;
+    state->unicode_count = GO_UNICODE_SCALAR_COUNT;
+    return 0;
+
+failure:
+    PyMem_Free(active);
+    PyMem_Free(simple);
+    PyMem_Free(expanded);
+    return -1;
+}
+
+static int go_prepare_identifier_traits(
+    const uint32_t *source,
+    Py_ssize_t length,
+    int byte_mode,
+    uint8_t **starts,
+    uint8_t **continues
+) {
+    *starts = NULL;
+    *continues = NULL;
+    if (length == 0) {
+        return 0;
+    }
+    uint8_t *start_traits = go_allocate(
+        length,
+        sizeof(*start_traits)
+    );
+    if (start_traits == NULL) {
+        return -1;
+    }
+    uint8_t *continue_traits = go_allocate(
+        length,
+        sizeof(*continue_traits)
+    );
+    if (continue_traits == NULL) {
+        PyMem_Free(start_traits);
+        return -1;
+    }
+    for (Py_ssize_t index = 0; index < length; index++) {
+        Py_UCS4 value = (Py_UCS4)source[index];
+        int ascii_start =
+            value == '_' ||
+            (value >= 'A' && value <= 'Z') ||
+            (value >= 'a' && value <= 'z');
+        int ascii_continue = ascii_start ||
+            (value >= '0' && value <= '9');
+        if (byte_mode || value <= 0x7f) {
+            start_traits[index] = (uint8_t)ascii_start;
+            continue_traits[index] = (uint8_t)ascii_continue;
+            continue;
+        }
+
+        PyObject *character = PyUnicode_FromOrdinal(
+            (int)value
+        );
+        if (character == NULL) {
+            goto failure;
+        }
+        int start = PyUnicode_IsIdentifier(character);
+        Py_DECREF(character);
+        if (start < 0 || PyErr_Occurred()) {
+            goto failure;
+        }
+        start_traits[index] = (uint8_t)(start != 0);
+        if (start != 0) {
+            continue_traits[index] = 1;
+            continue;
+        }
+        Py_UCS4 prefixed[2] = {'_', value};
+        PyObject *continued = PyUnicode_FromKindAndData(
+            PyUnicode_4BYTE_KIND,
+            prefixed,
+            2
+        );
+        if (continued == NULL) {
+            goto failure;
+        }
+        int continuation = PyUnicode_IsIdentifier(continued);
+        Py_DECREF(continued);
+        if (continuation < 0 || PyErr_Occurred()) {
+            goto failure;
+        }
+        continue_traits[index] = (uint8_t)(continuation != 0);
+    }
+    *starts = start_traits;
+    *continues = continue_traits;
+    return 0;
+
+failure:
+    PyMem_Free(start_traits);
+    PyMem_Free(continue_traits);
+    return -1;
 }
 
 static int go_program_traverse(
@@ -211,9 +558,9 @@ static PyGetSetDef go_program_getsets[] = {
 };
 
 static PyType_Slot go_program_slots[] = {
-    {Py_tp_dealloc, (void *)go_program_dealloc},
-    {Py_tp_traverse, (void *)go_program_traverse},
-    {Py_tp_clear, (void *)go_program_clear},
+    {Py_tp_dealloc, GO_FUNCTION_SLOT(go_program_dealloc)},
+    {Py_tp_traverse, GO_FUNCTION_SLOT(go_program_traverse)},
+    {Py_tp_clear, GO_FUNCTION_SLOT(go_program_clear)},
     {Py_tp_getset, (void *)go_program_getsets},
     {0, NULL},
 };
@@ -508,6 +855,22 @@ static PyObject *go_compile(
         ) < 0) {
         return NULL;
     }
+    if (!byte_mode && go_prepare_unicode_tables(state) < 0) {
+        PyMem_Free(source);
+        return NULL;
+    }
+    uint8_t *identifier_starts = NULL;
+    uint8_t *identifier_continues = NULL;
+    if (go_prepare_identifier_traits(
+            source,
+            length,
+            byte_mode,
+            &identifier_starts,
+            &identifier_continues
+        ) < 0) {
+        PyMem_Free(source);
+        return NULL;
+    }
 
     size_t *named_positions = NULL;
     uint32_t *named_values = NULL;
@@ -522,6 +885,11 @@ static PyObject *go_compile(
             (size_t)length,
             (uint32_t)flag_value,
             (uint8_t)byte_mode,
+            state->unicode_simple,
+            state->unicode_expanded,
+            state->unicode_count,
+            identifier_starts,
+            identifier_continues,
             named_positions,
             named_values,
             named_count,
@@ -532,6 +900,15 @@ static PyObject *go_compile(
         if (handle != 0) {
             free(message);
             break;
+        }
+        if (PyErr_Occurred()) {
+            free(message);
+            PyMem_Free(source);
+            PyMem_Free(identifier_starts);
+            PyMem_Free(identifier_continues);
+            PyMem_Free(named_positions);
+            PyMem_Free(named_values);
+            return NULL;
         }
         if (kind == GO_FAILURE_UNICODE_NAME && message != NULL) {
             int resolved = go_resolve_unicode_name(
@@ -562,11 +939,15 @@ static PyObject *go_compile(
             free(message);
         }
         PyMem_Free(source);
+        PyMem_Free(identifier_starts);
+        PyMem_Free(identifier_continues);
         PyMem_Free(named_positions);
         PyMem_Free(named_values);
         return NULL;
     }
     PyMem_Free(source);
+    PyMem_Free(identifier_starts);
+    PyMem_Free(identifier_continues);
     PyMem_Free(named_positions);
     PyMem_Free(named_values);
 
@@ -727,16 +1108,10 @@ static int go_subject_prepare(
             traits |= GO_TRAIT_LOCALE_WORD;
         }
         Py_UCS4 lower;
-        if (program->byte_mode &&
-            (program->flags & GO_FLAG_LOCALE) != 0) {
+        if (program->byte_mode) {
             lower = (Py_UCS4)tolower((unsigned char)value);
         } else {
             lower = (Py_UCS4)Py_UNICODE_TOLOWER(value);
-            if (value == 0x0130 || value == 0x0131) {
-                lower = 'i';
-            } else if (value == 0x017f) {
-                lower = 's';
-            }
         }
         subject->characters[index] = (uint32_t)value;
         subject->lowercase[index] = (uint32_t)lower;
@@ -882,11 +1257,20 @@ static PyObject *go_execute(
         go_subject_release(&subject);
         return NULL;
     }
+    uint32_t locale_lower[256];
+    if (program->byte_mode) {
+        for (size_t index = 0; index < 256; index++) {
+            locale_lower[index] = (uint32_t)tolower(
+                (unsigned char)index
+            );
+        }
+    }
     int64_t last_index = -1;
     int outcome = rebar_go_execute(
         program->handle,
         subject.characters,
         subject.lowercase,
+        program->byte_mode ? locale_lower : NULL,
         subject.traits,
         (size_t)subject.length,
         (size_t)beginning,
@@ -959,6 +1343,11 @@ static int go_module_traverse(
 static int go_module_clear(PyObject *module) {
     GoModuleState *state = (GoModuleState *)PyModule_GetState(module);
     if (state != NULL) {
+        PyMem_Free(state->unicode_simple);
+        PyMem_Free(state->unicode_expanded);
+        state->unicode_simple = NULL;
+        state->unicode_expanded = NULL;
+        state->unicode_count = 0;
         Py_CLEAR(state->program_type);
         Py_CLEAR(state->syntax_error);
         Py_CLEAR(state->unicode_module);
@@ -1005,7 +1394,7 @@ static int go_module_exec(PyObject *module) {
 }
 
 static PyModuleDef_Slot go_module_slots[] = {
-    {Py_mod_exec, (void *)go_module_exec},
+    {Py_mod_exec, GO_FUNCTION_SLOT(go_module_exec)},
     {Py_mod_multiple_interpreters, Py_MOD_PER_INTERPRETER_GIL_SUPPORTED},
     {Py_mod_gil, Py_MOD_GIL_USED},
     {0, NULL},

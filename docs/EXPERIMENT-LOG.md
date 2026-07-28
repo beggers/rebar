@@ -7,6 +7,68 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Correct the independent Go Unicode engine and portable bridge
+
+Keep Go as a genuinely separate from-scratch parser and matching
+engine. Use only Python's public Unicode character metadata; never
+import `re`, `_sre`, an external regex package, another candidate, or
+Go's incompatible older Unicode regex tables. Derive the complete
+Python Unicode 16 equivalence relation, character-class behavior,
+simple backreference case handling, identifier validity, and
+match-time byte-locale data independently.
+
+Pin the corrected
+[Go matching engine](../candidates/go/engine.go), SHA-256
+`6472c4413921f3a877455315400c532e7632a871a96d46de9583fa6170a43192`,
+and the corrected
+[Go Python bridge](../candidates/go/py_bridge.c), SHA-256
+`52101f0afe29a568e3c2e22a06d47c89c051e08a0e2024ad4891c5ae2d60fb6a`.
+Keep the unchanged adapter and Go module hashes,
+`816d21527b9806afbc9457122f72f8f6b62c39b8b791d3f363745d412cbe3d20`
+and `9297c4e8fe4649196150400d23a4da584d7ef721347f7095399a7382edad669b`.
+
+Independently verify the public Python reference over all **1,114,112**
+Unicode scalar slots, including **2,981** case-active values,
+**1,495** components, **6,025** identity and ordered matching pairs,
+and **14,350** negative pairs. Seven independently defined checks per
+pair yield **142,625** exact Python-reference controls with zero
+unexplained self-oracle failures in both ordinary and empty
+environments. These are isolated reference controls, not executed Go
+matches and not candidate compatibility results.
+
+Preserve the actually rejected intermediate Go engine,
+SHA-256
+`a533785d5c0d4d76f8e6309c89ebcf523b5814e7c3819b95aa412f85b63d1fae`:
+an incorrectly placed conditional referenced an undefined parser
+variable. Also preserve the initially reviewed bridge,
+SHA-256
+`12ce9aad14229d11727766afae6e6a884f27847c2a303177f5182d8389d42ff0`.
+Its strict GCC 13 check genuinely reports four ISO C errors because
+three Python type callbacks and one module callback directly convert
+function pointers into object pointers. Reproduce those four errors
+from the exact rejected source in both environments; do not describe
+the old bridge as strictly portable.
+
+Correct all four callbacks using an explicitly size-checked `uintptr_t`
+slot conversion, matching the independently reviewed native bridge
+technique. Both corrected GCC 13 and Clang runs pass with
+`-Wconversion`, `-Wsign-conversion`, `-Wshadow`,
+`-Wstrict-prototypes`, `-Wpedantic`, and `-Werror`, in both ordinary
+and empty environments. Both compilers' source-only static analyzers
+and Go formatting checks also pass in both environments. Preserve two
+rejected review hypotheses: importing the public `unicodedata` module
+is not importing a matching engine, and **1,522** unordered
+nonidentity pairs are not the full **6,025** ordered pairs including
+identities.
+
+The four source-derived Python and Go Unicode table arrays contain
+exactly **17,825,792** raw bytes. This is arithmetic, not an observed
+memory peak or execution time. Cold startup, initialization, actual
+native and Python memory, complete scanners, buffer lifetimes,
+lookbehind, full Go compatibility, and speed remain **NOT MEASURED**.
+No Go binary has been built or run; the expanded final comparison
+remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Preserve the actual C compatibility-gate preflight failure
 
 Activate the genuine, twice-reproduced C engine using only the frozen,
