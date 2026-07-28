@@ -7,6 +7,64 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected C-only compatibility runner
+
+Independent review falsified the claim that a six-engine source inventory
+makes six engines runnable. The corrected original-suite runner actually
+accepts **C only**. Its machine-readable contract now records exactly
+**one** runnable family, separately identifies the **six** original
+first-party engine designs and their **25** source files, and rejects any
+attempt to relabel those designs as runnable or passing replacements.
+
+The [isolated C-only worker](../tools/run_frozen_p0_candidate_worker_v8.py)
+has SHA-256
+`78634bbcb5f55c560ea4b38c81ca395f4d4d5385c285bd0a3c25b395e3dd5ee1`.
+The [C-only original-suite runner](../tools/run_frozen_p0_candidate_v10.py)
+has SHA-256
+`c114b578ac7ebfe28b45aa3b3407b81d05333f4470fa3047fd338ed3541c185a`.
+The [frozen C-only protocol](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V10.md)
+has SHA-256
+`2d773fc55fe7c0a61e044a0e7deef81c8e36ffa0a9a744f4e60901f7a953c2ae`.
+The [complete C-only contract](../oracle/phase2/p0-candidate-protocol-v10.json)
+has SHA-256
+`8eb72f1d94af85db1f1b282dda4d6ce1839f51f492ed2c7436c666d792f9b737`.
+
+All eight ordinary and empty-environment worker and runner source gates
+pass independently. The worker rejects **257** hostile controls, including
+**six** injected failures after a worker effect. The runner rejects
+**101** hostile controls and exercises **20** process and reporting
+failure paths. Actual process-start and publication ledgers preserve
+failed launches, real process identifiers, timeouts, oversized output,
+partial results, and the original error. An incomplete category cannot
+claim a complete mismatch count. The source gates run no candidate,
+build, reference, benchmark, or hidden test.
+
+The [current C-only runner and overall-results graph](evidence/candidate-current-overview-v41.svg)
+shows the corrected reference and all previous candidate losses without
+counting an uncommitted Rust runner or reporting a C matching result.
+Its [reproducible graph renderer](../tools/render_candidate_current_overview_v41.py)
+has SHA-256
+`c0ab9b19acd895a122a171ca1d9df9010de0ec732b81b0f52f29b96cbc88f87a`.
+The [complete graph inputs](evidence/candidate-current-overview-v41.inputs.json)
+have SHA-256
+`3abaa207a8d25f03c59bd9f7443dcd0bfb5fd6934c7f1fa388e2abf636893fc4`;
+the [machine-readable current results](evidence/candidate-current-overview-v41.json)
+have SHA-256
+`e2835917d55d654a6d4c167298737c51f5f3b299ab7e2bc2c2eba60f9bff4f9f`;
+and the generated graph has SHA-256
+`882e8ddb4e233a1c569c0330bbbf618f65f54bcf3d0bb59dc1c99542677dd2b7`.
+The graph's source-only checks reject **634** hostile controls. Its
+frozen-context verification authenticates exactly one actual corrected
+Python-reference archive and starts no candidate or reference worker.
+
+All **31,237** original cases, **13** original groups, **13** named
+private waivers, and **96** corrected reference cases remain unchanged.
+The C-only runner is **FROZEN**, but corrected C matching and all other
+corrected candidate matching have **NOT RUN**. Qualified replacements:
+**0**. Runtime non-delegation: **NOT ESTABLISHED**. Speed, memory,
+confidence intervals, and undefined behavior: **NOT MEASURED**. The
+expanded **4,194,304**-case final comparison remains unopened.
+
 ## Freeze the independently written Zig scanner correction
 
 Freeze one narrowly identified Zig scanner correction against the

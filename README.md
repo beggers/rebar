@@ -16,22 +16,23 @@ The original **31,237** Python compatibility checks exposed **96** cases
 where the saved Python reference and replacement tests used different
 execution contexts. Two independent Python processes have now agreed on
 all **6,912** affected checks, including all **96** cases, in the correct
-context. Replacement testing remains paused until the runners use these
-verified answers. No case has been removed. There is no compatible
-replacement, measured speedup, or winner.
+context. No case has been removed. There is no compatible replacement,
+measured speedup, or winner.
 
-The shared test producer now preserves both the original reference and
-the corrected answers. Engine-specific test runners have **NOT RUN**.
-A separately frozen Zig scanner correction has **NOT BEEN APPLIED**.
+The corrected test runner can run **C only**. Its safety and failure
+reporting have been independently checked, but its actual C matching
+test has **NOT RUN**. Six independently written engine designs do not
+mean six runnable, tested replacements. Rust, Zig, C++, Go, and Fortran
+must each pass their own complete test. The separately frozen Zig
+scanner correction has **NOT BEEN APPLIED**.
 
-![Two independent Python processes pass all 6,912 corrected reference checks; the corrected Zig scanner targets 64 cases but has not been applied or tested; no replacement qualifies and performance is not measured](docs/evidence/candidate-current-overview-v40.svg)
+![Python passes its corrected reference; one C-only test runner is frozen but has not run; six from-scratch engine designs are not six tested replacements; speed is not measured](docs/evidence/candidate-current-overview-v41.svg)
 
-Each language below uses its own, independently written matching engine;
-the source and build checks reject outside matching packages and shared
+The source and build checks reject outside matching packages and shared
 candidate engines. A complete execution-time proof that no candidate
-delegates matching to Python remains **NOT ESTABLISHED**. The corrected
-Zig engine reduced its differences from **2,172** to **1,764** across
-all **13** original test groups, but still does not qualify.
+delegates matching to Python remains **NOT ESTABLISHED**. An earlier
+Zig build reduced its differences from **2,172** to **1,764** across
+all **13** original test groups, but did not qualify.
 
 The next corrected Rust engine now builds identically from scratch in
 two independent offline source trees. Its full matching test has
@@ -44,7 +45,7 @@ measurements start only when three independent engines pass every check.
 | --- | --- | --- | --- |
 | Python `re` | Corrected reference agrees in two independent processes | Original suite unchanged; corrected reference: 6,912 / 6,912 | Reference; not timed |
 | Rust | Corrected build repeated twice; test paused | Previous tested build: 8,965 verified; 1,036 differences | NOT MEASURED |
-| C | Independently written and built | 7,325 verified; 1,230 differences; all 13 groups completed | NOT MEASURED |
+| C | Corrected C-only test runner frozen; new test has NOT RUN | Previous build: 7,325 verified; 1,230 differences; all 13 groups completed | NOT MEASURED |
 | Zig | Independently written and built | 3,711 verified; 1,764 differences; all 13 groups completed | NOT MEASURED |
 | C++ | Independently written and built | 128 verified; 2,308 differences; five worker failures | NOT MEASURED |
 | Go | New build paused; failure recorder needs correction | 128 verified; 4,518 differences; four worker failures | NOT MEASURED |
@@ -93,6 +94,7 @@ slowdown greater than **20%**. There is no winner.
 - [Frozen Python compatibility checks](oracle/phase1/P0-COMPLETENESS-V1.md).
 - [Frozen correction for the Python reference](oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md).
 - [Corrected six-engine test producer](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md).
+- [Corrected C-only original-suite runner](oracle/phase2/P0-CANDIDATE-PROTOCOL-V10.md).
 - [Unapplied from-scratch Zig scanner correction](oracle/phase2/ZIG-SCANNER-PHRASE-SOURCE-REPAIR-V3.md).
 - [Separately frozen public-signature checks](oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md).
 - [Frozen two-process Python signature reference](oracle/phase1/CALLABLE-INTROSPECTION-REFERENCE-V2.md).
