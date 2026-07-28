@@ -1,0 +1,123 @@
+{
+  "schema": "rebar-owned-go-campaign-publication-failure-v1-source-freeze",
+  "version": 1,
+  "status": "FROZEN",
+  "goal_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+  "candidate_family": "go",
+  "candidate_label": "phase2-v1",
+  "frozen_original_campaign": [
+    {"role": "source", "relative": "tools/run_owned_six_family_original_p0_campaign_v1.py", "sha256": "50ac9f549739bb6b540f1762177f25b46c1fa345dce717ea7163e15d98ae7e88", "size_bytes": 93832},
+    {"role": "protocol", "relative": "oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V1.md", "sha256": "01d5908b9c1c3c356059a21cd0b418a7278559843d465e9062155b68f6497422", "size_bytes": 4249},
+    {"role": "contract", "relative": "oracle/phase2/six-family-p0-campaign-v1.json", "sha256": "c619e63dd18b8242bfc1af9e01030eff60e8d17128a83de216992b5cdc619801", "size_bytes": 19273}
+  ],
+  "frozen_activation": [
+    {"role": "source", "relative": "tools/activate_verified_native_candidate_v4.py", "sha256": "f22106dab1e4a2f66178cdda66388c12dda83ad09254b045b447759615bf5cd7", "size_bytes": 308110},
+    {"role": "protocol", "relative": "oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V4.md", "sha256": "3b4d463103380e30b7eb324598b4d39edb66e29f6ad483f7783cf51e4456621d", "size_bytes": 7757},
+    {"role": "contract", "relative": "oracle/phase2/verified-native-activation-v4.json", "sha256": "b1ba6cccfea423f562056e1813c8fe6c1e0ef24c2beabb099809dd1669982cf5", "size_bytes": 26819}
+  ],
+  "frozen_go_source_build": [
+    {"role": "source", "relative": "tools/reproduce_owned_native_source_build_v6.py", "sha256": "2af9da3cb37a55782f3bfb8bdbdfdb7a945532994a5c988f4645d888dbe57ebc", "size_bytes": 196660},
+    {"role": "protocol", "relative": "oracle/phase2/NATIVE-SOURCE-BUILD-V6.md", "sha256": "108dbd52144c78530221e36882a0070fe9805b1bef6a136caf4636148ae9131d", "size_bytes": 10297},
+    {"role": "contract", "relative": "oracle/phase2/native-source-build-v6.json", "sha256": "0121aaa5902b449e107396d6a1107ca8fe0fefebb0a0f09eb58d2d19c8888db4", "size_bytes": 29292},
+    {"role": "archive", "relative": "oracle/phase2/evidence/native-source-build-v6-go-phase2-v6.json.gz", "sha256": "05c24a5fff228d8eab8bec961d825b0e65504072e11e8c574ec580d9f3e6e245", "size_bytes": 37619},
+    {"role": "receipt", "relative": "oracle/phase2/evidence/native-source-build-v6-go-phase2-v6-publication-receipt.json", "sha256": "f3adcb20bb591946600e1e2b1db037fb3b4828c3d4a628a0347cfed40f262fca", "size_bytes": 3262}
+  ],
+  "retained_cpp_evidence": [
+    {"role": "archive", "relative": "oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures.json.gz", "sha256": "0462adbd6ee7bafb274578462117513669de9b849473a2e1ada441407bc814a2", "size_bytes": 3244833},
+    {"role": "receipt", "relative": "oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures-publication-receipt.json", "sha256": "7b1156c07441acd579149ca9b3aedcb9308eb75a130ce7f7df98aa6a89d776f6", "size_bytes": 3936}
+  ],
+  "inherited_historical_evidence_owner_count": 65,
+  "retained_cpp_evidence_owner_count": 2,
+  "total_retained_repository_evidence_owner_count": 67,
+  "historical_compiler_process_count": 169,
+  "original_suite_count": 13,
+  "original_case_execution_denominator": 31237,
+  "original_named_private_waiver_count": 13,
+  "original_report_publication_max_bytes": 268435456,
+  "original_archive_publication_max_bytes": 268435456,
+  "private_activation_root": {
+    "path": "/tmp/rebar-phase2-verified-native-activation-v4-go-gdwheo66",
+    "device": 2049,
+    "inode": 11385000,
+    "mode": 448,
+    "uid": 1000
+  },
+  "private_activation_owners": [
+    {"role": "activation_report", "relative": "activation-report.json", "sha256": "58bab0b59bbec0bd3d536f04a752b98424d5f690dc70c532adb8fffcc678309c", "size_bytes": 6959, "device": 2049, "inode": 11387742, "mode": 384, "uid": 1000},
+    {"role": "activation_receipt", "relative": "activation-receipt.json", "sha256": "43c07c72d44148b4adf69337732bdc139dc5e4eb8893bb8a31fd27dea0a325c3", "size_bytes": 2667, "device": 2049, "inode": 11387753, "mode": 384, "uid": 1000},
+    {"role": "recovery_journal", "relative": "recovery-journal.json", "sha256": "8c71db399823923982d2fc81d8fc17e52dad44a6c4ed85d1be339300e3e95518", "size_bytes": 3471, "device": 2049, "inode": 11385003, "mode": 384, "uid": 1000},
+    {"role": "engine_intention", "relative": "promotion-intent-engine.json", "sha256": "e599d5ab3cc01cd39bd87251f837d08c9e4a25193a78bc7114dc63c351092c41", "size_bytes": 1121, "device": 2049, "inode": 11385035, "mode": 384, "uid": 1000},
+    {"role": "bridge_intention", "relative": "promotion-intent-bridge.json", "sha256": "0db59bf159edf46b87c7d179cdbd94c068094ffb86b14f08fdbebdb31633f4d9", "size_bytes": 1177, "device": 2049, "inode": 11387740, "mode": 384, "uid": 1000}
+  ],
+  "original_go_targets": {
+    "engine": {"relative": "candidates/_go_engine.so", "sha256": "38ab223b8ef88340a7be86f2195c417ee7d2dd9deead48cc6495a5b4e3c31b27", "size_bytes": 2712912, "device": 2064, "inode": 431825},
+    "bridge": {"relative": "candidates/_go_bridge.cpython-314-x86_64-linux-gnu.so", "sha256": "dd71ab6cb15a98e1a07c38965cdb178da0dbba2a26db937975e0d6435a2a5d0c", "size_bytes": 41904, "device": 2064, "inode": 431826}
+  },
+  "required_absent_original_outcome_owners": [
+    "oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1.json.gz",
+    "oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-publication-receipt.json",
+    "oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-failures.json.gz",
+    "oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-failures-publication-receipt.json"
+  ],
+  "failure_evidence_archive": "oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-publication-failure-evidence.json.gz",
+  "failure_evidence_receipt": "oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-publication-failure-evidence-publication-receipt.json",
+  "publication_policy": {
+    "archive_mode": "0600",
+    "receipt_mode": "0600",
+    "distinct_owner_inodes": true,
+    "exclusive_creation": true,
+    "no_follow": true,
+    "same_inode_readback_required": true,
+    "archive_file_fsync_required": true,
+    "archive_directory_fsync_required": true,
+    "receipt_file_fsync_required": true,
+    "receipt_directory_fsync_required": true,
+    "gzip_mtime": 0,
+    "gzip_compresslevel": 9,
+    "maximum_failure_report_bytes": 1048576,
+    "embed_complete_original_five_owner_bytes": true
+  },
+  "failure_result_policy": {
+    "infrastructure_status": "FAIL",
+    "candidate_status": "NOT VERIFIED",
+    "candidate_qualified": false,
+    "unknown_result_fields": [
+      "actual_attempted_suite_count",
+      "actual_completed_suite_count",
+      "actual_suite_statuses",
+      "actual_mismatch_count",
+      "actual_crash_count",
+      "actual_timeout_count",
+      "actual_original_report_bytes",
+      "actual_full_worker_stdout",
+      "actual_restoration_route"
+    ],
+    "unknown_result_value": "NOT RECORDED",
+    "prepared_journal_is_not_restoration_proof": true,
+    "absent_targets_are_not_restoration_route_proof": true,
+    "report_exact_bytes_must_not_be_guessed": true,
+    "receipt_pass_means_evidence_publication_only": true
+  },
+  "verification_effects": {
+    "actual_candidate_workers": 0,
+    "actual_candidate_imports": 0,
+    "actual_reference_workers": 0,
+    "actual_source_builds": 0,
+    "actual_native_activations": 0,
+    "actual_native_promotions": 0,
+    "actual_native_libraries_loaded": 0,
+    "actual_interpreters_created": 0,
+    "actual_threads_started": 0,
+    "actual_subprocesses_started": 0,
+    "actual_network_requests": 0,
+    "hidden_cases_read": 0,
+    "benchmark_files_read": 0,
+    "clock_samples": 0,
+    "timing_trials_run": 0,
+    "qualified_candidate_count": 0,
+    "performance": "NOT MEASURED",
+    "memory": "NOT MEASURED",
+    "holdout": "NOT OPENED",
+    "winner_selected": false
+  }
+}

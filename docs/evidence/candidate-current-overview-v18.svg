@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1630" viewBox="0 0 1600 1630" role="img" aria-labelledby="v18-title v18-description">
+<title id="v18-title">Which from-scratch engines actually match Python re?</title>
+<desc id="v18-description">Python passes all 31,237 original checks. Zero of six replacement engines is proven compatible. C++ passed 128 checks, with 2,308 genuine matching differences and five separate infrastructure failures. The Go test result could not be published within its 256-mebibyte limit; its suite results, mismatch counts, and recovery route are not recorded and must not be guessed. All 69 repository evidence files remain available. Candidate speed, memory, and confidence are not measured. The proposed 4,194,304-case holdout has not been generated or opened.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.title{font-size:35px;font-weight:760;fill:#16324f}.heading{font-size:25px;font-weight:740;fill:#16324f}.body{font-size:15px;fill:#42556c}.name{font-size:18px;font-weight:720;fill:#16324f}.pass{font-size:15px;font-weight:750;fill:#00794c}.fail{font-size:15px;font-weight:740;fill:#a15e00}.warning{font-size:15px;font-weight:740;fill:#725400}.pending{font-size:15px;font-weight:700;fill:#58697d}.big{font-size:31px;font-weight:760;fill:#16324f}.foot{font-size:12px;fill:#53667b}</style>
+<rect width="1600" height="1630" rx="22" fill="#f4f7fb"/>
+<text x="54" y="69" class="title">Can these engines replace Python re?</text>
+<text x="56" y="100" class="body">Python 3.14.6 · first-party engines · original failures never hidden</text>
+<rect x="54" y="124" width="367" height="102" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="69" y="167" class="big">31,237</text>
+<text x="69" y="201" class="body">original compatibility checks</text>
+<rect x="440" y="124" width="367" height="102" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="455" y="167" class="big">0 of 6</text>
+<text x="455" y="201" class="body">fully compatible replacements</text>
+<rect x="826" y="124" width="367" height="102" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="841" y="167" class="big">69</text>
+<text x="841" y="201" class="body">verified repository evidence files</text>
+<rect x="1212" y="124" width="367" height="102" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="1227" y="167" class="big">NOT MEASURED</text>
+<text x="1227" y="201" class="body">speed, memory and confidence</text>
+<rect x="54" y="245" width="1490" height="806" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="75" y="287" class="heading">1. Does it match Python?</text>
+<text x="77" y="315" class="body">All engines share the original 13 groups and 31,237-case baseline. Unpublished outcomes are not passes.</text>
+<rect x="75" y="342" width="1448" height="72" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="370" class="name">Python re</text>
+<text x="1500" y="370" class="pass" text-anchor="end">31,237 / 31,237</text>
+<text x="272" y="396" class="body">All original Python reference checks passed</text>
+<rect x="75" y="425" width="1448" height="72" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="453" class="name">Rust</text>
+<text x="1500" y="453" class="fail" text-anchor="end">FAILED; NOT QUALIFIED</text>
+<text x="272" y="479" class="body">7,461 verified passes; 2,042 genuine matching differences</text>
+<rect x="75" y="508" width="1448" height="72" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="536" class="name">C</text>
+<text x="1500" y="536" class="fail" text-anchor="end">FAILED; NOT QUALIFIED</text>
+<text x="272" y="562" class="body">7,197 verified passes; 2,094 genuine matching differences</text>
+<rect x="75" y="591" width="1448" height="72" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="619" class="name">Zig</text>
+<text x="1500" y="619" class="fail" text-anchor="end">FAILED; NOT QUALIFIED</text>
+<text x="272" y="645" class="body">3,583 verified passes; 1,764 genuine matching differences</text>
+<rect x="75" y="674" width="1448" height="72" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="702" class="name">C++</text>
+<text x="1500" y="702" class="fail" text-anchor="end">FAILED; NOT QUALIFIED</text>
+<text x="272" y="728" class="body">128 verified passes; 2,308 matching differences; five separate infrastructure failures</text>
+<rect x="75" y="757" width="1448" height="72" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="785" class="name">Go</text>
+<text x="1500" y="785" class="warning" text-anchor="end">NOT VERIFIED; REPORT TOO LARGE</text>
+<text x="272" y="811" class="body">Engine built; original result could not be published within 256 MiB</text>
+<rect x="75" y="840" width="1448" height="72" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="868" class="name">Fortran</text>
+<text x="1500" y="868" class="warning" text-anchor="end">BUILD NOT REPRODUCIBLE</text>
+<text x="272" y="894" class="body">Compiled engines differ; matching remains NOT MEASURED</text>
+<text x="79" y="970" class="body">Go: failure evidence is preserved; matching results, crashes and exact report size remain NOT RECORDED.</text>
+<text x="79" y="998" class="body">C++: its original 13-group failure and verified restoration remain unchanged.</text>
+<rect x="54" y="1070" width="1490" height="412" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="76" y="1110" class="heading">2. Is any replacement faster?</text>
+<text x="78" y="1136" class="body">NOT MEASURED. No speed bars, confidence intervals, rankings, or memory results exist.</text>
+<text x="93" y="1172" class="name">Python re</text>
+<text x="1500" y="1172" class="pending" text-anchor="end">REFERENCE ONLY; NOT TIMED</text>
+<text x="93" y="1206" class="name">Rust</text>
+<text x="1500" y="1206" class="pending" text-anchor="end">NOT MEASURED</text>
+<text x="93" y="1240" class="name">C</text>
+<text x="1500" y="1240" class="pending" text-anchor="end">NOT MEASURED</text>
+<text x="93" y="1274" class="name">Zig</text>
+<text x="1500" y="1274" class="pending" text-anchor="end">NOT MEASURED</text>
+<text x="93" y="1308" class="name">C++</text>
+<text x="1500" y="1308" class="pending" text-anchor="end">NOT MEASURED</text>
+<text x="93" y="1342" class="name">Go</text>
+<text x="1500" y="1342" class="pending" text-anchor="end">NOT MEASURED</text>
+<text x="93" y="1376" class="name">Fortran</text>
+<text x="1500" y="1376" class="pending" text-anchor="end">NOT MEASURED</text>
+<text x="80" y="1430" class="body">A 1.5× speedup is a future goal, not a result.</text>
+<text x="58" y="1505" class="body">Proposed 4,194,304-case holdout: NOT GENERATED; NOT OPENED.</text>
+<text x="58" y="1540" class="foot">Inputs SHA-256: ed6033adb85baa7e1a2b103e1fea2ca569186d01bbad5c47bbfde038408669a0</text>
+<text x="58" y="1565" class="foot">Renderer SHA-256: 3c4bb2fff3063d201d6c952d54c28b68f5f5f97924ebbabbc0ce0feb1520008a</text>
+</svg>

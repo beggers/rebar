@@ -7,6 +7,93 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the failed first Go test-recording attempt
+
+Run the independently built, first-party Go engine against the unchanged
+original Python compatibility campaign. Do not substitute another regex
+engine, weaken an original test, open the final comparison, or record a
+speed measurement.
+
+The attempt exposes a genuine defect in the frozen version-one recorder.
+It tries to turn the entire original test report into a single in-memory
+JSON document and rejects documents larger than **268,435,456** bytes.
+The actual Go report exceeds that limit. The recorder fails before
+creating either a complete Go result archive or a result-publication
+receipt.
+
+The exact full report size, individual passing and failing test groups,
+matching differences, crashes, timeouts, and worker outcomes were not
+durably recorded. They are **NOT VERIFIED**. Neither a passing nor a
+failing Go compatibility result exists. The failed recording attempt
+does not qualify Go or change the original **31,237**-case test
+denominator.
+
+Five separate, genuine, owner-only activation records establish that the
+recorded source-built Go engine and bridge were activated. Their original
+targets were both absent, and independent checks confirm that both
+targets are absent again after the run. The recorded activation-report
+SHA-256 is
+`58bab0b59bbec0bd3d536f04a752b98424d5f690dc70c532adb8fffcc678309c`;
+the activation-receipt SHA-256 is
+`43c07c72d44148b4adf69337732bdc139dc5e4eb8893bb8a31fd27dea0a325c3`;
+the recovery-journal SHA-256 is
+`8c71db399823923982d2fc81d8fc17e52dad44a6c4ed85d1be339300e3e95518`.
+The recovery journal records the original file state; it is not a
+candidate test report or a receipt for a claimed restoration route.
+
+Freeze the [independent Go publication-failure preservation tool](../tools/preserve_owned_go_campaign_publication_failure_v1.py),
+SHA-256
+`105b7e730eae779396840ccaca13152554244ea615e5403930e0adbd2344f5ba`;
+[versioned failure-preservation rules](../oracle/phase2/OWNED-GO-CAMPAIGN-PUBLICATION-FAILURE-V1.md),
+SHA-256
+`5e067f3d71c0997be69cd5e3eb246c2e1c9387cd40616230e806ddf561994f4f`;
+and [complete failure-evidence inventory](../oracle/phase2/owned-go-campaign-publication-failure-v1.json),
+SHA-256
+`f095f94f74255432b0ceff7eb1239e28d6e4e4effeab19d4f2fed86156b2925b`.
+Ordinary and clean-environment safety tests each pass **9** positive
+checks, reject **120** hostile modifications, and block **10** real
+external effects without running another candidate.
+
+Preserve the [complete, compressed Go recording-failure evidence](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-publication-failure-evidence.json.gz),
+SHA-256
+`5ed230d255cc8ba87ff2790dd0bce091968252da159e2d8c6d7ada93feeae87e`,
+**7,719** bytes, together with the separate
+[independent recording-failure publication receipt](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-publication-failure-evidence-publication-receipt.json),
+SHA-256
+`0b7d11dad3c204d34151a38d797b1177442040524acf68fb29633d4222d681b0`,
+**2,724** bytes. The archive preserves all **15,395** original bytes
+of the **5** signed native-activation records. The receipt's `PASS`
+means that the evidence was published; the original recording failure
+remains `FAIL`, and Go compatibility remains **NOT VERIFIED**.
+
+Regenerate the [Go-aware headline graph renderer](../tools/render_candidate_current_overview_v18.py),
+SHA-256
+`3c4bb2fff3063d201d6c952d54c28b68f5f5f97924ebbabbc0ce0feb1520008a`;
+[exact evidence-pinned graph inputs](evidence/candidate-current-overview-v18.inputs.json),
+SHA-256
+`ed6033adb85baa7e1a2b103e1fea2ca569186d01bbad5c47bbfde038408669a0`;
+[complete machine-readable candidate summary](evidence/candidate-current-overview-v18.json),
+SHA-256
+`9e6ea734cb916509509e5fee7818a423d790a3134ef0d806e50f007fee4f7146`;
+and [clear, accessible overall candidate graph](evidence/candidate-current-overview-v18.svg),
+SHA-256
+`d6ef51a3737ac97c5e123ddbd1a6375bcb9026029dad443be82966aa8cc88bb7`.
+The graph preserves the complete C++ result and rejects fabricated Go
+outcomes, missing evidence, altered test totals, and hidden benchmarks.
+
+All **67** earlier repository evidence owners, including the complete
+C++ compatibility failure, remain unchanged; the **2** new
+recording-failure owners bring the preserved repository total to **69**.
+Neither new file is a Go compatibility result. The generated Go interface
+was never installed as a matching engine. Speed, memory, and confidence
+remain **NOT MEASURED**. The **4,194,304**-case comparison remains
+**NOT GENERATED** and **NOT OPENED**.
+
+Freeze and verify a separate, lossless streaming recorder before
+attempting the complete Go test again. Preserve this failed recording
+attempt independently; do not silently replace it with a successful
+rerun.
+
 ## Run the complete original Python tests against the C++ engine
 
 Run exactly one independently frozen C++ compatibility campaign. Use
