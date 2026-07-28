@@ -7,6 +7,59 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Build the independently written C++ engine from source
+
+Use only the already frozen six-language source-build protocol, exact
+offline compiler, pinned stable Python, and the four distinct C++
+source owners: its own matching parser and executor, its complete
+private header, its own native Python bridge, and its separate Python
+interface. Do not import a candidate, install an external regex
+package, activate a shared library, run a correctness case, or open a
+benchmark.
+
+Perform both independently fresh, private native builds. Both produce
+the exact same **130,744-byte** C++ Python bridge, SHA-256
+`d444611316caceb4ba08783203bc4f1d396a8987f63a49bd24c81d5d2c532441`.
+Record all **10** actual independent compiler and native-inspection
+processes and both separate source and output directories. Preserve
+their complete arguments, environment, return status, output streams,
+library dependencies, exported native symbols, runpaths, and two
+distinct resulting file identities.
+
+Pin the complete, genuinely passing
+[independent C++ source-build archive](../oracle/phase2/evidence/native-source-build-v4-cpp-phase2-v4.json.gz),
+SHA-256
+`48910a6328e8aaacdac993b2c029995d878960a456359a14db5c83b9fc518df9`,
+and its separate
+[durable C++ source-build publication receipt](../oracle/phase2/evidence/native-source-build-v4-cpp-phase2-v4-publication-receipt.json),
+SHA-256
+`7742eda3ce777b1378d0c7fb87fc064f222850ca8bcf15cd23ff8a4d87d8bebf`.
+Authenticate the receipt against the actual passing archive, the
+complete frozen source inventory, the genuine compiler output, and all
+**10** process records. A receipt by itself cannot establish a build.
+
+Regenerate the headline graph exclusively from the **53** preserved
+actual evidence records and all **25** owned engine-source files. Pin
+the [graph renderer](../tools/render_candidate_current_overview_v9.py)
+to SHA-256
+`d23551b9970bf8e4278c4d825bc851ac1eb5b87b6d2c6d4f074958eb5a179c6b`,
+the [complete graph inputs](evidence/candidate-current-overview-v9.inputs.json)
+to
+`83a2c281c792e865a02a93a89f94cbcb21bdd56006197555c5e8e1d179ad9d44`,
+the [reproducible results](evidence/candidate-current-overview-v9.json)
+to
+`8b1f57d6d93465d21613d568dfcbabf637e5e51cd4cca47ee0b3a72e934492fb`,
+and the [generated readable graph](evidence/candidate-current-overview-v9.svg)
+to
+`7f79815db967fb9cd96935bada83b14b9d6673c9e0b4eb9bc15bf5382d9f75e4`.
+
+C++ is now **SOURCE-BUILT**, not source-only. Its Python matching
+correctness, interpreter safety, native activation, memory, undefined
+behavior, and performance remain **NOT MEASURED**. Go and Fortran
+remain **NOT BUILT**. Keep all **51** actual C, Rust, and Zig records
+unchanged. No candidate qualifies, and the expanded final benchmark
+remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Run and preserve Zig's complete Python compatibility failure
 
 Activate only the genuinely reproducible, separately source-built Zig
