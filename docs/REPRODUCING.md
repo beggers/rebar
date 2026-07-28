@@ -14,6 +14,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Frozen recovery-safe same-context Python reference](../oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md), [complete corrected-reference contract](../oracle/phase1/p0-public-type-reference-context-v1.json), and [independently verified two-worker reference controller](../tools/verify_owned_public_type_reference_context_v1.py); two actual Python workers each pass all **6,912** unchanged public-type cases and preserve all **96** original case IDs. Existing replacement runners still bind the rejected original reference and remain **BLOCKED** until a separately frozen successor consumes the corrected reference.
 - [Complete corrected two-process Python reference](../oracle/phase1/evidence/public-type-reference-context-v1-cpython-3-14-6-candidate-context-p0.json.gz) and [independently durable corrected-reference receipt](../oracle/phase1/evidence/public-type-reference-context-v1-cpython-3-14-6-candidate-context-p0-publication-receipt.json); both actual workers pass every one of the **6,912** cases, produce the identical full-reference SHA-256 `6b26ac4eff9ec64cc3ae79872b3195b303a12bf40b96b55850b627857e614aa2`, and retain all **96** previously falsified cases. Reference **PASS** and publication **PASS** are checked separately. No candidate or holdout ran.
 - [Corrected shared six-family test producer](../oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md), [complete corrected producer contract](../oracle/phase2/six-family-p0-producer-v4.json), and [independent original-suite test producer](../tools/run_owned_six_family_original_p0_producer_v4.py); preserve all **31,237** original cases and both the historical and corrected Python reference digests. All **six** engine families and **25** independently owned source files remain separate. Corrected engine-specific runners and candidate matching have **NOT RUN**.
+- [Unapplied first-party Zig scanner correction](../oracle/phase2/ZIG-SCANNER-PHRASE-SOURCE-REPAIR-V3.md), [complete frozen Zig correction contract](../oracle/phase2/zig-scanner-phrase-source-repair-v3.json), and [source-only Zig correction verifier](../tools/apply_owned_zig_scanner_phrase_source_repair_v3.py); precisely **64** of the original **1,024** scanner cases identify the construction defect. The corrected Zig source has **NOT BEEN APPLIED**, its matching has **NOT RUN**, and its performance is **NOT MEASURED**.
 - [Independently reproduced two-process Python signature reference](../oracle/phase1/CALLABLE-INTROSPECTION-REFERENCE-V2.md), [exact independently isolated reference and publication contract](../oracle/phase1/callable-introspection-reference-v2.json), and [source-pinned Python reference controller](../tools/run_owned_callable_introspection_reference_v2.py); both actual reference workers passed and independently produced the same complete **50**-observation result.
 - [Complete actual Python signature-reference archive](../oracle/phase1/evidence/callable-introspection-reference-v2-cpython-3.14.6.json.gz) and [separately durable two-worker reference receipt](../oracle/phase1/evidence/callable-introspection-reference-v2-cpython-3.14.6-publication-receipt.json); reference **PASS** means both actual Python workers agreed on every additional check. The separate durable publication also passed.
 - [First-party engine ownership and no-wrapping source audit](../oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md), [exact six-family source inventory](../oracle/phase2/candidate-independence-v2.json), and [source verifier](../tools/audit_candidate_independence_v2.py); independent matching-engine ownership passes, but a complete execution-time no-delegation audit remains **NOT ESTABLISHED**.
@@ -76,7 +77,8 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Complete repaired C compatibility evidence](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures.json.gz), [independent safe-restoration receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures-publication-receipt.json), [all 13 original worker reports](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures.json.gz), and [original-suite aggregate receipt](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures-publication-receipt.json); eight complete groups pass, five retain 1,262 genuine differences, and no infrastructure failure occurred.
 - [Actual independent repaired Zig builds](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner.json.gz) and [complete native build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner-publication-receipt.json); exactly 26 genuine processes produce two identical first-party engine and bridge binaries without testing matching or measuring speed.
 - [Actual independent repaired Rust builds](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay.json.gz) and [complete offline-build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay-publication-receipt.json); exactly 28 genuine processes produce two identical dependency-free Rust engines and bridges without testing matching or measuring speed.
-- [Current plain-language six-family test-producer and Python-reference graph](../docs/evidence/candidate-current-overview-v39.svg), [independently authenticated current graph inputs](../docs/evidence/candidate-current-overview-v39.inputs.json), [complete current machine-readable results](../docs/evidence/candidate-current-overview-v39.json), and [reproducible current graph generator](../tools/render_candidate_current_overview_v39.py); two actual Python workers pass all **6,912** affected cases, all **31,237** original cases remain unchanged, and the corrected six-family test producer is frozen. Replacement tests remain blocked until engine-specific workers use the corrected producer. Historical Rust, C, and Zig differences remain **1,036**, **1,230**, and **1,764**. At least **164** evidence owners and **169** history references are independently authenticated. Speed is **NOT MEASURED** and the final comparison remains unopened.
+- [Current plain-language Zig-correction and six-family results graph](../docs/evidence/candidate-current-overview-v40.svg), [independently authenticated current graph inputs](../docs/evidence/candidate-current-overview-v40.inputs.json), [complete current machine-readable results](../docs/evidence/candidate-current-overview-v40.json), and [reproducible current graph generator](../tools/render_candidate_current_overview_v40.py); the Zig scanner source identifies **64** of **1,024** cases, but the correction is **NOT APPLIED** and matching has **NOT RUN**. The corrected Python reference passes, all **31,237** original cases remain unchanged, and engine-specific candidate runs remain blocked. Actual historical Zig matching remains **1,764** differences. At least **164** evidence owners and **169** references are independently authenticated. Speed is **NOT MEASURED** and the final comparison remains unopened.
+- [Historical six-family test-producer graph](../docs/evidence/candidate-current-overview-v39.svg), [historical test-producer graph inputs](../docs/evidence/candidate-current-overview-v39.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v39.json), and [historical graph generator](../tools/render_candidate_current_overview_v39.py); preserve the corrected Python baseline, frozen six-family producer, and matching-blocked state from before the Zig scanner correction was frozen.
 - [Historical corrected-Python-reference graph](../docs/evidence/candidate-current-overview-v38.svg), [historical corrected-reference graph inputs](../docs/evidence/candidate-current-overview-v38.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v38.json), and [historical graph generator](../tools/render_candidate_current_overview_v38.py); preserve the actual passing two-process reference and the previous state before the corrected six-family producer was frozen.
 - [Historical Python-reference falsification graph](../docs/evidence/candidate-current-overview-v37.svg), [historical falsification graph inputs](../docs/evidence/candidate-current-overview-v37.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v37.json), and [historical graph generator](../tools/render_candidate_current_overview_v37.py); preserve the **96** actual Python-context failures, **162** authenticated evidence owners, and **167** references from before the corrected two-worker reference passed.
 - [Historical candidate and corrected-Rust build graph](../docs/evidence/candidate-current-overview-v36.svg), [historical graph inputs](../docs/evidence/candidate-current-overview-v36.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v36.json), and [historical graph generator](../tools/render_candidate_current_overview_v36.py); this preserved snapshot predates the candidate-context falsification. It authenticates the corrected Rust build's **28** real processes, **161** evidence owners, and **166** references. Its Rust, C, and Zig matching results are historical, not corrected-reference results.
@@ -95,6 +97,11 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
 "$PY" -I -B tools/verify_p0_completeness_v1.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_producer_v4.py --self-test
+"$PY" -I -B tools/apply_owned_zig_scanner_phrase_source_repair_v3.py \
+  --self-test \
+  --source-sha256 9b5cf55b9d66729b84b91470f8ba5906208ccee09312b43c329acaab2ff34010 \
+  --protocol-sha256 78fccd7fffd33e5ecd9a9033d8225c294d82ee07f391eb46ccd621a08e0d38e1 \
+  --contract-sha256 4eee672b4fe6f25f7481c34a34928f00d34a45a9e0675e024238a8ee5576fade
 "$PY" -I -B tools/verify_owned_public_type_reference_context_v1.py \
   --self-test \
   --source-sha256 bff95e5630e875e1b389eeb4555810a112728dbed5f2cc7c43e1ec83d0817ddc \
@@ -204,6 +211,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/render_candidate_current_overview_v37.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v38.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v39.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v40.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v6.py --self-test \
   --source-sha256 d3a9b08c1bf7e3408719a0e92b8c1965aa6160dd2e18ab1501bb8662aaf8e4a1 \
   --protocol-sha256 0e736d575835fa22388841a527e22b62eef1ddf39eac9415bd7c518ba985b1d0 \
@@ -331,7 +339,31 @@ decompressing a matching archive, or opening the final comparison:
   --protocol-sha256 e82b3469853406bf36812f016688aa3e6403b8d98d025a29fb9d0a9704ea2aa5 \
   --document-sha256 c22ff77b4947659510634e3fb802f82b559b8938dd26ba2d58552f3e761fa1d5
 
-# Verify the current corrected-reference and frozen six-family graph.
+# Verify the frozen Zig correction without applying or building it.
+"$PY" -I -B tools/apply_owned_zig_scanner_phrase_source_repair_v3.py \
+  --verify-frozen-context \
+  --source-sha256 9b5cf55b9d66729b84b91470f8ba5906208ccee09312b43c329acaab2ff34010 \
+  --protocol-sha256 78fccd7fffd33e5ecd9a9033d8225c294d82ee07f391eb46ccd621a08e0d38e1 \
+  --contract-sha256 4eee672b4fe6f25f7481c34a34928f00d34a45a9e0675e024238a8ee5576fade
+
+# Verify the current Zig-feature and frozen six-family graph.
+"$PY" -I -B tools/render_candidate_current_overview_v40.py \
+  --verify-frozen-context \
+  --source-sha256 15dc12f2d6a3c329d326f8d5b53bd2b1db7e82d01bb7c55e1178bd4ec0587c14 \
+  --source-bytes 50218 \
+  --archive-sha256 c4906928850329fa3576576221e713ce653adae17a02a4de4bac4cb006389e05 \
+  --receipt-sha256 ff8ddfaa14ff2eb09bde02ecb3566c84d204a41373c6b842eb34598c4de2f966 \
+  --producer-source-sha256 e0bab3833f6b8274b79e19b1dd7ca28c45931ef3efea8eefcc5cdfb0505af3d8 \
+  --producer-protocol-sha256 e82b3469853406bf36812f016688aa3e6403b8d98d025a29fb9d0a9704ea2aa5 \
+  --producer-contract-sha256 c22ff77b4947659510634e3fb802f82b559b8938dd26ba2d58552f3e761fa1d5 \
+  --zig-source-sha256 9b5cf55b9d66729b84b91470f8ba5906208ccee09312b43c329acaab2ff34010 \
+  --zig-protocol-sha256 78fccd7fffd33e5ecd9a9033d8225c294d82ee07f391eb46ccd621a08e0d38e1 \
+  --zig-contract-sha256 4eee672b4fe6f25f7481c34a34928f00d34a45a9e0675e024238a8ee5576fade \
+  --inputs-sha256 a05ee04da984b618781bc31fe0deba6d1daf7c44256d7804e539ddd1392a2ffd \
+  --summary-sha256 5e9f2216fc2a0ab4742d36a1aa49c422880a8ae17e3e1534da9b362ca0eeda92 \
+  --svg-sha256 7e9189fb06410903b9f5d851648893e7984b8ecd1ba7d42c73329c1f985857e3
+
+# Verify the historical six-family graph from before the Zig feature.
 "$PY" -I -B tools/render_candidate_current_overview_v39.py \
   --verify-frozen-context \
   --source-sha256 8adb7202644da2d19a4d2f50fe191de8d84007ce9b654a427a61fb4ea883c6b5 \

@@ -7,6 +7,63 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the independently written Zig scanner correction
+
+Freeze one narrowly identified Zig scanner correction against the
+actual corrected Python reference and the corrected shared six-engine
+producer. The [first-party Zig scanner-correction verifier](../tools/apply_owned_zig_scanner_phrase_source_repair_v3.py)
+has SHA-256
+`9b5cf55b9d66729b84b91470f8ba5906208ccee09312b43c329acaab2ff34010`.
+The [frozen Zig scanner-correction protocol](../oracle/phase2/ZIG-SCANNER-PHRASE-SOURCE-REPAIR-V3.md)
+has SHA-256
+`78fccd7fffd33e5ecd9a9033d8225c294d82ee07f391eb46ccd621a08e0d38e1`.
+The [complete Zig correction contract](../oracle/phase2/zig-scanner-phrase-source-repair-v3.json)
+has SHA-256
+`4eee672b4fe6f25f7481c34a34928f00d34a45a9e0675e024238a8ee5576fade`.
+
+The original frozen scanner matrix contains **1,024** cases. Exactly
+**64** expose the identified phrase-overflow construction: **32**
+nested-capture cases, **16** numbered-capture cases, and **16**
+named-capture cases. Preserve all remaining **960** cases. The derived
+correction is computed and verified in memory only. It has **NOT BEEN
+APPLIED**, and its impact on any actual matching result remains
+**NOT MEASURED**.
+
+Ordinary and empty-environment source and frozen-context checks all
+pass. Each source-only gate rejects **216** hostile controls and blocks
+**52** potential effects, including direct native-extension loading,
+subprocess creation, and matching-engine imports. The current Python
+reference, corrected six-family producer, actual historical Zig
+failure, original **31,237** cases, and **13** named private waivers
+remain authenticated and unchanged.
+
+The [current Zig-feature and overall candidate graph](evidence/candidate-current-overview-v40.svg)
+shows the **64** prospective cases prominently without reporting an
+applied correction or improved candidate. Its [source-pinned graph
+renderer](../tools/render_candidate_current_overview_v40.py) has SHA-256
+`15dc12f2d6a3c329d326f8d5b53bd2b1db7e82d01bb7c55e1178bd4ec0587c14`.
+The [complete graph inputs](evidence/candidate-current-overview-v40.inputs.json)
+have SHA-256
+`a05ee04da984b618781bc31fe0deba6d1daf7c44256d7804e539ddd1392a2ffd`;
+the [machine-readable current results](evidence/candidate-current-overview-v40.json)
+have SHA-256
+`5e9f2216fc2a0ab4742d36a1aa49c422880a8ae17e3e1534da9b362ca0eeda92`;
+and the generated graph has SHA-256
+`7e9189fb06410903b9f5d851648893e7984b8ecd1ba7d42c73329c1f985857e3`.
+Both ordinary and empty-environment source-only checks pass and reject
+**515** hostile controls. Each actual graph context accurately records
+one corrected Python-reference archive read and zero candidate runs or
+matching-archive reads. The authenticated lower bounds remain **164**
+evidence owners and **169** history references.
+
+The historical full Zig result remains **1,764** differences and
+**3,711** verified passes. The separate verbose-scanner failures are
+not declared repaired. Actual source application, Zig compilation,
+and matching remain **BLOCKED** until the independently corrected
+engine-specific candidate runners are frozen. No replacement is
+qualified, and speed and memory are **NOT MEASURED**. The final
+**4,194,304**-case comparison remains unopened.
+
 ## Freeze the corrected six-engine test producer
 
 Correct the single shared original-suite test producer before

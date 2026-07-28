@@ -22,8 +22,9 @@ replacement, measured speedup, or winner.
 
 The shared test producer now preserves both the original reference and
 the corrected answers. Engine-specific test runners have **NOT RUN**.
+A separately frozen Zig scanner correction has **NOT BEEN APPLIED**.
 
-![Two independent Python processes pass all 6,912 corrected reference checks; the corrected six-engine test cases are frozen, but replacement runners have not yet run; no replacement qualifies and performance is not measured](docs/evidence/candidate-current-overview-v39.svg)
+![Two independent Python processes pass all 6,912 corrected reference checks; the corrected Zig scanner targets 64 cases but has not been applied or tested; no replacement qualifies and performance is not measured](docs/evidence/candidate-current-overview-v40.svg)
 
 Each language below uses its own, independently written matching engine;
 the source and build checks reject outside matching packages and shared
@@ -92,6 +93,7 @@ slowdown greater than **20%**. There is no winner.
 - [Frozen Python compatibility checks](oracle/phase1/P0-COMPLETENESS-V1.md).
 - [Frozen correction for the Python reference](oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md).
 - [Corrected six-engine test producer](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md).
+- [Unapplied from-scratch Zig scanner correction](oracle/phase2/ZIG-SCANNER-PHRASE-SOURCE-REPAIR-V3.md).
 - [Separately frozen public-signature checks](oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md).
 - [Frozen two-process Python signature reference](oracle/phase1/CALLABLE-INTROSPECTION-REFERENCE-V2.md).
 - [Independent, from-scratch engine and no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
