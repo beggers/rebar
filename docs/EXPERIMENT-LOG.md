@@ -7,6 +7,44 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a fail-safe full correctness run for the repaired C engine
+
+Freeze the entire safety boundary before loading the genuinely built
+first-party C repair. Keep all **13** original Python test groups, all
+**31,237** original checks, their original evaluator, all historical failures,
+and all **13** named private exceptions. Do not run a smaller or replacement
+test suite.
+
+Authenticate the two actual repaired C builds, their preserved build evidence,
+and the unmodified original C source before touching the native module. The
+existing user-owned native module is present: SHA-256
+`075350a17d4909cd6f8dbe5e808e7b6444760f54bb60af013e0f812e22cfb7fd`,
+device **2064**, inode **430300**, **149,976** bytes, and mode `0755`. A
+recovery guard must cover the whole activation and test run. If the inner
+runner already restored the file, verify its original recovery receipt instead
+of attempting a second recovery. Publish nothing until the exact original
+inode, bytes, hash, and permissions have been restored.
+
+Freeze the [recovered full-suite runner](../tools/run_owned_repaired_c_original_campaign_v1.py),
+SHA-256
+`51caee9c71ab2f7c2007ecd3ea9c9ced590f3f0c9d3ac1ee8bc8e2ae2574bff0`;
+[original correctness and recovery rules](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V1.md),
+SHA-256
+`de88fe5506107d88130bd6caca56f9d41114516649b3ed3398bbd7b4979b3108`;
+and [machine-readable frozen recovery contract](../oracle/phase2/repaired-c-original-campaign-v1.json),
+SHA-256
+`c88d02cd0f6a6785ee2b907148e2a1691ff7e55f7da006ede0d01c2abcf62d9b`.
+Both normal and clean-environment self-tests reject **71** hostile changes;
+both pinned read-only checks authenticate the real repaired C builds, the
+**73** existing evidence files, **78** historical references, and the
+unchanged original native file.
+
+These four checks start no candidate, activate no native module, build no
+source, run no compatibility checks, and record no performance data.
+Repaired C compatibility remains **NOT MEASURED**. The **4,194,304**-case
+final comparison remains **NOT FROZEN**, **NOT GENERATED**, and
+**NOT OPENED**.
+
 ## Build the corrected first-party C engine twice
 
 Run the independently frozen C build exactly once after freezing and

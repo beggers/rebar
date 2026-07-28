@@ -123,6 +123,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Reproducible independent Rust build rules](oracle/phase2/NATIVE-SOURCE-BUILD-V9.md), [exact Rust build inventory](oracle/phase2/native-source-build-v9.json), and [offline two-build verifier](tools/reproduce_owned_native_source_build_v9.py); the repaired Rust engine has no external regex dependency and has not yet been built or retested.
 - [Safe reversible C-engine loading rules](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V5.md), [exact recovery and build checks](oracle/phase2/verified-native-activation-v5.json), and [first-party engine recovery tool](tools/activate_verified_native_candidate_v5.py); no repaired engine has been loaded or tested.
 - [Complete repaired-engine Python test rules](oracle/phase2/P0-CANDIDATE-PROTOCOL-V8.md), [all original groups and seeds](oracle/phase2/p0-candidate-protocol-v8.json), [isolated original-test worker](tools/run_frozen_p0_candidate_worker_v6.py), and [complete test and recovery recorder](tools/run_frozen_p0_candidate_v8.py); all **31,237** existing cases remain unchanged and the repaired engine has not yet been run.
+- [Fail-safe full C test rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V1.md), [exact recovery and test contract](oracle/phase2/repaired-c-original-campaign-v1.json), and [recovered original-test runner](tools/run_owned_repaired_c_original_campaign_v1.py); the original native file must be restored before any result is recorded. The repaired engine has **NOT YET BEEN RETESTED**.
 - [Complete original-test rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V1.md), [frozen test inventory](oracle/phase2/six-family-p0-campaign-v1.json), and [reproducible candidate test runner](tools/run_owned_six_family_original_p0_campaign_v1.py).
 - [Lossless original-test recording rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V2.md), [frozen streaming-test inventory](oracle/phase2/six-family-p0-campaign-v2.json), and [complete streaming test recorder](tools/run_owned_six_family_original_p0_campaign_v2.py); the original tests, first-party engines, and preserved Go failure remain unchanged.
 - [Complete first-party C++ failure](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures.json.gz) and [independent publication and recovery receipt](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures-publication-receipt.json).
@@ -145,6 +146,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_frozen_p0_candidate_v7.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_worker_v6.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v8.py --self-test
+"$PY" -I -B tools/run_owned_repaired_c_original_campaign_v1.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_producer_v1.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_producer_v2.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v1.py --self-test
@@ -188,6 +190,12 @@ opening a benchmark:
   --v8-archive-sha256 69a795af6c407c0719b68dfa9fd4cb6dcfca2595271f72b83bc43678521f2598 \
   --v8-receipt-sha256 3b0983af9729b3150ae239a83dd0fdb37c6e790b3c03ebea48c77215f51456b8 \
   --manifest-sha256 bf09019d4a8df9ab5519a0b6bbbe9c4aaa8574dbcc4a9eafc1b424ba1961f021
+
+"$PY" -I -B tools/run_owned_repaired_c_original_campaign_v1.py \
+  --verify-frozen-context \
+  --source-sha256 51caee9c71ab2f7c2007ecd3ea9c9ced590f3f0c9d3ac1ee8bc8e2ae2574bff0 \
+  --protocol-sha256 de88fe5506107d88130bd6caca56f9d41114516649b3ed3398bbd7b4979b3108 \
+  --contract-sha256 c88d02cd0f6a6785ee2b907148e2a1691ff7e55f7da006ede0d01c2abcf62d9b
 
 "$PY" -I -B tools/run_frozen_p0_candidate_worker_v6.py \
   --verify-frozen-context \
