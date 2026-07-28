@@ -11,6 +11,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Frozen Python compatibility tests](../oracle/phase1/P0-COMPLETENESS-V1.md), [all 31,237 test cases](../oracle/phase1/p0-completeness-v1.json), and [independent test verifier](../tools/verify_p0_completeness_v1.py).
 - [Separately frozen public callable signature checks](../oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md), [all 50 additional function, pattern, match, and scanner cases](../oracle/phase1/p0-callable-introspection-v1.json), and [independent source-only verifier](../tools/verify_python_re_callable_introspection_v1.py); the original **31,237** cases are unchanged, and **two** separate Python reference processes passed all **50** additional checks. Candidate signature checks have **NOT RUN**.
 - [Actual 96-case candidate-context Python reference falsification](../oracle/phase1/evidence/public-type-candidate-context-falsification-v1.json); the original public-type helper produces `__main__` when run as a script and its qualified module name when imported by a candidate worker. Pinned Python alone reproduces all **96** differences. All candidate matching is **BLOCKED** pending a passing, same-context two-Python reference. Preserve all **31,237** original cases, the genuine C subclass-equality failure, and every recorded Zig failure.
+- [Frozen recovery-safe same-context Python reference](../oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md), [complete corrected-reference contract](../oracle/phase1/p0-public-type-reference-context-v1.json), and [independently verified two-worker reference controller](../tools/verify_owned_public_type_reference_context_v1.py); the future **two** Python workers must each cover all **6,912** unchanged public-type cases and preserve all **96** original case IDs. The corrected reference is **NOT RUN**. Existing replacement runners still bind the rejected original reference and remain **BLOCKED** until a separately frozen successor authenticates the actual corrected reference.
 - [Independently reproduced two-process Python signature reference](../oracle/phase1/CALLABLE-INTROSPECTION-REFERENCE-V2.md), [exact independently isolated reference and publication contract](../oracle/phase1/callable-introspection-reference-v2.json), and [source-pinned Python reference controller](../tools/run_owned_callable_introspection_reference_v2.py); both actual reference workers passed and independently produced the same complete **50**-observation result.
 - [Complete actual Python signature-reference archive](../oracle/phase1/evidence/callable-introspection-reference-v2-cpython-3.14.6.json.gz) and [separately durable two-worker reference receipt](../oracle/phase1/evidence/callable-introspection-reference-v2-cpython-3.14.6-publication-receipt.json); reference **PASS** means both actual Python workers agreed on every additional check. The separate durable publication also passed.
 - [First-party engine ownership and no-wrapping source audit](../oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md), [exact six-family source inventory](../oracle/phase2/candidate-independence-v2.json), and [source verifier](../tools/audit_candidate_independence_v2.py); independent matching-engine ownership passes, but a complete execution-time no-delegation audit remains **NOT ESTABLISHED**.
@@ -89,6 +90,11 @@ Run the source-only safety checks without opening the final comparison:
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
 "$PY" -I -B tools/verify_p0_completeness_v1.py --self-test
+"$PY" -I -B tools/verify_owned_public_type_reference_context_v1.py \
+  --self-test \
+  --source-sha256 bff95e5630e875e1b389eeb4555810a112728dbed5f2cc7c43e1ec83d0817ddc \
+  --protocol-sha256 11ca046ccd5087b2212b8ad8496896fb1fd60e408a193e038bae4b19fb360018 \
+  --contract-sha256 dd0ea680e9a73345f7c323e278ba7ccebd5a3bb26cb606a9bdbecf7c3fb8298b
 "$PY" -I -B tools/verify_python_re_callable_introspection_v1.py \
   --self-test \
   --source-sha256 5a64fb4546bdccd13b6d8d9ba32a7472b01cb86dd0d9f2c643678e6bbf919653 \
@@ -274,6 +280,14 @@ Verify the current headline graph without rerunning a candidate,
 decompressing a matching archive, or opening the final comparison:
 
 ```sh
+# Verify the corrected Python-reference freeze without starting a worker.
+"$PY" -I -B tools/verify_owned_public_type_reference_context_v1.py \
+  --verify-frozen-context \
+  --source-sha256 bff95e5630e875e1b389eeb4555810a112728dbed5f2cc7c43e1ec83d0817ddc \
+  --protocol-sha256 11ca046ccd5087b2212b8ad8496896fb1fd60e408a193e038bae4b19fb360018 \
+  --contract-sha256 dd0ea680e9a73345f7c323e278ba7ccebd5a3bb26cb606a9bdbecf7c3fb8298b
+
+# Verify the current independently reproduced falsification graph.
 "$PY" -I -B tools/render_candidate_current_overview_v37.py \
   --verify-frozen-context \
   --source-sha256 4dcd5c14a63adeb159e11c86802bb4080eea82dec9240afb2f910da7bd39ef07 \

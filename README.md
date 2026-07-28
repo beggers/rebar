@@ -19,6 +19,10 @@ Candidate testing is paused until Python agrees with itself in the exact
 candidate execution context. No cases will be removed. There is no
 compatible replacement, measured speedup, or winner.
 
+The corrected, independently verified two-process Python reference is
+frozen but **NOT RUN**. Existing replacement test runners still point at
+the rejected reference and cannot run until they are corrected.
+
 ![Python disagrees with itself on 96 of the original 31,237 checks, so replacement testing is paused; previously tested Rust, C, and Zig have 1,036, 1,230, and 1,764 historical differences; no replacement qualifies and speed is not measured](docs/evidence/candidate-current-overview-v37.svg)
 
 Each language below uses its own, independently written matching engine;
@@ -86,6 +90,7 @@ slowdown greater than **20%**. There is no winner.
 - [Reproduce the results and verify every graph](docs/REPRODUCING.md).
 - [Experiment log, original reports, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Frozen Python compatibility checks](oracle/phase1/P0-COMPLETENESS-V1.md).
+- [Frozen correction for the Python reference](oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md).
 - [Separately frozen public-signature checks](oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md).
 - [Frozen two-process Python signature reference](oracle/phase1/CALLABLE-INTROSPECTION-REFERENCE-V2.md).
 - [Independent, from-scratch engine and no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).

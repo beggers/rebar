@@ -7,6 +7,47 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected Python-to-Python reference
+
+Freeze the complete correction before starting another Python reference
+process. The [recovery-safe reference controller](../tools/verify_owned_public_type_reference_context_v1.py)
+has SHA-256
+`bff95e5630e875e1b389eeb4555810a112728dbed5f2cc7c43e1ec83d0817ddc`.
+The [corrected reference protocol](../oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md)
+has SHA-256
+`11ca046ccd5087b2212b8ad8496896fb1fd60e408a193e038bae4b19fb360018`.
+The [complete versioned correction contract](../oracle/phase1/p0-public-type-reference-context-v1.json)
+has SHA-256
+`dd0ea680e9a73345f7c323e278ba7ccebd5a3bb26cb606a9bdbecf7c3fb8298b`.
+
+Ordinary and empty-environment source and frozen-context checks all
+pass. Each source check rejects **255** hostile controls and tests
+**six** simulated real-controller failures: failure to create the
+private recovery journal, failure to start a process, a failed second
+process, a timeout, archive-publication failure, and receipt-publication
+failure. Simulations are not executed reference workers. The controller
+records attempted, started, completed, and validated workers separately;
+it retains real process IDs, bounded complete output, failures, and
+durable owner-only recovery records.
+
+The proposed corrected run will use **two** independently isolated
+Python processes, each observing all **6,912** unchanged public-type
+cases in the exact named-module context used by replacements. It is
+**NOT RUN**. The original **31,237** cases, **13** suites, **13** named
+private waivers, all **96** previously falsified cases, and the genuine
+C equality failure remain unchanged. The separately frozen **50**
+signature checks still pass and are not added to the original total.
+
+The old original-suite producer and replacement runners still bind the
+rejected script-context reference. Even a future passing corrected
+reference will not authorize any replacement test until a separately
+frozen producer consumes both genuine corrected reference records and
+their durable publication. All replacement matching remains
+**BLOCKED**. The current V37 headline graph remains accurate: the
+corrected reference has **NOT RUN**, speed and memory are **NOT
+MEASURED**, and the **4,194,304**-case final comparison remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Falsify the candidate-facing Python public-type reference
 
 Replay the exact original `public_types_v1` evaluation path using only
