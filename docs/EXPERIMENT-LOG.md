@@ -7,6 +7,53 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the actual C compatibility-gate preflight failure
+
+Activate the genuine, twice-reproduced C engine using only the frozen,
+crash-recoverable native activation protocol. Verify its exact
+source-build archive, both fresh binary identities, every pinned C
+source, the durable **0700** recovery root, the **0600** journal and
+promotion intention, and the unchanged original native binary.
+
+Run the exact already-published version-three full compatibility
+controller. It rejects the actual recovery record before starting a
+single candidate or reference worker. The saved error is
+`a mode-0600 pre-replace promotion intention was lost`; this is an
+incorrect controller assumption, not a missing file, a failed C regex
+match, or a failed compiler.
+
+The true frozen activator returns a fresh, verified inode-identity
+record when rereading a promotion intention. The original exclusively
+written intention has the same genuine path, hash, size, device,
+inode, and mode, plus its durable creation and synchronization flags.
+Version three wrongly requires these two differently shaped records to
+be identical and looks for publication flags on the fresh read. Preserve
+that actual false rejection; a successor must compare exact ownership
+fields and authenticate the original publication flags without dropping
+any crash-recovery or native-identity checks.
+
+The complete exclusive
+[version-three C failure report](../oracle/phase2/evidence/frozen-p0-candidate-v3-c-phase2-v3-failures.json.gz)
+is **1,096 bytes**, SHA-256
+`3f7718b09080d0aa9612dabc7f97e8f41ea35958c8bbfeb7febbbf678d06028d`.
+Its original uncompressed report is **2,539 bytes**, SHA-256
+`5eb32867d926d709b216b1a153f7d2ad11bc9bbfe2261d90f0d4f4073757dc71`.
+The complete
+[C failure publication receipt](../oracle/phase2/evidence/frozen-p0-candidate-v3-c-phase2-v3-failures-publication-receipt.json)
+is **1,179 bytes**, SHA-256
+`02996c09c8662c75eadadeccef2ac77895d942a56e06aca323e880f951a330a1`.
+
+Immediately use the frozen authentic restore command and independently
+verify the original C binary returns to SHA-256
+`075350a17d4909cd6f8dbe5e808e7b6444760f54bb60af013e0f812e22cfb7fd`.
+Preserve the genuine **31,237**-case denominator and record exactly
+**zero** executed C compatibility cases, **zero** supplemental
+interpreter cases, **zero** candidate imports, and **zero** reference
+workers. Do not alter or rerun the frozen version-three source or
+silently reuse its exclusive evidence label. Full C correctness,
+runtime memory, and speed remain **NOT MEASURED**; the larger final
+comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Preserve the actual Zig reproducibility failure
 
 Run the original frozen, unmodified version-two build protocol on the
