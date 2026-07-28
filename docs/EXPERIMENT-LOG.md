@@ -7,6 +7,39 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze independently reproducible builds for the corrected C engine
+
+Freeze a two-build experiment that retains both first-party C repairs:
+the earlier replacement-buffer correction and the exact fix for the
+**32** archived legacy match-pickling differences. Preserve all
+**64** already-correct higher-protocol cases and the previous
+**1,262** measured C compatibility differences.
+
+Each future independent build must create its own private C source
+from scratch, apply both frozen repairs exactly once, and use the
+same previously audited compiler and native-inspection rules. There
+are **7** real compiler and inspection processes per build, or **14**
+total. They have not yet run. Both resulting native binaries must be
+byte-for-byte identical without sharing source directories or
+delegating matching to another engine.
+
+Preserve the [independent repaired-C build verifier](../tools/reproduce_owned_c_pickle_source_build_v12.py),
+SHA-256
+`654e4dea29b9f687a27b53fa18b2f345e29042a03ea4b507594e87fa3e4a161f`;
+[offline C build protocol](../oracle/phase2/C-PICKLE-SOURCE-BUILD-V12.md),
+SHA-256
+`aecb2cacfc5397a46e2d123767d4b7bf39935d1bda95d3b0d0cf8058614769ac`;
+and [exact first-party native-build contract](../oracle/phase2/c-pickle-source-build-v12.json),
+SHA-256
+`5c3bc3487962c9b66cd63155a0ca0d7fc18aa4debac47ee9a75123a678d800b3`.
+
+Both normal and clean-environment source and context checks pass
+without building, loading, or testing the candidate. The actual C
+result remains **1,262** differences. The proposed build, its
+compatibility, speed, memory, and undefined behavior remain
+**NOT MEASURED**. The original **31,237** Python checks and final
+holdout are unchanged.
+
 ## Freeze the C repair for Python's original match-pickling behavior
 
 Inspect all **6,912** original public-type records and retain all
