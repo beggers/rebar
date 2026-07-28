@@ -1,0 +1,216 @@
+{
+  "schema": "rebar-owned-candidate-subinterpreters-protocol-v1",
+  "version": 1,
+  "phase": "CANDIDATES",
+  "status": "SOURCE FROZEN; CANDIDATES NOT RUN",
+  "goal_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+  "controller": {
+    "source_path": "tools/run_owned_candidate_subinterpreters_v1.py",
+    "source_sha256_mode": "mandatory-exact-caller-pinned-source-bytes",
+    "protocol_path": "oracle/phase2/candidate-subinterpreters-v1.json",
+    "protocol_sha256_mode": "mandatory-exact-caller-pinned-source-bytes",
+    "explanation_path": "oracle/phase2/CANDIDATE-SUBINTERPRETERS-V1.md",
+    "explanation_sha256_mode": "mandatory-exact-caller-pinned-source-bytes"
+  },
+  "python": {
+    "implementation": "CPython",
+    "version": "3.14.6",
+    "executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+    "sha256": "255e900f44ce87c630e83b637a79435f9ae7778dd72f6e2a2f18a486e501d016",
+    "isolated": true,
+    "bytecode_writes": false
+  },
+  "phase1": {
+    "inventory_path": "oracle/phase1/p0-completeness-v1.json",
+    "inventory_sha256": "cc703915bf08b4a4d3caf399729d6afd4b583287633bd5db25db3a20671cd47f",
+    "verifier_path": "tools/verify_p0_completeness_v1.py",
+    "verifier_sha256": "0bb256c3d1140688f0f466d90cae020345aafcb5d3e8130b38b09e9de3930a0c",
+    "full_suite_count": 13,
+    "full_case_execution_denominator": 31237
+  },
+  "candidate_gate": {
+    "source_path": "tools/run_frozen_p0_candidate_v1.py",
+    "source_sha256": "c8378cd59a3b4dfaf75609c5b06f5a5ec20114d428e8e06ccc0f12ceec2076b8",
+    "inventory_path": "oracle/phase2/p0-candidate-protocol-v1.json",
+    "inventory_sha256": "7ca70c9d4ae7491ae2b9b9a660c8c72efcee629708103ac7654f31353fa7cd0c"
+  },
+  "source_build": {
+    "source_path": "tools/reproduce_phase2_native_builds_v1.py",
+    "source_sha256": "e4cee196fcd6ff0908f46c26ef66363aa059e3003f2e89b302df10f35f9a3afd",
+    "protocol_path": "oracle/phase2/NATIVE-SOURCE-BUILDS-V1.md",
+    "protocol_sha256": "33c495f6852155130c92af73422b7a6c6aae26b1c7012e65e2ddddab028064a2",
+    "actual_published_selected_family_build_required": true,
+    "preexisting_native_binary_is_source_build_proof": false,
+    "candidate_authorization": {
+      "required_protocol_version": 2,
+      "status": "V2_PUBLISHED_NO_FAMILY_BUILDS",
+      "source_path": "tools/reproduce_phase2_native_builds_v2.py",
+      "source_sha256": "e822e22cf6a5bbbdc2b634209c6e185ca74ebc55d86828ebea77bb5d44ce3796",
+      "protocol_path": "oracle/phase2/NATIVE-SOURCE-BUILDS-V2.md",
+      "protocol_sha256": "f383c2ca419c18cf77451c855b53593bb97ea7fa83c90d5d133a80de043aa603",
+      "report_schema": "rebar-phase2-independent-native-source-build-v2",
+      "receipt_schema": "rebar-phase2-independent-native-source-build-v2-durable-publication-receipt",
+      "future_digest_policy": "mandatory-exact-caller-pinned-published-source-protocol-archive-and-receipt",
+      "version_1_can_authorize_candidate": false,
+      "actual_native_must_match_both_fresh_v2_outputs": true,
+      "versioned_undefined_regex_symbol_audit_required": true
+    },
+    "published_before_controller_freeze": {
+      "completed_family_count": 1,
+      "c": {
+        "status": "PASS",
+        "family": "c",
+        "label": "phase2-v1",
+        "archive_path": "oracle/phase2/evidence/native-source-build-v1-c-phase2-v1.json.gz",
+        "archive_sha256": "b7844048cde986cae25ec4dafadfbb6dc560f4ea86108b908fe074176423f2e2",
+        "receipt_path": "oracle/phase2/evidence/native-source-build-v1-c-phase2-v1-publication-receipt.json",
+        "receipt_sha256": "7736349d1e8dce83e47fdf741a4e34fb313d4d370a11a2d5563dba4468e55002",
+        "fresh_extension_sha256": "ed57383dad99ce311664d165635fa300f3894df6b4816b5f54801d0e68263697",
+        "fresh_extension_bytes": 163136,
+        "independent_fresh_phase_count": 2,
+        "byte_identical": true,
+        "candidate_processes_started": 0,
+        "candidate_imports": 0,
+        "native_libraries_loaded": 0
+      },
+      "rust": "NOT RUN",
+      "zig": "NOT RUN"
+    }
+  },
+  "independence_audit": {
+    "source_path": "tools/audit_candidate_independence_v1.py",
+    "source_sha256": "f18d9b99a3f11fdf20c47d6cb43cb353532c894ababbdaeb7088c14e397ae3b5",
+    "protocol_path": "oracle/phase2/CANDIDATE-INDEPENDENCE-V1.md",
+    "protocol_sha256": "a7ee45f0ea76ee7fedacc564c3122b7f37272d918ef28f1c527c9e8adf351292",
+    "runtime_no_delegation_proved_by_static_audit": false,
+    "persistent_per_interpreter_v5_guard_required": true
+  },
+  "canonical_activation": {
+    "status": "REQUIRED_NOT_PUBLISHED",
+    "source_path": "tools/activate_verified_native_candidate_v1.py",
+    "protocol_path": "oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V1.md",
+    "report_schema": "rebar-phase2-verified-native-candidate-activation-v1",
+    "receipt_schema": "rebar-phase2-verified-native-candidate-activation-v1-durable-publication-receipt",
+    "backup_root_prefix": "/tmp/rebar-phase2-verified-native-activation-v1-",
+    "backup_root_mode": "0700",
+    "source_sha256_mode": "mandatory-exact-caller-pinned-source-bytes",
+    "protocol_sha256_mode": "mandatory-exact-caller-pinned-source-bytes",
+    "report_sha256_mode": "mandatory-exact-caller-pinned-source-bytes",
+    "receipt_sha256_mode": "mandatory-exact-caller-pinned-source-bytes",
+    "exact_v2_source_build_required": true,
+    "preexisting_repo_native_binary_authorizes_candidate": false,
+    "verified_transactionally_activated_repo_binary_required": true,
+    "frozen_guard_root_mutation_allowed": false,
+    "complete_reversible_native_backup_required": true,
+    "transactional_rollback_required": true,
+    "canonical_frozen_guard_source_sha256": {
+      "tools/independent_original_cpython_suite_v5.py": "8e499c03d076cec59da44a2d7dac15bdec6eb49bfec562cbd3dd4893cf3bdfce",
+      "tools/independent_original_cpython_suite_v4.py": "1b6b217bd6883dcfc2ff3ceafa66fa49544770bb7007d210ebbe3a57e48d24a3",
+      "tools/rust_original_cpython_suite_v1.py": "cf0267e3766fb849891d182e5b57ced569a0634831dd494d8135e703844b6c95",
+      "tools/rust_original_cpython_suite_v2.py": "569036804b557b01eb29ba404c6fea0ecc5806bdbc2b6b9eb61c1ea18aa79267",
+      "tools/rust_original_cpython_suite_v3.py": "55aced566c4ef0a236f26ddf4607dbe3e69ae9dc15ab6fd95399d4ddc346cea2"
+    }
+  },
+  "original_guard": {
+    "source_path": "tools/independent_original_cpython_suite_v5.py",
+    "source_sha256": "8e499c03d076cec59da44a2d7dac15bdec6eb49bfec562cbd3dd4893cf3bdfce",
+    "identity_guard_path": "tools/rust_original_cpython_suite_v2.py",
+    "identity_guard_sha256": "569036804b557b01eb29ba404c6fea0ecc5806bdbc2b6b9eb61c1ea18aa79267",
+    "warning_guard_path": "tools/rust_original_cpython_suite_v3.py",
+    "warning_guard_sha256": "55aced566c4ef0a236f26ddf4607dbe3e69ae9dc15ab6fd95399d4ddc346cea2",
+    "persistent_guard_per_interpreter": true,
+    "public_re_alias_is_authenticated_own_candidate_only": true,
+    "public_re_alias_is_original_stdlib": false
+  },
+  "reference": {
+    "source_path": "tools/python_re_subinterpreter_oracle_v2.py",
+    "source_sha256": "54735efb77a099feb2dd076723d3a93d81415226b9b9213307c32cc0f38c52c8",
+    "protocol_path": "oracle/cpython-3.14.6/PUBLIC-SUBINTERPRETER-V2.md",
+    "protocol_sha256": "8c5caccf077ec38afbad62e282f8e74aa470b5d3616ed0b6aa848dd6d97c0dee",
+    "producer_program_bytes": 11378,
+    "producer_program_sha256": "9d136a708a438c1f8060c047d89d415c4854ffaeeee9af2fb2d8619f2f0ed07d",
+    "adapted_program_bytes": 12759,
+    "adapted_program_sha256": "147b09bcda37678b9ac4f2f050a22eb5435c7703cbce33247e9287e62e514f71",
+    "matrix_sha256": "edda77658c5eef9746c6d4769734c69e40db4c9d986171fa63799093f4cb62d3",
+    "reference_records_sha256": "450fccc859099ca78aec725911b6195695cd932ad281af931ca7945cec8c51e8",
+    "projected_reference_records_sha256": "cf5633c8dc1038d650603eee421371285d0e32f6446190ce728590f1f5c55021",
+    "case_count": 128,
+    "cohort_count": 16,
+    "cases_per_cohort": 8,
+    "independent_reference_roles": 2,
+    "reference_process_ids": "actual independently validated archive values; not hardcoded"
+  },
+  "identity_projection": {
+    "name": "explicit-lossless-reference-only-owner-identity-v1",
+    "projected_reference_only_top_level_fields": [
+      "candidate_imports",
+      "stdlib_origin_verified"
+    ],
+    "lossless_observation_field_renames": {
+      "actual_stdlib_reimport": "actual_engine_reimport",
+      "match_is_stdlib_match": "match_is_engine_match",
+      "module_identity": "engine_sysmodules_identity_verified",
+      "pattern_is_stdlib_pattern": "pattern_is_engine_pattern",
+      "reimported_origin_verified": "engine_reimported_origin_verified",
+      "stdlib_owner": "engine_sysmodules_owner_verified",
+      "stdlib_re_module": "engine_module_name_verified"
+    },
+    "semantic_fields_dropped": 0,
+    "canonical_json_has_trailing_newline": false
+  },
+  "lifecycle": {
+    "actual_case_execution_count": 128,
+    "actual_a_observations": 128,
+    "actual_b_observations": 128,
+    "actual_repeated_a_observations": 128,
+    "actual_fresh_interpreter_case_observations": 8,
+    "actual_a_after_b_close_observations": 1,
+    "actual_fresh_c_observations": 1,
+    "actual_case_interpreter_exec_calls": 394,
+    "actual_initialization_interpreter_exec_calls": 11,
+    "actual_guard_cleanup_interpreter_exec_calls": 11,
+    "actual_interpreters_created": 11,
+    "actual_interpreters_destroyed": 11,
+    "correctness_worker_timeout_seconds": 180,
+    "correctness_worker_cleanup_timeout_seconds": 15,
+    "all_real_pipes_read_to_eof": true,
+    "all_real_pipe_descriptors_closed": true,
+    "interpreter_live_set_restored": true,
+    "locale_restored": true
+  },
+  "candidate_families": ["rust", "c", "zig"],
+  "family_audit_names": {
+    "rust": "rust",
+    "c": "c_vm",
+    "zig": "zig"
+  },
+  "evidence": {
+    "directory": "oracle/phase2/evidence",
+    "pass_archive_template": "owned-candidate-subinterpreters-v1-FAMILY-LABEL.json.gz",
+    "pass_receipt_template": "owned-candidate-subinterpreters-v1-FAMILY-LABEL-publication-receipt.json",
+    "failure_archive_template": "owned-candidate-subinterpreters-v1-FAMILY-LABEL-failures.json.gz",
+    "failure_receipt_template": "owned-candidate-subinterpreters-v1-FAMILY-LABEL-failures-publication-receipt.json",
+    "deterministic_gzip_mtime": 0,
+    "exclusive_no_overwrite": true,
+    "no_follow": true,
+    "same_inode_readback_verified": true,
+    "file_fsync_required": true,
+    "directory_fsync_required": true,
+    "complete_failures_preserved": true
+  },
+  "boundaries": {
+    "actual_candidate_workers_before_publication": 0,
+    "actual_completed_source_builds_before_publication": 1,
+    "actual_source_builds_started_by_self_test": 0,
+    "candidate_results": "NOT MEASURED",
+    "hidden_cases_read": 0,
+    "benchmark_files_read": 0,
+    "clock_samples": 0,
+    "timing_trials_run": 0,
+    "performance": "NOT MEASURED",
+    "final_holdout_authorized": false,
+    "final_holdout_opened": false,
+    "candidate_qualified_for_hidden_benchmark": false,
+    "final_winner_selected": false
+  }
+}

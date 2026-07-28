@@ -7,6 +7,66 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze genuine isolated-interpreter checks for each native engine
+
+Freeze the [candidate interpreter controller](../tools/run_owned_candidate_subinterpreters_v1.py),
+SHA-256
+`45e9b47c7c635fc30ebdb2cb4830d2d1fe382a5a7e4b663fb1a8e0112779e1a7`,
+its [complete machine-readable interpreter protocol](../oracle/phase2/candidate-subinterpreters-v1.json),
+SHA-256
+`7d282b559952df68b95b5ebd55634b99d922ffc27b7a640778822ec3eed6ebe2`,
+and its [plain-language interpreter protocol](../oracle/phase2/CANDIDATE-SUBINTERPRETERS-V1.md),
+SHA-256
+`1dee7ebb7a98ccfec65cdb58f95378836a6747c1c9532ca676599cce62367332`,
+before building or importing any current native candidate.
+
+Preserve all **128** original source-ordered cases without changing the
+**31,237**-case full-oracle denominator. An actual future candidate must
+create and destroy **11** real Python interpreters and perform **394**
+genuine matching observations; the **11** initialization calls and **11**
+cleanup calls are separately recorded. Require the exact original
+A/B/A order, eight fresh-interpreter cases, real pipe descriptors, event
+order, complete bytes, genuine end-of-file, locale restoration, exact
+candidate engine identity, and the unchanged original version-five guard.
+Never copy the guard or rebind its project root.
+
+Use only the complete, uniquely derived **12,759**-byte interpreter
+program, SHA-256
+`147b09bcda37678b9ac4f2f050a22eb5435c7703cbce33247e9287e62e514f71`.
+The exact projected original reference is SHA-256
+`cf5633c8dc1038d650603eee421371285d0e32f6446190ce728590f1f5c55021`.
+The original preliminary transformation's whole-source hash was
+**NOT CAPTURED**; do not invent or relabel one. Independent review also
+identified and corrected incomplete descriptor accounting, parent-module
+import bypasses, candidate-specific native-type cleanup, and synthetic
+results that initially mislabeled expected interpreter calls as actual.
+
+Both ordinary and empty-environment source-only checks genuinely pass
+**418** positive controls and reject **502** hostile substitutions. Every
+actual candidate, interpreter, thread, pipe, file, native load, source
+build, timing, and holdout-access counter remains zero. The **394/11/11**
+counts are explicitly expected future operations, not synthetic test
+results.
+
+Actual candidate worker timeouts and process cleanup are bounded. The
+**48 MiB** captured-output check happens after subprocess collection; it
+is **not** a proven streaming memory cap. Do not describe it as one.
+At this freeze exactly **one** historical version-one C build exists,
+**zero** corrected version-two family builds have run, and reversible
+native activation remains **NOT PUBLISHED**.
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/run_owned_candidate_subinterpreters_v1.py --self-test
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/run_owned_candidate_subinterpreters_v1.py --self-test
+```
+
+No real candidate or reference was started. Candidate correctness,
+native memory safety, and speed remain **NOT MEASURED**. The expanded
+final comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze a separate, from-scratch Go matching engine
 
 Preserve Go as a fifth, separately implemented architecture, not a Go
