@@ -7,6 +7,53 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected complete candidate compatibility gate
+
+Retain the genuinely observed version-three C failure and all original
+source, activation, restore, native-build, and full-suite records.
+Independently reproduce its cause using the actual preserved recovery
+journal and mode-**0600** promotion intention, not a hypothetical
+fixture. A freshly read file owner has seven exact identity fields;
+the original durable publication has the same seven fields plus its
+exclusive-write and synchronization evidence. Comparing the complete
+dictionaries incorrectly rejected a correctly promoted file.
+
+Freeze the corrected
+[complete version-four candidate controller](../tools/run_frozen_p0_candidate_v4.py),
+SHA-256
+`7bb6104423fbd6604decdb46b1c9b1cc0c0782094d04db467710b3b3b2cc208c`,
+its independently generated
+[version-four human-readable protocol](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V4.md),
+SHA-256
+`1d7afe5658e8f0f7bb8576fbf1f191a9d8d2d82bde7c97d179b46e1760de2b1f`,
+and its
+[exact full candidate inventory](../oracle/phase2/p0-candidate-protocol-v4.json),
+SHA-256
+`e874b253b7baf4ab8cb3f359a44c2d4eacb4251abc3e5703507dceac616690a8`.
+
+Require all seven exact path, hash, size, device, inode, and mode
+identities on the genuine freshly read file. Separately check the
+original publication's four durable creation and synchronization
+guarantees and its positive actual write count. Preserve the native
+binary's genuine mode instead of incorrectly requiring it to be
+**0600**. Directly verify that the actual saved version-three failing
+snapshot now passes, and reject every substituted inode, missing
+flag, changed path, false write count, and forged role.
+
+Keep all **13** original suites and all **31,237** original cases,
+plus **128** real-interpreter checks counted separately. Preserve and
+authenticate the actual C preflight failure and its receipt before
+starting a candidate worker. Both ordinary and empty-environment
+source-only controls pass byte-identically: **33** accepted cases,
+**706** rejected attacks, and zero actual file, candidate, compiler,
+activation, interpreter, benchmark, clock, or hidden-holdout
+operations.
+
+This chunk freezes only the corrected compatibility gate. No
+version-four candidate has yet run. Full replacement compatibility,
+runtime memory, and speed remain **NOT MEASURED**; the final
+comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Replace historical headline graphs with actual current results
 
 Older headline graphs correctly described their historical source

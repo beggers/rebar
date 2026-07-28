@@ -104,6 +104,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 ## Evidence and reproduction
 
 - [Complete 31,237-check compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md), [machine-readable test inventory](oracle/phase1/p0-completeness-v1.json), and [independent fail-closed verifier](tools/verify_p0_completeness_v1.py).
+- [Corrected complete 31,237-check candidate protocol](oracle/phase2/P0-CANDIDATE-PROTOCOL-V4.md), [exact version-four candidate inventory](oracle/phase2/p0-candidate-protocol-v4.json), and [recovery-verified full candidate runner](tools/run_frozen_p0_candidate_v4.py); no version-four candidate has run.
 - [Final source-verified 31,237-check candidate protocol](oracle/phase2/P0-CANDIDATE-PROTOCOL-V3.md), [exact version-three candidate inventory](oracle/phase2/p0-candidate-protocol-v3.json), and [crash-verified full candidate runner](tools/run_frozen_p0_candidate_v3.py).
 - [Preserved C full-gate preflight failure](oracle/phase2/evidence/frozen-p0-candidate-v3-c-phase2-v3-failures.json.gz) and [independently verified C preflight failure receipt](oracle/phase2/evidence/frozen-p0-candidate-v3-c-phase2-v3-failures-publication-receipt.json); zero compatibility cases ran.
 - [Complete shared candidate correctness protocol](oracle/phase2/P0-CANDIDATE-PROTOCOL-V2.md), [exact version-two candidate inventory](oracle/phase2/p0-candidate-protocol-v2.json), and [full 31,237-check candidate runner](tools/run_frozen_p0_candidate_v2.py).
@@ -140,6 +141,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_frozen_p0_candidate_v1.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v2.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v3.py --self-test
+"$PY" -I -B tools/run_frozen_p0_candidate_v4.py --self-test
 "$PY" -I -B tools/run_owned_candidate_subinterpreters_v1.py --self-test
 "$PY" -I -B tools/run_owned_candidate_subinterpreters_v2.py --self-test
 "$PY" -I -B tools/reproduce_phase2_native_builds_v1.py --self-test
