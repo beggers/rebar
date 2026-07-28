@@ -7,6 +7,64 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze isolated, from-scratch builds for all six languages
+
+Freeze a new, independently reviewed source-build standard before
+retrying Go, Fortran, or any other matching engine. Preserve all
+**25** first-party engine source files, all **13** pinned toolchain
+owners, all **57** independently signed historical evidence files,
+and the unchanged **13-suite**, **31,237-case** Python standard.
+Reject all Python, Go, Rust, C++, C, Zig, Fortran, and native-library
+regex wrappers, cross-candidate engines, external packages,
+fallbacks, and networked package resolution.
+
+Correct the exact recorded Go build architecture. Give each
+independent build phase a private Go module containing only
+hash-verified copies of the original `go.mod` and `engine.go`.
+Preserve the original Python-facing `py_bridge.c` separately; never
+compile it as part of the Go engine. Require the pinned offline Go
+compiler to generate its own real nine-export native header before
+the independent C compiler builds the Python bridge. Verify each
+phase's separate files, inodes, generated header, ELF symbols,
+runpaths, caches, and complete compiler output.
+
+Preserve Go's original **4** real processes and compilation failure,
+the genuine C++ **10**-process successful source build, and the
+Fortran **18**-process reproducibility failure. Keep both real
+Fortran engine hashes, the genuinely identical bridge, all **9**
+engine functions, and all **3** reverse callbacks. The prior
+version-two and version-four source-build evidence contains **71**
+real process records; it is distinct from **57** signed evidence
+files. The successful version-three Zig build adds **15** separate
+historical steps when all source-build versions are counted.
+
+Freeze a fixed Fortran compiler seed and phase-independent path
+mapping as a reproducibility **HYPOTHESIS**, not as a successful
+build. Add complete native-section and note inspections to future
+builds so a later reproducibility failure has captured forensic
+evidence. Do not invent an ELF section or diagnose the historical
+failure beyond the recorded unequal engine hashes.
+
+Pin the [corrected six-engine source-build recorder](../tools/reproduce_owned_native_source_build_v5.py)
+to SHA-256
+`39ba55b6906a2aebf204c878c143894562f317765b0427f4f1f449e35e1dde92`,
+the [frozen corrected source-build standard](../oracle/phase2/NATIVE-SOURCE-BUILD-V5.md)
+to
+`d2f7ca95cb0df377f4698399f56eea9eb0c237b0ad2f9e3790d74a0bee2246d9`,
+and the [complete machine-readable source inventory](../oracle/phase2/native-source-build-v5.json)
+to
+`a54121391d43f5ee5e2debcdecf06567cb947d2e654142ba622c7adf0681ee11`.
+Independently run the ordinary and clean-environment source checks:
+**151** genuine acceptance controls, **242** rejected attacks, and
+**0** actual builds, candidate imports, native-library loads,
+network requests, clocks, or holdout reads. Verify all **57**
+historical owners in both read-only full-context checks.
+
+This chunk performs **NO NEW SOURCE BUILD** and runs **NO CANDIDATE**.
+Go and Fortran remain unqualified. All runtime, memory, and speed
+results are **NOT MEASURED**; the expanded final comparison remains
+**NOT GENERATED** and **NOT OPENED**.
+
 ## Correct the complete 31,237-case candidate test
 
 Freeze the complete original **13-suite**, **31,237-case** Python
