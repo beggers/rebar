@@ -7,6 +7,48 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze an independent Zig build against all current C evidence
+
+The earlier Zig build rules were frozen when the complete evidence
+history contained **105** files and **110** authenticated references.
+After the repaired C campaign publishes all **30** genuine worker,
+aggregate, and recovery records, those old rules still report their
+historical inventory. Do not run the outdated build or present it as a
+current experiment.
+
+Freeze a separate first-party Zig build that authenticates the current
+results graph, all **135** real evidence files, **140** authenticated
+references, and all **30** new C records. Keep the genuine C result:
+**13** completed original workers, **7,325** verified passing cases,
+**1,262** compatibility differences, **0** infrastructure failures,
+and the exact restored original native file.
+
+Preserve the original dependency-free Zig engine, its authentic native
+C bridge, the independently frozen capture repair, the existing official
+Zig compiler, and all **1,764** previous Zig failures. Future builds
+must use two distinct, owner-only private snapshots and **26** genuinely
+recorded compiler and inspection processes. Those processes remain
+planned until a separate actual build.
+
+Freeze the [current-history first-party Zig build verifier](../tools/reproduce_owned_zig_scanner_source_build_v11.py),
+SHA-256
+`b908f12d14fb8ebc5f17c62dfc00d48a1a5ee3717a3144aed437059e21c0f097`;
+[complete-evidence independent Zig build rules](../oracle/phase2/ZIG-SCANNER-SOURCE-BUILD-V11.md),
+SHA-256
+`15fd222876407be72d36c0b9cf2ce581d8b73a954358df192c2a083a08973539`;
+and [exact current-history, first-party two-build contract](../oracle/phase2/zig-scanner-source-build-v11.json),
+SHA-256
+`92979e4bfacd6d23e7f54f4fdce7a7707cc54dba2512753029fdcd479150464c`.
+
+Normal and clean-environment synthetic and pinned read-only checks
+preserve every existing source and failure, reject stale history, and
+start **0** compilers, matching engines, or timing measurements.
+No repaired Zig engine has yet been built or retested. Its correctness,
+speed, memory, and undefined behavior remain **NOT MEASURED**.
+
+No candidate qualifies. The **4,194,304**-case final comparison remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Run all 13 corrected C workers and preserve every matching failure
 
 Run the independently reproduced first-party repaired C engine once
