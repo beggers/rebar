@@ -28,6 +28,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Evidence-backed C match-pickling repair](../oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V2.md), [exact private-source and original-evidence contract](../oracle/phase2/first-party-source-repair-v2.json), and [first-party C source-repair verifier](../tools/apply_owned_first_party_source_repair_v2.py); all 32 observed protocol-0/1 failures and all 64 higher-protocol observations are preserved. The later V15 experiment builds the repaired source twice; its matching remains **NOT MEASURED**.
 - [Separate first-party Rust repair](../oracle/phase2/RUST-SOURCE-REPAIR-V1.md), [exact Rust repair and preserved evidence](../oracle/phase2/rust-source-repair-v1.json), and [private Rust-snapshot-only repair tool](../tools/apply_owned_rust_source_repair_v1.py); the existing Rust engine and all its previous failures remain unchanged.
 - [Independent Rust public-compatibility repair](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V1.md), [exact three-block private-source contract](../oracle/phase2/rust-public-contract-source-repair-v1.json), and [first-party Rust public-source verifier](../tools/apply_owned_rust_public_contract_source_repair_v1.py); the repaired source was independently applied to both private builds. Its later complete compatibility test found **1,087** differences.
+- [Source-only correction for the observed Rust flag-display failure](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V2.md), [exact private-source and genuine-Python flag contract](../oracle/phase2/rust-public-contract-source-repair-v2.json), and [independently written Rust repair verifier](../tools/apply_owned_rust_public_contract_source_repair_v2.py); all six upstream assertions and **5,128** Python flag values agree. A rebuilt engine and its complete compatibility remain **NOT MEASURED**.
 - [Reproducible first-party C build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V8.md), [exact build inventory](../oracle/phase2/native-source-build-v8.json), and [independent two-build verifier](../tools/reproduce_owned_native_source_build_v8.py).
 - [Reproducible offline build rules for both C repairs](../oracle/phase2/C-PICKLE-SOURCE-BUILD-V12.md), [exact two-phase source-build contract](../oracle/phase2/c-pickle-source-build-v12.json), and [independent repaired C native-build verifier](../tools/reproduce_owned_c_pickle_source_build_v12.py); its 14 compiler and inspection steps have not yet run.
 - [Independently verified C build rules](../oracle/phase2/C-PICKLE-SOURCE-BUILD-V13.md), [exact historical-evidence and two-build contract](../oracle/phase2/c-pickle-source-build-v13.json), and [first-party repaired C build verifier](../tools/reproduce_owned_c_pickle_source_build_v13.py); the frozen two-build, 14-process experiment preserves its original 141-file evidence history but has **NOT YET RUN**.
@@ -83,6 +84,11 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
   --protocol-sha256 79f5f81aedd85b9a59c121b0a3ae96ca3fc3307a34c1427464762ae569f4d473 \
   --contract-sha256 83a00d475acb9e5e103ed9ed6f4a58e116da47db462322f4bb05bd406b4c09f4
 "$PY" -I -B tools/apply_owned_rust_public_contract_source_repair_v1.py --self-test
+"$PY" -I -B tools/apply_owned_rust_public_contract_source_repair_v2.py \
+  --self-test \
+  --source-sha256 d0f90145195e9978482a7797956ef916adb1d0612118c2fc6343c4f38b823fa8 \
+  --protocol-sha256 3f469ca7298b08cc1d50d18aff5029ae17a3f4f318c4fc7a2d8f8f45cc16e239 \
+  --contract-sha256 b87c876e16041b0e08619aec0a86a069598b54478a1fa55cc9baa220c2c1f53b
 "$PY" -I -B tools/reproduce_owned_native_source_build_v11.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v1.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v2.py --self-test
@@ -189,6 +195,12 @@ opening a benchmark:
   --inputs-sha256 ea2ea381a22a9a23344ff40505d975aba8d25704d2ad90e03b58018fda44ca0f \
   --summary-sha256 b04db4e93dc74bb9200c13133c0a33bd33961b5f35e5810e74de65b29fcab534 \
   --svg-sha256 a3dbbb69c5140d15588463e0e3579d5bea5d95587f1abf444b6679cd3361d4c6
+
+"$PY" -I -B tools/apply_owned_rust_public_contract_source_repair_v2.py \
+  --verify-frozen-context \
+  --source-sha256 d0f90145195e9978482a7797956ef916adb1d0612118c2fc6343c4f38b823fa8 \
+  --protocol-sha256 3f469ca7298b08cc1d50d18aff5029ae17a3f4f318c4fc7a2d8f8f45cc16e239 \
+  --contract-sha256 b87c876e16041b0e08619aec0a86a069598b54478a1fa55cc9baa220c2c1f53b
 
 "$PY" -I -B tools/run_owned_repaired_c_original_campaign_v4.py \
   --verify-frozen-context \

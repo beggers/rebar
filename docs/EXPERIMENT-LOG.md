@@ -7,6 +7,42 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the Rust fix for Python flag display
+
+The original, complete Rust compatibility test recorded **1,087** differences.
+Its first actual failure is Python's `PatternReprTests.test_flags_repr`:
+the Rust replacement displayed `~re.I` as
+`re.LOCALE|re.MULTILINE|re.DOTALL|re.UNICODE|re.VERBOSE|re.DEBUG|re.ASCII|0x1`.
+Python 3.14.6 displays
+`re.ASCII|re.LOCALE|re.UNICODE|re.MULTILINE|re.DOTALL|re.VERBOSE|re.DEBUG|0x1`.
+
+Freeze a minimal correction to the independently written Rust adapter.
+Preserve its previous pattern, error, cache, pickling, and pure-unknown-flag
+repairs. Check all six assertions from the original Python test and **5,128**
+actual Python flag values without importing or wrapping Python's matching
+engine in a candidate. The exact corrected private-source content is
+SHA-256 `f8afb6c6e020faad3452b59ceb84abc957ee74d1397397008b3178856abe01a5`.
+The checked-in Rust adapter and its native engine remain unchanged.
+
+The [frozen Rust source repair](../tools/apply_owned_rust_public_contract_source_repair_v2.py)
+has SHA-256
+`d0f90145195e9978482a7797956ef916adb1d0612118c2fc6343c4f38b823fa8`.
+The [observed-failure and private-source rules](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V2.md)
+have SHA-256
+`3f469ca7298b08cc1d50d18aff5029ae17a3f4f318c4fc7a2d8f8f45cc16e239`.
+The [exact machine-readable source contract](../oracle/phase2/rust-public-contract-source-repair-v2.json)
+has SHA-256
+`b87c876e16041b0e08619aec0a86a069598b54478a1fa55cc9baa220c2c1f53b`.
+
+Normal and empty-environment source checks both pass. This is not a rebuilt
+engine or a full compatibility result: Rust still has **1,087** recorded
+differences, C has **1,230**, and Zig has **2,172**. The current graph still
+authenticates **149** evidence files and **154** references. The effect of
+the new Rust correction on the complete **31,237**-check test is
+**NOT MEASURED**. No engine qualifies; speed, memory, and undefined behavior
+remain **NOT MEASURED**. The expanded final comparison remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Run the complete original Python test for the rebuilt C engine
 
 Run the independently built C engine exactly once against all **13**
