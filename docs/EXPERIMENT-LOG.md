@@ -7,6 +7,56 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the inherited complete-case worker failure
+
+Run the frozen version-four C gate with a genuinely fresh, reversible
+activation of the exact twice-built C engine. The corrected rich and
+fresh recovery-owner checks now pass. Its isolated full-suite child
+then rejects the already frozen, authentic version-one Python test
+document before starting any matching case.
+
+The cause is a single independently confirmed strict-boolean error in
+the immutable version-two worker. Its `require` accepts only the
+literal `True`, but it passes the successfully validated original
+test document directly. The validator correctly returns the complete
+authenticated document, not a boolean, so this old guard always
+rejects genuine evidence. Preserve the complete real child output and
+original traceback; do not change the frozen version-one or version-two
+worker, skip validation, treat this as a regex mismatch, or invent a
+missing inner publication receipt.
+
+The original C engine, native symbol audit, crash-recovery root,
+promotion journal, and exact version-four full protocol all pass. The
+one genuine isolated worker exits **1**, with **1,695 bytes** of
+complete stdout, SHA-256
+`e8271f054d8f9836b555f376e526fd762e1d6700d53fe1ef436d556514230327`,
+and no stderr. Its actual error is
+`preserve the entire published V1 candidate freeze`. Exactly **zero**
+of **31,237** compatibility cases and **zero** supplementary
+interpreter cases execute.
+
+Preserve the complete exclusive
+[version-four C failure archive](../oracle/phase2/evidence/frozen-p0-candidate-v4-c-phase2-v4-failures.json.gz),
+**7,186 bytes**, SHA-256
+`08614ef777081edb2335bcdaed615104c1d8a957ce246261b05d275d8bc6f50c`.
+Its original **42,231-byte** uncompressed report has SHA-256
+`fe8b9d59be3ca7ed08b365fa0e0994c13a058b7ace0c5b36f1aab1196d8e6ba2`.
+Keep the separately durable
+[version-four C failure receipt](../oracle/phase2/evidence/frozen-p0-candidate-v4-c-phase2-v4-failures-publication-receipt.json),
+**1,180 bytes**, SHA-256
+`4ba965cca31ae3644ba37b4d8bb52f093d27349dd2aa1b747b8d2918fd60e23b`.
+
+Immediately restore the canonical original binary using the
+unchanged source-pinned activator. Its genuinely successful restore
+receipt is SHA-256
+`843e77eef922d138fbe28af0138c181ff948d0f65d5759e4bf019f29beee4965`;
+the original binary returns to SHA-256
+`075350a17d4909cd6f8dbe5e808e7b6444760f54bb60af013e0f812e22cfb7fd`.
+Preserve both independently observed full-gate failures and their
+causes. No candidate is qualified, and C compatibility, memory, and
+speed remain **NOT MEASURED**. The final holdout remains
+**NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze the corrected complete candidate compatibility gate
 
 Retain the genuinely observed version-three C failure and all original
