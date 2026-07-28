@@ -7,6 +7,26 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Record the expanded four-million-example user amendment
+
+Preserve the original objective unchanged. Record the user's request
+for a larger final comparison as [amendment 10](../AMENDMENTS.md),
+linked to the [existing unopened comparison proposal](EXPANDED-HOLDOUT-PROTOCOL-V1.md).
+
+The proposal has **4,194,304** examples: **16** operation groups,
+**16** pattern families, **four** input types, **four** valid lifecycle
+states, and **1,024** variants. Each of the **24** paired measurement
+rounds includes unmodified Python and **three** independently written,
+fully correctness-qualified matching engines. All **402,653,184**
+planned individual timings and **301,989,888** planned comparisons are
+prospective arithmetic, not completed measurements.
+
+No final example, secret, timing record, or benchmark is generated,
+opened, or inspected. The holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**. Candidate speed, memory,
+confidence, undefined behavior, and complete runtime no-delegation
+remain **NOT MEASURED** or **NOT ESTABLISHED**. There is no winner.
+
 ## Reject the unexecuted Go build's incomplete failure recorder
 
 An independent deeper source review falsifies the previously frozen Go

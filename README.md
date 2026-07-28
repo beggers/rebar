@@ -67,8 +67,9 @@ in the [experiment log](docs/EXPERIMENT-LOG.md).
 
 ## Final comparison
 
-The final comparison is planned to use **4,194,304** unseen examples and
-**24** balanced measurement rounds. Its cases remain **NOT FROZEN**,
+The final comparison is planned to use **4,194,304** unseen examples,
+four times the preceding one-million-example proposal, and **24**
+balanced measurement rounds. Its cases remain **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**. Current speed and memory are
 **NOT MEASURED**.
 
