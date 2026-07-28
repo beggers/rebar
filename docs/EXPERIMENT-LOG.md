@@ -7,6 +7,48 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a complete corrected Python test worker and runner
+
+Connect the corrected original Python test producer to all **13** frozen
+test groups before running another candidate. Preserve all **31,237**
+cases, the **13** named private exceptions, both complete original Python
+reference recordings, all **103** real evidence files, all **108**
+individually authenticated history references, and the **30** separately
+owned records from the previous failed C run.
+
+Authenticate the corrected producer while the original C module is still
+present. Future isolated workers must then authenticate the privately
+built first-party C engine and its real reversible activation
+independently. Carry the same frozen producer fingerprint through every
+worker and real isolated interpreter; never fall back to the broken
+previous producer. Preserve every future case, mismatch, process failure,
+stdout and stderr stream, bounded result archive, and durable receipt.
+
+Freeze the [corrected isolated Python test worker](../tools/run_frozen_p0_candidate_worker_v7.py),
+SHA-256
+`855c59acdc0b5270493ece8fc39548a89e0febf94d6b186ac9f0e5a50754f68f`;
+[complete corrected-suite runner](../tools/run_frozen_p0_candidate_v9.py),
+SHA-256
+`1511dac06dab5ce319b4dd09cb6f8c5a12160c48cc0dbbdfa7e7fe3f0d426702`;
+[unchanged Python test protocol](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V9.md),
+SHA-256
+`afbb933eb022efaca7cb9604bc1614d3d2de7e3faf33f446234f725cd331771f`;
+and [exact original test, source, and evidence contract](../oracle/phase2/p0-candidate-protocol-v9.json),
+SHA-256
+`a9609b0576aab4e0ea7ff6f9ae2a466c0d77d0af134a7f0bddf83ed01f61d631`.
+
+The worker's normal and clean-environment self-tests each reject **196**
+unsafe changes. The complete runner's self-tests each reject **58**.
+All four source-pinned worker and runner history checks preserve the
+corrected producer, the complete frozen cases, and the exact existing
+failure history. No replacement or Python reference runs in any source
+or read-only verification.
+
+Compatibility through the corrected workers, speed, memory, and
+undefined behavior remain **NOT MEASURED**. No candidate qualifies.
+The expanded **4,194,304**-case final comparison remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the corrected original Python test producer
 
 Preserve every original test after the repaired C run exposes three
