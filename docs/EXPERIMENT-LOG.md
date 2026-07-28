@@ -7,6 +7,127 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete independently written Rust compatibility test
+
+Verify all nine original Rust source owners, the frozen package manifest
+and lockfile, both genuine separately built Rust engine inodes, and
+both separately built native bridge inodes. Confirm that the locked
+Rust build uses **zero** external regular-expression packages. Activate
+only the authenticated **658,344-byte** independently written Rust
+engine and its **148,536-byte** owned Python bridge. Preserve the
+original user engine and bridge before either atomic replacement.
+
+Run all **13** original frozen compatibility-group processes. Exactly
+**eight** groups pass, verifying **7,461** cases from the unchanged
+**31,237**-case denominator. Rust passes all **264** buffer-exporter
+and retained-scanner cases. Four test groups expose reproducible
+behavior differences: **248** of **6,912** public-type cases;
+**336** of **5,120** replacement cases; **1,392** of **10,240**
+changing-buffer cases; and **66** of **1,376** public-surface cases.
+All **2,042** known behavioral differences remain visible.
+
+The fifth failing group is not a proven Rust matching defect. Its
+genuine isolated-interpreter audit rejects the freshly source-built
+native engine as an unexpected native-library identity before creating
+any candidate test worker. Preserve the complete **128**-case frozen
+denominator but claim **zero verified interpreter matching cases**.
+Do not substitute the old binary, alter the frozen audit, or claim that
+the supplementary interpreter gate ran.
+
+Preserve the independently published
+[complete Rust compatibility failure archive](../oracle/phase2/evidence/frozen-p0-candidate-v5-rust-phase2-v5-failures.json.gz),
+SHA-256
+`bf0915a4dab62ebaea67b92258eafbc01f52b436b70f81bf7e0ca42211f95bff`,
+and its
+[complete Rust publication receipt](../oracle/phase2/evidence/frozen-p0-candidate-v5-rust-phase2-v5-failures-publication-receipt.json),
+SHA-256
+`72070ab4f68200c305d317a59c7ff6405888d23fadaaf04835aba68d33a6c6ec`.
+Retain the actual **16,834,434-byte** uncompressed
+[13-group Rust worker failure report](../oracle/phase2/evidence/frozen-p0-candidate-worker-v3-rust-phase2-v5-failures.json.gz),
+compressed SHA-256
+`a2106050b59130a9eb7f083d13c2e42e22dcf9a33f5a7b35b634ff9dd9b2f9ae`,
+uncompressed SHA-256
+`03d9eff7cd70087f3e5c78108a96f4c3043e8d0095c62be881d4d88eea56dd1d`,
+and its
+[independently synchronized worker receipt](../oracle/phase2/evidence/frozen-p0-candidate-worker-v3-rust-phase2-v5-failures-publication-receipt.json),
+SHA-256
+`f6fe003c100a93e06239a072380c4f3839dc9863391b939ebfc6d667b174f0d9`.
+A receipt's `PASS` verifies publication, not candidate compatibility.
+
+Preserve every actual Rust group report and publication receipt:
+the passing
+[memory-lifetime report](../experiments/rust_public_practice_v1/rust-managed-buffer-lifetime-v1-phase2-v5-managed.json.gz)
+and
+[memory-lifetime receipt](../experiments/rust_public_practice_v1/rust-managed-buffer-lifetime-v1-phase2-v5-managed-publication-receipt.json);
+the passing
+[scanner and pattern-comment report](../experiments/rust_public_practice_v1/rust-scanner-verbose-comments-v1-phase2-v5-verbose.json.gz)
+and
+[scanner and pattern-comment receipt](../experiments/rust_public_practice_v1/rust-scanner-verbose-comments-v1-phase2-v5-verbose-publication-receipt.json);
+the failing
+[public-type report](../experiments/rust_public_practice_v1/rust-public-type-identity-serialization-v1-phase2-v5-types.json.gz)
+and
+[public-type receipt](../experiments/rust_public_practice_v1/rust-public-type-identity-serialization-v1-phase2-v5-types-publication-receipt.json);
+the failing
+[replacement report](../experiments/rust_public_practice_v1/rust-substitution-buffer-semantics-v2-phase2-v5-substitution.json.gz)
+and
+[replacement receipt](../experiments/rust_public_practice_v1/rust-substitution-buffer-semantics-v2-phase2-v5-substitution-publication-receipt.json);
+the failing
+[changing-buffer report](../experiments/rust_public_practice_v1/rust-shape-changing-buffer-semantics-v2-phase2-v5-shape.json.gz)
+and
+[changing-buffer receipt](../experiments/rust_public_practice_v1/rust-shape-changing-buffer-semantics-v2-phase2-v5-shape-publication-receipt.json);
+and the actual
+[isolated-interpreter audit failure](../oracle/phase2/evidence/owned-candidate-subinterpreters-v1-rust-phase2-v5-subinterpreters-failures.json.gz)
+and
+[isolated-interpreter failure receipt](../oracle/phase2/evidence/owned-candidate-subinterpreters-v1-rust-phase2-v5-subinterpreters-failures-publication-receipt.json).
+
+Restore both actual original user binaries immediately after the
+failure: the Rust engine has SHA-256
+`f8cd2e8ecac5ab6a12eb933e6d1d234700a71ab64fc1578800f46ce93d25b8b4`,
+and the original bridge has SHA-256
+`6fdd114c812b63acce88ef56b8077da5a260c8719ffe2058d29e5be418a26f15`.
+Independently verify their exact original sizes and **0755** modes.
+Keep the **2,572-byte**
+[byte-identical copy of the original durable Rust restoration receipt](../oracle/phase2/evidence/frozen-p0-candidate-v5-rust-phase2-v5-restoration-receipt.json),
+SHA-256
+`3cd828fbd507d048d0e80715efef754930e89f3c176717ba1dd8985784832889`.
+The original durable receipt remains in its private recovery directory;
+the repository file is an unchanged preservation copy.
+
+Generate the complete side-by-side Rust and C correctness graph only
+after independently authenticating all **32** genuine test-group and
+candidate evidence files and both byte-identical restoration receipts.
+Keep the complete version-five C graph unchanged. Increase the bounded
+candidate-report reader enough to verify Rust's genuinely recorded
+**16,834,434-byte** worker report; never drop a case or silently
+truncate the real evidence.
+
+Pin the
+[side-by-side candidate comparison renderer](../tools/render_candidate_current_overview_v6.py),
+SHA-256
+`d7e70cb56809781b11e869a4537ff02ab84ee88a29111a5e7002f2c9d24b16fb`,
+the
+[complete source-owned graph inputs](../docs/evidence/candidate-current-overview-v6.inputs.json),
+SHA-256
+`f05a05d55ebd8cad6cc62c15756d1254c680c20a3ed76d4bf3862905e91f0b52`,
+the
+[generated side-by-side graph summary](../docs/evidence/candidate-current-overview-v6.json),
+SHA-256
+`8bf471c6698542062894b3f162114de066999cca6fc5fad8b8f2c29195f6b1e4`,
+and the
+[generated readable Rust and C comparison](../docs/evidence/candidate-current-overview-v6.svg),
+SHA-256
+`bcd2e98ff0ab87b2399f1fe207bec01f495d3a3c4ffceeaf34caf8dde63fe4c1`.
+The independent synthetic source tests pass **32** valid controls and
+reject **307** hostile controls in both normal and clean environments.
+Neither source test executes a candidate or opens the final comparison.
+
+Keep all **16** original Rust candidate evidence files plus the exact
+restoration copy. Preserve the earlier complete C experiment, all its
+**16** reports, its original restoration receipt, and all historical
+failure records. Neither Rust nor C is qualified. The expanded final
+comparison remains **NOT GENERATED** and **NOT OPENED**. Speed and
+memory remain **NOT MEASURED**.
+
 ## Freeze reversible loading of every reproducibly built native engine
 
 The original crash-safe native loader accepts only the genuine

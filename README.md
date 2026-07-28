@@ -14,21 +14,22 @@ Python, another regular-expression package, or another candidate does not count.
 
 Python passes all **31,237** frozen compatibility checks. No replacement
 has yet passed them. Rust, C, and Zig now each have two independently
-matching, from-scratch builds. The actual C engine passes **7,197**
-verified cases in seven test groups. Five further groups expose genuine
-incompatibilities, and an interpreter test has a separate setup failure;
-C is **not a compatible replacement**. Zig's original non-reproducible build
-remains preserved alongside its successful corrected build.
+matching, from-scratch builds. Rust passes **7,461** verified cases in
+eight test groups; C passes **7,197** in seven. Both still have genuine
+Python-compatibility failures, and both encounter separately documented
+interpreter-test setup failures. Neither is a compatible replacement.
+Zig's original non-reproducible build remains preserved alongside its
+successful corrected build.
 C++ and Go have independently written source but have not been built.
 Every replacement's speed is **NOT MEASURED**; the final comparison
 remains **NOT OPENED**.
 
-![Current results: Python passes all 31,237 compatibility checks; C passes 7,197 verified cases, fails five compatibility groups, and encounters one interpreter-test setup failure; Rust and Zig have matching from-scratch builds but have not completed the compatibility test; no replacement is qualified or timed](docs/evidence/candidate-current-overview-v5.svg)
+![Current results: Python passes all 31,237 compatibility checks; Rust passes 7,461 verified cases and C passes 7,197, but both have compatibility failures and separately documented interpreter-test setup failures; Zig has matching from-scratch builds but has not completed the compatibility test; no replacement is qualified or timed](docs/evidence/candidate-current-overview-v6.svg)
 
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
-| Rust | Two matching builds | NOT MEASURED | NOT MEASURED |
+| Rust | Two matching builds | 7,461 verified; five groups failed; not qualified | NOT MEASURED |
 | C | Two matching builds | 7,197 verified; six groups failed; not qualified | NOT MEASURED |
 | Zig | Two matching builds; original failure preserved | NOT MEASURED | NOT MEASURED |
 | C++ | Source only | NOT MEASURED | NOT MEASURED |
@@ -49,14 +50,14 @@ experiments are preserved in the [experiment log](docs/EXPERIMENT-LOG.md).
 | Total matching checks | 2,807 | 2,807 | 2,807 | 2,807 |
 | Additional memory-lifetime safety, counted separately | 1,024 | 1,024 | 1,024 | 1,024 |
 | Historical scanner and pattern-comment checks, counted separately | 2,854 | 2,738; 116 failures | 2,738; 116 failures | 1,490; 1,364 failures |
-| Additional public types, copying, and serialization | 6,912 | NOT MEASURED | 248 failures | NOT MEASURED |
-| Corrected replacement and buffer checks; original test preserved | 5,120 | NOT MEASURED | 336 failures | NOT MEASURED |
-| Corrected changing-size buffer checks; original test preserved | 10,240 | NOT MEASURED | 1,392 failures | NOT MEASURED |
-| Broad public behavior and real locales | 1,376 | NOT MEASURED | 114 failures | NOT MEASURED |
-| Python buffer exporters and retained scanners | 264 | NOT MEASURED | 4 failures | NOT MEASURED |
-| Simultaneous isolated Python interpreters | 128 | NOT MEASURED | Test setup failed; zero cases verified | NOT MEASURED |
-| Patterns shared across simultaneous Python threads | 512 | NOT MEASURED | 512 | NOT MEASURED |
-| Full frozen compatibility gate | 31,237 | NOT MEASURED | Failed; 7,197 verified; six groups failed | NOT MEASURED |
+| Additional public types, copying, and serialization | 6,912 | 248 failures | 248 failures | NOT MEASURED |
+| Corrected replacement and buffer checks; original test preserved | 5,120 | 336 failures | 336 failures | NOT MEASURED |
+| Corrected changing-size buffer checks; original test preserved | 10,240 | 1,392 failures | 1,392 failures | NOT MEASURED |
+| Broad public behavior and real locales | 1,376 | 66 failures | 114 failures | NOT MEASURED |
+| Python buffer exporters and retained scanners | 264 | 264 | 4 failures | NOT MEASURED |
+| Simultaneous isolated Python interpreters | 128 | Test setup failed; zero cases verified | Test setup failed; zero cases verified | NOT MEASURED |
+| Patterns shared across simultaneous Python threads | 512 | 512 | 512 | NOT MEASURED |
+| Full frozen compatibility gate | 31,237 | Failed; 7,461 verified; five groups failed | Failed; 7,197 verified; six groups failed | NOT MEASURED |
 
 Python's genuine debug-only test is skipped equally and is not included in the denominator.
 Passing examples inside a failed group do not qualify that group or the replacement.
@@ -111,6 +112,8 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Independently corrected complete compatibility protocol](oracle/phase2/P0-CANDIDATE-PROTOCOL-V5.md), [frozen machine-readable test inventory](oracle/phase2/p0-candidate-protocol-v5.json), [corrected full-test worker](tools/run_frozen_p0_candidate_worker_v3.py), and [complete candidate test runner](tools/run_frozen_p0_candidate_v5.py); both independently authenticate the unchanged 31,237-check freeze without running a candidate.
 - [Complete actual C compatibility failure](oracle/phase2/evidence/frozen-p0-candidate-v5-c-phase2-v5-failures.json.gz), [verified publication receipt](oracle/phase2/evidence/frozen-p0-candidate-v5-c-phase2-v5-failures-publication-receipt.json), [complete 13-group worker evidence](oracle/phase2/evidence/frozen-p0-candidate-worker-v3-c-phase2-v5-failures.json.gz), and [independent worker receipt](oracle/phase2/evidence/frozen-p0-candidate-worker-v3-c-phase2-v5-failures-publication-receipt.json); all six failed groups are preserved.
 - [Byte-identical preserved C restoration receipt](oracle/phase2/evidence/frozen-p0-candidate-v5-c-phase2-v5-restoration-receipt.json); the original native library was verified and restored.
+- [Complete actual Rust compatibility failure](oracle/phase2/evidence/frozen-p0-candidate-v5-rust-phase2-v5-failures.json.gz), [verified Rust publication receipt](oracle/phase2/evidence/frozen-p0-candidate-v5-rust-phase2-v5-failures-publication-receipt.json), [complete 13-group Rust worker evidence](oracle/phase2/evidence/frozen-p0-candidate-worker-v3-rust-phase2-v5-failures.json.gz), and [independent Rust worker receipt](oracle/phase2/evidence/frozen-p0-candidate-worker-v3-rust-phase2-v5-failures-publication-receipt.json); all five failed groups are preserved.
+- [Byte-identical preserved Rust restoration receipt](oracle/phase2/evidence/frozen-p0-candidate-v5-rust-phase2-v5-restoration-receipt.json); both original native Rust libraries were verified and restored.
 - [Corrected complete 31,237-check candidate protocol](oracle/phase2/P0-CANDIDATE-PROTOCOL-V4.md), [exact version-four candidate inventory](oracle/phase2/p0-candidate-protocol-v4.json), and [recovery-verified full candidate runner](tools/run_frozen_p0_candidate_v4.py); no candidate has completed the gate.
 - [Preserved C full-gate worker failure](oracle/phase2/evidence/frozen-p0-candidate-v4-c-phase2-v4-failures.json.gz) and [verified version-four C failure receipt](oracle/phase2/evidence/frozen-p0-candidate-v4-c-phase2-v4-failures-publication-receipt.json); the inherited worker stopped before any compatibility case.
 - [Final source-verified 31,237-check candidate protocol](oracle/phase2/P0-CANDIDATE-PROTOCOL-V3.md), [exact version-three candidate inventory](oracle/phase2/p0-candidate-protocol-v3.json), and [crash-verified full candidate runner](tools/run_frozen_p0_candidate_v3.py).
@@ -132,11 +135,12 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Independent general, scanner, and buffer reference protocol](oracle/cpython-3.14.6/PUBLIC-CONTRACT-BASELINES-V1.md) and [Python-only reference recorder](tools/record_independent_public_contract_baselines_v1.py).
 - [Real simultaneous-thread reference protocol](oracle/cpython-3.14.6/PUBLIC-THREADED-PATTERN-V1.md), [complete thread reference](oracle/cpython-3.14.6/evidence/public-threaded-pattern-v1-self-oracle.json.gz), and [original publication receipt](oracle/cpython-3.14.6/evidence/public-threaded-pattern-v1-self-oracle-publication-receipt.json).
 - [From-scratch engine ownership and no-delegation protocol](oracle/phase2/CANDIDATE-INDEPENDENCE-V1.md) and [independently tested static ownership audit](tools/audit_candidate_independence_v1.py).
-- [Dependency-free Rust matching engine](candidates/rust/src/lib.rs), [interpreter-safe Rust Python bridge](candidates/rust/py_bridge.c), [frozen Rust lockfile](candidates/rust/Cargo.lock), and [Rust-backed Python interface](candidates/rust_candidate.py); full compatibility is not yet measured.
+- [Dependency-free Rust matching engine](candidates/rust/src/lib.rs), [native Rust Python bridge](candidates/rust/py_bridge.c), [frozen Rust lockfile](candidates/rust/Cargo.lock), and [Rust-backed Python interface](candidates/rust_candidate.py); full compatibility fails four behavioral groups and one interpreter-test setup check.
 - [Independently written Zig matching engine](candidates/zig/mini_regex.zig), [owned interpreter-safe Zig Python bridge](candidates/zig/py_bridge.c), and [experimental Zig-backed Python interface](candidates/zig_candidate.py); full compatibility is not yet measured.
 - [Independently written C++ matching engine](candidates/cpp/engine.cpp), [native Python bridge](candidates/cpp/py_bridge.cpp), and [experimental Python interface](candidates/cpp_candidate.py); source checks only.
 - [Independently written Go matching engine](candidates/go/engine.go), [strictly portable Unicode-aware Python bridge](candidates/go/py_bridge.c), and [experimental Python interface](candidates/go_candidate.py); source checks only, not an executed compatibility result.
-- [Current source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v5.inputs.json), [complete current graph summary](docs/evidence/candidate-current-overview-v5.json), and [reproducible current-results graph generator](tools/render_candidate_current_overview_v5.py); the graph independently verifies all 17 current C evidence and restoration files.
+- [Current source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v6.inputs.json), [complete current graph summary](docs/evidence/candidate-current-overview-v6.json), and [reproducible current-results graph generator](tools/render_candidate_current_overview_v6.py); the graph independently verifies the complete Rust and C evidence and both restoration receipts.
+- [Preserved earlier Rust-unmeasured headline graph inputs](docs/evidence/candidate-current-overview-v5.inputs.json), [earlier C-only headline summary](docs/evidence/candidate-current-overview-v5.json), and [earlier headline graph generator](tools/render_candidate_current_overview_v5.py).
 - [Preserved earlier source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v4.inputs.json), [earlier headline summary](docs/evidence/candidate-current-overview-v4.json), and [earlier headline graph generator](tools/render_candidate_current_overview_v4.py).
 - [Preserved earlier source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v3.inputs.json), [earlier headline summary](docs/evidence/candidate-current-overview-v3.json), and [earlier headline graph generator](tools/render_candidate_current_overview_v3.py).
 - [Preserved historical development-graph inputs](docs/evidence/candidate-correctness-overview-v2.inputs.json) and [historical graph generator](tools/render_candidate_correctness_overview_v2.py).
@@ -170,16 +174,17 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/render_candidate_current_overview_v3.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v4.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v5.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v6.py --self-test
 ```
 
 Verify the current headline graph without rerunning a candidate or
 opening a benchmark:
 
 ```sh
-"$PY" -I -B tools/render_candidate_current_overview_v5.py --verify \
-  --source-sha256 23bbf48ed0784c7cc2026d32c63b186ede18ff45eb16c1f96f7973719c22231b \
+"$PY" -I -B tools/render_candidate_current_overview_v6.py --verify \
+  --source-sha256 d7e70cb56809781b11e869a4537ff02ab84ee88a29111a5e7002f2c9d24b16fb \
   --go-bridge-sha256 52101f0afe29a568e3c2e22a06d47c89c051e08a0e2024ad4891c5ae2d60fb6a \
-  --manifest-sha256 2af61339325a9e7d22c2ea2359ee212bb34adeec5321431ba696d5449a8502a2
+  --manifest-sha256 f05a05d55ebd8cad6cc62c15756d1254c680c20a3ed76d4bf3862905e91f0b52
 ```
 
 The [complete compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md)
