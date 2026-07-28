@@ -14,17 +14,18 @@ Python, another regular-expression package, or another candidate does not count.
 
 Python passes all **31,237** frozen compatibility checks. No replacement
 has passed them. Five independently written engines—Rust, C, Zig, C++,
-and Go—build reproducibly. Rust, C, Zig, and C++ have now been tested
-and are still incompatible. Go was attempted, but the original test
-recorder rejected its complete result above **256 MiB** before saving
-it. Go is therefore **NOT VERIFIED**. All **13** C++ test groups were
-attempted; only **128** cases belong to a passing group. All **2,308**
-C++ behavior differences and **5** separate test-worker failures are
-preserved. Fortran compiles, but its two builds still differ. No
-candidate wraps an external regular-expression engine. Speed and
-memory are **NOT MEASURED**; the final comparison is **NOT OPENED**.
+and Go—build reproducibly. All five have now been tested and remain
+incompatible. Go has **4,518** confirmed matching differences and
+**4** separately recorded test-worker failures; C++ has **2,308**
+matching differences and **5** worker failures. Each passes only the
+**128**-case isolated-interpreter group. The original oversized Go
+report is now fully preserved by a lossless streaming recorder, and the
+earlier failed recording attempt remains documented. Fortran compiles,
+but its two builds still differ. No candidate wraps an external regex
+engine. Speed and memory are **NOT MEASURED**; the final comparison is
+**NOT OPENED**.
 
-![Python passes all 31,237 checks; Rust, C, Zig, and C++ are incompatible; the Go test report could not be saved and remains unverified; and speed is not measured](docs/evidence/candidate-current-overview-v18.svg)
+![Python passes all 31,237 checks; all five independently built replacement engines remain incompatible; the complete C++ and Go matching differences and separate worker failures are preserved; speed is not measured](docs/evidence/candidate-current-overview-v19.svg)
 
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
@@ -33,7 +34,7 @@ memory are **NOT MEASURED**; the final comparison is **NOT OPENED**.
 | C | Two matching builds | 7,197 verified; six groups failed; not qualified | NOT MEASURED |
 | Zig | Two matching builds; original failure preserved | 3,583 verified; seven groups failed; not qualified | NOT MEASURED |
 | C++ | Two matching source builds | 128 verified; 12 groups failed; not qualified | NOT MEASURED |
-| Go | Two matching first-party builds | Result recording failed; NOT VERIFIED | NOT MEASURED |
+| Go | Two matching first-party builds | 128 verified; 4,518 differences; four worker failures | NOT MEASURED |
 | Fortran | Three attempts; engines differ | NOT TESTED | NOT MEASURED |
 
 Historical graphs below describe earlier binaries. They do not qualify
@@ -42,26 +43,29 @@ experiments are preserved in the [experiment log](docs/EXPERIMENT-LOG.md).
 
 ## Detailed compatibility
 
-| Python behavior | Cases | Rust | C | Zig | C++ |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| Python's original runnable public tests | 151 | 151 | 151 | 151 | 43 failures |
-| General public behavior | 864 | 864 | 864 | 864 | 40 failures |
-| Scanners and callbacks | 1,024 | 1,024 | 1,024 | 960; 64 failures | 992 failures |
-| Memory views and buffers | 768 | 768 | 768 | 768 | 181 failures |
-| Total initial matching checks | 2,807 | 2,807 | 2,807 | 2,743; 64 failures | 1,256 failures |
-| Additional memory-lifetime safety, counted separately | 1,024 | 1,024 | 1,024 | 1,024 | 600 failures |
-| Verbose scanners and pattern comments | 2,854 | 2,854 | 2,854 | 2,234; 620 failures | Test worker failed |
-| Additional public types, copying, and serialization | 6,912 | 248 failures | 248 failures | 248 failures | Test worker failed |
-| Replacement and buffer behavior | 5,120 | 336 failures | 336 failures | 64 failures | Test worker failed |
-| Changing-size buffer behavior | 10,240 | 1,392 failures | 1,392 failures | 672 failures | Test worker failed |
-| Broad public behavior and real locales | 1,376 | 66 failures | 114 failures | 96 failures | 336 failures |
-| Python buffer exporters and retained scanners | 264 | 264 | 4 failures | 264 | 116 failures |
-| Simultaneous isolated Python interpreters | 128 | Setup failed; matching not established | Setup failed; no cases verified | Cleanup and report verification failed; no complete suite | 128 |
-| Patterns shared across simultaneous Python threads | 512 | 512 | 512 | 512 | Test worker failed |
-| Full frozen compatibility gate | 31,237 | Failed; 7,461 verified; five groups failed | Failed; 7,197 verified; six groups failed | Failed; 3,583 verified; seven groups failed | Failed; 128 verified; 2,308 mismatches; five worker failures |
+| Python behavior | Cases | Rust | C | Zig | C++ | Go |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Python's original runnable public tests | 151 | 151 | 151 | 151 | 43 failures | 38 failures |
+| General public behavior | 864 | 864 | 864 | 864 | 40 failures | 153 failures |
+| Scanners and callbacks | 1,024 | 1,024 | 1,024 | 960; 64 failures | 992 failures | 960 failures |
+| Memory views and buffers | 768 | 768 | 768 | 768 | 181 failures | 197 failures |
+| Total initial matching checks | 2,807 | 2,807 | 2,807 | 2,743; 64 failures | 1,256 failures | 1,348 failures |
+| Additional memory-lifetime safety, counted separately | 1,024 | 1,024 | 1,024 | 1,024 | 600 failures | 668 failures |
+| Verbose scanners and pattern comments | 2,854 | 2,854 | 2,854 | 2,234; 620 failures | Test worker failed | Test worker failed |
+| Additional public types, copying, and serialization | 6,912 | 248 failures | 248 failures | 248 failures | Test worker failed | Test worker failed |
+| Replacement and buffer behavior | 5,120 | 336 failures | 336 failures | 64 failures | Test worker failed | 2,058 failures |
+| Changing-size buffer behavior | 10,240 | 1,392 failures | 1,392 failures | 672 failures | Test worker failed | Test output exceeded worker limit |
+| Broad public behavior and real locales | 1,376 | 66 failures | 114 failures | 96 failures | 336 failures | 324 failures |
+| Python buffer exporters and retained scanners | 264 | 264 | 4 failures | 264 | 116 failures | 120 failures |
+| Simultaneous isolated Python interpreters | 128 | Setup failed; matching not established | Setup failed; no cases verified | Cleanup and report verification failed; no complete suite | 128 | 128 |
+| Patterns shared across simultaneous Python threads | 512 | 512 | 512 | 512 | Test worker failed | Test worker failed |
+| Full frozen compatibility gate | 31,237 | Failed; 7,461 verified; five groups failed | Failed; 7,197 verified; six groups failed | Failed; 3,583 verified; seven groups failed | Failed; 128 verified; 2,308 mismatches; five worker failures | Failed; 128 verified; 4,518 mismatches; four worker failures |
 
 Python's genuine debug-only test is skipped equally and is not included in the denominator.
 Passing examples inside a failed group do not qualify that group or the replacement.
+Go's changing-buffer worker exceeded its frozen output limit and was
+stopped by the test harness. This is a recorded infrastructure failure,
+not evidence of a spontaneous native crash or undefined behavior.
 Zig's interpreter worker completed **385** matching calls before failing to
 restore the original Python matcher; this cleanup failure is preserved but
 is not counted as a regex mismatch. The outer test runner also rejects the
@@ -113,8 +117,9 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Complete original-test rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V1.md), [frozen test inventory](oracle/phase2/six-family-p0-campaign-v1.json), and [reproducible candidate test runner](tools/run_owned_six_family_original_p0_campaign_v1.py).
 - [Lossless original-test recording rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V2.md), [frozen streaming-test inventory](oracle/phase2/six-family-p0-campaign-v2.json), and [complete streaming test recorder](tools/run_owned_six_family_original_p0_campaign_v2.py); the original tests, first-party engines, and preserved Go failure remain unchanged.
 - [Complete first-party C++ failure](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures.json.gz) and [independent publication and recovery receipt](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures-publication-receipt.json).
+- [Complete first-party Go matching failure](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v2-go-phase2-v2-failures.json.gz) and [independent streamed-result and native-recovery receipt](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v2-go-phase2-v2-failures-publication-receipt.json); all **13** groups, **4,518** genuine differences, **4** separate worker failures, and both restored native files are preserved.
 - [Complete Go result-recording failure](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-publication-failure-evidence.json.gz), [independent evidence receipt](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-publication-failure-evidence-publication-receipt.json), and [reproducible failure-preservation tool](tools/preserve_owned_go_campaign_publication_failure_v1.py). This is not a Go compatibility result.
-- [Headline graph inputs](docs/evidence/candidate-current-overview-v18.inputs.json), [complete machine-readable results](docs/evidence/candidate-current-overview-v18.json), and [reproducible graph generator](tools/render_candidate_current_overview_v18.py).
+- [Headline graph inputs](docs/evidence/candidate-current-overview-v19.inputs.json), [complete machine-readable results](docs/evidence/candidate-current-overview-v19.json), and [reproducible graph generator](tools/render_candidate_current_overview_v19.py).
 - [Full experiment log, build reports, previous graphs, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Proposed 4,194,304-case final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); examples remain **NOT GENERATED** and **NOT OPENED**.
 - [Original objective](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; [later clarifications](AMENDMENTS.md).
@@ -148,7 +153,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/activate_verified_native_candidate_v4.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v4.py --verify-frozen-context
 "$PY" -I -B tools/audit_candidate_independence_v2.py --self-test
-"$PY" -I -B tools/render_candidate_current_overview_v18.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v19.py --self-test
 ```
 
 Verify the current headline graph without rerunning a candidate or
@@ -197,10 +202,10 @@ opening a benchmark:
   --protocol-sha256 a7a5ce16bb7a98dfd6e0e4f9f3777912687aa09259cc1669c5e0932da2287313 \
   --contract-sha256 cfc774cfce1a0c4298f01e298d7ffaa982300375ba117e316bff2ebbf0be7819
 
-"$PY" -I -B tools/render_candidate_current_overview_v18.py --verify \
-  --source-sha256 3c4bb2fff3063d201d6c952d54c28b68f5f5f97924ebbabbc0ce0feb1520008a \
+"$PY" -I -B tools/render_candidate_current_overview_v19.py --verify \
+  --source-sha256 8144272f7c91e3821306a4d3963c8e201c68b275cecacf80d5000dd98c502494 \
   --go-bridge-sha256 52101f0afe29a568e3c2e22a06d47c89c051e08a0e2024ad4891c5ae2d60fb6a \
-  --manifest-sha256 ed6033adb85baa7e1a2b103e1fea2ca569186d01bbad5c47bbfde038408669a0
+  --manifest-sha256 8f1eb51ff477f0b59934ee503d9bf795f472fd6674180e2af244c7ad4504560c
 ```
 
 The [complete compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md)

@@ -7,6 +7,75 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run and preserve the complete original Go compatibility campaign
+
+Run one genuine, source-built Go engine using the separately frozen
+lossless recorder. Keep the complete Python **3.14.6** reference suite,
+all **13** original groups, all **31,237** cases and seeds, all named
+private waivers, and the unchanged first-party Go source. Do not wrap
+another regex engine, weaken a test, benchmark the candidate, or open
+the final comparison.
+
+All **13** original groups complete. Exactly **1** group passes: the
+original **128**-case isolated-interpreter test. Exactly **8** groups
+record **4,518** genuine matching differences: **38** original Python
+public-test differences, **153** general public differences, **960**
+scanner differences, **197** buffer differences, **668** memory-lifetime
+differences, **2,058** substitution differences, **324** public-surface
+differences, and **120** buffer-exporter differences.
+
+The other **4** groups are independently preserved worker failures:
+verbose scanners, public types, changing-size buffers, and shared
+patterns across threads. The changing-buffer worker exceeds the original
+**64 MiB** standard-output limit. The frozen worker intentionally stops
+that process; its recorded signal is caused by the test harness. Do not
+call that a spontaneous Go crash, a timeout, undefined behavior, or a
+regex matching difference. Record all **4** failures separately.
+
+Preserve the [complete original Go compatibility failure](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v2-go-phase2-v2-failures.json.gz),
+SHA-256
+`af971b3387382862ebf084b1d48ff0a21f37084cb234fd9e776d721b3ca5aae0`,
+**9,139,062** compressed bytes. The complete streamed original report
+contains **300,933,399** canonical bytes, SHA-256
+`f209e0695ec9bbe2ed764c615288c4806337fe6ef536477805d412e2a1cd25f8`.
+Preserve the separate [independent Go compatibility-result receipt](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v2-go-phase2-v2-failures-publication-receipt.json),
+SHA-256
+`a7352b7028348941cf0655ddc0e973ae43c6498be91139d47eb4d3555f90b3da`,
+**4,615** bytes. Its publication `PASS` preserves the actual Go
+candidate `FAIL`; it never qualifies the candidate.
+
+Generate the [complete five-engine headline graph](../tools/render_candidate_current_overview_v19.py),
+SHA-256
+`8144272f7c91e3821306a4d3963c8e201c68b275cecacf80d5000dd98c502494`;
+[source-pinned graph and evidence inputs](evidence/candidate-current-overview-v19.inputs.json),
+SHA-256
+`8f1eb51ff477f0b59934ee503d9bf795f472fd6674180e2af244c7ad4504560c`;
+[full original-suite candidate summary](evidence/candidate-current-overview-v19.json),
+SHA-256
+`504de87d091c555eb53d664fbfaaa70660ff4dd2f9abc22803246f8a5e18287f`;
+and [clear baseline and candidate comparison](evidence/candidate-current-overview-v19.svg),
+SHA-256
+`7dea68622d7c360f9d2af83f97d76210889b2aeda6662e06178009a1127cf3d6`.
+The graph incrementally authenticates all **300,933,399** bytes of the
+Go report, preserves original Python Unicode behavior, and separately
+verifies the unchanged original evaluator and the streaming receipt.
+Ordinary and clean-environment source-only controls reject **58**
+false results without activating or timing a candidate.
+
+The independently recorded, report-based native recovery restores both
+the original Go engine and bridge to their original absent state. The
+recovery journal has SHA-256
+`973c9ea8cc0d535830b0e3684da2f95c44d6fe9873dae152d7f63095be1d28d9`.
+The generated Go header is never installed as a matching engine.
+
+Preserve the earlier Go report-publication failure and all **69** prior
+evidence files. The **2** new complete Go result files bring the actual
+repository evidence total to **71**. Go is **NOT COMPATIBLE** and does
+not qualify. There are still **0** qualified candidates. Speed, memory,
+rankings, confidence intervals, and undefined behavior remain **NOT
+MEASURED**. The expanded **4,194,304**-case performance comparison is
+**NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze complete, lossless original-test recording
 
 Freeze a corrected test recorder before running any candidate again.
