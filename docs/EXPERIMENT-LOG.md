@@ -7,6 +7,50 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the first actual remaining Rust representation correction
+
+Inspect the real corrected Rust compatibility evidence without inflating a
+complete failure report. The first six original test groups pass. The first
+failing group, `public_types_v1`, has **140** actual differences across
+**6,912** checks. Its first actual failing case is
+`pattern-and-match-representation/058`; its complete **901-byte** record
+has SHA-256
+`1130da7818fe8b27a0d74f607bd4531c43f5f12ec9d6674419aa448786884d75`.
+
+The actual match representation agrees. Only the compiled pattern's displayed
+flags differ: Python prints `re.IGNORECASE|re.ASCII`, while the tested Rust
+candidate prints `re.ASCII|re.IGNORECASE`. Keep the separate standalone
+flag display unchanged: all **5,128** already verified `RegexFlag` examples
+must remain correct. Freeze a uniquely anchored, first-party source change
+only for the representation of a compiled pattern.
+
+The [first-party Rust compiled-pattern repair verifier](../tools/apply_owned_rust_public_contract_source_repair_v3.py)
+has SHA-256
+`5e57da2379e736bba75eacdb57f84710dc144c0d4088d5827b3139a6b71d8859`.
+The [observed Rust failure and first-party correction protocol](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V3.md)
+has SHA-256
+`2aeb81e55548b46011c75815465d2bc2fa461d57ba7b990fc7a7b87d2d687a34`.
+The [exact preserved-original and corrected-adapter contract](../oracle/phase2/rust-public-contract-source-repair-v3.json)
+has SHA-256
+`82bce0066181dd16f3de52d88f31e930f25706b5ff3da2ba18b10c8b31b4f6a1`.
+
+All four independently pinned ordinary and empty-environment source
+checks pass. They reject **118** hostile controls and block **11** kinds
+of external effects. The **31,934-byte** corrected adapter is derived
+only in memory; its SHA-256 is
+`d47a976771206da468168ec22683e6d0204905a0f5b7e9e328fc1234b38f210e`.
+All original engine files, matching records, **5,128** standalone flag
+observations, and the corrected Zig build remain unchanged.
+
+The current graph and evidence remain at **155** owners and **160**
+references. Tested Rust still has **1,036** differences; C has **1,230**;
+the last tested Zig has **2,172**. The two newly built Zig engines have
+not yet been tested. Preserve all **31,237** original checks and all **50**
+separately frozen unrun signature cases. Corrected Rust matching, speed,
+memory, and undefined behavior remain **NOT MEASURED**. The planned
+**4,194,304**-case final comparison remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Build the corrected from-scratch Zig engine independently twice
 
 Run the separately frozen first-party Zig build exactly once. Both

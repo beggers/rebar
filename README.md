@@ -29,8 +29,8 @@ replacement.
 
 The corrected from-scratch Zig engine has now been independently built
 twice; both native builds are identical. Its complete Python compatibility
-test has **NOT RUN**. Targeted Go and C++ corrections are frozen, and their
-rebuilt compatibility is **NOT MEASURED**.
+test has **NOT RUN**. Further evidence-backed Rust, Go, and C++ corrections
+are frozen; their rebuilt compatibility is **NOT MEASURED**.
 
 Both Rust source builds agree, use no outside regular-expression engine,
 and were compiled and inspected in **28** offline steps. The full test
@@ -48,7 +48,7 @@ only after three independent engines pass all compatibility checks.
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
-| Rust | Two identical corrected first-party builds | 8,965 verified; 1,036 differences; no worker failures; not qualified | NOT MEASURED |
+| Rust | Two first-party builds; next representation fix not yet built | 8,965 verified; 1,036 differences; no worker failures; not qualified | NOT MEASURED |
 | C | Two identical first-party builds; all 13 groups tested | 7,325 verified; 1,230 differences; no worker failures; not qualified | NOT MEASURED |
 | Zig | Corrected engine built independently twice; not yet retested | Earlier build: all 13 groups; 2,172 differences; not qualified | NOT MEASURED |
 | C++ | Earlier first-party builds; argument correction not yet built | 128 verified; 2,308 differences; five worker failures | NOT MEASURED |
@@ -120,6 +120,7 @@ slowdown greater than **20%**. There is no winner.
 - [Frozen full Python test for the newly rebuilt Rust engine](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V4.md).
 - [Actual complete corrected Rust test and recovery receipt](oracle/phase2/evidence/repaired-rust-original-campaign-v4-rust-phase2-v12-rust-flag-original-p0-failures-publication-receipt.json).
 - [Source-only correction of the observed Rust flag-display failure](oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V2.md).
+- [Evidence-backed correction of the next actual Rust compiled-pattern failure](oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V3.md).
 - [Frozen first-party build rules for the corrected Rust engine](oracle/phase2/RUST-FLAG-SOURCE-BUILD-V12.md).
 - [Actual corrected Rust build evidence and durable receipt](oracle/phase2/evidence/native-source-build-v12-rust-phase2-v12-rust-flag-original-p0-publication-receipt.json).
 - [Evidence-backed C match-pickling compatibility repair](oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V2.md).
