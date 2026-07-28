@@ -131,6 +131,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Complete first Go source-build failure](oracle/phase2/evidence/native-source-build-v4-go-phase2-v4-failures.json.gz) and [verified Go failure publication receipt](oracle/phase2/evidence/native-source-build-v4-go-phase2-v4-failures-publication-receipt.json); the real Go compiler accidentally includes the Python bridge in the Go engine and fails before building a native library or running a compatibility check.
 - [Complete Fortran reproducibility failure](oracle/phase2/evidence/native-source-build-v4-fortran-phase2-v4-failures.json.gz) and [verified Fortran failure publication receipt](oracle/phase2/evidence/native-source-build-v4-fortran-phase2-v4-failures-publication-receipt.json); both independent engine and bridge builds compile, but the two Fortran engine binaries differ and fail the source-build gate.
 - [Frozen from-scratch build rules for all six languages](oracle/phase2/NATIVE-SOURCE-BUILD-V4.md), [complete source and compiler inventory](oracle/phase2/native-source-build-v4.json), and [independent six-language build verifier](tools/reproduce_owned_native_source_build_v4.py); the actual C++ build succeeds, Go's engine compilation fails, and Fortran's engine builds are not reproducible.
+- [Reversible six-engine native-loading rules](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V3.md), [frozen source and recovery inventory](oracle/phase2/verified-native-activation-v3.json), and [verified native activation and crash recovery](tools/activate_verified_native_candidate_v3.py); only a genuinely reproducible, independently source-built engine may be loaded, and no candidate is claimed to have been run.
 - [Six-engine first-party ownership and no-wrapping standard](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md), [complete source and dependency inventory](oracle/phase2/candidate-independence-v2.json), and [independent six-language ownership audit](tools/audit_candidate_independence_v2.py); verifies all 25 engine sources, both project dependency files, and all 34 actual C and Rust failure artifacts without claiming that a source audit proves correctness.
 - [Current source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v11.inputs.json), [complete current graph summary](docs/evidence/candidate-current-overview-v11.json), and [reproducible current-results graph generator](tools/render_candidate_current_overview_v11.py); the graph independently authenticates all six engine designs, the actual C/Rust/Zig compatibility results, C++'s reproducible build, Go's compiler failure, and Fortran's nonmatching engine builds.
 - [Complete experiment log, raw evidence, rejected approaches, and preserved failures](docs/EXPERIMENT-LOG.md).
@@ -149,6 +150,8 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/reproduce_owned_native_source_build_v4.py --self-test
 "$PY" -I -B tools/reproduce_owned_native_source_build_v4.py --verify-context
 "$PY" -I -B tools/activate_verified_native_candidate_v2.py --self-test
+"$PY" -I -B tools/activate_verified_native_candidate_v3.py --self-test
+"$PY" -I -B tools/activate_verified_native_candidate_v3.py --verify-frozen-context
 "$PY" -I -B tools/audit_candidate_independence_v2.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v11.py --self-test
 ```

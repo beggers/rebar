@@ -7,6 +7,56 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze verified, reversible native loading for all six engines
+
+Freeze a separate, independently reviewed native-loader standard
+before loading any of the six independently owned matching engines.
+Require all **25** genuine source files, all **13** pinned compiler
+and Python owners, all **57** preserved actual evidence files, the
+original Python matcher, the original **13** correctness suites, and
+all **31,237** unchanged reference cases. Native loading remains a
+capability, not a claim that any new matcher has actually been run.
+
+Independently preserve the complete original C, Rust, and Zig
+compatibility failures; the genuinely successful C++ source build;
+Go's actual four-process compilation failure; and Fortran's **18**
+successful compilation and inspection processes followed by its
+genuine two-engine reproducibility failure. Reject both failed build
+receipts as activation authority. Preserve **39** original
+version-two build process records, **15** corrected Zig build
+records, and **32** current C++, Go, and Fortran build records:
+**86** genuine recorded steps in total. The version-two plus current
+version-four subtotal is **71**, not the complete total.
+
+Protect each native destination with its own independently durable
+intent, source-authenticated binary, and original owner. Never claim
+that publishing multiple native files is one atomic operation. On
+recovery, restore exactly the previously recorded file bytes,
+permissions, and originally missing targets. Reject user-modified
+destinations, foreign engines, external regex packages, missing
+Go-generated headers, fabricated matching results, hidden timing,
+and opened final cases.
+
+Pin the [complete reversible native-loader source](../tools/activate_verified_native_candidate_v3.py)
+to SHA-256
+`39a170d5981e3484366eca223c0533366d92927975271fdb004fbce784b7a21e`,
+the [frozen loader and crash-recovery rules](../oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V3.md)
+to
+`17656cd0ea3aa879cc5c69078460118f1e5e977f3e5c8d977c784954ea9f65bf`,
+and the [complete machine-readable loading inventory](../oracle/phase2/verified-native-activation-v3.json)
+to
+`87d2d34a142f620894b87b35f3216ede4a0374921a3dfacb9d8e209e3d3133fc`.
+Run the independently reviewed source-only checks in the ordinary and
+clean environments: **85** passing controls, **208** rejected attacks,
+and **0** actual candidate, loader, build, clock, or holdout actions.
+Run both exact, read-only full-context checks against all **57**
+evidence files.
+
+This chunk performs **NO NATIVE ACTIVATION**. C++ remains untested,
+Go and Fortran remain rejected, and no candidate is fully compatible.
+Runtime, memory, and speed remain **NOT MEASURED**. The expanded final
+comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Preserve the first Fortran source-build reproducibility failure
 
 Build the three independently owned Fortran source files under the

@@ -1,0 +1,221 @@
+{
+  "schema": "rebar-phase2-verified-native-candidate-activation-v3-source-freeze",
+  "version": 3,
+  "phase": "SOURCE FREEZE; NO NATIVE ACTIVATION AUTHORIZED",
+  "oracle": {
+    "implementation": "CPython",
+    "version": "3.14.6",
+    "suite_count": 13,
+    "case_execution_count": 31237,
+    "manifest_path": "oracle/phase1/p0-completeness-v1.json",
+    "manifest_sha256": "cc703915bf08b4a4d3caf399729d6afd4b583287633bd5db25db3a20671cd47f"
+  },
+  "source_build": {
+    "version": 4,
+    "schema": "rebar-phase2-owned-native-source-build-v4",
+    "receipt_schema": "rebar-phase2-owned-native-source-build-v4-durable-publication-receipt",
+    "source_path": "tools/reproduce_owned_native_source_build_v4.py",
+    "source_sha256": "efb37ccca1524e98f32b734b600704a390bc55c73d374da61c089730aaff10b1",
+    "protocol_path": "oracle/phase2/NATIVE-SOURCE-BUILD-V4.md",
+    "protocol_sha256": "e974b26562cc210c175c08cda7914e6b196fdee2ebe2a8232dd87c0cddbc0dfb",
+    "contract_path": "oracle/phase2/native-source-build-v4.json",
+    "contract_sha256": "0b5641529bc49f55b9e56fe397ad38e7e23d6c9b3376587b743753814b8089d7",
+    "private_root_prefix": "/tmp/rebar-phase2-native-build-v4-",
+    "evidence_prefix": "oracle/phase2/evidence/native-source-build-v4-",
+    "independent_source_phase_count": 2,
+    "actual_build_status": "CPP PASS; GO FAIL; FORTRAN FAIL",
+    "historical_published_build_count": 3,
+    "historical_successful_build_families": ["cpp"],
+    "historical_failed_build_families": ["go", "fortran"],
+    "builds_started_by_activation_freeze": 0
+  },
+  "family_count": 6,
+  "qualified_candidate_count": 0,
+  "families": [
+    {
+      "id": "c",
+      "language": "C",
+      "module": "candidates.vm_candidate",
+      "promotion_targets": {"extension": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so"},
+      "generated_build_only_outputs": {},
+      "owners": [
+        {"path": "candidates/vm_candidate.py", "sha256": "b37d3e634b10c37ded2de3c59af9ef477e1d12125ab1b52cfc57915305ff7096", "bytes": 60707},
+        {"path": "candidates/_vm_native.c", "sha256": "bc937bdd3945a111d7929439dfd4a660a55b70593b19ee807c82325d9e6f1e55", "bytes": 218185}
+      ]
+    },
+    {
+      "id": "rust",
+      "language": "Rust",
+      "module": "candidates.rust_candidate",
+      "promotion_targets": {"engine": "candidates/_rust_engine.so", "bridge": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so"},
+      "generated_build_only_outputs": {},
+      "owners": [
+        {"path": "candidates/rust_candidate.py", "sha256": "6fb66ef6c3f143475426dd3d5b97c52dbe251f8d2ddd0ef3d5de7ec553a0351b", "bytes": 31151},
+        {"path": "candidates/rust/py_bridge.c", "sha256": "f8a0918aaf8a78f363f6d755770636d26acd45fb83c9abcf997a6e052748ea8b", "bytes": 175676},
+        {"path": "candidates/rust/Cargo.toml", "sha256": "2e57ff8ad346ffc850d50eab429a0f05c14825c4984fd8c9bc36eab03239a966", "bytes": 225},
+        {"path": "candidates/rust/Cargo.lock", "sha256": "267c3b21dc41432f7c5ee036b50b48d81f9228384780b4d13a6b41a8ad2cef63", "bytes": 167},
+        {"path": "candidates/rust/src/lib.rs", "sha256": "c4901e83e359191badc39fbf42ea65f0eb07a3db870172acf8cae65ffb1eaf2d", "bytes": 177967},
+        {"path": "candidates/rust/src/newline.rs", "sha256": "13216ffbea967af121c77d57abe14906030e7f3a6906c554399511154a3d6d8b", "bytes": 14416},
+        {"path": "candidates/rust/src/search.rs", "sha256": "4612c86424b9cbcb193d7ace521f359d7e3507281e83d3bf7e7ef7d189dd68fe", "bytes": 14773},
+        {"path": "candidates/rust/src/stack.rs", "sha256": "5198a056e99bde5632169cfc5b07ad913910cdb1b30785dad4744ccb9a30809e", "bytes": 7269},
+        {"path": "candidates/rust/src/unicode_tables.rs", "sha256": "f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af", "bytes": 471989}
+      ]
+    },
+    {
+      "id": "zig",
+      "language": "Zig",
+      "module": "candidates.zig_candidate",
+      "promotion_targets": {"engine": "candidates/_zig_probe.so", "bridge": "candidates/_zig_bridge.cpython-314-x86_64-linux-gnu.so"},
+      "generated_build_only_outputs": {},
+      "owners": [
+        {"path": "candidates/zig_candidate.py", "sha256": "2d7ec411bc035091fea3f20857a4793b21092d3f490d20a9a0efaa418cda0862", "bytes": 68422},
+        {"path": "candidates/zig/mini_regex.zig", "sha256": "a917e7b1a06008be400e4c4a74b6caee5a552624dc46a7d67c932758f594ef28", "bytes": 186915},
+        {"path": "candidates/zig/py_bridge.c", "sha256": "67edae144290254ba25f67f73350ff5d52ccfb2a209e3fbcc555fc4b3d4efd4b", "bytes": 173026}
+      ]
+    },
+    {
+      "id": "cpp",
+      "language": "C++",
+      "module": "candidates.cpp_candidate",
+      "promotion_targets": {"bridge": "candidates/_cpp_bridge.cpython-314-x86_64-linux-gnu.so"},
+      "generated_build_only_outputs": {},
+      "owners": [
+        {"path": "candidates/cpp_candidate.py", "sha256": "8dcece29b1a194eea023143148af37bb679a9df4c39c01153f5ee23f778e16d5", "bytes": 27488},
+        {"path": "candidates/cpp/engine.hpp", "sha256": "66998fed1839f5e5f7f09382830ed9fda1a62b80bd545305c4eee95ed9a13df9", "bytes": 4089},
+        {"path": "candidates/cpp/engine.cpp", "sha256": "a9ceb37cfde77447a01a36a8882f7713faf5f201d7a15a193dd17e7b91d118f5", "bytes": 62813},
+        {"path": "candidates/cpp/py_bridge.cpp", "sha256": "1d930b63b2f9493dd4759b7521f75d8846daf2580a5699337fcf82540484ab6d", "bytes": 25068}
+      ]
+    },
+    {
+      "id": "go",
+      "language": "Go",
+      "module": "candidates.go_candidate",
+      "promotion_targets": {"engine": "candidates/_go_engine.so", "bridge": "candidates/_go_bridge.cpython-314-x86_64-linux-gnu.so"},
+      "generated_build_only_outputs": {"generated_header": "_go_engine.h"},
+      "owners": [
+        {"path": "candidates/go_candidate.py", "sha256": "816d21527b9806afbc9457122f72f8f6b62c39b8b791d3f363745d412cbe3d20", "bytes": 31049},
+        {"path": "candidates/go/go.mod", "sha256": "9297c4e8fe4649196150400d23a4da584d7ef721347f7095399a7382edad669b", "bytes": 44},
+        {"path": "candidates/go/engine.go", "sha256": "6472c4413921f3a877455315400c532e7632a871a96d46de9583fa6170a43192", "bytes": 53782},
+        {"path": "candidates/go/py_bridge.c", "sha256": "52101f0afe29a568e3c2e22a06d47c89c051e08a0e2024ad4891c5ae2d60fb6a", "bytes": 39373}
+      ]
+    },
+    {
+      "id": "fortran",
+      "language": "Fortran",
+      "module": "candidates.fortran_candidate",
+      "promotion_targets": {"engine": "candidates/_fortran_engine.so", "bridge": "candidates/_fortran_bridge.cpython-314-x86_64-linux-gnu.so"},
+      "generated_build_only_outputs": {},
+      "owners": [
+        {"path": "candidates/fortran_candidate.py", "sha256": "8db564771d38c0896a5207f1241a44463432dc5bf75dfcf657740d8bcfefd194", "bytes": 26521},
+        {"path": "candidates/fortran/engine.f90", "sha256": "5180da085487b9932e3f769e6baded6a8409a0b778890e6197aaea6dad1923a5", "bytes": 85062},
+        {"path": "candidates/fortran/py_bridge.c", "sha256": "8540b708de4819f1b3340c32e78eaf083c1cad35f016c0f7af33a27773694b0d", "bytes": 26311}
+      ]
+    }
+  ],
+  "historical_candidate_evidence": {
+    "overview_input_path": "docs/evidence/candidate-current-overview-v7.inputs.json",
+    "overview_input_sha256": "744f86e241e3489cf07c5fccccf291eb68c44a50605d79723dd1ae1092d8511f",
+    "tested_family_count": 3,
+    "evidence_owners_per_tested_family": 17,
+    "candidate_evidence_owner_count": 51,
+    "published_v4_build_evidence_owner_count": 6,
+    "total_distinct_evidence_owner_count": 57,
+    "families": ["c", "rust", "zig"],
+    "historical_qualified_candidate_count": 0,
+    "published_v4_builds": [
+      {
+        "family": "cpp",
+        "build_status": "PASS",
+        "archive_path": "oracle/phase2/evidence/native-source-build-v4-cpp-phase2-v4.json.gz",
+        "archive_sha256": "48910a6328e8aaacdac993b2c029995d878960a456359a14db5c83b9fc518df9",
+        "archive_bytes": 20605,
+        "receipt_path": "oracle/phase2/evidence/native-source-build-v4-cpp-phase2-v4-publication-receipt.json",
+        "receipt_sha256": "7742eda3ce777b1378d0c7fb87fc064f222850ca8bcf15cd23ff8a4d87d8bebf",
+        "receipt_bytes": 2074,
+        "process_count": 10,
+        "completed_phase_count": 2,
+        "qualified_candidate_count": 0
+      },
+      {
+        "family": "go",
+        "build_status": "FAIL",
+        "archive_path": "oracle/phase2/evidence/native-source-build-v4-go-phase2-v4-failures.json.gz",
+        "archive_sha256": "fcf643b7b8e9fbe80bd3b40c7ed884695a844f46e1117f5ebdb130135e5db4bb",
+        "archive_bytes": 4095,
+        "receipt_path": "oracle/phase2/evidence/native-source-build-v4-go-phase2-v4-failures-publication-receipt.json",
+        "receipt_sha256": "215e9680bbe0f8d2250fcca8bae0335017606288e13e7636224b7c76336b5e41",
+        "receipt_bytes": 2075,
+        "process_count": 4,
+        "completed_phase_count": 0,
+        "qualified_candidate_count": 0
+      },
+      {
+        "family": "fortran",
+        "build_status": "FAIL",
+        "archive_path": "oracle/phase2/evidence/native-source-build-v4-fortran-phase2-v4-failures.json.gz",
+        "archive_sha256": "ba35ea4f0d28814f716a36d2ccb384ef034a88a4029ca3f3cbf4f91eae268103",
+        "archive_bytes": 14825,
+        "receipt_path": "oracle/phase2/evidence/native-source-build-v4-fortran-phase2-v4-failures-publication-receipt.json",
+        "receipt_sha256": "86b4b2648adf651481eea8d8b427a432f121c59322f508b522eca18af0749a08",
+        "receipt_bytes": 2019,
+        "process_count": 18,
+        "completed_phase_count": 2,
+        "qualified_candidate_count": 0
+      }
+    ],
+    "historical_build_process_ledger": {
+      "v2_process_count": 39,
+      "v3_zig_process_count": 15,
+      "v4_process_count": 32,
+      "v2_and_v4_process_count": 71,
+      "all_historical_build_process_count": 86,
+      "v4_processes_by_family": {"cpp": 10, "go": 4, "fortran": 18},
+      "unique_pid_scope": "WITHIN EACH ACTUAL BUILD REPORT ONLY"
+    },
+    "zig_restoration_receipt_path": "oracle/phase2/evidence/frozen-p0-candidate-v6-zig-phase2-v6-restoration-receipt.json",
+    "zig_restoration_receipt_sha256": "c415ba80c055d39a933617a839624037b557adbe30c418c2a0e859131fbe9028"
+  },
+  "recovery_policy": {
+    "root_prefix": "/tmp/rebar-phase2-verified-native-activation-v3-",
+    "root_mode": "0700",
+    "evidence_mode": "0600",
+    "journal_name": "recovery-journal.json",
+    "report_name": "activation-report.json",
+    "receipt_name": "activation-receipt.json",
+    "intention_prefix": "promotion-intent-",
+    "backup_prefix": "backups/candidates/",
+    "canonical_import_root": "/home/dev-user/src/rebar",
+    "target_promotion": "INDIVIDUALLY ATOMIC; NEVER GROUP-ATOMIC",
+    "backup": "EXACT ORIGINAL BYTES, MODE, DEVICE, AND INODE",
+    "absent_original": "RECORDED TRUTHFULLY; NO FABRICATED BACKUP",
+    "staging": "ADJACENT, EXCLUSIVE, NO-FOLLOW, AND FSYNCED",
+    "intention": "DURABLE AND OWNER-ONLY BEFORE EACH ATOMIC REPLACEMENT",
+    "reportless_recovery": "JOURNAL AND PER-ROLE INTENTION; NO REPORT OR RECEIPT REQUIRED",
+    "modified_user_target": "NEVER OVERWRITE OR DELETE",
+    "native_loader": "NOT USED",
+    "external_regular_expression_engine": "FORBIDDEN",
+    "cross_family_matching_engine": "FORBIDDEN"
+  },
+  "phase_boundary": {
+    "actual_v4_source_builds": "NOT RUN",
+    "actual_v3_activations": "NOT RUN",
+    "qualified_candidate_count": 0,
+    "candidate_processes_started": 0,
+    "reference_processes_started": 0,
+    "candidate_imports": 0,
+    "native_libraries_loaded": 0,
+    "network_requests": 0,
+    "hidden_cases_read": 0,
+    "final_cases_read": 0,
+    "benchmark_files_read": 0,
+    "clock_samples": 0,
+    "timing_trials_run": 0,
+    "candidate_correctness": "NOT MEASURED",
+    "subinterpreter_isolation": "NOT MEASURED",
+    "undefined_behavior": "NOT MEASURED",
+    "performance": "NOT MEASURED",
+    "memory": "NOT MEASURED",
+    "holdout": "NOT OPENED",
+    "winner_selected": false
+  }
+}
