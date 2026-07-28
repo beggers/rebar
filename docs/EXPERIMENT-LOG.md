@@ -7,6 +7,39 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze all original compatibility checks for the repaired Zig engine
+
+Prepare the first complete test of the independently repaired Zig
+engine. Keep all **13** original Python test groups, all **31,237**
+required checks, and the **13** named private exclusions. Use the
+original Python test observers rather than the existing C-only runner.
+
+A future campaign starts one isolated worker for each complete group.
+It retains the actual upstream tests, callbacks, buffer exporters,
+thread behavior, and **128** real multi-interpreter cases. A failed
+group never suppresses a later test group or its output.
+
+The controller authenticates both original user-owned Zig binaries
+before activation. It restores their exact original inodes in reverse
+order before it publishes any passing or failing result. No external
+regular-expression package or other candidate may do Zig's matching.
+
+Preserve the [complete repaired-Zig original-suite controller](../tools/run_owned_repaired_zig_original_campaign_v1.py),
+SHA-256
+`ff4bc83173930c193de5984659aa6e8aca1848496d06f3d3dca3c28294c37c90`;
+[original Python compatibility protocol](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V1.md),
+SHA-256
+`974c1cc09511c7a119a2ea0f59fab8c39e8d1887c948df19657de2458b5b9d67`;
+and [exact original-test and recovery contract](../oracle/phase2/repaired-zig-original-campaign-v1.json),
+SHA-256
+`f3f1bdfea41b8b4d5bce22b2b236c76f653e97268e500b951fbef262052718f0`.
+
+The four ordinary and clean-environment source-only checks pass
+without activating or testing Zig. Actual repaired-Zig correctness,
+speed, memory, and undefined behavior remain **NOT MEASURED**.
+The final holdout remains **NOT FROZEN**, **NOT GENERATED**, and
+**NOT OPENED**.
+
 ## Freeze independently reproducible builds for the corrected C engine
 
 Freeze a two-build experiment that retains both first-party C repairs:
