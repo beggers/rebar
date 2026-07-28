@@ -7,6 +7,39 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze offline Rust builds against the complete current evidence
+
+Freeze the Rust build against all **137** existing evidence files,
+**142** independently verified references, the **30** real C test
+records, and both real Zig build records. Preserve the C engine's
+**1,262** differences and the original Rust engine's **2,042**
+differences; do not present either engine as a drop-in replacement.
+
+Keep both independently written first-party Rust repairs: bridge
+SHA-256 `4436bbb8ad180ee8f02dd4418187506ec0d5a33bdb5a79c424fc736253fa0257`
+and public Python interface SHA-256
+`81089bab906c9bb511fe0779d8e1ddf735850fce62eaac06ca1e6c678856578c`.
+Each future private build must apply both repairs exactly once and
+compile a single local Rust package with no external dependencies,
+using Cargo's locked, frozen, offline mode.
+
+Freeze the [current independent Rust build verifier](../tools/reproduce_owned_native_source_build_v11.py),
+SHA-256
+`3fb0ca1b6914617eb8a6f491072fcb40b15a364afacbaec2d4caac1e9b6f5d10`;
+[offline two-build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V11.md),
+SHA-256
+`bd6bce6b14bebe55691900e4a48bb8acf89197660e1d5ebd4c8c38e979c05fe6`;
+and [exact current-evidence Rust build contract](../oracle/phase2/native-source-build-v11.json),
+SHA-256
+`7b1f8941444e942a85eb9f9df9dc23244112763ca92381fe22f76fd87c95a87a`.
+
+Both ordinary and empty-environment self-tests and source-pinned checks
+pass, rejecting **92** unsafe controls. All **28** planned compiler
+and inspection processes remain future work. Repaired Rust has not
+been built or tested. Speed, memory, and undefined behavior remain
+**NOT MEASURED**; the expanded final comparison remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Build the repaired first-party Zig engine twice
 
 Run the separately frozen current-history Zig build once using the pinned
