@@ -7,6 +7,59 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Validate Python's 50 additional public-signature checks twice
+
+Run the separately frozen Python-versus-Python reference exactly once.
+Exactly **two** isolated pinned Python 3.14.6 workers independently pass
+all **50** additional public function, pattern, match, and scanner
+signature checks. Their complete observation vectors agree; their actual
+process identities are distinct. The candidate has not been run against
+these additional checks.
+
+The [complete independently reproduced Python signature-reference archive](../oracle/phase1/evidence/callable-introspection-reference-v2-cpython-3.14.6.json.gz)
+is **8,538** bytes with SHA-256
+`7875f249a6cec7910e31800566ef5ccb1ee7398a29a403f307c5de88e647736c`.
+Its complete strictly bounded uncompressed reference record is **152,530**
+bytes with SHA-256
+`cacf306a64fc4e68686b64895ee24b076b9be87efd778b94967c5e2adb662ef0`.
+The matching **50**-observation vector has SHA-256
+`b32f2ea83213686a8b97d63a15ba5c83d323c2dee1f831bab41176544d6adb0a`.
+
+The [separately durable Python reference-publication receipt](../oracle/phase1/evidence/callable-introspection-reference-v2-cpython-3.14.6-publication-receipt.json)
+is **3,533** bytes with SHA-256
+`29b4a389e1b99cce15f07069ee1a0895f193e13400f944a037a4f42832619334`.
+The actual reference status is **PASS**, both real reference processes
+completed, and no worker failures occurred. Receipt **PASS** remains a
+separate statement that the complete result was durably recorded.
+
+The [current Python-versus-candidates and additional-signature graph](evidence/candidate-current-overview-v35.svg)
+has SHA-256
+`bc4ec953b521973d4f2ee69db36e75d4e9ec539b4025e1cef3ad90a7c18315a3`.
+Its [independently authenticated current graph inputs](evidence/candidate-current-overview-v35.inputs.json)
+have SHA-256
+`e90ba3ac5bce1b4c73e1005e740d36c1d24d94a065f71d154ae50075895cf73a`.
+The [complete current machine-readable reference and candidate evidence](evidence/candidate-current-overview-v35.json)
+has SHA-256
+`5cf793bbd79a65720b4081809c53333b028f133f51143ee22acb3ce43b805367`.
+The [reproducible current graph generator](../tools/render_candidate_current_overview_v35.py)
+has SHA-256
+`390373ef8d196c54301ba6917b15b847708359dd27724f7463d9497e706aa618`.
+It verifies all **152,530** bounded reference-report bytes, both actual
+workers, both complete **50**-case vectors, and their original output.
+It does not open or decompress a candidate-matching archive, run a
+candidate, or change the original denominator.
+
+The original denominator remains exactly **31,237** checks, **13** groups,
+and **13** named private waivers. The additional **50** are never added to
+that denominator. Two genuinely new reference evidence owners establish
+authenticated lower bounds of **159** evidence owners and **164**
+references. Candidate public-signature results have **NOT RUN**. Rust,
+C, and Zig retain their respective **1,036**, **1,230**, and **1,764**
+observed differences. Runtime no-delegation remains **NOT ESTABLISHED**;
+speed, memory, confidence, and undefined behavior remain **NOT MEASURED**.
+The **4,194,304**-case final holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze two independent Python references for the additional signature checks
 
 Freeze a separately reproducible Python-versus-Python reference for all

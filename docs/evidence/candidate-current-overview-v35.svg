@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1725" viewBox="0 0 1440 1725" role="img" aria-labelledby="v35-title v35-description">
+<title id="v35-title">Building a faster Python re: 50 extra Python API checks now independently verified</title>
+<desc id="v35-description">The original Python reference still has exactly 31,237 checks across 13 suites. Two independently observed reference processes, PIDs 81 and 82, agree on all 50 separately counted callable-signature checks. Candidate signature checks have not run. Current Rust, C and Zig still have 1,036, 1,230 and 1,764 compatibility differences; no replacement qualifies. Source independence is verified but full runtime no-delegation remains NOT ESTABLISHED. Speed, memory and confidence are NOT MEASURED. At least 159 evidence owners and 164 history references are authenticated. Exactly one bounded additional Python-reference report was decompressed; no candidate matching archive was inflated. The 4,194,304-case holdout remains unopened and ungenerated.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.title{font-size:26px;font-weight:760;fill:#16324f}.heading{font-size:19px;font-weight:750;fill:#16324f}.body{font-size:14px;fill:#42556c}.name{font-size:14px;font-weight:720;fill:#16324f}.pass{font-size:12px;font-weight:760;fill:#00794c}.fail{font-size:12px;font-weight:750;fill:#a75c13}.pending{font-size:12px;font-weight:740;fill:#53667b}.big{font-size:20px;font-weight:760;fill:#16324f}.small{font-size:11px;fill:#42556c}.foot{font-size:10px;fill:#53667b}</style>
+<rect width="1440" height="1725" rx="22" fill="#f4f7fb"/>
+<text x="44" y="53" class="title">Can we build a faster replacement for Python re?</text>
+<text x="46" y="81" class="body">Two independent Python references now confirm 50 extra API checks. No candidate has passed full compatibility; speed is NOT MEASURED.</text>
+<rect x="44" y="99" width="184" height="83" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="53" y="132" class="big">31,237</text>
+<text x="53" y="157" class="small">unchanged original checks</text>
+<rect x="239" y="99" width="184" height="83" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="248" y="132" class="big">50 / 50</text>
+<text x="248" y="157" class="small">extra Python checks pass</text>
+<rect x="434" y="99" width="184" height="83" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="443" y="132" class="big">2</text>
+<text x="443" y="157" class="small">independent reference workers</text>
+<rect x="629" y="99" width="184" height="83" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="638" y="132" class="big">0</text>
+<text x="638" y="157" class="small">compatible replacements</text>
+<rect x="824" y="99" width="184" height="83" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="833" y="132" class="big">1,764</text>
+<text x="833" y="157" class="small">current Zig differences</text>
+<rect x="1019" y="99" width="184" height="83" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="1028" y="132" class="big">0</text>
+<text x="1028" y="157" class="small">candidate extra checks run</text>
+<rect x="1214" y="99" width="184" height="83" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="1223" y="132" class="big">≥159 / 164</text>
+<text x="1223" y="157" class="small">authenticated lower bounds</text>
+<rect x="44" y="201" width="1352" height="357" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="235" class="heading">1. Overall: can a candidate yet replace Python re?</text>
+<text x="66" y="259" class="body">Same frozen 31,237-case original reference; lower differences are better, and only zero qualifies.</text>
+<text x="67" y="300" class="name">Python re — original reference</text>
+<text x="1370" y="300" class="pass" text-anchor="end">REFERENCE PASS</text>
+<rect x="68" y="311" width="590" height="10" rx="5" fill="#edf1f5"/>
+<rect x="68" y="311" width="0" height="10" rx="5" fill="#0b8d61"/>
+<text x="674" y="321" class="small">0 differences; 31,237 independently confirmed passes</text>
+<text x="67" y="362" class="name">Rust — current from-scratch candidate</text>
+<text x="1370" y="362" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<rect x="68" y="373" width="590" height="10" rx="5" fill="#edf1f5"/>
+<rect x="68" y="373" width="347" height="10" rx="5" fill="#b77a36"/>
+<text x="674" y="383" class="small">1,036 differences; 8,965 independently confirmed passes</text>
+<text x="67" y="424" class="name">C — current from-scratch candidate</text>
+<text x="1370" y="424" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<rect x="68" y="435" width="590" height="10" rx="5" fill="#edf1f5"/>
+<rect x="68" y="435" width="411" height="10" rx="5" fill="#b77a36"/>
+<text x="674" y="445" class="small">1,230 differences; 7,325 independently confirmed passes</text>
+<text x="67" y="486" class="name">Zig — corrected and actually tested</text>
+<text x="1370" y="486" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<rect x="68" y="497" width="590" height="10" rx="5" fill="#edf1f5"/>
+<rect x="68" y="497" width="590" height="10" rx="5" fill="#b77a36"/>
+<text x="674" y="507" class="small">1,764 differences; 3,711 independently confirmed passes</text>
+<rect x="44" y="577" width="1352" height="285" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="611" class="heading">2. What the 50 new reference checks actually prove</text>
+<text x="67" y="641" class="body">Python itself passed all 50 separately frozen public callable-signature checks.</text>
+<text x="67" y="666" class="body">Two actual isolated Python reference workers, PIDs 81 and 82, independently agreed.</text>
+<text x="67" y="691" class="body">Both workers recorded and preserved all 50 complete signature observations.</text>
+<text x="67" y="716" class="body">The shared record fingerprint is independently verified from the full reference report.</text>
+<text x="67" y="741" class="body">These 50 checks are additional: the original compatibility denominator remains 31,237.</text>
+<text x="67" y="766" class="body">Candidate signature checks are NOT RUN; a Python pass is not a candidate pass.</text>
+<text x="67" y="791" class="body">Exactly one 152,530-byte Python-reference report was bounded and authenticated.</text>
+<text x="67" y="816" class="body">No C, Rust, Zig or other candidate matching archive was decompressed.</text>
+<rect x="44" y="880" width="1352" height="282" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="914" class="heading">3. What remains unproven or unmeasured</text>
+<text x="68" y="945" class="name">Compatible replacement</text>
+<text x="379" y="945" class="body">NONE: Rust, C and Zig still differ from Python re.</text>
+<text x="68" y="975" class="name">Candidates on the 50 extra checks</text>
+<text x="379" y="975" class="body">NOT RUN: only the two Python reference processes have run.</text>
+<text x="68" y="1005" class="name">Faster than Python re</text>
+<text x="379" y="1005" class="body">NOT MEASURED: no candidate is correctness-qualified.</text>
+<text x="68" y="1035" class="name">Runtime no-delegation</text>
+<text x="379" y="1035" class="body">NOT ESTABLISHED: first-party source is not a complete runtime audit.</text>
+<text x="68" y="1065" class="name">Memory and statistical confidence</text>
+<text x="379" y="1065" class="body">NOT MEASURED: no eligible performance comparison.</text>
+<text x="68" y="1095" class="name">4,194,304-case final holdout</text>
+<text x="379" y="1095" class="body">NOT OPENED and NOT GENERATED; zero hidden cases read.</text>
+<text x="68" y="1125" class="name">Winner</text>
+<text x="379" y="1125" class="body">NONE: compatibility, runtime independence and speed are not established.</text>
+<rect x="44" y="1180" width="1352" height="354" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="1214" class="heading">4. How to read the independently recorded evidence</text>
+<text x="67" y="1245" class="body">The original reference remains exactly 31,237 checks, 13 suites and 13 named private waivers.</text>
+<text x="67" y="1270" class="body">50 additional checks passed in each of two actual, separately identified Python processes.</text>
+<text x="67" y="1295" class="body">Their agreement fingerprint comes from the bounded full reference report, not the small receipt.</text>
+<text x="67" y="1320" class="body">V34 independently authenticated 157 evidence owners and 162 historical references.</text>
+<text x="67" y="1345" class="body">Two distinct new reference records establish lower bounds of 159 owners and 164 references.</text>
+<text x="67" y="1370" class="body">These are authenticated lower bounds, not a claim to have counted the whole workspace.</text>
+<text x="67" y="1395" class="body">The corrected Zig remains at 1,764 differences; Rust has 1,036 and C has 1,230.</text>
+<text x="67" y="1420" class="body">First-party source and build independence are verified; runtime no-delegation is NOT ESTABLISHED.</text>
+<text x="67" y="1445" class="body">Exactly one reference gzip was inflated; candidate matching archive inflation remains zero.</text>
+<text x="67" y="1470" class="body">No graph ran a reference worker, candidate, compiler, benchmark, clock or hidden holdout.</text>
+<text x="47" y="1568" class="foot">Inputs SHA-256: e90ba3ac5bce1b4c73e1005e740d36c1d24d94a065f71d154ae50075895cf73a</text>
+<text x="47" y="1590" class="foot">Renderer SHA-256: 390373ef8d196c54301ba6917b15b847708359dd27724f7463d9497e706aa618</text>
+<text x="47" y="1612" class="foot">Actual additional reference archive SHA-256: 7875f249a6cec7910e31800566ef5ccb1ee7398a29a403f307c5de88e647736c</text>
+<text x="47" y="1634" class="foot">Actual additional reference receipt SHA-256: 29b4a389e1b99cce15f07069ee1a0895f193e13400f944a037a4f42832619334</text>
+<text x="47" y="1656" class="foot">Actual 50-observation vector SHA-256: b32f2ea83213686a8b97d63a15ba5c83d323c2dee1f831bab41176544d6adb0a</text>
+</svg>

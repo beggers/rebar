@@ -16,7 +16,7 @@ Python passes all **31,237** frozen compatibility checks. No replacement
 has passed them, so there is no drop-in replacement, measured speedup,
 or winner.
 
-![Python passes all 31,237 compatibility checks; the from-scratch Rust, C, and Zig engines have 1,036, 1,230, and 1,764 differences respectively; none qualifies and speed is not measured](docs/evidence/candidate-current-overview-v34.svg)
+![Python passes all 31,237 original compatibility checks and 50 separately verified public-signature checks; the from-scratch Rust, C, and Zig engines have 1,036, 1,230, and 1,764 differences respectively; none qualifies and speed is not measured](docs/evidence/candidate-current-overview-v35.svg)
 
 Each language below uses its own, independently written matching engine;
 the source and build checks reject outside matching packages and shared
@@ -43,9 +43,10 @@ a failed test group does not prove that its remaining cases pass. All
 failures and worker errors remain in the published evidence.
 
 An additional **50** checks of Python's public function and method
-signatures are frozen separately. The reproducible, two-process Python
-reference is frozen but **NOT RUN**; candidate results are **NOT MEASURED**.
-These checks are not added to the original **31,237** checks.
+signatures are frozen separately. Two independently isolated Python
+reference processes passed all **50** and produced identical results.
+Candidate results for these additional checks remain **NOT MEASURED**;
+the checks are not added to the original **31,237**.
 
 ## Detailed compatibility
 

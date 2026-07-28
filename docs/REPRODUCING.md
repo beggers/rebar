@@ -9,8 +9,9 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 ## Evidence and reproduction
 
 - [Frozen Python compatibility tests](../oracle/phase1/P0-COMPLETENESS-V1.md), [all 31,237 test cases](../oracle/phase1/p0-completeness-v1.json), and [independent test verifier](../tools/verify_p0_completeness_v1.py).
-- [Separately frozen public callable signature checks](../oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md), [all 50 additional function, pattern, match, and scanner cases](../oracle/phase1/p0-callable-introspection-v1.json), and [independent source-only verifier](../tools/verify_python_re_callable_introspection_v1.py); the original **31,237** cases are unchanged, and the new independent-reference and candidate runs have **NOT YET RUN**.
-- [Frozen two-process Python signature reference](../oracle/phase1/CALLABLE-INTROSPECTION-REFERENCE-V2.md), [exact independently isolated reference and publication contract](../oracle/phase1/callable-introspection-reference-v2.json), and [source-pinned Python reference controller](../tools/run_owned_callable_introspection_reference_v2.py); the independently reproducible reference for the **50** additional cases is frozen but has **NOT RUN**.
+- [Separately frozen public callable signature checks](../oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md), [all 50 additional function, pattern, match, and scanner cases](../oracle/phase1/p0-callable-introspection-v1.json), and [independent source-only verifier](../tools/verify_python_re_callable_introspection_v1.py); the original **31,237** cases are unchanged, and **two** separate Python reference processes passed all **50** additional checks. Candidate signature checks have **NOT RUN**.
+- [Independently reproduced two-process Python signature reference](../oracle/phase1/CALLABLE-INTROSPECTION-REFERENCE-V2.md), [exact independently isolated reference and publication contract](../oracle/phase1/callable-introspection-reference-v2.json), and [source-pinned Python reference controller](../tools/run_owned_callable_introspection_reference_v2.py); both actual reference workers passed and independently produced the same complete **50**-observation result.
+- [Complete actual Python signature-reference archive](../oracle/phase1/evidence/callable-introspection-reference-v2-cpython-3.14.6.json.gz) and [separately durable two-worker reference receipt](../oracle/phase1/evidence/callable-introspection-reference-v2-cpython-3.14.6-publication-receipt.json); reference **PASS** means both actual Python workers agreed on every additional check. The separate durable publication also passed.
 - [First-party engine ownership and no-wrapping source audit](../oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md), [exact six-family source inventory](../oracle/phase2/candidate-independence-v2.json), and [source verifier](../tools/audit_candidate_independence_v2.py); independent matching-engine ownership passes, but a complete execution-time no-delegation audit remains **NOT ESTABLISHED**.
 - [Independent Zig scanner-capture repair](../oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V1.md), [single-block private-snapshot contract](../oracle/phase2/zig-scanner-capture-source-repair-v1.json), and [source-pinned first-party repair tool](../tools/apply_owned_zig_scanner_capture_source_repair_v1.py); the repair was independently applied to both private native builds.
 - [First-party correction for the observed Zig scanner failure](../oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V2.md), [exact corrected private-bridge contract](../oracle/phase2/zig-scanner-capture-source-repair-v2.json), and [independently owned source verifier](../tools/apply_owned_zig_scanner_capture_source_repair_v2.py); the corrected engine was independently built twice and its subsequent complete test reduced observed Zig differences from **2,172** to **1,764**.
@@ -67,7 +68,8 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Complete repaired C compatibility evidence](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures.json.gz), [independent safe-restoration receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures-publication-receipt.json), [all 13 original worker reports](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures.json.gz), and [original-suite aggregate receipt](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures-publication-receipt.json); eight complete groups pass, five retain 1,262 genuine differences, and no infrastructure failure occurred.
 - [Actual independent repaired Zig builds](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner.json.gz) and [complete native build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner-publication-receipt.json); exactly 26 genuine processes produce two identical first-party engine and bridge binaries without testing matching or measuring speed.
 - [Actual independent repaired Rust builds](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay.json.gz) and [complete offline-build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay-publication-receipt.json); exactly 28 genuine processes produce two identical dependency-free Rust engines and bridges without testing matching or measuring speed.
-- [Current Python-versus-candidates graph](../docs/evidence/candidate-current-overview-v34.svg), [independently authenticated current graph inputs](../docs/evidence/candidate-current-overview-v34.inputs.json), [complete machine-readable current results](../docs/evidence/candidate-current-overview-v34.json), and [reproducible current graph generator](../tools/render_candidate_current_overview_v34.py); the actual **157** evidence files and **162** references preserve Rust's **1,036** differences, C's **1,230**, and the corrected Zig engine's **1,764**. Its earlier **2,172**-difference Zig result is clearly historical. Runtime no-delegation is **NOT ESTABLISHED**; speed and memory are **NOT MEASURED**.
+- [Current Python-versus-candidates and signature-reference graph](../docs/evidence/candidate-current-overview-v35.svg), [independently authenticated current graph inputs](../docs/evidence/candidate-current-overview-v35.inputs.json), [complete current machine-readable reference and candidate evidence](../docs/evidence/candidate-current-overview-v35.json), and [reproducible current graph generator](../tools/render_candidate_current_overview_v35.py); independently authenticate two real Python workers passing the **50** additional checks, unchanged original **31,237** checks, Rust's **1,036** differences, C's **1,230**, and corrected Zig's **1,764**. The **159** evidence owners and **164** references are authenticated lower bounds. Candidate signature tests have **NOT RUN**, runtime no-delegation is **NOT ESTABLISHED**, and speed is **NOT MEASURED**.
+- [Historical corrected-Zig graph](../docs/evidence/candidate-current-overview-v34.svg), [historical corrected-Zig graph inputs](../docs/evidence/candidate-current-overview-v34.inputs.json), [historical full candidate results](../docs/evidence/candidate-current-overview-v34.json), and [historical graph generator](../tools/render_candidate_current_overview_v34.py); this preserved **157**-owner, **162**-reference snapshot recorded Rust's **1,036** differences, C's **1,230**, and corrected Zig's **1,764** before the separate signature-reference evidence was published.
 - [Historical pre-test graph inputs](../docs/evidence/candidate-current-overview-v33.inputs.json), [historical machine-readable Python baseline, matching results, and independently verified Zig build](../docs/evidence/candidate-current-overview-v33.json), and [historical graph generator](../tools/render_candidate_current_overview_v33.py); this preserved snapshot authenticates the **155** evidence files and **160** references available before the corrected Zig matching test. It records Rust's **1,036** differences, C's **1,230**, and the previous Zig engine's **2,172** differences. It does not include the later corrected Zig result.
 - [Preserved historical Rust-only graph](../docs/evidence/candidate-current-overview-v32.svg), [historical source inputs](../docs/evidence/candidate-current-overview-v32.inputs.json), and [historical graph generator](../tools/render_candidate_current_overview_v32.py); its **153** owners and **158** references describe the genuine state before the corrected Zig source-build evidence was published.
 - [Full experiment log, build reports, previous graphs, failures, and rejected designs](../docs/EXPERIMENT-LOG.md).
@@ -170,6 +172,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/render_candidate_current_overview_v32.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v33.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v34.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v35.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v6.py --self-test \
   --source-sha256 d3a9b08c1bf7e3408719a0e92b8c1965aa6160dd2e18ab1501bb8662aaf8e4a1 \
   --protocol-sha256 0e736d575835fa22388841a527e22b62eef1ddf39eac9415bd7c518ba985b1d0 \
@@ -253,6 +256,16 @@ Verify the current headline graph without rerunning a candidate,
 decompressing a matching archive, or opening the final comparison:
 
 ```sh
+"$PY" -I -B tools/render_candidate_current_overview_v35.py \
+  --verify-frozen-context \
+  --source-sha256 390373ef8d196c54301ba6917b15b847708359dd27724f7463d9497e706aa618 \
+  --reference-archive-sha256 7875f249a6cec7910e31800566ef5ccb1ee7398a29a403f307c5de88e647736c \
+  --reference-receipt-sha256 29b4a389e1b99cce15f07069ee1a0895f193e13400f944a037a4f42832619334 \
+  --inputs-sha256 e90ba3ac5bce1b4c73e1005e740d36c1d24d94a065f71d154ae50075895cf73a \
+  --summary-sha256 5cf793bbd79a65720b4081809c53333b028f133f51143ee22acb3ce43b805367 \
+  --svg-sha256 bc4ec953b521973d4f2ee69db36e75d4e9ec539b4025e1cef3ad90a7c18315a3
+
+# Verify the historical graph from before the extra Python reference.
 "$PY" -I -B tools/render_candidate_current_overview_v34.py \
   --verify-frozen-context \
   --source-sha256 cf4f7b0749d0e3aa6c15d4e5444762441265773fbb90c1ebbceff0f65e3e841f \
@@ -420,8 +433,8 @@ decompressing a matching archive, or opening the final comparison:
 The earlier pinned context checks below reproduce historical source freezes.
 Each intentionally authenticates the exact evidence inventory that existed
 when it was committed. Run one against its corresponding historical commit;
-it is not a verification of the current **157** evidence files and
-**162** authenticated references.
+it is not a verification of the current lower bounds of **159** evidence
+files and **164** authenticated references.
 
 ```sh
 
@@ -723,12 +736,12 @@ and recovery directory.
 
 ## Reproduce the separate Python signature reference
 
-Only run the command below after the three signature-reference source owners
-and their protocol have been committed and pushed. It starts exactly two
-independent, isolated Python reference workers and compares all **50**
-separately frozen signatures. It does not change the original **31,237**
-checks, run a candidate, measure performance, or open the final holdout.
-Do not reuse or overwrite an already published reference-evidence path.
+The exact command below already ran once after its independently reviewed
+source freeze was committed and pushed. Exactly **two** isolated Python
+reference workers independently passed all **50** separately frozen
+signature checks. The original **31,237** checks did not change; no
+candidate, benchmark, or holdout ran. Do not rerun the already-used command
+or overwrite its published reference archive and receipt.
 
 ```sh
 "$PY" -I -B tools/run_owned_callable_introspection_reference_v2.py \
