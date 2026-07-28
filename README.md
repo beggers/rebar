@@ -20,7 +20,8 @@ has passed them, so there is not yet a drop-in alternative or a speed winner.
 Rust, C, Zig, C++, and Go each use an independently written engine.
 Both repaired Rust and repaired Zig now produce two identical builds
 without an external regular-expression package. Neither repaired
-engine has yet taken the full compatibility test.
+engine has completed the full compatibility test. The first repaired-Zig
+attempt stopped during setup before any matching test began.
 
 The repaired C engine completed all **13** test groups: **8** groups
 passed, **5** contained **1,262** differences, and no test worker
@@ -97,6 +98,7 @@ slowdown greater than **20%**. There is no winner.
 - [Reproducible offline build rules for the corrected C engine](oracle/phase2/C-PICKLE-SOURCE-BUILD-V12.md).
 - [Safe recovery rules for both existing Zig engine files](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V6.md).
 - [Complete original Python compatibility tests for repaired Zig](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V1.md).
+- [Why the first repaired-Zig test stopped before any matching began](oracle/phase2/ZIG-CAMPAIGN-PREFLIGHT-FAILURE-V1.md).
 - [Expanded, still-unopened final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256
   `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`;

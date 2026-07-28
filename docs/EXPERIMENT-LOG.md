@@ -7,6 +7,30 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Record the first repaired-Zig setup failure
+
+The original repaired-Zig test controller ran once and exited **1** before
+loading Zig or starting any test worker. Its existing file-owner reader
+omitted the two ownership details expected by the safety check. Both
+original Zig files were left unchanged. No matching check ran, no campaign
+archive was produced, and the process ID was **NOT RECORDED**.
+
+Freeze the [read-only failure verifier](../tools/preserve_owned_zig_campaign_preflight_failure_v1.py),
+SHA-256
+`4a401ea42b4446535d51d1c7c65c688196185a0bb9fa2e15aebdb3bfebb85498`;
+[failure protocol](../oracle/phase2/ZIG-CAMPAIGN-PREFLIGHT-FAILURE-V1.md),
+SHA-256
+`a3c005c95c61a68a5683125f7805564f4749ea9e82350f2d883da9e29b2817c5`;
+and [complete traceback contract](../oracle/phase2/zig-campaign-preflight-failure-v1.json),
+SHA-256
+`534a3cde3084c12a4124f5dea057ddb80b53fa4c591c8c72e26931bc277735f0`.
+
+Both ordinary and clean-environment source and context checks pass. The
+current graph still verifies **139** evidence files against **144**
+authenticated references. The failure archive has **NOT YET BEEN
+PRESERVED**. Zig correctness, speed, memory, and undefined behavior remain
+**NOT MEASURED**; the final comparison remains unopened.
+
 ## Freeze all original compatibility checks for the repaired Zig engine
 
 Prepare the first complete test of the independently repaired Zig
