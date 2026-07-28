@@ -7,6 +7,43 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the genuine repaired-Zig setup failure
+
+Publish the exact first failed Zig controller without repeating it. The
+actual controller ran once, exited **1**, loaded no Zig engine, and started
+**zero** matching workers. Preserve its complete **1,539-byte** traceback,
+its empty standard output, and its honestly unrecorded process ID. Both
+original Zig files retain their original contents, owners, and inodes.
+
+The [compressed original-failure archive](../oracle/phase2/evidence/zig-campaign-preflight-failure-v1-zig-phase2-v11-zig-scanner-original-p0-failures.json.gz)
+has SHA-256
+`1cb38eb48a2d3305ea98d5103a27ce6ae758137168f68df07a408dec3d055a37`.
+The distinct [durable publication receipt](../oracle/phase2/evidence/zig-campaign-preflight-failure-v1-zig-phase2-v11-zig-scanner-original-p0-failures-publication-receipt.json)
+has SHA-256
+`e15180c3ae0b313374079007455a810c78f91cabff926560cae702dfbc14bd23`.
+Successful evidence preservation does not mean the failed controller or
+the untested matching engine passed.
+
+Regenerate the [current headline graph](evidence/candidate-current-overview-v26.svg)
+from its [complete frozen inputs](evidence/candidate-current-overview-v26.inputs.json)
+and [machine-readable results](evidence/candidate-current-overview-v26.json).
+The [independently verified graph renderer](../tools/render_candidate_current_overview_v26.py)
+has SHA-256
+`55c36e916f0da8b9ef7b6992724d1d1f98161e834f4d2d21729663d9671a3982`.
+The inputs have SHA-256
+`c29e8df08d9b5a03eaad283b625465ba6638f19f69d7d3ab4ea5512e83c37685`;
+the results have SHA-256
+`8ebf2ccb74ae2cf62196a1507f94bd39ff4b103122c450865121306accf71f48`;
+and the graph has SHA-256
+`52b42c7ceccf45f80777d94820a812c7f8e0f790fba03a57aef28c11573dd9cc`.
+All **141** evidence files and **146** distinct authenticated references
+are retained. The graph identifies the setup failure as zero matching
+tests, not as a passing or failing regular-expression result.
+
+The repaired engine's compatibility, speed, memory, and undefined
+behavior remain **NOT MEASURED**. The expanded holdout remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Correct the Zig setup check without touching either engine
 
 The first repaired-Zig test stopped because its original file-owner reader
@@ -27,10 +64,11 @@ SHA-256
 
 Both ordinary and clean-environment source and context checks pass.
 Neither original Zig file was opened or changed by the checks. The
-corrected activation and matching tests have **NOT YET RUN**. The exact
-first-run failure archive has **NOT YET BEEN PRESERVED**; the graph still
-authenticates **139** evidence files and **144** references. Speed,
-memory, and undefined behavior remain **NOT MEASURED**.
+corrected activation and matching tests had **NOT YET RUN**. At this
+source-freeze point the exact first-run failure archive had **NOT YET
+BEEN PRESERVED**; the graph authenticated **139** evidence files and
+**144** references. Speed, memory, and undefined behavior remain
+**NOT MEASURED**.
 
 ## Record the first repaired-Zig setup failure
 
@@ -51,10 +89,11 @@ SHA-256
 `534a3cde3084c12a4124f5dea057ddb80b53fa4c591c8c72e26931bc277735f0`.
 
 Both ordinary and clean-environment source and context checks pass. The
-current graph still verifies **139** evidence files against **144**
-authenticated references. The failure archive has **NOT YET BEEN
-PRESERVED**. Zig correctness, speed, memory, and undefined behavior remain
-**NOT MEASURED**; the final comparison remains unopened.
+then-current graph verified **139** evidence files against **144**
+authenticated references. At this source-freeze point the failure archive
+had **NOT YET BEEN PRESERVED**. Zig correctness, speed, memory, and
+undefined behavior remain **NOT MEASURED**; the final comparison remains
+unopened.
 
 ## Freeze all original compatibility checks for the repaired Zig engine
 

@@ -15,7 +15,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Original two-file Zig activation and exact-inode recovery](../oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V6.md), [frozen dual-role safety contract](../oracle/phase2/verified-native-activation-v6.json), and [original Zig loading and recovery tool](../tools/activate_verified_native_candidate_v6.py); its nine-field safety check rejected genuine seven-field records for the unchanged original files before any engine loaded or matching test ran.
 - [Corrected Zig file-owner verification and safe recovery](../oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V7.md), [exact descriptor-verification contract](../oracle/phase2/verified-native-activation-v7.json), and [independently verified first-party activation source](../tools/activate_verified_native_candidate_v7.py); its frozen source checks authenticate the missing owner details without opening, replacing, or testing either original engine file. Activation has **NOT YET RUN**.
 - [Complete original Python tests for repaired Zig](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V1.md), [exact 13-group original-suite and safe-restoration contract](../oracle/phase2/repaired-zig-original-campaign-v1.json), and [independent repaired-Zig original-suite controller](../tools/run_owned_repaired_zig_original_campaign_v1.py); all 31,237 original checks remain frozen, and the first controller attempt stopped during setup before any candidate test started.
-- [First repaired-Zig setup failure](../oracle/phase2/ZIG-CAMPAIGN-PREFLIGHT-FAILURE-V1.md), [complete pinned traceback and failure contract](../oracle/phase2/zig-campaign-preflight-failure-v1.json), and [read-only failure verifier](../tools/preserve_owned_zig_campaign_preflight_failure_v1.py); one controller exited 1 before any Zig test worker began. The separately authorized failure archive has **NOT YET BEEN PRESERVED**.
+- [First repaired-Zig setup failure](../oracle/phase2/ZIG-CAMPAIGN-PREFLIGHT-FAILURE-V1.md), [complete pinned traceback and failure contract](../oracle/phase2/zig-campaign-preflight-failure-v1.json), and [failure preservation verifier](../tools/preserve_owned_zig_campaign_preflight_failure_v1.py); one controller exited 1 before any Zig test worker began. Its exact traceback is preserved in the [compressed original-failure archive](../oracle/phase2/evidence/zig-campaign-preflight-failure-v1-zig-phase2-v11-zig-scanner-original-p0-failures.json.gz) and [separate durable publication receipt](../oracle/phase2/evidence/zig-campaign-preflight-failure-v1-zig-phase2-v11-zig-scanner-original-p0-failures-publication-receipt.json). Receipt success verifies preservation, not a successful Zig test.
 - [Corrected original Python test producer](../tools/run_owned_six_family_original_p0_producer_v3.py), [unchanged original-test and first-party ownership protocol](../oracle/phase2/SIX-FAMILY-P0-PRODUCER-V3.md), and [exact source-pinned contract](../oracle/phase2/six-family-p0-producer-v3.json); both real Python reference processes and all 31,237 cases are preserved.
 - [Corrected complete original-suite protocol](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V9.md), [exact case and worker inventory](../oracle/phase2/p0-candidate-protocol-v9.json), [corrected isolated-suite worker](../tools/run_frozen_p0_candidate_worker_v7.py), and [complete 13-suite runner](../tools/run_frozen_p0_candidate_v9.py); all 13 repaired C candidate workers ran and preserved their complete results.
 - [Frozen correction for the original C test coordinator](../oracle/phase2/P0-V9-LIVE-CONTEXT-ADAPTER-V1.md), [exact immutable original-worker adapter contract](../oracle/phase2/p0-v9-live-context-adapter-v1.json), and [independently verified original-worker adapter](../tools/run_owned_frozen_p0_v9_live_context_adapter_v1.py); all original corrected-suite worker records are preserved.
@@ -43,7 +43,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Complete repaired C compatibility evidence](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures.json.gz), [independent safe-restoration receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures-publication-receipt.json), [all 13 original worker reports](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures.json.gz), and [original-suite aggregate receipt](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures-publication-receipt.json); eight complete groups pass, five retain 1,262 genuine differences, and no infrastructure failure occurred.
 - [Actual independent repaired Zig builds](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner.json.gz) and [complete native build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner-publication-receipt.json); exactly 26 genuine processes produce two identical first-party engine and bridge binaries without testing matching or measuring speed.
 - [Actual independent repaired Rust builds](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay.json.gz) and [complete offline-build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay-publication-receipt.json); exactly 28 genuine processes produce two identical dependency-free Rust engines and bridges without testing matching or measuring speed.
-- [Current headline graph inputs](../docs/evidence/candidate-current-overview-v25.inputs.json), [complete machine-readable Python baseline and candidate failures](../docs/evidence/candidate-current-overview-v25.json), and [reproducible graph generator](../tools/render_candidate_current_overview_v25.py); the current graph authenticates all **139** evidence files and **144** references.
+- [Current headline graph inputs](../docs/evidence/candidate-current-overview-v26.inputs.json), [complete machine-readable Python baseline and candidate failures](../docs/evidence/candidate-current-overview-v26.json), and [reproducible graph generator](../tools/render_candidate_current_overview_v26.py); the current graph authenticates all **141** evidence files and **146** references, including the real zero-worker Zig setup failure.
 - [Full experiment log, build reports, previous graphs, failures, and rejected designs](../docs/EXPERIMENT-LOG.md).
 - [Proposed 4,194,304-case final comparison](../docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); examples remain **NOT GENERATED** and **NOT OPENED**.
 - [Original objective](../GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; [later clarifications](../AMENDMENTS.md).
@@ -98,6 +98,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/render_candidate_current_overview_v23.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v24.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v25.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v26.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v6.py --self-test \
   --source-sha256 d3a9b08c1bf7e3408719a0e92b8c1965aa6160dd2e18ab1501bb8662aaf8e4a1 \
   --protocol-sha256 0e736d575835fa22388841a527e22b62eef1ddf39eac9415bd7c518ba985b1d0 \
@@ -142,14 +143,14 @@ Verify the current headline graph without rerunning a candidate or
 opening a benchmark:
 
 ```sh
-"$PY" -I -B tools/render_candidate_current_overview_v25.py \
+"$PY" -I -B tools/render_candidate_current_overview_v26.py \
   --verify-frozen-context \
-  --source-sha256 9b1eabba4a3bd991c4359af4ab1482fe6f1ce848bb9e5df6fdd9e8bdafb21204 \
-  --rust-build-archive-sha256 282927f91fd885701dff6c431474f586afbc09460c6a20417ffa20be5a2e891c \
-  --rust-build-receipt-sha256 4c75468663af0de60b37cdbabfca384c4e7f75e25a6155c2ff1c33f654d3f1d7 \
-  --inputs-sha256 123210219fac109506c03c2f76f89fda33aa5e08b0628fef43b9236d05bc1abe \
-  --summary-sha256 8e4101c896e316190928d0710ca4442488c925ee5ef421507ba4dd08ff10a6d9 \
-  --svg-sha256 db2f1a11e49fd58701ad89111aa422e619431eb9834d3fb5ae66deffcd75f0bb
+  --source-sha256 55c36e916f0da8b9ef7b6992724d1d1f98161e834f4d2d21729663d9671a3982 \
+  --failure-archive-sha256 1cb38eb48a2d3305ea98d5103a27ce6ae758137168f68df07a408dec3d055a37 \
+  --failure-receipt-sha256 e15180c3ae0b313374079007455a810c78f91cabff926560cae702dfbc14bd23 \
+  --inputs-sha256 c29e8df08d9b5a03eaad283b625465ba6638f19f69d7d3ab4ea5512e83c37685 \
+  --summary-sha256 8ebf2ccb74ae2cf62196a1507f94bd39ff4b103122c450865121306accf71f48 \
+  --svg-sha256 52b42c7ceccf45f80777d94820a812c7f8e0f790fba03a57aef28c11573dd9cc
 
 "$PY" -I -B tools/activate_verified_native_candidate_v6.py \
   --verify-frozen-context \
@@ -191,8 +192,8 @@ opening a benchmark:
 The earlier pinned context checks below reproduce historical source freezes.
 Each intentionally authenticates the exact evidence inventory that existed
 when it was committed. Run one against its corresponding historical commit;
-it is not a verification of the current **139** evidence files and
-**144** authenticated references.
+it is not a verification of the current **141** evidence files and
+**146** authenticated references.
 
 ```sh
 

@@ -15,14 +15,15 @@ Python, another regular-expression package, or another candidate does not count.
 Python passes all **31,237** frozen compatibility checks. No replacement
 has passed them, so there is not yet a drop-in alternative or a speed winner.
 
-![Python passes all 31,237 compatibility checks; repaired C has 1,262 remaining differences; repaired Rust and Zig build reproducibly but have not yet been retested; speed is not measured](docs/evidence/candidate-current-overview-v25.svg)
+![Python passes all 31,237 checks; C has 1,262 differences; Zig stopped before matching; no replacement qualifies and speed is not measured](docs/evidence/candidate-current-overview-v26.svg)
 
 Rust, C, Zig, C++, and Go each use an independently written engine.
 Both repaired Rust and repaired Zig now produce two identical builds
 without an external regular-expression package. Neither repaired
 engine has completed the full compatibility test. The first repaired-Zig
 attempt stopped during setup before any matching test began. A corrected
-safety check is frozen but has not yet loaded or retested the engine.
+safety check is frozen but has not yet loaded or retested the engine. The
+original setup failure is preserved and is not a matching result.
 
 The repaired C engine completed all **13** test groups: **8** groups
 passed, **5** contained **1,262** differences, and no test worker
@@ -36,7 +37,7 @@ only after three independent engines pass all compatibility checks.
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
 | Rust | Two identical repaired first-party builds | Repair: NOT MEASURED. Original: 7,461 verified; five groups failed | NOT MEASURED |
 | C | Independently repeated repaired native build | 7,325 verified; 1,262 differences; five groups failed; not qualified | NOT MEASURED |
-| Zig | Two identical independently repaired builds | Original: 3,583 verified; seven groups failed. Repair: matching not measured | NOT MEASURED |
+| Zig | Two identical independently repaired builds | Original: 3,583 verified; seven groups failed. Repair: setup stopped; 0 matching tests | NOT MEASURED |
 | C++ | Two matching source builds | 128 verified; 12 groups failed; not qualified | NOT MEASURED |
 | Go | Two matching first-party builds | 128 verified; 4,518 differences; four worker failures | NOT MEASURED |
 | Fortran | Three attempts; engines differ | NOT TESTED | NOT MEASURED |
