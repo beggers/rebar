@@ -7,6 +7,52 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze reversible loading of every reproducibly built native engine
+
+The original crash-safe native loader accepts only the genuine
+version-two source-build format. C and Rust use that format; the
+corrected reproducible Zig build uses independently frozen version
+three. Freeze a separately written version-aware loader before
+installing any additional binary. The loader must explicitly select
+the exact original build version, complete source closure, compressed
+report, receipt, compiler commands, environment, GNU symbol records,
+distinct native inodes, and private build root.
+
+Pin the standalone
+[version-aware reversible native loader](../tools/activate_verified_native_candidate_v2.py),
+SHA-256
+`e6e8a72feffcf670da9a3e4d2e8b642e933c1d81cfe5bf7d1636385f207d6218`,
+and its
+[crash-safe, version-aware native activation protocol](../oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V2.md),
+SHA-256
+`a675b411873c01ae88ea50d4f95aab7231a29dde38a458a947437f07ed850529`.
+Accept only the genuine passing version-two C and Rust source builds
+and the genuine passing version-three Zig source build. Independently
+recheck all **39** prior C, Rust, and Zig version-two compiler and
+symbol-audit processes. Preserve the authentic version-two Zig
+reproducibility failure; a durable failure receipt is not a passing
+build.
+
+Authenticate every genuine compiler command, native ELF symbol, and
+separately built file without importing or loading a native library.
+Keep the complete seven-field physical file identity separate from
+the four actual durable-publication flags and the genuinely positive
+write count. Require exact no-follow paths, owner-only backup and
+recovery files, the actual original binary permissions, and a
+separately durable intention before each atomic replacement. Preserve
+report-independent crash recovery and all original user binaries.
+
+The independent synthetic tests pass **135** positive controls and
+reject **2,710** hostile controls identically in normal and clean
+environments. Separately authenticate all three actual archived
+source-build families in a read-only process: C and Rust against
+version two, and Zig against version three. Verify all source owners,
+all genuine distinct build inodes, all preserved failure records,
+and all recorded compiler and dynamic-symbol streams. No candidate
+is activated or imported during this source-freeze experiment.
+Compatibility, speed, and memory remain **NOT MEASURED**; the
+expanded final test remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Run the complete C compatibility test and preserve every failure
 
 Use the separately frozen, independently reviewed version-five

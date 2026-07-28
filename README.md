@@ -121,6 +121,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Real isolated-interpreter compatibility protocol](oracle/phase2/CANDIDATE-SUBINTERPRETERS-V1.md), [exact interpreter test inventory](oracle/phase2/candidate-subinterpreters-v1.json), and [independently checked interpreter test runner](tools/run_owned_candidate_subinterpreters_v1.py).
 - [Corrected C, Rust, and Zig source-build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V2.md), [version-safe offline native-build verifier](tools/reproduce_phase2_native_builds_v2.py), and [preserved original build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V1.md).
 - [Deterministic, failure-preserving version-three native-build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V3.md) and [independently verified native build recorder](tools/reproduce_phase2_native_builds_v3.py); the corrected Zig engine has two matching source builds.
+- [Version-aware crash-safe native activation](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V2.md) and [independently verified reversible native loader](tools/activate_verified_native_candidate_v2.py); accepts only the recorded, source-built C, Rust, and Zig binaries, preserves the original Zig failure, and does not run compatibility tests.
 - [Crash-safe verified native activation protocol](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V1.md) and [reversible, source-authenticated native activation and recovery](tools/activate_verified_native_candidate_v1.py).
 - [Complete reproducible Zig source-build record](oracle/phase2/evidence/native-source-build-v3-zig-phase2-v3.json.gz) and [independently verified Zig build receipt](oracle/phase2/evidence/native-source-build-v3-zig-phase2-v3-publication-receipt.json).
 - [Complete preserved Zig reproducibility failure](oracle/phase2/evidence/native-source-build-v2-zig-phase2-v2-failures.json.gz) and [independently verified Zig failure receipt](oracle/phase2/evidence/native-source-build-v2-zig-phase2-v2-failures-publication-receipt.json).
@@ -161,6 +162,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/reproduce_phase2_native_builds_v2.py --self-test
 "$PY" -I -B tools/reproduce_phase2_native_builds_v3.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v1.py --self-test
+"$PY" -I -B tools/activate_verified_native_candidate_v2.py --self-test
 "$PY" -I -B tools/audit_candidate_independence_v1.py --self-test
 "$PY" -I -B tools/record_independent_public_contract_baselines_v1.py --self-test
 "$PY" -I -B tools/python_re_threaded_pattern_oracle_v1.py --self-test
