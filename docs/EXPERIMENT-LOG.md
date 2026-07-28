@@ -7,6 +7,59 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze first-party build forensics before retrying Fortran
+
+Freeze a way to record exactly where two native engine files differ,
+before retrying the already falsified Fortran build. Preserve all
+**13** original Python suites, **31,237** compatibility cases, **25**
+first-party engine sources, **65** actual historical evidence owners,
+and **169** recorded historical compiler and inspection processes.
+Do not change the frozen source, compiler arguments, linker arguments,
+phase order, Go build, Python baseline, or any test.
+
+The existing Go result remains a reproducible first-party source-build
+**PASS**, not a Python-compatibility result. The existing Fortran
+result remains a genuine source-build **FAIL**: all **26** compiler
+and inspection processes succeeded, both bridges match, neither engine
+contains a generated build-identifier note, and the two engine files
+still differ. The differing raw section in that earlier experiment is
+**NOT RECORDED**. A successful failure-publication receipt does not
+turn the failed build into a passing build.
+
+During a separately authorized future build, the new recorder will
+authenticate and compare the complete real engine bytes, headers,
+sections, padding, unclaimed regions, and exact differing ranges
+**before** rejecting mismatched outputs. It starts no additional
+compiler or inspection process, uses Python's own bounded binary-file
+parser, introduces no external regular-expression package, and names
+a single cause only when the complete files actually prove it.
+
+Preserve the independently reviewed
+[first-party native-build forensics recorder](../tools/reproduce_owned_native_source_build_v7.py),
+SHA-256
+`20d8e43a9c70f585049f81d38f9085661b50e4bf754320a6abcd95d566d854a7`;
+[source-pinned six-engine forensic protocol](../oracle/phase2/NATIVE-SOURCE-BUILD-V7.md),
+SHA-256
+`a7a5ce16bb7a98dfd6e0e4f9f3777912687aa09259cc1669c5e0932da2287313`;
+and [canonical forensic and compiler inventory](../oracle/phase2/native-source-build-v7.json),
+SHA-256
+`cfc774cfce1a0c4298f01e298d7ffaa982300375ba117e316bff2ebbf0be7819`.
+
+The source-only self-test passes **190** positive controls and rejects
+**416** hostile or corrupted inputs in both ordinary and empty
+environments. The two read-only context checks independently
+authenticate the complete **65**-owner, **169**-process historical
+record and the unchanged six-family compiler schedule without running
+a compiler, engine, match, activation, reference process, network
+request, clock, or final test.
+
+The current headline graph remains unchanged: a source-only forensic
+freeze creates no new build, candidate result, evidence owner, speed
+measurement, or charted observation. Actual V7 builds are **NOT RUN**.
+Compatibility-qualified candidates remain **0**. Speed, memory, and
+undefined behavior remain **NOT MEASURED**. The final expanded
+comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze safe activation for independently source-built engines
 
 Freeze a fail-closed, reversible native-loading protocol before

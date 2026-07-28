@@ -13,25 +13,12 @@ Python, another regular-expression package, or another candidate does not count.
 ## Headline results
 
 Python passes all **31,237** frozen compatibility checks. No replacement
-has yet passed them. Rust, C, and Zig now each have two independently
-matching, from-scratch builds. Rust passes **7,461** verified cases in
-eight groups; C passes **7,197** in seven; Zig passes **3,583** in six.
-All three still fail the complete Python compatibility standard. Zig's
-full run records **1,764** actual behavior differences; its separate
-interpreter-cleanup failure is not counted as a matching difference.
-The run also exposed an interpreter-report bug in the earlier test
-harness; the corrected full test preserves that failure.
-Its original failed source build is preserved alongside the corrected build.
-C++ and Go now each have two matching, independently built native
-outputs. Both remain **NOT TESTED** against the complete Python
-compatibility suite. Both earlier Go build failures remain preserved.
-Fortran's third build experiment successfully removes the previously
-observed generated build identifiers. Both bridges still match, but
-the engine files remain different, so the correction is rejected.
-All six candidate source trees pass the independently frozen
-first-party ownership audit; this does not qualify their behavior.
-Every replacement's speed is **NOT MEASURED**; the final comparison
-remains **NOT OPENED**.
+has passed them. Five independently written engines—Rust, C, Zig, C++,
+and Go—build reproducibly. Rust, C, and Zig have been tested and are
+still incompatible; C++ and Go are built but **NOT TESTED**. Fortran
+compiles, but its two builds still differ. No candidate wraps an
+external regular-expression engine. Speed and memory are
+**NOT MEASURED**; the final comparison is **NOT OPENED**.
 
 ![Python passes all 31,237 checks; Rust, C, and Zig remain incompatible; C++ and Go build reproducibly with safe activation rules but remain untested; Fortran engines remain nonreproducible; and speed is not measured](docs/evidence/candidate-current-overview-v16.svg)
 
@@ -41,9 +28,9 @@ remains **NOT OPENED**.
 | Rust | Two matching builds | 7,461 verified; five groups failed; not qualified | NOT MEASURED |
 | C | Two matching builds | 7,197 verified; six groups failed; not qualified | NOT MEASURED |
 | Zig | Two matching builds; original failure preserved | 3,583 verified; seven groups failed; not qualified | NOT MEASURED |
-| C++ | Two matching source builds | NOT MEASURED | NOT MEASURED |
-| Go | Two matching first-party builds | NOT MEASURED | NOT MEASURED |
-| Fortran | Three attempts; engines differ | NOT MEASURED | NOT MEASURED |
+| C++ | Two matching source builds | NOT TESTED | NOT MEASURED |
+| Go | Two matching first-party builds | NOT TESTED | NOT MEASURED |
+| Fortran | Three attempts; engines differ | NOT TESTED | NOT MEASURED |
 
 Historical graphs below describe earlier binaries. They do not qualify
 the current implementations. The complete history and rejected
@@ -136,6 +123,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Original Fortran reproducibility failure](oracle/phase2/evidence/native-source-build-v4-fortran-phase2-v4-failures.json.gz) and [verified original Fortran failure receipt](oracle/phase2/evidence/native-source-build-v4-fortran-phase2-v4-failures-publication-receipt.json); both independent engine and bridge builds compile, but the two Fortran engine files differ.
 - [Independently repeated Fortran reproducibility failure](oracle/phase2/evidence/native-source-build-v5-fortran-phase2-v5-failures.json.gz) and [verified repeated Fortran failure receipt](oracle/phase2/evidence/native-source-build-v5-fortran-phase2-v5-failures-publication-receipt.json); all **26** compiler and binary-inspection processes succeed and both bridges match, but the engine files and their recorded build identifiers still differ.
 - [Falsified Fortran build-identifier correction](oracle/phase2/evidence/native-source-build-v6-fortran-phase2-v6-failures.json.gz) and [verified correction-failure receipt](oracle/phase2/evidence/native-source-build-v6-fortran-phase2-v6-failures-publication-receipt.json); all **26** build and inspection steps succeed and generated engine identifiers are genuinely absent, but the two engine files still differ.
+- [Frozen first-party build-forensics rules](oracle/phase2/NATIVE-SOURCE-BUILD-V7.md), [exact six-engine source and compiler inventory](oracle/phase2/native-source-build-v7.json), and [independently verified binary-forensics recorder](tools/reproduce_owned_native_source_build_v7.py); preserves every earlier build and freezes how a future unchanged Fortran build will record the actual differing bytes and file sections. No new build or compatibility test has been run.
 - [Frozen first-party Go and Fortran build corrections](oracle/phase2/NATIVE-SOURCE-BUILD-V6.md), [exact correction and source inventory](oracle/phase2/native-source-build-v6.json), and [independently verified build recorder](tools/reproduce_owned_native_source_build_v6.py); the Go correction produces matching builds, while the Fortran correction is experimentally falsified; neither is a Python compatibility result.
 - [Corrected from-scratch build rules for all six languages](oracle/phase2/NATIVE-SOURCE-BUILD-V5.md), [exact source and compiler inventory](oracle/phase2/native-source-build-v5.json), and [independent source-build recorder](tools/reproduce_owned_native_source_build_v5.py); preserves the real isolated-Go bridge failure and the independently repeated Fortran reproducibility failure without claiming either candidate is compatible.
 - [Preserved original six-language build rules](oracle/phase2/NATIVE-SOURCE-BUILD-V4.md), [original frozen inventory](oracle/phase2/native-source-build-v4.json), and [original source-build recorder](tools/reproduce_owned_native_source_build_v4.py); retains the actual C++, Go, and Fortran build outcomes unchanged.
@@ -165,6 +153,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/reproduce_owned_native_source_build_v5.py --verify-context
 "$PY" -I -B tools/reproduce_owned_native_source_build_v6.py --self-test
 "$PY" -I -B tools/reproduce_owned_native_source_build_v6.py --verify-context
+"$PY" -I -B tools/reproduce_owned_native_source_build_v7.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v2.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v3.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v3.py --verify-frozen-context
@@ -189,6 +178,12 @@ opening a benchmark:
   --source-sha256 36451c10221857cca8c77fad7533382f4e3969a20a5cdf73c055beea1d315d33 \
   --protocol-sha256 1e7ed2cbd63e080c563dd49b4ea2a2be284d831d75739c47edecfae50373ce17 \
   --document-sha256 5206bcc097cd399cddd91a8d0356fd780b44ef7c173d70605d28a175dac71c0b
+
+"$PY" -I -B tools/reproduce_owned_native_source_build_v7.py \
+  --verify-context \
+  --source-sha256 20d8e43a9c70f585049f81d38f9085661b50e4bf754320a6abcd95d566d854a7 \
+  --protocol-sha256 a7a5ce16bb7a98dfd6e0e4f9f3777912687aa09259cc1669c5e0932da2287313 \
+  --contract-sha256 cfc774cfce1a0c4298f01e298d7ffaa982300375ba117e316bff2ebbf0be7819
 
 "$PY" -I -B tools/render_candidate_current_overview_v16.py --verify \
   --source-sha256 4228b6b74708ecd3ba143b1556ae9e6c0592b118ce22285751f7b53d976a95c4 \
