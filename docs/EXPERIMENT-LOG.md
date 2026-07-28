@@ -7,6 +7,42 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze 50 additional Python public-interface checks
+
+An independent audit found a real compatibility gap: the original **31,237**
+Python checks exercise callable behavior, but do not compare the public
+function and method signatures exposed by Python's `inspect` module.
+Freeze exactly **50** additional checks without editing the existing test
+suite or silently changing any previous denominator or result.
+
+The separate category covers **11** module-level functions, **18** bound and
+unbound compiled-pattern methods, **14** bound and unbound match methods,
+and **7** scanner interfaces. Record positional-only parameters, argument
+names, default values, public text signatures, and the real `ValueError`
+from the intentionally uninspectable `Match.group` method. The canonical
+50-case matrix has SHA-256
+`89ff9e5197ac0fee63a5b7f3880d9d66083f7e25255d0d062e14ff84ab5c884b`.
+
+The [frozen signature-test source](../tools/verify_python_re_callable_introspection_v1.py)
+has SHA-256
+`5a64fb4546bdccd13b6d8d9ba32a7472b01cb86dd0d9f2c643678e6bbf919653`.
+The [separately counted compatibility rules](../oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md)
+have SHA-256
+`1c3082048fc13338e86a055a577128ba678f1a18abde3465a08552d1295b90e8`.
+The [exact 50-case source contract](../oracle/phase1/p0-callable-introspection-v1.json)
+has SHA-256
+`e7415894dcc3920d49cf5e14206b4cfd59c4aa4380cb9d960430f688e97f7349`.
+
+All normal and empty-environment source and context checks pass. The two
+independent Python reference processes have **NOT RUN**; no candidate has
+run the new cases. The original reference result remains **31,237 / 31,237**,
+not **31,287 / 31,287**. Preserve the actual **151** evidence owners and
+**156** references, the previously measured Rust **1,087**, C **1,230**, and
+Zig **2,172** matching differences, and the new Rust's build-only result.
+Performance, memory, and undefined behavior remain **NOT MEASURED**. The
+expanded final comparison remains **NOT FROZEN**, **NOT GENERATED**, and
+**NOT OPENED**.
+
 ## Build the corrected Rust engine twice from scratch
 
 Run the previously frozen first-party Rust build exactly once. Two separate

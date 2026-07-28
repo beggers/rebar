@@ -9,6 +9,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 ## Evidence and reproduction
 
 - [Frozen Python compatibility tests](../oracle/phase1/P0-COMPLETENESS-V1.md), [all 31,237 test cases](../oracle/phase1/p0-completeness-v1.json), and [independent test verifier](../tools/verify_p0_completeness_v1.py).
+- [Separately frozen public callable signature checks](../oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md), [all 50 additional function, pattern, match, and scanner cases](../oracle/phase1/p0-callable-introspection-v1.json), and [independent source-only verifier](../tools/verify_python_re_callable_introspection_v1.py); the original **31,237** cases are unchanged, and the new independent-reference and candidate runs have **NOT YET RUN**.
 - [First-party engine ownership and no-wrapping audit](../oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md), [exact source inventory](../oracle/phase2/candidate-independence-v2.json), and [source verifier](../tools/audit_candidate_independence_v2.py).
 - [Independent Zig scanner-capture repair](../oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V1.md), [single-block private-snapshot contract](../oracle/phase2/zig-scanner-capture-source-repair-v1.json), and [source-pinned first-party repair tool](../tools/apply_owned_zig_scanner_capture_source_repair_v1.py); the repair was independently applied to both private native builds.
 - [Current reproducible independent Zig build protocol](../oracle/phase2/ZIG-SCANNER-SOURCE-BUILD-V11.md), [exact private two-build contract](../oracle/phase2/zig-scanner-source-build-v11.json), and [first-party Zig build verifier](../tools/reproduce_owned_zig_scanner_source_build_v11.py); both repaired native outputs build identically. Their later complete matching test recorded **2,172** differences.
@@ -66,6 +67,11 @@ Run the source-only safety checks without opening the final comparison:
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
 "$PY" -I -B tools/verify_p0_completeness_v1.py --self-test
+"$PY" -I -B tools/verify_python_re_callable_introspection_v1.py \
+  --self-test \
+  --source-sha256 5a64fb4546bdccd13b6d8d9ba32a7472b01cb86dd0d9f2c643678e6bbf919653 \
+  --protocol-sha256 1c3082048fc13338e86a055a577128ba678f1a18abde3465a08552d1295b90e8 \
+  --contract-sha256 e7415894dcc3920d49cf5e14206b4cfd59c4aa4380cb9d960430f688e97f7349
 "$PY" -I -B tools/run_frozen_p0_candidate_worker_v4.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v6.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_worker_v5.py --self-test
@@ -203,6 +209,12 @@ opening a benchmark:
   --inputs-sha256 25f1ef2cdf7f3443f5924b9c9814c4f0864148ebdf243c92a1df12d1c5754900 \
   --summary-sha256 6d6f8fa23022b9198255cd0836961d4f78cd2d4c5d4041734a82a1d9f9d2ec90 \
   --svg-sha256 23f89b7983d5154d9275dcfa029bfe2a5599ad339c80675efb7c5eabda587d1a
+
+"$PY" -I -B tools/verify_python_re_callable_introspection_v1.py \
+  --verify-frozen-context \
+  --source-sha256 5a64fb4546bdccd13b6d8d9ba32a7472b01cb86dd0d9f2c643678e6bbf919653 \
+  --protocol-sha256 1c3082048fc13338e86a055a577128ba678f1a18abde3465a08552d1295b90e8 \
+  --contract-sha256 e7415894dcc3920d49cf5e14206b4cfd59c4aa4380cb9d960430f688e97f7349
 
 "$PY" -I -B tools/apply_owned_rust_public_contract_source_repair_v2.py \
   --verify-frozen-context \

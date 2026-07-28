@@ -15,6 +15,10 @@ Python, another regular-expression package, or another candidate does not count.
 Python passes all **31,237** frozen compatibility checks. No replacement
 has passed them, so there is not yet a drop-in alternative or a speed winner.
 
+An additional **50** public function and method signature checks are now
+frozen separately. Neither Python's new reference run nor a candidate's
+result for those extra checks has been measured.
+
 ![Python passes all 31,237 checks; previously tested Rust has 1,087 differences, C has 1,230, Zig has 2,172, and the newly corrected Rust build is not yet compatibility-tested](docs/evidence/candidate-current-overview-v31.svg)
 
 Rust, C, Zig, C++, and Go each use an independently written engine.
@@ -105,6 +109,7 @@ slowdown greater than **20%**. There is no winner.
 - [How to reproduce every result and verify the current graph](docs/REPRODUCING.md).
 - [Full experiment log, raw reports, past results, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Frozen Python compatibility tests](oracle/phase1/P0-COMPLETENESS-V1.md).
+- [Separately frozen public function and method signature checks](oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md).
 - [Proof the candidate engines are independently built](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Recoverable original Python compatibility tests for repaired Rust](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V3.md).
 - [Source-only correction of the observed Rust flag-display failure](oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V2.md).
