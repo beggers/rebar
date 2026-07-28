@@ -111,6 +111,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 ## Evidence and reproduction
 
 - [Complete 31,237-check compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md), [machine-readable test inventory](oracle/phase1/p0-completeness-v1.json), and [independent fail-closed verifier](tools/verify_p0_completeness_v1.py).
+- [Complete, recoverable original Python test campaigns](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V1.md), [frozen full-test and result-publication inventory](oracle/phase2/six-family-p0-campaign-v1.json), and [independently verified full-campaign recorder](tools/run_owned_six_family_original_p0_campaign_v1.py); a future C++ or Go run must attempt all **13** original test groups, retain all **31,237** results and failures, restore its original files, and publish private, reproducible evidence. No campaign or new candidate has been run.
 - [Original Python compatibility tests and safe native-loading rules for all six engines](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V2.md), [frozen six-engine test inventory](oracle/phase2/six-family-p0-producer-v2.json), and [independently verified original-test runner](tools/run_owned_six_family_original_p0_producer_v2.py); preserves all **31,237** original cases and all **65** actual evidence files, and permits a C++ or Go test only after proving that its own recorded build has actually been activated and can be restored. No new engine has been tested.
 - [Original Python compatibility tests for all six first-party engines](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V1.md), [frozen six-language test inventory](oracle/phase2/six-family-p0-producer-v1.json), and [independently verified six-language test runner](tools/run_owned_six_family_original_p0_producer_v1.py); preserves all **31,237** original cases, real buffer, thread, and interpreter behavior, six separate matching engines, and its **61** frozen historical evidence files without claiming an untested engine has passed.
 - [Corrected complete candidate standard](oracle/phase2/P0-CANDIDATE-PROTOCOL-V7.md), [frozen 31,237-case candidate inventory](oracle/phase2/p0-candidate-protocol-v7.json), [independently verified full-test worker](tools/run_frozen_p0_candidate_worker_v5.py), and [complete candidate runner](tools/run_frozen_p0_candidate_v7.py); all **13** original suites, all **57** evidence records, the real Zig interpreter failure, and every candidate mismatch remain unchanged.
@@ -148,6 +149,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_frozen_p0_candidate_v7.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_producer_v1.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_producer_v2.py --self-test
+"$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v1.py --self-test
 "$PY" -I -B tools/run_owned_candidate_subinterpreters_v3.py --self-test
 "$PY" -I -B tools/reproduce_owned_native_source_build_v4.py --self-test
 "$PY" -I -B tools/reproduce_owned_native_source_build_v4.py --verify-context
@@ -186,6 +188,12 @@ opening a benchmark:
   --source-sha256 fe6e82306852517580dcb90f289c643a55db8c01421230a4d7d05d6df365f9c1 \
   --protocol-sha256 3add264a113550d141379229a333d19e375f66429c2b7eb47dc3193a67f7b598 \
   --document-sha256 a210e9cac8d06b47cfc745019e4f4ab3a0c465ff63a38add0bc2b83b1cd986e3
+
+"$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v1.py \
+  --verify-frozen-context \
+  --source-sha256 50ac9f549739bb6b540f1762177f25b46c1fa345dce717ea7163e15d98ae7e88 \
+  --protocol-sha256 01d5908b9c1c3c356059a21cd0b418a7278559843d465e9062155b68f6497422 \
+  --document-sha256 c619e63dd18b8242bfc1af9e01030eff60e8d17128a83de216992b5cdc619801
 
 "$PY" -I -B tools/reproduce_owned_native_source_build_v7.py \
   --verify-context \

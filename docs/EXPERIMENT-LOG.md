@@ -7,6 +7,59 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze complete, recoverable C++ and Go compatibility runs
+
+Freeze the full-candidate recorder before activating or testing either
+newly reproducible engine. Preserve all **13** original Python suites,
+**31,237** cases, **13** named private waivers, the genuine debug-only
+skip, and every original test, expected result, and random seed.
+Preserve all six independent engine designs, **25** distinct source
+files, **65** actual historical evidence files, and **169** recorded
+build and inspection processes.
+
+The recorder supports only engines with a genuinely passing,
+independently repeated source build and a provable reversible
+activation: the first-party C++ and Go engines. C++ has one combined
+native engine and bridge. Go has separately built native engine and
+bridge files; its generated compiler interface is never installed as
+a matching engine. Failed Fortran, another candidate's implementation,
+Python's matcher, and external regex packages remain ineligible.
+
+A future actual run must start a separate isolated, pinned Python
+worker for **every original suite**, continuing after a mismatch,
+nonzero exit, crash, or timeout. Preserve every case, actual standard
+output and error, recorded mismatch, traceback, and original Unicode
+value. Always restore the original native files before publishing the
+full result. Record complete evidence in separate, private,
+individually synchronized and reproducible compressed-result and
+receipt files. A receipt for a failed candidate never counts as a
+passing candidate.
+
+Preserve the independently reviewed
+[complete original Python compatibility-campaign recorder](../tools/run_owned_six_family_original_p0_campaign_v1.py),
+SHA-256
+`50ac9f549739bb6b540f1762177f25b46c1fa345dce717ea7163e15d98ae7e88`;
+[source-pinned full-campaign and recovery protocol](../oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V1.md),
+SHA-256
+`01d5908b9c1c3c356059a21cd0b418a7278559843d465e9062155b68f6497422`;
+and [canonical full-test, activation, and publication inventory](../oracle/phase2/six-family-p0-campaign-v1.json),
+SHA-256
+`c619e63dd18b8242bfc1af9e01030eff60e8d17128a83de216992b5cdc619801`.
+
+Ordinary and clean-environment source-only checks pass **25** positive
+controls and reject **395** hostile mutations, including hidden or
+reordered tests, forged engine owners, corrupted archives, falsely
+passing receipts, lost Unicode values, crashes, and invalid file
+recovery. Both complete read-only checks authenticate all **65**
+actual evidence files and **169** historical processes without
+starting a candidate, activation, compiler, reference process, thread,
+clock, or benchmark.
+
+Freezing the recorder does not change the headline graph. C++ and Go
+remain **NOT TESTED**; fully compatible candidates remain **0**.
+Speed, memory, and undefined behavior remain **NOT MEASURED**. The
+expanded final comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze original Python tests for verified C++ and Go builds
 
 Freeze the next complete original-Python test runner before activating
