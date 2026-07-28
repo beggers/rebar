@@ -7,6 +7,55 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the from-scratch engine ownership check
+
+After publishing the complete Python correctness standard in commit
+`455327b6949849f6d3dc3960c2bdb4b36f07107b`, freeze the
+[independent-engine ownership and no-delegation protocol](../oracle/phase2/CANDIDATE-INDEPENDENCE-V1.md),
+SHA-256
+`a7ee45f0ea76ee7fedacc564c3122b7f37272d918ef28f1c527c9e8adf351292`,
+and its
+[read-only source and native-artifact auditor](../tools/audit_candidate_independence_v1.py),
+SHA-256
+`f18d9b99a3f11fdf20c47d6cb43cb353532c894ababbdaeb7088c14e397ae3b5`,
+before running the actual ownership audit.
+
+Keep the Python tree, C, Rust, and Zig source families separate. Require
+distinct parsers, compilers, and matching engines; authenticate each
+family's complete source list without treating a wrapper or configuration
+as a new engine. Parse native library data without loading or executing it.
+Allow Zig's own, explicitly identified native library and Python-compatible
+scanner type names; reject another family's symbols, outside regex
+libraries, unapproved imports, unsafe paths, and undeclared dependencies.
+
+Preserve the genuine pre-publication failure: audit source
+`88d49c84b42ca7f5d94ac1998243ea47bd6e7aa666c2ebc059f60959eebcd0e7`
+incorrectly accepted a Zig source that called an unprefixed Rust-style
+`rebar_match` symbol. Both ordinary and empty environments failed with
+`hostile self-test was accepted: inspect_native`. Correct the native
+ownership rule to reject every Zig `rebar_` symbol outside the genuinely
+owned `rebar_zig_` namespace; never remove the failing control.
+
+Both corrected source-only checks now pass with byte-identical results:
+**21** positive checks and **197** rejected attacks. Neither starts a
+candidate or Python reference, reads or writes a file, loads a native
+library, takes a timing sample, or accesses the final comparison.
+
+Run both independently:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/audit_candidate_independence_v1.py --self-test
+env -i /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/audit_candidate_independence_v1.py --self-test
+```
+
+Static analysis does not establish native-binary source provenance,
+reproducible clean-clone builds, runtime absence of delegation, full
+compatibility, memory safety, or speed. The actual source ownership
+audit has **NOT RUN**; all candidate results remain **NOT MEASURED**.
+The expanded final comparison remains **NOT OPENED**.
+
 ## Complete and independently verify the Python correctness standard
 
 Freeze the [complete human-readable Python compatibility standard](../oracle/phase1/P0-COMPLETENESS-V1.md),
