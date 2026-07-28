@@ -12,11 +12,14 @@ Python, another regular-expression package, or another candidate does not count.
 
 ## Headline results
 
-Python passes all **31,237** frozen compatibility checks. No replacement
-has passed them, so there is no drop-in replacement, measured speedup,
-or winner.
+Python's original reference passed all **31,237** frozen compatibility
+checks. A stricter replay has since exposed **96** original cases where
+the test helper behaves differently when run as a script or imported.
+Candidate testing is paused until Python agrees with itself in the exact
+candidate execution context. No cases will be removed. There is no
+compatible replacement, measured speedup, or winner.
 
-![Python passes all 31,237 original checks and 50 separate public-signature checks; a newly corrected Rust engine builds twice but has not yet been matching-tested; previously tested Rust, C, and Zig have 1,036, 1,230, and 1,764 differences; no replacement qualifies and speed is not measured](docs/evidence/candidate-current-overview-v36.svg)
+![Python disagrees with itself on 96 of the original 31,237 checks, so replacement testing is paused; previously tested Rust, C, and Zig have 1,036, 1,230, and 1,764 historical differences; no replacement qualifies and speed is not measured](docs/evidence/candidate-current-overview-v37.svg)
 
 Each language below uses its own, independently written matching engine;
 the source and build checks reject outside matching packages and shared
@@ -34,8 +37,8 @@ measurements start only when three independent engines pass every check.
 
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
-| Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
-| Rust | Corrected build repeated twice; full test pending | Previous tested build: 8,965 verified; 1,036 differences | NOT MEASURED |
+| Python `re` | Candidate-context reference needs correction | Original: 31,237 / 31,237; replay: 96 context differences | Reference; not timed |
+| Rust | Corrected build repeated twice; test paused | Previous tested build: 8,965 verified; 1,036 differences | NOT MEASURED |
 | C | Independently written and built | 7,325 verified; 1,230 differences; all 13 groups completed | NOT MEASURED |
 | Zig | Independently written and built | 3,711 verified; 1,764 differences; all 13 groups completed | NOT MEASURED |
 | C++ | Independently written and built | 128 verified; 2,308 differences; five worker failures | NOT MEASURED |

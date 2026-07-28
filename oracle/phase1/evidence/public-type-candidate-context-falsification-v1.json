@@ -1,0 +1,83 @@
+{
+  "schema": "rebar-public-type-candidate-context-falsification-v1",
+  "version": 1,
+  "status": "FALSIFIED",
+  "candidate_facing_self_oracle_status": "FAIL",
+  "actual_replay": {
+    "python_version": "3.14.6",
+    "python_sha256": "255e900f44ce87c630e83b637a79435f9ae7778dd72f6e2a2f18a486e501d016",
+    "isolated_python_process_id": 80,
+    "candidate_import_count": 0,
+    "candidate_workers_started": 0,
+    "reference_subprocesses_started": 0,
+    "matching_archives_opened": 0,
+    "holdout_opened": false
+  },
+  "original_oracle": {
+    "case_execution_denominator": 31237,
+    "suite_count": 13,
+    "named_private_waiver_count": 13,
+    "affected_suite": "public_types_v1",
+    "affected_suite_case_count": 6912,
+    "matrix_sha256": "c315e37dfa2e79ab62519ea84c710d4e3ca41d63d34873894bf7415278b56123",
+    "published_seed_decimal": "6077977430793212465",
+    "original_cases_removed": 0,
+    "additional_private_waivers": 0,
+    "case_denominator_changed": false
+  },
+  "immutable_sources": {
+    "candidate_suite_gate": {
+      "path": "tools/run_frozen_p0_candidate_v1.py",
+      "sha256": "c8378cd59a3b4dfaf75609c5b06f5a5ec20114d428e8e06ccc0f12ceec2076b8"
+    },
+    "public_type_observer": {
+      "path": "tools/independent_public_type_identity_serialization_v1.py",
+      "sha256": "7ce0606da0d830ef8e9cf9b8e9b952a9836bf705254a23a65551832bf1d92e20"
+    },
+    "candidate_case_producer": {
+      "path": "tools/run_owned_six_family_original_p0_producer_v3.py",
+      "sha256": "7415192cf5ad83ca643c2c8aaa58222394d62f98bc35f15c301007947b46b23c"
+    },
+    "original_public_reference_archive": {
+      "path": "experiments/rust_public_practice_v1/public-type-identity-serialization-v1-shared-suite-v1.json.gz",
+      "sha256": "8956c0b26e074d1537a47047062fb51e11d3f0196dc97ce4a6e24d2ae45128e2",
+      "opened_by_replay": false
+    },
+    "original_public_reference_receipt": {
+      "path": "experiments/rust_public_practice_v1/public-type-identity-serialization-v1-shared-suite-v1-publication-receipt.json",
+      "sha256": "6a8ce4334d0b605483e0f78a909f620a8bcdd0e5ad8cdb4fae4960fc237132fd"
+    }
+  },
+  "falsifying_cases": {
+    "cohort": "cache-pattern-type-separation",
+    "case_count": 96,
+    "text_subclass_case_count": 48,
+    "bytes_subclass_case_count": 48,
+    "first_case": "cache-pattern-type-separation/000",
+    "last_case": "cache-pattern-type-separation/095",
+    "case_ids_sha256": "df43bd52adb112c0fde2bfe24a45200ca2ac30a9c41dfdc5716e3e81cbe19ce0",
+    "exact_case_matrix_sha256": "09b5d7cb665af227b8d6c733c795d68f9a1e22c62956b9d64105a9234af6abca",
+    "published_script_context_records_sha256": "df849727d5aa74cbec19950c2d56764bd592404b76c49abe87418bccd3a5013a",
+    "actual_named_context_stdlib_records_sha256": "587cf35555472940522d6ae3a73053fb7e98492befe581cc024444bed8e264ad",
+    "first_script_context_record_sha256": "33d63c67211bba811706bef2457230573cd13b498642c5ba0fa27b2e5091688c",
+    "first_named_context_stdlib_record_sha256": "7d8752048b7a3520b2657a21c3fe03722a507e0914d777404f16ffeec60d2292",
+    "sole_normalized_difference_path": "outcome.value.items[2].module",
+    "published_script_context_module": "__main__",
+    "actual_candidate_facing_module": "tools.independent_public_type_identity_serialization_v1"
+  },
+  "interpretation": {
+    "candidate_facing_python_against_python_agrees": false,
+    "historical_rust_records_recomputed_or_deleted": false,
+    "c_pattern_equality_failure_waived": false,
+    "zig_pattern_equality_failure_waived": false,
+    "all_candidate_matching_blocked": true,
+    "same_context_reference_correction_status": "NOT RUN",
+    "separate_50_case_reference_status": "PASS",
+    "separate_50_case_candidate_status": "NOT RUN",
+    "runtime_no_delegation": "NOT ESTABLISHED",
+    "performance": "NOT MEASURED",
+    "memory": "NOT MEASURED",
+    "final_holdout_opened": false,
+    "winner_selected": false
+  }
+}

@@ -10,6 +10,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
 - [Frozen Python compatibility tests](../oracle/phase1/P0-COMPLETENESS-V1.md), [all 31,237 test cases](../oracle/phase1/p0-completeness-v1.json), and [independent test verifier](../tools/verify_p0_completeness_v1.py).
 - [Separately frozen public callable signature checks](../oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md), [all 50 additional function, pattern, match, and scanner cases](../oracle/phase1/p0-callable-introspection-v1.json), and [independent source-only verifier](../tools/verify_python_re_callable_introspection_v1.py); the original **31,237** cases are unchanged, and **two** separate Python reference processes passed all **50** additional checks. Candidate signature checks have **NOT RUN**.
+- [Actual 96-case candidate-context Python reference falsification](../oracle/phase1/evidence/public-type-candidate-context-falsification-v1.json); the original public-type helper produces `__main__` when run as a script and its qualified module name when imported by a candidate worker. Pinned Python alone reproduces all **96** differences. All candidate matching is **BLOCKED** pending a passing, same-context two-Python reference. Preserve all **31,237** original cases, the genuine C subclass-equality failure, and every recorded Zig failure.
 - [Independently reproduced two-process Python signature reference](../oracle/phase1/CALLABLE-INTROSPECTION-REFERENCE-V2.md), [exact independently isolated reference and publication contract](../oracle/phase1/callable-introspection-reference-v2.json), and [source-pinned Python reference controller](../tools/run_owned_callable_introspection_reference_v2.py); both actual reference workers passed and independently produced the same complete **50**-observation result.
 - [Complete actual Python signature-reference archive](../oracle/phase1/evidence/callable-introspection-reference-v2-cpython-3.14.6.json.gz) and [separately durable two-worker reference receipt](../oracle/phase1/evidence/callable-introspection-reference-v2-cpython-3.14.6-publication-receipt.json); reference **PASS** means both actual Python workers agreed on every additional check. The separate durable publication also passed.
 - [First-party engine ownership and no-wrapping source audit](../oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md), [exact six-family source inventory](../oracle/phase2/candidate-independence-v2.json), and [source verifier](../tools/audit_candidate_independence_v2.py); independent matching-engine ownership passes, but a complete execution-time no-delegation audit remains **NOT ESTABLISHED**.
@@ -72,7 +73,8 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Complete repaired C compatibility evidence](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures.json.gz), [independent safe-restoration receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures-publication-receipt.json), [all 13 original worker reports](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures.json.gz), and [original-suite aggregate receipt](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures-publication-receipt.json); eight complete groups pass, five retain 1,262 genuine differences, and no infrastructure failure occurred.
 - [Actual independent repaired Zig builds](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner.json.gz) and [complete native build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner-publication-receipt.json); exactly 26 genuine processes produce two identical first-party engine and bridge binaries without testing matching or measuring speed.
 - [Actual independent repaired Rust builds](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay.json.gz) and [complete offline-build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay-publication-receipt.json); exactly 28 genuine processes produce two identical dependency-free Rust engines and bridges without testing matching or measuring speed.
-- [Current plain-language candidate and corrected-Rust build graph](../docs/evidence/candidate-current-overview-v36.svg), [independently authenticated current graph inputs](../docs/evidence/candidate-current-overview-v36.inputs.json), [complete current machine-readable results](../docs/evidence/candidate-current-overview-v36.json), and [reproducible current graph generator](../tools/render_candidate_current_overview_v36.py); independently authenticate the complete corrected Rust build report, **28** unique real build processes, **two** separate first-party builds, the original **31,237** checks, and Python's separate **50**-check reference pass. Corrected Rust matching has **NOT RUN**. Previously tested Rust has **1,036** differences; C has **1,230** and Zig has **1,764**. The **161** evidence owners and **166** references are authenticated lower bounds. Candidate signature tests have **NOT RUN**, runtime no-delegation is **NOT ESTABLISHED**, and speed is **NOT MEASURED**.
+- [Current plain-language Python-reference and candidate graph](../docs/evidence/candidate-current-overview-v37.svg), [independently authenticated current graph inputs](../docs/evidence/candidate-current-overview-v37.inputs.json), [complete current machine-readable results](../docs/evidence/candidate-current-overview-v37.json), and [reproducible current graph generator](../tools/render_candidate_current_overview_v37.py); the original **31,237** cases remain unchanged, while Python falsifies its own candidate-facing reference on **96** cases. All candidate matching is paused. The historical Rust, C, and Zig results remain **1,036**, **1,230**, and **1,764** differences. Corrected Rust matching has **NOT RUN**; Python's separate **50** reference checks still pass. At least **162** evidence owners and **167** history references are independently authenticated. Runtime no-delegation is **NOT ESTABLISHED**, speed is **NOT MEASURED**, and the expanded final comparison is unopened.
+- [Historical candidate and corrected-Rust build graph](../docs/evidence/candidate-current-overview-v36.svg), [historical graph inputs](../docs/evidence/candidate-current-overview-v36.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v36.json), and [historical graph generator](../tools/render_candidate_current_overview_v36.py); this preserved snapshot predates the candidate-context falsification. It authenticates the corrected Rust build's **28** real processes, **161** evidence owners, and **166** references. Its Rust, C, and Zig matching results are historical, not corrected-reference results.
 - [Historical Python-versus-candidates and signature-reference graph](../docs/evidence/candidate-current-overview-v35.svg), [historical independently authenticated graph inputs](../docs/evidence/candidate-current-overview-v35.inputs.json), [historical machine-readable reference and candidate evidence](../docs/evidence/candidate-current-overview-v35.json), and [historical graph generator](../tools/render_candidate_current_overview_v35.py); preserve the two Python workers passing all **50** additional checks and the **159**-owner, **164**-reference evidence snapshot from before the corrected Rust build was recorded.
 - [Historical corrected-Zig graph](../docs/evidence/candidate-current-overview-v34.svg), [historical corrected-Zig graph inputs](../docs/evidence/candidate-current-overview-v34.inputs.json), [historical full candidate results](../docs/evidence/candidate-current-overview-v34.json), and [historical graph generator](../tools/render_candidate_current_overview_v34.py); this preserved **157**-owner, **162**-reference snapshot recorded Rust's **1,036** differences, C's **1,230**, and corrected Zig's **1,764** before the separate signature-reference evidence was published.
 - [Historical pre-test graph inputs](../docs/evidence/candidate-current-overview-v33.inputs.json), [historical machine-readable Python baseline, matching results, and independently verified Zig build](../docs/evidence/candidate-current-overview-v33.json), and [historical graph generator](../tools/render_candidate_current_overview_v33.py); this preserved snapshot authenticates the **155** evidence files and **160** references available before the corrected Zig matching test. It records Rust's **1,036** differences, C's **1,230**, and the previous Zig engine's **2,172** differences. It does not include the later corrected Zig result.
@@ -188,6 +190,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/render_candidate_current_overview_v34.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v35.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v36.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v37.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v6.py --self-test \
   --source-sha256 d3a9b08c1bf7e3408719a0e92b8c1965aa6160dd2e18ab1501bb8662aaf8e4a1 \
   --protocol-sha256 0e736d575835fa22388841a527e22b62eef1ddf39eac9415bd7c518ba985b1d0 \
@@ -271,6 +274,16 @@ Verify the current headline graph without rerunning a candidate,
 decompressing a matching archive, or opening the final comparison:
 
 ```sh
+"$PY" -I -B tools/render_candidate_current_overview_v37.py \
+  --verify-frozen-context \
+  --source-sha256 4dcd5c14a63adeb159e11c86802bb4080eea82dec9240afb2f910da7bd39ef07 \
+  --source-bytes 73032 \
+  --falsification-sha256 319f0f75aaaea16fd1f41d814785d67060c57060852893349366cc3b482c4670 \
+  --inputs-sha256 c89e9c3a2250807e10b27abf33a9e2632344edaefb821a97d317b50944cd398b \
+  --summary-sha256 c2cfbec3fb096b001e7642dee1a7dcc4bdbb4dc7710b5027295b9e1a8340d4ee \
+  --svg-sha256 db371864df0d2148d49be0f007195ab741b097a8c880505a8297ce383bda7ac8
+
+# Verify the historical graph from before the reference was falsified.
 "$PY" -I -B tools/render_candidate_current_overview_v36.py \
   --verify-frozen-context \
   --source-sha256 1163df648d3fc3fb6b8f07abe260955958ea3b19826fafd09ee20b6fd5ba0cb1 \
@@ -464,8 +477,8 @@ decompressing a matching archive, or opening the final comparison:
 The earlier pinned context checks below reproduce historical source freezes.
 Each intentionally authenticates the exact evidence inventory that existed
 when it was committed. Run one against its corresponding historical commit;
-it is not a verification of the current lower bounds of **161** evidence
-files and **166** authenticated references.
+it is not a verification of the current lower bounds of **162** evidence
+owners and **167** authenticated references.
 
 ```sh
 
@@ -763,6 +776,71 @@ and recovery directory.
   --native-bridge-sha256 e5809566a166f469e7f95fc1a43e814a3beeeffa2a6e848c00a3a48215ee6726 \
   --native-engine-bytes 108888 \
   --native-bridge-bytes 133656
+```
+
+## Reproduce the candidate-context Python reference failure
+
+This command runs only pinned Python's own `re` through the exact
+candidate-facing public-type observer. It verifies the immutable
+observer, candidate gate, original producer, and small reference
+receipt. It imports no candidate and does not open a compressed
+matching or reference archive. The command must report **96** original
+cases: **48** text and **48** bytes, differing only in the fixture
+class's module name. Do not run any candidate until the separately
+frozen same-context Python reference passes.
+
+```sh
+"$PY" -I -B -c '
+import collections
+import copy
+import hashlib
+import importlib
+import json
+import pathlib
+import re
+import sys
+
+root = pathlib.Path("/home/dev-user/src/rebar")
+owners = {
+    "tools/run_frozen_p0_candidate_v1.py": "c8378cd59a3b4dfaf75609c5b06f5a5ec20114d428e8e06ccc0f12ceec2076b8",
+    "tools/independent_public_type_identity_serialization_v1.py": "7ce0606da0d830ef8e9cf9b8e9b952a9836bf705254a23a65551832bf1d92e20",
+    "tools/run_owned_six_family_original_p0_producer_v3.py": "7415192cf5ad83ca643c2c8aaa58222394d62f98bc35f15c301007947b46b23c",
+    "experiments/rust_public_practice_v1/public-type-identity-serialization-v1-shared-suite-v1-publication-receipt.json": "6a8ce4334d0b605483e0f78a909f620a8bcdd0e5ad8cdb4fae4960fc237132fd",
+}
+for relative, expected in owners.items():
+    assert hashlib.sha256((root / relative).read_bytes()).hexdigest() == expected
+
+sys.path.insert(0, str(root))
+before = {name for name in sys.modules if name == "candidates" or name.startswith("candidates.")}
+gate = importlib.import_module("tools.run_frozen_p0_candidate_v1")
+source = gate.import_suite_source(gate.suite_spec("public_types_v1"))
+support = source.preload_support_modules()
+cases = [case for case in source.build_matrix()
+         if case["cohort"] == "cache-pattern-type-separation"]
+actual = [source.observe_case(case, re, support) for case in cases]
+expected = copy.deepcopy(actual)
+for record in expected:
+    record["outcome"]["value"]["items"][2]["module"] = "__main__"
+
+def sha256(value):
+    raw = json.dumps(value, ensure_ascii=True, allow_nan=False,
+                     sort_keys=True, separators=(",", ":")).encode("ascii") + b"\n"
+    return hashlib.sha256(raw).hexdigest()
+
+assert len(cases) == 96
+assert dict(collections.Counter(case["domain"] for case in cases)) == {"str": 48, "bytes": 48}
+assert sha256(cases) == "09b5d7cb665af227b8d6c733c795d68f9a1e22c62956b9d64105a9234af6abca"
+assert sha256([case["case"] for case in cases]) == "df43bd52adb112c0fde2bfe24a45200ca2ac30a9c41dfdc5716e3e81cbe19ce0"
+assert sha256(expected) == "df849727d5aa74cbec19950c2d56764bd592404b76c49abe87418bccd3a5013a"
+assert sha256(actual) == "587cf35555472940522d6ae3a73053fb7e98492befe581cc024444bed8e264ad"
+after = {name for name in sys.modules if name == "candidates" or name.startswith("candidates.")}
+assert not before and not after
+print(json.dumps({"status": "FALSIFIED", "case_count": len(cases),
+                  "candidate_imports": 0,
+                  "original_denominator": 31237,
+                  "named_context_sha256": sha256(actual),
+                  "holdout": "NOT OPENED"}, sort_keys=True))
+'
 ```
 
 ## Verify the corrected first-party Go source freeze

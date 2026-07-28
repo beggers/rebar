@@ -1,0 +1,99 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1855" viewBox="0 0 1440 1855" role="img" aria-labelledby="v37-title v37-description">
+<title id="v37-title">Building a faster Python re: Python reference falsified; all candidate runs paused</title>
+<desc id="v37-description">An actual isolated Python-only replay falsified all 96 affected original public-type reference records: 48 text cases and 48 byte cases. The expected records ran as __main__, while candidate-facing Python uses the actual imported module name. All candidate matching must pause until the reference is repaired. No original case was removed, no waiver added, and the 13-suite denominator remains 31,237. Historical Rust has 1,036 differences, C has 1,230, and Zig has 1,764; they are not new measurements. The corrected Rust build was reproduced twice but matching has not run. Fifty separate Python signature references still pass. Speed and memory are not measured and the 4,194,304-case holdout is unopened.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.title{font-size:27px;font-weight:760;fill:#16324f}.heading{font-size:19px;font-weight:750;fill:#16324f}.body{font-size:14px;fill:#42556c}.name{font-size:14px;font-weight:720;fill:#16324f}.danger{font-size:18px;font-weight:780;fill:#a31f2d}.dangerbody{font-size:14px;fill:#7d2631}.pass{font-size:12px;font-weight:760;fill:#00794c}.fail{font-size:12px;font-weight:750;fill:#a75c13}.pending{font-size:12px;font-weight:740;fill:#53667b}.big{font-size:20px;font-weight:760;fill:#16324f}.small{font-size:11px;fill:#42556c}.foot{font-size:10px;fill:#53667b}</style>
+<rect width="1440" height="1855" rx="22" fill="#f4f7fb"/>
+<text x="44" y="54" class="title">Can we build a faster replacement for Python re?</text>
+<text x="46" y="81" class="body">First, Python must agree with itself in the exact context used to test the replacements.</text>
+<rect x="44" y="100" width="1352" height="108" rx="14" fill="#fff1f2" stroke="#efbec5"/>
+<text x="65" y="139" class="danger">REFERENCE CONTEXT FALSIFIED — 96 / 96; ALL CANDIDATE RUNS PAUSED</text>
+<text x="67" y="168" class="dangerbody">The existing Python reference used __main__; candidates see the imported module. Fix and re-verify the reference before running any candidate.</text>
+<text x="67" y="191" class="dangerbody">No cases removed. No added exceptions. No genuine C or Zig pattern-equality failure waived.</text>
+<rect x="44" y="226" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="53" y="259" class="big">31,237</text>
+<text x="53" y="284" class="small">unchanged original cases</text>
+<rect x="239" y="226" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="248" y="259" class="big">96 / 96</text>
+<text x="248" y="284" class="small">reference cases falsified</text>
+<rect x="434" y="226" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="443" y="259" class="big">48 + 48</text>
+<text x="443" y="284" class="small">text and byte cases</text>
+<rect x="629" y="226" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="638" y="259" class="big">50 / 50</text>
+<text x="638" y="284" class="small">separate Python checks pass</text>
+<rect x="824" y="226" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="833" y="259" class="big">28</text>
+<text x="833" y="284" class="small">historical Rust build roles</text>
+<rect x="1019" y="226" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="1028" y="259" class="big">0</text>
+<text x="1028" y="284" class="small">new candidate runs</text>
+<rect x="1214" y="226" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="1223" y="259" class="big">≥162 / 167</text>
+<text x="1223" y="284" class="small">authenticated lower bounds</text>
+<rect x="44" y="327" width="1352" height="439" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="362" class="heading">1. Overall: testing is paused until Python agrees with itself</text>
+<text x="66" y="388" class="body">Candidate bars are preserved historical results, not results under the corrected reference. No candidate has been rerun.</text>
+<text x="67" y="430" class="name">Python reference — candidate-facing context</text>
+<text x="1368" y="430" class="danger" text-anchor="end">FALSIFIED; RUNS PAUSED</text>
+<rect x="68" y="442" width="560" height="10" rx="5" fill="#edf1f5"/>
+<rect x="68" y="442" width="30" height="10" rx="5" fill="#c73545"/>
+<text x="645" y="452" class="small">96 of 96 self-reference cases disagree</text>
+<text x="67" y="492" class="name">Rust — previously tested version</text>
+<text x="1368" y="492" class="fail" text-anchor="end">HISTORICAL FAILURE</text>
+<rect x="68" y="504" width="560" height="10" rx="5" fill="#edf1f5"/>
+<rect x="68" y="504" width="329" height="10" rx="5" fill="#b77a36"/>
+<text x="645" y="514" class="small">1,036 historical differences; 8,965 historical passes</text>
+<text x="67" y="554" class="name">C — previously tested version</text>
+<text x="1368" y="554" class="fail" text-anchor="end">HISTORICAL FAILURE</text>
+<rect x="68" y="566" width="560" height="10" rx="5" fill="#edf1f5"/>
+<rect x="68" y="566" width="390" height="10" rx="5" fill="#b77a36"/>
+<text x="645" y="576" class="small">1,230 historical differences; 7,325 historical passes</text>
+<text x="67" y="616" class="name">Zig — previously tested version</text>
+<text x="1368" y="616" class="fail" text-anchor="end">HISTORICAL FAILURE</text>
+<rect x="68" y="628" width="560" height="10" rx="5" fill="#edf1f5"/>
+<rect x="68" y="628" width="560" height="10" rx="5" fill="#b77a36"/>
+<text x="645" y="638" class="small">1,764 historical differences; 3,711 historical passes</text>
+<rect x="67" y="690" width="1304" height="56" rx="10" fill="#f3f6fb" stroke="#dae4ee"/>
+<text x="83" y="714" class="name">Rust — corrected first-party engine independently built twice</text>
+<text x="1355" y="714" class="pending" text-anchor="end">MATCHING NOT RUN; BLOCKED</text>
+<text x="84" y="735" class="small">28 real historical build processes establish reproducibility, not compatibility.</text>
+<rect x="44" y="785" width="1352" height="276" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="820" class="heading">2. What exactly was falsified</text>
+<text x="67" y="851" class="body">One isolated, pinned CPython 3.14.6 process replayed all 96 original cache-pattern-type cases.</text>
+<text x="67" y="877" class="body">The cases divide evenly: 48 text subclasses and 48 byte subclasses.</text>
+<text x="67" y="903" class="body">The existing reference records identify the observing module as __main__.</text>
+<text x="67" y="929" class="body">The actual candidate-facing Python reference identifies its real imported observer module.</text>
+<text x="67" y="955" class="body">The sole normalized difference is outcome.value.items[2].module.</text>
+<text x="67" y="981" class="body">Fix the reference context itself; never discard cases or turn genuine C and Zig failures into waivers.</text>
+<text x="67" y="1007" class="body">The separate 50 signature-reference cases still PASS; their candidate checks have NOT RUN.</text>
+<rect x="44" y="1080" width="1352" height="247" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="1115" class="heading">3. What remains blocked or unmeasured</text>
+<text x="68" y="1147" class="name">Corrected reference</text>
+<text x="350" y="1147" class="body">NOT RUN: Python must first pass the same candidate-facing context.</text>
+<text x="68" y="1174" class="name">Every candidate matching run</text>
+<text x="350" y="1174" class="body">PAUSED: no Rust, C, Zig, Go, C++, or Fortran rerun is permitted.</text>
+<text x="68" y="1201" class="name">Runtime independence</text>
+<text x="350" y="1201" class="body">NOT ESTABLISHED; source and native-build checks are not a runtime proof.</text>
+<text x="68" y="1228" class="name">Speed, memory and confidence</text>
+<text x="350" y="1228" class="body">NOT MEASURED; no honest comparative timing is possible.</text>
+<text x="68" y="1255" class="name">4,194,304-case final holdout</text>
+<text x="350" y="1255" class="body">NOT OPENED and NOT GENERATED; no hidden cases were accessed.</text>
+<text x="68" y="1282" class="name">Winning replacement</text>
+<text x="350" y="1282" class="body">NONE: reference correctness and candidate correctness must come first.</text>
+<rect x="44" y="1346" width="1352" height="321" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="1381" class="heading">4. Independently reproducible evidence</text>
+<text x="67" y="1411" class="body">Authenticate the immutable preceding V36 graph and replay it exactly without running a candidate.</text>
+<text x="67" y="1436" class="body">Read only the one complete, private 3,892-byte Python-only falsification record.</text>
+<text x="67" y="1461" class="body">Preserve all original 31,237 cases, all 13 groups, and exactly the existing 13 named private waivers.</text>
+<text x="67" y="1486" class="body">Preserve all historical Rust, C, and Zig losses; do not silently retest or rewrite them.</text>
+<text x="67" y="1511" class="body">Preserve the two independently recorded Python signature-reference processes and all 50 passing cases.</text>
+<text x="67" y="1536" class="body">The one new genuine evidence owner raises authenticated lower bounds from 161/166 to at least 162/167.</text>
+<text x="67" y="1561" class="body">A full repository-wide evidence or reference count remains NOT MEASURED.</text>
+<text x="67" y="1586" class="body">The graph opens no compressed archive and starts no candidate, compiler, reference, timer or benchmark.</text>
+<text x="67" y="1611" class="body">Correct the same-context Python self-oracle before authorizing or announcing any new candidate result.</text>
+<text x="47" y="1700" class="foot">Graph inputs SHA-256: c89e9c3a2250807e10b27abf33a9e2632344edaefb821a97d317b50944cd398b</text>
+<text x="47" y="1722" class="foot">Graph renderer SHA-256: 4dcd5c14a63adeb159e11c86802bb4080eea82dec9240afb2f910da7bd39ef07</text>
+<text x="47" y="1744" class="foot">Actual Python-only falsification SHA-256: 319f0f75aaaea16fd1f41d814785d67060c57060852893349366cc3b482c4670</text>
+<text x="47" y="1766" class="foot">Actual named-context Python reference SHA-256: 587cf35555472940522d6ae3a73053fb7e98492befe581cc024444bed8e264ad</text>
+<text x="47" y="1788" class="foot">Previous script-context reference SHA-256: df849727d5aa74cbec19950c2d56764bd592404b76c49abe87418bccd3a5013a</text>
+</svg>

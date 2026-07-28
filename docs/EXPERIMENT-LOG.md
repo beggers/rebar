@@ -7,6 +7,65 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Falsify the candidate-facing Python public-type reference
+
+Replay the exact original `public_types_v1` evaluation path using only
+the independently pinned CPython **3.14.6** and its standard-library
+`re`. Do not import a candidate, create another reference worker,
+inspect a matching archive, or open the final holdout.
+
+All **96** original `cache-pattern-type-separation` cases disagree
+between the saved script-context reference and the named-module context
+actually used by candidate workers. Exactly **48** use a text subclass
+and **48** use a bytes subclass. Their sole Python-versus-Python
+difference is `outcome.value.items[2].module`: `__main__` in the saved
+reference and `tools.independent_public_type_identity_serialization_v1`
+in the candidate-facing replay.
+
+The [complete source-pinned reference-context falsification](../oracle/phase1/evidence/public-type-candidate-context-falsification-v1.json)
+has SHA-256
+`319f0f75aaaea16fd1f41d814785d67060c57060852893349366cc3b482c4670`.
+The exact **96** case IDs have canonical SHA-256
+`df43bd52adb112c0fde2bfe24a45200ca2ac30a9c41dfdc5716e3e81cbe19ce0`.
+The original script-context record vector has SHA-256
+`df849727d5aa74cbec19950c2d56764bd592404b76c49abe87418bccd3a5013a`;
+the actual named-context Python vector has SHA-256
+`587cf35555472940522d6ae3a73053fb7e98492befe581cc024444bed8e264ad`.
+
+This is a **FALSIFIED** candidate-facing self-oracle, not a passing
+candidate and not permission to discard a case. The **31,237** original
+cases, **13** suites, and **13** named private waivers remain unchanged.
+C has a genuine, independently observed subclass-equality defect;
+Zig's existing failures also remain unwaived. Correcting the harness
+must not hide or waive either engine's actual failures.
+All further candidate matching is **BLOCKED** until two independently
+recorded Python references agree under the same execution context.
+
+The [reproducible current headline graph](evidence/candidate-current-overview-v37.svg)
+shows the actual Python-versus-Python failure, the pause, and the
+unchanged historical results. Its [independent graph generator](../tools/render_candidate_current_overview_v37.py)
+has SHA-256
+`4dcd5c14a63adeb159e11c86802bb4080eea82dec9240afb2f910da7bd39ef07`.
+The [complete graph inputs](evidence/candidate-current-overview-v37.inputs.json)
+have SHA-256
+`c89e9c3a2250807e10b27abf33a9e2632344edaefb821a97d317b50944cd398b`;
+the [machine-readable results](evidence/candidate-current-overview-v37.json)
+have SHA-256
+`c2cfbec3fb096b001e7642dee1a7dcc4bdbb4dc7710b5027295b9e1a8340d4ee`;
+the generated SVG has SHA-256
+`db371864df0d2148d49be0f007195ab741b097a8c880505a8297ce383bda7ac8`.
+Ordinary and empty-environment source and exact-evidence gates all pass;
+each source gate rejects **207** hostile controls. The graph establishes
+lower bounds of **162** authenticated evidence owners and **167**
+authenticated history references, not an entire-repository file count.
+
+The separately frozen **50** signature checks remain a genuine Python
+reference **PASS**. Candidate signature checks have **NOT RUN**.
+Matching performance, memory, confidence, undefined behavior, and full
+runtime no-delegation remain **NOT MEASURED** or **NOT ESTABLISHED**.
+The **4,194,304** proposed final cases remain **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Record the expanded four-million-example user amendment
 
 Preserve the original objective unchanged. Record the user's request
