@@ -7,6 +7,39 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Verify the independent Python scanner reference
+
+Only after separately committing and pushing the general Python reference,
+run the frozen **1,024**-case Python-only scanner reference. Genuine,
+isolated Python processes **81** and **82** each pass all
+**1,024 / 1,024** original scanner cases. Preserve all **32 × 32**
+source-ordered cases, full-width seed `5999710933164053041`, frozen
+case-matrix SHA-256
+`83a8ad125b36846c1790ca01564305b2ab9714185f972efa838740b7bbf4b55c`,
+and matching observation vector
+`37de08e1991adf28990e35b72c2130ebafa78c72b04750d28550cce08555666d`.
+There are **zero** reference mismatches or worker failures.
+
+The [complete reproducibly compressed scanner reference](../oracle/cpython-3.14.6/evidence/public-contract-baseline-v1-scanner-phase1-v1.json.gz)
+has SHA-256
+`bc543a66cbf2ba3436ea15b2e663e46aeef8205fe3144d4563ab7065fc8ebca4`
+and **329,353** compressed bytes. Its **10,933,374** complete
+uncompressed bytes have SHA-256
+`588a9817bf950fc8412b41cfbe350bb859adf4bc5af6e07f640fdee3a701571f`.
+The [separately durable scanner reference receipt](../oracle/cpython-3.14.6/evidence/public-contract-baseline-v1-scanner-phase1-v1-publication-receipt.json)
+has SHA-256
+`50291aaa6be4dd8f50041c7b2d91b92df7848dcddb18323900dbe1b4c92fe3ba`
+and **3,767** bytes.
+
+Ordinary and empty-environment read-only replays independently verify both
+complete worker streams, all source owners, every ordered input and
+observation, deterministic compression, and the actual archive and receipt
+write, synchronization, no-overwrite, and full-readback ledgers.
+
+The separate **768**-case buffer reference remains **NOT RUN**. Candidate
+results and performance are **NOT MEASURED**. The final comparison remains
+**NOT OPENED**.
+
 ## Verify the independent general Python reference
 
 After freezing and pushing the Python-only reference protocol and recorder,
