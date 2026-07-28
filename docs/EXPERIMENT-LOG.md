@@ -7,6 +7,53 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze reproducible, dependency-free Rust engine builds
+
+Define how to build the independently authored Rust engine and its own
+corrected Python bridge twice. Preserve all **9** original Rust source
+files, the original Rust matching engine, its one-package lockfile, and
+its zero external dependencies. Do not borrow the C implementation,
+Python's regex engine, or another regex package.
+
+Use two distinct, owner-only private source directories. Copy **8**
+unchanged Rust source files and apply the exact previously frozen
+Rust-bridge correction once in each directory. Keep the original
+**175,676**-byte bridge and its historical **2,042** matching
+differences unchanged. Require the complete private bridge SHA-256
+`4436bbb8ad180ee8f02dd4418187506ec0d5a33bdb5a79c424fc736253fa0257`
+in both builds.
+
+Use the pinned Rust compiler, Cargo, C compiler, and binary inspector.
+Require Cargo's locked, frozen, offline release mode, the existing
+zero-dependency lockfile, and separate Rust-engine and Python-bridge
+binaries. The future plan requires **14** independent compiler and
+inspection processes per build, **28** in total, and complete matching
+binary bytes. These processes have **not** run. The original Rust build
+used **16** actual historical processes; do not label those as a new
+Rust result.
+
+Freeze the [independent Rust reproducible-build tool](../tools/reproduce_owned_native_source_build_v9.py),
+SHA-256
+`c4a4b85b92ef0d600528732c9e0acb8f8303b7b2fbfc320e84c9b9e2d384219f`;
+[offline Rust build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V9.md),
+SHA-256
+`18494d4b778a3c958b07903996e8a1b13f4466e08b2c9e72cd5d711957dbcecc`;
+and [machine-readable Rust build inventory](../oracle/phase2/native-source-build-v9.json),
+SHA-256
+`6a4aee7f0c639b2b338d1497c35a69d35939841cf55b0dbe38abe404cea404da`.
+Ordinary and clean-environment source checks each reject **291**
+unsafe changes and block **7** real effects. Both source-pinned,
+read-only checks independently pass.
+
+All **71** evidence files, **76** historical references, **25**
+first-party source owners, **13** original Python test groups,
+**31,237** cases, and **13** named private exceptions remain
+unchanged. No Rust bridge is written or built. The original Rust
+result remains a failure; no engine is qualified. Speed, memory, and
+corrected compatibility are **NOT MEASURED**. The expanded
+**4,194,304**-case final comparison remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze safe loading and recovery for the repaired C engine
 
 Before running any corrected C engine, define exactly how its native

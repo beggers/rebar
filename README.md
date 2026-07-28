@@ -118,6 +118,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Frozen first-party C repair](oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V1.md), [exact repair and preserved evidence](oracle/phase2/first-party-source-repair-v1.json), and [private-snapshot-only repair tool](tools/apply_owned_first_party_source_repair_v1.py); no original engine, matching result, or final comparison has been changed.
 - [Separate first-party Rust repair](oracle/phase2/RUST-SOURCE-REPAIR-V1.md), [exact Rust repair and preserved evidence](oracle/phase2/rust-source-repair-v1.json), and [private Rust-snapshot-only repair tool](tools/apply_owned_rust_source_repair_v1.py); the existing Rust engine and all its previous failures remain unchanged.
 - [Reproducible first-party C build rules](oracle/phase2/NATIVE-SOURCE-BUILD-V8.md), [exact build inventory](oracle/phase2/native-source-build-v8.json), and [independent two-build verifier](tools/reproduce_owned_native_source_build_v8.py); the repaired engine has not yet been built or retested.
+- [Reproducible independent Rust build rules](oracle/phase2/NATIVE-SOURCE-BUILD-V9.md), [exact Rust build inventory](oracle/phase2/native-source-build-v9.json), and [offline two-build verifier](tools/reproduce_owned_native_source_build_v9.py); the repaired Rust engine has no external regex dependency and has not yet been built or retested.
 - [Safe reversible C-engine loading rules](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V5.md), [exact recovery and build checks](oracle/phase2/verified-native-activation-v5.json), and [first-party engine recovery tool](tools/activate_verified_native_candidate_v5.py); no repaired engine has been loaded or tested.
 - [Complete original-test rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V1.md), [frozen test inventory](oracle/phase2/six-family-p0-campaign-v1.json), and [reproducible candidate test runner](tools/run_owned_six_family_original_p0_campaign_v1.py).
 - [Lossless original-test recording rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V2.md), [frozen streaming-test inventory](oracle/phase2/six-family-p0-campaign-v2.json), and [complete streaming test recorder](tools/run_owned_six_family_original_p0_campaign_v2.py); the original tests, first-party engines, and preserved Go failure remain unchanged.
@@ -153,6 +154,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/reproduce_owned_native_source_build_v6.py --verify-context
 "$PY" -I -B tools/reproduce_owned_native_source_build_v7.py --self-test
 "$PY" -I -B tools/reproduce_owned_native_source_build_v8.py --self-test
+"$PY" -I -B tools/reproduce_owned_native_source_build_v9.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v2.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v3.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v3.py --verify-frozen-context
@@ -175,6 +177,12 @@ Verify the current headline graph without rerunning a candidate or
 opening a benchmark:
 
 ```sh
+"$PY" -I -B tools/reproduce_owned_native_source_build_v9.py \
+  --verify-context \
+  --source-sha256 c4a4b85b92ef0d600528732c9e0acb8f8303b7b2fbfc320e84c9b9e2d384219f \
+  --protocol-sha256 18494d4b778a3c958b07903996e8a1b13f4466e08b2c9e72cd5d711957dbcecc \
+  --contract-sha256 6a4aee7f0c639b2b338d1497c35a69d35939841cf55b0dbe38abe404cea404da
+
 "$PY" -I -B tools/activate_verified_native_candidate_v5.py \
   --verify-frozen-context \
   --activation-source-sha256 bdfcb93e4ac3f436474cf82725165c92b61c8982efff0bf113900cbce3e8aff5 \
