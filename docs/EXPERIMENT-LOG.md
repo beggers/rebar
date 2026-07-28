@@ -7,6 +7,60 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run all 13 corrected C workers and preserve every matching failure
+
+Run the independently reproduced first-party repaired C engine once
+through the frozen recovery-safe controller, unchanged original test
+producer, immutable original aggregate, corrected worker adapter, and all
+**13** independently started original-suite workers. Preserve all
+**31,237** original cases without changing an oracle or opening a
+benchmark.
+
+Eight complete groups pass: original public methods (**151**), general
+matching (**864**), scanners (**1,024**), memory views (**768**), buffer
+lifetimes (**1,024**), verbose scanners (**2,854**), isolated
+subinterpreters (**128**), and shared-pattern threads (**512**). These
+are **7,325** independently verified cases from fully passing groups,
+not a complete **31,237**-case pass.
+
+Five groups produce exactly **1,262** genuine, fully preserved semantic
+differences: **248** public types, **224** replacements and buffers,
+**672** changing-size buffers, **114** broad public behavior and real
+locales, and **4** Python-defined buffer exporters. All **13** workers
+complete; infrastructure failures are **0**. The engine is not qualified.
+
+The original C engine previously recorded **2,094** mismatches; this
+actual, separately built repair records **1,262**, a reduction of
+**832** witnessed compatibility differences. Substitution differences
+drop from **336** to **224** and changing-buffer differences from
+**1,392** to **672**. Public types, broad public behavior, and buffer
+exporter failures remain. This measures compatibility, not speed.
+
+Preserve the [complete recovered C correctness result](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures.json.gz),
+SHA-256
+`8dae792944509b4e8879d42b149a723d629c237b40c387a577fac5443bd2e4c7`;
+[independently durable result and exact-restoration receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures-publication-receipt.json),
+SHA-256
+`f3383b6c00ab28d4466332b99c759e981b423a9f427757b0524f7a85f0cf253d`;
+[all 13 original worker results and failures](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures.json.gz),
+SHA-256
+`b3ade63c2a5b1b8152af680c83fc19d5e89fd0fa955aa428737c97fffbfab173`;
+and [independently durable original-suite receipt](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures-publication-receipt.json),
+SHA-256
+`d9476eaee24864ae6b96efd3dfef30cf2355f32398d567d99244d47363de0b54`.
+
+Retain all **26** separate suite archives and receipts, the two aggregate
+owners, and the two recovered outer owners: **30** newly recorded
+evidence files. Together with the previous **105** actual files and
+**110** authenticated history references, the complete inventory is
+**135** evidence files and **140** historical references. Restore the
+original C native file, preserving inode `430300`, mode `0755`, and its
+exact original SHA-256.
+
+Speed, memory, and undefined behavior are **NOT MEASURED**. No candidate
+qualifies. The **4,194,304**-case final comparison remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the recovery-safe complete corrected C rerun
 
 Freeze the complete rerun before starting the repaired C candidate.

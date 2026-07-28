@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1660" height="1990" viewBox="0 0 1660 1990" role="img" aria-labelledby="v23-title v23-description">
+<title id="v23-title">Building a faster Python re: the repaired C engine ran all tests but still differs from Python</title>
+<desc id="v23-description">The original Python reference passes 31,237 checks. The repaired first-party C engine genuinely ran all 13 test groups and all 31,237 checks. Eight complete groups containing 7,325 checks passed. Five groups contain 1,262 recorded differences. There were zero infrastructure failures. The C candidate is not fully compatible; none of the six replacement families qualifies. Both earlier C runner failures remain visible. All 135 distinct evidence files and 140 signed history references are independently authenticated. Speed, memory, ranking and the final holdout have not been measured.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.title{font-size:33px;font-weight:760;fill:#16324f}.heading{font-size:24px;font-weight:740;fill:#16324f}.body{font-size:15px;fill:#42556c}.name{font-size:17px;font-weight:720;fill:#16324f}.pass{font-size:15px;font-weight:750;fill:#00794c}.fail{font-size:15px;font-weight:740;fill:#a15e00}.pending{font-size:15px;font-weight:740;fill:#53667b}.big{font-size:25px;font-weight:760;fill:#16324f}.foot{font-size:12px;fill:#53667b}.small{font-size:13px;fill:#42556c}</style>
+<rect width="1660" height="1990" rx="22" fill="#f4f7fb"/>
+<text x="54" y="66" class="title">Can we build a faster replacement for Python re?</text>
+<text x="56" y="96" class="body">The repaired C engine now really runs all tests, but 1,262 results still differ from Python.</text>
+<rect x="54" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="68" y="163" class="big">31,237</text>
+<text x="68" y="198" class="body">original Python checks run</text>
+<rect x="374" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="388" y="163" class="big">8 of 13</text>
+<text x="388" y="198" class="body">C test groups fully passed</text>
+<rect x="694" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="708" y="163" class="big">1,262</text>
+<text x="708" y="198" class="body">real C matching differences</text>
+<rect x="1014" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="1028" y="163" class="big">0</text>
+<text x="1028" y="198" class="body">current C runner failures</text>
+<rect x="1334" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="1348" y="163" class="big">NOT MEASURED</text>
+<text x="1348" y="198" class="body">speed and memory</text>
+<rect x="54" y="241" width="1552" height="700" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="77" y="282" class="heading">1. Does each replacement behave exactly like Python?</text>
+<text x="78" y="309" class="body">A replacement qualifies only if every original check agrees. A published failure is not a passing candidate.</text>
+<rect x="75" y="326" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="349" class="name">Python re — reference</text>
+<text x="1564" y="349" class="pass" text-anchor="end">PASSED</text>
+<text x="96" y="372" class="small">All 31,237 original reference checks pass.</text>
+<rect x="75" y="395" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="418" class="name">C — latest repaired engine</text>
+<text x="1564" y="418" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="441" class="small">All 13 groups ran: 8 completely passed (7,325 checks); 1,262 differences; 0 runner failures.</text>
+<rect x="75" y="464" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="487" class="name">C — earlier matching engine</text>
+<text x="1564" y="487" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="510" class="small">7,197 fully verified passing checks; 2,094 matching differences.</text>
+<rect x="75" y="533" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="556" class="name">Rust</text>
+<text x="1564" y="556" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="579" class="small">7,461 fully verified passing checks; 2,042 matching differences.</text>
+<rect x="75" y="602" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="625" class="name">Zig</text>
+<text x="1564" y="625" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="648" class="small">3,583 fully verified passing checks; 1,764 matching differences.</text>
+<rect x="75" y="671" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="694" class="name">C++</text>
+<text x="1564" y="694" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="717" class="small">128 fully verified passing checks; 2,308 matching differences and 5 earlier runner failures.</text>
+<rect x="75" y="740" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="763" class="name">Go</text>
+<text x="1564" y="763" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="786" class="small">128 fully verified passing checks; 4,518 matching differences and 4 runner failures.</text>
+<rect x="75" y="809" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="832" class="name">Fortran</text>
+<text x="1564" y="832" class="pending" text-anchor="end">NOT READY</text>
+<text x="96" y="855" class="small">Its independently built engine is not yet compatible. Matching: NOT MEASURED.</text>
+<text x="78" y="903" class="body">The earlier C attempts remain recorded separately: 13 old runner failures, then one runner failure before matching.</text>
+<rect x="54" y="958" width="1552" height="648" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="77" y="999" class="heading">2. Which C test groups still differ?</text>
+<text x="78" y="1026" class="body">All 13 groups and all original case records were preserved; differences are actual observed results.</text>
+<text x="92" y="1053" class="small">TEST GROUP</text>
+<text x="1225" y="1053" class="small" text-anchor="end">ORIGINAL CHECKS</text>
+<text x="1562" y="1053" class="small" text-anchor="end">RESULT</text>
+<rect x="77" y="1066" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1087" class="body">Core Python behavior</text>
+<text x="1225" y="1087" class="body" text-anchor="end">151</text>
+<text x="1562" y="1087" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1101" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1122" class="body">Everyday public methods</text>
+<text x="1225" y="1122" class="body" text-anchor="end">864</text>
+<text x="1562" y="1122" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1136" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1157" class="body">Scanning and callbacks</text>
+<text x="1225" y="1157" class="body" text-anchor="end">1,024</text>
+<text x="1562" y="1157" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1171" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1192" class="body">Buffers and memory views</text>
+<text x="1225" y="1192" class="body" text-anchor="end">768</text>
+<text x="1562" y="1192" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1206" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1227" class="body">Buffer lifetime</text>
+<text x="1225" y="1227" class="body" text-anchor="end">1,024</text>
+<text x="1562" y="1227" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1241" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1262" class="body">Verbose patterns</text>
+<text x="1225" y="1262" class="body" text-anchor="end">2,854</text>
+<text x="1562" y="1262" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1276" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1297" class="body">Public types and serialization</text>
+<text x="1225" y="1297" class="body" text-anchor="end">6,912</text>
+<text x="1562" y="1297" class="fail" text-anchor="end">248 DIFFERENCES</text>
+<rect x="77" y="1311" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1332" class="body">Substitutions</text>
+<text x="1225" y="1332" class="body" text-anchor="end">5,120</text>
+<text x="1562" y="1332" class="fail" text-anchor="end">224 DIFFERENCES</text>
+<rect x="77" y="1346" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1367" class="body">Result shapes</text>
+<text x="1225" y="1367" class="body" text-anchor="end">10,240</text>
+<text x="1562" y="1367" class="fail" text-anchor="end">672 DIFFERENCES</text>
+<rect x="77" y="1381" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1402" class="body">Full public interface</text>
+<text x="1225" y="1402" class="body" text-anchor="end">1,376</text>
+<text x="1562" y="1402" class="fail" text-anchor="end">114 DIFFERENCES</text>
+<rect x="77" y="1416" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1437" class="body">Subinterpreters</text>
+<text x="1225" y="1437" class="body" text-anchor="end">128</text>
+<text x="1562" y="1437" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1451" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1472" class="body">Python buffer exporters</text>
+<text x="1225" y="1472" class="body" text-anchor="end">264</text>
+<text x="1562" y="1472" class="fail" text-anchor="end">4 DIFFERENCES</text>
+<rect x="77" y="1486" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1507" class="body">Patterns across threads</text>
+<text x="1225" y="1507" class="body" text-anchor="end">512</text>
+<text x="1562" y="1507" class="pass" text-anchor="end">PASSED</text>
+<text x="79" y="1550" class="body">Eight complete groups pass. The 7,325 passed checks count only those completely passing groups.</text>
+<text x="79" y="1576" class="body">The remaining five groups contain 1,262 exact differences; no differences or failures were hidden.</text>
+<rect x="54" y="1622" width="1552" height="193" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="77" y="1663" class="heading">3. Is any replacement faster?</text>
+<text x="79" y="1695" class="body">NOT MEASURED. No candidate has first passed every correctness test.</text>
+<text x="79" y="1725" class="body">There is no speed or memory comparison, confidence interval, ranking, winner, or opened final holdout.</text>
+<text x="79" y="1755" class="body">Evidence: 105 earlier files + 30 new real worker and campaign files = 135 verified files; 140 signed references.</text>
+<text x="79" y="1785" class="body">The original C binary, its exact inode, and its 0755 permissions were restored.</text>
+<text x="58" y="1853" class="foot">Inputs SHA-256: e203be81e2ebafa23bd91e41902dd1949fa2245cb8d818e76444982021bfba68</text>
+<text x="58" y="1878" class="foot">Renderer SHA-256: a7f90986e1020d4cccd0b7eac19779a68a5dac28a33a2a7b5776a5508c91b213</text>
+<text x="58" y="1903" class="foot">Actual C campaign archive SHA-256: 8dae792944509b4e8879d42b149a723d629c237b40c387a577fac5443bd2e4c7</text>
+<text x="58" y="1928" class="foot">Actual C campaign receipt SHA-256: f3383b6c00ab28d4466332b99c759e981b423a9f427757b0524f7a85f0cf253d</text>
+</svg>
