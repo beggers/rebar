@@ -7,6 +7,46 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete corrected Zig compatibility experiment
+
+Run the frozen first-party Zig engine exactly once against all **13**
+original Python test groups. All **13** workers complete, exposing
+**2,172** actual matching differences and **2,847** verified passing
+cases. There are **zero** infrastructure failures. The result is
+**FAIL**: Zig is not a drop-in Python replacement.
+
+Restore the exact original Zig engine inode **431260** and bridge inode
+**431274** before publishing the result. Preserve all original worker
+streams in the [compressed matching-failure archive](../oracle/phase2/evidence/repaired-zig-original-campaign-v2-zig-phase2-v11-zig-scanner-original-p0-failures.json.gz),
+SHA-256
+`583d63c92240cec78c861893407003466a5f754b099719aabfc8eaf4f14fbbf8`.
+The [separate durable publication receipt](../oracle/phase2/evidence/repaired-zig-original-campaign-v2-zig-phase2-v11-zig-scanner-original-p0-failures-publication-receipt.json)
+has SHA-256
+`40dd3afa5f99dc51b30af48fe407ece84337a2a41fb3536b214845d0dda00fba`.
+Receipt success means the actual matching failure was saved, not that
+the Zig candidate passed.
+
+Regenerate the [current headline graph](evidence/candidate-current-overview-v27.svg)
+from its [exact frozen inputs](evidence/candidate-current-overview-v27.inputs.json)
+and [complete machine-readable results](evidence/candidate-current-overview-v27.json).
+The [graph renderer](../tools/render_candidate_current_overview_v27.py)
+has SHA-256
+`0df3ed1efbbacd862597e7aac1652eb37ee84c12adf8b79b836a298418925eba`.
+Its inputs have SHA-256
+`c48ff1d86d6b9b40ff6f8651ae5cbedf1b17889e5420c27ca77ee03168b80897`;
+its results have SHA-256
+`e9a3adfa76acc8b551228708865a756b9ec8fc3ba5447280ac655fe78f8f5ab4`;
+and its graph has SHA-256
+`f50791d54c0aaf743b03054b330957941d077874fa676ca1388b8314266870c3`.
+All **143** distinct evidence files and **148** authenticated references
+are retained. Individual new Zig group counts are not present in the
+publication receipt and are not invented for the chart.
+
+Keep the separate first-attempt setup failure and every historical
+candidate result. Speed, memory, and undefined behavior remain **NOT
+MEASURED**. The final holdout remains **NOT FROZEN**, **NOT GENERATED**,
+and **NOT OPENED**.
+
 ## Freeze the corrected full Zig compatibility test
 
 Keep the genuinely archived first Zig setup failure. Correct the file-owner
