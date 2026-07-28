@@ -103,7 +103,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 
 - [Complete 31,237-check compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md), [machine-readable test inventory](oracle/phase1/p0-completeness-v1.json), and [independent fail-closed verifier](tools/verify_p0_completeness_v1.py).
 - [Shared 31,237-check candidate test](oracle/phase2/P0-CANDIDATE-PROTOCOL-V1.md), [frozen candidate test inventory](oracle/phase2/p0-candidate-protocol-v1.json), and [fail-closed candidate test runner](tools/run_frozen_p0_candidate_v1.py).
-- [Reproducible C, Rust, and Zig source-build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V1.md) and [pinned, offline native-build verifier](tools/reproduce_phase2_native_builds_v1.py).
+- [Corrected C, Rust, and Zig source-build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V2.md), [version-safe offline native-build verifier](tools/reproduce_phase2_native_builds_v2.py), and [preserved original build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V1.md).
 - [Both reproducible C source builds and complete process records](oracle/phase2/evidence/native-source-build-v1-c-phase2-v1.json.gz), with the [source-built C publication receipt](oracle/phase2/evidence/native-source-build-v1-c-phase2-v1-publication-receipt.json).
 - [Accounting for all 165 original Python tests](oracle/cpython-3.14.6/UPSTREAM-ACCOUNTING-V5.md), [exact upstream manifest](oracle/cpython-3.14.6/manifest-v5.json), and [independent original-test verifier](tools/verify_original_cpython_accounting_v1.py).
 - [Independent general, scanner, and buffer reference protocol](oracle/cpython-3.14.6/PUBLIC-CONTRACT-BASELINES-V1.md) and [Python-only reference recorder](tools/record_independent_public_contract_baselines_v1.py).
@@ -122,6 +122,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/verify_p0_completeness_v1.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v1.py --self-test
 "$PY" -I -B tools/reproduce_phase2_native_builds_v1.py --self-test
+"$PY" -I -B tools/reproduce_phase2_native_builds_v2.py --self-test
 "$PY" -I -B tools/audit_candidate_independence_v1.py --self-test
 "$PY" -I -B tools/record_independent_public_contract_baselines_v1.py --self-test
 "$PY" -I -B tools/python_re_threaded_pattern_oracle_v1.py --self-test

@@ -7,6 +7,63 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected native-symbol source-build verifier
+
+Keep the original C source-build report, receipt, compiler output, frozen
+version-one verifier, and failed symbol-parsing behavior unchanged.
+Separately freeze the
+[version-two native source-build protocol](../oracle/phase2/NATIVE-SOURCE-BUILDS-V2.md),
+SHA-256
+`f383c2ca419c18cf77451c855b53593bb97ea7fa83c90d5d133a80de043aa603`,
+and the [version-safe offline source-build verifier](../tools/reproduce_phase2_native_builds_v2.py),
+SHA-256
+`e822e22cf6a5bbbdc2b634209c6e185ca74ebc55d86828ebea77bb5d44ce3796`,
+before running any version-two compiler or candidate.
+
+GNU `readelf` represents an imported, versioned function as a genuine
+symbol name followed by an optional annotation:
+
+```text
+32: 0000000000000000 0 FUNC GLOBAL DEFAULT UND regexec@GLIBC_2.2.5 (2)
+```
+
+The first verifier mistakenly takes the last field, `(2)`, rather than
+`regexec@GLIBC_2.2.5`. Preserve the actual failing version-one behavior;
+do not pretend that a generic version-one no-delegation gate passed.
+Independently decode both complete original C symbol streams using the
+correct symbol-name field. The C build remains historically reproducible
+and its actual imports are benign, but future engines must use the
+corrected gate.
+
+Authenticate all **132** entries in each genuine C symbol stream, preserve
+each original binding, visibility, section, normalized symbol, GNU version,
+optional version annotation, export, and import. All **nine** actual
+versioned C-library imports are legitimate. Reject hidden versioned regex
+symbols, malformed annotations, extra fields, reordered or missing rows,
+external packages, dynamic matchers, and calls into another candidate.
+Retain the first recorder, C evidence, and compiler identities; no
+historical result or denominator is altered.
+
+Both isolated source-only self-tests now pass identically: **71** positive
+controls and **451** rejected attacks. Their complete original C-symbol
+fixture is embedded in memory, so they read no actual evidence, invoke no
+compiler, import no candidate, access no holdout, and take no timings.
+Independently replay the original archived C streams in ordinary and
+empty environments; both confirm the same genuine **132** entries and
+all nine versioned imports.
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/reproduce_phase2_native_builds_v2.py --self-test
+env -i /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/reproduce_phase2_native_builds_v2.py --self-test
+```
+
+Actual version-two C, Rust, and Zig source builds are **NOT RUN** at
+this source freeze. Candidate correctness, installed native provenance,
+runtime memory safety, speed, and the expanded final comparison remain
+**NOT MEASURED** or **NOT OPENED**.
+
 ## Rebuild the repaired C engine twice from its own source
 
 Only after separately freezing and pushing the complete Python standard,
