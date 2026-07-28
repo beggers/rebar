@@ -7,6 +7,57 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze independent builds for all six source-written engines
+
+Fix the complete, separate source and offline build rules for C, Rust,
+Zig, C++, Go, and Fortran before running any new build. Include all
+**25** distinct first-party source files, the C++ header, both Rust
+dependency files, Go's dependency-free module, each language's native
+Python bridge, all **13** pinned compiler and support binaries, and the
+unchanged **13-suite, 31,237-check** Python standard. Do not import an
+engine, use an outside regex package, activate a binary, or open a
+benchmark.
+
+Pin the independently reviewed
+[six-language offline source-build recorder](../tools/reproduce_owned_native_source_build_v4.py),
+SHA-256
+`efb37ccca1524e98f32b734b600704a390bc55c73d374da61c089730aaff10b1`,
+the
+[six-language source and compiler contract](../oracle/phase2/native-source-build-v4.json),
+SHA-256
+`0b5641529bc49f55b9e56fe397ad38e7e23d6c9b3376587b743753814b8089d7`,
+and the
+[plain-language reproducible-build protocol](../oracle/phase2/NATIVE-SOURCE-BUILD-V4.md),
+SHA-256
+`e974b26562cc210c175c08cda7914e6b196fdee2ebe2a8232dd87c0cddbc0dfb`.
+
+An earlier recorder,
+`824b1342b0bd654b6467d3afa82931e7626961ffdcb3f5fdd415806aec85721b`,
+is rejected because it did not independently require every Fortran
+callback. The corrected recorder verifies all three Fortran callbacks
+in both directions, all nine Go and Fortran engine entry points, and
+Go's fresh per-build generated header. That header does not currently
+exist; it must be created separately inside each actual future build
+and forced into the corresponding Python-bridge compilation.
+
+Keep all **39** original source-build process records: **8** for C,
+**16** for Rust, and **15** for Zig. Their process identifiers are
+unique within each actual build; repeated numeric identifiers across
+separate historical builds are not failures. Preserve both Zig's
+original reproducibility **FAIL** and its later corrected **PASS**.
+
+Both ordinary and clean-environment source-only checks pass **53**
+positive controls and reject **135** attacks. Both independently
+repeated read-only context checks verify six families, **25** distinct
+owners, the pinned tools, and all historical source-build evidence.
+They run **zero** compilers, candidate processes, reference processes,
+timers, or hidden cases.
+
+C++, Go, and Fortran remain **NOT BUILT**. No new candidate has been
+tested or qualified. Current speed and memory remain **NOT MEASURED**,
+and the expanded final benchmark remains **NOT GENERATED** and
+**NOT OPENED**.
+
 ## Add a separate, from-scratch Fortran matching engine
 
 Expand the language search with a genuinely independent Fortran

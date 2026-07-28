@@ -1,0 +1,173 @@
+{
+  "schema": "rebar-phase2-owned-native-source-build-v4-source-freeze",
+  "version": 4,
+  "phase": "SOURCE FREEZE; NO BUILD AUTHORIZED",
+  "oracle": {
+    "implementation": "CPython",
+    "version": "3.14.6",
+    "suite_count": 13,
+    "case_execution_count": 31237,
+    "manifest_path": "oracle/phase1/p0-completeness-v1.json",
+    "manifest_sha256": "cc703915bf08b4a4d3caf399729d6afd4b583287633bd5db25db3a20671cd47f"
+  },
+  "family_count": 6,
+  "qualified_candidate_count": 0,
+  "families": [
+    {
+      "id": "c",
+      "language": "C",
+      "adapter_import": "_vm_native",
+      "artifacts": {"extension": "_vm_native.cpython-314-x86_64-linux-gnu.so"},
+      "allowed_bridge_python_imports": [],
+      "owners": [
+        {"path": "candidates/vm_candidate.py", "sha256": "b37d3e634b10c37ded2de3c59af9ef477e1d12125ab1b52cfc57915305ff7096", "bytes": 60707},
+        {"path": "candidates/_vm_native.c", "sha256": "bc937bdd3945a111d7929439dfd4a660a55b70593b19ee807c82325d9e6f1e55", "bytes": 218185}
+      ]
+    },
+    {
+      "id": "rust",
+      "language": "Rust",
+      "adapter_import": "_rust_bridge",
+      "artifacts": {"engine": "_rust_engine.so", "bridge": "_rust_bridge.cpython-314-x86_64-linux-gnu.so"},
+      "allowed_bridge_python_imports": ["copyreg", "functools", "inspect"],
+      "owners": [
+        {"path": "candidates/rust_candidate.py", "sha256": "6fb66ef6c3f143475426dd3d5b97c52dbe251f8d2ddd0ef3d5de7ec553a0351b", "bytes": 31151},
+        {"path": "candidates/rust/py_bridge.c", "sha256": "f8a0918aaf8a78f363f6d755770636d26acd45fb83c9abcf997a6e052748ea8b", "bytes": 175676},
+        {"path": "candidates/rust/Cargo.toml", "sha256": "2e57ff8ad346ffc850d50eab429a0f05c14825c4984fd8c9bc36eab03239a966", "bytes": 225},
+        {"path": "candidates/rust/Cargo.lock", "sha256": "267c3b21dc41432f7c5ee036b50b48d81f9228384780b4d13a6b41a8ad2cef63", "bytes": 167},
+        {"path": "candidates/rust/src/lib.rs", "sha256": "c4901e83e359191badc39fbf42ea65f0eb07a3db870172acf8cae65ffb1eaf2d", "bytes": 177967},
+        {"path": "candidates/rust/src/newline.rs", "sha256": "13216ffbea967af121c77d57abe14906030e7f3a6906c554399511154a3d6d8b", "bytes": 14416},
+        {"path": "candidates/rust/src/search.rs", "sha256": "4612c86424b9cbcb193d7ace521f359d7e3507281e83d3bf7e7ef7d189dd68fe", "bytes": 14773},
+        {"path": "candidates/rust/src/stack.rs", "sha256": "5198a056e99bde5632169cfc5b07ad913910cdb1b30785dad4744ccb9a30809e", "bytes": 7269},
+        {"path": "candidates/rust/src/unicode_tables.rs", "sha256": "f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af", "bytes": 471989}
+      ]
+    },
+    {
+      "id": "zig",
+      "language": "Zig",
+      "adapter_import": "_zig_bridge",
+      "artifacts": {"engine": "_zig_probe.so", "bridge": "_zig_bridge.cpython-314-x86_64-linux-gnu.so"},
+      "allowed_bridge_python_imports": [],
+      "owners": [
+        {"path": "candidates/zig_candidate.py", "sha256": "2d7ec411bc035091fea3f20857a4793b21092d3f490d20a9a0efaa418cda0862", "bytes": 68422},
+        {"path": "candidates/zig/mini_regex.zig", "sha256": "a917e7b1a06008be400e4c4a74b6caee5a552624dc46a7d67c932758f594ef28", "bytes": 186915},
+        {"path": "candidates/zig/py_bridge.c", "sha256": "67edae144290254ba25f67f73350ff5d52ccfb2a209e3fbcc555fc4b3d4efd4b", "bytes": 173026}
+      ]
+    },
+    {
+      "id": "cpp",
+      "language": "C++",
+      "adapter_import": "_cpp_bridge",
+      "artifacts": {"bridge": "_cpp_bridge.cpython-314-x86_64-linux-gnu.so"},
+      "allowed_bridge_python_imports": ["unicodedata"],
+      "owners": [
+        {"path": "candidates/cpp_candidate.py", "sha256": "8dcece29b1a194eea023143148af37bb679a9df4c39c01153f5ee23f778e16d5", "bytes": 27488},
+        {"path": "candidates/cpp/engine.hpp", "sha256": "66998fed1839f5e5f7f09382830ed9fda1a62b80bd545305c4eee95ed9a13df9", "bytes": 4089},
+        {"path": "candidates/cpp/engine.cpp", "sha256": "a9ceb37cfde77447a01a36a8882f7713faf5f201d7a15a193dd17e7b91d118f5", "bytes": 62813},
+        {"path": "candidates/cpp/py_bridge.cpp", "sha256": "1d930b63b2f9493dd4759b7521f75d8846daf2580a5699337fcf82540484ab6d", "bytes": 25068}
+      ]
+    },
+    {
+      "id": "go",
+      "language": "Go",
+      "adapter_import": "_go_bridge",
+      "artifacts": {"engine": "_go_engine.so", "bridge": "_go_bridge.cpython-314-x86_64-linux-gnu.so", "generated_header": "_go_engine.h"},
+      "allowed_bridge_python_imports": ["unicodedata"],
+      "owners": [
+        {"path": "candidates/go_candidate.py", "sha256": "816d21527b9806afbc9457122f72f8f6b62c39b8b791d3f363745d412cbe3d20", "bytes": 31049},
+        {"path": "candidates/go/go.mod", "sha256": "9297c4e8fe4649196150400d23a4da584d7ef721347f7095399a7382edad669b", "bytes": 44},
+        {"path": "candidates/go/engine.go", "sha256": "6472c4413921f3a877455315400c532e7632a871a96d46de9583fa6170a43192", "bytes": 53782},
+        {"path": "candidates/go/py_bridge.c", "sha256": "52101f0afe29a568e3c2e22a06d47c89c051e08a0e2024ad4891c5ae2d60fb6a", "bytes": 39373}
+      ]
+    },
+    {
+      "id": "fortran",
+      "language": "Fortran",
+      "adapter_import": "_fortran_bridge",
+      "artifacts": {"engine": "_fortran_engine.so", "bridge": "_fortran_bridge.cpython-314-x86_64-linux-gnu.so"},
+      "allowed_bridge_python_imports": [],
+      "owners": [
+        {"path": "candidates/fortran_candidate.py", "sha256": "8db564771d38c0896a5207f1241a44463432dc5bf75dfcf657740d8bcfefd194", "bytes": 26521},
+        {"path": "candidates/fortran/engine.f90", "sha256": "5180da085487b9932e3f769e6baded6a8409a0b778890e6197aaea6dad1923a5", "bytes": 85062},
+        {"path": "candidates/fortran/py_bridge.c", "sha256": "8540b708de4819f1b3340c32e78eaf083c1cad35f016c0f7af33a27773694b0d", "bytes": 26311}
+      ]
+    }
+  ],
+  "toolchains": [
+    {"id": "python", "path": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14", "sha256": "255e900f44ce87c630e83b637a79435f9ae7778dd72f6e2a2f18a486e501d016", "bytes": 32387816, "version": "CPython 3.14.6", "executable": true},
+    {"id": "python_header", "path": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/include/python3.14/Python.h", "sha256": "e39aad93d70c3ea1a63b77ec5795ff59a5c177745aedace6f83bbf4275a20d9f", "bytes": 4399, "version": "CPython 3.14.6", "executable": false},
+    {"id": "python_patchlevel", "path": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/include/python3.14/patchlevel.h", "sha256": "1c61b149e1ce72a7f6328c58057970d37fcafb02bec805be071dc0ed4cf39a95", "bytes": 1773, "version": "CPython 3.14.6", "executable": false},
+    {"id": "gcc", "path": "/usr/bin/x86_64-linux-gnu-gcc-13", "sha256": "1b99826121ae6682a634e5efe09bd3e3df58ce58e0b28f849114ab5b89139c26", "bytes": 1023032, "version": "GCC 13", "executable": true},
+    {"id": "gxx", "path": "/usr/bin/x86_64-linux-gnu-g++-13", "sha256": "1353e9bdd29a7295c7226bf6c63abccce056d8cac31f112e5cdbecc3f28c2769", "bytes": 1027128, "version": "G++ 13", "executable": true},
+    {"id": "gfortran", "path": "/usr/bin/x86_64-linux-gnu-gfortran-13", "sha256": "142861efc95f49e33705852027dae8c2e5382fd1155fcec6116ef973f25d8f84", "bytes": 1027128, "version": "GNU Fortran 13", "executable": true},
+    {"id": "readelf", "path": "/usr/bin/x86_64-linux-gnu-readelf", "sha256": "64c58e15274bbbb5153f31078e455e9e77ee5f51489e709bba5bb788ce9df2b0", "bytes": 789280, "version": "GNU readelf", "executable": true},
+    {"id": "go", "path": "/home/dev-user/.openai/go/bin/go", "sha256": "d68b7abbc40d0844f673f6cf06ae3cded225c50437c6454fa37ef178d079fe65", "bytes": 15434598, "version": "go1.26.3 linux/amd64", "executable": true},
+    {"id": "rustc", "path": "/home/dev-user/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/rustc", "sha256": "bff349e72704ff70bc08a234a3847338e797065bbedde5e556808bc87b7bf7c6", "bytes": 644784, "version": "rustc 1.95.0", "executable": true},
+    {"id": "cargo", "path": "/home/dev-user/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo", "sha256": "841072d1d92f9e841d9ba5b0814182a0adf064acf4527cd120967b7bc49dcb66", "bytes": 42185192, "version": "cargo 1.95.0", "executable": true},
+    {"id": "rust_driver", "path": "/home/dev-user/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/lib/librustc_driver-6108105cd7e839cf.so", "sha256": "ae69468875215df490fde685ec1f1b969743482ba7e0251f4074a222606a5484", "bytes": 153621360, "version": "rustc 1.95.0 compiler driver", "executable": false},
+    {"id": "zig_archive", "path": "/tmp/rebar-zig-0.16.0-x86_64-linux.tar.xz", "sha256": "70e49664a74374b48b51e6f3fdfbf437f6395d42509050588bd49abe52ba3d00", "bytes": 55478392, "version": "official Zig 0.16.0 x86_64-linux", "executable": false},
+    {"id": "zig", "path": "/tmp/zig-x86_64-linux-0.16.0/zig", "sha256": "2317bbb91798556d9d0f38aabdac23db83f0979b25f767259ae474546724087c", "bytes": 172641672, "version": "official Zig 0.16.0", "executable": true}
+  ],
+  "pinned_support": [
+    {"id": "objective", "path": "GOAL.md", "sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62", "bytes": 3756},
+    {"id": "p0_manifest", "path": "oracle/phase1/p0-completeness-v1.json", "sha256": "cc703915bf08b4a4d3caf399729d6afd4b583287633bd5db25db3a20671cd47f", "bytes": 45632},
+    {"id": "p0_protocol", "path": "oracle/phase1/P0-COMPLETENESS-V1.md", "sha256": "1457b15ce0ac80eb0247ec3bc5ad7fad4675478881e5fe7160070225f7e43798", "bytes": 10392},
+    {"id": "p0_verifier", "path": "tools/verify_p0_completeness_v1.py", "sha256": "0bb256c3d1140688f0f466d90cae020345aafcb5d3e8130b38b09e9de3930a0c", "bytes": 118040},
+    {"id": "independence_protocol_v1", "path": "oracle/phase2/CANDIDATE-INDEPENDENCE-V1.md", "sha256": "a7ee45f0ea76ee7fedacc564c3122b7f37272d918ef28f1c527c9e8adf351292", "bytes": 7127},
+    {"id": "independence_auditor_v1", "path": "tools/audit_candidate_independence_v1.py", "sha256": "f18d9b99a3f11fdf20c47d6cb43cb353532c894ababbdaeb7088c14e397ae3b5", "bytes": 75793},
+    {"id": "build_recorder_v2", "path": "tools/reproduce_phase2_native_builds_v2.py", "sha256": "e822e22cf6a5bbbdc2b634209c6e185ca74ebc55d86828ebea77bb5d44ce3796", "bytes": 136677},
+    {"id": "build_protocol_v2", "path": "oracle/phase2/NATIVE-SOURCE-BUILDS-V2.md", "sha256": "f383c2ca419c18cf77451c855b53593bb97ea7fa83c90d5d133a80de043aa603", "bytes": 13032},
+    {"id": "build_recorder_v3", "path": "tools/reproduce_phase2_native_builds_v3.py", "sha256": "c33d8e89c4b86f06e7cc06ecef9bca7052af86191d2e09ac89e665500147ba6f", "bytes": 175029},
+    {"id": "build_protocol_v3", "path": "oracle/phase2/NATIVE-SOURCE-BUILDS-V3.md", "sha256": "273e5de944b661ec1f5cfbe3a26bcabc2e9b8c04353891fcfb822b07955eace3", "bytes": 7979},
+    {"id": "official_zig_lock", "path": "toolchains/zig-0.16.0.lock.json", "sha256": "a0f105b47dd60bab9c3136a7b7a44ab417bc034e680bf2d30693cc954422b3cd", "bytes": 628}
+  ],
+  "historical_v2": [
+    {"family": "c", "build_status": "PASS", "archive_path": "oracle/phase2/evidence/native-source-build-v2-c-phase2-v2.json.gz", "archive_sha256": "4d954992312a039daa46a2810e51fc29cfdd2bd49d159dc834f5bf003e456878", "archive_bytes": 16016, "uncompressed_sha256": "0d0a67a3c8ebba83806ba3b9beaee39e154f9d0483f0e39aac6bb04ecbfc598a", "uncompressed_bytes": 169716, "receipt_path": "oracle/phase2/evidence/native-source-build-v2-c-phase2-v2-publication-receipt.json", "receipt_sha256": "e90b4c12a087c0e8864c1627e242be18bd779f9d9693ec711f7dd575288eda24", "receipt_bytes": 1639, "process_count": 8},
+    {"family": "rust", "build_status": "PASS", "archive_path": "oracle/phase2/evidence/native-source-build-v2-rust-phase2-v2.json.gz", "archive_sha256": "69b645c14ca3e566256f5a5b393a6d18554ad347b97b542383db3d86681bb35d", "archive_bytes": 33741, "uncompressed_sha256": "389a833d6a3ce6c7aed3216759278d97d8d02dd901f758815e002f7a0031d4ec", "uncompressed_bytes": 279925, "receipt_path": "oracle/phase2/evidence/native-source-build-v2-rust-phase2-v2-publication-receipt.json", "receipt_sha256": "15580e4441ce651c21800df187fcfaa88ec9336322348a07d84544094d5b050e", "receipt_bytes": 2346, "process_count": 16},
+    {"family": "zig", "build_status": "FAIL", "archive_path": "oracle/phase2/evidence/native-source-build-v2-zig-phase2-v2-failures.json.gz", "archive_sha256": "dc5128aaaf8a4d915c57ea8770696db3dc7ca51c89d5a3570cab9d259d070a0e", "archive_bytes": 19556, "uncompressed_sha256": "f6ea1eb57d9ceb23c6dc5d4f291c4eb300768460a658d97828b7ce0095c53652", "uncompressed_bytes": 188479, "receipt_path": "oracle/phase2/evidence/native-source-build-v2-zig-phase2-v2-failures-publication-receipt.json", "receipt_sha256": "97e3150e9b68d3031c96ea6e973097687c80163a371f99a67f8b3de08bc0707a", "receipt_bytes": 1766, "process_count": 15}
+  ],
+  "build_policy": {
+    "phase_names": ["reference-a", "reference-b"],
+    "private_root_prefix": "/tmp/rebar-phase2-native-build-v4-",
+    "private_root_mode": "0700",
+    "phase_source_cache_target_output_and_process_identity": "DISTINCT",
+    "all_phase_outputs": "BYTE IDENTICAL OR PRESERVE FAILURE",
+    "argv_environment_working_directory_stdout_stderr_and_pid": "COMPLETE AND AUTHENTICATED",
+    "elf_dynamic_symbols_and_versions": "COMPLETE AND AUTHENTICATED",
+    "bridge_runpath": "$ORIGIN",
+    "rpath": "FORBIDDEN",
+    "zig_engine_strip_flag": "-fstrip",
+    "go_build_mode": "c-shared",
+    "go_generated_header": "FRESH, PHASE-OWNED, AUTHENTICATED, FORCED WITH -include, AND REPRODUCIBLE",
+    "rust_package_count": 1,
+    "rust_external_package_count": 0,
+    "go_module_count": 1,
+    "go_external_package_count": 0,
+    "network_requests": 0,
+    "external_regular_expression_packages": 0,
+    "cross_family_matching_dependencies": 0,
+    "stdlib_matching_delegation": 0,
+    "fallback": "FORBIDDEN",
+    "prebuilt_artifact": "FORBIDDEN",
+    "evidence_creation": "BOUNDED, EXCLUSIVE, CANONICAL, AND SYNCHRONIZED"
+  },
+  "phase_boundary": {
+    "native_builds_started": 0,
+    "candidate_processes_started": 0,
+    "reference_processes_started": 0,
+    "candidate_imports": 0,
+    "native_libraries_loaded": 0,
+    "hidden_cases_read": 0,
+    "final_cases_read": 0,
+    "benchmark_files_read": 0,
+    "clock_samples": 0,
+    "timing_trials_run": 0,
+    "candidate_correctness": "NOT MEASURED",
+    "subinterpreter_isolation": "NOT MEASURED",
+    "undefined_behavior": "NOT MEASURED",
+    "performance": "NOT MEASURED",
+    "memory": "NOT MEASURED",
+    "holdout": "NOT OPENED",
+    "winner_selected": false
+  }
+}
