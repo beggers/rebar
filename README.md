@@ -13,28 +13,33 @@ Python, another regular-expression package, or another candidate does not count.
 ## Headline results
 
 The Python baseline covers **31,237** frozen compatibility checks. None of the
-Rust, C, or Zig engines is yet a fully compatible replacement: extra scanner
-tests find **116** failures for Rust and C and **1,364** for Zig. Current
-candidate speed is **NOT MEASURED**. The final comparison is **NOT OPENED**.
+Rust, C, or Zig engines is yet a fully qualified replacement. Earlier scanner
+tests found **116** failures for previous Rust and C builds and **1,364** for
+an earlier Zig build. The repaired C engine has now produced **two identical,
+independent source builds**, but its new binary has not yet run the full
+compatibility test. Current speed is **NOT MEASURED**. The final comparison
+is **NOT OPENED**.
 
 ![Previously recorded starting checks: Python and the independently built Rust, C, and Zig engines each pass 2,807 out of 2,807; full compatibility remains unmeasured](docs/evidence/candidate-correctness-overview-v2.svg)
 
 ![Expanded replacement checks: Python passes all 5,120 checks; Rust, C, and Zig have not yet been measured](docs/evidence/substitution-buffer-overview-v2.svg)
 
-![Additional scanner checks: Python passes all 2,854; Rust and C each fail 116; Zig fails 1,364](docs/evidence/scanner-verbose-overview-v1.svg)
+![Historical scanner checks: Python passes all 2,854; earlier Rust and C builds each fail 116; an earlier Zig build fails 1,364](docs/evidence/scanner-verbose-overview-v1.svg)
 
 ![Additional memory-safety checks: Python, Rust, C, and Zig all pass all 1,024 checks](docs/evidence/managed-buffer-lifetime-overview-v1.svg)
 
-| Engine | Built from scratch | Starting checks | Memory safety | Extra scanner checks | Full compatibility | Current speed |
+| Engine | Built from scratch | Starting checks | Memory safety | Earlier scanner checks | Full compatibility | Current speed |
 | --- | --- | ---: | ---: | ---: | ---: | ---: |
 | Python `re` | Baseline | 2,807 / 2,807 | 1,024 / 1,024 | 2,854 / 2,854 | 31,237 / 31,237 | 1.000× baseline |
 | Rust | PASS | 2,807 / 2,807 | 1,024 / 1,024 | 2,738 / 2,854 | NOT MEASURED | NOT MEASURED |
 | C | PASS | 2,807 / 2,807 | 1,024 / 1,024 | 2,738 / 2,854 | NOT MEASURED | NOT MEASURED |
 | Zig | PASS | 2,807 / 2,807 | 1,024 / 1,024 | 1,490 / 2,854 | NOT MEASURED | NOT MEASURED |
 
-The starting and memory-safety results are earlier development measurements;
-they do not mean any engine passes all **31,237** checks. Every scanner
-failure is included. Python's baseline is not a timing result.
+All starting, memory, and scanner numbers are earlier development
+measurements, not results for the repaired C, Rust, or Zig engines. The
+current C source has produced two matching clean builds; current Rust and
+Zig rebuilds have **NOT RUN**. No engine has passed all **31,237** checks.
+Python's baseline is not a timing result.
 
 ## Detailed compatibility
 
@@ -46,7 +51,7 @@ failure is included. Python's baseline is not a timing result.
 | Memory views and buffers | 768 | 768 | 768 | 768 |
 | Total matching checks | 2,807 | 2,807 | 2,807 | 2,807 |
 | Additional memory-lifetime safety, counted separately | 1,024 | 1,024 | 1,024 | 1,024 |
-| Additional scanner and pattern-comment checks, counted separately | 2,854 | 2,738; 116 failures | 2,738; 116 failures | 1,490; 1,364 failures |
+| Historical scanner and pattern-comment checks, counted separately | 2,854 | 2,738; 116 failures | 2,738; 116 failures | 1,490; 1,364 failures |
 | Additional public types, copying, and serialization | 6,912 | NOT MEASURED | NOT MEASURED | NOT MEASURED |
 | Corrected replacement and buffer checks; original test preserved | 5,120 | NOT MEASURED | NOT MEASURED | NOT MEASURED |
 | Corrected changing-size buffer checks; original test preserved | 10,240 | NOT MEASURED | NOT MEASURED | NOT MEASURED |
@@ -99,6 +104,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Complete 31,237-check compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md), [machine-readable test inventory](oracle/phase1/p0-completeness-v1.json), and [independent fail-closed verifier](tools/verify_p0_completeness_v1.py).
 - [Shared 31,237-check candidate test](oracle/phase2/P0-CANDIDATE-PROTOCOL-V1.md), [frozen candidate test inventory](oracle/phase2/p0-candidate-protocol-v1.json), and [fail-closed candidate test runner](tools/run_frozen_p0_candidate_v1.py).
 - [Reproducible C, Rust, and Zig source-build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V1.md) and [pinned, offline native-build verifier](tools/reproduce_phase2_native_builds_v1.py).
+- [Both reproducible C source builds and complete process records](oracle/phase2/evidence/native-source-build-v1-c-phase2-v1.json.gz), with the [source-built C publication receipt](oracle/phase2/evidence/native-source-build-v1-c-phase2-v1-publication-receipt.json).
 - [Accounting for all 165 original Python tests](oracle/cpython-3.14.6/UPSTREAM-ACCOUNTING-V5.md), [exact upstream manifest](oracle/cpython-3.14.6/manifest-v5.json), and [independent original-test verifier](tools/verify_original_cpython_accounting_v1.py).
 - [Independent general, scanner, and buffer reference protocol](oracle/cpython-3.14.6/PUBLIC-CONTRACT-BASELINES-V1.md) and [Python-only reference recorder](tools/record_independent_public_contract_baselines_v1.py).
 - [Real simultaneous-thread reference protocol](oracle/cpython-3.14.6/PUBLIC-THREADED-PATTERN-V1.md), [complete thread reference](oracle/cpython-3.14.6/evidence/public-threaded-pattern-v1-self-oracle.json.gz), and [original publication receipt](oracle/cpython-3.14.6/evidence/public-threaded-pattern-v1-self-oracle-publication-receipt.json).

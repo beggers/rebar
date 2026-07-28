@@ -11,6 +11,8 @@ from struct import calcsize as _native_calcsize
 
 from candidates import _vm_native
 
+__version__ = "2.2.1"
+
 
 class RegexFlag(enum.IntFlag):
     ASCII = 256
@@ -110,6 +112,18 @@ class _BytecodeParser:
             self.at += 1
         return value
 
+    def skip_comment(self, terminator, opening=None):
+        while self.current() is not None:
+            value = self.advance()
+            if value == "\\":
+                if self.current() is None:
+                    self.error("bad escape (end of pattern)", self.at - 1)
+                self.at += 1
+            elif value == terminator:
+                return
+        if opening is not None:
+            self.error("missing ), unterminated comment", opening)
+
     def insignificant(self, flags):
         if not flags & int(VERBOSE):
             return
@@ -118,8 +132,8 @@ class _BytecodeParser:
             if value in " \t\n\r\v\f":
                 self.at += 1
             elif value == "#":
-                newline = self.source.find("\n", self.at)
-                self.at = len(self.source) if newline < 0 else newline + 1
+                self.at += 1
+                self.skip_comment("\n")
             else:
                 break
 
@@ -478,10 +492,7 @@ class _BytecodeParser:
                     stack.append(self.frame("atomic", flags, opening))
                     continue
                 if extension == "#":
-                    close = self.source.find(")", self.at)
-                    if close < 0:
-                        self.error("missing ), unterminated comment", opening)
-                    self.at = close + 1
+                    self.skip_comment(")", opening)
                     continue
                 if extension == "P":
                     form = self.advance()

@@ -7,6 +7,81 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Rebuild the repaired C engine twice from its own source
+
+Only after separately freezing and pushing the complete Python standard,
+the ownership audit, the common candidate gate, and the offline native-build
+protocol, build the current C implementation in **two** genuinely fresh,
+private source trees.
+
+The repaired Python adapter is
+[`candidates/vm_candidate.py`](../candidates/vm_candidate.py), SHA-256
+`b37d3e634b10c37ded2de3c59af9ef477e1d12125ab1b52cfc57915305ff7096`.
+Its own token-aware parser fixes escaped newline and comment handling and
+exports the actual required Python module version, `2.2.1`. The independent
+native engine is [`candidates/_vm_native.c`](../candidates/_vm_native.c),
+SHA-256
+`bc937bdd3945a111d7929439dfd4a660a55b70593b19ee807c82325d9e6f1e55`.
+It uses genuine interpreter-local module state, four module-owned heap
+types, isolated caches, and correctly released native memory.
+
+Preserve the actual rejected native intermediate,
+`598e1a4661960ddcdd443a0bbcaa0ec885eb9e696c961e335553fbf74161d2eb`:
+Clang's path-sensitive analysis exposed **two** genuine null-pointer cleanup
+paths after an allocation failure. Correct both guarded cleanup paths;
+independently rerun Clang and GCC syntax checks in ordinary and empty
+environments and Clang's memory-lifetime analysis with zero warnings.
+Static analysis is not proof that undefined behavior is impossible.
+
+The two independently built C extension files have exactly the same
+**163,136** bytes and SHA-256
+`ed57383dad99ce311664d165635fa300f3894df6b4816b5f54801d0e68263697`.
+The complete record preserves **eight** distinct successful compiler and
+ELF-inspection processes, PIDs `81`, `82`, `83`, `88`, `89`, `90`, `95`,
+and `96`, and every original argument, output, error, and exit status.
+Both actual dynamic-symbol streams have been independently decoded: neither
+binary imports a regex package, Python's regex engine, another candidate's
+engine, or a foreign matching symbol. Their sole native-library dependency
+is `libc.so.6`.
+
+The durable [complete compressed C build report](../oracle/phase2/evidence/native-source-build-v1-c-phase2-v1.json.gz)
+has SHA-256
+`b7844048cde986cae25ec4dafadfbb6dc560f4ea86108b908fe074176423f2e2`.
+Its canonical uncompressed report has SHA-256
+`70779c2751a805774a0b570e12f7d7f843dca45e06edf862136d184f27d297d3`.
+The [complete original C build publication receipt](../oracle/phase2/evidence/native-source-build-v1-c-phase2-v1-publication-receipt.json)
+has SHA-256
+`7736349d1e8dce83e47fdf741a4e34fb313d4d370a11a2d5563dba4468e55002`.
+
+Keep the real version-one ELF-auditor limitation visible: GNU `readelf`
+appends a version annotation such as `(2)` to an imported libc symbol,
+but the version-one tokenizer incorrectly identifies that suffix as the
+symbol. Independently parse both preserved original symbol streams from
+their actual name columns; both C outputs contain **zero** forbidden
+matching or cross-engine symbols. Preserve the complete streams and
+separately freeze a corrected, adversarially tested version-two builder
+before relying on this check for another engine.
+
+Reproduce the same source build under a fresh, non-overwriting label:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/reproduce_phase2_native_builds_v1.py \
+  --build --family c --label phase2-reproduction-v1 \
+  --source-sha256 e4cee196fcd6ff0908f46c26ef66363aa059e3003f2e89b302df10f35f9a3afd \
+  --protocol-sha256 33c495f6852155130c92af73422b7a6c6aae26b1c7012e65e2ddddab028064a2 \
+  --owned-source-sha256 candidates/vm_candidate.py=b37d3e634b10c37ded2de3c59af9ef477e1d12125ab1b52cfc57915305ff7096 \
+  --owned-source-sha256 candidates/_vm_native.c=bc937bdd3945a111d7929439dfd4a660a55b70593b19ee807c82325d9e6f1e55
+```
+
+Publication is exclusive: to preserve the original passing report and
+receipt, choose a new `--label` for every repetition. The old workspace
+C binary does not match either newly built native file. Neither fresh C
+binary has been installed or imported, and the old binary is not counted
+as a source-built result. Candidate
+correctness, full subinterpreter behavior, runtime memory safety, and
+speed remain **NOT MEASURED**. The final comparison remains **NOT OPENED**.
+
 ## Freeze reproducible builds of each native engine
 
 After separately publishing the Python standard, the no-wrapping audit,
