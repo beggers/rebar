@@ -17,7 +17,8 @@ C, Rust, Zig, C++, and Go engines are being explored; none is yet a fully
 qualified replacement. Earlier scanner
 tests found **116** failures for previous Rust and C builds and **1,364** for
 an earlier Zig build. The repaired C engine has now produced **two identical,
-independent source builds**, but its new binary has not yet run the full
+independent source builds under the corrected native-symbol audit**, but its
+new binary has not yet run the full
 compatibility test. Current speed is **NOT MEASURED**. The final comparison
 is **NOT OPENED**.
 
@@ -40,7 +41,8 @@ is **NOT OPENED**.
 
 All starting, memory, and scanner numbers are earlier development
 measurements, not results for the repaired C, Rust, or Zig engines. The
-current C source has produced two matching clean builds; current Rust and
+current C source has produced two matching, independently verified builds
+with no external regex dependencies; current Rust and
 Zig rebuilds have **NOT RUN**. The new C++ and Go engines have passed
 source and compiler checks but have **NOT BEEN BUILT**. Go still has known
 Unicode, lookbehind, and buffer-lifetime gaps. No engine has passed all
@@ -113,6 +115,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Real isolated-interpreter compatibility protocol](oracle/phase2/CANDIDATE-SUBINTERPRETERS-V1.md), [exact interpreter test inventory](oracle/phase2/candidate-subinterpreters-v1.json), and [independently checked interpreter test runner](tools/run_owned_candidate_subinterpreters_v1.py).
 - [Corrected C, Rust, and Zig source-build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V2.md), [version-safe offline native-build verifier](tools/reproduce_phase2_native_builds_v2.py), and [preserved original build protocol](oracle/phase2/NATIVE-SOURCE-BUILDS-V1.md).
 - [Crash-safe verified native activation protocol](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V1.md) and [reversible, source-authenticated native activation and recovery](tools/activate_verified_native_candidate_v1.py).
+- [Complete corrected C source-build record](oracle/phase2/evidence/native-source-build-v2-c-phase2-v2.json.gz) and [independently verified corrected C build receipt](oracle/phase2/evidence/native-source-build-v2-c-phase2-v2-publication-receipt.json).
 - [Both reproducible C source builds and complete process records](oracle/phase2/evidence/native-source-build-v1-c-phase2-v1.json.gz), with the [source-built C publication receipt](oracle/phase2/evidence/native-source-build-v1-c-phase2-v1-publication-receipt.json).
 - [Accounting for all 165 original Python tests](oracle/cpython-3.14.6/UPSTREAM-ACCOUNTING-V5.md), [exact upstream manifest](oracle/cpython-3.14.6/manifest-v5.json), and [independent original-test verifier](tools/verify_original_cpython_accounting_v1.py).
 - [Independent general, scanner, and buffer reference protocol](oracle/cpython-3.14.6/PUBLIC-CONTRACT-BASELINES-V1.md) and [Python-only reference recorder](tools/record_independent_public_contract_baselines_v1.py).

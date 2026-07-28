@@ -7,6 +7,71 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Rebuild and independently audit the corrected C native engine
+
+Only after separately freezing and pushing the full Python standard,
+corrected native-symbol verifier, complete candidate runner, authentic
+interpreter controller, and crash-safe activation protocol, perform the
+actual corrected **version-two** C source-build experiment.
+
+The exact Python adapter remains SHA-256
+`b37d3e634b10c37ded2de3c59af9ef477e1d12125ab1b52cfc57915305ff7096`.
+The independently written native C engine remains SHA-256
+`bc937bdd3945a111d7929439dfd4a660a55b70593b19ee807c82325d9e6f1e55`.
+The corrected source-build recorder is SHA-256
+`e822e22cf6a5bbbdc2b634209c6e185ca74ebc55d86828ebea77bb5d44ce3796`,
+and its already published protocol is SHA-256
+`f383c2ca419c18cf77451c855b53593bb97ea7fa83c90d5d133a80de043aa603`.
+
+Perform two real, separately owned offline source builds. Each produces
+the identical **163,136**-byte native C extension, SHA-256
+`ed57383dad99ce311664d165635fa300f3894df6b4816b5f54801d0e68263697`.
+The two resulting files have distinct actual inodes **10862191** and
+**10862199**. Preserve all **eight** real compiler and inspection
+processes, all original output, all **132** native symbols per file,
+and all **nine** correctly decoded versioned C-library imports. The sole
+native-library dependency is `libc.so.6`; there are **zero** external
+regex engines, cross-candidate dependencies, fallback matchers, or
+candidate imports.
+
+The [complete corrected, deterministic compressed C build report](../oracle/phase2/evidence/native-source-build-v2-c-phase2-v2.json.gz)
+has SHA-256
+`4d954992312a039daa46a2810e51fc29cfdd2bd49d159dc834f5bf003e456878`
+and **16,016** bytes. Its **169,716** uncompressed report bytes have
+SHA-256
+`0d0a67a3c8ebba83806ba3b9beaee39e154f9d0483f0e39aac6bb04ecbfc598a`.
+The [separately durable corrected C publication receipt](../oracle/phase2/evidence/native-source-build-v2-c-phase2-v2-publication-receipt.json)
+has SHA-256
+`e90b4c12a087c0e8864c1627e242be18bd779f9d9693ec711f7dd575288eda24`
+and **1,639** bytes.
+
+Independently replay the authentic complete corrected build report through
+the separately frozen crash-safe activation verifier, normally and with
+an empty environment, without installing or loading the native file.
+Retain both original build outputs and the exact original archived
+compiler and native-symbol streams. Preserve the historical version-one
+symbol-parser failure; the first successful C report does not become a
+corrected version-two report.
+
+Reproduce the build without overwriting the frozen original evidence by
+choosing a distinct label:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/reproduce_phase2_native_builds_v2.py \
+  --build --family c --label phase2-v2-reproduction \
+  --source-sha256 e822e22cf6a5bbbdc2b634209c6e185ca74ebc55d86828ebea77bb5d44ce3796 \
+  --protocol-sha256 f383c2ca419c18cf77451c855b53593bb97ea7fa83c90d5d133a80de043aa603 \
+  --owned-source-sha256 candidates/vm_candidate.py=b37d3e634b10c37ded2de3c59af9ef477e1d12125ab1b52cfc57915305ff7096 \
+  --owned-source-sha256 candidates/_vm_native.c=bc937bdd3945a111d7929439dfd4a660a55b70593b19ee807c82325d9e6f1e55
+```
+
+This experiment does **not** install a native file, import a candidate,
+run a regex, time an operation, or open the final comparison. The C
+engine's full **31,237**-case correctness, memory safety, and speed
+remain **NOT MEASURED**. Rust and Zig version-two source builds remain
+**NOT RUN**.
+
 ## Freeze reversible, crash-safe, source-verified native activation
 
 Freeze the [verified native activation and recovery controller](../tools/activate_verified_native_candidate_v1.py),
