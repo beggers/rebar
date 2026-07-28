@@ -7,6 +7,58 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Correct the complete compatibility worker without losing a test
+
+Preserve both genuine earlier attempts to run the source-built C engine.
+Version three rejected valid native-recovery evidence before starting a
+worker. Version four passed native recovery and started one real worker,
+which rejected Python's authenticated original test document before
+running a compatibility case. Neither failure qualifies an engine, and
+neither is a regular-expression mismatch.
+
+The original Python-document validator correctly returns the complete
+validated dictionary. The old worker incorrectly passed that dictionary
+to a guard that accepts only literal `True`. Freeze a separate worker
+that requires the actual returned value to be a dictionary and checks
+that it matches the complete original document byte for byte after
+canonical encoding. Leave both original workers, every Python test,
+all prior native builds, and both complete historical failures unchanged.
+
+Pin the independently reviewed
+[corrected full-suite worker](../tools/run_frozen_p0_candidate_worker_v3.py),
+SHA-256
+`3364ee6d2168803751a2a8c06533828fe9762bb5ad323e8f798bc346a4a2f475`,
+and the
+[corrected complete candidate runner](../tools/run_frozen_p0_candidate_v5.py),
+SHA-256
+`5dfdd52069379f4410a9620f95914717e0a9d278fdfc9f1d7416f3aa36ec6326`.
+Freeze their
+[human-readable compatibility protocol](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V5.md),
+SHA-256
+`a943eb9d8d9dbc8ca13562c274b9a96b340ddc531423d6669a00d2aeba65ead8`,
+and
+[complete machine-readable test inventory](../oracle/phase2/p0-candidate-protocol-v5.json),
+SHA-256
+`f0ae8a783a3091cb2f59fdb7f82cb012fe34eceffbead347ff3ee2e11ec1724b`.
+
+Run both synthetic self-tests in the normal and clean environments.
+The worker passes **36** valid and **434** deliberately invalid
+controls; the complete runner passes **33** valid and **762** invalid
+controls. Independently run both genuine, read-only frozen-context
+checks in both environments. The worker authenticates **51** source
+owners and **1,055** actual file reads; the complete runner verifies
+**31** additional source owners and **1,170** actual file reads,
+including the same genuine inner context. Both preserve all **13**
+original suites and all **31,237** cases. The supplementary **128**
+interpreter checks are never added to the original denominator.
+
+These checks start no matching candidate, native build, worker,
+activation, thread, timer, or performance process. They preserve both
+actual C failure archives, their receipts, and the failed worker's
+complete stdout. Full candidate compatibility and speed remain
+**NOT MEASURED**. The expanded final comparison remains
+**NOT GENERATED** and **NOT OPENED**.
+
 ## Build the from-scratch Zig engine reproducibly
 
 Run only the already committed version-three Zig source-build protocol
