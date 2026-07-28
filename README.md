@@ -111,6 +111,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 ## Evidence and reproduction
 
 - [Complete 31,237-check compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md), [machine-readable test inventory](oracle/phase1/p0-completeness-v1.json), and [independent fail-closed verifier](tools/verify_p0_completeness_v1.py).
+- [Final source-verified 31,237-check candidate protocol](oracle/phase2/P0-CANDIDATE-PROTOCOL-V3.md), [exact version-three candidate inventory](oracle/phase2/p0-candidate-protocol-v3.json), and [crash-verified full candidate runner](tools/run_frozen_p0_candidate_v3.py).
 - [Complete shared candidate correctness protocol](oracle/phase2/P0-CANDIDATE-PROTOCOL-V2.md), [exact version-two candidate inventory](oracle/phase2/p0-candidate-protocol-v2.json), and [full 31,237-check candidate runner](tools/run_frozen_p0_candidate_v2.py).
 - [Shared 31,237-check candidate test](oracle/phase2/P0-CANDIDATE-PROTOCOL-V1.md), [frozen candidate test inventory](oracle/phase2/p0-candidate-protocol-v1.json), and [fail-closed candidate test runner](tools/run_frozen_p0_candidate_v1.py).
 - [Crash-verified real-interpreter correctness protocol](oracle/phase2/CANDIDATE-SUBINTERPRETERS-V2.md), [corrected interpreter test inventory](oracle/phase2/candidate-subinterpreters-v2.json), and [corrected real-interpreter candidate runner](tools/run_owned_candidate_subinterpreters_v2.py).
@@ -140,6 +141,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/verify_p0_completeness_v1.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v1.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v2.py --self-test
+"$PY" -I -B tools/run_frozen_p0_candidate_v3.py --self-test
 "$PY" -I -B tools/run_owned_candidate_subinterpreters_v1.py --self-test
 "$PY" -I -B tools/run_owned_candidate_subinterpreters_v2.py --self-test
 "$PY" -I -B tools/reproduce_phase2_native_builds_v1.py --self-test

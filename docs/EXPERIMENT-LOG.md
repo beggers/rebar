@@ -7,6 +7,73 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the complete, crash-verified candidate correctness gate
+
+Preserve the original version-one and version-two full candidate runners,
+the original interpreter protocols, and every original compatibility
+case. The version-two full gate authentically executes all **13**
+categories and all **31,237** frozen cases, but its original interpreter
+route predates crash-safe native promotion intents. Require a genuine,
+separately verified intent and a complete corrected interpreter run;
+never describe the older route as independently validating an inode
+record that it does not inspect.
+
+Freeze the [corrected complete candidate runner](../tools/run_frozen_p0_candidate_v3.py),
+SHA-256
+`478d7d6d119c0f1b248890b1d4e27ffe1714688684b439ecb14bd4a83ecee557`,
+the [version-three candidate correctness explanation](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V3.md),
+SHA-256
+`3587e71b91f15c7727749554d971c120ecf5dea2b3624298be19e5dd849adb84`,
+and the [exact generated version-three candidate inventory](../oracle/phase2/p0-candidate-protocol-v3.json),
+SHA-256
+`ebdbc2b9e6ada77a25d6c95d83078fc2af9fde5dd0c2887c5aab09748a67c8bc`.
+
+The unpublished first explanation and inventory ended with an extra
+blank line, causing the clean-commit gate to fail. Preserve their actual
+rejected hashes, respectively
+`c2cf44f49604fb671c13fc0b1a8cbe0a08e5e07a2269f6efe7dfc18326f5fa32`
+and `f2e1dcd077b11a450556935b30eed4de886c9123980ec0abade67934fc3daf04`.
+Remove only the trailing blank line; the protocol, cases, and runner
+remain unchanged.
+
+Authenticate each real source-built native file, both genuinely fresh
+compiler outputs, the no-follow owner-only journal, every per-role
+promotion intent, every exact device and inode, the corrected
+activation receipt, and all unchanged original matcher guards. Repeat
+that authentication before and after each real candidate operation.
+Then execute the complete, unmodified version-two **13**-suite gate,
+plus the independently corrected real-interpreter route. The extra
+**128** interpreter cases and their **394** real observations are
+separately reported; they are not added to the official **31,237**
+original case denominator.
+
+Preserve the genuinely rejected initial version-three source, SHA-256
+`5edaf778dd325f45be7b7e22c503d0dfce069d3aef68453774034f7b91224966`.
+It preserved the inner results but did not write its own promised
+exclusively created complete success and failure archives. Correct the
+runner using the unchanged, independently frozen durable report writer;
+retain all actual process output, original exceptions, timeouts,
+mismatches, exact candidate records, and publication receipts.
+
+Both ordinary and empty-environment source-only self-tests pass
+byte-identically: **24** valid controls, **383** rejected attacks, and
+zero actual candidate, file, compiler, interpreter, activation, clock,
+or holdout operations. Preserve every prior protocol, real failure,
+source hash, and honest one-family C-build chronology.
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/run_frozen_p0_candidate_v3.py --self-test
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/run_frozen_p0_candidate_v3.py --self-test
+```
+
+Source validation is not candidate execution. All full-engine
+compatibility, native runtime memory safety, performance, and rankings
+remain **NOT MEASURED**. The expanded final comparison remains
+**NOT GENERATED** and **NOT OPENED**.
+
 ## Require crash-verified native provenance inside every real interpreter
 
 Preserve the published version-one interpreter controller, SHA-256
