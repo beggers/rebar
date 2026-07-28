@@ -37,8 +37,9 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Separate first-party Rust repair](../oracle/phase2/RUST-SOURCE-REPAIR-V1.md), [exact Rust repair and preserved evidence](../oracle/phase2/rust-source-repair-v1.json), and [private Rust-snapshot-only repair tool](../tools/apply_owned_rust_source_repair_v1.py); the existing Rust engine and all its previous failures remain unchanged.
 - [Independent Rust public-compatibility repair](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V1.md), [exact three-block private-source contract](../oracle/phase2/rust-public-contract-source-repair-v1.json), and [first-party Rust public-source verifier](../tools/apply_owned_rust_public_contract_source_repair_v1.py); the repaired source was independently applied to both private builds. Its later complete compatibility test found **1,087** differences.
 - [First-party correction for the observed Rust flag-display failure](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V2.md), [exact private-source and genuine-Python flag contract](../oracle/phase2/rust-public-contract-source-repair-v2.json), and [independently written Rust repair verifier](../tools/apply_owned_rust_public_contract_source_repair_v2.py); all six upstream assertions and **5,128** Python flag values agree. Its independently rebuilt engine completed all **13** compatibility groups and recorded **1,036** differences.
-- [First actual remaining Rust compiled-pattern representation correction](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V3.md), [exact actual mismatch and preserved standalone-flag contract](../oracle/phase2/rust-public-contract-source-repair-v3.json), and [source-pinned first-party Rust representation verifier](../tools/apply_owned_rust_public_contract_source_repair_v3.py); the first real failing case is corrected in memory while all **5,128** standalone flag cases remain unchanged. Corrected compilation and matching have **NOT RUN**.
-- [Frozen independent builds of the next corrected first-party Rust engine](../oracle/phase2/RUST-PATTERN-REPR-SOURCE-BUILD-V13.md), [exact nine-source, two-phase, offline build contract](../oracle/phase2/rust-pattern-repr-source-build-v13.json), and [source-pinned first-party Rust build controller](../tools/reproduce_owned_rust_pattern_repr_source_build_v13.py); the procedure is frozen and independently checked. Its **28** compiler and inspection processes and corrected matching have **NOT RUN**.
+- [First actual remaining Rust compiled-pattern representation correction](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V3.md), [exact actual mismatch and preserved standalone-flag contract](../oracle/phase2/rust-public-contract-source-repair-v3.json), and [source-pinned first-party Rust representation verifier](../tools/apply_owned_rust_public_contract_source_repair_v3.py); the corrected adapter has been privately applied in both actual independent Rust builds while all **5,128** standalone flag observations remain unchanged. Corrected matching has **NOT RUN**.
+- [Independently reproduced builds of the next corrected first-party Rust engine](../oracle/phase2/RUST-PATTERN-REPR-SOURCE-BUILD-V13.md), [exact nine-source, two-phase, offline build contract](../oracle/phase2/rust-pattern-repr-source-build-v13.json), and [source-pinned first-party Rust build controller](../tools/reproduce_owned_rust_pattern_repr_source_build_v13.py); all **28** real compiler and inspection processes completed, and both separate native engines and bridges are byte-identical. The corrected matching test has **NOT RUN**.
+- [Complete actual corrected first-party Rust build archive](../oracle/phase2/evidence/native-source-build-v13-rust-phase2-v13-rust-pattern-repr-original-p0.json.gz) and [separate durable two-phase Rust build receipt](../oracle/phase2/evidence/native-source-build-v13-rust-phase2-v13-rust-pattern-repr-original-p0-publication-receipt.json); actual build **PASS** establishes two reproducible offline first-party builds, not a passing candidate.
 - [Independently reproducible corrected Rust build rules](../oracle/phase2/RUST-FLAG-SOURCE-BUILD-V12.md), [exact first-party toolchain and two-phase build contract](../oracle/phase2/rust-flag-source-build-v12.json), and [offline corrected Rust build verifier](../tools/reproduce_owned_rust_flag_source_build_v12.py); both independent builds and all **28** real compiler and inspection processes succeeded. A separately recorded full matching run finds **1,036** differences.
 - [Actual corrected Rust two-build evidence](../oracle/phase2/evidence/native-source-build-v12-rust-phase2-v12-rust-flag-original-p0.json.gz) and [separately durable corrected-build receipt](../oracle/phase2/evidence/native-source-build-v12-rust-phase2-v12-rust-flag-original-p0-publication-receipt.json); the receipt proves **28** real processes, two identical first-party builds, the corrected adapter, no outside matcher, and **zero** candidate tests. Its **PASS** means the build succeeded, not that the replacement passes Python's tests.
 - [Reproducible first-party C build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V8.md), [exact build inventory](../oracle/phase2/native-source-build-v8.json), and [independent two-build verifier](../tools/reproduce_owned_native_source_build_v8.py).
@@ -69,7 +70,8 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Complete repaired C compatibility evidence](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures.json.gz), [independent safe-restoration receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures-publication-receipt.json), [all 13 original worker reports](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures.json.gz), and [original-suite aggregate receipt](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures-publication-receipt.json); eight complete groups pass, five retain 1,262 genuine differences, and no infrastructure failure occurred.
 - [Actual independent repaired Zig builds](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner.json.gz) and [complete native build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner-publication-receipt.json); exactly 26 genuine processes produce two identical first-party engine and bridge binaries without testing matching or measuring speed.
 - [Actual independent repaired Rust builds](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay.json.gz) and [complete offline-build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay-publication-receipt.json); exactly 28 genuine processes produce two identical dependency-free Rust engines and bridges without testing matching or measuring speed.
-- [Current Python-versus-candidates and signature-reference graph](../docs/evidence/candidate-current-overview-v35.svg), [independently authenticated current graph inputs](../docs/evidence/candidate-current-overview-v35.inputs.json), [complete current machine-readable reference and candidate evidence](../docs/evidence/candidate-current-overview-v35.json), and [reproducible current graph generator](../tools/render_candidate_current_overview_v35.py); independently authenticate two real Python workers passing the **50** additional checks, unchanged original **31,237** checks, Rust's **1,036** differences, C's **1,230**, and corrected Zig's **1,764**. The **159** evidence owners and **164** references are authenticated lower bounds. Candidate signature tests have **NOT RUN**, runtime no-delegation is **NOT ESTABLISHED**, and speed is **NOT MEASURED**.
+- [Current plain-language candidate and corrected-Rust build graph](../docs/evidence/candidate-current-overview-v36.svg), [independently authenticated current graph inputs](../docs/evidence/candidate-current-overview-v36.inputs.json), [complete current machine-readable results](../docs/evidence/candidate-current-overview-v36.json), and [reproducible current graph generator](../tools/render_candidate_current_overview_v36.py); independently authenticate the complete corrected Rust build report, **28** unique real build processes, **two** separate first-party builds, the original **31,237** checks, and Python's separate **50**-check reference pass. Corrected Rust matching has **NOT RUN**. Previously tested Rust has **1,036** differences; C has **1,230** and Zig has **1,764**. The **161** evidence owners and **166** references are authenticated lower bounds. Candidate signature tests have **NOT RUN**, runtime no-delegation is **NOT ESTABLISHED**, and speed is **NOT MEASURED**.
+- [Historical Python-versus-candidates and signature-reference graph](../docs/evidence/candidate-current-overview-v35.svg), [historical independently authenticated graph inputs](../docs/evidence/candidate-current-overview-v35.inputs.json), [historical machine-readable reference and candidate evidence](../docs/evidence/candidate-current-overview-v35.json), and [historical graph generator](../tools/render_candidate_current_overview_v35.py); preserve the two Python workers passing all **50** additional checks and the **159**-owner, **164**-reference evidence snapshot from before the corrected Rust build was recorded.
 - [Historical corrected-Zig graph](../docs/evidence/candidate-current-overview-v34.svg), [historical corrected-Zig graph inputs](../docs/evidence/candidate-current-overview-v34.inputs.json), [historical full candidate results](../docs/evidence/candidate-current-overview-v34.json), and [historical graph generator](../tools/render_candidate_current_overview_v34.py); this preserved **157**-owner, **162**-reference snapshot recorded Rust's **1,036** differences, C's **1,230**, and corrected Zig's **1,764** before the separate signature-reference evidence was published.
 - [Historical pre-test graph inputs](../docs/evidence/candidate-current-overview-v33.inputs.json), [historical machine-readable Python baseline, matching results, and independently verified Zig build](../docs/evidence/candidate-current-overview-v33.json), and [historical graph generator](../tools/render_candidate_current_overview_v33.py); this preserved snapshot authenticates the **155** evidence files and **160** references available before the corrected Zig matching test. It records Rust's **1,036** differences, C's **1,230**, and the previous Zig engine's **2,172** differences. It does not include the later corrected Zig result.
 - [Preserved historical Rust-only graph](../docs/evidence/candidate-current-overview-v32.svg), [historical source inputs](../docs/evidence/candidate-current-overview-v32.inputs.json), and [historical graph generator](../tools/render_candidate_current_overview_v32.py); its **153** owners and **158** references describe the genuine state before the corrected Zig source-build evidence was published.
@@ -179,6 +181,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/render_candidate_current_overview_v33.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v34.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v35.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v36.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v6.py --self-test \
   --source-sha256 d3a9b08c1bf7e3408719a0e92b8c1965aa6160dd2e18ab1501bb8662aaf8e4a1 \
   --protocol-sha256 0e736d575835fa22388841a527e22b62eef1ddf39eac9415bd7c518ba985b1d0 \
@@ -262,6 +265,16 @@ Verify the current headline graph without rerunning a candidate,
 decompressing a matching archive, or opening the final comparison:
 
 ```sh
+"$PY" -I -B tools/render_candidate_current_overview_v36.py \
+  --verify-frozen-context \
+  --source-sha256 1163df648d3fc3fb6b8f07abe260955958ea3b19826fafd09ee20b6fd5ba0cb1 \
+  --build-archive-sha256 c201c014f55a51454baab77d2148dc39d6024bae3273242d6eb1f1b43f419f6a \
+  --build-receipt-sha256 4d4c927640c6e8c1b1e02c53350e1517b98255284218f49c2cefb53d647e9805 \
+  --inputs-sha256 0b5587a1b9790ee33ca00f6234efe162a79019618334b2726e2b239a425c230c \
+  --summary-sha256 a082592fbb9aa29e9c577aac32c5f4b9db0e2bd503e149df0f1a39ee44b0cad6 \
+  --svg-sha256 a94a73b62ac356acf54bcf3e066857b2160176d7f63c0cd44597641d1739d764
+
+# Verify the historical graph from before the corrected Rust build.
 "$PY" -I -B tools/render_candidate_current_overview_v35.py \
   --verify-frozen-context \
   --source-sha256 390373ef8d196c54301ba6917b15b847708359dd27724f7463d9497e706aa618 \
@@ -445,8 +458,8 @@ decompressing a matching archive, or opening the final comparison:
 The earlier pinned context checks below reproduce historical source freezes.
 Each intentionally authenticates the exact evidence inventory that existed
 when it was committed. Run one against its corresponding historical commit;
-it is not a verification of the current lower bounds of **159** evidence
-files and **164** authenticated references.
+it is not a verification of the current lower bounds of **161** evidence
+files and **166** authenticated references.
 
 ```sh
 
@@ -765,12 +778,13 @@ or overwrite its published reference archive and receipt.
 
 ## Reproduce the corrected first-party Rust source builds
 
-Only run the following **after** the exact three Rust build-source owners
-have been independently reviewed, committed, and pushed. It creates two
-separate private source trees and records **28** actual offline compiler
-and binary-inspection processes. It does not run Rust matching tests;
-successful compilation does not qualify a candidate. Never reuse an
-existing evidence label or native-build directory.
+The exact frozen build below has already run once after its three source
+owners were independently reviewed, committed, and pushed. Both private
+source trees were independently built, all **28** real offline compiler
+and binary-inspection processes succeeded, and both native outputs matched.
+No Rust matching test ran; successful compilation does not qualify a
+candidate. Do not rerun this already-used evidence label or overwrite the
+published build archive and receipt.
 
 ```sh
 "$PY" -I -B tools/reproduce_owned_rust_pattern_repr_source_build_v13.py \

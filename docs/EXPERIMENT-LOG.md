@@ -7,6 +7,67 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Independently build the corrected first-party Rust engine twice
+
+Execute the separately frozen Rust build exactly once. Its **two** fresh
+private source trees each contain all **nine** independently authenticated
+first-party Rust source owners. All **28** separately recorded compiler and
+binary-inspection processes succeed and have distinct actual process
+identities. Both privately rebuilt matching engines are byte-identical,
+and both rebuilt Python bridges are byte-identical.
+
+The [complete independently repeated corrected Rust build report](../oracle/phase2/evidence/native-source-build-v13-rust-phase2-v13-rust-pattern-repr-original-p0.json.gz)
+is **108,985** bytes with SHA-256
+`c201c014f55a51454baab77d2148dc39d6024bae3273242d6eb1f1b43f419f6a`.
+Its complete strictly bounded uncompressed report is **760,477** bytes
+with SHA-256
+`7bf86cbaec1df17548a0989d03db896036a86b0671d32e82f12ce4c3fae630db`.
+The [separately durable two-build publication receipt](../oracle/phase2/evidence/native-source-build-v13-rust-phase2-v13-rust-pattern-repr-original-p0-publication-receipt.json)
+is **2,437** bytes with SHA-256
+`4d4c927640c6e8c1b1e02c53350e1517b98255284218f49c2cefb53d647e9805`.
+
+The actual engine is **658,344** bytes with SHA-256
+`5e79f92b10d47f73919796af2349e44e7d16eceb515cc07571d0beaaec4a405f`.
+The actual Python bridge is **148,656** bytes with SHA-256
+`7f5dfb587fc7f53ce3a7b6cfa568a6e49c009a4d0015929b4dada28cb5425c54`.
+Each has two genuinely separate phase-owned native inodes. The complete
+corrected **31,934**-byte public adapter has SHA-256
+`d47a976771206da468168ec22683e6d0204905a0f5b7e9e328fc1234b38f210e`.
+Its exact repair and the **176,118**-byte first-party bridge-source repair
+are each applied once in each phase. The canonical Rust project sources
+remain unchanged.
+
+The [updated plain-language candidate graph](evidence/candidate-current-overview-v36.svg)
+has SHA-256
+`a94a73b62ac356acf54bcf3e066857b2160176d7f63c0cd44597641d1739d764`.
+Its [independently authenticated graph inputs](evidence/candidate-current-overview-v36.inputs.json)
+have SHA-256
+`0b5587a1b9790ee33ca00f6234efe162a79019618334b2726e2b239a425c230c`.
+The [complete machine-readable current results](evidence/candidate-current-overview-v36.json)
+have SHA-256
+`a082592fbb9aa29e9c577aac32c5f4b9db0e2bd503e149df0f1a39ee44b0cad6`.
+The [reproducible current graph generator](../tools/render_candidate_current_overview_v36.py)
+has SHA-256
+`1163df648d3fc3fb6b8f07abe260955958ea3b19826fafd09ee20b6fd5ba0cb1`.
+Its ordinary and empty-environment self-tests and evidence-verification
+checks all pass. The generator independently verifies the complete
+bounded build report, all **28** unique real build processes, both
+private source phases, and both pairs of native outputs. It neither runs
+a candidate nor opens a candidate matching archive or the final holdout.
+
+These results prove independent first-party source builds, not successful
+matching. The corrected Rust matching test has **NOT RUN**. The most
+recent actually tested Rust build still has **1,036** genuine differences
+and **8,965** verified passes. C remains at **1,230** differences and
+Zig at **1,764**. The separate **50**-case Python reference has actually
+passed in two isolated workers; candidate signature checks have
+**NOT RUN**. The two real new evidence files establish authenticated
+lower bounds of **161** owners and **166** references. Full runtime
+no-delegation remains **NOT ESTABLISHED**. Speed, memory, confidence,
+and undefined behavior remain **NOT MEASURED**, and the **4,194,304**
+planned final cases remain **NOT FROZEN**, **NOT GENERATED**, and
+**NOT OPENED**.
+
 ## Freeze the first-party Rust build for the next observed Python difference
 
 Freeze two reproducible, independent builds of the next corrected Rust

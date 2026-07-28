@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1755" viewBox="0 0 1440 1755" role="img" aria-labelledby="v36-title v36-description">
+<title id="v36-title">Building a faster Python re: corrected Rust builds reproducibly, but compatibility remains untested</title>
+<desc id="v36-description">A new first-party Rust engine was built in two independently owned private phases with 28 distinct successful compiler and inspection processes. Both native outputs reproduce byte-for-byte. Matching has NOT RUN for this corrected Rust engine: the last tested Rust still has 1,036 differences and 8,965 confirmed passes. C has 1,230 differences; corrected Zig has 1,764. The frozen Python baseline remains 31,237 checks, and 50 additional Python signature references passed in processes 81 and 82. Candidate signature checks are NOT RUN. At least 161 evidence owners and 166 history references are authenticated. Runtime no-delegation is NOT ESTABLISHED. Speed and memory are NOT MEASURED; the 4,194,304-case holdout is unopened.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.title{font-size:26px;font-weight:760;fill:#16324f}.heading{font-size:19px;font-weight:750;fill:#16324f}.body{font-size:14px;fill:#42556c}.name{font-size:14px;font-weight:720;fill:#16324f}.pass{font-size:12px;font-weight:760;fill:#00794c}.fail{font-size:12px;font-weight:750;fill:#a75c13}.pending{font-size:12px;font-weight:740;fill:#53667b}.big{font-size:20px;font-weight:760;fill:#16324f}.small{font-size:11px;fill:#42556c}.foot{font-size:10px;fill:#53667b}</style>
+<rect width="1440" height="1755" rx="22" fill="#f4f7fb"/>
+<text x="44" y="53" class="title">Can we build a faster replacement for Python re?</text>
+<text x="46" y="81" class="body">New Rust built twice from project-owned source. Its compatibility has NOT RUN; no candidate is yet qualified or benchmarked.</text>
+<rect x="44" y="100" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="53" y="133" class="big">31,237</text>
+<text x="53" y="157" class="small">unchanged original checks</text>
+<rect x="239" y="100" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="248" y="133" class="big">50 / 50</text>
+<text x="248" y="157" class="small">extra Python checks pass</text>
+<rect x="434" y="100" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="443" y="133" class="big">28</text>
+<text x="443" y="157" class="small">actual Rust build processes</text>
+<rect x="629" y="100" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="638" y="133" class="big">2</text>
+<text x="638" y="157" class="small">independent Rust builds</text>
+<rect x="824" y="100" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="833" y="133" class="big">1,036</text>
+<text x="833" y="157" class="small">last tested Rust differences</text>
+<rect x="1019" y="100" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="1028" y="133" class="big">0</text>
+<text x="1028" y="157" class="small">compatible replacements</text>
+<rect x="1214" y="100" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="1223" y="133" class="big">≥161 / 166</text>
+<text x="1223" y="157" class="small">authenticated lower bounds</text>
+<rect x="44" y="201" width="1352" height="437" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="235" class="heading">1. Overall: which implementations have actually passed?</text>
+<text x="66" y="260" class="body">Only fully tested candidates can be compared for compatibility. Building new Rust is not a matching result or a speed result.</text>
+<text x="67" y="300" class="name">Python re — original reference</text>
+<text x="1370" y="300" class="pass" text-anchor="end">REFERENCE PASS</text>
+<rect x="68" y="311" width="560" height="10" rx="5" fill="#edf1f5"/>
+<rect x="68" y="311" width="0" height="10" rx="5" fill="#0b8d61"/>
+<text x="645" y="321" class="small">0 differences; 31,237 confirmed passes</text>
+<text x="67" y="360" class="name">Rust — last fully tested version</text>
+<text x="1370" y="360" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<rect x="68" y="371" width="560" height="10" rx="5" fill="#edf1f5"/>
+<rect x="68" y="371" width="329" height="10" rx="5" fill="#b77a36"/>
+<text x="645" y="381" class="small">1,036 differences; 8,965 confirmed passes</text>
+<text x="67" y="420" class="name">C — current fully tested version</text>
+<text x="1370" y="420" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<rect x="68" y="431" width="560" height="10" rx="5" fill="#edf1f5"/>
+<rect x="68" y="431" width="390" height="10" rx="5" fill="#b77a36"/>
+<text x="645" y="441" class="small">1,230 differences; 7,325 confirmed passes</text>
+<text x="67" y="480" class="name">Zig — corrected and fully tested</text>
+<text x="1370" y="480" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<rect x="68" y="491" width="560" height="10" rx="5" fill="#edf1f5"/>
+<rect x="68" y="491" width="560" height="10" rx="5" fill="#b77a36"/>
+<text x="645" y="501" class="small">1,764 differences; 3,711 confirmed passes</text>
+<rect x="67" y="543" width="1304" height="67" rx="10" fill="#f3f6fb" stroke="#dae4ee"/>
+<text x="83" y="570" class="name">Rust — newly corrected V13, independently built twice</text>
+<text x="1355" y="570" class="pending" text-anchor="end">BUILT; MATCHING NOT RUN</text>
+<text x="84" y="593" class="small">28 real build processes; 0 new candidate workers; build success does not prove compatibility or speed.</text>
+<rect x="44" y="655" width="1352" height="262" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="689" class="heading">2. What the new Rust build really established</text>
+<text x="67" y="718" class="body">Two separate, privately owned build phases each started from all nine project-owned Rust sources.</text>
+<text x="67" y="743" class="body">All 28 distinct compiler and native-inspection processes completed successfully.</text>
+<text x="67" y="768" class="body">Both phases independently applied the corrected public adapter and corrected Python bridge.</text>
+<text x="67" y="793" class="body">The Rust engine and Python bridge reproduced byte-for-byte across distinct native inodes.</text>
+<text x="67" y="818" class="body">The recorded native dependency audit found no external regular-expression engine.</text>
+<text x="67" y="843" class="body">Source and native-build independence are verified; complete runtime no-delegation is NOT ESTABLISHED.</text>
+<text x="67" y="868" class="body">The corrected Rust candidate ran 0 matching workers: full compatibility is NOT RUN.</text>
+<rect x="44" y="936" width="1352" height="270" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="970" class="heading">3. What remains unproven or unmeasured</text>
+<text x="68" y="1002" class="name">Corrected Rust compatibility</text>
+<text x="394" y="1002" class="body">NOT RUN: last actually tested Rust still has 1,036 differences.</text>
+<text x="68" y="1030" class="name">50 additional Python signature checks</text>
+<text x="394" y="1030" class="body">REFERENCE PASS in two Python processes; candidate checks NOT RUN.</text>
+<text x="68" y="1058" class="name">Fully compatible replacement</text>
+<text x="394" y="1058" class="body">NONE: current fully tested Rust, C and Zig all have differences.</text>
+<text x="68" y="1086" class="name">Runtime no-delegation</text>
+<text x="394" y="1086" class="body">NOT ESTABLISHED: native/source independence is not a runtime proof.</text>
+<text x="68" y="1114" class="name">Speed, memory and confidence</text>
+<text x="394" y="1114" class="body">NOT MEASURED: no correctness-qualified candidate exists.</text>
+<text x="68" y="1142" class="name">4,194,304-case final holdout</text>
+<text x="394" y="1142" class="body">NOT OPENED and NOT GENERATED; zero hidden cases read.</text>
+<text x="68" y="1170" class="name">Winner</text>
+<text x="394" y="1170" class="body">NONE: the new Rust build has not yet passed matching or performance.</text>
+<rect x="44" y="1225" width="1352" height="326" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="1259" class="heading">4. Reading the actual evidence correctly</text>
+<text x="67" y="1289" class="body">The original correctness denominator stays exactly 31,237, with 13 suites and 13 private waivers.</text>
+<text x="67" y="1315" class="body">The separately recorded 50 Python-reference checks remain PASS; no candidate ran those checks.</text>
+<text x="67" y="1341" class="body">V35 established at least 159 evidence owners and 164 authenticated history references.</text>
+<text x="67" y="1367" class="body">The two new actual Rust source-build records establish lower bounds of 161 owners and 166 references.</text>
+<text x="67" y="1393" class="body">These are explicitly authenticated lower bounds; the complete workspace count is NOT MEASURED.</text>
+<text x="67" y="1419" class="body">Only the bounded 760,477-byte Rust source-build report was decompressed by this graph.</text>
+<text x="67" y="1445" class="body">No candidate matching archive and no additional Python-reference archive was decompressed.</text>
+<text x="67" y="1471" class="body">No graph worker ran a candidate, compiler, Python reference, benchmark, clock or holdout.</text>
+<text x="67" y="1497" class="body">Rust matching remains NOT RUN; speed, runtime delegation and undefined behavior remain unproven.</text>
+<text x="47" y="1584" class="foot">Inputs SHA-256: 0b5587a1b9790ee33ca00f6234efe162a79019618334b2726e2b239a425c230c</text>
+<text x="47" y="1606" class="foot">Renderer SHA-256: 1163df648d3fc3fb6b8f07abe260955958ea3b19826fafd09ee20b6fd5ba0cb1</text>
+<text x="47" y="1628" class="foot">Actual Rust source-build archive SHA-256: c201c014f55a51454baab77d2148dc39d6024bae3273242d6eb1f1b43f419f6a</text>
+<text x="47" y="1650" class="foot">Actual distinct Rust source-build receipt SHA-256: 4d4c927640c6e8c1b1e02c53350e1517b98255284218f49c2cefb53d647e9805</text>
+</svg>
