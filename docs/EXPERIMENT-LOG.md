@@ -7,6 +7,40 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Validate every genuine Python buffer-exporter case
+
+Only after separately freezing, independently reviewing, committing, and
+pushing the **264**-case Python buffer-exporter protocol and controller,
+record two complete, isolated CPython 3.14.6 reference runs. Real reference
+processes **81** and **82** each pass all **264 / 264** original cases and
+agree on the complete source-ordered result vector, SHA-256
+`7827586e0c7d4f43ac1fbd288f6b28f6a44b810b46274830d3803505c76692a8`.
+
+The [complete reproducibly compressed Python buffer reference](../oracle/cpython-3.14.6/evidence/public-buffer-exporter-v4-self-oracle.json.gz)
+has SHA-256
+`9ac916c57941a38daeecb3c0a724cbbffdfd54227dc28e8e2c1b471e3de8f8c2`
+and **53,865** compressed bytes. Its **1,068,957** exact uncompressed bytes
+have SHA-256
+`2cadda489ff4f354c04c62e3ce1f1ee503c9c59ead1b617178af1b91d1b34429`.
+The [independently verified, safely published reference receipt](../oracle/cpython-3.14.6/evidence/public-buffer-exporter-v4-self-oracle-publication-receipt.json)
+has SHA-256
+`a76eb84394a653ebae4476fa61fd4493fc49dc3c6bad71a00995355605c0d807`.
+
+Retain every one of the **528** actual case executions, both complete
+worker-output streams, all **6,932** ordered observations, **728** genuine
+buffer acquisitions and **728** matching releases, all **32** retained
+holder lifetimes, and all **40** deliberately raised callback exceptions.
+Preserve both historical failure reports, including the real **256**-case
+prefix preceding the original scanner-lifetime failure. Authenticate all
+**23** publication operations, one complete write, same-inode readback, and
+both file and directory synchronization operations.
+
+These **264** separately counted checks do not change the original
+**2,807**-case candidate graph. Rust, C, and Zig buffer-exporter results
+remain **NOT MEASURED**. No candidate or native matcher was run or
+imported. Performance is **NOT MEASURED** and the final comparison remains
+**NOT OPENED**.
+
 ## Freeze complete Python buffer-exporter correctness checks
 
 Freeze the [264-case direct and wrapped Python buffer-exporter protocol](../oracle/cpython-3.14.6/PUBLIC-BUFFER-EXPORTER-V4.md),
