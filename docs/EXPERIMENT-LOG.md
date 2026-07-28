@@ -7,6 +7,73 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Falsify the Fortran build-identifier reproducibility hypothesis
+
+Run exactly one previously frozen, committed first-party Fortran
+source-build experiment. Use the original three owned source files,
+the fixed compiler seed and source paths, and the genuine
+`-Wl,--build-id=none` correction on the Fortran engine alone. Preserve
+the original Python bridge, its fixed build identifier, and both
+previous Fortran failures. Do not run a candidate, matching case,
+native activation, reference process, or performance test.
+
+All **26 of 26** compiler and binary-inspection processes succeed.
+Each of the two complete fresh source-build phases produces an engine
+and a bridge. The **37,424-byte** Python bridges match exactly, SHA-256
+`f0808671b4d16f9b8d74a891d04ccd78bcf2e568ae2edbfb3997fb0db23c2fd7`.
+Both engine-note inspections return exactly zero bytes: the engine
+build identifier really has been removed. Nevertheless, the two
+**74,544-byte** matching engines still differ. The first has SHA-256
+`6ed7afa0b7c2eb905cd00de0ec935a7c449f257431d44aaa652ae0f10191d1f7`;
+the second has SHA-256
+`1458072addc7988975317ac81d64748970ee3d4321437be73275a700fed831c9`.
+
+The frozen hypothesis is therefore **FALSIFIED**. Removing the
+previously observed generated build identifier is not enough to make
+the actual engines byte-identical. Full section-listing, symbol, and
+dependency streams still agree; the differing underlying section
+payload is **NOT RECORDED** and must not be guessed. The exact final
+failure is `BuildError: the two independently owned outputs are not
+genuinely byte-identical`. This is not a compiler or bridge failure.
+
+Preserve the complete
+[third Fortran reproducibility failure](../oracle/phase2/evidence/native-source-build-v6-fortran-phase2-v6-failures.json.gz),
+SHA-256
+`c62007d5519d1ef723da7e144b1c6eeb067aacf47e960638e9d6b8a604f05d12`;
+and its independent
+[durable third Fortran failure receipt](../oracle/phase2/evidence/native-source-build-v6-fortran-phase2-v6-failures-publication-receipt.json),
+SHA-256
+`6bc1ea1695247d8d137e6c2f50908b6c3a0518ff82978258bd07e8010e88ad7a`.
+The full expanded report is **166,999 bytes**, SHA-256
+`b8186f02586e134b5db4275688513670cad814526ce4b42cad50802ed9f2f32b`.
+The receipt's publication `status: PASS` preserves the actual
+`build_status: FAIL`; it does not qualify Fortran.
+
+The independently reproduced headline graph preserves all **65**
+evidence files and separately authenticates the preceding **63**.
+Preserve its source-pinned
+[graph generator](../tools/render_candidate_current_overview_v15.py),
+SHA-256
+`6de4254ce7ebe5b74f78108cedcfc1c201abc6bb1f0aab93f7996f8db63cf074`;
+[exact graph inputs](evidence/candidate-current-overview-v15.inputs.json),
+SHA-256
+`a5417c7fe0c7954a9a3e6791e20265512f681bdc3ab6e8178ae2cc0129c6ac82`;
+[complete machine-readable summary](evidence/candidate-current-overview-v15.json),
+SHA-256
+`45c2f37fc499190d3823e74dd8478ef2ff9267c63ba648d46fe96a161b9930f2`;
+and [accessible headline graph](evidence/candidate-current-overview-v15.svg),
+SHA-256
+`d6d35fedc1f8fd539e93deedce3ff3ad2b9e8a71e66a04fbe1054caecffc8c7f`.
+
+Keep all **63** prior evidence files, including the genuine Go source
+build and all earlier Go and Fortran failures. The two new Fortran
+records give exactly **65** actual evidence files. Source-build
+reproducibility remains verified for **5** of **6** engine families;
+only **3** are historically runnable against the complete frozen test,
+and **0** have qualified. Fortran correctness, undefined behavior,
+memory, and speed remain **NOT MEASURED**; the expanded final
+comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Build the independent Go engine and Python bridge from scratch
 
 Run exactly one previously frozen, committed, and independently
