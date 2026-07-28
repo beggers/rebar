@@ -7,6 +7,55 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the evidence-backed Go and Fortran build corrections
+
+Freeze the next source-only build experiment before invoking a compiler.
+Preserve all **25** first-party source files, all **13** pinned build
+tools, the complete **13-suite**, **31,237-case** Python reference, and
+all **61** independently signed previous evidence files. Keep both
+original Go failures and both original Fortran reproducibility failures.
+No external regular-expression package, Python matcher, other
+candidate, networked package resolution, or fallback is introduced.
+
+The previous Go matching engine really compiled, but its Python bridge
+failed on `SSIZE_MAX`. Freeze exactly one `-D_GNU_SOURCE` before the
+existing first-party generated-header include; keep Go's private,
+offline two-file matching engine and its nine real native exports.
+The previous Fortran experiment recorded two different engine build
+identifiers even though all **26** processes succeeded and both
+bridges matched. Freeze exactly one `-Wl,--build-id=none` on the
+Fortran engine only; preserve its original bridge, random seed, source
+path mapping, and complete binary inspections. Neither correction is
+a successful build or compatibility result until it is actually run.
+
+An early unpublished version of the build documents had trailing final
+blank lines. Reject it without running an experiment. Independently
+verify the corrected source and both documents each end in exactly one
+newline and contain no trailing whitespace. Freeze only the corrected
+[source-only six-language build recorder](../tools/reproduce_owned_native_source_build_v6.py),
+SHA-256
+`2af9da3cb37a55782f3bfb8bdbdfdb7a945532994a5c988f4645d888dbe57ebc`;
+[Go and Fortran correction protocol](../oracle/phase2/NATIVE-SOURCE-BUILD-V6.md),
+SHA-256
+`108dbd52144c78530221e36882a0070fe9805b1bef6a136caf4636148ae9131d`;
+and [complete canonical build inventory](../oracle/phase2/native-source-build-v6.json),
+SHA-256
+`0121aaa5902b449e107396d6a1107ca8fe0fefebb0a0f09eb58d2d19c8888db4`.
+
+The corrected source-only self-test passes **168** positive controls
+and rejects **286** distinct corruptions in both ordinary and empty
+environments. Both read-only context checks authenticate all **61**
+actual evidence owners, all **25** first-party engine sources, and the
+separate **71**, **102**, and **117** recorded process totals for their
+respective historical build scopes. An independently blinded review
+passes **7,193** additional checks and verifies that the two planned
+flags are the only changes to the frozen build commands.
+
+No candidate is run or qualified. The corrected Go and Fortran builds,
+matching correctness, interpreter safety, undefined behavior, memory,
+and speed remain **NOT MEASURED**. The expanded final comparison
+remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Repeat the first-party Fortran reproducibility experiment
 
 Run the previously committed, source-pinned six-language build standard

@@ -30,6 +30,8 @@ failures are preserved.
 Fortran's second independent build experiment again compiles both
 engines and both Python bridges. The bridges match, but the engine
 files still differ, so the reproducibility check fails.
+A narrowly targeted Go and Fortran build correction is frozen but has
+**NOT BEEN RUN**.
 All six candidate source trees pass the independently frozen
 first-party ownership audit; this does not qualify their behavior.
 Every replacement's speed is **NOT MEASURED**; the final comparison
@@ -135,6 +137,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Complete isolated-Go source-build failure](oracle/phase2/evidence/native-source-build-v5-go-phase2-v5-failures.json.gz) and [verified isolated-Go failure receipt](oracle/phase2/evidence/native-source-build-v5-go-phase2-v5-failures-publication-receipt.json); the genuinely isolated Go engine compiles but the separate Python bridge fails on the original `SSIZE_MAX` compiler error.
 - [Original Fortran reproducibility failure](oracle/phase2/evidence/native-source-build-v4-fortran-phase2-v4-failures.json.gz) and [verified original Fortran failure receipt](oracle/phase2/evidence/native-source-build-v4-fortran-phase2-v4-failures-publication-receipt.json); both independent engine and bridge builds compile, but the two Fortran engine files differ.
 - [Independently repeated Fortran reproducibility failure](oracle/phase2/evidence/native-source-build-v5-fortran-phase2-v5-failures.json.gz) and [verified repeated Fortran failure receipt](oracle/phase2/evidence/native-source-build-v5-fortran-phase2-v5-failures-publication-receipt.json); all **26** compiler and binary-inspection processes succeed and both bridges match, but the engine files and their recorded build identifiers still differ.
+- [Frozen first-party Go and Fortran build corrections](oracle/phase2/NATIVE-SOURCE-BUILD-V6.md), [exact correction and source inventory](oracle/phase2/native-source-build-v6.json), and [independently verified build recorder](tools/reproduce_owned_native_source_build_v6.py); tests precisely the actual Go bridge error and the observed differing Fortran build identifiers, without claiming either corrected build has run.
 - [Corrected from-scratch build rules for all six languages](oracle/phase2/NATIVE-SOURCE-BUILD-V5.md), [exact source and compiler inventory](oracle/phase2/native-source-build-v5.json), and [independent source-build recorder](tools/reproduce_owned_native_source_build_v5.py); preserves the real isolated-Go bridge failure and the independently repeated Fortran reproducibility failure without claiming either candidate is compatible.
 - [Preserved original six-language build rules](oracle/phase2/NATIVE-SOURCE-BUILD-V4.md), [original frozen inventory](oracle/phase2/native-source-build-v4.json), and [original source-build recorder](tools/reproduce_owned_native_source_build_v4.py); retains the actual C++, Go, and Fortran build outcomes unchanged.
 - [Reversible six-engine native-loading rules](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V3.md), [frozen source and recovery inventory](oracle/phase2/verified-native-activation-v3.json), and [verified native activation and crash recovery](tools/activate_verified_native_candidate_v3.py); only a genuinely reproducible, independently source-built engine may be loaded, and no candidate is claimed to have been run.
@@ -159,6 +162,8 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/reproduce_owned_native_source_build_v4.py --verify-context
 "$PY" -I -B tools/reproduce_owned_native_source_build_v5.py --self-test
 "$PY" -I -B tools/reproduce_owned_native_source_build_v5.py --verify-context
+"$PY" -I -B tools/reproduce_owned_native_source_build_v6.py --self-test
+"$PY" -I -B tools/reproduce_owned_native_source_build_v6.py --verify-context
 "$PY" -I -B tools/activate_verified_native_candidate_v2.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v3.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v3.py --verify-frozen-context
