@@ -7,6 +7,47 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Verify all simultaneous Python-thread reference cases
+
+Only after separately freezing, committing, and pushing the
+simultaneous-thread protocol and controller, run the actual
+**512**-case two-Python reference. Genuine reference processes **81** and
+**114** each pass all **512 / 512** source-ordered cases, including all
+**32** version checks inside the same **512**-case denominator.
+
+Both references agree on the complete semantic vector, SHA-256
+`928ea100d6fdaecc7c1dcf01e32c24fd98a146964c0955989a8149c1216ffe81`,
+and warning vector, SHA-256
+`f28af6781328eacabdbe96460e8c54cba1e7802f6a052cefb4a7c59f30ce4413`.
+Together the processes start and join **64** genuine threads, record
+**2,048** actual thread-side case executions, and execute **4,352**
+genuine matching, iteration, scanner, and replacement calls. All thread
+identities, barriers, pattern sharing, complete worker streams, warnings,
+and joins are preserved; no orphan thread or mismatch is hidden.
+
+The [complete reproducibly compressed thread reference](../oracle/cpython-3.14.6/evidence/public-threaded-pattern-v1-self-oracle.json.gz)
+has SHA-256
+`7a39bafee6a5ac46ee53c379054d953814d2094589738963f3852da14c6ed834`
+and **149,738** compressed bytes. Its **4,956,660** exact uncompressed
+bytes have SHA-256
+`7bd5d2ae1f37d3885b03e882f266e1e700ea92be81a667baf6b429bd8e515186`.
+The [complete source-validated thread publication receipt](../oracle/cpython-3.14.6/evidence/public-threaded-pattern-v1-self-oracle-publication-receipt.json)
+has SHA-256
+`3483d19465685f44e0cae128483406a50cd9bb86f44910b5d3b0404a4d17aa76`
+and **204,382** bytes.
+
+Ordinary and empty-environment producer-owned read-only replays
+independently validate every source, archived worker, pattern identity,
+original case, recorded thread, deterministic gzip byte, and complete
+archive publication journal without starting another thread or worker.
+The successful controller's very large console output is
+transport-truncated; do not invent its missing bytes or a complete
+second-publication journal. Authenticate the complete physical receipt
+and original archive directly.
+
+All candidate thread results remain **NOT RUN**. Candidate speed and
+memory are **NOT MEASURED**. The final comparison remains **NOT OPENED**.
+
 ## Freeze simultaneous Python-thread compatibility checks
 
 Freeze the [simultaneous-thread and public module-version protocol](../oracle/cpython-3.14.6/PUBLIC-THREADED-PATTERN-V1.md),
