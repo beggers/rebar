@@ -356,7 +356,7 @@ impl Parser {
     fn now(&self) -> Option<char> {
         self.source
             .get(self.at)
-            .map(|&value| char::from_u32(value).unwrap_or('\u{fffd}'))
+            .map(|&value| char::from_u32(value).unwrap_or(char::REPLACEMENT_CHARACTER))
     }
     fn take(&mut self) -> Option<char> {
         let value = self.now();
@@ -384,25 +384,41 @@ impl Parser {
     fn fail<T>(&self, msg: String, pos: Option<usize>, include: bool) -> PResult<T> {
         Err((msg, pos, include))
     }
-    fn skip(&mut self, flags: u32) {
+
+    /// Consume a comment token using Python's backslash-and-character pairing.
+    fn take_comment_token(&mut self) -> PResult<Option<char>> {
+        let position = self.at;
+        let Some(token) = self.take() else {
+            return Ok(None);
+        };
+        if token == '\\' && self.take().is_none() {
+            return self.fail("bad escape (end of pattern)".into(), Some(position), true);
+        }
+        Ok(Some(token))
+    }
+
+    fn skip(&mut self, flags: u32) -> PResult<()> {
         if flags & X == 0 {
-            return;
+            return Ok(());
         }
         loop {
             match self.now() {
-                Some(' ' | '\t' | '\n' | '\r' | '\u{b}' | '\u{c}') => self.at += 1,
+                Some(' ' | '\t' | '\n' | '\r' | '\x0b' | '\x0c') => self.at += 1,
                 Some('#') => {
-                    while self.now().is_some() && self.now() != Some('\n') {
-                        self.at += 1;
+                    self.at += 1;
+                    while let Some(token) = self.take_comment_token()? {
+                        if token == '\n' {
+                            break;
+                        }
                     }
                 }
-                _ => break,
+                _ => return Ok(()),
             }
         }
     }
     fn parse(&mut self) -> PResult<Expr> {
         let result = self.alt(self.flags)?;
-        self.skip(self.flags);
+        self.skip(self.flags)?;
         if self.at != self.source.len() {
             return self.fail("unbalanced parenthesis".into(), Some(self.at), true);
         }
@@ -447,14 +463,14 @@ impl Parser {
     fn seq(&mut self, mut flags: u32) -> PResult<Expr> {
         let mut result = Vec::new();
         loop {
-            self.skip(flags);
+            self.skip(flags)?;
             match self.now() {
                 None | Some('|') | Some(')') => break,
                 _ => {}
             }
             let start = self.at;
             let mut node = self.atom(flags)?;
-            self.skip(flags);
+            self.skip(flags)?;
             if self.global_group(start)
                 && (matches!(self.now(), Some('*' | '+' | '?')) || self.brace_repeat(self.at))
             {
@@ -1022,11 +1038,18 @@ impl Parser {
                 Ok(Expr::Atomic(Box::new(child)))
             }
             '#' => {
-                while self.now().is_some() && self.now() != Some(')') {
-                    self.at += 1;
-                }
-                if self.take() != Some(')') {
-                    return self.fail("missing ), unterminated comment".into(), Some(start), true);
+                loop {
+                    match self.take_comment_token()? {
+                        Some(')') => break,
+                        Some(_) => {}
+                        None => {
+                            return self.fail(
+                                "missing ), unterminated comment".into(),
+                                Some(start),
+                                true,
+                            );
+                        }
+                    }
                 }
                 Ok(Expr::Seq(vec![]))
             }
@@ -4382,6 +4405,229 @@ pub unsafe extern "C" fn rebar_collect_wide(
         finishes,
         last_values,
     )
+}
+
+#[cfg(test)]
+mod verbose_comment_tokenizer_tests {
+    use super::{BYTE, Expr, PResult, Parser, X};
+
+    fn parse(
+        pattern: &str,
+        lexical_flags: u32,
+        byte_mode: bool,
+        scanner_runtime: bool,
+    ) -> PResult<Expr> {
+        let source = if byte_mode {
+            pattern.bytes().map(u32::from).collect()
+        } else {
+            pattern.chars().map(u32::from).collect()
+        };
+        let flags = lexical_flags | if byte_mode { BYTE } else { 0 };
+        let mut parser = Parser {
+            source,
+            at: 0,
+            flags,
+            scanner_runtime_flags: scanner_runtime.then_some(flags),
+            byte_mode,
+            groups: 0,
+            names: Vec::new(),
+            widths: Vec::new(),
+            named: Vec::new(),
+            global_allowed: true,
+            recursion_limit: 1_000,
+            group_depth: 0,
+            open_groups: Vec::new(),
+            lookbehind_bases: Vec::new(),
+            pending_conditionals: Vec::new(),
+            invalid_lookbehind_width: false,
+        };
+        parser.parse()
+    }
+
+    fn collect_literals(expression: &Expr, values: &mut Vec<u32>) {
+        match expression {
+            Expr::Lit(value, _) => values.push(*value),
+            Expr::Seq(children) => {
+                for child in children {
+                    collect_literals(child, values);
+                }
+            }
+            _ => panic!("verbose comment test unexpectedly produced a non-literal expression"),
+        }
+    }
+
+    fn assert_literals(pattern: &str, flags: u32, expected: &[u32]) {
+        for byte_mode in [false, true] {
+            for scanner_runtime in [false, true] {
+                let expression = parse(pattern, flags, byte_mode, scanner_runtime)
+                    .expect("comment pattern must parse");
+                let mut actual = Vec::new();
+                collect_literals(&expression, &mut actual);
+                assert_eq!(
+                    actual, expected,
+                    "pattern={pattern:?}, byte_mode={byte_mode}, scanner={scanner_runtime}"
+                );
+            }
+        }
+    }
+
+    fn assert_error(pattern: &str, flags: u32, message: &str, position: usize) {
+        for byte_mode in [false, true] {
+            for scanner_runtime in [false, true] {
+                let actual = match parse(pattern, flags, byte_mode, scanner_runtime) {
+                    Ok(_) => panic!(
+                        "pattern={pattern:?}, byte_mode={byte_mode}, \
+                         scanner={scanner_runtime} unexpectedly parsed"
+                    ),
+                    Err(error) => error,
+                };
+                assert_eq!(
+                    actual,
+                    (message.to_owned(), Some(position), true),
+                    "pattern={pattern:?}, byte_mode={byte_mode}, scanner={scanner_runtime}"
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn an_escaped_newline_does_not_end_a_verbose_comment() {
+        let expected = [u32::from(b'a'), u32::from(b'b')];
+        for pattern in [
+            "a# ignored\\\nstill ignored\nb",
+            "a# ignored\\\\\\\nstill ignored\nb",
+            "a# ignored\\\nstill ignored\r\nb",
+        ] {
+            assert_literals(pattern, X, &expected);
+        }
+    }
+
+    #[test]
+    fn even_backslash_parity_leaves_a_real_comment_terminator() {
+        let expected = [u32::from(b'a'), u32::from(b'b')];
+        for pattern in [
+            "a# ignored\nb",
+            "a# ignored\\\\\nb",
+            "a# ignored\\\\\\\\\nb",
+            "a# ignored\\\r\nb",
+            "a# ignored\\\\\r\nb",
+        ] {
+            assert_literals(pattern, X, &expected);
+        }
+    }
+
+    #[test]
+    fn carriage_return_alone_does_not_end_a_verbose_comment() {
+        assert_literals("a# ignored\rb", X, &[u32::from(b'a')]);
+        assert_literals("a# ignored\\\n", X, &[u32::from(b'a')]);
+        assert_literals("a# ignored\\\\", X, &[u32::from(b'a')]);
+    }
+
+    #[test]
+    fn scoped_verbose_flags_apply_comment_tokenization_locally() {
+        assert_literals(
+            "a(?x:# ignored\\\nstill ignored\nb)c",
+            0,
+            &[u32::from(b'a'), u32::from(b'b'), u32::from(b'c')],
+        );
+        assert_literals(
+            "(?x)a# ignored\\\nstill ignored\nb",
+            0,
+            &[u32::from(b'a'), u32::from(b'b')],
+        );
+        assert_literals(
+            "(?-x:#\\\nq)",
+            X,
+            &[u32::from(b'#'), u32::from(b'\n'), u32::from(b'q')],
+        );
+        assert_literals(
+            "a(?x:# ignored\\\nstill ignored\nb(?-x:#\\\nc))d",
+            0,
+            &[
+                u32::from(b'a'),
+                u32::from(b'b'),
+                u32::from(b'#'),
+                u32::from(b'\n'),
+                u32::from(b'c'),
+                u32::from(b'd'),
+            ],
+        );
+    }
+
+    #[test]
+    fn unicode_comment_positions_count_python_code_points() {
+        let pattern = "é#🦀\\";
+        for scanner_runtime in [false, true] {
+            let actual = match parse(pattern, X, false, scanner_runtime) {
+                Ok(_) => panic!("a trailing comment escape unexpectedly parsed"),
+                Err(error) => error,
+            };
+            assert_eq!(
+                actual,
+                (
+                    "bad escape (end of pattern)".to_owned(),
+                    Some(pattern.chars().count() - 1),
+                    true,
+                )
+            );
+        }
+    }
+
+    #[test]
+    fn verbose_comments_preserve_exact_trailing_escape_errors() {
+        for pattern in ["#\\", "a# ignored\\", "a# ignored\\\\\\"] {
+            assert_error(pattern, X, "bad escape (end of pattern)", pattern.len() - 1);
+        }
+    }
+
+    #[test]
+    fn parenthesized_comments_consume_escaped_closing_parentheses() {
+        let expected = [u32::from(b'a'), u32::from(b'b')];
+        for pattern in [
+            "a(?# ignored\\) still ignored)b",
+            "a(?# ignored\\\\)b",
+            "a(?# ignored\\\nstill ignored)b",
+            "a(?# ignored\nstill ignored)b",
+        ] {
+            assert_literals(pattern, 0, &expected);
+            assert_literals(pattern, X, &expected);
+        }
+    }
+
+    #[test]
+    fn parenthesized_comments_preserve_exact_tokenization_errors() {
+        for flags in [0, X] {
+            assert_error("(?#\\)", flags, "missing ), unterminated comment", 0);
+            for pattern in ["(?#\\", "a(?#ignored\\"] {
+                assert_error(
+                    pattern,
+                    flags,
+                    "bad escape (end of pattern)",
+                    pattern.len() - 1,
+                );
+            }
+        }
+    }
+
+    #[test]
+    fn escaped_comment_newlines_preserve_following_quantifiers() {
+        let pattern = "a# ignored\\\nstill ignored\n+";
+        for byte_mode in [false, true] {
+            for scanner_runtime in [false, true] {
+                let expression = parse(pattern, X, byte_mode, scanner_runtime)
+                    .expect("comment followed by a quantifier must parse");
+                let Expr::Seq(children) = expression else {
+                    panic!("a quantified pattern must remain a sequence");
+                };
+                assert_eq!(children.len(), 1);
+                let Expr::Repeat(child, minimum, maximum, mode) = &children[0] else {
+                    panic!("the quantifier must remain attached to its literal");
+                };
+                assert!(matches!(child.as_ref(), Expr::Lit(value, _) if *value == u32::from(b'a')));
+                assert_eq!((*minimum, *maximum, *mode), (1, None, 0));
+            }
+        }
+    }
 }
 
 #[cfg(test)]

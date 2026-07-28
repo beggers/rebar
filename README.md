@@ -43,7 +43,7 @@ All starting, memory, and scanner numbers are earlier development
 measurements, not results for the repaired C, Rust, or Zig engines. The
 current C source has produced two matching, independently verified builds
 with no external regex dependencies; current Rust and
-Zig rebuilds have **NOT RUN**. The Zig engine and bridge have now passed
+Zig rebuilds have **NOT RUN**. The Rust and Zig engines and bridges have now passed
 both frozen ownership checks and strict compiler checks. The new C++ and Go engines have passed
 source and compiler checks but have **NOT BEEN BUILT**. Go still has known
 Unicode, lookbehind, and buffer-lifetime gaps. No engine has passed all
@@ -122,6 +122,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Independent general, scanner, and buffer reference protocol](oracle/cpython-3.14.6/PUBLIC-CONTRACT-BASELINES-V1.md) and [Python-only reference recorder](tools/record_independent_public_contract_baselines_v1.py).
 - [Real simultaneous-thread reference protocol](oracle/cpython-3.14.6/PUBLIC-THREADED-PATTERN-V1.md), [complete thread reference](oracle/cpython-3.14.6/evidence/public-threaded-pattern-v1-self-oracle.json.gz), and [original publication receipt](oracle/cpython-3.14.6/evidence/public-threaded-pattern-v1-self-oracle-publication-receipt.json).
 - [From-scratch engine ownership and no-delegation protocol](oracle/phase2/CANDIDATE-INDEPENDENCE-V1.md) and [independently tested static ownership audit](tools/audit_candidate_independence_v1.py).
+- [Dependency-free Rust matching engine](candidates/rust/src/lib.rs), [interpreter-safe Rust Python bridge](candidates/rust/py_bridge.c), [frozen Rust lockfile](candidates/rust/Cargo.lock), and [Rust-backed Python interface](candidates/rust_candidate.py); full compatibility is not yet measured.
 - [Independently written Zig matching engine](candidates/zig/mini_regex.zig), [owned interpreter-safe Zig Python bridge](candidates/zig/py_bridge.c), and [experimental Zig-backed Python interface](candidates/zig_candidate.py); full compatibility is not yet measured.
 - [Independently written C++ matching engine](candidates/cpp/engine.cpp), [native Python bridge](candidates/cpp/py_bridge.cpp), and [experimental Python interface](candidates/cpp_candidate.py); source checks only.
 - [Independently written Go matching engine](candidates/go/engine.go), [native Python bridge](candidates/go/py_bridge.c), and [experimental Python interface](candidates/go_candidate.py); source checks only.

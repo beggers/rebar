@@ -7,6 +7,61 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze corrected, dependency-free Rust matching-engine source
+
+Freeze the complete **nine-source** Rust ownership closure before starting
+the Rust compiler or downloading a package:
+
+| Exact Rust-owned input | SHA-256 |
+| --- | --- |
+| `candidates/rust_candidate.py` | `6fb66ef6c3f143475426dd3d5b97c52dbe251f8d2ddd0ef3d5de7ec553a0351b` |
+| `candidates/rust/py_bridge.c` | `f8a0918aaf8a78f363f6d755770636d26acd45fb83c9abcf997a6e052748ea8b` |
+| `candidates/rust/Cargo.toml` | `2e57ff8ad346ffc850d50eab429a0f05c14825c4984fd8c9bc36eab03239a966` |
+| `candidates/rust/Cargo.lock` | `267c3b21dc41432f7c5ee036b50b48d81f9228384780b4d13a6b41a8ad2cef63` |
+| `candidates/rust/src/lib.rs` | `c4901e83e359191badc39fbf42ea65f0eb07a3db870172acf8cae65ffb1eaf2d` |
+| `candidates/rust/src/newline.rs` | `13216ffbea967af121c77d57abe14906030e7f3a6906c554399511154a3d6d8b` |
+| `candidates/rust/src/search.rs` | `4612c86424b9cbcb193d7ace521f359d7e3507281e83d3bf7e7ef7d189dd68fe` |
+| `candidates/rust/src/stack.rs` | `5198a056e99bde5632169cfc5b07ad913910cdb1b30785dad4744ccb9a30809e` |
+| `candidates/rust/src/unicode_tables.rs` | `f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af` |
+
+The Rust source owns its parser, compiler, matching instructions,
+backtracking, captures, and Unicode tables. Its exact lockfile contains
+one first-party Rust package, **zero** outside packages, **zero** registry
+dependencies, and **zero** external regex libraries. The native bridge
+uses interpreter-local module state, independently owned Python heap
+types, and explicit garbage-collection traversal. Its public scanner
+name `_sre.SRE_Scanner` is Python-compatible type-display metadata,
+not an import or delegation to Python's regex engine.
+
+Preserve the genuinely rejected intermediate bridge, SHA-256
+`e93984a6195524913aec31d94f64d23b2a87dae81493c8568601869a0ab87958`.
+All four strict Clang and GCC checks exposed a truncated
+`PyUnicode_Tailmatch` result and a signed-to-unsigned vector-call count.
+Fix both with the exact Python `Py_ssize_t` type and a checked,
+nonnegative conversion; preserve the original diagnostics.
+
+Also preserve the rejected intermediate matching-engine source, SHA-256
+`04b1417e040592c70f2e66841e9f51d6213159f5a72200897cd2d84e33b3c23b`.
+Although Rust accepts braced Unicode character escapes, the independently
+frozen no-delegation tokenizer correctly fails closed when it cannot
+authenticate those literals. Keep the frozen security audit unchanged.
+Use Rust's own semantically equivalent replacement character constant
+and ordinary hexadecimal character escapes; do not remove the
+failing source, weaken the scanner, or invent a passing audit.
+
+The unchanged frozen ownership auditor now passes the complete real
+nine-file graph in both normal and empty environments: **45** positive
+controls and **118** rejected hostile cases. The independently frozen
+version-two build-source auditor also passes all nine exact files,
+with **67** positive controls and **96** rejected attacks. Clang and GCC
+each pass the exact strict bridge syntax check in both environments:
+**four** clean source-only checks. Neither audit imports a candidate or
+starts Rust, Cargo, a native build, a benchmark, or the holdout.
+
+At this source freeze, complete Rust correctness, native runtime memory
+safety, actual native provenance, and speed remain **NOT MEASURED**.
+The actual corrected version-two Rust source build has **NOT RUN**.
+
 ## Freeze corrected, independently audited Zig engine source
 
 Freeze the complete source-owned Zig family before invoking the Zig

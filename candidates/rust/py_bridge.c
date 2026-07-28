@@ -68,13 +68,6 @@ typedef struct {
     PyObject *prefix[];
 } RustBoundMethod;
 
-static PyTypeObject RustMatchType;
-static PyTypeObject RustIteratorType;
-static PyTypeObject RustScannerType;
-static PyTypeObject RustBoundMethodType;
-static PyObject *rust_template_helper;
-static PyObject *rust_generic_alias_factory;
-
 typedef enum {
     RUST_PATTERN_ATTRIBUTE_HANDLE,
     RUST_PATTERN_ATTRIBUTE_GROUPINDEX,
@@ -96,10 +89,6 @@ static const char *const rust_pattern_attribute_spellings[
     "groups",
 };
 
-static PyObject *rust_pattern_attribute_names[
-    RUST_PATTERN_ATTRIBUTE_COUNT
-];
-
 #ifndef Py_GIL_DISABLED
 typedef struct {
     PyTypeObject *type;
@@ -107,11 +96,45 @@ typedef struct {
     Py_ssize_t offsets[RUST_PATTERN_ATTRIBUTE_COUNT];
     uint8_t eligible[RUST_PATTERN_ATTRIBUTE_COUNT];
 } RustPatternSlotCache;
+#endif
 
-static PyTypeObject *rust_primary_pattern_type;
-static RustPatternSlotCache rust_pattern_slot_cache;
+typedef struct {
+    PyTypeObject *match_type;
+    PyTypeObject *iterator_type;
+    PyTypeObject *scanner_type;
+    PyTypeObject *bound_method_type;
+    PyObject *template_helper;
+    PyObject *generic_alias_factory;
+    PyObject *pattern_attribute_names[RUST_PATTERN_ATTRIBUTE_COUNT];
+#ifndef Py_GIL_DISABLED
+    PyTypeObject *primary_pattern_type;
+    RustPatternSlotCache pattern_slot_cache;
+#endif
+} RustBridgeState;
 
+static struct PyModuleDef bridge_module;
+
+static RustBridgeState *rust_bridge_state_from_module(PyObject *module) {
+    if (module == NULL) {
+        PyErr_SetString(PyExc_SystemError, "Rust regex bridge has no owning module");
+        return NULL;
+    }
+    RustBridgeState *state = (RustBridgeState *)PyModule_GetState(module);
+    if (state == NULL && !PyErr_Occurred()) {
+        PyErr_SetString(PyExc_SystemError, "Rust regex bridge has no interpreter-local state");
+    }
+    return state;
+}
+
+static RustBridgeState *rust_bridge_state_from_type(PyTypeObject *type) {
+    PyObject *module = PyType_GetModuleByDef(type, &bridge_module);
+    if (module == NULL) return NULL;
+    return rust_bridge_state_from_module(module);
+}
+
+#ifndef Py_GIL_DISABLED
 static int rust_pattern_refresh_slot_cache(
+    RustBridgeState *state,
     PyTypeObject *type,
     unsigned int version
 ) {
@@ -138,7 +161,7 @@ static int rust_pattern_refresh_slot_cache(
 
             PyObject *descriptor = PyDict_GetItemWithError(
                 dict,
-                rust_pattern_attribute_names[attribute]
+                state->pattern_attribute_names[attribute]
             );
             if (descriptor == NULL) {
                 if (PyErr_Occurred()) return -1;
@@ -182,17 +205,17 @@ static int rust_pattern_refresh_slot_cache(
     }
 
     memcpy(
-        rust_pattern_slot_cache.offsets,
+        state->pattern_slot_cache.offsets,
         offsets,
         sizeof(offsets)
     );
     memcpy(
-        rust_pattern_slot_cache.eligible,
+        state->pattern_slot_cache.eligible,
         eligible,
         sizeof(eligible)
     );
-    rust_pattern_slot_cache.type = type;
-    rust_pattern_slot_cache.version = version;
+    state->pattern_slot_cache.type = type;
+    state->pattern_slot_cache.version = version;
     return 1;
 }
 #endif
@@ -201,22 +224,25 @@ static PyObject *rust_pattern_get_attribute(
     PyObject *pattern,
     RustPatternAttribute attribute
 ) {
+    RustBridgeState *state = rust_bridge_state_from_type(Py_TYPE(pattern));
+    if (state == NULL) return NULL;
 #ifndef Py_GIL_DISABLED
     PyTypeObject *type = Py_TYPE(pattern);
     unsigned int version = type->tp_version_tag;
 
     if (
-        type == rust_primary_pattern_type
+        type == state->primary_pattern_type
         && version != 0
         && (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         && type->tp_itemsize == 0
         && type->tp_getattro == PyObject_GenericGetAttr
     ) {
         if (
-            rust_pattern_slot_cache.type != type
-            || rust_pattern_slot_cache.version != version
+            state->pattern_slot_cache.type != type
+            || state->pattern_slot_cache.version != version
         ) {
             int refreshed = rust_pattern_refresh_slot_cache(
+                state,
                 type,
                 version
             );
@@ -224,15 +250,15 @@ static PyObject *rust_pattern_get_attribute(
             if (refreshed == 0) {
                 return PyObject_GetAttr(
                     pattern,
-                    rust_pattern_attribute_names[attribute]
+                    state->pattern_attribute_names[attribute]
                 );
             }
         }
 
-        if (rust_pattern_slot_cache.eligible[attribute]) {
+        if (state->pattern_slot_cache.eligible[attribute]) {
             PyObject *value = *(PyObject **)(
                 (char *)pattern
-                + rust_pattern_slot_cache.offsets[attribute]
+                + state->pattern_slot_cache.offsets[attribute]
             );
             if (value != NULL) return Py_NewRef(value);
         }
@@ -241,18 +267,18 @@ static PyObject *rust_pattern_get_attribute(
 
     return PyObject_GetAttr(
         pattern,
-        rust_pattern_attribute_names[attribute]
+        state->pattern_attribute_names[attribute]
     );
 }
 
-static int rust_initialize_pattern_attribute_names(void) {
+static int rust_initialize_pattern_attribute_names(RustBridgeState *state) {
     for (size_t index = 0; index < RUST_PATTERN_ATTRIBUTE_COUNT; index++) {
-        if (rust_pattern_attribute_names[index] != NULL) continue;
+        if (state->pattern_attribute_names[index] != NULL) continue;
         PyObject *name = PyUnicode_InternFromString(
             rust_pattern_attribute_spellings[index]
         );
         if (name == NULL) return -1;
-        rust_pattern_attribute_names[index] = name;
+        state->pattern_attribute_names[index] = name;
     }
     return 0;
 }
@@ -278,8 +304,12 @@ static RustMatch *rust_match_allocate(PyObject *pattern, PyObject *string, PyObj
         PyErr_NoMemory();
         return NULL;
     }
+    RustBridgeState *state = rust_bridge_state_from_type(Py_TYPE(pattern));
+    if (state == NULL) return NULL;
     size_t stride = groups + 1;
-    RustMatch *match = (RustMatch *)PyType_GenericAlloc(&RustMatchType, (Py_ssize_t)(stride * 2));
+    RustMatch *match = (RustMatch *)PyType_GenericAlloc(
+        state->match_type, (Py_ssize_t)(stride * 2)
+    );
     if (match == NULL) return NULL;
     match->pattern = Py_NewRef(pattern);
     match->string = Py_NewRef(string);
@@ -489,12 +519,14 @@ static PyObject *rust_match_end(RustMatch *match, PyObject *const *args, Py_ssiz
 static PyObject *rust_match_span_method(RustMatch *match, PyObject *const *args, Py_ssize_t nargs) { return rust_match_bound(match, args, nargs, 2, "span"); }
 
 static PyObject *rust_match_expand_fallback(RustMatch *match, PyObject *template) {
-    if (rust_template_helper == NULL) {
+    RustBridgeState *state = rust_bridge_state_from_type(Py_TYPE(match));
+    if (state == NULL) return NULL;
+    if (state->template_helper == NULL) {
         PyErr_SetString(PyExc_RuntimeError, "Rust match template helper is not configured");
         return NULL;
     }
     PyObject *args[2] = {template, (PyObject *)match};
-    return PyObject_Vectorcall(rust_template_helper, args, 2, NULL);
+    return PyObject_Vectorcall(state->template_helper, args, 2, NULL);
 }
 
 static PyObject *rust_match_expand(RustMatch *match, PyObject *template);
@@ -517,7 +549,13 @@ static PyObject *rust_match_reduce(RustMatch *match, PyObject *ignored) {
 }
 
 static PyObject *rust_match_class_getitem(PyObject *type, PyObject *item) {
-    if (rust_generic_alias_factory == NULL) {
+    if (!PyType_Check(type)) {
+        PyErr_SetString(PyExc_TypeError, "Rust match aliases require an owned match type");
+        return NULL;
+    }
+    RustBridgeState *state = rust_bridge_state_from_type((PyTypeObject *)type);
+    if (state == NULL) return NULL;
+    if (state->generic_alias_factory == NULL) {
         PyErr_SetString(
             PyExc_RuntimeError,
             "owned Rust generic-alias factory is not configured"
@@ -525,7 +563,7 @@ static PyObject *rust_match_class_getitem(PyObject *type, PyObject *item) {
         return NULL;
     }
     return PyObject_CallFunctionObjArgs(
-        rust_generic_alias_factory, type, item, NULL
+        state->generic_alias_factory, type, item, NULL
     );
 }
 
@@ -621,6 +659,7 @@ static PyObject *rust_match_get_private_spans(RustMatch *match, void *closure) {
 }
 
 static int rust_match_traverse(RustMatch *match, visitproc visit, void *arg) {
+    Py_VISIT(Py_TYPE(match));
     Py_VISIT(match->string);
     Py_VISIT(match->pattern);
     Py_VISIT(match->groupindex);
@@ -637,9 +676,11 @@ static int rust_match_clear(RustMatch *match) {
 }
 
 static void rust_match_dealloc(RustMatch *match) {
+    PyTypeObject *type = Py_TYPE(match);
     PyObject_GC_UnTrack(match);
     rust_match_clear(match);
-    Py_TYPE(match)->tp_free((PyObject *)match);
+    type->tp_free((PyObject *)match);
+    Py_DECREF(type);
 }
 
 static PyObject *rust_match_new(PyTypeObject *type, PyObject *args, PyObject *kwargs) {
@@ -775,27 +816,30 @@ static PyGetSetDef rust_match_getsets[] = {
     {NULL, NULL, NULL, NULL, NULL},
 };
 
-static PyMappingMethods rust_match_mapping = {0, rust_match_subscript, 0};
+static PyType_Slot rust_match_slots[] = {
+    {Py_tp_dealloc, (void *)rust_match_dealloc},
+    {Py_tp_repr, (void *)rust_match_repr},
+    {Py_mp_subscript, (void *)rust_match_subscript},
+    {Py_tp_doc, "Native match from the from-scratch Rust regular-expression engine."},
+    {Py_tp_methods, rust_match_methods},
+    {Py_tp_getset, rust_match_getsets},
+    {Py_tp_traverse, (void *)rust_match_traverse},
+    {Py_tp_clear, (void *)rust_match_clear},
+    {Py_tp_new, (void *)rust_match_new},
+    {0, NULL},
+};
 
-static PyTypeObject RustMatchType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "re.Match",
-    .tp_basicsize = offsetof(RustMatch, spans),
-    .tp_itemsize = sizeof(intptr_t),
-    .tp_dealloc = (destructor)rust_match_dealloc,
-    .tp_repr = (reprfunc)rust_match_repr,
-    .tp_as_mapping = &rust_match_mapping,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
-    .tp_doc = "Native match from the from-scratch Rust regular-expression engine.",
-    .tp_methods = rust_match_methods,
-    .tp_getset = rust_match_getsets,
-    .tp_traverse = (traverseproc)rust_match_traverse,
-    .tp_clear = (inquiry)rust_match_clear,
-    .tp_new = rust_match_new,
+static PyType_Spec rust_match_spec = {
+    .name = "re.Match",
+    .basicsize = (int)offsetof(RustMatch, spans),
+    .itemsize = (int)sizeof(intptr_t),
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
+    .slots = rust_match_slots,
 };
 
 static PyObject *bridge_set_template(PyObject *module, PyObject *value) {
-    (void)module;
+    RustBridgeState *state = rust_bridge_state_from_module(module);
+    if (state == NULL) return NULL;
     if (!PyFunction_Check(value)) {
         PyErr_SetString(
             PyExc_TypeError,
@@ -835,7 +879,7 @@ static PyObject *bridge_set_template(PyObject *module, PyObject *value) {
         || PyFunction_GetGlobals(resolver) != globals
         || pattern == NULL
         || !PyType_Check(pattern)
-        || match != (PyObject *)&RustMatchType
+        || match != (PyObject *)state->match_type
     ) {
         if (!PyErr_Occurred()) {
             PyErr_SetString(
@@ -848,8 +892,8 @@ static PyObject *bridge_set_template(PyObject *module, PyObject *value) {
 
 #ifndef Py_GIL_DISABLED
     if (
-        rust_primary_pattern_type == NULL
-        || pattern != (PyObject *)rust_primary_pattern_type
+        state->primary_pattern_type == NULL
+        || pattern != (PyObject *)state->primary_pattern_type
     ) {
         PyErr_SetString(
             PyExc_TypeError,
@@ -915,8 +959,8 @@ static PyObject *bridge_set_template(PyObject *module, PyObject *value) {
         return NULL;
     }
 
-    Py_XSETREF(rust_generic_alias_factory, Py_NewRef(factory));
-    Py_XSETREF(rust_template_helper, Py_NewRef(value));
+    Py_XSETREF(state->generic_alias_factory, Py_NewRef(factory));
+    Py_XSETREF(state->template_helper, Py_NewRef(value));
     Py_RETURN_NONE;
 }
 
@@ -2117,7 +2161,7 @@ static PyObject *rust_pattern_direct(PyObject *pattern, void *handle, PyObject *
                 }
             } else if (mode != 2 || (size_t)width == end - start) {
                 if (subject.text) {
-                    int equal = PyUnicode_Tailmatch(value, literal, (Py_ssize_t)start, (Py_ssize_t)end, -1);
+                    Py_ssize_t equal = PyUnicode_Tailmatch(value, literal, (Py_ssize_t)start, (Py_ssize_t)end, -1);
                     if (equal < 0) found = -1;
                     else if (equal) at = (Py_ssize_t)start;
                 } else if (memcmp(subject.data + start, PyBytes_AS_STRING(literal), (size_t)width) == 0) {
@@ -2391,7 +2435,10 @@ static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const 
 }
 
 static int rust_iterator_traverse(RustIterator *iterator, visitproc visit, void *arg) {
-    if (Py_TYPE(iterator) != &RustScannerType) Py_VISIT(iterator->string);
+    RustBridgeState *state = rust_bridge_state_from_type(Py_TYPE(iterator));
+    if (state == NULL) return -1;
+    Py_VISIT(Py_TYPE(iterator));
+    if (Py_TYPE(iterator) != state->scanner_type) Py_VISIT(iterator->string);
     Py_VISIT(iterator->pattern);
     Py_VISIT(iterator->groupindex);
     return 0;
@@ -2410,9 +2457,11 @@ static int rust_iterator_clear(RustIterator *iterator) {
 }
 
 static void rust_iterator_dealloc(RustIterator *iterator) {
+    PyTypeObject *type = Py_TYPE(iterator);
     PyObject_GC_UnTrack(iterator);
     rust_iterator_clear(iterator);
-    Py_TYPE(iterator)->tp_free((PyObject *)iterator);
+    type->tp_free((PyObject *)iterator);
+    Py_DECREF(type);
 }
 
 static PyObject *rust_iterator_get_pattern(RustIterator *iterator, void *closure) {
@@ -2544,31 +2593,41 @@ static PyGetSetDef rust_iterator_getsets[] = {
     {NULL, NULL, NULL, NULL, NULL},
 };
 
-static PyTypeObject RustIteratorType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "re._RustMatchIterator",
-    .tp_basicsize = sizeof(RustIterator),
-    .tp_dealloc = (destructor)rust_iterator_dealloc,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
-    .tp_doc = "Lazy, borrowed-subject Rust regular-expression match iterator.",
-    .tp_iter = PyObject_SelfIter,
-    .tp_iternext = rust_iterator_next,
-    .tp_getset = rust_iterator_getsets,
-    .tp_traverse = (traverseproc)rust_iterator_traverse,
-    .tp_clear = (inquiry)rust_iterator_clear,
+static PyType_Slot rust_iterator_slots[] = {
+    {Py_tp_dealloc, (void *)rust_iterator_dealloc},
+    {Py_tp_doc, "Lazy, borrowed-subject Rust regular-expression match iterator."},
+    {Py_tp_iter, (void *)PyObject_SelfIter},
+    {Py_tp_iternext, (void *)rust_iterator_next},
+    {Py_tp_getset, rust_iterator_getsets},
+    {Py_tp_traverse, (void *)rust_iterator_traverse},
+    {Py_tp_clear, (void *)rust_iterator_clear},
+    {0, NULL},
 };
 
-static PyTypeObject RustScannerType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "_sre.SRE_Scanner",
-    .tp_basicsize = sizeof(RustIterator),
-    .tp_dealloc = (destructor)rust_iterator_dealloc,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
-    .tp_doc = "Borrowed-subject Rust regular-expression scanner.",
-    .tp_methods = rust_scanner_methods,
-    .tp_getset = rust_iterator_getsets,
-    .tp_traverse = (traverseproc)rust_iterator_traverse,
-    .tp_clear = (inquiry)rust_iterator_clear,
+static PyType_Spec rust_iterator_spec = {
+    .name = "re._RustMatchIterator",
+    .basicsize = (int)sizeof(RustIterator),
+    .itemsize = 0,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
+    .slots = rust_iterator_slots,
+};
+
+static PyType_Slot rust_scanner_slots[] = {
+    {Py_tp_dealloc, (void *)rust_iterator_dealloc},
+    {Py_tp_doc, "Borrowed-subject Rust regular-expression scanner."},
+    {Py_tp_methods, rust_scanner_methods},
+    {Py_tp_getset, rust_iterator_getsets},
+    {Py_tp_traverse, (void *)rust_iterator_traverse},
+    {Py_tp_clear, (void *)rust_iterator_clear},
+    {0, NULL},
+};
+
+static PyType_Spec rust_scanner_spec = {
+    .name = "_sre.SRE_Scanner",
+    .basicsize = (int)sizeof(RustIterator),
+    .itemsize = 0,
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
+    .slots = rust_scanner_slots,
 };
 
 static PyObject *rust_iterator_create(PyTypeObject *type, PyObject *pattern, void *handle, PyObject *groupindex, PyObject *pattern_value, size_t groups, PyObject *value, PyObject *pos, PyObject *endpos) {
@@ -2625,14 +2684,24 @@ static PyObject *rust_bound_iterator(PyObject *const *args, Py_ssize_t nargs, Py
 }
 
 static PyObject *bridge_bound_finditer(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
-    (void)module;
-    PyObject *scanner = rust_bound_iterator(args, nargs, kwnames, "finditer", &RustScannerType);
+    RustBridgeState *state = module == NULL
+        ? (nargs > 0 ? rust_bridge_state_from_type(Py_TYPE(args[0])) : NULL)
+        : rust_bridge_state_from_module(module);
+    if (state == NULL) {
+        if (!PyErr_Occurred()) {
+            PyErr_SetString(PyExc_SystemError, "Rust iterator has no owning bridge state");
+        }
+        return NULL;
+    }
+    PyObject *scanner = rust_bound_iterator(
+        args, nargs, kwnames, "finditer", state->scanner_type
+    );
     if (scanner == NULL) return NULL;
     PyObject *search = PyCMethod_New(
         &rust_iterator_scanner_search_method,
         scanner,
         NULL,
-        &RustScannerType
+        state->scanner_type
     );
     Py_DECREF(scanner);
     if (search == NULL) return NULL;
@@ -2642,8 +2711,18 @@ static PyObject *bridge_bound_finditer(PyObject *module, PyObject *const *args, 
 }
 
 static PyObject *bridge_bound_scanner(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
-    (void)module;
-    return rust_bound_iterator(args, nargs, kwnames, "scanner", &RustScannerType);
+    RustBridgeState *state = module == NULL
+        ? (nargs > 0 ? rust_bridge_state_from_type(Py_TYPE(args[0])) : NULL)
+        : rust_bridge_state_from_module(module);
+    if (state == NULL) {
+        if (!PyErr_Occurred()) {
+            PyErr_SetString(PyExc_SystemError, "Rust scanner has no owning bridge state");
+        }
+        return NULL;
+    }
+    return rust_bound_iterator(
+        args, nargs, kwnames, "scanner", state->scanner_type
+    );
 }
 
 static int rust_append_batched_split(
@@ -3236,7 +3315,9 @@ static PyObject *rust_normalize_expand_buffer(PyObject *template) {
 }
 
 static PyObject *rust_match_expand(RustMatch *match, PyObject *template) {
-    if (rust_template_helper == NULL) {
+    RustBridgeState *state = rust_bridge_state_from_type(Py_TYPE(match));
+    if (state == NULL) return NULL;
+    if (state->template_helper == NULL) {
         return rust_match_expand_fallback(match, template);
     }
 
@@ -3272,7 +3353,7 @@ static PyObject *rust_match_expand(RustMatch *match, PyObject *template) {
                 : match->endpos;
     PyObject *templates = PyObject_GetAttr(
         match->pattern,
-        rust_pattern_attribute_names[RUST_PATTERN_ATTRIBUTE_TEMPLATES]
+        state->pattern_attribute_names[RUST_PATTERN_ATTRIBUTE_TEMPLATES]
     );
     if (templates == NULL) return NULL;
     if (templates != Py_None && !PyDict_CheckExact(templates)) {
@@ -3339,6 +3420,8 @@ static PyObject *rust_match_expand(RustMatch *match, PyObject *template) {
 }
 
 static PyObject *rust_substitute_core(PyObject *pattern, void *handle, PyObject *groupindex, PyObject *pattern_value, PyObject *templates, size_t groups, PyObject *replacement, PyObject *value, Py_ssize_t limit, int want_count) {
+    RustBridgeState *state = rust_bridge_state_from_type(Py_TYPE(pattern));
+    if (state == NULL) return NULL;
     if (groups != rebar_groups(handle)) {
         PyErr_SetString(PyExc_ValueError, "Rust regex group count does not match the compiled program");
         return NULL;
@@ -3434,7 +3517,7 @@ static PyObject *rust_substitute_core(PyObject *pattern, void *handle, PyObject 
             if (replaced == 0 && rust_output_init(&writer, subject.text, (Py_ssize_t)subject.length) < 0) goto substitute_error;
             if (rust_output_subject(&writer, &subject, previous, (size_t)begins[0]) < 0) goto substitute_error;
             if (tokens != Py_None && subject.text != (uint8_t)PyUnicode_Check(raw)) {
-                if (rust_template_helper == NULL) {
+                if (state->template_helper == NULL) {
                     PyErr_SetString(PyExc_RuntimeError, "Rust replacement template helper has not been configured");
                     goto substitute_error;
                 }
@@ -3443,7 +3526,9 @@ static PyObject *rust_substitute_core(PyObject *pattern, void *handle, PyObject 
                 memcpy(match->spans, begins, stride * sizeof(intptr_t));
                 memcpy(match->spans + stride, ends, stride * sizeof(intptr_t));
                 match->lastindex = last;
-                PyObject *piece = PyObject_CallFunctionObjArgs(rust_template_helper, raw, (PyObject *)match, NULL);
+                PyObject *piece = PyObject_CallFunctionObjArgs(
+                    state->template_helper, raw, (PyObject *)match, NULL
+                );
                 Py_DECREF(match);
                 if (piece == NULL) goto substitute_error;
                 int written = rust_output_value(&writer, piece);
@@ -3602,12 +3687,14 @@ static int rust_pattern_append_attributes(
     int *fast
 ) {
     *fast = 0;
+    RustBridgeState *state = rust_bridge_state_from_type(Py_TYPE(pattern));
+    if (state == NULL) return 0;
 #ifndef Py_GIL_DISABLED
     PyTypeObject *type = Py_TYPE(pattern);
     unsigned int version = type->tp_version_tag;
 
     if (
-        type == rust_primary_pattern_type
+        type == state->primary_pattern_type
         && version != 0
         && (type->tp_flags & Py_TPFLAGS_HEAPTYPE)
         && type->tp_itemsize == 0
@@ -3615,10 +3702,10 @@ static int rust_pattern_append_attributes(
     ) {
         int ready = 1;
         if (
-            rust_pattern_slot_cache.type != type
-            || rust_pattern_slot_cache.version != version
+            state->pattern_slot_cache.type != type
+            || state->pattern_slot_cache.version != version
         ) {
-            int refreshed = rust_pattern_refresh_slot_cache(type, version);
+            int refreshed = rust_pattern_refresh_slot_cache(state, type, version);
             if (refreshed < 0) return 0;
             ready = refreshed;
         }
@@ -3628,13 +3715,13 @@ static int rust_pattern_append_attributes(
             size_t initial_prefix_count = *prefix_count;
             for (size_t index = 0; index < count; index++) {
                 RustPatternAttribute attribute = attributes[index];
-                if (!rust_pattern_slot_cache.eligible[attribute]) {
+                if (!state->pattern_slot_cache.eligible[attribute]) {
                     ready = 0;
                     break;
                 }
                 PyObject *value = *(PyObject **)(
                     (char *)pattern
-                    + rust_pattern_slot_cache.offsets[attribute]
+                    + state->pattern_slot_cache.offsets[attribute]
                 );
                 if (value == NULL) {
                     ready = 0;
@@ -3738,6 +3825,8 @@ static PyObject *rust_pattern_dispatch(
     PyObject *kwnames,
     RustPatternMethod operation
 ) {
+    RustBridgeState *state = rust_bridge_state_from_type(Py_TYPE(pattern));
+    if (state == NULL) return NULL;
     PyObject *owned[7] = {NULL};
     PyObject *prefix[7] = {NULL};
     size_t owned_count = 0;
@@ -3851,7 +3940,7 @@ static PyObject *rust_pattern_dispatch(
                 PyObject *pos = nargs >= 2 ? args[1] : NULL;
                 PyObject *endpos = nargs >= 3 ? args[2] : NULL;
                 PyObject *scanner = rust_iterator_create(
-                    &RustScannerType,
+                    state->scanner_type,
                     pattern,
                     handle,
                     prefix[2],
@@ -3871,7 +3960,7 @@ static PyObject *rust_pattern_dispatch(
                     &rust_iterator_scanner_search_method,
                     scanner,
                     NULL,
-                    &RustScannerType
+                    state->scanner_type
                 );
                 Py_DECREF(scanner);
                 if (search == NULL) goto cleanup;
@@ -3901,7 +3990,7 @@ static PyObject *rust_pattern_dispatch(
                 if (
                     PyObject_SetAttr(
                         pattern,
-                        rust_pattern_attribute_names[
+                        state->pattern_attribute_names[
                             RUST_PATTERN_ATTRIBUTE_TEMPLATES
                         ],
                         templates
@@ -4104,11 +4193,23 @@ static PyMethodDef rust_pattern_methods[] = {
 static PyObject *bridge_pattern_descriptors(
     PyObject *module, PyObject *pattern_type
 ) {
-    (void)module;
+    RustBridgeState *state = rust_bridge_state_from_module(module);
+    if (state == NULL) return NULL;
     if (!PyType_Check(pattern_type)) {
         PyErr_SetString(
             PyExc_TypeError,
             "pattern_descriptors() requires a pattern type"
+        );
+        return NULL;
+    }
+    RustBridgeState *pattern_state = rust_bridge_state_from_type(
+        (PyTypeObject *)pattern_type
+    );
+    if (pattern_state == NULL) return NULL;
+    if (pattern_state != state) {
+        PyErr_SetString(
+            PyExc_TypeError,
+            "pattern descriptors require this interpreter's Rust pattern type"
         );
         return NULL;
     }
@@ -4132,7 +4233,8 @@ static PyObject *bridge_pattern_descriptors(
 static PyObject *bridge_pattern_type(
     PyObject *module, PyObject *pattern_base
 ) {
-    (void)module;
+    RustBridgeState *state = rust_bridge_state_from_module(module);
+    if (state == NULL) return NULL;
     if (!PyType_Check(pattern_base)) {
         PyErr_SetString(
             PyExc_TypeError,
@@ -4165,13 +4267,13 @@ static PyObject *bridge_pattern_type(
     };
     PyObject *bases = PyTuple_Pack(1, pattern_base);
     if (bases == NULL) return NULL;
-    PyObject *pattern_type = PyType_FromSpecWithBases(
-        &specification, bases
+    PyObject *pattern_type = PyType_FromModuleAndSpec(
+        module, &specification, bases
     );
     Py_DECREF(bases);
 #ifndef Py_GIL_DISABLED
-    if (pattern_type != NULL && rust_primary_pattern_type == NULL) {
-        rust_primary_pattern_type =
+    if (pattern_type != NULL && state->primary_pattern_type == NULL) {
+        state->primary_pattern_type =
             (PyTypeObject *)Py_NewRef(pattern_type);
     }
 #endif
@@ -4181,7 +4283,12 @@ static PyObject *bridge_pattern_type(
 static PyObject *rust_bound_call(PyObject *value, PyObject *const *args, size_t nargsf, PyObject *kwnames) {
     RustBoundMethod *method = (RustBoundMethod *)value;
     size_t prefix = (size_t)Py_SIZE(method);
-    size_t positional = PyVectorcall_NARGS(nargsf);
+    Py_ssize_t positional_count = PyVectorcall_NARGS(nargsf);
+    if (positional_count < 0) {
+        PyErr_SetString(PyExc_SystemError, "Rust bound vectorcall has a negative positional argument count");
+        return NULL;
+    }
+    size_t positional = (size_t)positional_count;
     size_t keywords = kwnames == NULL ? 0 : (size_t)PyTuple_GET_SIZE(kwnames);
     if (prefix > SIZE_MAX - positional || prefix + positional > SIZE_MAX - keywords) return PyErr_NoMemory();
     size_t total = prefix + positional + keywords;
@@ -4200,16 +4307,19 @@ static PyObject *rust_bound_call(PyObject *value, PyObject *const *args, size_t 
 }
 
 static void rust_bound_dealloc(RustBoundMethod *method) {
+    PyTypeObject *type = Py_TYPE(method);
     PyObject_GC_UnTrack(method);
     Py_CLEAR(method->function);
     Py_CLEAR(method->pattern);
     Py_CLEAR(method->signature);
     Py_ssize_t prefix = Py_SIZE(method);
     for (Py_ssize_t index = 0; index < prefix; index++) Py_CLEAR(method->prefix[index]);
-    Py_TYPE(method)->tp_free((PyObject *)method);
+    type->tp_free((PyObject *)method);
+    Py_DECREF(type);
 }
 
 static int rust_bound_traverse(RustBoundMethod *method, visitproc visit, void *arg) {
+    Py_VISIT(Py_TYPE(method));
     Py_VISIT(method->function);
     Py_VISIT(method->pattern);
     Py_VISIT(method->signature);
@@ -4326,24 +4436,40 @@ static PyGetSetDef rust_bound_getsets[] = {
     {NULL, NULL, NULL, NULL, NULL},
 };
 
-static PyTypeObject RustBoundMethodType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "re.builtin_method",
-    .tp_basicsize = offsetof(RustBoundMethod, prefix),
-    .tp_itemsize = sizeof(PyObject *),
-    .tp_dealloc = (destructor)rust_bound_dealloc,
-    .tp_repr = (reprfunc)rust_bound_repr,
-    .tp_call = PyVectorcall_Call,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_HAVE_GC,
-    .tp_doc = "Fresh, native-vectorcall bound Rust regular-expression method.",
-    .tp_getset = rust_bound_getsets,
-    .tp_vectorcall_offset = offsetof(RustBoundMethod, vectorcall),
-    .tp_traverse = (traverseproc)rust_bound_traverse,
-    .tp_clear = (inquiry)rust_bound_clear,
+static PyMemberDef rust_bound_members[] = {
+    {
+        "__vectorcalloffset__",
+        Py_T_PYSSIZET,
+        offsetof(RustBoundMethod, vectorcall),
+        Py_READONLY,
+        "Interpreter-local native vectorcall offset.",
+    },
+    {NULL, 0, 0, 0, NULL},
+};
+
+static PyType_Slot rust_bound_slots[] = {
+    {Py_tp_dealloc, (void *)rust_bound_dealloc},
+    {Py_tp_repr, (void *)rust_bound_repr},
+    {Py_tp_call, (void *)PyVectorcall_Call},
+    {Py_tp_doc, "Fresh, native-vectorcall bound Rust regular-expression method."},
+    {Py_tp_members, rust_bound_members},
+    {Py_tp_getset, rust_bound_getsets},
+    {Py_tp_traverse, (void *)rust_bound_traverse},
+    {Py_tp_clear, (void *)rust_bound_clear},
+    {0, NULL},
+};
+
+static PyType_Spec rust_bound_spec = {
+    .name = "re.builtin_method",
+    .basicsize = (int)offsetof(RustBoundMethod, prefix),
+    .itemsize = (int)sizeof(PyObject *),
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_VECTORCALL | Py_TPFLAGS_HAVE_GC,
+    .slots = rust_bound_slots,
 };
 
 static PyObject *bridge_bind(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
-    (void)module;
+    RustBridgeState *state = rust_bridge_state_from_module(module);
+    if (state == NULL) return NULL;
     if (nargs < 2) {
         PyErr_Format(PyExc_TypeError, "bind() requires a function and pattern (%zd arguments given)", nargs);
         return NULL;
@@ -4354,7 +4480,9 @@ static PyObject *bridge_bind(PyObject *module, PyObject *const *args, Py_ssize_t
     }
     PyObject *cached_prefix = nargs == 3 && PyTuple_Check(args[2]) ? args[2] : NULL;
     Py_ssize_t prefix = cached_prefix == NULL ? nargs - 2 : PyTuple_GET_SIZE(cached_prefix);
-    RustBoundMethod *result = (RustBoundMethod *)PyType_GenericAlloc(&RustBoundMethodType, prefix);
+    RustBoundMethod *result = (RustBoundMethod *)PyType_GenericAlloc(
+        state->bound_method_type, prefix
+    );
     if (result == NULL) return NULL;
     result->function = Py_NewRef(args[0]);
     result->pattern = Py_NewRef(args[1]);
@@ -4396,26 +4524,110 @@ static PyMethodDef bridge_methods[] = {
     {NULL, NULL, 0, NULL},
 };
 
+static int rust_bridge_traverse(PyObject *module, visitproc visit, void *arg) {
+    RustBridgeState *state = (RustBridgeState *)PyModule_GetState(module);
+    if (state == NULL) return 0;
+    Py_VISIT(state->match_type);
+    Py_VISIT(state->iterator_type);
+    Py_VISIT(state->scanner_type);
+    Py_VISIT(state->bound_method_type);
+    Py_VISIT(state->template_helper);
+    Py_VISIT(state->generic_alias_factory);
+    for (size_t index = 0; index < RUST_PATTERN_ATTRIBUTE_COUNT; index++) {
+        Py_VISIT(state->pattern_attribute_names[index]);
+    }
+#ifndef Py_GIL_DISABLED
+    Py_VISIT(state->primary_pattern_type);
+#endif
+    return 0;
+}
+
+static int rust_bridge_clear(PyObject *module) {
+    RustBridgeState *state = (RustBridgeState *)PyModule_GetState(module);
+    if (state == NULL) return 0;
+#ifndef Py_GIL_DISABLED
+    memset(&state->pattern_slot_cache, 0, sizeof(state->pattern_slot_cache));
+    Py_CLEAR(state->primary_pattern_type);
+#endif
+    Py_CLEAR(state->template_helper);
+    Py_CLEAR(state->generic_alias_factory);
+    for (size_t index = 0; index < RUST_PATTERN_ATTRIBUTE_COUNT; index++) {
+        Py_CLEAR(state->pattern_attribute_names[index]);
+    }
+    Py_CLEAR(state->match_type);
+    Py_CLEAR(state->iterator_type);
+    Py_CLEAR(state->scanner_type);
+    Py_CLEAR(state->bound_method_type);
+    return 0;
+}
+
+static void rust_bridge_free_module(void *module) {
+    (void)rust_bridge_clear((PyObject *)module);
+}
+
+static int rust_bridge_exec(PyObject *module) {
+    RustBridgeState *state = rust_bridge_state_from_module(module);
+    if (state == NULL) return -1;
+    if (
+        state->match_type != NULL
+        || state->iterator_type != NULL
+        || state->scanner_type != NULL
+        || state->bound_method_type != NULL
+    ) {
+        PyErr_SetString(
+            PyExc_SystemError,
+            "Rust regex bridge interpreter state was already initialized"
+        );
+        return -1;
+    }
+    if (rust_initialize_pattern_attribute_names(state) < 0) return -1;
+
+    state->match_type = (PyTypeObject *)PyType_FromModuleAndSpec(
+        module, &rust_match_spec, NULL
+    );
+    if (state->match_type == NULL) return -1;
+    state->iterator_type = (PyTypeObject *)PyType_FromModuleAndSpec(
+        module, &rust_iterator_spec, NULL
+    );
+    if (state->iterator_type == NULL) return -1;
+    state->scanner_type = (PyTypeObject *)PyType_FromModuleAndSpec(
+        module, &rust_scanner_spec, NULL
+    );
+    if (state->scanner_type == NULL) return -1;
+    state->bound_method_type = (PyTypeObject *)PyType_FromModuleAndSpec(
+        module, &rust_bound_spec, NULL
+    );
+    if (state->bound_method_type == NULL) return -1;
+
+    if (
+        PyModule_AddObjectRef(
+            module, "Match", (PyObject *)state->match_type
+        ) < 0
+    ) {
+        return -1;
+    }
+    return 0;
+}
+
+static PyModuleDef_Slot rust_bridge_slots[] = {
+    {Py_mod_exec, (void *)rust_bridge_exec},
+    {Py_mod_multiple_interpreters, Py_MOD_PER_INTERPRETER_GIL_SUPPORTED},
+    {Py_mod_gil, Py_MOD_GIL_USED},
+    {0, NULL},
+};
+
 static struct PyModuleDef bridge_module = {
     PyModuleDef_HEAD_INIT,
-    "_rust_bridge",
-    "Dependency-free CPython bridge for the from-scratch Rust regex engine.",
-    -1,
-    bridge_methods,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
+    .m_name = "_rust_bridge",
+    .m_doc = "Dependency-free CPython bridge for the from-scratch Rust regex engine.",
+    .m_size = (Py_ssize_t)sizeof(RustBridgeState),
+    .m_methods = bridge_methods,
+    .m_slots = rust_bridge_slots,
+    .m_traverse = rust_bridge_traverse,
+    .m_clear = rust_bridge_clear,
+    .m_free = rust_bridge_free_module,
 };
 
 PyMODINIT_FUNC PyInit__rust_bridge(void) {
-    if (rust_initialize_pattern_attribute_names() < 0) return NULL;
-    if (PyType_Ready(&RustMatchType) < 0 || PyType_Ready(&RustIteratorType) < 0 || PyType_Ready(&RustScannerType) < 0 || PyType_Ready(&RustBoundMethodType) < 0) return NULL;
-    PyObject *module = PyModule_Create(&bridge_module);
-    if (module == NULL) return NULL;
-    if (PyModule_AddObjectRef(module, "Match", (PyObject *)&RustMatchType) < 0) {
-        Py_DECREF(module);
-        return NULL;
-    }
-    return module;
+    return PyModuleDef_Init(&bridge_module);
 }
