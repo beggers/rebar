@@ -7,6 +7,31 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the complete repaired Rust compatibility test
+
+Freeze all **13** original Python test groups and all **31,237** checks
+against the actual independently built Rust engine. Include both genuine
+first-party repairs, Python's original thread and buffer tests, and all
+**128** multi-interpreter cases. Preserve and later restore the exact
+original inodes of all four Rust source and native files.
+
+The [first-party Rust test controller](../tools/run_owned_repaired_rust_original_campaign_v2.py)
+has SHA-256
+`a6ffce3eb9ff09f27f3e35f84b35b9d1aba6e29dae225c56c036de85e089b7b3`.
+The [complete original-test protocol](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V2.md)
+has SHA-256
+`9b9a246a08c0e89667899a6317df41424320617f7c4ac6cb84ef210fabee1ca0`.
+The [original-suite and recovery contract](../oracle/phase2/repaired-rust-original-campaign-v2.json)
+has SHA-256
+`bc100f6a7a3d4ec2640e131211ecea202172846daa10c93d73cbf58ea74ed547`.
+
+Ordinary and clean-environment source and context checks preserve all
+**143** evidence files and **148** references, including the genuine
+**2,172** Zig differences. They do not load, change, or test Rust. Rust
+matching, speed, memory, and undefined behavior remain **NOT MEASURED**.
+The final holdout remains **NOT FROZEN**, **NOT GENERATED**, and
+**NOT OPENED**.
+
 ## Run the complete corrected Zig compatibility experiment
 
 Run the frozen first-party Zig engine exactly once against all **13**
