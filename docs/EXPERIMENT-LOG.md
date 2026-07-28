@@ -7,6 +7,64 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the common compatibility test for every native candidate
+
+After separately publishing the complete Python reference and the
+independent-engine ownership check, freeze the
+[common candidate correctness protocol](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V1.md),
+SHA-256
+`e73c8a9a1b1edeb847d23c3d27d594d19bdfc514bee9e89790cd4d18fc9d3844`,
+the [machine-readable candidate inventory](../oracle/phase2/p0-candidate-protocol-v1.json),
+SHA-256
+`7ca70c9d4ae7491ae2b9b9a660c8c72efcee629708103ac7654f31353fa7cd0c`,
+and the [isolated, fail-closed candidate runner](../tools/run_frozen_p0_candidate_v1.py),
+SHA-256
+`c8378cd59a3b4dfaf75609c5b06f5a5ec20114d428e8e06ccc0f12ceec2076b8`.
+
+Pin all **13** published Python suite owners, their original matrices,
+reference vectors, complete source-ordered case identities, and the
+unchanged **31,237**-case denominator. Require the actual frozen ownership
+audit and the original category controller. Never let one candidate borrow
+another candidate's engine, Python's matching engine, an outside package,
+a prepared answer, or an unverified native library.
+
+Preserve a real source-only failure: the preliminary runner,
+SHA-256
+`f7e451a6edcfede0d3edd56c9203d9efe8b7e9d975b3b13006fc06367e57427b`,
+accepted a forged candidate-module owner. Both ordinary and empty
+environments rejected it with
+`a mandatory hostile source-only control escaped: reject-forged-interpreter-owner-candidate_module`.
+Fix the candidate-module identity check; retain and expand every hostile
+control.
+
+A Python-reference subinterpreter necessarily records its own genuine
+standard-library identity; a real replacement must not pretend to be that
+module. Remove only the **two** reference-only outer identity fields,
+bijectively rename all **seven** inner owner-identity fields, and preserve
+every original match, type, exception, flag, cache, callback, buffer, locale,
+interpreter execution, and cleanup. Both independently archived Python
+reference processes produce the same exact lossless projected vector,
+SHA-256
+`cf5633c8dc1038d650603eee421371285d0e32f6446190ce728590f1f5c55021`.
+
+Both candidate-free self-tests produce identical passing results:
+**35** positive controls and **302** rejected attacks. They start no
+candidate, Python reference, thread, interpreter, or native build; take no
+timings; and never access the expanded final comparison.
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/run_frozen_p0_candidate_v1.py --self-test
+env -i /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/run_frozen_p0_candidate_v1.py --self-test
+```
+
+The candidate runner's actual subinterpreter execution route is
+**NOT IMPLEMENTED**. Its complete candidate mode therefore fails safely
+before starting any candidate; it cannot count an absent interpreter test
+as a pass. Candidate correctness, native memory safety, and speed remain
+**NOT MEASURED**. The final comparison remains **NOT OPENED**.
+
 ## Freeze the from-scratch engine ownership check
 
 After publishing the complete Python correctness standard in commit
