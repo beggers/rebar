@@ -19,8 +19,8 @@ eight groups; C passes **7,197** in seven; Zig passes **3,583** in six.
 All three still fail the complete Python compatibility standard. Zig's
 full run records **1,764** actual behavior differences; its separate
 interpreter-cleanup failure is not counted as a matching difference.
-The run also exposes a separately preserved interpreter-report bug in
-the current test harness.
+The run also exposed an interpreter-report bug in the earlier test
+harness; the corrected full test preserves that failure.
 Its original failed source build is preserved alongside the corrected build.
 C++ also has two matching, independently built native outputs, but its
 Python compatibility has **NOT BEEN TESTED**. Go's first source build
@@ -124,7 +124,8 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 ## Evidence and reproduction
 
 - [Complete 31,237-check compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md), [machine-readable test inventory](oracle/phase1/p0-completeness-v1.json), and [independent fail-closed verifier](tools/verify_p0_completeness_v1.py).
-- [Current complete candidate standard](oracle/phase2/P0-CANDIDATE-PROTOCOL-V6.md), [frozen 31,237-case candidate inventory](oracle/phase2/p0-candidate-protocol-v6.json), [complete test worker](tools/run_frozen_p0_candidate_worker_v4.py), and [full candidate runner](tools/run_frozen_p0_candidate_v6.py); the real Zig run also preserves the identified interpreter-report defect.
+- [Corrected complete candidate standard](oracle/phase2/P0-CANDIDATE-PROTOCOL-V7.md), [frozen 31,237-case candidate inventory](oracle/phase2/p0-candidate-protocol-v7.json), [independently verified full-test worker](tools/run_frozen_p0_candidate_worker_v5.py), and [complete candidate runner](tools/run_frozen_p0_candidate_v7.py); all **13** original suites, all **57** evidence records, the real Zig interpreter failure, and every candidate mismatch remain unchanged.
+- [Preserved earlier complete candidate standard](oracle/phase2/P0-CANDIDATE-PROTOCOL-V6.md), [original inventory](oracle/phase2/p0-candidate-protocol-v6.json), and [earlier candidate runner](tools/run_frozen_p0_candidate_v6.py); its original Zig failure and discovered interpreter-report defect remain available.
 - Complete actual compatibility failures for [C](oracle/phase2/evidence/frozen-p0-candidate-v5-c-phase2-v5-failures.json.gz), [Rust](oracle/phase2/evidence/frozen-p0-candidate-v5-rust-phase2-v5-failures.json.gz), and [Zig](oracle/phase2/evidence/frozen-p0-candidate-v6-zig-phase2-v6-failures.json.gz); the [experiment log](docs/EXPERIMENT-LOG.md) links every independent worker report, publication receipt, failure, and restoration.
 - [Actual isolated-interpreter Zig failure](oracle/phase2/evidence/owned-candidate-subinterpreters-v3-zig-phase2-v6-subinterpreters-failures.json.gz) and [independent failure receipt](oracle/phase2/evidence/owned-candidate-subinterpreters-v3-zig-phase2-v6-subinterpreters-failures-publication-receipt.json); 385 genuine matching calls precede cleanup failure.
 - [Complete reproducible C++ source-build report](oracle/phase2/evidence/native-source-build-v4-cpp-phase2-v4.json.gz) and [independent C++ publication receipt](oracle/phase2/evidence/native-source-build-v4-cpp-phase2-v4-publication-receipt.json); two fresh source builds produce the same native library, without running a candidate or claiming Python compatibility.
@@ -146,6 +147,8 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/verify_p0_completeness_v1.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_worker_v4.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v6.py --self-test
+"$PY" -I -B tools/run_frozen_p0_candidate_worker_v5.py --self-test
+"$PY" -I -B tools/run_frozen_p0_candidate_v7.py --self-test
 "$PY" -I -B tools/run_owned_candidate_subinterpreters_v3.py --self-test
 "$PY" -I -B tools/reproduce_owned_native_source_build_v4.py --self-test
 "$PY" -I -B tools/reproduce_owned_native_source_build_v4.py --verify-context
@@ -160,11 +163,11 @@ Verify the current headline graph without rerunning a candidate or
 opening a benchmark:
 
 ```sh
-"$PY" -I -B tools/run_frozen_p0_candidate_v6.py --verify-frozen-context \
-  --source-sha256 53c5abd71ba46384204f628238dfc4b91a9adf6c75f8edd838e6523300677a9c \
-  --worker-source-sha256 b0111d76df52ead959863c4459ea1b78f78ab6b1e0d0417624df268860918d8b \
-  --protocol-sha256 b1d50f9778257d25e22df7ddba493e6830c514365d25ded518ea832b5e175c39 \
-  --document-sha256 73cbdf73f94de18496793bafe4ab29c613d694bfde8c47e7ec8430d27a23b521
+"$PY" -I -B tools/run_frozen_p0_candidate_v7.py --verify-frozen-context \
+  --source-sha256 08ab73a0d42a2bb3bb658cf6924786a7ba396aacd229957a710866572e178690 \
+  --worker-source-sha256 66f869e71e1aaf77944f4b7115e91ab34f6bc9b06fb4d17f097ea26c97c9c780 \
+  --protocol-sha256 ed595cbb3d5f040454da7efff3d8330befb09dda2ac6eebc681b630b96f32733 \
+  --document-sha256 16f24a46113e0a120fc5cf7fea2122d78e76445665959a9553b610a27b8843b1
 
 "$PY" -I -B tools/render_candidate_current_overview_v11.py --verify \
   --source-sha256 ca5ab6696fde912ac5f46a4fef3e5001aa0c7788772157423dcc01d59282c987 \

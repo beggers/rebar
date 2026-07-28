@@ -7,6 +7,67 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Correct the complete 31,237-case candidate test
+
+Freeze the complete original **13-suite**, **31,237-case** Python
+correctness test before running another candidate. Retain all
+**57** signed evidence owners, all **25** independent source files,
+the corrected reversible six-engine loading freeze, the precise
+Python baseline, and every genuine C, Rust, Zig, C++, Go, and
+Fortran result. No original Python test is removed, added to the
+denominator, changed, or replaced with an approximation.
+
+Fix the documented version-six test-infrastructure error without
+modifying its frozen files. The genuine isolated-interpreter recorder
+calls its durable publication field `file_fsync`; the version-six
+aggregate accidentally demanded `file_fsync_completed`. Authenticate
+the original nested report with its exact actual field, complete
+same-inode receipt, full output, and all **385** real matcher calls.
+Keep the separately failed original interpreter cleanup failed;
+never turn a successful receipt into a successful candidate.
+
+Retain the specialist recorders' independently documented
+`file_fsync_completed` schema. Authenticate changing-buffer reports
+up to exactly **64 MiB**, while limiting newly published whole-test
+reports to **32 MiB**. Reject interchanged schemas, omitted specialist
+records, truncated records, reduced denominators, altered random
+seeds, guessed native activation, external regex engines, copied
+engines, fallbacks, hidden benchmarks, and premature winners.
+
+Record exactly **six** from-scratch engine source families but only
+**three** families currently supported by all original candidate-test
+producers. Do not claim that C++, Go, or Fortran has been run through
+all **13** suites: require genuinely extended original producers and
+a successful independently reproducible source build first. Preserve
+the correct **39**, **15**, and **32** earlier build process counts;
+their complete sum is **86**, while the version-two and version-four
+subset is **71**. Keep the fully qualified candidate count at **0**.
+
+Pin the [corrected complete-case worker](../tools/run_frozen_p0_candidate_worker_v5.py)
+to SHA-256
+`66f869e71e1aaf77944f4b7115e91ab34f6bc9b06fb4d17f097ea26c97c9c780`,
+the [whole-candidate test runner](../tools/run_frozen_p0_candidate_v7.py)
+to
+`08ab73a0d42a2bb3bb658cf6924786a7ba396aacd229957a710866572e178690`,
+the [complete original candidate-testing standard](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V7.md)
+to
+`ed595cbb3d5f040454da7efff3d8330befb09dda2ac6eebc681b630b96f32733`,
+and the [exact complete machine-readable inventory](../oracle/phase2/p0-candidate-protocol-v7.json)
+to
+`16f24a46113e0a120fc5cf7fea2122d78e76445665959a9553b610a27b8843b1`.
+
+Run both workers' source-only checks in the ordinary and clean
+environments. The complete-case worker passes **17** acceptance
+controls and rejects **222** attacks; the whole-candidate runner
+passes **13** and rejects **80**. Independently run both complete
+read-only evidence checks in both environments without starting a
+candidate, loading native code, taking a timing sample, or opening
+the final holdout.
+
+This chunk executes **NO CANDIDATE**. Compatibility qualifications
+remain **0**; speed and memory remain **NOT MEASURED**. The expanded
+final comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze verified, reversible native loading for all six engines
 
 Freeze a separate, independently reviewed native-loader standard
