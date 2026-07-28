@@ -7,6 +7,33 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected full Zig compatibility test
+
+Keep the genuinely archived first Zig setup failure. Correct the file-owner
+safety check and freeze a fresh run of all **13** original Python test
+groups and all **31,237** compatibility checks. Use only the separately
+built first-party Zig engine and its own bridge. Preserve the real Python
+callbacks, memory views, changing buffers, threads, and **128** isolated
+interpreter cases.
+
+The [corrected original Zig test controller](../tools/run_owned_repaired_zig_original_campaign_v2.py)
+has SHA-256
+`a9f62061f709583c60a4d0b72ba1150931132a66b80b6eed1081e017fd389795`.
+The [complete frozen test protocol](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V2.md)
+has SHA-256
+`fe17a8fc4e5fb5638ff92caa6e1b6d625e93dfb27ced02ba7b1490b830356db3`.
+The [exact original-suite and recovery contract](../oracle/phase2/repaired-zig-original-campaign-v2.json)
+has SHA-256
+`0112748e8dbca769625ea2643643fad81ced069e20ed87a458bebe0a922d2851`.
+
+Ordinary and clean-environment source and context checks preserve the
+current **141** evidence files and **146** references, including the
+complete failed first attempt. They start no test worker and do not open
+or change either original Zig file. Setup and recovery errors are reported
+without swallowing Python interrupts. The corrected matching test, speed,
+memory, and undefined behavior remain **NOT MEASURED**. The final holdout
+remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the next independently built C repair
 
 Preserve the actual **1,262** C differences and use the original Python

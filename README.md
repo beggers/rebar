@@ -100,7 +100,7 @@ slowdown greater than **20%**. There is no winner.
 - [Evidence-backed C match-pickling compatibility repair](oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V2.md).
 - [Reproducible offline build rules for the corrected C engine](oracle/phase2/C-PICKLE-SOURCE-BUILD-V13.md).
 - [Corrected safe recovery rules for both existing Zig engine files](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V7.md).
-- [Complete original Python compatibility tests for repaired Zig](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V1.md).
+- [Corrected complete Python compatibility tests for repaired Zig](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V2.md).
 - [Why the first repaired-Zig test stopped before any matching began](oracle/phase2/ZIG-CAMPAIGN-PREFLIGHT-FAILURE-V1.md).
 - [Expanded, still-unopened final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256
