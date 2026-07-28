@@ -27,6 +27,9 @@ test groups without worker failures. That Rust build has **1,087**
 compatibility differences; Zig has **2,172**. Neither is a replacement.
 Zig's earlier zero-test setup failure remains separately preserved.
 
+A separate source-only Zig fix restores the complete scanner match found
+in a real Python failure. Its rebuilt compatibility is **NOT MEASURED**.
+
 A further Rust correction fixes the exact Python flag-display failure in
 **5,128** source-only checks. Its effect on a rebuilt engine and the full
 compatibility test remains **NOT MEASURED**.
@@ -111,6 +114,7 @@ slowdown greater than **20%**. There is no winner.
 - [Frozen Python compatibility tests](oracle/phase1/P0-COMPLETENESS-V1.md).
 - [Separately frozen public function and method signature checks](oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md).
 - [Proof the candidate engines are independently built](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
+- [Source-only correction of the observed Zig scanner failure](oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V2.md).
 - [Recoverable original Python compatibility tests for repaired Rust](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V3.md).
 - [Source-only correction of the observed Rust flag-display failure](oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V2.md).
 - [Frozen first-party build rules for the corrected Rust engine](oracle/phase2/RUST-FLAG-SOURCE-BUILD-V12.md).

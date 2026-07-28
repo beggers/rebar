@@ -7,6 +7,39 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the correction for a real Zig scanner failure
+
+The already-tested first-party Zig engine reports **2,172** genuine
+compatibility differences. One actual public scanner case should return the
+complete `alpha42` branch at span `[0, 7]`; the existing corrected bridge
+incorrectly returns the nested `alpha` capture at `[0, 5]`.
+
+Freeze the smallest source-only correction. Restore the original **190-byte**
+whole-branch assignment instead of the faulty **246-byte** conditional
+assignment. Preserve nested captures in separate group slots, the original
+independently written Zig engine, all Python matching records, and the
+canonical checked-in bridge. The exact privately derived corrected bridge is
+SHA-256 `67edae144290254ba25f67f73350ff5d52ccfb2a209e3fbcc555fc4b3d4efd4b`,
+**173,026** bytes. It is not installed, built, loaded, or tested.
+
+The [frozen first-party Zig correction](../tools/apply_owned_zig_scanner_capture_source_repair_v2.py)
+has SHA-256
+`87a4cf8895b5d52c346213ef8277c17b66af44eba695bc37fac5198e0169b6ff`.
+The [actual-failure and private-source rules](../oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V2.md)
+have SHA-256
+`eb71f594968a497ddeef5aaf0ab9f221d46153be47e69402a1f0090fa6597879`.
+The [exact private two-snapshot contract](../oracle/phase2/zig-scanner-capture-source-repair-v2.json)
+has SHA-256
+`3afc80a62a50ee55d059b6a19fc74915ca0a8cbdeddd9efa723722b2629ee85e`.
+
+Normal and empty-environment source tests reject **181** unsafe controls.
+Keep the authentic **151** evidence owners and **156** references, Rust's
+**1,087** historical differences, C's **1,230**, Zig's **2,172**, and the
+separately frozen **50** signature checks. Corrected Zig matching, the new
+signature reference, all speed, memory, and undefined behavior remain
+**NOT MEASURED**. No candidate qualifies. The final **4,194,304**-case
+comparison remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze 50 additional Python public-interface checks
 
 An independent audit found a real compatibility gap: the original **31,237**
