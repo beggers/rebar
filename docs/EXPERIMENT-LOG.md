@@ -7,6 +7,28 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the C build against all Rust and Zig results
+
+Freeze two independent first-party C builds against all **145** evidence
+files. Preserve Rust's **1,087**, C's **1,262**, and Zig's **2,172**
+actual compatibility differences. Keep both separately verified C source
+repairs and all **14** planned native build and inspection processes.
+
+The [current C source builder](../tools/reproduce_owned_c_pickle_source_build_v15.py)
+has SHA-256
+`91bc1985ac1edad757a3b027840db3f08aa97a781df1542e33b39d39f04aa7d8`;
+the [two-build protocol](../oracle/phase2/C-PICKLE-SOURCE-BUILD-V15.md)
+has SHA-256
+`fab2219a4c4a0cf78acfe8adbb039aba591a450409d9cc75347d552d9d0e4727`;
+and the [exact build contract](../oracle/phase2/c-pickle-source-build-v15.json)
+has SHA-256
+`7fb1409eb228deb034626efb9b5bb1781c1cd139343d18e87acdac6deab97285`.
+
+All ordinary and clean-environment source checks pass without compiling,
+running a candidate, expanding the large failure archives, or opening the
+final holdout. The actual C build, its compatibility, speed, memory, and
+undefined behavior remain **NOT MEASURED**.
+
 ## Run the complete safely recoverable Rust test
 
 Run repaired, independently built Rust exactly once against all **13**
