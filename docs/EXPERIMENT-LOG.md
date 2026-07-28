@@ -7,6 +7,41 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Account for every original Python regex test
+
+Freeze the [complete original CPython 3.14.6 test-accounting protocol](../oracle/cpython-3.14.6/UPSTREAM-ACCOUNTING-V5.md),
+SHA-256
+`21e77143bbec1f54faa6fc8a74a842808e32bd36815802a0df3ddfef11c597e1`,
+the [complete source-ordered original-test manifest](../oracle/cpython-3.14.6/manifest-v5.json),
+SHA-256
+`41b598475a6f756bf63dcd71141d602da05ebb7a810525c45b6c07635b78c0d7`,
+and the [independently guarded read-only accounting verifier](../tools/verify_original_cpython_accounting_v1.py),
+SHA-256
+`f562ab8c998197880590487fa6e78f511db5c01596ab35731185ca8caead454c`.
+
+Individually account for all **165** original source-ordered methods,
+including all **152** public methods and exactly **13** named private
+implementation waivers. Keep the genuine public release-build debug skip
+separate from those waivers: Python passes **151** runnable public methods;
+its one debug-build-only public method is not waived or counted as passing.
+Preserve all **403** original corpus cases, all **11** upstream correctness
+fixtures, and all **26** original support modules.
+
+Independently authenticate the genuine **2,147,483,648**-item Python
+reference, its **40 GiB** resource limit, the separate full-resource V6
+reference, the bounded **5,147**-item candidate-facing harness, and all
+**1,376** broader public-reference cases. Keep these histories distinct:
+the broader reference descends from full-resource V5, not V6. A bounded
+candidate run does not prove a real **2 GiB** candidate test, and no
+missing historical process ID is invented.
+
+Both ordinary and empty-environment self-tests agree on all **740**
+controls: **7** positive checks and **733** rejected attacks. These
+source-only checks start no Python-reference or candidate worker, execute
+no matcher, access no hidden case, measure no time, and do not modify the
+workspace. Candidate full-resource compatibility and performance remain
+**NOT MEASURED**. The final comparison remains **NOT OPENED**.
+
 ## Validate every genuine Python buffer-exporter case
 
 Only after separately freezing, independently reviewing, committing, and
