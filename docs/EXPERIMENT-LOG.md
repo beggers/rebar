@@ -7,6 +7,67 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the complete shared native-candidate correctness runner
+
+Freeze the [complete version-two candidate runner](../tools/run_frozen_p0_candidate_v2.py),
+SHA-256
+`6789f54668ab1a6b8401135a429c3a3cc9cbcb7c820fdf1df02811cdf7975ced`,
+the [human-readable complete candidate protocol](../oracle/phase2/P0-CANDIDATE-PROTOCOL-V2.md),
+SHA-256
+`fc670f502b43ce55f1ef326ea43edeee1fdf28c21726c1bd102468f50c7bbab6`,
+and the [exact machine-readable candidate inventory](../oracle/phase2/p0-candidate-protocol-v2.json),
+SHA-256
+`ce3b5c950ef61858af060109e9ac1050bc0851e6324625fed43343086d310c57`.
+Preserve the earlier version-one protocol, original **13** suite owners,
+all **73** public obligations, all **13** named private waivers, and the
+unchanged total of **31,237** separately counted checks.
+
+Require the real owner of each matching category. Use the actual managed
+candidate recorder rather than its baseline-only reference, the corrected
+substitution recorder, and the complete original Python test output:
+**152** public records, **151** runnable successes, one genuine debug
+skip, and the complete unchanged private-waiver list. Require all real
+Python buffer exports and callback events, **64** locale cases with
+**192** locale transitions, **32** genuine thread starts and joins,
+**1,024** thread-side cases, **2,176** actual matching calls, and the
+separately published genuine-interpreter protocol.
+
+Authenticate the exact two-build version-two native provenance and
+separately caller-pinned, reversible canonical activation before
+importing any candidate. Keep every original matcher guard and canonical
+project root unchanged. Preserve complete source-ordered records,
+actual stdout and stderr, every mismatch, and exclusively created
+full-report and failure archives. Do not count a wrapper, a fallback,
+a copied guard, another engine, or an existing compiled file as an
+independent candidate.
+
+Preserve a genuine initial source-only failure:
+`reject-forged-interpreter-rust-candidate_import_count`. Its preliminary
+whole-source SHA-256 was **NOT CAPTURED**. The original hostile fixture
+incorrectly rejected a valid import count of two; the corrected hostile
+case rejects the actually invalid count of zero. Do not relabel either
+failed preliminary self-test as passing.
+
+Both pinned, isolated source-only self-tests pass byte-identically,
+accept **35** positive controls, and reject **427** hostile controls.
+All actual candidate, reference, native-build, promotion, interpreter,
+thread, file, timing, and holdout counters remain zero. Independently
+authenticate every original suite and specialized recorder against the
+frozen phase-one standard without changing its denominator.
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/run_frozen_p0_candidate_v2.py --self-test
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/run_frozen_p0_candidate_v2.py --self-test
+```
+
+The runner freeze is not a passing candidate. Corrected C, Rust, and Zig
+source builds, canonical activation, complete native-candidate results,
+memory safety, and performance remain **NOT MEASURED** or **NOT RUN**.
+The expanded final comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze genuine isolated-interpreter checks for each native engine
 
 Freeze the [candidate interpreter controller](../tools/run_owned_candidate_subinterpreters_v1.py),
