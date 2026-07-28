@@ -7,6 +7,31 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Correct the Zig setup check without touching either engine
+
+The first repaired-Zig test stopped because its original file-owner reader
+returned seven details while the safety check required nine. Correct only
+that boundary: verify the two missing ownership details directly from the
+same authenticated file descriptor, reject changed or multiply linked
+files, and retain the original reverse-order recovery rules.
+
+Freeze the [corrected Zig activation source](../tools/activate_verified_native_candidate_v7.py),
+SHA-256
+`98002a0a283ffec24670bcb9f35546c5720d2a7a1d098257729d244918022f8e`;
+[owner-verification and recovery protocol](../oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V7.md),
+SHA-256
+`f333b50f9810cf246ae659c6d07eb4c63b8e2114d07b485b50d570ab272f22f8`;
+and [exact descriptor-verification contract](../oracle/phase2/verified-native-activation-v7.json),
+SHA-256
+`62375f7d013b7b02a160b9492e5aa249b7af556041f2c86f20e7bfd5ad6885b1`.
+
+Both ordinary and clean-environment source and context checks pass.
+Neither original Zig file was opened or changed by the checks. The
+corrected activation and matching tests have **NOT YET RUN**. The exact
+first-run failure archive has **NOT YET BEEN PRESERVED**; the graph still
+authenticates **139** evidence files and **144** references. Speed,
+memory, and undefined behavior remain **NOT MEASURED**.
+
 ## Record the first repaired-Zig setup failure
 
 The original repaired-Zig test controller ran once and exited **1** before
