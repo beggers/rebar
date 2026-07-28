@@ -7,6 +7,31 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the next independently built C repair
+
+Preserve the actual **1,262** C differences and use the original Python
+records to address the **32** observed old-style match-pickling failures.
+Keep the **64** existing modern-pickling results. Freeze two separately
+built first-party C engines, each using its own source directory and all
+**7** compiler and inspection steps. The **14** total steps have **NOT
+YET RUN**.
+
+The [first-party C build verifier](../tools/reproduce_owned_c_pickle_source_build_v13.py)
+has SHA-256
+`697b0959acf12ae779553f6c2654663d0358cd8c834f59b39850aad2b1fd683c`.
+The [offline build protocol](../oracle/phase2/C-PICKLE-SOURCE-BUILD-V13.md)
+has SHA-256
+`2b8cdfcfa3274b2ebcf6eac29fd3680fa9c748efe2084cd65b0edd780ab2d387`.
+The [exact two-build contract](../oracle/phase2/c-pickle-source-build-v13.json)
+has SHA-256
+`29a8afd92b7d3b533b8c0ba804946d31d107ebecef7ca27993eb1b8b9d1abc7d`.
+
+Ordinary and clean-environment source and context checks authenticate
+the current **141** evidence files and **146** references. They run no
+compiler, candidate, or matching test. The new build, compatibility,
+speed, memory, and undefined behavior remain **NOT MEASURED**. The final
+holdout remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Preserve the genuine repaired-Zig setup failure
 
 Publish the exact first failed Zig controller without repeating it. The

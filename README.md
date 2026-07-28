@@ -28,6 +28,7 @@ original setup failure is preserved and is not a matching result.
 The repaired C engine completed all **13** test groups: **8** groups
 passed, **5** contained **1,262** differences, and no test worker
 crashed. Its **7,325** passing checks are not a passing full suite.
+A further first-party C fix is frozen but has not yet been built or tested.
 
 Overall speed relative to Python: **NOT MEASURED**. Benchmarking starts
 only after three independent engines pass all compatibility checks.
@@ -97,7 +98,7 @@ slowdown greater than **20%**. There is no winner.
 - [Frozen Python compatibility tests](oracle/phase1/P0-COMPLETENESS-V1.md).
 - [Proof the candidate engines are independently built](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Evidence-backed C match-pickling compatibility repair](oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V2.md).
-- [Reproducible offline build rules for the corrected C engine](oracle/phase2/C-PICKLE-SOURCE-BUILD-V12.md).
+- [Reproducible offline build rules for the corrected C engine](oracle/phase2/C-PICKLE-SOURCE-BUILD-V13.md).
 - [Corrected safe recovery rules for both existing Zig engine files](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V7.md).
 - [Complete original Python compatibility tests for repaired Zig](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V1.md).
 - [Why the first repaired-Zig test stopped before any matching began](oracle/phase2/ZIG-CAMPAIGN-PREFLIGHT-FAILURE-V1.md).
