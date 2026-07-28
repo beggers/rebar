@@ -7,6 +7,59 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Complete and independently verify the Python correctness standard
+
+Freeze the [complete human-readable Python compatibility standard](../oracle/phase1/P0-COMPLETENESS-V1.md),
+SHA-256
+`1457b15ce0ac80eb0247ec3bc5ad7fad4675478881e5fe7160070225f7e43798`,
+the [complete canonical correctness inventory](../oracle/phase1/p0-completeness-v1.json),
+SHA-256
+`cc703915bf08b4a4d3caf399729d6afd4b583287633bd5db25db3a20671cd47f`,
+and the [independent, fail-closed correctness verifier](../tools/verify_p0_completeness_v1.py),
+SHA-256
+`0bb256c3d1140688f0f466d90cae020345aafcb5d3e8130b38b09e9de3930a0c`.
+
+All **13** genuine Python reference suites pass, covering exactly
+**31,237** separately counted case executions. Individually account for
+all **165** upstream test methods, **151** runnable public passes, the
+one real debug-only public skip, and exactly **13** named private
+implementation waivers. Independently map all **45** inherited and
+**28** additional public compatibility requirements and all **34**
+summary mappings.
+
+Preserve an actual pre-publication verification failure: verifier source
+`9f7eb0006d878aaaed57d2e58f5bc0c4951c9d02b111fbaafe3071bd0edc349e`
+correctly failed in both environments when it mistakenly interpreted the
+original Python subinterpreter's **23**-field provenance summary as the
+complete source report. Preserve the actual `SubinterpreterOracleError`
+and repair the verifier with the source owner's exact provenance shape;
+do not alter, rerun, or mislabel either Python reference.
+
+The corrected verifier reproduces byte-identical passing results in both
+ordinary and empty environments. Its source-only controls pass all
+**12** positive cases and reject all **201** hostile cases. Its complete
+read-only gate authenticates **34** frozen sources, all **11** compressed
+archives and publication receipts, and all **524,005,764** independently
+streamed original evidence bytes. It verifies complete general, scanner,
+buffer, PEP 688, subinterpreter, simultaneous-thread, managed-lifetime,
+replacement, public-type, and locale reference vectors without starting
+any new Python reference, thread, or candidate.
+
+Reproduce the complete read-only verification using the exact frozen pins:
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/verify_p0_completeness_v1.py --verify \
+  --source-sha256 0bb256c3d1140688f0f466d90cae020345aafcb5d3e8130b38b09e9de3930a0c \
+  --document-sha256 cc703915bf08b4a4d3caf399729d6afd4b583287633bd5db25db3a20671cd47f \
+  --explanation-sha256 1457b15ce0ac80eb0247ec3bc5ad7fad4675478881e5fe7160070225f7e43798
+```
+
+The Python correctness reference is **PASS**. Full candidate correctness,
+candidate speed, and native memory are **NOT MEASURED**. The expanded
+final comparison is **NOT GENERATED** and **NOT OPENED**. No candidate
+has been selected.
+
 ## Verify all simultaneous Python-thread reference cases
 
 Only after separately freezing, committing, and pushing the
