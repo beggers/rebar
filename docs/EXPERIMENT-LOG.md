@@ -7,6 +7,45 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete safely recoverable Rust test
+
+Run repaired, independently built Rust exactly once against all **13**
+original Python test groups. All **13** workers complete and expose
+**1,087** actual compatibility differences and **7,438** verified
+passing checks. There are **zero** infrastructure failures. The
+candidate result is **FAIL**, not a qualifying replacement.
+
+Announce the recovery journal before changing the four original Rust
+files. Restore each exact original inode before publishing. Preserve all
+test output in the [complete compressed Rust failure archive](../oracle/phase2/evidence/repaired-rust-original-campaign-v3-rust-phase2-v11-rust-dual-overlay-original-p0-failures.json.gz),
+SHA-256
+`3ac7736c127d13d3fad579c4ab9974c6a83612b4253f7921ed3e44269f3a82ad`,
+and [separate durable publication receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v3-rust-phase2-v11-rust-dual-overlay-original-p0-failures-publication-receipt.json),
+SHA-256
+`97f0b8c47823b20cd04740e3fe2883189cc648d49769015800c0998e6698c281`.
+A successful receipt preserves an actual Rust failure; it does not make
+Rust pass.
+
+Regenerate the [current headline graph](evidence/candidate-current-overview-v28.svg)
+from [frozen graph inputs](evidence/candidate-current-overview-v28.inputs.json)
+and [complete machine-readable results](evidence/candidate-current-overview-v28.json).
+The [graph renderer](../tools/render_candidate_current_overview_v28.py)
+has SHA-256
+`bd0f3311157128dcb4d9d17e79353bbd73d50ad08a61cce8bde65b17beef08bf`.
+Its inputs have SHA-256
+`6d64de8b7b364afd1281d0c4be2a444bf7146a2a232df4c8bc27dd77895dc97d`;
+its results have SHA-256
+`8ec3034aff9c4830686a6946f340be729f2eb2b606b74cdf18c9a7f816a0d754`;
+and its graph has SHA-256
+`dd78e23ad42599da713f2f204967f981ce694f91e4e70a8da341b7aa91f9c597`.
+The graph preserves all **145** evidence owners and **150** references
+without inventing unavailable per-group Rust or Zig results.
+
+Keep the C and Zig losses, all **31,237** original checks, and every
+historical failure. Speed, memory, and undefined behavior remain
+**NOT MEASURED**. The expanded holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the C build against the latest real results
 
 Freeze two independent first-party C source builds against all **143**

@@ -15,15 +15,15 @@ Python, another regular-expression package, or another candidate does not count.
 Python passes all **31,237** frozen compatibility checks. No replacement
 has passed them, so there is not yet a drop-in alternative or a speed winner.
 
-![Python passes all 31,237 checks; C has 1,262 differences; Zig has 2,172 differences; no replacement qualifies and speed is not measured](docs/evidence/candidate-current-overview-v27.svg)
+![Python passes all 31,237 checks; Rust has 1,087 differences, C 1,262, and Zig 2,172; no replacement qualifies and speed is not measured](docs/evidence/candidate-current-overview-v28.svg)
 
 Rust, C, Zig, C++, and Go each use an independently written engine.
 Both repaired Rust and repaired Zig now produce two identical builds
-without an external regular-expression package. Repaired Zig has now
-completed all **13** Python test groups: it has **2,172** actual
-compatibility differences, no test-worker failures, and is not a
-replacement. Its earlier zero-test setup failure remains separately
-preserved. Repaired Rust has not yet taken the complete matching test.
+without an external regular-expression package. Both completed all **13**
+Python test groups without test-worker failures. Repaired Rust has
+**1,087** compatibility differences; repaired Zig has **2,172**. Neither
+is a replacement. Zig's earlier zero-test setup failure remains
+separately preserved.
 
 The repaired C engine completed all **13** test groups: **8** groups
 passed, **5** contained **1,262** differences, and no test worker
@@ -36,7 +36,7 @@ only after three independent engines pass all compatibility checks.
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
-| Rust | Two identical repaired first-party builds | Repair: NOT MEASURED. Original: 7,461 verified; five groups failed | NOT MEASURED |
+| Rust | Two identical repaired first-party builds | All 13 groups completed; 1,087 differences; not qualified | NOT MEASURED |
 | C | Independently repeated repaired native build | 7,325 verified; 1,262 differences; five groups failed; not qualified | NOT MEASURED |
 | Zig | Two identical independently repaired builds | All 13 groups completed; 2,172 differences; not qualified | NOT MEASURED |
 | C++ | Two matching source builds | 128 verified; 12 groups failed; not qualified | NOT MEASURED |
@@ -46,10 +46,10 @@ only after three independent engines pass all compatibility checks.
 ## Detailed compatibility
 
 The detailed C column uses its latest matching-tested repair. The Rust and
-Zig columns below preserve their earlier per-group results; the newer Zig
-run separately recorded **2,172** differences across all **13** groups.
+Zig columns preserve earlier per-group results; the latest complete runs
+recorded **1,087** and **2,172** differences respectively.
 
-| Python behavior | Cases | Rust | C | Zig (earlier) | C++ | Go |
+| Python behavior | Cases | Rust (earlier) | C | Zig (earlier) | C++ | Go |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | Python's original runnable public tests | 151 | 151 | 151 | 151 | 43 failures | 38 failures |
 | General public behavior | 864 | 864 | 864 | 864 | 40 failures | 153 failures |
