@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1660" height="1700" viewBox="0 0 1660 1700" role="img" aria-labelledby="v22-title v22-description">
+<title id="v22-title">Building a faster Python re: the corrected C runner stopped before matching</title>
+<desc id="v22-description">Python passes all 31,237 original reference checks. None of six replacement families is fully compatible. The latest corrected C campaign started one real runner, but its runner raised an AttributeError before any candidate worker or matching case began. Its matching result is not measured. An earlier C campaign separately failed all 13 test groups before matching. All previous candidate failures remain visible. There are exactly 105 evidence files and 110 separately authenticated history paths. The exact original C binary was restored. Speed, memory and the 4,194,304-case final comparison remain not measured.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.title{font-size:33px;font-weight:760;fill:#16324f}.heading{font-size:24px;font-weight:740;fill:#16324f}.body{font-size:15px;fill:#42556c}.name{font-size:18px;font-weight:720;fill:#16324f}.pass{font-size:15px;font-weight:750;fill:#00794c}.fail{font-size:15px;font-weight:740;fill:#a15e00}.pending{font-size:15px;font-weight:740;fill:#53667b}.big{font-size:25px;font-weight:760;fill:#16324f}.foot{font-size:12px;fill:#53667b}</style>
+<rect width="1660" height="1700" rx="22" fill="#f4f7fb"/>
+<text x="54" y="68" class="title">Can we build a faster replacement for Python re?</text>
+<text x="56" y="98" class="body">The latest C runner stopped before testing a single match. Compatibility and speed remain unproven.</text>
+<rect x="54" y="122" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="68" y="165" class="big">31,237</text>
+<text x="68" y="201" class="body">original Python reference checks</text>
+<rect x="374" y="122" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="388" y="165" class="big">0 of 6</text>
+<text x="388" y="201" class="body">fully compatible replacements</text>
+<rect x="694" y="122" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="708" y="165" class="big">0</text>
+<text x="708" y="201" class="body">latest C matching cases observed</text>
+<rect x="1014" y="122" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="1028" y="165" class="big">105</text>
+<text x="1028" y="201" class="body">independently verified evidence files</text>
+<rect x="1334" y="122" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="1348" y="165" class="big">NOT MEASURED</text>
+<text x="1348" y="201" class="body">speed and memory</text>
+<rect x="54" y="244" width="1552" height="1040" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="76" y="285" class="heading">1. Does it behave like Python?</text>
+<text x="77" y="312" class="body">The original reference has 13 groups and 31,237 cases. A runner error is not a matching result.</text>
+<rect x="75" y="335" width="1510" height="71" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="361" class="name">Python re</text>
+<text x="1564" y="361" class="pass" text-anchor="end">PASSED</text>
+<text x="96" y="387" class="body">31,237 of 31,237 original Python reference checks passed.</text>
+<rect x="75" y="417" width="1510" height="71" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="443" class="name">C — latest corrected runner</text>
+<text x="1564" y="443" class="fail" text-anchor="end">RUNNER FAILED</text>
+<text x="96" y="469" class="body">One runner failed before starting any test worker. Matching: NOT MEASURED.</text>
+<rect x="75" y="499" width="1510" height="71" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="525" class="name">C — earlier runner attempt</text>
+<text x="1564" y="525" class="fail" text-anchor="end">RUNNER FAILED</text>
+<text x="96" y="551" class="body">All 13 earlier test groups failed before matching; these failures are preserved.</text>
+<rect x="75" y="581" width="1510" height="71" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="607" class="name">C — earlier matching build</text>
+<text x="1564" y="607" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="633" class="body">7,197 verified passes and 2,094 genuine matching differences.</text>
+<rect x="75" y="663" width="1510" height="71" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="689" class="name">Rust</text>
+<text x="1564" y="689" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="715" class="body">7,461 verified passes and 2,042 genuine matching differences.</text>
+<rect x="75" y="745" width="1510" height="71" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="771" class="name">Zig</text>
+<text x="1564" y="771" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="797" class="body">3,583 verified passes and 1,764 genuine matching differences.</text>
+<rect x="75" y="827" width="1510" height="71" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="853" class="name">C++</text>
+<text x="1564" y="853" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="879" class="body">128 verified passes, 2,308 matching differences and five runner failures.</text>
+<rect x="75" y="909" width="1510" height="71" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="935" class="name">Go</text>
+<text x="1564" y="935" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="961" class="body">128 verified passes, 4,518 matching differences and four runner failures.</text>
+<rect x="75" y="991" width="1510" height="71" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="1017" class="name">Fortran</text>
+<text x="1564" y="1017" class="pending" text-anchor="end">NOT READY</text>
+<text x="96" y="1043" class="body">Independently built engine outputs differ. Matching: NOT MEASURED.</text>
+<text x="77" y="1094" class="body">Latest cause: the runner expected a missing runner_source_sha256 field and exited before matching.</text>
+<text x="77" y="1122" class="body">Latest evidence: one failed runner; zero candidate workers; passing and mismatch counts NOT MEASURED.</text>
+<text x="77" y="1150" class="body">Previous evidence: 13 separate old runner failures; 12 ownership errors and one reference-decoding error.</text>
+<text x="77" y="1178" class="body">The exact original C binary, permissions and inode were restored; the repaired binary is not active.</text>
+<text x="77" y="1206" class="body">105 actual evidence files = 103 preserved files + the latest genuine report and its receipt.</text>
+<text x="77" y="1234" class="body">All 110 distinct signed historical evidence references are authenticated; none are silently recounted.</text>
+<rect x="54" y="1300" width="1552" height="220" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="76" y="1342" class="heading">2. Is it faster than Python?</text>
+<text x="78" y="1376" class="body">NOT MEASURED. There is no tested speed, memory, confidence interval, ranking or winner.</text>
+<text x="78" y="1410" class="body">The planned 4,194,304-case final comparison has not been generated, opened or timed.</text>
+<text x="78" y="1444" class="body">Next: repair the independently proven missing runner field; then rerun all original correctness cases.</text>
+<text x="58" y="1564" class="foot">Inputs SHA-256: 6843292a1f1d62d4635be4737a1565554cee8ec9f359506bc95a94cb80af7b58</text>
+<text x="58" y="1590" class="foot">Renderer SHA-256: a07bf3d6e6d8dc28c206218f14e2ed6f6089e31c66dbab2961979409b30fc955</text>
+<text x="58" y="1616" class="foot">Actual corrected C report SHA-256: a37a70f7ab9e4dcc72b176ca51fb1bfe8514d906431e8f02f269871a8b946810</text>
+<text x="58" y="1642" class="foot">Actual corrected C receipt SHA-256: 8a16520de9ac80aac1a6ea6d9a6cec3778379d35a611a52a2bca692685645c81</text>
+</svg>

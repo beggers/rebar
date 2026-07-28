@@ -7,6 +7,46 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the corrected C runner's actual one-process failure
+
+Run the separately frozen, recovery-safe corrected C controller exactly
+once using the exact independently reproduced first-party C binary. The
+real aggregate process starts, then fails before starting any matching
+worker: the aggregate passes its own Python argument object to a worker
+that requires a different `runner_source_sha256` field. Its complete
+signed output records `AttributeError: 'Namespace' object has no
+attribute 'runner_source_sha256'`.
+
+Record exactly **1** aggregate process, **1** infrastructure failure,
+**0** candidate workers, and **0** completed test groups. The original
+**13** groups and **31,237** cases remain the frozen requirement, not an
+observed pass or a matching total. Correctness, verified passing cases,
+and semantic mismatches remain **NOT MEASURED**. Preserve the first C
+attempt's separate **13** runner failures and all **30** independently
+owned historical C records.
+
+Preserve the [complete independently recovered one-process failure](../oracle/phase2/evidence/repaired-c-original-campaign-v2-c-phase2-v9-original-p0-failures.json.gz),
+SHA-256
+`a37a70f7ab9e4dcc72b176ca51fb1bfe8514d906431e8f02f269871a8b946810`,
+and [exact durable failure and original-file-restoration receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v2-c-phase2-v9-original-p0-failures-publication-receipt.json),
+SHA-256
+`8a16520de9ac80aac1a6ea6d9a6cec3778379d35a611a52a2bca692685645c81`.
+These two new owners bring the complete preserved inventory to **105**
+actual evidence files and **110** independently authenticated historical
+references. The actual original C native module is restored with inode
+`430300`, mode `0755`, and SHA-256
+`075350a17d4909cd6f8dbe5e808e7b6444760f54bb60af013e0f812e22cfb7fd`.
+
+The [current results graph](../docs/evidence/candidate-current-overview-v22.svg)
+shows the genuine Python baseline, all independently implemented
+historical candidate results, the separately preserved **13** previous
+C runner failures, and the **1** new pre-matching failure. It does not
+represent either C attempt as an executed compatibility test.
+
+Speed, memory, and undefined behavior are **NOT MEASURED**. No candidate
+qualifies. The **4,194,304**-case final comparison remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze safe recovery for the corrected full C run
 
 Preserve all **13** original Python test groups, all **31,237** original

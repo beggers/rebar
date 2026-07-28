@@ -18,21 +18,21 @@ and Go—build reproducibly, but their previously tested versions remain
 incompatible. Fortran has not yet produced matching repeat builds. None
 of these engines wraps an external regular-expression package.
 
-A repaired C engine now builds identically twice. Its full rerun exposed
-two test-runner problems before matching: **12** groups rejected
-Python-compatible public type names, and **1** could not decode its
-saved Python reference. All **13** failures are preserved. Repaired C matching,
-speed, and memory are **NOT MEASURED**. The final comparison remains
-**NOT OPENED**. Separate Rust and Zig source repairs have not yet
-been built.
+A repaired C engine builds identically twice. Its first test attempt
+recorded **13** test-runner failures. A corrected attempt reduced those
+to **1** separately recorded runner error before any matching test
+started. Both results are preserved; neither is a compatibility result.
+Repaired C matching, speed, and memory remain **NOT MEASURED**. The final
+comparison remains **NOT OPENED**. Separate Rust and Zig source repairs
+have not yet been built.
 
-![Python passes all 31,237 original checks; the five previous replacements remain incompatible; the rebuilt C engine hit 13 recorded test-runner failures before matching; speed and memory are not measured](docs/evidence/candidate-current-overview-v21.svg)
+![Python passes all 31,237 compatibility checks; five original from-scratch engines fail; repaired C has one recorded test-runner error before matching; speed and memory have not been measured](docs/evidence/candidate-current-overview-v22.svg)
 
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
 | Rust | Two matching builds | 7,461 verified; five groups failed; not qualified | NOT MEASURED |
-| C | Original and repaired builds match independently | Original: 7,197 verified; six groups failed. Repair: 13 test-runner failures; matching not measured | NOT MEASURED |
+| C | Original and repaired builds match independently | Original: 7,197 verified; six groups failed. Repair: first 13 runner failures; then 1; matching not measured | NOT MEASURED |
 | Zig | Two matching original builds; capture repair not built | 3,583 verified; seven groups failed; not qualified | NOT MEASURED |
 | C++ | Two matching source builds | 128 verified; 12 groups failed; not qualified | NOT MEASURED |
 | Go | Two matching first-party builds | 128 verified; 4,518 differences; four worker failures | NOT MEASURED |
@@ -41,8 +41,8 @@ been built.
 ## Detailed compatibility
 
 The table shows the last completed matching results for each original engine.
-The repaired C run is reported separately in the headline: its test runner
-failed before any matching result could be measured.
+The repaired C attempts are reported separately in the headline: both test
+runners failed before a matching result could be measured.
 
 | Python behavior | Cases | Rust | C | Zig | C++ | Go |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -92,10 +92,11 @@ slowdown greater than **20%**. There is no winner.
 - [Independent, from-scratch engine audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Corrected original-test and ownership rules](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V3.md), [exact frozen contract](oracle/phase2/six-family-p0-producer-v3.json), and [source-only test producer](tools/run_owned_six_family_original_p0_producer_v3.py); all original tests and both Python references are preserved.
 - [Complete corrected-suite protocol](oracle/phase2/P0-CANDIDATE-PROTOCOL-V9.md), [frozen test contract](oracle/phase2/p0-candidate-protocol-v9.json), [isolated original-test worker](tools/run_frozen_p0_candidate_worker_v7.py), and [full-suite runner](tools/run_frozen_p0_candidate_v9.py); no candidate has yet been run through this corrected path.
-- [Recovery-safe corrected C test rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V2.md), [exact recovery contract](oracle/phase2/repaired-c-original-campaign-v2.json), and [complete safely recovered runner](tools/run_owned_repaired_c_original_campaign_v2.py); the repaired candidate has not yet been rerun.
+- [Recovery-safe corrected C test rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V2.md), [exact recovery contract](oracle/phase2/repaired-c-original-campaign-v2.json), and [complete safely recovered runner](tools/run_owned_repaired_c_original_campaign_v2.py); its one recorded test-runner failure is preserved.
 - [Frozen first-party Zig capture repair](oracle/phase2/ZIG-SCANNER-CAPTURE-SOURCE-REPAIR-V1.md), [exact one-change contract](oracle/phase2/zig-scanner-capture-source-repair-v1.json), and [private-snapshot-only repair tool](tools/apply_owned_zig_scanner_capture_source_repair_v1.py); the repaired Zig engine has not been built or tested.
 - [Complete original C test-runner failure](oracle/phase2/evidence/frozen-p0-candidate-v8-c-phase2-v8-original-p0-failures.json.gz) and [independently recovered failure and original-file proof](oracle/phase2/evidence/repaired-c-original-campaign-v1-c-phase2-v8-original-p0-failures.json.gz).
-- [Current graph inputs](docs/evidence/candidate-current-overview-v21.inputs.json), [machine-readable results](docs/evidence/candidate-current-overview-v21.json), and [graph generator](tools/render_candidate_current_overview_v21.py).
+- [Complete corrected C runner failure](oracle/phase2/evidence/repaired-c-original-campaign-v2-c-phase2-v9-original-p0-failures.json.gz) and [independent failure and exact-restoration receipt](oracle/phase2/evidence/repaired-c-original-campaign-v2-c-phase2-v9-original-p0-failures-publication-receipt.json).
+- [Current graph inputs](docs/evidence/candidate-current-overview-v22.inputs.json), [machine-readable results](docs/evidence/candidate-current-overview-v22.json), and [graph generator](tools/render_candidate_current_overview_v22.py).
 - [Full reproduction instructions and source-pinned checks](docs/REPRODUCING.md).
 - [Experiment log, raw evidence, previous graphs, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Expanded final-comparison plan](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
@@ -112,9 +113,10 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_frozen_p0_candidate_worker_v7.py --self-test
 "$PY" -I -B tools/run_frozen_p0_candidate_v9.py --self-test
 "$PY" -I -B tools/run_owned_repaired_c_original_campaign_v2.py --self-test
-"$PY" -I -B tools/render_candidate_current_overview_v21.py --verify \
-  --source-sha256 617a64691bf9da7730e44bfed96fe20dbd9c8e38b575e0daf8a3432dbf2625e9 \
-  --campaign-archive-sha256 a8319a686c2486e27374bfb9c6ada4e4ec104c27c1cafdbc2205c98f40fa9fb7 \
-  --campaign-receipt-sha256 034207331f8d61ef69f510cb42b9babe921b85570c571198ea8eb310c75ffecd \
-  --manifest-sha256 704b2e07e32260ac741b0a914e2ae04a3deb583de317ba170432f85126af5139
+"$PY" -I -B tools/render_candidate_current_overview_v22.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v22.py --verify \
+  --source-sha256 a07bf3d6e6d8dc28c206218f14e2ed6f6089e31c66dbab2961979409b30fc955 \
+  --campaign-archive-sha256 a37a70f7ab9e4dcc72b176ca51fb1bfe8514d906431e8f02f269871a8b946810 \
+  --campaign-receipt-sha256 8a16520de9ac80aac1a6ea6d9a6cec3778379d35a611a52a2bca692685645c81 \
+  --manifest-sha256 6843292a1f1d62d4635be4737a1565554cee8ec9f359506bc95a94cb80af7b58
 ```
