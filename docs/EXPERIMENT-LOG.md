@@ -7,6 +7,134 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete C compatibility test and preserve every failure
+
+Use the separately frozen, independently reviewed version-five
+compatibility worker only after its source and full **31,237**-case
+protocol are committed and pushed. First verify the frozen Python
+context and the separately published reproducible C source build.
+Temporarily install only the actual twice-built, independently written
+C native engine. Back up the user's original **149,976-byte** native
+library, SHA-256
+`075350a17d4909cd6f8dbe5e808e7b6444760f54bb60af013e0f812e22cfb7fd`,
+with its original permissions and genuine recovery journal.
+
+Start all **13** frozen test-group processes. Exactly seven test groups
+pass, independently verifying **7,197** matching cases. Six groups
+fail: **248** public-type and serialization differences in **6,912**
+cases; **336** replacement differences in **5,120** cases; **1,392**
+changing-buffer differences in **10,240** cases; **114** public-surface
+differences in **1,376** cases; **four** retained-buffer lifetime
+differences in **264** cases; and a genuine failing original
+isolated-interpreter process. The interpreter failure is a separate
+test-infrastructure defect, not a demonstrated C matching difference.
+Its real worker creates two interpreters and performs one initialization,
+then rejects missing source-size evidence before running any of its
+**128** cases. A separate supplementary interpreter run never starts.
+Preserve the exact failure without inventing a matching result.
+
+The first confirmed public-surface difference is Python's `DEBUG`
+compilation behavior: Python emits debugging output on each compilation
+and does not return a previously cached compiled pattern; the C
+implementation incorrectly reuses a cached pattern. The four verified
+buffer-exporter differences concern a retained scanner releasing a
+buffer during cyclic garbage collection sooner than Python. These are
+genuine compatibility failures, not speed measurements. All passing
+records inside a failed group remain evidence; no failed group
+qualifies the candidate.
+
+Preserve the complete outer
+[C compatibility failure archive](../oracle/phase2/evidence/frozen-p0-candidate-v5-c-phase2-v5-failures.json.gz),
+SHA-256
+`f8c4465be0d982445f79ec66744c710b20c64bd308eaff8a12ba571b5bb0ef91`,
+and its
+[exclusive publication receipt](../oracle/phase2/evidence/frozen-p0-candidate-v5-c-phase2-v5-failures-publication-receipt.json),
+SHA-256
+`10b1bb903ae3e6cf6b0b732e0518bfadce8f17a0021c36ba86bef1e641da07a1`.
+Preserve the actual worker's complete **16,598,602-byte** uncompressed
+[13-group C failure report](../oracle/phase2/evidence/frozen-p0-candidate-worker-v3-c-phase2-v5-failures.json.gz),
+compressed SHA-256
+`149bc01c571c15034896d26eb05708985a7a3a49e361e26199682860f8c83e13`,
+uncompressed SHA-256
+`f21559e3525c66c719a9e50150a314d7e5d0ce74f406cc281b265ae28644f359`,
+and its independently synchronized
+[actual worker publication receipt](../oracle/phase2/evidence/frozen-p0-candidate-worker-v3-c-phase2-v5-failures-publication-receipt.json),
+SHA-256
+`fc68840c6bbf0e9bc1510894b575d0111246401eba70e8706e2a33542365fc55`.
+A publication receipt's `PASS` verifies durable publication only;
+both actual C results are `FAIL`.
+
+Keep every original per-group report and receipt, including the
+successful
+[memory-lifetime report](../experiments/rust_public_practice_v1/c-managed-buffer-lifetime-v1-phase2-v5-managed.json.gz)
+and
+[memory-lifetime receipt](../experiments/rust_public_practice_v1/c-managed-buffer-lifetime-v1-phase2-v5-managed-publication-receipt.json),
+the successful
+[scanner and pattern-comment report](../experiments/rust_public_practice_v1/c-scanner-verbose-comments-v1-phase2-v5-verbose.json.gz)
+and
+[scanner and pattern-comment receipt](../experiments/rust_public_practice_v1/c-scanner-verbose-comments-v1-phase2-v5-verbose-publication-receipt.json),
+the complete failing
+[public-type report](../experiments/rust_public_practice_v1/c-public-type-identity-serialization-v1-phase2-v5-types.json.gz)
+and
+[public-type receipt](../experiments/rust_public_practice_v1/c-public-type-identity-serialization-v1-phase2-v5-types-publication-receipt.json),
+the failing
+[replacement report](../experiments/rust_public_practice_v1/c-substitution-buffer-semantics-v2-phase2-v5-substitution.json.gz)
+and
+[replacement receipt](../experiments/rust_public_practice_v1/c-substitution-buffer-semantics-v2-phase2-v5-substitution-publication-receipt.json),
+the failing
+[changing-buffer report](../experiments/rust_public_practice_v1/c-shape-changing-buffer-semantics-v2-phase2-v5-shape.json.gz)
+and
+[changing-buffer receipt](../experiments/rust_public_practice_v1/c-shape-changing-buffer-semantics-v2-phase2-v5-shape-publication-receipt.json),
+and the original
+[isolated-interpreter failure](../oracle/phase2/evidence/owned-candidate-subinterpreters-v1-c-phase2-v5-subinterpreters-failures.json.gz)
+and
+[isolated-interpreter failure receipt](../oracle/phase2/evidence/owned-candidate-subinterpreters-v1-c-phase2-v5-subinterpreters-failures-publication-receipt.json).
+
+Restore the exact original C binary immediately after the failed run;
+independently recheck its complete SHA-256, **149,976-byte** size,
+original **0755** permissions, and new inode. Preserve the exact
+**2,152-byte**
+[byte-identical copy of the authentic private restoration receipt](../oracle/phase2/evidence/frozen-p0-candidate-v5-c-phase2-v5-restoration-receipt.json),
+SHA-256
+`2bc016478561ea93c4783773a89789af4534368b9388f2d81baf2aefcdeb9dde`.
+The genuine original receipt remains in its private synchronized
+recovery directory; the repository file is an exact preservation copy,
+not a separate claim of activation-time publication.
+
+Generate a readable current-results graph directly from all **16**
+published candidate evidence files and the preserved restoration
+receipt. Preserve the initial rejected renderer, SHA-256
+`41d4ef6640804ce41449ac57a6f81ad00196a080562b3b39f254e04ed4a29e40`:
+the complete pre-commit check found an extra blank line at the end of
+its source. Remove only that line, regenerate all graph outputs, and
+rerun both clean-environment verifications before publishing. Freeze the
+[independently verified current-results renderer](../tools/render_candidate_current_overview_v5.py),
+SHA-256
+`23bbf48ed0784c7cc2026d32c63b186ede18ff45eb16c1f96f7973719c22231b`,
+the
+[complete source-pinned graph inputs](../docs/evidence/candidate-current-overview-v5.inputs.json),
+SHA-256
+`2af61339325a9e7d22c2ea2359ee212bb34adeec5321431ba696d5449a8502a2`,
+the
+[generated complete graph summary](../docs/evidence/candidate-current-overview-v5.json),
+SHA-256
+`c2e7b033cb5fb237ab10ee0edbed6f0890780f2c3014cdb66255e3ef483c166b`,
+and the
+[generated plain-language current-results graph](../docs/evidence/candidate-current-overview-v5.svg),
+SHA-256
+`cbdbf8123b40fc33a06f265cf5a96e3d152a4fa9a3a3afb865aa56cbfa88d070`.
+Keep the preceding version-four graph and every historical loss
+unchanged. The new renderer passes **30** accepted and **274** rejected
+synthetic controls in both normal and empty environments.
+
+In total, retain **16** actual candidate and test-group evidence files,
+plus the byte-identical restoration receipt. Preserve both earlier
+version-three and version-four C worker failures unchanged. C is
+**NOT QUALIFIED**. No Rust or Zig compatibility case, final benchmark,
+memory comparison, or timing result is implied. Performance remains
+**NOT MEASURED**; the expanded **4,194,304**-case final comparison
+remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Correct the complete compatibility worker without losing a test
 
 Preserve both genuine earlier attempts to run the source-built C engine.
