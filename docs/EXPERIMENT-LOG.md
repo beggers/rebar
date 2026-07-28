@@ -7,6 +7,57 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Require crash-verified native provenance inside every real interpreter
+
+Preserve the published version-one interpreter controller, SHA-256
+`45e9b47c7c635fc30ebdb2cb4830d2d1fe382a5a7e4b663fb1a8e0112779e1a7`,
+and its exact original protocols. Independent integration review found
+that it authenticates a genuine native activation report and recovery
+journal but does not independently validate the corrected activation's
+new, crash-safe per-file promotion intent. Do not rewrite the frozen
+controller, silently weaken the activation proof, or describe version
+one as validating an inode record it never reads.
+
+Instead, separately freeze the [version-two real-interpreter controller](../tools/run_owned_candidate_subinterpreters_v2.py),
+SHA-256
+`7dd5b4a5cdfecbe6dd674632bb5cee456ee877291de88ffc76ba60472d81408a`,
+its [machine-readable corrected interpreter protocol](../oracle/phase2/candidate-subinterpreters-v2.json),
+SHA-256
+`f740da205f8431898f0a1089df5419f01612c2384def78c7d9831748ecca1b24`,
+and its [corrected interpreter explanation](../oracle/phase2/CANDIDATE-SUBINTERPRETERS-V2.md),
+SHA-256
+`c7a501f4487dfbe547c2cf8f5844be5179da035e7ae5f5e89f803234f3bf32dc`.
+
+Authenticate the exact, separately published corrected native activator;
+the complete no-follow report, receipt, and **0600** recovery journal;
+and every role's real **0600** staged promotion intent. Require the
+same actual source-built native bytes, device, inode, private owner,
+candidate family, original source, and unchanged matcher guard before
+creating any interpreter. Keep the original genuine **128** case
+identities, **394** actual matching observations, and **11** separate
+initialization and cleanup calls. An extra verification of these
+**128** cases is supplementary and never increases the original
+**31,237**-case correctness denominator.
+
+Both ordinary and empty-environment source-only tests agree exactly:
+**421** valid controls, **522** rejected attacks, and zero actual
+candidate imports, native loads, source builds, file operations,
+interpreter creations, activations, clocks, or holdout access. The
+protocol truthfully records **one** published corrected C source-build
+family, no Rust or Zig build, and **zero** actual native activations.
+
+```sh
+/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/run_owned_candidate_subinterpreters_v2.py --self-test
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/run_owned_candidate_subinterpreters_v2.py --self-test
+```
+
+Neither real interpreter results nor candidate correctness are implied.
+Compatibility, memory safety, and performance remain **NOT MEASURED**;
+the final holdout remains **NOT OPENED**.
+
 ## Freeze corrected, dependency-free Rust matching-engine source
 
 Freeze the complete **nine-source** Rust ownership closure before starting
