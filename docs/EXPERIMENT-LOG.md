@@ -7,6 +7,75 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete original Python tests against the C++ engine
+
+Run exactly one independently frozen C++ compatibility campaign. Use
+the genuine two-phase, first-party C++ source build, its single native
+engine and bridge, the pinned reversible activation, and all **13**
+unchanged original Python test suites. Do not use Python's regex
+engine, another candidate, an external regex library, new cases, a
+performance timer, or the hidden final comparison.
+
+All **13** original suite workers actually run in their frozen order,
+covering the original **31,237**-case denominator. Exactly **1** group
+passes: the **128**-case isolated-interpreter test, including its
+genuine **394** calls and **11** created and destroyed interpreters.
+
+Seven groups report exactly **2,308** actual, fully preserved regex
+behavior differences: **43** original Python public-test differences,
+**40** general public differences, **992** scanner differences,
+**181** buffer differences, **600** managed-memory differences,
+**336** public-surface differences, and **116** buffer-exporter
+differences.
+
+The other **5** groups are separately preserved test-worker failures:
+verbose patterns, public types, substitutions, changing-size buffers,
+and threaded patterns. They are not falsely counted as additional
+regex mismatches. No worker crashes, times out, or loses its captured
+output. Individual worker process IDs were not recorded and are not
+invented.
+
+The actual reversible C++ activation passes. The genuine recovery
+journal has SHA-256
+`88bf947e41e321e2732073900b5598e0730352c320f148471966d530eddc770a`.
+Report-based restoration passes before publication and returns the
+originally absent native file to its original absent state.
+
+Preserve the complete, owner-only
+[first C++ original-Python compatibility failure](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures.json.gz),
+SHA-256
+`0462adbd6ee7bafb274578462117513669de9b849473a2e1ada441407bc814a2`,
+**3,244,833** compressed bytes; the complete original report contains
+**97,639,407** bytes, SHA-256
+`58d918b4febe8fcbc5b9f7945c376ae639455fb69da46336b674a8dca1dd0fae`.
+Preserve its separate, owner-only
+[verified C++ failure-publication receipt](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures-publication-receipt.json),
+SHA-256
+`7b1156c07441acd579149ca9b3aedcb9308eb75a130ce7f7df98aa6a89d776f6`,
+**3,936** bytes. Its publication `status: PASS` records the actual
+`candidate_status: FAIL`. Both files are individually synchronized,
+mode **0600**, and have genuinely distinct file identities.
+
+Reproduce the complete actual result in the independently verified
+[C++-aware headline graph renderer](../tools/render_candidate_current_overview_v17.py),
+SHA-256
+`2f14cad826b33ad873b1c46c986d8c7112ad9771cef309939203b64601340325`;
+[exact evidence-bound graph inputs](evidence/candidate-current-overview-v17.inputs.json),
+SHA-256
+`e8ac1d9954169d71da75724056d15cdad86918503da9ec2f36a7442e049945af`;
+[complete machine-readable compatibility summary](evidence/candidate-current-overview-v17.json),
+SHA-256
+`605dbf715d7461474a1a787db3b75369ddf1f74477864e757b39fce4635735f0`;
+and [clear, accessible current-results graph](evidence/candidate-current-overview-v17.svg),
+SHA-256
+`975f044c388ec2ab0a975d1a8b72f0d335247c17a7c71efc384c311cfae9051e`.
+
+C++ is **NOT COMPATIBLE**. Fully qualified candidates remain **0**.
+All **65** earlier actual evidence owners remain preserved; the two
+new C++ owners bring the repository total to **67**. Speed, memory,
+and undefined behavior remain **NOT MEASURED**. The final expanded
+comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze complete, recoverable C++ and Go compatibility runs
 
 Freeze the full-candidate recorder before activating or testing either

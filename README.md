@@ -14,13 +14,16 @@ Python, another regular-expression package, or another candidate does not count.
 
 Python passes all **31,237** frozen compatibility checks. No replacement
 has passed them. Five independently written engines—Rust, C, Zig, C++,
-and Go—build reproducibly. Rust, C, and Zig have been tested and are
-still incompatible; C++ and Go are built but **NOT TESTED**. Fortran
-compiles, but its two builds still differ. No candidate wraps an
-external regular-expression engine. Speed and memory are
-**NOT MEASURED**; the final comparison is **NOT OPENED**.
+and Go—build reproducibly. Rust, C, Zig, and C++ have now been tested
+and are still incompatible; Go is built but **NOT TESTED**. All **13**
+C++ test groups were attempted; only **128** cases belong to a passing
+group. All **2,308** behavior differences and **5** separate test-worker
+failures are preserved. Fortran compiles, but its two builds still
+differ. No candidate wraps an external regular-expression engine.
+Speed and memory are **NOT MEASURED**; the final comparison is
+**NOT OPENED**.
 
-![Python passes all 31,237 checks; Rust, C, and Zig remain incompatible; C++ and Go build reproducibly with safe activation rules but remain untested; Fortran engines remain nonreproducible; and speed is not measured](docs/evidence/candidate-current-overview-v16.svg)
+![Python passes all 31,237 checks; Rust, C, Zig, and C++ are incompatible; C++ has 2,308 confirmed differences and five separately recorded worker failures; Go is untested; and speed is not measured](docs/evidence/candidate-current-overview-v17.svg)
 
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
@@ -28,7 +31,7 @@ external regular-expression engine. Speed and memory are
 | Rust | Two matching builds | 7,461 verified; five groups failed; not qualified | NOT MEASURED |
 | C | Two matching builds | 7,197 verified; six groups failed; not qualified | NOT MEASURED |
 | Zig | Two matching builds; original failure preserved | 3,583 verified; seven groups failed; not qualified | NOT MEASURED |
-| C++ | Two matching source builds | NOT TESTED | NOT MEASURED |
+| C++ | Two matching source builds | 128 verified; 12 groups failed; not qualified | NOT MEASURED |
 | Go | Two matching first-party builds | NOT TESTED | NOT MEASURED |
 | Fortran | Three attempts; engines differ | NOT TESTED | NOT MEASURED |
 
@@ -38,23 +41,23 @@ experiments are preserved in the [experiment log](docs/EXPERIMENT-LOG.md).
 
 ## Detailed compatibility
 
-| Python behavior | Cases | Rust | C | Zig |
-| --- | ---: | ---: | ---: | ---: |
-| Python's original runnable public tests | 151 | 151 | 151 | 151 |
-| General public behavior | 864 | 864 | 864 | 864 |
-| Scanners and callbacks | 1,024 | 1,024 | 1,024 | 960; 64 failures |
-| Memory views and buffers | 768 | 768 | 768 | 768 |
-| Total initial matching checks | 2,807 | 2,807 | 2,807 | 2,743; 64 failures |
-| Additional memory-lifetime safety, counted separately | 1,024 | 1,024 | 1,024 | 1,024 |
-| Verbose scanners and pattern comments | 2,854 | 2,854 | 2,854 | 2,234; 620 failures |
-| Additional public types, copying, and serialization | 6,912 | 248 failures | 248 failures | 248 failures |
-| Replacement and buffer behavior | 5,120 | 336 failures | 336 failures | 64 failures |
-| Changing-size buffer behavior | 10,240 | 1,392 failures | 1,392 failures | 672 failures |
-| Broad public behavior and real locales | 1,376 | 66 failures | 114 failures | 96 failures |
-| Python buffer exporters and retained scanners | 264 | 264 | 4 failures | 264 |
-| Simultaneous isolated Python interpreters | 128 | Setup failed; matching not established | Setup failed; no cases verified | Cleanup and report verification failed; no complete suite |
-| Patterns shared across simultaneous Python threads | 512 | 512 | 512 | 512 |
-| Full frozen compatibility gate | 31,237 | Failed; 7,461 verified; five groups failed | Failed; 7,197 verified; six groups failed | Failed; 3,583 verified; seven groups failed |
+| Python behavior | Cases | Rust | C | Zig | C++ |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| Python's original runnable public tests | 151 | 151 | 151 | 151 | 43 failures |
+| General public behavior | 864 | 864 | 864 | 864 | 40 failures |
+| Scanners and callbacks | 1,024 | 1,024 | 1,024 | 960; 64 failures | 992 failures |
+| Memory views and buffers | 768 | 768 | 768 | 768 | 181 failures |
+| Total initial matching checks | 2,807 | 2,807 | 2,807 | 2,743; 64 failures | 1,256 failures |
+| Additional memory-lifetime safety, counted separately | 1,024 | 1,024 | 1,024 | 1,024 | 600 failures |
+| Verbose scanners and pattern comments | 2,854 | 2,854 | 2,854 | 2,234; 620 failures | Test worker failed |
+| Additional public types, copying, and serialization | 6,912 | 248 failures | 248 failures | 248 failures | Test worker failed |
+| Replacement and buffer behavior | 5,120 | 336 failures | 336 failures | 64 failures | Test worker failed |
+| Changing-size buffer behavior | 10,240 | 1,392 failures | 1,392 failures | 672 failures | Test worker failed |
+| Broad public behavior and real locales | 1,376 | 66 failures | 114 failures | 96 failures | 336 failures |
+| Python buffer exporters and retained scanners | 264 | 264 | 4 failures | 264 | 116 failures |
+| Simultaneous isolated Python interpreters | 128 | Setup failed; matching not established | Setup failed; no cases verified | Cleanup and report verification failed; no complete suite | 128 |
+| Patterns shared across simultaneous Python threads | 512 | 512 | 512 | 512 | Test worker failed |
+| Full frozen compatibility gate | 31,237 | Failed; 7,461 verified; five groups failed | Failed; 7,197 verified; six groups failed | Failed; 3,583 verified; seven groups failed | Failed; 128 verified; 2,308 mismatches; five worker failures |
 
 Python's genuine debug-only test is skipped equally and is not included in the denominator.
 Passing examples inside a failed group do not qualify that group or the replacement.
@@ -64,21 +67,15 @@ is not counted as a regex mismatch. The outer test runner also rejects the
 interpreter report because the two recorders name its verified file-sync
 field differently. Both failures are recorded separately.
 
-![Historical starting checks: earlier Python, Rust, C, and Zig binaries each pass 2,807 starting cases; these are not results for the current candidate sources](docs/evidence/candidate-correctness-overview-v2.svg)
-
 ![Historical replacement checks recorded before the current C run; this earlier graph does not contain the newly recorded 336 C replacement failures](docs/evidence/substitution-buffer-overview-v2.svg)
 
 ![Historical scanner checks: Python passes all 2,854; earlier Rust and C each fail 116, and earlier Zig fails 1,364](docs/evidence/scanner-verbose-overview-v1.svg)
 
 ![Historical memory-safety checks: earlier Python, Rust, C, and Zig binaries each pass 1,024 cases; these are not results for the current candidate sources](docs/evidence/managed-buffer-lifetime-overview-v1.svg)
 
-![Detailed public correctness: Python and the Rust engine match on all 864 public examples](docs/evidence/rust-public-correctness-v1.svg)
-
-![Falsified historical changing-buffer report: its 1,888 recorded C differences include 496 test-harness errors](docs/evidence/shape-changing-buffer-overview-v1.svg)
-
-This historical graph contains a known test-harness error; its red bar is
-**NOT QUALIFIED**. Complete failures, corrections, and raw reports remain in
-the [experiment log](docs/EXPERIMENT-LOG.md).
+These detailed graphs describe older development builds, not the current
+compatibility results. The [experiment log](docs/EXPERIMENT-LOG.md)
+preserves the remaining historical graphs, including rejected results.
 
 ## Detailed development speed
 
@@ -110,31 +107,13 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 
 ## Evidence and reproduction
 
-- [Complete 31,237-check compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md), [machine-readable test inventory](oracle/phase1/p0-completeness-v1.json), and [independent fail-closed verifier](tools/verify_p0_completeness_v1.py).
-- [Complete, recoverable original Python test campaigns](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V1.md), [frozen full-test and result-publication inventory](oracle/phase2/six-family-p0-campaign-v1.json), and [independently verified full-campaign recorder](tools/run_owned_six_family_original_p0_campaign_v1.py); a future C++ or Go run must attempt all **13** original test groups, retain all **31,237** results and failures, restore its original files, and publish private, reproducible evidence. No campaign or new candidate has been run.
-- [Original Python compatibility tests and safe native-loading rules for all six engines](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V2.md), [frozen six-engine test inventory](oracle/phase2/six-family-p0-producer-v2.json), and [independently verified original-test runner](tools/run_owned_six_family_original_p0_producer_v2.py); preserves all **31,237** original cases and all **65** actual evidence files, and permits a C++ or Go test only after proving that its own recorded build has actually been activated and can be restored. No new engine has been tested.
-- [Original Python compatibility tests for all six first-party engines](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V1.md), [frozen six-language test inventory](oracle/phase2/six-family-p0-producer-v1.json), and [independently verified six-language test runner](tools/run_owned_six_family_original_p0_producer_v1.py); preserves all **31,237** original cases, real buffer, thread, and interpreter behavior, six separate matching engines, and its **61** frozen historical evidence files without claiming an untested engine has passed.
-- [Corrected complete candidate standard](oracle/phase2/P0-CANDIDATE-PROTOCOL-V7.md), [frozen 31,237-case candidate inventory](oracle/phase2/p0-candidate-protocol-v7.json), [independently verified full-test worker](tools/run_frozen_p0_candidate_worker_v5.py), and [complete candidate runner](tools/run_frozen_p0_candidate_v7.py); all **13** original suites, all **57** evidence records, the real Zig interpreter failure, and every candidate mismatch remain unchanged.
-- [Preserved earlier complete candidate standard](oracle/phase2/P0-CANDIDATE-PROTOCOL-V6.md), [original inventory](oracle/phase2/p0-candidate-protocol-v6.json), and [earlier candidate runner](tools/run_frozen_p0_candidate_v6.py); its original Zig failure and discovered interpreter-report defect remain available.
-- Complete actual compatibility failures for [C](oracle/phase2/evidence/frozen-p0-candidate-v5-c-phase2-v5-failures.json.gz), [Rust](oracle/phase2/evidence/frozen-p0-candidate-v5-rust-phase2-v5-failures.json.gz), and [Zig](oracle/phase2/evidence/frozen-p0-candidate-v6-zig-phase2-v6-failures.json.gz); the [experiment log](docs/EXPERIMENT-LOG.md) links every independent worker report, publication receipt, failure, and restoration.
-- [Actual isolated-interpreter Zig failure](oracle/phase2/evidence/owned-candidate-subinterpreters-v3-zig-phase2-v6-subinterpreters-failures.json.gz) and [independent failure receipt](oracle/phase2/evidence/owned-candidate-subinterpreters-v3-zig-phase2-v6-subinterpreters-failures-publication-receipt.json); 385 genuine matching calls precede cleanup failure.
-- [Complete reproducible C++ source-build report](oracle/phase2/evidence/native-source-build-v4-cpp-phase2-v4.json.gz) and [independent C++ publication receipt](oracle/phase2/evidence/native-source-build-v4-cpp-phase2-v4-publication-receipt.json); two fresh source builds produce the same native library, without running a candidate or claiming Python compatibility.
-- [Complete first Go source-build failure](oracle/phase2/evidence/native-source-build-v4-go-phase2-v4-failures.json.gz) and [verified Go failure publication receipt](oracle/phase2/evidence/native-source-build-v4-go-phase2-v4-failures-publication-receipt.json); the real Go compiler accidentally includes the Python bridge in the Go engine and fails before building a native library or running a compatibility check.
-- [Complete isolated-Go source-build failure](oracle/phase2/evidence/native-source-build-v5-go-phase2-v5-failures.json.gz) and [verified isolated-Go failure receipt](oracle/phase2/evidence/native-source-build-v5-go-phase2-v5-failures-publication-receipt.json); the genuinely isolated Go engine compiles but the separate Python bridge fails on the original `SSIZE_MAX` compiler error.
-- [Complete successful first-party Go build](oracle/phase2/evidence/native-source-build-v6-go-phase2-v6.json.gz) and [independent Go build receipt](oracle/phase2/evidence/native-source-build-v6-go-phase2-v6-publication-receipt.json); all **26** build and inspection steps succeed and two independently generated engines, bridges, and interfaces match exactly, without running a Python compatibility check.
-- [Original Fortran reproducibility failure](oracle/phase2/evidence/native-source-build-v4-fortran-phase2-v4-failures.json.gz) and [verified original Fortran failure receipt](oracle/phase2/evidence/native-source-build-v4-fortran-phase2-v4-failures-publication-receipt.json); both independent engine and bridge builds compile, but the two Fortran engine files differ.
-- [Independently repeated Fortran reproducibility failure](oracle/phase2/evidence/native-source-build-v5-fortran-phase2-v5-failures.json.gz) and [verified repeated Fortran failure receipt](oracle/phase2/evidence/native-source-build-v5-fortran-phase2-v5-failures-publication-receipt.json); all **26** compiler and binary-inspection processes succeed and both bridges match, but the engine files and their recorded build identifiers still differ.
-- [Falsified Fortran build-identifier correction](oracle/phase2/evidence/native-source-build-v6-fortran-phase2-v6-failures.json.gz) and [verified correction-failure receipt](oracle/phase2/evidence/native-source-build-v6-fortran-phase2-v6-failures-publication-receipt.json); all **26** build and inspection steps succeed and generated engine identifiers are genuinely absent, but the two engine files still differ.
-- [Frozen first-party build-forensics rules](oracle/phase2/NATIVE-SOURCE-BUILD-V7.md), [exact six-engine source and compiler inventory](oracle/phase2/native-source-build-v7.json), and [independently verified binary-forensics recorder](tools/reproduce_owned_native_source_build_v7.py); preserves every earlier build and freezes how a future unchanged Fortran build will record the actual differing bytes and file sections. No new build or compatibility test has been run.
-- [Frozen first-party Go and Fortran build corrections](oracle/phase2/NATIVE-SOURCE-BUILD-V6.md), [exact correction and source inventory](oracle/phase2/native-source-build-v6.json), and [independently verified build recorder](tools/reproduce_owned_native_source_build_v6.py); the Go correction produces matching builds, while the Fortran correction is experimentally falsified; neither is a Python compatibility result.
-- [Corrected from-scratch build rules for all six languages](oracle/phase2/NATIVE-SOURCE-BUILD-V5.md), [exact source and compiler inventory](oracle/phase2/native-source-build-v5.json), and [independent source-build recorder](tools/reproduce_owned_native_source_build_v5.py); preserves the real isolated-Go bridge failure and the independently repeated Fortran reproducibility failure without claiming either candidate is compatible.
-- [Preserved original six-language build rules](oracle/phase2/NATIVE-SOURCE-BUILD-V4.md), [original frozen inventory](oracle/phase2/native-source-build-v4.json), and [original source-build recorder](tools/reproduce_owned_native_source_build_v4.py); retains the actual C++, Go, and Fortran build outcomes unchanged.
-- [Reversible, first-party-only engine activation rules](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V4.md), [frozen activation and recovery inventory](oracle/phase2/verified-native-activation-v4.json), and [independently verified safe activation recorder](tools/activate_verified_native_candidate_v4.py); admits only actually reproducible source builds, safely restores each existing file, rejects failed Fortran, and does not activate or qualify any candidate by itself.
-- [Reversible six-engine native-loading rules](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V3.md), [frozen source and recovery inventory](oracle/phase2/verified-native-activation-v3.json), and [verified native activation and crash recovery](tools/activate_verified_native_candidate_v3.py); only a genuinely reproducible, independently source-built engine may be loaded, and no candidate is claimed to have been run.
-- [Six-engine first-party ownership and no-wrapping standard](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md), [complete source and dependency inventory](oracle/phase2/candidate-independence-v2.json), and [independent six-language ownership audit](tools/audit_candidate_independence_v2.py); verifies all 25 engine sources, both project dependency files, and all 34 actual C and Rust failure artifacts without claiming that a source audit proves correctness.
-- [Current source-pinned headline graph inputs](docs/evidence/candidate-current-overview-v16.inputs.json), [complete current graph summary](docs/evidence/candidate-current-overview-v16.json), and [reproducible current-results graph generator](tools/render_candidate_current_overview_v16.py); the graph independently authenticates all six engine designs, C++ and Go's reproducible builds and unexecuted safe activation rules, every earlier Go and Fortran failure, the C/Rust/Zig compatibility results, and all **65** preserved evidence files.
-- [Complete experiment log, raw evidence, rejected approaches, and preserved failures](docs/EXPERIMENT-LOG.md).
-- [Proposed expanded final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); the final cases remain **NOT GENERATED** and **NOT OPENED**.
+- [Frozen Python compatibility tests](oracle/phase1/P0-COMPLETENESS-V1.md), [all 31,237 test cases](oracle/phase1/p0-completeness-v1.json), and [independent test verifier](tools/verify_p0_completeness_v1.py).
+- [First-party engine ownership and no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md), [exact source inventory](oracle/phase2/candidate-independence-v2.json), and [source verifier](tools/audit_candidate_independence_v2.py).
+- [Complete original-test rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V1.md), [frozen test inventory](oracle/phase2/six-family-p0-campaign-v1.json), and [reproducible candidate test runner](tools/run_owned_six_family_original_p0_campaign_v1.py).
+- [Complete first-party C++ failure](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures.json.gz) and [independent publication and recovery receipt](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures-publication-receipt.json).
+- [Headline graph inputs](docs/evidence/candidate-current-overview-v17.inputs.json), [complete machine-readable results](docs/evidence/candidate-current-overview-v17.json), and [reproducible graph generator](tools/render_candidate_current_overview_v17.py).
+- [Full experiment log, build reports, previous graphs, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
+- [Proposed 4,194,304-case final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); examples remain **NOT GENERATED** and **NOT OPENED**.
 - [Original objective](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; [later clarifications](AMENDMENTS.md).
 
 Run the source-only safety checks without opening the final comparison:
@@ -164,7 +143,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/activate_verified_native_candidate_v4.py --self-test
 "$PY" -I -B tools/activate_verified_native_candidate_v4.py --verify-frozen-context
 "$PY" -I -B tools/audit_candidate_independence_v2.py --self-test
-"$PY" -I -B tools/render_candidate_current_overview_v16.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v17.py --self-test
 ```
 
 Verify the current headline graph without rerunning a candidate or
@@ -201,10 +180,10 @@ opening a benchmark:
   --protocol-sha256 a7a5ce16bb7a98dfd6e0e4f9f3777912687aa09259cc1669c5e0932da2287313 \
   --contract-sha256 cfc774cfce1a0c4298f01e298d7ffaa982300375ba117e316bff2ebbf0be7819
 
-"$PY" -I -B tools/render_candidate_current_overview_v16.py --verify \
-  --source-sha256 4228b6b74708ecd3ba143b1556ae9e6c0592b118ce22285751f7b53d976a95c4 \
+"$PY" -I -B tools/render_candidate_current_overview_v17.py --verify \
+  --source-sha256 2f14cad826b33ad873b1c46c986d8c7112ad9771cef309939203b64601340325 \
   --go-bridge-sha256 52101f0afe29a568e3c2e22a06d47c89c051e08a0e2024ad4891c5ae2d60fb6a \
-  --manifest-sha256 d96cc1b22b7ef87c1717cfcddefb98b5ec73b9d7a746cdf09e7556f05969c754
+  --manifest-sha256 e8ac1d9954169d71da75724056d15cdad86918503da9ec2f36a7442e049945af
 ```
 
 The [complete compatibility standard](oracle/phase1/P0-COMPLETENESS-V1.md)
