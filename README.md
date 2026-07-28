@@ -12,18 +12,15 @@ Python, another regular-expression package, or another candidate does not count.
 
 ## Headline results
 
-Python's original reference passed all **31,237** frozen compatibility
-checks. A stricter replay has since exposed **96** original cases where
-the test helper behaves differently when run as a script or imported.
-Candidate testing is paused until Python agrees with itself in the exact
-candidate execution context. No cases will be removed. There is no
-compatible replacement, measured speedup, or winner.
+The original **31,237** Python compatibility checks exposed **96** cases
+where the saved Python reference and replacement tests used different
+execution contexts. Two independent Python processes have now agreed on
+all **6,912** affected checks, including all **96** cases, in the correct
+context. Replacement testing remains paused until the runners use these
+verified answers. No case has been removed. There is no compatible
+replacement, measured speedup, or winner.
 
-The corrected, independently verified two-process Python reference is
-frozen but **NOT RUN**. Existing replacement test runners still point at
-the rejected reference and cannot run until they are corrected.
-
-![Python disagrees with itself on 96 of the original 31,237 checks, so replacement testing is paused; previously tested Rust, C, and Zig have 1,036, 1,230, and 1,764 historical differences; no replacement qualifies and speed is not measured](docs/evidence/candidate-current-overview-v37.svg)
+![Two independent Python processes pass all 6,912 corrected reference checks; all six replacement engines remain blocked until their test runner uses the corrected answers; no replacement qualifies and performance is not measured](docs/evidence/candidate-current-overview-v38.svg)
 
 Each language below uses its own, independently written matching engine;
 the source and build checks reject outside matching packages and shared
@@ -41,7 +38,7 @@ measurements start only when three independent engines pass every check.
 
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
-| Python `re` | Candidate-context reference needs correction | Original: 31,237 / 31,237; replay: 96 context differences | Reference; not timed |
+| Python `re` | Corrected reference agrees in two independent processes | Original suite unchanged; corrected reference: 6,912 / 6,912 | Reference; not timed |
 | Rust | Corrected build repeated twice; test paused | Previous tested build: 8,965 verified; 1,036 differences | NOT MEASURED |
 | C | Independently written and built | 7,325 verified; 1,230 differences; all 13 groups completed | NOT MEASURED |
 | Zig | Independently written and built | 3,711 verified; 1,764 differences; all 13 groups completed | NOT MEASURED |

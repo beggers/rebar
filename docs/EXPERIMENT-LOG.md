@@ -7,6 +7,67 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Record the corrected Python-to-Python reference
+
+After committing and pushing the independently reviewed reference
+controller, run the exact frozen procedure once. Two genuinely
+independent Python processes, operating-system process IDs **81** and
+**82**, each execute every one of the **6,912** original public-type
+cases. Both agree on all **6,912** results, including all **96** cases
+that previously observed the wrong fixture module. Both actual
+reference status and durable publication status are **PASS**.
+
+The [complete corrected Python reference](../oracle/phase1/evidence/public-type-reference-context-v1-cpython-3-14-6-candidate-context-p0.json.gz)
+has SHA-256
+`c4906928850329fa3576576221e713ce653adae17a02a4de4bac4cb006389e05`
+and is **1,374,913** compressed bytes. The [independently durable
+two-process reference receipt](../oracle/phase1/evidence/public-type-reference-context-v1-cpython-3-14-6-candidate-context-p0-publication-receipt.json)
+has SHA-256
+`ff8ddfaa14ff2eb09bde02ecb3566c84d204a41373c6b842eb34598c4de2f966`
+and is **2,509** bytes. The complete **6,912**-record reference vector
+has SHA-256
+`6b26ac4eff9ec64cc3ae79872b3195b303a12bf40b96b55850b627857e614aa2`.
+The unchanged **96** affected records have SHA-256
+`587cf35555472940522d6ae3a73053fb7e98492befe581cc024444bed8e264ad`.
+The complete uncompressed reference archive has **73,371,145** bytes
+and SHA-256
+`bc6c0fc9b4e3ff57faecd7e6dda982c1099d170e09dd8ce5641c48872479bebd`.
+
+The [current plain-language corrected-reference graph](evidence/candidate-current-overview-v38.svg)
+distinguishes the passing Python baseline from the still-blocked
+replacement tests. Its [independent graph generator](../tools/render_candidate_current_overview_v38.py)
+has SHA-256
+`8d6b83cd31cdb8d1b02d94946a4f4583e818fb649010a38f35e02ff9c66eac37`.
+The [complete graph inputs](evidence/candidate-current-overview-v38.inputs.json)
+have SHA-256
+`754dca58a8423255fb00eb6869894b2bb79017afb59e36081b6d62b88d00ff89`;
+the [machine-readable results](evidence/candidate-current-overview-v38.json)
+have SHA-256
+`c8b1c018a018e4e3e26fb35c0901179945cf363d868019283f31689a8d5d411c`;
+the generated graph has SHA-256
+`7559d6ab328420d0b59741d38e003aafc4348bf7d3932c6e51b945c3069d7eaf`.
+Ordinary and empty-environment source and exact-evidence checks all
+pass; each source check rejects **270** hostile controls. Each exact
+graph check reads and verifies the complete corrected reference once.
+The authenticated lower bounds are **164** evidence owners and **169**
+history references, not an entire-repository census.
+
+The actual attempted, started, completed, and validated reference
+counts are each **two**. No candidate, benchmark, final-comparison
+case, or external matching package ran. All original **31,237** cases,
+**13** suites, **13** named private waivers, and genuine previous
+candidate differences remain unchanged. The additional **50**
+signature checks remain a separate passing reference.
+
+Replacement matching remains **BLOCKED**: the old original-suite
+producer and runners still refer to the rejected script-context
+reference. A separately frozen and independently reviewed successor
+must verify and use the complete corrected reference before any
+replacement test can start. Speed, memory, statistical confidence,
+and undefined behavior remain **NOT MEASURED**; runtime no-delegation
+remains **NOT ESTABLISHED**. The proposed **4,194,304** final cases
+remain **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the corrected Python-to-Python reference
 
 Freeze the complete correction before starting another Python reference
@@ -43,10 +104,11 @@ rejected script-context reference. Even a future passing corrected
 reference will not authorize any replacement test until a separately
 frozen producer consumes both genuine corrected reference records and
 their durable publication. All replacement matching remains
-**BLOCKED**. The current V37 headline graph remains accurate: the
-corrected reference has **NOT RUN**, speed and memory are **NOT
-MEASURED**, and the **4,194,304**-case final comparison remains
-**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+**BLOCKED**. At the time of this freeze, the V37 headline graph
+correctly recorded that the corrected reference had **NOT RUN**.
+Speed and memory were **NOT MEASURED**, and the **4,194,304**-case
+final comparison remained **NOT FROZEN**, **NOT GENERATED**, and
+**NOT OPENED**.
 
 ## Falsify the candidate-facing Python public-type reference
 
@@ -82,7 +144,7 @@ must not hide or waive either engine's actual failures.
 All further candidate matching is **BLOCKED** until two independently
 recorded Python references agree under the same execution context.
 
-The [reproducible current headline graph](evidence/candidate-current-overview-v37.svg)
+The [historical reference-falsification graph](evidence/candidate-current-overview-v37.svg)
 shows the actual Python-versus-Python failure, the pause, and the
 unchanged historical results. Its [independent graph generator](../tools/render_candidate_current_overview_v37.py)
 has SHA-256
