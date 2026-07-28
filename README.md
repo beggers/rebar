@@ -31,7 +31,7 @@ measurements start only when three independent engines pass every check.
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
-| Rust | Independently written and built | 8,965 verified; 1,036 differences; all 13 groups completed | NOT MEASURED |
+| Rust | Independently built; next observed fix frozen | 8,965 verified; 1,036 differences; all 13 groups completed | NOT MEASURED |
 | C | Independently written and built | 7,325 verified; 1,230 differences; all 13 groups completed | NOT MEASURED |
 | Zig | Independently written and built | 3,711 verified; 1,764 differences; all 13 groups completed | NOT MEASURED |
 | C++ | Independently written and built | 128 verified; 2,308 differences; five worker failures | NOT MEASURED |

@@ -38,6 +38,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Independent Rust public-compatibility repair](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V1.md), [exact three-block private-source contract](../oracle/phase2/rust-public-contract-source-repair-v1.json), and [first-party Rust public-source verifier](../tools/apply_owned_rust_public_contract_source_repair_v1.py); the repaired source was independently applied to both private builds. Its later complete compatibility test found **1,087** differences.
 - [First-party correction for the observed Rust flag-display failure](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V2.md), [exact private-source and genuine-Python flag contract](../oracle/phase2/rust-public-contract-source-repair-v2.json), and [independently written Rust repair verifier](../tools/apply_owned_rust_public_contract_source_repair_v2.py); all six upstream assertions and **5,128** Python flag values agree. Its independently rebuilt engine completed all **13** compatibility groups and recorded **1,036** differences.
 - [First actual remaining Rust compiled-pattern representation correction](../oracle/phase2/RUST-PUBLIC-CONTRACT-SOURCE-REPAIR-V3.md), [exact actual mismatch and preserved standalone-flag contract](../oracle/phase2/rust-public-contract-source-repair-v3.json), and [source-pinned first-party Rust representation verifier](../tools/apply_owned_rust_public_contract_source_repair_v3.py); the first real failing case is corrected in memory while all **5,128** standalone flag cases remain unchanged. Corrected compilation and matching have **NOT RUN**.
+- [Frozen independent builds of the next corrected first-party Rust engine](../oracle/phase2/RUST-PATTERN-REPR-SOURCE-BUILD-V13.md), [exact nine-source, two-phase, offline build contract](../oracle/phase2/rust-pattern-repr-source-build-v13.json), and [source-pinned first-party Rust build controller](../tools/reproduce_owned_rust_pattern_repr_source_build_v13.py); the procedure is frozen and independently checked. Its **28** compiler and inspection processes and corrected matching have **NOT RUN**.
 - [Independently reproducible corrected Rust build rules](../oracle/phase2/RUST-FLAG-SOURCE-BUILD-V12.md), [exact first-party toolchain and two-phase build contract](../oracle/phase2/rust-flag-source-build-v12.json), and [offline corrected Rust build verifier](../tools/reproduce_owned_rust_flag_source_build_v12.py); both independent builds and all **28** real compiler and inspection processes succeeded. A separately recorded full matching run finds **1,036** differences.
 - [Actual corrected Rust two-build evidence](../oracle/phase2/evidence/native-source-build-v12-rust-phase2-v12-rust-flag-original-p0.json.gz) and [separately durable corrected-build receipt](../oracle/phase2/evidence/native-source-build-v12-rust-phase2-v12-rust-flag-original-p0-publication-receipt.json); the receipt proves **28** real processes, two identical first-party builds, the corrected adapter, no outside matcher, and **zero** candidate tests. Its **PASS** means the build succeeded, not that the replacement passes Python's tests.
 - [Reproducible first-party C build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V8.md), [exact build inventory](../oracle/phase2/native-source-build-v8.json), and [independent two-build verifier](../tools/reproduce_owned_native_source_build_v8.py).
@@ -127,6 +128,11 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
   --source-sha256 1b3f8333f36a6262e962647719ed99b00dd1519a704bf7f07a5d1f1d56377db6 \
   --protocol-sha256 822857ed434cf1273c0d5eaf14f540d0398c744fee8e14b7b7734238dc2d9950 \
   --contract-sha256 c1c68590a1b45005fb709dc00a6a5f86e6564ed494e179fff9480ea5bed7b592
+"$PY" -I -B tools/reproduce_owned_rust_pattern_repr_source_build_v13.py \
+  --self-test \
+  --source-sha256 2ec050c9902cbb3a239ed3a2dce3258344300b40546e37aea374cf18a9c8b797 \
+  --protocol-sha256 3c486fdb63041b4f6060a6147186dd93c8339cbdff5f8060f597ab156ff05701 \
+  --contract-sha256 15023a0a484715f2d97ae5ea9649bb16fe3d30781d601635bda40c246c5906aa
 "$PY" -I -B tools/reproduce_owned_native_source_build_v11.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v1.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v2.py --self-test
@@ -344,6 +350,12 @@ decompressing a matching archive, or opening the final comparison:
   --source-sha256 1b3f8333f36a6262e962647719ed99b00dd1519a704bf7f07a5d1f1d56377db6 \
   --protocol-sha256 822857ed434cf1273c0d5eaf14f540d0398c744fee8e14b7b7734238dc2d9950 \
   --contract-sha256 c1c68590a1b45005fb709dc00a6a5f86e6564ed494e179fff9480ea5bed7b592
+
+"$PY" -I -B tools/reproduce_owned_rust_pattern_repr_source_build_v13.py \
+  --verify-frozen-context \
+  --source-sha256 2ec050c9902cbb3a239ed3a2dce3258344300b40546e37aea374cf18a9c8b797 \
+  --protocol-sha256 3c486fdb63041b4f6060a6147186dd93c8339cbdff5f8060f597ab156ff05701 \
+  --contract-sha256 15023a0a484715f2d97ae5ea9649bb16fe3d30781d601635bda40c246c5906aa
 
 "$PY" -I -B tools/run_owned_repaired_c_original_campaign_v4.py \
   --verify-frozen-context \
@@ -749,4 +761,35 @@ or overwrite its published reference archive and receipt.
   --source-sha256 00c543077bfbe38e5c48e9970f7881119d21cb32cf91e838d21587f8f820ada4 \
   --protocol-sha256 1e316b848e5d7a44b83a8f44605f08370faacb33074c2b79c042c76d9390a59f \
   --contract-sha256 0f87ef8926771cfe39e33d95b3b871f03c9f1c44fe932615f7067d391eb68f42
+```
+
+## Reproduce the corrected first-party Rust source builds
+
+Only run the following **after** the exact three Rust build-source owners
+have been independently reviewed, committed, and pushed. It creates two
+separate private source trees and records **28** actual offline compiler
+and binary-inspection processes. It does not run Rust matching tests;
+successful compilation does not qualify a candidate. Never reuse an
+existing evidence label or native-build directory.
+
+```sh
+"$PY" -I -B tools/reproduce_owned_rust_pattern_repr_source_build_v13.py \
+  --build \
+  --source-sha256 2ec050c9902cbb3a239ed3a2dce3258344300b40546e37aea374cf18a9c8b797 \
+  --protocol-sha256 3c486fdb63041b4f6060a6147186dd93c8339cbdff5f8060f597ab156ff05701 \
+  --contract-sha256 15023a0a484715f2d97ae5ea9649bb16fe3d30781d601635bda40c246c5906aa \
+  --label phase2-v13-rust-pattern-repr-original-p0 \
+  --owned-source-sha256 candidates/rust/Cargo.lock=267c3b21dc41432f7c5ee036b50b48d81f9228384780b4d13a6b41a8ad2cef63 \
+  --owned-source-sha256 candidates/rust/Cargo.toml=2e57ff8ad346ffc850d50eab429a0f05c14825c4984fd8c9bc36eab03239a966 \
+  --owned-source-sha256 candidates/rust/py_bridge.c=f8a0918aaf8a78f363f6d755770636d26acd45fb83c9abcf997a6e052748ea8b \
+  --owned-source-sha256 candidates/rust/src/lib.rs=c4901e83e359191badc39fbf42ea65f0eb07a3db870172acf8cae65ffb1eaf2d \
+  --owned-source-sha256 candidates/rust/src/newline.rs=13216ffbea967af121c77d57abe14906030e7f3a6906c554399511154a3d6d8b \
+  --owned-source-sha256 candidates/rust/src/search.rs=4612c86424b9cbcb193d7ace521f359d7e3507281e83d3bf7e7ef7d189dd68fe \
+  --owned-source-sha256 candidates/rust/src/stack.rs=5198a056e99bde5632169cfc5b07ad913910cdb1b30785dad4744ccb9a30809e \
+  --owned-source-sha256 candidates/rust/src/unicode_tables.rs=f33ac8b88ec2925ee096febb1815a8958b90cd2ca3c54217267d0c255f67a6af \
+  --owned-source-sha256 candidates/rust_candidate.py=6fb66ef6c3f143475426dd3d5b97c52dbe251f8d2ddd0ef3d5de7ec553a0351b \
+  --bridge-derived-sha256 4436bbb8ad180ee8f02dd4418187506ec0d5a33bdb5a79c424fc736253fa0257 \
+  --bridge-derived-bytes 176118 \
+  --public-derived-sha256 d47a976771206da468168ec22683e6d0204905a0f5b7e9e328fc1234b38f210e \
+  --public-derived-bytes 31934
 ```

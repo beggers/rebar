@@ -7,6 +7,43 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the first-party Rust build for the next observed Python difference
+
+Freeze two reproducible, independent builds of the next corrected Rust
+engine. The correction targets the first actual remaining observed failure,
+`pattern-and-match-representation/058`; its complete original case has
+SHA-256
+`1130da7818fe8b27a0d74f607bd4531c43f5f12ec9d6674419aa448786884d75`.
+Correct the compiled pattern's displayed flag order without changing the
+**5,128** separately verified standalone flag observations.
+
+The [first-party corrected Rust build controller](../tools/reproduce_owned_rust_pattern_repr_source_build_v13.py)
+has SHA-256
+`2ec050c9902cbb3a239ed3a2dce3258344300b40546e37aea374cf18a9c8b797`.
+The [independent two-build Rust protocol](../oracle/phase2/RUST-PATTERN-REPR-SOURCE-BUILD-V13.md)
+has SHA-256
+`3c486fdb63041b4f6060a6147186dd93c8339cbdff5f8060f597ab156ff05701`.
+The [exact first-party Rust source and build contract](../oracle/phase2/rust-pattern-repr-source-build-v13.json)
+has SHA-256
+`15023a0a484715f2d97ae5ea9649bb16fe3d30781d601635bda40c246c5906aa`.
+
+All four independently pinned ordinary and empty-environment source-only
+gates pass. They reject **176** hostile controls and independently
+authenticate all nine first-party sources, pinned offline Rust 1.95,
+the actual first failing example, the existing Rust, C, and Zig results,
+and the completed two-process **50**-check Python reference. No Rust
+source is changed and no compiler or candidate starts.
+
+An actual future build must create **two** separate private first-party
+source trees and run **28** distinct recorded compiler and binary-inspection
+processes. It may not use an outside matching package, Python's matching
+engine, another candidate, networking, or a prebuilt substitute. Those
+two source builds, corrected Rust matching, speed, memory, and runtime
+no-delegation have **NOT RUN**, are **NOT MEASURED**, or remain
+**NOT ESTABLISHED**. The original **31,237** cases and separately passed
+**50** reference checks remain unchanged. The final **4,194,304**-case
+holdout remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Validate Python's 50 additional public-signature checks twice
 
 Run the separately frozen Python-versus-Python reference exactly once.
