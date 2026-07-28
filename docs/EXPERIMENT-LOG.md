@@ -7,6 +7,29 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze safely recoverable Rust compatibility testing
+
+Keep all **31,237** original Python checks and both separately repaired
+Rust components. Add a durable, explicitly recoverable journal for all
+four original Rust source and native files before testing. Handle normal
+interruptions without claiming protection from a kill or power failure.
+
+The [recoverable Rust test controller](../tools/run_owned_repaired_rust_original_campaign_v3.py)
+has SHA-256
+`23819da6e6bb1ce8b27144a5d974b4bb0ecac845c844cb6fadae2ba01b2ef3d2`;
+the [recovery and original-test protocol](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V3.md)
+has SHA-256
+`c29edb7751045da17cce2052e028b92530d8eab5ba6b8adafc21135a746f7883`;
+and the [exact recovery contract](../oracle/phase2/repaired-rust-original-campaign-v3.json)
+has SHA-256
+`ab4b424570254201865394330e025850b4626dfe2eaacd4ec82f41d2e99b0980`.
+
+All ordinary and clean-environment source checks pass without installing
+signal handlers, reading or changing an original file, loading Rust, or
+running a test. Actual Rust matching, recovery, speed, memory, and
+undefined behavior remain **NOT MEASURED**. The expanded holdout remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the complete repaired Rust compatibility test
 
 Freeze all **13** original Python test groups and all **31,237** checks

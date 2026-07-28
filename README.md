@@ -97,7 +97,7 @@ slowdown greater than **20%**. There is no winner.
 - [Full experiment log, raw reports, past results, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Frozen Python compatibility tests](oracle/phase1/P0-COMPLETENESS-V1.md).
 - [Proof the candidate engines are independently built](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
-- [Complete original Python compatibility tests for repaired Rust](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V2.md).
+- [Recoverable original Python compatibility tests for repaired Rust](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V3.md).
 - [Evidence-backed C match-pickling compatibility repair](oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V2.md).
 - [Reproducible offline build rules for the corrected C engine](oracle/phase2/C-PICKLE-SOURCE-BUILD-V13.md).
 - [Corrected safe recovery rules for both existing Zig engine files](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V7.md).
