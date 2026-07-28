@@ -22,6 +22,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Frozen correction for the original C test coordinator](../oracle/phase2/P0-V9-LIVE-CONTEXT-ADAPTER-V1.md), [exact immutable original-worker adapter contract](../oracle/phase2/p0-v9-live-context-adapter-v1.json), and [independently verified original-worker adapter](../tools/run_owned_frozen_p0_v9_live_context_adapter_v1.py); all original corrected-suite worker records are preserved.
 - [Recovery-safe corrected C campaign rules](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V2.md), [exact restoration and full-test contract](../oracle/phase2/repaired-c-original-campaign-v2.json), and [complete recovery-safe original-suite controller](../tools/run_owned_repaired_c_original_campaign_v2.py); its one genuine runner failure and exact restoration are independently preserved.
 - [Complete repaired C original-suite rerun rules](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V3.md), [exact original-worker and recovery contract](../oracle/phase2/repaired-c-original-campaign-v3.json), and [safe complete-suite controller](../tools/run_owned_repaired_c_original_campaign_v3.py); all 13 original workers completed with 1,262 preserved semantic mismatches and zero infrastructure failures.
+- [Recovery-safe original Python tests for the rebuilt C engine](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V4.md), [frozen 31,237-check C test and recovery contract](../oracle/phase2/repaired-c-original-campaign-v4.json), and [independently pinned complete-suite controller](../tools/run_owned_repaired_c_original_campaign_v4.py); the **13** original worker groups and exact file restoration are frozen, but the new C matching test has **NOT YET RUN**.
 - [Frozen first-party C repair](../oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V1.md), [exact repair and preserved evidence](../oracle/phase2/first-party-source-repair-v1.json), and [private-snapshot-only repair tool](../tools/apply_owned_first_party_source_repair_v1.py); the original checked-in engine, all historical results, and the sealed final comparison remain unchanged.
 - [Evidence-backed C match-pickling repair](../oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V2.md), [exact private-source and original-evidence contract](../oracle/phase2/first-party-source-repair-v2.json), and [first-party C source-repair verifier](../tools/apply_owned_first_party_source_repair_v2.py); all 32 observed protocol-0/1 failures and all 64 higher-protocol observations are preserved. The later V15 experiment builds the repaired source twice; its matching remains **NOT MEASURED**.
 - [Separate first-party Rust repair](../oracle/phase2/RUST-SOURCE-REPAIR-V1.md), [exact Rust repair and preserved evidence](../oracle/phase2/rust-source-repair-v1.json), and [private Rust-snapshot-only repair tool](../tools/apply_owned_rust_source_repair_v1.py); the existing Rust engine and all its previous failures remain unchanged.
@@ -76,6 +77,10 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/run_owned_frozen_p0_v9_live_context_adapter_v1.py --self-test
 "$PY" -I -B tools/run_owned_repaired_c_original_campaign_v2.py --self-test
 "$PY" -I -B tools/run_owned_repaired_c_original_campaign_v3.py --self-test
+"$PY" -I -B tools/run_owned_repaired_c_original_campaign_v4.py --self-test \
+  --source-sha256 e1730319db687828e7a283574cfd3daa8fb41c936025965c140b5b9de12978a5 \
+  --protocol-sha256 79f5f81aedd85b9a59c121b0a3ae96ca3fc3307a34c1427464762ae569f4d473 \
+  --contract-sha256 83a00d475acb9e5e103ed9ed6f4a58e116da47db462322f4bb05bd406b4c09f4
 "$PY" -I -B tools/apply_owned_rust_public_contract_source_repair_v1.py --self-test
 "$PY" -I -B tools/reproduce_owned_native_source_build_v11.py --self-test
 "$PY" -I -B tools/run_owned_six_family_original_p0_campaign_v1.py --self-test
@@ -182,6 +187,12 @@ opening a benchmark:
   --inputs-sha256 f6d306dfc08b89604d9d89896a899049c1ba03b0ebfe674ebba036cc80898894 \
   --summary-sha256 48eaf71facc4e7bba79e6b8c6c2ad45ed56eaeecf553afd82e8fe402c0aa6160 \
   --svg-sha256 58725ecef05a1adf01d6c354512bf7101c212bf87f63c40cfdd9e225267f91ff
+
+"$PY" -I -B tools/run_owned_repaired_c_original_campaign_v4.py \
+  --verify-frozen-context \
+  --source-sha256 e1730319db687828e7a283574cfd3daa8fb41c936025965c140b5b9de12978a5 \
+  --protocol-sha256 79f5f81aedd85b9a59c121b0a3ae96ca3fc3307a34c1427464762ae569f4d473 \
+  --contract-sha256 83a00d475acb9e5e103ed9ed6f4a58e116da47db462322f4bb05bd406b4c09f4
 
 "$PY" -I -B tools/activate_verified_native_candidate_v6.py \
   --verify-frozen-context \

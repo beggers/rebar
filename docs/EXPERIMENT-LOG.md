@@ -7,6 +7,35 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the complete original Python test for the rebuilt C engine
+
+Freeze a recovery-safe test of the newly built first-party C engine against
+all **13** original Python groups and all **31,237** unchanged checks.
+Preserve the original Python adapter, C source, and installed native
+engine. The future test must authenticate the actual private build, stage
+it safely across filesystems, run **13** independently observed Python
+workers, restore the exact original native file, and retain every outcome.
+It must not use an obsolete runner or call another engine.
+
+The [complete C test controller](../tools/run_owned_repaired_c_original_campaign_v4.py)
+has SHA-256
+`e1730319db687828e7a283574cfd3daa8fb41c936025965c140b5b9de12978a5`;
+the [recovery and original-test protocol](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V4.md)
+has SHA-256
+`79f5f81aedd85b9a59c121b0a3ae96ca3fc3307a34c1427464762ae569f4d473`;
+and the [canonical exact test contract](../oracle/phase2/repaired-c-original-campaign-v4.json)
+has SHA-256
+`83a00d475acb9e5e103ed9ed6f4a58e116da47db462322f4bb05bd406b4c09f4`.
+
+Both normal and empty-environment source checks pass **56** positive
+controls and reject **95** unsafe or dishonest controls without starting a
+worker, reading the native engine, changing a signal handler, measuring
+performance, or opening the final comparison. The latest matching-tested C
+engine still has **1,262** differences; Rust has **1,087**, and Zig has
+**2,172**. The rebuilt C engine's matching is **NOT MEASURED** until its
+complete, separately authorized test actually runs. Keep the headline graph
+at its current **147** evidence files and **152** references.
+
 ## Build the repaired C engine twice from scratch
 
 Run the frozen C experiment once. Fourteen recorded compiler and inspection

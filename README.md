@@ -29,7 +29,8 @@ The latest fully tested C engine completed all **13** groups: **8** passed,
 **5** contained **1,262** differences, and no test worker crashed. Its
 **7,325** passing checks do not qualify it. A newer from-scratch C engine
 has now been built independently twice, producing identical native files.
-Whether that newer engine matches Python is **NOT MEASURED**.
+A recovery-safe protocol is frozen for testing it against all **13**
+original groups. Whether it matches Python is **NOT MEASURED**.
 
 Overall speed relative to Python: **NOT MEASURED**. Benchmarking starts
 only after three independent engines pass all compatibility checks.
@@ -101,6 +102,7 @@ slowdown greater than **20%**. There is no winner.
 - [Recoverable original Python compatibility tests for repaired Rust](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V3.md).
 - [Evidence-backed C match-pickling compatibility repair](oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V2.md).
 - [Reproducible offline build rules for the corrected C engine](oracle/phase2/C-PICKLE-SOURCE-BUILD-V15.md).
+- [Recovery-safe complete Python tests for the rebuilt C engine](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V4.md).
 - [Corrected safe recovery rules for both existing Zig engine files](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V7.md).
 - [Corrected complete Python compatibility tests for repaired Zig](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V2.md).
 - [Why the first repaired-Zig test stopped before any matching began](oracle/phase2/ZIG-CAMPAIGN-PREFLIGHT-FAILURE-V1.md).
