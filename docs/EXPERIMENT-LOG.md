@@ -7,6 +7,80 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the first Fortran source-build reproducibility failure
+
+Build the three independently owned Fortran source files under the
+unchanged six-language build rules: the native matching engine, its
+separate Python-facing C bridge, and the Python interface. Use two
+fresh private build directories, the exact pinned Fortran and C
+compilers, all required native symbol checks, and the original
+Python. Never import a candidate, activate either resulting library,
+run a compatibility case, or open a benchmark.
+
+Both genuinely independent Fortran engine and bridge builds compile
+successfully. All **18** actual compiler and native-inspection processes
+exit with status **0**, and both source-build phases complete. The two
+**37,424-byte** Python bridges are genuinely byte-identical, SHA-256
+`eba8c1d145a53a2017fc9b7a6e4651b31ec4aef2e67e6c176c6435bffafc7b26`.
+Both **74,624-byte** engines independently expose all **9** owned
+engine functions and correctly reference all **3** independently
+owned bridge callbacks. Neither contains an external regex engine.
+
+The complete experiment nevertheless **FAILS**: the two Fortran
+engine binaries are not byte-identical. The first has SHA-256
+`37557a44033a80aa11a81fa145ca76c2bbd44ee544b31974dcf6e59ba0f2949c`;
+the second has SHA-256
+`696126d3f3e7239cac55975f53beb3b5e5cffc6948f08258817b6b2d86422199`.
+The actual frozen error is `BuildError: the two independently owned
+outputs are not genuinely byte-identical`. It is not a compiler
+failure, a missing library, an unbuilt phase, or a measured Python
+compatibility difference. The captured report does not identify which
+native-file section differs; do not invent an explanation.
+
+Preserve the complete
+[actual Fortran source-build failure](../oracle/phase2/evidence/native-source-build-v4-fortran-phase2-v4-failures.json.gz),
+SHA-256
+`ba35ea4f0d28814f716a36d2ccb384ef034a88a4029ca3f3cbf4f91eae268103`,
+and the separate
+[durable Fortran failure publication receipt](../oracle/phase2/evidence/native-source-build-v4-fortran-phase2-v4-failures-publication-receipt.json),
+SHA-256
+`86b4b2648adf651481eea8d8b427a432f121c59322f508b522eca18af0749a08`.
+Successful publication preserves the failure; the receipt's
+`build_status` remains **FAIL**. The complete uncompressed canonical
+report is **140,723 bytes**, SHA-256
+`a0e72b44b40bf2dcc4e60d50a8996fa344ead3fa5d3056b3509de90260b3cfb1`.
+
+Reject the first uncommitted graph renderer, SHA-256
+`63b58fe479997d9bb3059355da1f61c3220118d624dee57307f91ad298dfeb5e`.
+Although its visible Fortran row correctly reports both source builds,
+its screen-reader description incorrectly calls Fortran unbuilt and
+its inherited current evidence-count field incorrectly says **55**.
+Neither claim is acceptable: both builds completed and the true
+current evidence count is **57**. Reject the first graph and correct
+both the accessible description and machine-readable count before
+committing or publishing any chart.
+
+Regenerate the headline graph from all **57** complete evidence owners
+and all **25** independently written engine-source files. Pin the
+[graph renderer](../tools/render_candidate_current_overview_v11.py)
+to SHA-256
+`ca5ab6696fde912ac5f46a4fef3e5001aa0c7788772157423dcc01d59282c987`,
+the [complete graph inputs](evidence/candidate-current-overview-v11.inputs.json)
+to
+`a1e0ac2f4696c145eee725cccaf05926f31ebf1dbbbd5cebc8a6e7ab900a34d8`,
+the [generated summary](evidence/candidate-current-overview-v11.json)
+to
+`76d257f6b9fd8b8dc292c1fbc504b431ce7ca3e544cff44e977f544beecbdf1b`,
+and the [readable results graph](evidence/candidate-current-overview-v11.svg)
+to
+`c10c5b111deb1752e127404d3a3a9c4007e8ef395220ccb62673d720fd996b3d`.
+
+Fortran is **NOT REPRODUCIBLE**, **NOT ACTIVATED**, and
+**NOT QUALIFIED**. Matching compatibility, interpreter safety, memory,
+and speed remain **NOT MEASURED**. Preserve all **55** preceding
+C, Rust, Zig, C++, and Go evidence owners. The final comparison
+remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Preserve the first independent Go source-build failure
 
 Run the frozen six-language source-build rules against the four
