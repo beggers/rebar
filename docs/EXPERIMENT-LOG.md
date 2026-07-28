@@ -7,6 +7,43 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze two independent builds of the corrected first-party Go engine
+
+Freeze an independently written Go engine correction against the actual
+previous Go matching failure. The engine keeps its own parser, compiler,
+executor, and Python bridge. Its private Go module has **zero** outside
+dependencies. Go `regexp`, Python `re`, `_sre`, other matching packages,
+and the other candidate engines are forbidden.
+
+The [first-party Go build controller](../tools/reproduce_owned_go_unicode_source_build_v13.py)
+has SHA-256
+`0c5319b7cfe6400cf7cd577efd36d8d574ee6a8674cd28987295402ce6020b06`.
+The [independent corrected-Go source-build protocol](../oracle/phase2/GO-UNICODE-SOURCE-BUILD-V13.md)
+has SHA-256
+`60edb693ec2b57cf2a03c7aca7c863320563b12a18f6daecd5ab080aded0fc11`.
+The [exact source, private-module, and two-build contract](../oracle/phase2/go-unicode-source-build-v13.json)
+has SHA-256
+`a04b93a857d5ad71105479385bc9141b15c1f5303fb2a7059539b0266515f743`.
+
+Ordinary and empty-environment self-tests and pinned context checks all
+pass; the self-tests reject **180** hostile controls. The procedure
+requires **two** separately created private source trees and **13** real
+compiler or binary-inspection processes per tree. Those **26** processes
+are future requirements, not build results: the corrected Go build and
+matching have **NOT RUN**.
+
+The previous fully recorded Go result remains **4,518** differences,
+**128** verified passes, and **four** test-worker infrastructure failures.
+Those failures are not proven native crashes. The original **31,237**
+checks, **13** groups, and **13** named private waivers remain unchanged.
+Python's separate **50** reference checks remain **PASS**; candidate
+signature checks have **NOT RUN**. The current pushed Rust-build graph
+authenticates lower bounds of **161** evidence owners and **166**
+references. Complete runtime no-delegation remains **NOT ESTABLISHED**.
+Speed, memory, confidence, and undefined behavior remain **NOT
+MEASURED**. The planned **4,194,304** final cases remain **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Independently build the corrected first-party Rust engine twice
 
 Execute the separately frozen Rust build exactly once. Its **two** fresh
