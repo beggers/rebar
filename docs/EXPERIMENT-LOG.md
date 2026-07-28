@@ -7,6 +7,46 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze reproducible builds for the repaired C engine
+
+Define how to build the exact first-party C repair twice before actually
+running a compiler. Preserve the original checked-in C source, adapter,
+engine, frozen Python tests, graph, and every earlier failure.
+
+Each future build must use a separate, newly created private directory.
+Both directories must exist before either receives a source file. Copy
+the original C adapter unchanged; apply the separately frozen C repair
+exactly once to each private copy. Preserve the original compiler,
+Python **3.14.6** headers, warning and optimization settings, and
+executable checks. Each build uses **7** explicitly specified compiler
+and binary-inspection processes, for **14** future processes in total.
+Require byte-for-byte identical independently built libraries, full
+binary inspection, no external regex package, and two distinct private
+source and output files.
+
+Freeze the [first-party C reproducible-build tool](../tools/reproduce_owned_native_source_build_v8.py),
+SHA-256
+`afc4f8070cb3c1bccf312b77b019cbb6d71f8dcf976f4a2e921e18cc7c063dd4`;
+[C-engine reproducible-build rules](../oracle/phase2/NATIVE-SOURCE-BUILD-V8.md),
+SHA-256
+`376aae2bdcbeb0c399369c2a15e7e39efb2b1bcce53129a20c229fbbb995cda2`;
+and [machine-readable C-build inventory](../oracle/phase2/native-source-build-v8.json),
+SHA-256
+`7f463b70367156d65e73b561629bd1e14ae265b2273afae9b0a984608492019b`.
+Ordinary and clean-environment source-only checks reject **184** false
+builds and block **7** real side effects. Both complete read-only
+history checks independently pass.
+
+Keep all **25** first-party source owners, **76** authenticated graph
+references, and **71** actual evidence files distinct and unchanged.
+Preserve all **13** original Python groups, all **31,237** cases, and
+all **13** named private exceptions. No source is applied; no build,
+activation, candidate test, or timing occurs. The unchanged headline
+graph remains current. There are still **0** qualified engines.
+Compatibility of the repaired C engine, speed, memory, and safety are
+**NOT MEASURED**. The expanded **4,194,304**-case final comparison
+remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the first C-engine replacement-buffer repair
 
 The unchanged original C-engine result records **2,094** genuine matching
