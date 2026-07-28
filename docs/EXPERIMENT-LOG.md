@@ -7,6 +7,63 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the actual Zig reproducibility failure
+
+Run the original frozen, unmodified version-two build protocol on the
+independently written Zig engine, Python bridge, and adapter. Verify the
+official Zig 0.16.0 compiler against the exact compiler inside its
+pinned original release archive. Compile twice in genuinely fresh,
+private source and cache directories. Preserve all **15** real version,
+compiler, linker, and symbol-audit processes. Every process exits
+successfully; this is not a compiler or linker error.
+
+Both **480,040-byte** Zig engines compile without an outside regex
+package and pass the native symbol audit, but their hashes differ:
+
+- First engine:
+  `b73d43dc4bab42abc1de92e7aaf4a0b145e242ef8407714dc1bef48fc28a7d12`.
+- Second engine:
+  `69a3f024c079b8994c4ffdbf37cbecf59d5afd67c8bcf5200a7331cae66d1f53`.
+
+The binaries differ at exactly two 1-based byte offsets, **388,809**
+and **412,021**: the letters `a` and `b` from each fresh build
+directory. Those bytes are confined to Zig's source and cache paths in
+non-runtime debugging sections. Both independently compiled
+**133,656-byte** Python bridges genuinely match, SHA-256
+`c579cf52b767b84ecc3d0a60f837d526978ace4e7739fe4cf51c2d2c8cfd90d9`.
+
+The frozen build gate correctly rejects the non-identical engines. Keep
+the entire exclusive
+[Zig failure record](../oracle/phase2/evidence/native-source-build-v2-zig-phase2-v2-failures.json.gz),
+**19,556 bytes**, SHA-256
+`dc5128aaaf8a4d915c57ea8770696db3dc7ca51c89d5a3570cab9d259d070a0e`.
+The original complete report decompresses to **188,479 bytes**,
+SHA-256
+`f6ea1eb57d9ceb23c6dc5d4f291c4eb300768460a658d97828b7ce0095c53652`.
+Preserve the corresponding independently verified
+[Zig failure publication receipt](../oracle/phase2/evidence/native-source-build-v2-zig-phase2-v2-failures-publication-receipt.json),
+**1,766 bytes**, SHA-256
+`97e3150e9b68d3031c96ea6e973097687c80163a371f99a67f8b3de08bc0707a`.
+
+```sh
+PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+
+"$PY" -I -B tools/reproduce_phase2_native_builds_v2.py \
+  --build --family zig --label phase2-v2 \
+  --source-sha256 e822e22cf6a5bbbdc2b634209c6e185ca74ebc55d86828ebea77bb5d44ce3796 \
+  --protocol-sha256 f383c2ca419c18cf77451c855b53593bb97ea7fa83c90d5d133a80de043aa603 \
+  --owned-source-sha256 candidates/zig_candidate.py=2d7ec411bc035091fea3f20857a4793b21092d3f490d20a9a0efaa418cda0862 \
+  --owned-source-sha256 candidates/zig/mini_regex.zig=a917e7b1a06008be400e4c4a74b6caee5a552624dc46a7d67c932758f594ef28 \
+  --owned-source-sha256 candidates/zig/py_bridge.c=67edae144290254ba25f67f73350ff5d52ccfb2a209e3fbcc555fc4b3d4efd4b
+```
+
+This command preserves the genuine failure; reproduce only in a clean
+checkout because publication is exclusive. Do not modify the frozen
+builder, share the supposedly fresh build directories, relax binary
+equality, or reuse this evidence label. Candidate loading, activation,
+correctness, runtime memory, and performance remain **NOT MEASURED**;
+the larger final comparison remains **NOT GENERATED** and **NOT OPENED**.
+
 ## Build the independent Rust engine twice, offline
 
 Build the exact, already published Rust engine twice from nine frozen,
