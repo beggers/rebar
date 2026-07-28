@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1660" height="2260" viewBox="0 0 1660 2260" role="img" aria-labelledby="v25-title v25-description">
+<title id="v25-title">Building a faster Python re: Rust and Zig now build, but matching and speed remain untested</title>
+<desc id="v25-description">Python passes all 31,237 original reference checks. The new from-scratch Rust engine completed 28 genuine offline compiler and inspection steps; both first-party repairs were applied in each of two private builds, producing byte-identical engine and Python bridge outputs. The new Zig engine completed 26 genuine build steps. Neither new build has run the Python matching suite. The older Rust and Zig attempts still have 2,042 and 1,764 recorded differences. The latest C attempt genuinely ran all 13 original groups and recorded 1,262 matching differences. No replacement has qualified. All 139 actual evidence files and 144 distinct signed references are authenticated. Speed, memory, rankings, confidence intervals and undefined behavior have not been measured. The 4,194,304-case final holdout remains unopened.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.title{font-size:33px;font-weight:760;fill:#16324f}.heading{font-size:24px;font-weight:740;fill:#16324f}.body{font-size:15px;fill:#42556c}.name{font-size:17px;font-weight:720;fill:#16324f}.pass{font-size:15px;font-weight:750;fill:#00794c}.fail{font-size:15px;font-weight:740;fill:#a15e00}.pending{font-size:15px;font-weight:740;fill:#53667b}.big{font-size:25px;font-weight:760;fill:#16324f}.foot{font-size:12px;fill:#53667b}.small{font-size:13px;fill:#42556c}</style>
+<rect width="1660" height="2260" rx="22" fill="#f4f7fb"/>
+<text x="54" y="66" class="title">Can we build a faster replacement for Python re?</text>
+<text x="56" y="96" class="body">New from-scratch Rust and Zig engines both build. Whether either matches Python or is faster is NOT MEASURED.</text>
+<rect x="54" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="68" y="163" class="big">31,237</text>
+<text x="68" y="198" class="body">original Python reference checks</text>
+<rect x="374" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="388" y="163" class="big">28 of 28</text>
+<text x="388" y="198" class="body">real Rust build steps succeeded</text>
+<rect x="694" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="708" y="163" class="big">26 of 26</text>
+<text x="708" y="198" class="body">real Zig build steps succeeded</text>
+<rect x="1014" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="1028" y="163" class="big">0</text>
+<text x="1028" y="198" class="body">fully compatible replacements</text>
+<rect x="1334" y="120" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="1348" y="163" class="big">NOT MEASURED</text>
+<text x="1348" y="198" class="body">speed and memory</text>
+<rect x="54" y="241" width="1552" height="850" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="77" y="282" class="heading">1. Does each replacement behave exactly like Python?</text>
+<text x="78" y="309" class="body">A successful source build is not a passing matching test. A replacement qualifies only after every original check agrees.</text>
+<rect x="75" y="326" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="349" class="name">Python re — reference</text>
+<text x="1564" y="349" class="pass" text-anchor="end">PASSED</text>
+<text x="96" y="372" class="small">All 31,237 original Python reference checks pass.</text>
+<rect x="75" y="395" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="418" class="name">Rust — newly repaired engine</text>
+<text x="1564" y="418" class="pending" text-anchor="end">BUILT; MATCHING NOT MEASURED</text>
+<text x="96" y="441" class="small">28 real offline build and inspection steps; both private repairs; two identical engine and bridge builds.</text>
+<rect x="75" y="464" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="487" class="name">Zig — newly repaired engine</text>
+<text x="1564" y="487" class="pending" text-anchor="end">BUILT; MATCHING NOT MEASURED</text>
+<text x="96" y="510" class="small">26 real build and inspection steps; two separate byte-identical engine and bridge builds.</text>
+<rect x="75" y="533" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="556" class="name">C — latest repaired engine</text>
+<text x="1564" y="556" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="579" class="small">All 13 groups ran: 8 completely passed (7,325 checks); 1,262 matching differences; 0 runner failures.</text>
+<rect x="75" y="602" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="625" class="name">Rust — previously tested engine</text>
+<text x="1564" y="625" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="648" class="small">7,461 fully verified passing checks; 2,042 recorded matching differences.</text>
+<rect x="75" y="671" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="694" class="name">Zig — previously tested engine</text>
+<text x="1564" y="694" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="717" class="small">3,583 fully verified passing checks; 1,764 recorded matching differences.</text>
+<rect x="75" y="740" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="763" class="name">C — earlier matching engine</text>
+<text x="1564" y="763" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="786" class="small">7,197 fully verified passing checks; 2,094 recorded matching differences.</text>
+<rect x="75" y="809" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="832" class="name">C++</text>
+<text x="1564" y="832" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="855" class="small">128 fully verified passing checks; 2,308 matching differences and 5 earlier runner failures.</text>
+<rect x="75" y="878" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="901" class="name">Go</text>
+<text x="1564" y="901" class="fail" text-anchor="end">NOT COMPATIBLE</text>
+<text x="96" y="924" class="small">128 fully verified passing checks; 4,518 matching differences and 4 runner failures.</text>
+<rect x="75" y="947" width="1510" height="60" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="970" class="name">Fortran</text>
+<text x="1564" y="970" class="pending" text-anchor="end">NOT READY</text>
+<text x="96" y="993" class="small">Its independently built engine is not yet compatible. Matching: NOT MEASURED.</text>
+<text x="78" y="1060" class="body">Earlier C attempts remain visible: 13 old runner failures, followed by one runner failure before matching.</text>
+<rect x="54" y="1108" width="1552" height="648" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="77" y="1149" class="heading">2. Which C test groups still differ?</text>
+<text x="78" y="1176" class="body">All 13 original groups and case records are preserved. Neither newly built engine has run these matching tests.</text>
+<text x="92" y="1203" class="small">TEST GROUP</text>
+<text x="1225" y="1203" class="small" text-anchor="end">ORIGINAL CHECKS</text>
+<text x="1562" y="1203" class="small" text-anchor="end">RESULT</text>
+<rect x="77" y="1216" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1237" class="body">Core Python behavior</text>
+<text x="1225" y="1237" class="body" text-anchor="end">151</text>
+<text x="1562" y="1237" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1251" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1272" class="body">Everyday public methods</text>
+<text x="1225" y="1272" class="body" text-anchor="end">864</text>
+<text x="1562" y="1272" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1286" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1307" class="body">Scanning and callbacks</text>
+<text x="1225" y="1307" class="body" text-anchor="end">1,024</text>
+<text x="1562" y="1307" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1321" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1342" class="body">Buffers and memory views</text>
+<text x="1225" y="1342" class="body" text-anchor="end">768</text>
+<text x="1562" y="1342" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1356" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1377" class="body">Buffer lifetime</text>
+<text x="1225" y="1377" class="body" text-anchor="end">1,024</text>
+<text x="1562" y="1377" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1391" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1412" class="body">Verbose patterns</text>
+<text x="1225" y="1412" class="body" text-anchor="end">2,854</text>
+<text x="1562" y="1412" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1426" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1447" class="body">Public types and serialization</text>
+<text x="1225" y="1447" class="body" text-anchor="end">6,912</text>
+<text x="1562" y="1447" class="fail" text-anchor="end">248 DIFFERENCES</text>
+<rect x="77" y="1461" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1482" class="body">Substitutions</text>
+<text x="1225" y="1482" class="body" text-anchor="end">5,120</text>
+<text x="1562" y="1482" class="fail" text-anchor="end">224 DIFFERENCES</text>
+<rect x="77" y="1496" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1517" class="body">Result shapes</text>
+<text x="1225" y="1517" class="body" text-anchor="end">10,240</text>
+<text x="1562" y="1517" class="fail" text-anchor="end">672 DIFFERENCES</text>
+<rect x="77" y="1531" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1552" class="body">Full public interface</text>
+<text x="1225" y="1552" class="body" text-anchor="end">1,376</text>
+<text x="1562" y="1552" class="fail" text-anchor="end">114 DIFFERENCES</text>
+<rect x="77" y="1566" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1587" class="body">Subinterpreters</text>
+<text x="1225" y="1587" class="body" text-anchor="end">128</text>
+<text x="1562" y="1587" class="pass" text-anchor="end">PASSED</text>
+<rect x="77" y="1601" width="1506" height="31" rx="5" fill="#ffffff"/>
+<text x="95" y="1622" class="body">Python buffer exporters</text>
+<text x="1225" y="1622" class="body" text-anchor="end">264</text>
+<text x="1562" y="1622" class="fail" text-anchor="end">4 DIFFERENCES</text>
+<rect x="77" y="1636" width="1506" height="31" rx="5" fill="#f8fafd"/>
+<text x="95" y="1657" class="body">Patterns across threads</text>
+<text x="1225" y="1657" class="body" text-anchor="end">512</text>
+<text x="1562" y="1657" class="pass" text-anchor="end">PASSED</text>
+<text x="79" y="1700" class="body">Eight complete C groups pass. The 7,325 checks count only those completely passing groups.</text>
+<text x="79" y="1726" class="body">Five C groups contain 1,262 recorded differences. No historical failure has been hidden.</text>
+<rect x="54" y="1772" width="1552" height="282" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="77" y="1813" class="heading">3. Is any replacement faster?</text>
+<text x="79" y="1845" class="body">NOT MEASURED. No replacement has yet passed every Python correctness check.</text>
+<text x="79" y="1875" class="body">There is no speed or memory comparison, confidence interval, ranking, winner, or opened final holdout.</text>
+<text x="79" y="1905" class="body">Real evidence: 137 earlier files + 2 actual Rust build files = 139 verified files; 144 signed references.</text>
+<text x="79" y="1935" class="body">Rust was built offline from our own source and two private first-party repairs; no external regex package.</text>
+<text x="79" y="1965" class="body">Both Rust native outputs were byte-identical across independently owned phase files.</text>
+<text x="79" y="1995" class="body">The original C binary, its exact inode, and its 0755 permissions remain restored.</text>
+<text x="58" y="2088" class="foot">Inputs SHA-256: 123210219fac109506c03c2f76f89fda33aa5e08b0628fef43b9236d05bc1abe</text>
+<text x="58" y="2113" class="foot">Renderer SHA-256: 9b1eabba4a3bd991c4359af4ab1482fe6f1ce848bb9e5df6fdd9e8bdafb21204</text>
+<text x="58" y="2138" class="foot">Actual Rust build archive SHA-256: 282927f91fd885701dff6c431474f586afbc09460c6a20417ffa20be5a2e891c</text>
+<text x="58" y="2163" class="foot">Actual Rust build receipt SHA-256: 4c75468663af0de60b37cdbabfca384c4e7f75e25a6155c2ff1c33f654d3f1d7</text>
+<text x="58" y="2188" class="foot">Independently built Rust engine SHA-256: 5e79f92b10d47f73919796af2349e44e7d16eceb515cc07571d0beaaec4a405f</text>
+<text x="58" y="2213" class="foot">Independently built Rust bridge SHA-256: 7f5dfb587fc7f53ce3a7b6cfa568a6e49c009a4d0015929b4dada28cb5425c54</text>
+</svg>

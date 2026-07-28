@@ -7,7 +7,41 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
-## Freeze offline Rust builds against the complete current evidence
+## Build the repaired Rust engine twice without external packages
+
+Run the committed Rust build exactly once against the pinned original
+sources, independently frozen bridge repair, and independently frozen
+Python-interface repair. Build both fresh private snapshots with
+`cargo build --locked --offline --frozen`. The lock contains one
+first-party package and no downloaded or external dependency.
+
+All **28** actual compiler and inspection processes finish successfully,
+with **28** separate process identifiers. Both independently compiled
+engine libraries match exactly: SHA-256
+`5e79f92b10d47f73919796af2349e44e7d16eceb515cc07571d0beaaec4a405f`,
+**658,344** bytes. Both independently compiled Python bridges also match:
+SHA-256
+`7f5dfb587fc7f53ce3a7b6cfa568a6e49c009a4d0015929b4dada28cb5425c54`,
+**148,656** bytes. Both binary audits show zero external, Python, or
+cross-candidate regular-expression engines. Apply each of the two
+first-party repairs once in each private build.
+
+Preserve the [complete actual Rust build report](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay.json.gz),
+SHA-256
+`282927f91fd885701dff6c431474f586afbc09460c6a20417ffa20be5a2e891c`;
+and [independent durable build receipt](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay-publication-receipt.json),
+SHA-256
+`4c75468663af0de60b37cdbabfca384c4e7f75e25a6155c2ff1c33f654d3f1d7`.
+The two real Rust records bring the full preserved history to **139**
+evidence files and **144** authenticated references. Preserve all prior
+C differences, real Zig build records, and original Rust failures.
+
+The repaired Rust build passes; no repaired Rust matching test has
+run. Compatibility, speed, memory, and undefined behavior remain
+**NOT MEASURED**. No candidate qualifies. The expanded final comparison
+remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
+## Historical Rust source freeze before the successful build
 
 Freeze the Rust build against all **137** existing evidence files,
 **142** independently verified references, the **30** real C test
@@ -34,10 +68,11 @@ SHA-256
 `7b1f8941444e942a85eb9f9df9dc23244112763ca92381fe22f76fd87c95a87a`.
 
 Both ordinary and empty-environment self-tests and source-pinned checks
-pass, rejecting **92** unsafe controls. All **28** planned compiler
-and inspection processes remain future work. Repaired Rust has not
-been built or tested. Speed, memory, and undefined behavior remain
-**NOT MEASURED**; the expanded final comparison remains **NOT FROZEN**,
+passed, rejecting **92** unsafe controls. At the time of this freeze,
+all **28** compiler and inspection processes were future work, and
+repaired Rust had not yet been built or tested. Speed, memory, and
+undefined behavior remain **NOT MEASURED**; the expanded final
+comparison remains **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
 ## Build the repaired first-party Zig engine twice
