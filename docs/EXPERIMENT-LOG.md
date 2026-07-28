@@ -7,6 +7,61 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the separate Rust-only compatibility runner
+
+Freeze a genuinely separate Rust-specific original-suite runner after the
+C-only runner was committed. The Rust code uses its own independently
+written engine and native Python bridge. It does not route Rust matching
+through the C runner, Python's regular-expression engine, an external
+package, or another candidate. A frozen Rust test runner is not an
+executed Rust test.
+
+The [dedicated Rust-only original-suite runner](../tools/run_owned_repaired_rust_original_campaign_v6.py)
+has SHA-256
+`c25cbdf3674fc3e054c388e53de3ed38d4b1dab0a820808c42848e1803909f5e`.
+The [frozen Rust-only campaign protocol](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V6.md)
+has SHA-256
+`ddc5c212d3e188bc1d1cdde992bf872a38962e64d3b07d6ec7c275ba4f55f13c`.
+The [complete Rust-only machine-readable contract](../oracle/phase2/repaired-rust-original-campaign-v6.json)
+has SHA-256
+`ce044f18be388ab0608d0bd3bb68751e6970973f8e6ef758971e75e6d6b584a5`.
+
+Ordinary and empty-environment self-tests and frozen-context checks
+all pass independently and reject **355** hostile controls. The runner
+preserves all **13** original groups, **31,237** cases, **13** named
+private waivers, the actual corrected Python reference, and the earlier
+real Rust source build. Its four native-target recovery records, real
+process identifiers, partial results, and failed publication remain
+auditable. These source-only checks run no candidate, build, reference,
+benchmark, or hidden test and read no matching or reference archive.
+
+The [current separate C and Rust runner graph](evidence/candidate-current-overview-v42.svg)
+distinguishes **two** frozen, independently owned runner paths from the
+**six** first-party engine source designs. Corrected C and Rust matching
+both remain **NOT RUN**, and the other four designs have no frozen
+matching runner. Preserve all historical candidate failures and the
+earlier [C-only status graph](evidence/candidate-current-overview-v41.svg).
+Its [reproducible graph renderer](../tools/render_candidate_current_overview_v42.py)
+has SHA-256
+`8e4783f7c61340ce8f291f84e2dfa802189a66353edd7a89026934d9863d1ce2`.
+The [complete graph inputs](evidence/candidate-current-overview-v42.inputs.json)
+have SHA-256
+`ca11b1d4d7e7cd483a8ebf81fe12f36037a22608cf8ab459ce9d97d16f86dda2`;
+the [machine-readable current results](evidence/candidate-current-overview-v42.json)
+have SHA-256
+`30b7ba546209796f950ea6720a19acb16972bf8d984841f74d45c00d4c639838`;
+and the generated graph has SHA-256
+`3d1f05706861d662f3113dc7340ceb09731c66b137df99637819a3e8b4cbd781`.
+The ordinary and empty-environment graph source checks reject **722**
+hostile controls. Each frozen-context graph check authenticates one
+corrected Python-reference archive and starts no matching, candidate,
+reference, or compiler process.
+
+No engine is qualified. Runtime non-delegation is **NOT ESTABLISHED**;
+speed, memory, confidence intervals, and undefined behavior remain
+**NOT MEASURED**. The expanded **4,194,304**-case final comparison
+remains unopened.
+
 ## Freeze the corrected C-only compatibility runner
 
 Independent review falsified the claim that a six-engine source inventory
