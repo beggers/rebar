@@ -7,6 +7,59 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the independent Rust-engine replacement-buffer repair
+
+The preserved first-party Rust result records **2,042** genuine matching
+differences. Its original changing-buffer group contains **1,392**
+differences, including **1,216** across four substitution operations
+and **176** `match.expand` differences. Its original substitution group
+contains a further **336** differences. Freeze a Rust-specific
+replacement-order repair without changing the separate C engine or
+claiming any corrected matching result.
+
+Preserve the original **175,676**-byte Rust bridge, SHA-256
+`f8a0918aaf8a78f363f6d755770636d26acd45fb83c9abcf997a6e052748ea8b`,
+the independent Rust adapter and matcher, all **9** original Rust source
+files, the zero-dependency Rust lockfile, and all other candidates.
+Replace exactly one authenticated block in Rust's own native
+substitution function. The derived **176,118**-byte private bridge has
+SHA-256
+`4436bbb8ad180ee8f02dd4418187506ec0d5a33bdb5a79c424fc736253fa0257`.
+
+Prepare a non-callable replacement before opening its subject. Read the
+length directly for built-in text and byte objects; do not query,
+create a memory view for, or acquire an unknown buffer before its
+replacement. Preserve group validation, callable order, Rust's own
+replacement parser and cache, Python's original buffer flags, normal
+cleanup, and all existing matching code. Release prepared references
+exactly once if the subject fails to open. Leave `match.expand`
+unchanged. The **1,552** historical substitution cases describe the
+largest potentially affected group; an actual improvement is
+**NOT MEASURED**.
+
+Freeze the [private, first-party Rust repair tool](../tools/apply_owned_rust_source_repair_v1.py),
+SHA-256
+`1d5d9b5e3fecb278fdcb97ef21dadff9134cdd779cb6751c42d4931096796851`;
+[independent Rust repair rules](../oracle/phase2/RUST-SOURCE-REPAIR-V1.md),
+SHA-256
+`df9ce744660a4328a2b83151a3320aca64a7ad1606e14a4509f50f638a4afc7b`;
+and [machine-readable Rust repair](../oracle/phase2/rust-source-repair-v1.json),
+SHA-256
+`1ef69922310cb40166896685c75004c9f423a78e5bb96341a545d4dc75a1cf9b`.
+The ordinary and clean-environment checks accept **16** genuine
+controls, reject **63** hostile changes, and block **27** actual side
+effects. Both source-pinned, read-only history checks also pass.
+
+Preserve all **25** original first-party sources, all **76**
+authenticated historical references, all **71** genuine evidence files,
+and the unchanged independently frozen C repair. Keep all **13**
+original test groups, all **31,237** cases, and all **13** private
+exceptions. No derived Rust source is applied, built, activated, or
+tested. Rust's original **2,042** differences remain visible. There
+are **0** qualified candidates. Speed, memory, safety, and corrected
+compatibility are **NOT MEASURED**; the expanded **4,194,304**-case
+final comparison is **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze reproducible builds for the repaired C engine
 
 Define how to build the exact first-party C repair twice before actually

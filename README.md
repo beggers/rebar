@@ -23,8 +23,8 @@ report is now fully preserved by a lossless streaming recorder, and the
 earlier failed recording attempt remains documented. Fortran compiles,
 but its two builds still differ. No candidate wraps an external regex
 engine. Speed and memory are **NOT MEASURED**; the final comparison is
-**NOT OPENED**. A first-party C-engine buffer repair has been defined,
-but has not yet been built or retested.
+**NOT OPENED**. Separate first-party C and Rust buffer repairs have been
+defined, but neither has yet been built or retested.
 
 ![Python passes all 31,237 checks; all five independently built replacement engines remain incompatible; the complete C++ and Go matching differences and separate worker failures are preserved; speed is not measured](docs/evidence/candidate-current-overview-v19.svg)
 
@@ -116,6 +116,7 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Frozen Python compatibility tests](oracle/phase1/P0-COMPLETENESS-V1.md), [all 31,237 test cases](oracle/phase1/p0-completeness-v1.json), and [independent test verifier](tools/verify_p0_completeness_v1.py).
 - [First-party engine ownership and no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md), [exact source inventory](oracle/phase2/candidate-independence-v2.json), and [source verifier](tools/audit_candidate_independence_v2.py).
 - [Frozen first-party C repair](oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V1.md), [exact repair and preserved evidence](oracle/phase2/first-party-source-repair-v1.json), and [private-snapshot-only repair tool](tools/apply_owned_first_party_source_repair_v1.py); no original engine, matching result, or final comparison has been changed.
+- [Separate first-party Rust repair](oracle/phase2/RUST-SOURCE-REPAIR-V1.md), [exact Rust repair and preserved evidence](oracle/phase2/rust-source-repair-v1.json), and [private Rust-snapshot-only repair tool](tools/apply_owned_rust_source_repair_v1.py); the existing Rust engine and all its previous failures remain unchanged.
 - [Reproducible first-party C build rules](oracle/phase2/NATIVE-SOURCE-BUILD-V8.md), [exact build inventory](oracle/phase2/native-source-build-v8.json), and [independent two-build verifier](tools/reproduce_owned_native_source_build_v8.py); the repaired engine has not yet been built or retested.
 - [Complete original-test rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V1.md), [frozen test inventory](oracle/phase2/six-family-p0-campaign-v1.json), and [reproducible candidate test runner](tools/run_owned_six_family_original_p0_campaign_v1.py).
 - [Lossless original-test recording rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V2.md), [frozen streaming-test inventory](oracle/phase2/six-family-p0-campaign-v2.json), and [complete streaming test recorder](tools/run_owned_six_family_original_p0_campaign_v2.py); the original tests, first-party engines, and preserved Go failure remain unchanged.
@@ -162,12 +163,22 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
   --source-sha256 c04bbc8e7bc45bdbe1fb9eb93942286f5b32b39aef554db15b8b1acd9cc8cd99 \
   --protocol-sha256 1a2e83caaca5cb43fc82445c2a4fc3097bc3d51bdfc568783b8815797b8c63f5 \
   --contract-sha256 8f1a5676bbef5f2ef560d03fef910bf4ed3a4df029ecc0c638e3fa971206dab5
+"$PY" -I -B tools/apply_owned_rust_source_repair_v1.py --self-test \
+  --source-sha256 1d5d9b5e3fecb278fdcb97ef21dadff9134cdd779cb6751c42d4931096796851 \
+  --protocol-sha256 df9ce744660a4328a2b83151a3320aca64a7ad1606e14a4509f50f638a4afc7b \
+  --contract-sha256 1ef69922310cb40166896685c75004c9f423a78e5bb96341a545d4dc75a1cf9b
 ```
 
 Verify the current headline graph without rerunning a candidate or
 opening a benchmark:
 
 ```sh
+"$PY" -I -B tools/apply_owned_rust_source_repair_v1.py \
+  --verify-frozen-context \
+  --source-sha256 1d5d9b5e3fecb278fdcb97ef21dadff9134cdd779cb6751c42d4931096796851 \
+  --protocol-sha256 df9ce744660a4328a2b83151a3320aca64a7ad1606e14a4509f50f638a4afc7b \
+  --contract-sha256 1ef69922310cb40166896685c75004c9f423a78e5bb96341a545d4dc75a1cf9b
+
 "$PY" -I -B tools/reproduce_owned_native_source_build_v8.py \
   --verify-context \
   --source-sha256 afc4f8070cb3c1bccf312b77b019cbb6d71f8dcf976f4a2e921e18cc7c063dd4 \
