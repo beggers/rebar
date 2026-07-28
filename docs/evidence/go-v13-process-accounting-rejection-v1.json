@@ -1,0 +1,58 @@
+{
+  "schema": "rebar-go-v13-process-accounting-rejection-v1",
+  "version": 1,
+  "status": "REJECTED",
+  "rejected_source_commit": "bcab875e1360a1dede5ea8bb88b08afaca04e41e",
+  "rejected_source_path": "tools/reproduce_owned_go_unicode_source_build_v13.py",
+  "rejected_source_sha256": "0c5319b7cfe6400cf7cd577efd36d8d574ee6a8674cd28987295402ce6020b06",
+  "rejected_protocol_path": "oracle/phase2/GO-UNICODE-SOURCE-BUILD-V13.md",
+  "rejected_protocol_sha256": "60edb693ec2b57cf2a03c7aca7c863320563b12a18f6daecd5ab080aded0fc11",
+  "rejected_contract_path": "oracle/phase2/go-unicode-source-build-v13.json",
+  "rejected_contract_sha256": "a04b93a857d5ad71105479385bc9141b15c1f5303fb2a7059539b0266515f743",
+  "source_only_gates_status": "PASS",
+  "source_only_gates_prove_safe_failed_process_recording": false,
+  "actual_corrected_go_build_status": "NOT RUN",
+  "actual_corrected_go_build_processes_started": 0,
+  "actual_corrected_go_matching_status": "NOT RUN",
+  "actual_corrected_go_candidate_workers_started": 0,
+  "historical_go_semantic_mismatch_count": 4518,
+  "historical_go_verified_passing_case_count": 128,
+  "historical_go_infrastructure_failure_count": 4,
+  "historical_go_native_crash_proven": false,
+  "original_case_denominator": 31237,
+  "additional_python_reference_status": "PASS",
+  "additional_python_reference_case_count": 50,
+  "additional_candidate_signature_status": "NOT RUN",
+  "required_future_process_count": 26,
+  "distinct_actual_process_ids_recorded": false,
+  "failed_process_stdout_preserved": false,
+  "failed_process_stderr_preserved": false,
+  "failed_process_returncode_preserved": false,
+  "timeout_process_record_preserved": false,
+  "attempted_failed_process_counted": false,
+  "failure_sites": [
+    {
+      "description": "A nonzero return code or timeout raises before complete process streams are recorded.",
+      "first_line": 1687,
+      "last_line": 1706,
+      "excerpt_sha256": "29e2be4dcf3f2214fc8d206c4500edc44f0ea809b19393e3629652ba8335193a"
+    },
+    {
+      "description": "An attempted role is counted only after its subprocess has already returned successfully.",
+      "first_line": 1884,
+      "last_line": 1889,
+      "excerpt_sha256": "0790614df7444c750005859e815fc382763024b2536e13bd51bd8db35c7db826"
+    },
+    {
+      "description": "The failure report counts only successfully returned records, omitting the real failed subprocess.",
+      "first_line": 1953,
+      "last_line": 1968,
+      "excerpt_sha256": "c07b22c7f6fd102d45ca477c4afb50c2fada0b92d932af3aa53aa91970875c6a"
+    }
+  ],
+  "runtime_no_delegation": "NOT ESTABLISHED",
+  "performance": "NOT MEASURED",
+  "memory": "NOT MEASURED",
+  "final_holdout_opened": false,
+  "winner_selected": false
+}

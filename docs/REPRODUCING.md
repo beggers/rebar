@@ -65,7 +65,8 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Observed first-party C++ public-argument correction](../oracle/phase2/CPP-PUBLIC-ARGUMENT-SOURCE-REPAIR-V1.md), [exact original and corrected public-adapter contract](../oracle/phase2/cpp-public-argument-source-repair-v1.json), and [independent source-only argument verifier](../tools/apply_owned_cpp_public_argument_source_repair_v1.py); all **336** Python argument examples and **three** signatures are preserved, but corrected compilation and matching have **NOT RUN**.
 - [Complete first-party Go matching failure](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v2-go-phase2-v2-failures.json.gz) and [independent streamed-result and native-recovery receipt](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v2-go-phase2-v2-failures-publication-receipt.json); all **13** groups, **4,518** genuine differences, **4** separate worker failures, and both restored native files are preserved.
 - [Observed first-party Go Unicode group-name correction](../oracle/phase2/GO-UNICODE-NAME-SOURCE-REPAIR-V1.md), [exact byte-accurate original and corrected Go source contract](../oracle/phase2/go-unicode-name-source-repair-v1.json), and [independent source-only Go repair verifier](../tools/apply_owned_go_unicode_name_source_repair_v1.py); the corrected source is derived only in memory, and its build and compatibility have **NOT RUN**.
-- [Frozen independent corrected-Go build rules](../oracle/phase2/GO-UNICODE-SOURCE-BUILD-V13.md), [exact four-source, zero-dependency, two-phase build contract](../oracle/phase2/go-unicode-source-build-v13.json), and [source-pinned first-party Go build controller](../tools/reproduce_owned_go_unicode_source_build_v13.py); each future private source build requires **13** real compiler and inspection processes. The **26** total processes, corrected Go build, and matching test have **NOT RUN**.
+- [Rejected historical corrected-Go build rules](../oracle/phase2/GO-UNICODE-SOURCE-BUILD-V13.md), [preserved V13 private-source contract](../oracle/phase2/go-unicode-source-build-v13.json), and [unexecuted V13 Go build controller](../tools/reproduce_owned_go_unicode_source_build_v13.py); source-only verification passed, but independent review rejected its lossy failed-process accounting and missing actual process IDs. Do not execute the V13 build; corrected Go compilation and matching have **NOT RUN**.
+- [Independently recorded Go V13 process-accounting rejection](../docs/evidence/go-v13-process-accounting-rejection-v1.json); preserves the exact immutable V13 source and failure-site excerpt hashes without running a Go build.
 - [Complete Go result-recording failure](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-publication-failure-evidence.json.gz), [independent evidence receipt](../oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-publication-failure-evidence-publication-receipt.json), and [reproducible failure-preservation tool](../tools/preserve_owned_go_campaign_publication_failure_v1.py). This is not a Go compatibility result.
 - [Complete corrected C runner failure](../oracle/phase2/evidence/repaired-c-original-campaign-v2-c-phase2-v9-original-p0-failures.json.gz) and [independent durable failure and restoration receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v2-c-phase2-v9-original-p0-failures-publication-receipt.json); the genuine runner error occurred before any matching test started.
 - [Complete repaired C compatibility evidence](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures.json.gz), [independent safe-restoration receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures-publication-receipt.json), [all 13 original worker reports](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures.json.gz), and [original-suite aggregate receipt](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures-publication-receipt.json); eight complete groups pass, five retain 1,262 genuine differences, and no infrastructure failure occurred.
@@ -766,11 +767,14 @@ and recovery directory.
 
 ## Verify the corrected first-party Go source freeze
 
-These commands verify the independently written Go engine, its
-dependency-free private module, the exact corrected Unicode behavior,
-and the frozen two-build procedure. They do not compile, run Go matching,
-start a Python reference, or open the final comparison. Both commands
-also pass with `env -i PATH=/usr/bin:/bin LC_ALL=C` before `"$PY"`.
+These commands reproduce the rejected historical V13 source-only
+checks. They verify the independent Go sources but do not exercise the
+build recorder's failed-process accounting. Do not run V13 `--build`:
+independent review established that it would omit failed-process
+diagnostics and cannot prove distinct process IDs. Neither command
+compiles, runs Go matching, starts a reference, or opens the final
+comparison. Both also pass with `env -i PATH=/usr/bin:/bin LC_ALL=C`
+before `"$PY"`.
 
 ```sh
 "$PY" -I -B tools/reproduce_owned_go_unicode_source_build_v13.py \

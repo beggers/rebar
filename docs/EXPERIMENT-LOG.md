@@ -7,6 +7,30 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Reject the unexecuted Go build's incomplete failure recorder
+
+An independent deeper source review falsifies the previously frozen Go
+V13 build recorder before any build is attempted. Its four source-only
+checks genuinely pass, but they do not test a real compiler failure.
+
+The actual `run_process` implementation raises on a nonzero compiler
+exit before preserving that process's complete standard output or error.
+Its caller appends a process record only after successful return. A
+timeout also raises without retaining its complete process record. The
+failure-report count therefore omits a real attempted failed process;
+successful records contain no actual operating-system process IDs, so
+**26** distinct future build processes cannot be established.
+
+The [source-pinned Go process-accounting rejection](evidence/go-v13-process-accounting-rejection-v1.json)
+preserves the exact published V13 source, commit, and SHA-256 values for
+each relevant source excerpt. Do not run or modify the rejected V13
+controller. No Go compiler, corrected Go candidate, benchmark, or
+holdout case ran. Preserve the already pushed V13 source freeze and
+its honest passing source-only results as rejected history. A corrected
+recorder must preserve attempted and failed process IDs, exit status,
+complete bounded output, timeouts, and durable failure evidence before
+any Go build can begin.
+
 ## Freeze two independent builds of the corrected first-party Go engine
 
 Freeze an independently written Go engine correction against the actual

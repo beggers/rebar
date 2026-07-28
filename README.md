@@ -39,7 +39,7 @@ measurements start only when three independent engines pass every check.
 | C | Independently written and built | 7,325 verified; 1,230 differences; all 13 groups completed | NOT MEASURED |
 | Zig | Independently written and built | 3,711 verified; 1,764 differences; all 13 groups completed | NOT MEASURED |
 | C++ | Independently written and built | 128 verified; 2,308 differences; five worker failures | NOT MEASURED |
-| Go | Previous independent build; corrected build pending | 128 verified; 4,518 differences; four worker failures | NOT MEASURED |
+| Go | New build paused; failure recorder needs correction | 128 verified; 4,518 differences; four worker failures | NOT MEASURED |
 | Fortran | Independently written | NOT TESTED | NOT MEASURED |
 
 Verified passes and reported differences do not always add up to 31,237:
