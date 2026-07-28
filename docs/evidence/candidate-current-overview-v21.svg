@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1660" height="1720" viewBox="0 0 1660 1720" role="img" aria-labelledby="v21-title v21-description">
+<title id="v21-title">Building a faster Python re: compatibility and the actual failed repaired C retest</title>
+<desc id="v21-description">Python passes its original 31,237 reference cases. None of six replacement families is fully compatible. The repaired first-party C build was tested through all 13 original suite workers; every worker stopped before matching. Twelve runner ownership checks rejected Python-compatible public type names, and one runner could not decode its already saved Python reference. Consequently zero matches were observed and repaired matching is not measured. The previous C, Rust, Zig, C++, and Go mismatches remain preserved. The exact original C binary was restored. All 103 actual repository evidence owners and 108 digest references are authenticated. Speed and memory are not measured and the planned 4,194,304-case holdout remains unopened.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.title{font-size:34px;font-weight:760;fill:#16324f}.heading{font-size:25px;font-weight:740;fill:#16324f}.body{font-size:15px;fill:#42556c}.name{font-size:18px;font-weight:720;fill:#16324f}.pass{font-size:15px;font-weight:750;fill:#00794c}.fail{font-size:15px;font-weight:740;fill:#a15e00}.pending{font-size:15px;font-weight:740;fill:#53667b}.big{font-size:26px;font-weight:760;fill:#16324f}.foot{font-size:12px;fill:#53667b}</style>
+<rect width="1660" height="1720" rx="22" fill="#f4f7fb"/>
+<text x="54" y="69" class="title">Can we build a faster replacement for Python re?</text>
+<text x="56" y="100" class="body">The repaired C test runner failed before matching. Compatibility and speed remain unproven.</text>
+<rect x="54" y="124" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="68" y="168" class="big">31,237</text>
+<text x="68" y="203" class="body">original Python reference checks</text>
+<rect x="374" y="124" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="388" y="168" class="big">0 of 6</text>
+<text x="388" y="203" class="body">fully compatible replacements</text>
+<rect x="694" y="124" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="708" y="168" class="big">13 of 13</text>
+<text x="708" y="203" class="body">repaired C test groups failed</text>
+<rect x="1014" y="124" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="1028" y="168" class="big">103</text>
+<text x="1028" y="203" class="body">actual evidence files</text>
+<rect x="1334" y="124" width="304" height="104" rx="13" fill="#fff" stroke="#dae4ee"/>
+<text x="1348" y="168" class="big">NOT MEASURED</text>
+<text x="1348" y="203" class="body">speed and memory</text>
+<rect x="54" y="248" width="1552" height="995" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="76" y="290" class="heading">1. Does it behave like Python?</text>
+<text x="77" y="318" class="body">The fixed reference contains 13 test groups and 31,237 cases. A failed runner is not a passing matching result.</text>
+<rect x="75" y="343" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="370" class="name">Python re</text>
+<text x="1564" y="370" class="pass" text-anchor="end">PASSED</text>
+<text x="96" y="397" class="body">31,237 of 31,237 frozen reference checks passed.</text>
+<rect x="75" y="427" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="454" class="name">C - last previously matched version</text>
+<text x="1564" y="454" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="481" class="body">7,197 verified passes and 2,094 genuine matching differences; historical result preserved.</text>
+<rect x="75" y="511" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="538" class="name">C repair - actual new full retest</text>
+<text x="1564" y="538" class="fail" text-anchor="end">RUNNER FAILED</text>
+<text x="96" y="565" class="body">All 13 groups stopped before matching; 0 matching observations; matching NOT MEASURED.</text>
+<rect x="75" y="595" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="622" class="name">Rust</text>
+<text x="1564" y="622" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="649" class="body">7,461 verified passes and 2,042 genuine matching differences.</text>
+<rect x="75" y="679" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="706" class="name">Zig</text>
+<text x="1564" y="706" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="733" class="body">3,583 verified passes and 1,764 genuine matching differences.</text>
+<rect x="75" y="763" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="790" class="name">C++</text>
+<text x="1564" y="790" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="817" class="body">128 verified passes, 2,308 matching differences, and five infrastructure failures.</text>
+<rect x="75" y="847" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="874" class="name">Go</text>
+<text x="1564" y="874" class="fail" text-anchor="end">FAILED</text>
+<text x="96" y="901" class="body">128 verified passes, 4,518 matching differences, and four infrastructure failures.</text>
+<rect x="75" y="931" width="1510" height="73" rx="9" fill="#f8fafd" stroke="#e5ecf2"/>
+<text x="94" y="958" class="name">Fortran</text>
+<text x="1564" y="958" class="pending" text-anchor="end">NOT READY</text>
+<text x="96" y="985" class="body">Two independently built engine outputs differed; matching remains NOT MEASURED.</text>
+<text x="77" y="1047" class="body">In 12 groups, a runner ownership check rejected Python-compatible Pattern and Match names before matching.</text>
+<text x="77" y="1076" class="body">In the remaining public-types group, the runner could not decode its already saved Python reference_a.</text>
+<text x="77" y="1105" class="body">Zero observed comparisons does not mean zero matching differences. The repaired C candidate is not qualified.</text>
+<text x="77" y="1134" class="body">The exact original 0755 C binary was restored, including its original inode; no repaired binary remains active.</text>
+<text x="77" y="1163" class="body">103 actual repository evidence files = 73 previous + 26 per-group reports and receipts + 4 full-campaign files.</text>
+<text x="77" y="1192" class="body">All 108 digest-addressed historical and current evidence references are independently authenticated.</text>
+<rect x="54" y="1261" width="1552" height="273" rx="16" fill="#fff" stroke="#dae4ee"/>
+<text x="76" y="1304" class="heading">2. Is it faster than Python?</text>
+<text x="78" y="1336" class="body">NOT MEASURED. There is no trustworthy speed, memory, confidence interval, ranking, or winner.</text>
+<text x="78" y="1370" class="body">A reproducible native build is not proof that matching works; the attempted repaired-C retest actually failed.</text>
+<text x="78" y="1404" class="body">The planned 4,194,304-case final comparison has not been generated, opened, or timed.</text>
+<text x="78" y="1438" class="body">Next: repair both authenticated runner blockers, then rerun every unchanged frozen correctness case.</text>
+<text x="78" y="1472" class="body">The previous two identical C builds and all original candidate failures remain preserved.</text>
+<text x="58" y="1583" class="foot">Inputs SHA-256: 704b2e07e32260ac741b0a914e2ae04a3deb583de317ba170432f85126af5139</text>
+<text x="58" y="1609" class="foot">Renderer SHA-256: 617a64691bf9da7730e44bfed96fe20dbd9c8e38b575e0daf8a3432dbf2625e9</text>
+<text x="58" y="1635" class="foot">Recovered C campaign archive SHA-256: a8319a686c2486e27374bfb9c6ada4e4ec104c27c1cafdbc2205c98f40fa9fb7</text>
+<text x="58" y="1661" class="foot">Recovered C campaign receipt SHA-256: 034207331f8d61ef69f510cb42b9babe921b85570c571198ea8eb310c75ffecd</text>
+</svg>

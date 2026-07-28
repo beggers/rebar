@@ -7,6 +7,74 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the complete repaired C correctness-run failure
+
+Run the separately frozen, fail-safe first-party C campaign once against
+all **13** original Python test groups and the unchanged **31,237**-case
+denominator. Load only the actual reproducibly built first-party C
+engine. Restore the existing original native file before publishing the
+complete result.
+
+Every test group fails before it can observe a matching case. Twelve
+fail because the independence check incorrectly treats Python-compatible
+public type names as evidence of a foreign matching engine. The pinned
+Python reference itself calls these types `re.Pattern` and `re.Match`.
+Their exact recorded error is `require genuinely owned Pattern and Match,
+including Python-owned C++ types`. The separately failed
+`public_types_v1` group cannot decode its saved reference and reports
+`the authenticated complete original reference vector is absent:
+reference_a`. Keep the **12** public-type failures and **1** missing
+reference failure separate.
+
+Preserve all **26** separately owned original group archives and
+receipts. The [complete original C test-runner failure](../oracle/phase2/evidence/frozen-p0-candidate-v8-c-phase2-v8-original-p0-failures.json.gz)
+has SHA-256
+`28aa89319262d9ba14ad6f07931d880770ef18dc025610750fa3b99c68d2f32f`.
+Its [independent complete-test receipt](../oracle/phase2/evidence/frozen-p0-candidate-v8-c-phase2-v8-original-p0-failures-publication-receipt.json)
+has SHA-256
+`088736e5329b24bab3f2fb8c5069c005b8adeb1afc27cf84742b26be923ee71d`.
+
+The [outer recovered C failure](../oracle/phase2/evidence/repaired-c-original-campaign-v1-c-phase2-v8-original-p0-failures.json.gz)
+has SHA-256
+`a8319a686c2486e27374bfb9c6ada4e4ec104c27c1cafdbc2205c98f40fa9fb7`.
+Its [separate durable recovery receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v1-c-phase2-v8-original-p0-failures-publication-receipt.json)
+has SHA-256
+`034207331f8d61ef69f510cb42b9babe921b85570c571198ea8eb310c75ffecd`.
+The original user-owned native module is restored: device **2064**, inode
+**430300**, mode `0755`, **149,976** bytes, and SHA-256
+`075350a17d4909cd6f8dbe5e808e7b6444760f54bb60af013e0f812e22cfb7fd`.
+
+Preserve all **73** prior evidence owners and add all **30** actual
+complete-run owners, for **103**. Preserve all **78** prior
+digest-addressed history paths and add the same **30**, for **108**.
+The original C candidate's **2,094** matching failures remain
+unchanged; the repaired C run has **13** infrastructure failures and
+**no observed matching cases**. It is not correct to describe these as
+zero mismatches or a passing engine.
+
+Generate the [complete current comparison chart](evidence/candidate-current-overview-v21.svg),
+SHA-256
+`ba7b82d7552603eb836a0c18e47546390c4e1398bbb74951616e309135b9ce5c`;
+[all verified graph inputs](evidence/candidate-current-overview-v21.inputs.json),
+SHA-256
+`704b2e07e32260ac741b0a914e2ae04a3deb583de317ba170432f85126af5139`;
+[Python baseline and all recorded candidate results](evidence/candidate-current-overview-v21.json),
+SHA-256
+`d2143b09bbf35a7a83977c08a35f6a0c87435a50e478df517099aa719e8fa28c`;
+and [reproducible graph generator](../tools/render_candidate_current_overview_v21.py),
+SHA-256
+`617a64691bf9da7730e44bfed96fe20dbd9c8e38b575e0daf8a3432dbf2625e9`.
+Both ordinary and clean-environment graph self-tests reject **152**
+incorrect alternatives. Both source-pinned read-only graph checks
+authenticate all **103** evidence owners, all **108** historical
+references, all **13** original group failures, and the restored native
+file without running a candidate.
+
+The result is **FAIL**. No candidate qualifies. Repaired C matching,
+speed, memory, and undefined behavior remain **NOT MEASURED**. The
+**4,194,304**-case final comparison remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze a fail-safe full correctness run for the repaired C engine
 
 Freeze the entire safety boundary before loading the genuinely built

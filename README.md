@@ -14,26 +14,24 @@ Python, another regular-expression package, or another candidate does not count.
 
 Python passes all **31,237** frozen compatibility checks. No replacement
 has passed them. Five independently written engines—Rust, C, Zig, C++,
-and Go—build reproducibly. All five have now been tested and remain
-incompatible. Go has **4,518** confirmed matching differences and
-**4** separately recorded test-worker failures; C++ has **2,308**
-matching differences and **5** worker failures. Each passes only the
-**128**-case isolated-interpreter group. The original oversized Go
-report is now fully preserved by a lossless streaming recorder, and the
-earlier failed recording attempt remains documented. Fortran compiles,
-but its two builds still differ. No candidate wraps an external regex
-engine. Speed and memory are **NOT MEASURED**; the final comparison is
-**NOT OPENED**. The repaired first-party C engine has now been built
-twice with identical results, but its complete matching behavior is
-**NOT YET RETESTED**. The separate Rust repair has not yet been built.
+and Go—build reproducibly, but their previously tested versions remain
+incompatible. Fortran has not yet produced matching repeat builds. None
+of these engines wraps an external regular-expression package.
 
-![Python passes all 31,237 original checks; every previously tested replacement remains incompatible; the repaired C engine has two identical first-party builds but has not yet been retested; speed and memory are not measured](docs/evidence/candidate-current-overview-v20.svg)
+A repaired C engine now builds identically twice. Its full rerun exposed
+two test-runner problems before matching: **12** groups rejected
+Python-compatible public type names, and **1** could not decode its
+saved Python reference. All **13** failures are preserved. Repaired C matching,
+speed, and memory are **NOT MEASURED**. The final comparison remains
+**NOT OPENED**. The separate Rust repair has not yet been built.
+
+![Python passes all 31,237 original checks; the five previous replacements remain incompatible; the rebuilt C engine hit 13 recorded test-runner failures before matching; speed and memory are not measured](docs/evidence/candidate-current-overview-v21.svg)
 
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
 | Python `re` | Reference | 31,237 / 31,237 | Reference; not timed |
 | Rust | Two matching builds | 7,461 verified; five groups failed; not qualified | NOT MEASURED |
-| C | Original and repaired builds match independently | Original: 7,197 verified; six groups failed. Repair: NOT YET RETESTED | NOT MEASURED |
+| C | Original and repaired builds match independently | Original: 7,197 verified; six groups failed. Repair: 13 test-runner failures; matching not measured | NOT MEASURED |
 | Zig | Two matching builds; original failure preserved | 3,583 verified; seven groups failed; not qualified | NOT MEASURED |
 | C++ | Two matching source builds | 128 verified; 12 groups failed; not qualified | NOT MEASURED |
 | Go | Two matching first-party builds | 128 verified; 4,518 differences; four worker failures | NOT MEASURED |
@@ -119,17 +117,19 @@ and an explanation of every slowdown greater than **20%**. There is no winner.
 - [Frozen first-party C repair](oracle/phase2/FIRST-PARTY-SOURCE-REPAIR-V1.md), [exact repair and preserved evidence](oracle/phase2/first-party-source-repair-v1.json), and [private-snapshot-only repair tool](tools/apply_owned_first_party_source_repair_v1.py); no original engine, matching result, or final comparison has been changed.
 - [Separate first-party Rust repair](oracle/phase2/RUST-SOURCE-REPAIR-V1.md), [exact Rust repair and preserved evidence](oracle/phase2/rust-source-repair-v1.json), and [private Rust-snapshot-only repair tool](tools/apply_owned_rust_source_repair_v1.py); the existing Rust engine and all its previous failures remain unchanged.
 - [Reproducible first-party C build rules](oracle/phase2/NATIVE-SOURCE-BUILD-V8.md), [exact build inventory](oracle/phase2/native-source-build-v8.json), and [independent two-build verifier](tools/reproduce_owned_native_source_build_v8.py).
-- [Actual matching first-party C builds](oracle/phase2/evidence/native-source-build-v8-c-phase2-v8.json.gz) and [independent build receipt](oracle/phase2/evidence/native-source-build-v8-c-phase2-v8-publication-receipt.json); two private builds produced identical native binaries, but the repaired engine has not yet been activated or retested.
+- [Actual matching first-party C builds](oracle/phase2/evidence/native-source-build-v8-c-phase2-v8.json.gz) and [independent build receipt](oracle/phase2/evidence/native-source-build-v8-c-phase2-v8-publication-receipt.json); two private builds produced identical native binaries.
 - [Reproducible independent Rust build rules](oracle/phase2/NATIVE-SOURCE-BUILD-V9.md), [exact Rust build inventory](oracle/phase2/native-source-build-v9.json), and [offline two-build verifier](tools/reproduce_owned_native_source_build_v9.py); the repaired Rust engine has no external regex dependency and has not yet been built or retested.
-- [Safe reversible C-engine loading rules](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V5.md), [exact recovery and build checks](oracle/phase2/verified-native-activation-v5.json), and [first-party engine recovery tool](tools/activate_verified_native_candidate_v5.py); no repaired engine has been loaded or tested.
-- [Complete repaired-engine Python test rules](oracle/phase2/P0-CANDIDATE-PROTOCOL-V8.md), [all original groups and seeds](oracle/phase2/p0-candidate-protocol-v8.json), [isolated original-test worker](tools/run_frozen_p0_candidate_worker_v6.py), and [complete test and recovery recorder](tools/run_frozen_p0_candidate_v8.py); all **31,237** existing cases remain unchanged and the repaired engine has not yet been run.
-- [Fail-safe full C test rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V1.md), [exact recovery and test contract](oracle/phase2/repaired-c-original-campaign-v1.json), and [recovered original-test runner](tools/run_owned_repaired_c_original_campaign_v1.py); the original native file must be restored before any result is recorded. The repaired engine has **NOT YET BEEN RETESTED**.
+- [Safe reversible C-engine loading rules](oracle/phase2/VERIFIED-NATIVE-ACTIVATION-V5.md), [exact recovery and build checks](oracle/phase2/verified-native-activation-v5.json), and [first-party engine recovery tool](tools/activate_verified_native_candidate_v5.py); the original native file was restored exactly.
+- [Complete repaired-engine Python test rules](oracle/phase2/P0-CANDIDATE-PROTOCOL-V8.md), [all original groups and seeds](oracle/phase2/p0-candidate-protocol-v8.json), [isolated original-test worker](tools/run_frozen_p0_candidate_worker_v6.py), and [complete test and recovery recorder](tools/run_frozen_p0_candidate_v8.py); all **31,237** original cases remain unchanged.
+- [Fail-safe full C test rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V1.md), [exact recovery and test contract](oracle/phase2/repaired-c-original-campaign-v1.json), and [recovered original-test runner](tools/run_owned_repaired_c_original_campaign_v1.py); the original native file was restored before the genuine failure was recorded.
+- [All 13 repaired C test-runner failures](oracle/phase2/evidence/frozen-p0-candidate-v8-c-phase2-v8-original-p0-failures.json.gz) and [complete original-test receipt](oracle/phase2/evidence/frozen-p0-candidate-v8-c-phase2-v8-original-p0-failures-publication-receipt.json); **12** groups rejected genuine Python-compatible public type names and **1** could not decode its archived reference.
+- [Independently recovered C failure and original-file proof](oracle/phase2/evidence/repaired-c-original-campaign-v1-c-phase2-v8-original-p0-failures.json.gz) and [separate durable recovery receipt](oracle/phase2/evidence/repaired-c-original-campaign-v1-c-phase2-v8-original-p0-failures-publication-receipt.json); matching was **NOT MEASURED**.
 - [Complete original-test rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V1.md), [frozen test inventory](oracle/phase2/six-family-p0-campaign-v1.json), and [reproducible candidate test runner](tools/run_owned_six_family_original_p0_campaign_v1.py).
 - [Lossless original-test recording rules](oracle/phase2/SIX-FAMILY-P0-CAMPAIGN-V2.md), [frozen streaming-test inventory](oracle/phase2/six-family-p0-campaign-v2.json), and [complete streaming test recorder](tools/run_owned_six_family_original_p0_campaign_v2.py); the original tests, first-party engines, and preserved Go failure remain unchanged.
 - [Complete first-party C++ failure](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures.json.gz) and [independent publication and recovery receipt](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-cpp-phase2-v1-failures-publication-receipt.json).
 - [Complete first-party Go matching failure](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v2-go-phase2-v2-failures.json.gz) and [independent streamed-result and native-recovery receipt](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v2-go-phase2-v2-failures-publication-receipt.json); all **13** groups, **4,518** genuine differences, **4** separate worker failures, and both restored native files are preserved.
 - [Complete Go result-recording failure](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-publication-failure-evidence.json.gz), [independent evidence receipt](oracle/phase2/evidence/owned-six-family-original-p0-campaign-v1-go-phase2-v1-publication-failure-evidence-publication-receipt.json), and [reproducible failure-preservation tool](tools/preserve_owned_go_campaign_publication_failure_v1.py). This is not a Go compatibility result.
-- [Current headline graph inputs](docs/evidence/candidate-current-overview-v20.inputs.json), [complete machine-readable baseline, failures, and repaired build](docs/evidence/candidate-current-overview-v20.json), and [reproducible graph generator](tools/render_candidate_current_overview_v20.py).
+- [Current headline graph inputs](docs/evidence/candidate-current-overview-v21.inputs.json), [complete machine-readable Python baseline and candidate failures](docs/evidence/candidate-current-overview-v21.json), and [reproducible graph generator](tools/render_candidate_current_overview_v21.py).
 - [Full experiment log, build reports, previous graphs, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Proposed 4,194,304-case final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); examples remain **NOT GENERATED** and **NOT OPENED**.
 - [Original objective](GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; [later clarifications](AMENDMENTS.md).
@@ -171,6 +171,7 @@ PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 "$PY" -I -B tools/audit_candidate_independence_v2.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v19.py --self-test
 "$PY" -I -B tools/render_candidate_current_overview_v20.py --self-test
+"$PY" -I -B tools/render_candidate_current_overview_v21.py --self-test
 "$PY" -I -B tools/apply_owned_first_party_source_repair_v1.py --self-test \
   --source-sha256 c04bbc8e7bc45bdbe1fb9eb93942286f5b32b39aef554db15b8b1acd9cc8cd99 \
   --protocol-sha256 1a2e83caaca5cb43fc82445c2a4fc3097bc3d51bdfc568783b8815797b8c63f5 \
@@ -185,11 +186,11 @@ Verify the current headline graph without rerunning a candidate or
 opening a benchmark:
 
 ```sh
-"$PY" -I -B tools/render_candidate_current_overview_v20.py --verify \
-  --source-sha256 3f4b63de113743204f2b6736c5486e9160f4f4c029575052676f68943a3210d2 \
-  --v8-archive-sha256 69a795af6c407c0719b68dfa9fd4cb6dcfca2595271f72b83bc43678521f2598 \
-  --v8-receipt-sha256 3b0983af9729b3150ae239a83dd0fdb37c6e790b3c03ebea48c77215f51456b8 \
-  --manifest-sha256 bf09019d4a8df9ab5519a0b6bbbe9c4aaa8574dbcc4a9eafc1b424ba1961f021
+"$PY" -I -B tools/render_candidate_current_overview_v21.py --verify \
+  --source-sha256 617a64691bf9da7730e44bfed96fe20dbd9c8e38b575e0daf8a3432dbf2625e9 \
+  --campaign-archive-sha256 a8319a686c2486e27374bfb9c6ada4e4ec104c27c1cafdbc2205c98f40fa9fb7 \
+  --campaign-receipt-sha256 034207331f8d61ef69f510cb42b9babe921b85570c571198ea8eb310c75ffecd \
+  --manifest-sha256 704b2e07e32260ac741b0a914e2ae04a3deb583de317ba170432f85126af5139
 
 "$PY" -I -B tools/run_owned_repaired_c_original_campaign_v1.py \
   --verify-frozen-context \
