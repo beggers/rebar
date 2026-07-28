@@ -7,6 +7,39 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the actual Go Unicode group-name correction
+
+Preserve the original from-scratch Go result: **4,518** genuine matching
+differences, **128** verified passing checks, and **four** failed workers.
+A real original Python test also exposes an independently diagnosed bug:
+the Go bridge copies only the first byte of each Unicode character in a
+named group. Correct the first-party engine's loop to copy every UTF-8 byte.
+Neither Go's `regexp` nor any other regular-expression package is used.
+
+The [first-party Go Unicode source verifier](../tools/apply_owned_go_unicode_name_source_repair_v1.py)
+has SHA-256
+`a32f1062ef507903edc3a7cb5d0462853528e57582dd61e24e97fd1cc7737561`.
+The [observed Unicode failure and exact source-repair protocol](../oracle/phase2/GO-UNICODE-NAME-SOURCE-REPAIR-V1.md)
+has SHA-256
+`fa738f2365a087d07d3860b23278fb20da00300e0d3eb3df09b6d3584f3b4c95`.
+The [canonical original-source and corrected-byte contract](../oracle/phase2/go-unicode-name-source-repair-v1.json)
+has SHA-256
+`b48d52c712288b037f2b2f88a69e658d8a389fd9ab469fb1999f80debc582d33`.
+
+All four pinned ordinary and empty-environment checks pass. They verify
+**10** Unicode examples, reject **146** unsafe controls, and block **11**
+kinds of external effects. The uniquely corrected Go source is **53,803**
+bytes with SHA-256
+`095fd5a69ab8c3667ba92dc1934bf91b650260f6e55f1ac876fd267f0d8bcf1a`.
+It is derived only in memory; the original engine remains unchanged.
+
+No compressed matching archive is opened. The current **153** evidence
+files, **158** references, **31,237** frozen checks, **13** groups, and
+**50** separately frozen unrun signature checks are unchanged. Corrected
+Go build and compatibility: **NOT MEASURED**. Speed, memory, and undefined
+behavior: **NOT MEASURED**. The **4,194,304**-case final comparison remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze reproducible builds for the corrected from-scratch Zig engine
 
 Freeze the first-party Zig engine and its independently written Python
