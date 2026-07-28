@@ -109,11 +109,27 @@ const Parser = struct {
         class.bits[value >> 3] |= @as(u8, 1) << @intCast(value & 7);
     }
 
-    fn skip(self: *Parser) void {
+    fn skip(self: *Parser) ParseError!void {
         while (self.at < self.source.len) {
             if (self.at + 2 < self.source.len and self.source[self.at] == '(' and self.source[self.at + 1] == '?' and self.source[self.at + 2] == '#') {
-                const close = std.mem.indexOfScalarPos(u8, self.source, self.at + 3, ')') orelse return;
-                self.at = close + 1;
+                self.at += 3;
+                var closed = false;
+                while (self.at < self.source.len) {
+                    switch (self.source[self.at]) {
+                        '\\' => {
+                            self.at += 1;
+                            if (self.at >= self.source.len) return error.InvalidPattern;
+                            _ = try self.codepoint();
+                        },
+                        ')' => {
+                            self.at += 1;
+                            closed = true;
+                            break;
+                        },
+                        else => self.at += 1,
+                    }
+                }
+                if (!closed) return error.InvalidPattern;
                 continue;
             }
             if (self.program.flags & 64 == 0) return;
@@ -123,7 +139,21 @@ const Parser = struct {
                 continue;
             }
             if (value == '#') {
-                while (self.at < self.source.len and self.source[self.at] != '\n') : (self.at += 1) {}
+                self.at += 1;
+                while (self.at < self.source.len) {
+                    switch (self.source[self.at]) {
+                        '\\' => {
+                            self.at += 1;
+                            if (self.at >= self.source.len) return error.InvalidPattern;
+                            _ = try self.codepoint();
+                        },
+                        '\n' => {
+                            self.at += 1;
+                            break;
+                        },
+                        else => self.at += 1,
+                    }
+                }
                 continue;
             }
             break;
@@ -478,7 +508,7 @@ const Parser = struct {
 
     fn repeated(self: *Parser) ParseError!u32 {
         const child = try self.atom();
-        self.skip();
+        try self.skip();
         if (self.at >= self.source.len) return child;
         const mark = self.source[self.at];
         if (mark == '{' and !self.braceRepeat()) return child;
@@ -558,10 +588,10 @@ const Parser = struct {
 
     fn sequence(self: *Parser) ParseError!u32 {
         var values: std.ArrayList(u32) = .empty;
-        self.skip();
+        try self.skip();
         while (self.at < self.source.len and self.source[self.at] != '|' and self.source[self.at] != ')') {
             try values.append(self.program.arena.allocator(), try self.repeated());
-            self.skip();
+            try self.skip();
         }
         return if (values.items.len == 0) self.add(.empty) else self.balanced(values.items, false);
     }

@@ -10,6 +10,9 @@ import warnings
 from candidates import _zig_bridge
 
 
+__version__ = "2.2.1"
+
+
 class RegexFlag(enum.IntFlag):
     ASCII = 256
     IGNORECASE = 2
@@ -271,6 +274,40 @@ def _fixed_width(text):
     return width if at == length else None
 
 
+def _skip_verbose_comment(text, index, pattern):
+    """Skip a verbose comment using Python's paired backslash tokens."""
+    length = len(text)
+    index += 1
+    while index < length:
+        char = text[index]
+        if char == "\\":
+            if index + 1 >= length:
+                raise PatternError("bad escape (end of pattern)", pattern, index)
+            index += 2
+        elif char == "\n":
+            return index + 1
+        else:
+            index += 1
+    return index
+
+
+def _skip_inline_comment(text, index, pattern):
+    """Skip an inline comment without mistaking an escaped ')' for its end."""
+    length = len(text)
+    cursor = index + 3
+    while cursor < length:
+        char = text[cursor]
+        if char == "\\":
+            if cursor + 1 >= length:
+                raise PatternError("bad escape (end of pattern)", pattern, cursor)
+            cursor += 2
+        elif char == ")":
+            return cursor + 1
+        else:
+            cursor += 1
+    raise PatternError("missing ), unterminated comment", pattern, index)
+
+
 def _pattern_recursion_weight(pattern, flags):
     """Measure real nested groups without counting escapes, sets, or comments."""
     text = pattern.decode("latin1") if isinstance(pattern, bytes) else pattern
@@ -287,8 +324,7 @@ def _pattern_recursion_weight(pattern, flags):
             index += 1
             continue
         if verbose and char == "#":
-            newline = text.find("\n", index + 1)
-            index = length if newline < 0 else newline + 1
+            index = _skip_verbose_comment(text, index, pattern)
             continue
         if char == "\\":
             index += min(2, length - index)
@@ -314,8 +350,7 @@ def _pattern_recursion_weight(pattern, flags):
             index += 1
             continue
         if text.startswith("(?#", index):
-            close = text.find(")", index + 3)
-            index = length if close < 0 else close + 1
+            index = _skip_inline_comment(text, index, pattern)
             continue
         if text.startswith("(?P=", index):
             close = text.find(")", index + 4)
@@ -515,8 +550,7 @@ def _preflight_pattern(pattern, flags):
                 index += 1
                 continue
             if char == "#":
-                end = text.find("\n", index)
-                index = length if end < 0 else end + 1
+                index = _skip_verbose_comment(text, index, pattern)
                 continue
         if char == "\\":
             index, _, _ = escape_at(index)
@@ -529,10 +563,7 @@ def _preflight_pattern(pattern, flags):
         if char == "(":
             opening = index
             if text.startswith("(?#", index):
-                close = text.find(")", index + 3)
-                if close < 0:
-                    fail("missing ), unterminated comment", opening)
-                index = close + 1
+                index = _skip_inline_comment(text, index, pattern)
                 continue
             capture = False
             group_number = None
@@ -1194,6 +1225,42 @@ class Pattern:
 _zig_bridge.install_pattern_methods(Pattern)
 
 
+_SCANNER_INLINE_FLAGS = (
+    ("a", int(ASCII)),
+    ("i", int(IGNORECASE)),
+    ("L", int(LOCALE)),
+    ("m", int(MULTILINE)),
+    ("s", int(DOTALL)),
+    ("u", int(UNICODE)),
+    ("x", int(VERBOSE)),
+)
+
+
+def _scanner_apply_inline_flags(flags, enabled, disabled):
+    for mark, bit in _SCANNER_INLINE_FLAGS:
+        if mark in enabled:
+            if mark in "aLu":
+                flags &= ~(int(ASCII) | int(LOCALE) | int(UNICODE))
+            flags |= bit
+        if mark in disabled:
+            flags &= ~bit
+    return flags
+
+
+def _scanner_apply_global_scope(source, initial_flags, phrase_flags):
+    enabled = []
+    disabled = []
+    for mark, bit in _SCANNER_INLINE_FLAGS:
+        if phrase_flags & bit and not initial_flags & bit:
+            enabled.append(mark)
+        elif initial_flags & bit and not phrase_flags & bit and mark not in "aLu":
+            disabled.append(mark)
+    if not enabled and not disabled:
+        return source
+    removal = "-" + "".join(disabled) if disabled else ""
+    return f"(?{''.join(enabled)}{removal}:{source})"
+
+
 def _scanner_capture_name(branch, number):
     return f"_rebar_scanner_inner_{branch}_{number}"
 
@@ -1222,11 +1289,21 @@ def _scanner_phrase(phrase, branch, flags, native_outer_group):
     pieces = []
     names = {}
     group_count = 0
-    verbose = bool(flags & int(VERBOSE))
+    active_flags = flags
+    phrase_flags = flags
+    flag_scopes = []
     index = 0
     length = len(text)
     while index < length:
         char = text[index]
+        if active_flags & int(VERBOSE):
+            if char in " \t\n\r\v\f":
+                index += 1
+                continue
+            if char == "#":
+                index = _skip_verbose_comment(text, index, phrase)
+                continue
+
         if char == "[":
             end = index + 1
             if end < length and text[end] == "^":
@@ -1276,7 +1353,7 @@ def _scanner_phrase(phrase, branch, flags, native_outer_group):
             continue
 
         if text.startswith("(?#", index):
-            end = text.index(")", index + 3) + 1
+            end = _skip_inline_comment(text, index, phrase)
             pieces.append(text[index:end])
             index = end
             continue
@@ -1289,6 +1366,7 @@ def _scanner_phrase(phrase, branch, flags, native_outer_group):
             pieces.append(
                 f"(?P<{_scanner_capture_name(branch, group_count)}>"
             )
+            flag_scopes.append(active_flags)
             index = end + 1
             continue
 
@@ -1311,6 +1389,7 @@ def _scanner_phrase(phrase, branch, flags, native_outer_group):
                     branch, names[reference]
                 )
             pieces.append(f"(?({rewritten_reference})")
+            flag_scopes.append(active_flags)
             index = end + 1
             continue
 
@@ -1318,12 +1397,19 @@ def _scanner_phrase(phrase, branch, flags, native_outer_group):
             cursor = index + 2
             while cursor < length and text[cursor] in "aiLmsux-":
                 cursor += 1
-            if cursor > index + 2 and cursor < length and text[cursor] == ")":
+            if cursor > index + 2 and cursor < length and text[cursor] in ":)":
                 enabled, separator, disabled = text[index + 2:cursor].partition("-")
-                if "x" in enabled:
-                    verbose = True
-                if separator and "x" in disabled:
-                    verbose = False
+                local_flags = _scanner_apply_inline_flags(
+                    active_flags, enabled, disabled if separator else ""
+                )
+                if text[cursor] == ":":
+                    pieces.append(text[index:cursor + 1])
+                    flag_scopes.append(active_flags)
+                    active_flags = local_flags
+                    index = cursor + 1
+                    continue
+                active_flags = local_flags
+                phrase_flags = local_flags
                 index = cursor + 1
                 continue
 
@@ -1332,16 +1418,20 @@ def _scanner_phrase(phrase, branch, flags, native_outer_group):
             pieces.append(
                 f"(?P<{_scanner_capture_name(branch, group_count)}>"
             )
+            flag_scopes.append(active_flags)
             index += 1
             continue
+
+        if char == "(":
+            flag_scopes.append(active_flags)
+        elif char == ")" and flag_scopes:
+            active_flags = flag_scopes.pop()
 
         pieces.append(char)
         index += 1
 
     rewritten = "".join(pieces)
-    if verbose != bool(flags & int(VERBOSE)):
-        rewritten = ("(?x:" if verbose else "(?-x:") + rewritten + ")"
-    return rewritten, group_count
+    return _scanner_apply_global_scope(rewritten, flags, phrase_flags), group_count
 
 
 class Scanner:
@@ -1364,8 +1454,6 @@ class Scanner:
         if not branches:
             raise RuntimeError("invalid SRE code")
         group_count = len(branches)
-        if any(local_groups > group_count for _body, local_groups in branches):
-            raise RuntimeError("invalid SRE code")
 
         source = "|".join(body for body, _local_groups in branches)
         if byte_mode:

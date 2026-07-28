@@ -29,6 +29,7 @@ extern intptr_t rebar_zig_collect_records_wide(const void *, const uint8_t *, si
 #define ZIG_ITERATOR_RECORD_WORDS 64
 #define ZIG_INITIAL_CAPTURE_COUNT 64
 #define ZIG_SCANNER_OUTER_PREFIX "_rebar_scanner_outer_"
+#define ZIG_PATTERN_ATTRIBUTE_COUNT 7
 
 typedef struct {
     ZigOwnedCompile owned_compile;
@@ -85,20 +86,112 @@ typedef struct {
     size_t record_count;
 } ZigIterator;
 
-static PyTypeObject ZigMatchType;
-static PyTypeObject ZigIteratorType;
-static PyTypeObject *ZigScannerType;
-static PyObject *zig_default_endpos;
-static PyObject *zig_generic_alias_factory;
+typedef struct {
+    PyTypeObject *match_type;
+    PyTypeObject *scanner_type;
+    PyObject *default_endpos;
+    PyObject *generic_alias_factory;
+    PyObject *pattern_attribute_keys[ZIG_PATTERN_ATTRIBUTE_COUNT];
+} ZigBridgeState;
+
+static struct PyModuleDef bridge_module;
 static PyObject *zig_span(intptr_t begin, intptr_t finish);
 
-static ZigMatch *zig_match_new(PyObject *pattern, PyObject *string, PyObject *groupindex, size_t groups, Py_ssize_t pos, Py_ssize_t endpos) {
+static ZigBridgeState *zig_bridge_state(PyObject *module) {
+    if (module == NULL || !PyModule_Check(module) ||
+        PyModule_GetDef(module) != &bridge_module) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "the owned Zig bridge module is not initialized");
+        return NULL;
+    }
+    ZigBridgeState *state = PyModule_GetState(module);
+    if (state == NULL && !PyErr_Occurred()) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "the owned Zig bridge interpreter state is unavailable");
+    }
+    return state;
+}
+
+static ZigBridgeState *zig_current_bridge_state(PyObject *pattern) {
+    PyObject *pattern_type = (PyObject *)Py_TYPE(pattern);
+    PyObject *bound = PyObject_GetAttrString(pattern_type,
+                                             "__class_getitem__");
+    if (bound == NULL) return NULL;
+    if (!PyMethod_Check(bound) || PyMethod_Self(bound) != pattern_type) {
+        Py_DECREF(bound);
+        PyErr_SetString(PyExc_RuntimeError,
+                        "the owned Zig pattern has no authentic generic alias");
+        return NULL;
+    }
+
+    PyObject *function = PyMethod_Function(bound);
+    if (function == NULL || !PyFunction_Check(function)) {
+        Py_DECREF(bound);
+        PyErr_SetString(PyExc_RuntimeError,
+                        "the owned Zig generic alias has no Python function");
+        return NULL;
+    }
+    PyObject *globals = PyFunction_GetGlobals(function);
+    if (globals == NULL || !PyDict_Check(globals)) {
+        Py_DECREF(bound);
+        PyErr_SetString(PyExc_RuntimeError,
+                        "the owned Zig generic alias has no Python globals");
+        return NULL;
+    }
+
+    PyObject *owner = PyDict_GetItemString(globals, "Pattern");
+    PyObject *module = PyDict_GetItemString(globals, "_zig_bridge");
+    if (owner != pattern_type || module == NULL) {
+        Py_DECREF(bound);
+        PyErr_SetString(PyExc_RuntimeError,
+                        "the owned Zig pattern and bridge do not match");
+        return NULL;
+    }
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) {
+        Py_DECREF(bound);
+        return NULL;
+    }
+    if (state->match_type == NULL) {
+        Py_DECREF(bound);
+        PyErr_SetString(PyExc_RuntimeError,
+                        "the owned Zig match type is not initialized");
+        return NULL;
+    }
+    PyObject *match_module = PyType_GetModule(state->match_type);
+    if (match_module == NULL) {
+        Py_DECREF(bound);
+        return NULL;
+    }
+    if (match_module != module) {
+        Py_DECREF(bound);
+        PyErr_SetString(PyExc_RuntimeError,
+                        "the owned Zig match type belongs to another bridge");
+        return NULL;
+    }
+
+    Py_DECREF(bound);
+    return state;
+}
+
+static ZigMatch *zig_match_new(ZigBridgeState *state, PyObject *pattern,
+                               PyObject *string, PyObject *groupindex,
+                               size_t groups, Py_ssize_t pos,
+                               Py_ssize_t endpos) {
+    if (state == NULL || state->match_type == NULL) {
+        if (!PyErr_Occurred()) {
+            PyErr_SetString(PyExc_RuntimeError,
+                            "the owned Zig match type is not initialized");
+        }
+        return NULL;
+    }
     if (groups > (size_t)PY_SSIZE_T_MAX / 2 - 1) {
         PyErr_NoMemory();
         return NULL;
     }
     size_t stride = groups + 1;
-    ZigMatch *match = (ZigMatch *)PyType_GenericAlloc(&ZigMatchType, (Py_ssize_t)(stride * 2));
+    ZigMatch *match = (ZigMatch *)PyType_GenericAlloc(
+        state->match_type, (Py_ssize_t)(stride * 2));
     if (match == NULL) return NULL;
     match->pattern = Py_NewRef(pattern);
     match->string = Py_NewRef(string);
@@ -457,12 +550,15 @@ static PyObject *zig_match_copy(ZigMatch *match, PyObject *ignored) { (void)igno
 static PyObject *zig_match_deepcopy(ZigMatch *match, PyObject *memo) { (void)memo; return Py_NewRef(match); }
 static PyObject *zig_match_reduce(ZigMatch *match, PyObject *ignored) { (void)match; (void)ignored; PyErr_SetString(PyExc_TypeError, "cannot pickle 're.Match' object"); return NULL; }
 static PyObject *zig_match_class_getitem(PyObject *type, PyObject *item) {
-    if (zig_generic_alias_factory == NULL) {
+    ZigBridgeState *state = (ZigBridgeState *)PyType_GetModuleState(
+        (PyTypeObject *)type);
+    if (state == NULL) return NULL;
+    if (state->generic_alias_factory == NULL) {
         PyErr_SetString(PyExc_RuntimeError,
                         "the native Zig generic alias factory is not initialized");
         return NULL;
     }
-    return PyObject_CallFunctionObjArgs(zig_generic_alias_factory, type,
+    return PyObject_CallFunctionObjArgs(state->generic_alias_factory, type,
                                          item, NULL);
 }
 
@@ -560,9 +656,11 @@ static int zig_match_clear(ZigMatch *match) {
 }
 
 static void zig_match_dealloc(ZigMatch *match) {
+    PyTypeObject *type = Py_TYPE(match);
     PyObject_GC_UnTrack(match);
     zig_match_clear(match);
-    Py_TYPE(match)->tp_free((PyObject *)match);
+    type->tp_free((PyObject *)match);
+    Py_DECREF(type);
 }
 
 static int zig_match_readonly(PyObject *match, PyObject *value, void *closure) {
@@ -626,22 +724,25 @@ static PyGetSetDef zig_match_getsets[] = {
     {NULL, NULL, NULL, NULL, NULL},
 };
 
-static PyMappingMethods zig_match_mapping = {0, zig_match_subscript, 0};
+static PyType_Slot zig_match_slots[] = {
+    {Py_tp_dealloc, (void *)zig_match_dealloc},
+    {Py_tp_repr, (void *)zig_match_repr},
+    {Py_tp_doc, (void *)"Capture-aware Zig regular expression match."},
+    {Py_tp_traverse, (void *)zig_match_traverse},
+    {Py_tp_clear, (void *)zig_match_clear},
+    {Py_tp_methods, zig_match_methods},
+    {Py_tp_getset, zig_match_getsets},
+    {Py_mp_subscript, (void *)zig_match_subscript},
+    {0, NULL},
+};
 
-static PyTypeObject ZigMatchType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "re.Match",
-    .tp_basicsize = offsetof(ZigMatch, spans),
-    .tp_itemsize = sizeof(intptr_t),
-    .tp_dealloc = (destructor)zig_match_dealloc,
-    .tp_repr = (reprfunc)zig_match_repr,
-    .tp_flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC,
-    .tp_doc = "Capture-aware Zig regular expression match.",
-    .tp_traverse = (traverseproc)zig_match_traverse,
-    .tp_clear = (inquiry)zig_match_clear,
-    .tp_methods = zig_match_methods,
-    .tp_getset = zig_match_getsets,
-    .tp_as_mapping = &zig_match_mapping,
+static PyType_Spec zig_match_spec = {
+    .name = "re.Match",
+    .basicsize = offsetof(ZigMatch, spans),
+    .itemsize = sizeof(intptr_t),
+    .flags = Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_GC |
+             Py_TPFLAGS_IMMUTABLETYPE | Py_TPFLAGS_DISALLOW_INSTANTIATION,
+    .slots = zig_match_slots,
 };
 
 static PyObject *zig_span(intptr_t begin, intptr_t finish) {
@@ -801,11 +902,12 @@ static intptr_t zig_collect_growing(const void *handle, const uint8_t *data, siz
 }
 
 static PyObject *bridge_match_object(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
-    (void)module;
     if (nargs != 9) {
         PyErr_Format(PyExc_TypeError, "match_object() takes exactly 9 arguments (%zd given)", nargs);
         return NULL;
     }
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) return NULL;
     PyObject *pattern = args[0];
     void *handle = PyLong_AsVoidPtr(args[1]);
     PyObject *groupindex = args[2];
@@ -835,7 +937,8 @@ static PyObject *bridge_match_object(PyObject *module, PyObject *const *args, Py
     size_t groups = rebar_zig_groups(handle);
     size_t stride = groups + 1;
     size_t end = endpos < length ? endpos : length;
-    ZigMatch *match = zig_match_new(pattern, subject, groupindex, groups, original, (Py_ssize_t)end);
+    ZigMatch *match = zig_match_new(state, pattern, subject, groupindex,
+                                    groups, original, (Py_ssize_t)end);
     if (match == NULL) {
         if (view.obj != NULL) PyBuffer_Release(&view);
         return NULL;
@@ -974,11 +1077,12 @@ static PyObject *bridge_free(PyObject *module, PyObject *value) {
 }
 
 static PyObject *bridge_span_object(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
-    (void)module;
     if (nargs != 8) {
         PyErr_Format(PyExc_TypeError, "span_object() takes exactly 8 arguments (%zd given)", nargs);
         return NULL;
     }
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) return NULL;
     PyObject *pattern = args[0];
     PyObject *subject = args[1];
     size_t groups = PyLong_AsSize_t(args[2]);
@@ -988,7 +1092,8 @@ static PyObject *bridge_span_object(PyObject *module, PyObject *const *args, Py_
     Py_ssize_t pos = PyLong_AsSsize_t(args[6]);
     Py_ssize_t endpos = PyLong_AsSsize_t(args[7]);
     if (PyErr_Occurred()) return NULL;
-    ZigMatch *match = zig_match_new(pattern, subject, groupindex, groups, pos, endpos);
+    ZigMatch *match = zig_match_new(state, pattern, subject, groupindex,
+                                    groups, pos, endpos);
     if (match == NULL) return NULL;
     size_t stride = groups + 1;
     for (size_t index = 0; index < stride * 2; index++) match->spans[index] = -1;
@@ -998,11 +1103,12 @@ static PyObject *bridge_span_object(PyObject *module, PyObject *const *args, Py_
 }
 
 static PyObject *bridge_collect_objects(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
-    (void)module;
     if (nargs != 7) {
         PyErr_Format(PyExc_TypeError, "collect_objects() takes exactly 7 arguments (%zd given)", nargs);
         return NULL;
     }
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) return NULL;
     PyObject *pattern = args[0];
     void *handle = PyLong_AsVoidPtr(args[1]);
     PyObject *groupindex = args[2];
@@ -1046,7 +1152,9 @@ static PyObject *bridge_collect_objects(PyObject *module, PyObject *const *args,
     size_t words = buffer.words_per_match;
     for (intptr_t index = 0; index < count; index++) {
         size_t base = (size_t)index * words;
-        ZigMatch *match = zig_match_new(pattern, subject, groupindex, groups, (Py_ssize_t)pos, (Py_ssize_t)end);
+        ZigMatch *match = zig_match_new(state, pattern, subject, groupindex,
+                                        groups, (Py_ssize_t)pos,
+                                        (Py_ssize_t)end);
         if (match == NULL) {
             Py_DECREF(result);
             zig_capture_release(&buffer);
@@ -1086,11 +1194,12 @@ static PyObject *zig_bad_bound_keyword(const char *method, PyObject *subject,
 }
 
 static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
-    (void)module;
     if (nargs != 9) {
         PyErr_Format(PyExc_TypeError, "pattern_match() takes exactly 9 arguments (%zd given)", nargs);
         return NULL;
     }
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) return NULL;
     PyObject *pattern = args[0];
     void *handle = PyLong_AsVoidPtr(args[1]);
     PyObject *groupindex = args[2];
@@ -1174,7 +1283,8 @@ static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, P
             }
         } else if (end - start >= width && (mode != 2 || end - start == width)) {
             if (text_mode) {
-                int matches = PyUnicode_Tailmatch(subject, literal, start, end, -1);
+                Py_ssize_t matches =
+                    PyUnicode_Tailmatch(subject, literal, start, end, -1);
                 if (matches < 0) {
                     if (view.obj != NULL) PyBuffer_Release(&view);
                     zig_span_buffer_release(&captures);
@@ -1199,7 +1309,8 @@ static PyObject *bridge_pattern_match(PyObject *module, PyObject *const *args, P
         zig_span_buffer_release(&captures);
         Py_RETURN_NONE;
     }
-    ZigMatch *match = zig_match_new(pattern, subject, groupindex, groups, start, end);
+    ZigMatch *match = zig_match_new(state, pattern, subject, groupindex,
+                                    groups, start, end);
     if (match == NULL) {
         zig_span_buffer_release(&captures);
         return NULL;
@@ -1222,9 +1333,11 @@ static PyObject *bridge_bound_search(PyObject *module, PyObject *const *args, Py
         PyErr_Format(PyExc_TypeError, "search() takes at most 3 arguments (%zd given)", nargs - 5 + keyword_count);
         return NULL;
     }
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) return NULL;
     PyObject *subject = nargs >= 6 ? args[5] : NULL;
     PyObject *pos = nargs >= 7 ? args[6] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
-    PyObject *endpos = nargs >= 8 ? args[7] : zig_default_endpos;
+    PyObject *endpos = nargs >= 8 ? args[7] : state->default_endpos;
     for (Py_ssize_t index = 0; index < keyword_count; index++) {
         PyObject *name = PyTuple_GET_ITEM(kwnames, index);
         if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
@@ -1261,9 +1374,11 @@ static PyObject *bridge_bound_pattern_mode(PyObject *module, PyObject *const *ar
         PyErr_Format(PyExc_TypeError, "%s() takes at most 3 arguments (%zd given)", method, nargs - 5 + keyword_count);
         return NULL;
     }
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) return NULL;
     PyObject *subject = nargs >= 6 ? args[5] : NULL;
     PyObject *pos = nargs >= 7 ? args[6] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
-    PyObject *endpos = nargs >= 8 ? args[7] : zig_default_endpos;
+    PyObject *endpos = nargs >= 8 ? args[7] : state->default_endpos;
     for (Py_ssize_t index = 0; index < keyword_count; index++) {
         PyObject *name = PyTuple_GET_ITEM(kwnames, index);
         if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
@@ -1329,15 +1444,15 @@ static int zig_scanner_clear(ZigIterator *iterator) {
 }
 
 static void zig_iterator_dealloc(ZigIterator *iterator) {
-    if (PyType_HasFeature(Py_TYPE(iterator), Py_TPFLAGS_HAVE_GC)) {
+    PyTypeObject *type = Py_TYPE(iterator);
+    if (PyType_HasFeature(type, Py_TPFLAGS_HAVE_GC)) {
         PyObject_GC_UnTrack(iterator);
     }
     zig_scanner_clear(iterator);
     PyMem_Free(iterator->record_heap);
-    Py_TYPE(iterator)->tp_free((PyObject *)iterator);
+    type->tp_free((PyObject *)iterator);
+    Py_DECREF(type);
 }
-
-static PyObject *zig_iterator_iter(PyObject *iterator) { return Py_NewRef(iterator); }
 
 static int zig_scanner_outer_groups_init(const void *handle,
                                           size_t exposed_groups,
@@ -1373,14 +1488,14 @@ static int zig_scanner_outer_groups_init(const void *handle,
 
         size_t branch = 0;
         for (size_t offset = prefix_length; offset < width; offset++) {
-            uint8_t digit = name[offset];
-            if (digit < '0' || digit > '9' ||
-                branch > (SIZE_MAX - (size_t)(digit - '0')) / 10) {
+            uint8_t branch_digit = name[offset];
+            if (branch_digit < '0' || branch_digit > '9' ||
+                branch > (SIZE_MAX - (size_t)(branch_digit - '0')) / 10) {
                 PyErr_SetString(PyExc_RuntimeError,
                                 "invalid owned Zig scanner branch index");
                 goto error;
             }
-            branch = branch * 10 + (size_t)(digit - '0');
+            branch = branch * 10 + (size_t)(branch_digit - '0');
         }
         size_t actual_group = rebar_zig_name_group(handle, item);
         if (branch >= exposed_groups || actual_group == 0 ||
@@ -1482,7 +1597,13 @@ static int zig_scanner_project_match(const ZigIterator *iterator,
 }
 
 static ZigMatch *zig_iterator_record(ZigIterator *iterator, const intptr_t *record) {
-    ZigMatch *match = zig_match_new(iterator->pattern, iterator->string, iterator->groupindex, iterator->groups, (Py_ssize_t)iterator->original_pos, (Py_ssize_t)iterator->endpos);
+    ZigBridgeState *state = (ZigBridgeState *)PyType_GetModuleState(
+        Py_TYPE(iterator));
+    ZigMatch *match = zig_match_new(state, iterator->pattern,
+                                    iterator->string, iterator->groupindex,
+                                    iterator->groups,
+                                    (Py_ssize_t)iterator->original_pos,
+                                    (Py_ssize_t)iterator->endpos);
     if (match == NULL) return NULL;
     size_t native_stride = iterator->native_groups + 1;
     if (!zig_scanner_project_match(iterator, match, record,
@@ -1598,7 +1719,13 @@ static PyObject *zig_scanner_match(ZigIterator *iterator,
         iterator->done = 1;
         Py_RETURN_NONE;
     }
-    ZigMatch *match = zig_match_new(iterator->pattern, iterator->string, iterator->groupindex, iterator->groups, (Py_ssize_t)iterator->original_pos, (Py_ssize_t)iterator->endpos);
+    ZigBridgeState *state = (ZigBridgeState *)PyType_GetModuleState(
+        Py_TYPE(iterator));
+    ZigMatch *match = zig_match_new(state, iterator->pattern,
+                                    iterator->string, iterator->groupindex,
+                                    iterator->groups,
+                                    (Py_ssize_t)iterator->original_pos,
+                                    (Py_ssize_t)iterator->endpos);
     if (match == NULL) {
         zig_span_buffer_release(&captures);
         return NULL;
@@ -1631,17 +1758,6 @@ static PyGetSetDef zig_scanner_getsets[] = {
     {NULL, NULL, NULL, NULL, NULL},
 };
 
-static PyTypeObject ZigIteratorType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    .tp_name = "re.finditer",
-    .tp_basicsize = sizeof(ZigIterator),
-    .tp_dealloc = (destructor)zig_iterator_dealloc,
-    .tp_flags = Py_TPFLAGS_DEFAULT,
-    .tp_doc = "Lazy, batched Zig regular-expression iterator.",
-    .tp_iter = zig_iterator_iter,
-    .tp_iternext = zig_iterator_next,
-};
-
 static PyType_Slot zig_scanner_slots[] = {
     {Py_tp_dealloc, (void *)zig_iterator_dealloc},
     {Py_tp_doc, (void *)"Lazy, batched Zig pattern scanner."},
@@ -1662,9 +1778,16 @@ static PyType_Spec zig_scanner_spec = {
 };
 
 static PyObject *bridge_pattern_iterator(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
-    (void)module;
     if (nargs != 9) {
         PyErr_Format(PyExc_TypeError, "pattern_iterator() takes exactly 9 arguments (%zd given)", nargs);
+        return NULL;
+    }
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL || state->scanner_type == NULL) {
+        if (!PyErr_Occurred()) {
+            PyErr_SetString(PyExc_RuntimeError,
+                            "the owned Zig scanner type is not initialized");
+        }
         return NULL;
     }
     PyObject *pattern = args[0];
@@ -1696,7 +1819,7 @@ static PyObject *bridge_pattern_iterator(PyObject *module, PyObject *const *args
     }
     if (!zig_index_arg(args[6], &requested_end)) return NULL;
     ZigIterator *iterator =
-        (ZigIterator *)ZigScannerType->tp_alloc(ZigScannerType, 0);
+        (ZigIterator *)state->scanner_type->tp_alloc(state->scanner_type, 0);
     if (iterator == NULL) return NULL;
     iterator->pattern = Py_NewRef(pattern);
     iterator->string = Py_NewRef(subject);
@@ -1771,9 +1894,11 @@ static PyObject *bridge_bound_finditer(PyObject *module, PyObject *const *args, 
         PyErr_Format(PyExc_TypeError, "finditer() takes at most 3 arguments (%zd given)", nargs - 5 + keyword_count);
         return NULL;
     }
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) return NULL;
     PyObject *subject = nargs >= 6 ? args[5] : NULL;
     PyObject *pos = nargs >= 7 ? args[6] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
-    PyObject *endpos = nargs >= 8 ? args[7] : zig_default_endpos;
+    PyObject *endpos = nargs >= 8 ? args[7] : state->default_endpos;
     for (Py_ssize_t index = 0; index < keyword_count; index++) {
         PyObject *name = PyTuple_GET_ITEM(kwnames, index);
         if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
@@ -1810,9 +1935,11 @@ static PyObject *bridge_bound_scanner(PyObject *module, PyObject *const *args, P
         PyErr_Format(PyExc_TypeError, "scanner() takes at most 3 arguments (%zd given)", nargs - 5 + keyword_count);
         return NULL;
     }
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) return NULL;
     PyObject *subject = nargs >= 6 ? args[5] : NULL;
     PyObject *pos = nargs >= 7 ? args[6] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
-    PyObject *endpos = nargs >= 8 ? args[7] : zig_default_endpos;
+    PyObject *endpos = nargs >= 8 ? args[7] : state->default_endpos;
     for (Py_ssize_t index = 0; index < keyword_count; index++) {
         PyObject *name = PyTuple_GET_ITEM(kwnames, index);
         if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
@@ -2152,9 +2279,11 @@ static PyObject *bridge_bound_findall(PyObject *module, PyObject *const *args, P
         PyErr_Format(PyExc_TypeError, "findall() takes at most 3 arguments (%zd given)", nargs - 3 + keyword_count);
         return NULL;
     }
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) return NULL;
     PyObject *subject = nargs >= 4 ? args[3] : NULL;
     PyObject *pos = nargs >= 5 ? args[4] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
-    PyObject *endpos = nargs >= 6 ? args[5] : zig_default_endpos;
+    PyObject *endpos = nargs >= 6 ? args[5] : state->default_endpos;
     for (Py_ssize_t index = 0; index < keyword_count; index++) {
         PyObject *name = PyTuple_GET_ITEM(kwnames, index);
         if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
@@ -2186,16 +2315,17 @@ static PyObject *bridge_bound_findall(PyObject *module, PyObject *const *args, P
 }
 
 static PyObject *bridge_bound_literal_findall(PyObject *module, PyObject *const *args, Py_ssize_t nargs, PyObject *kwnames) {
-    (void)module;
     Py_ssize_t keyword_count = kwnames == NULL ? 0 : PyTuple_GET_SIZE(kwnames);
     if (nargs < 1 || nargs - 1 + keyword_count > 3) {
         PyErr_Format(PyExc_TypeError, "findall() takes at most 3 arguments (%zd given)", nargs - 1 + keyword_count);
         return NULL;
     }
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) return NULL;
     PyObject *literal = args[0];
     PyObject *subject = nargs >= 2 ? args[1] : NULL;
     PyObject *pos_value = nargs >= 3 ? args[2] : Py_GetConstantBorrowed(Py_CONSTANT_ZERO);
-    PyObject *end_value = nargs >= 4 ? args[3] : zig_default_endpos;
+    PyObject *end_value = nargs >= 4 ? args[3] : state->default_endpos;
     for (Py_ssize_t index = 0; index < keyword_count; index++) {
         PyObject *name = PyTuple_GET_ITEM(kwnames, index);
         if (PyUnicode_CompareWithASCIIString(name, "string") == 0) {
@@ -3115,11 +3245,12 @@ static PyObject *bridge_literal_subn(PyObject *module, PyObject *const *args, Py
 }
 
 static PyObject *bridge_subn_callable(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
-    (void)module;
     if (nargs != 7) {
         PyErr_Format(PyExc_TypeError, "subn_callable() takes exactly 7 arguments (%zd given)", nargs);
         return NULL;
     }
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) return NULL;
     PyObject *pattern = args[0];
     void *handle = PyLong_AsVoidPtr(args[1]);
     PyObject *groupindex = args[2];
@@ -3214,7 +3345,8 @@ static PyObject *bridge_subn_callable(PyObject *module, PyObject *const *args, P
                 : zig_bytes_piece(subject, data, length, previous, begin);
             if (!zig_append_owned(pieces, prefix)) goto callable_subn_error;
         }
-        ZigMatch *match = zig_match_new(pattern, subject, groupindex, groups, 0, (Py_ssize_t)length);
+        ZigMatch *match = zig_match_new(state, pattern, subject, groupindex,
+                                        groups, 0, (Py_ssize_t)length);
         if (match == NULL) goto callable_subn_error;
         memcpy(match->spans, record, stride * 2 * sizeof(intptr_t));
         match->lastindex = record[stride * 2];
@@ -3489,26 +3621,40 @@ typedef enum {
     ZIG_PATTERN_ATTR_COUNT,
 } ZigPatternAttribute;
 
+_Static_assert(ZIG_PATTERN_ATTR_COUNT == ZIG_PATTERN_ATTRIBUTE_COUNT,
+               "the owned Zig pattern attribute state must stay in sync");
+
 static const char *const zig_pattern_attribute_names[ZIG_PATTERN_ATTR_COUNT] = {
     "pattern", "flags", "groups", "_groupindex", "_handle", "_literal",
     "_templates",
 };
-static PyObject *zig_pattern_attribute_keys[ZIG_PATTERN_ATTR_COUNT] = {NULL};
 
-static PyObject *zig_pattern_get_attribute(PyObject *pattern, uint8_t index) {
-    PyObject *key = zig_pattern_attribute_keys[index];
-    if (key == NULL) {
-        key = PyUnicode_InternFromString(zig_pattern_attribute_names[index]);
-        if (key == NULL) return NULL;
-        zig_pattern_attribute_keys[index] = key;
+static PyObject *zig_pattern_get_attribute(ZigBridgeState *state,
+                                           PyObject *pattern, uint8_t index) {
+    if (state == NULL || index >= ZIG_PATTERN_ATTRIBUTE_COUNT ||
+        state->pattern_attribute_keys[index] == NULL) {
+        if (!PyErr_Occurred()) {
+            PyErr_SetString(PyExc_RuntimeError,
+                            "the owned Zig pattern attribute is not initialized");
+        }
+        return NULL;
     }
-    return PyObject_GetAttr(pattern, key);
+    return PyObject_GetAttr(pattern, state->pattern_attribute_keys[index]);
 }
 
 static PyObject *zig_pattern_dispatch(PyObject *pattern,
                                       PyObject *const *args,
                                       Py_ssize_t nargs, PyObject *kwnames,
                                       ZigPatternOperation operation) {
+    ZigBridgeState *state = zig_current_bridge_state(pattern);
+    if (state == NULL) return NULL;
+    if (state->match_type == NULL) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "the owned Zig match type is not initialized");
+        return NULL;
+    }
+    PyObject *module = PyType_GetModule(state->match_type);
+    if (module == NULL) return NULL;
     static const uint8_t match_names[] = {
         ZIG_PATTERN_ATTR_HANDLE, ZIG_PATTERN_ATTR_GROUPINDEX,
         ZIG_PATTERN_ATTR_PATTERN, ZIG_PATTERN_ATTR_LITERAL,
@@ -3554,7 +3700,7 @@ static PyObject *zig_pattern_dispatch(PyObject *pattern,
             break;
         case ZIG_PATTERN_FINDALL: {
             PyObject *literal = zig_pattern_get_attribute(
-                pattern, ZIG_PATTERN_ATTR_LITERAL);
+                state, pattern, ZIG_PATTERN_ATTR_LITERAL);
             if (literal == NULL) return NULL;
             if (literal != Py_None) {
                 hidden[hidden_count++] = literal;
@@ -3584,7 +3730,8 @@ static PyObject *zig_pattern_dispatch(PyObject *pattern,
 
     if (include_pattern) hidden[hidden_count++] = Py_NewRef(pattern);
     for (Py_ssize_t index = 0; index < name_count; index++) {
-        PyObject *value = zig_pattern_get_attribute(pattern, names[index]);
+        PyObject *value = zig_pattern_get_attribute(state, pattern,
+                                                     names[index]);
         if (value == NULL) {
             for (Py_ssize_t owned = 0; owned < hidden_count; owned++) {
                 Py_DECREF(hidden[owned]);
@@ -3630,7 +3777,7 @@ static PyObject *zig_pattern_dispatch(PyObject *pattern,
                (size_t)forwarded * sizeof(*call));
     }
 
-    PyObject *result = bridge(NULL, call, hidden_count + nargs, kwnames);
+    PyObject *result = bridge(module, call, hidden_count + nargs, kwnames);
     if (call != local) PyMem_Free(call);
     for (Py_ssize_t owned = 0; owned < hidden_count; owned++) {
         Py_DECREF(hidden[owned]);
@@ -3719,7 +3866,8 @@ static PyMethodDef zig_pattern_methods[] = {
 
 static PyObject *bridge_install_pattern_methods(PyObject *module,
                                                  PyObject *pattern_type) {
-    (void)module;
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) return NULL;
     if (!PyType_Check(pattern_type)) {
         PyErr_SetString(PyExc_TypeError,
                         "the native pattern owner must be a type");
@@ -3752,7 +3900,7 @@ static PyObject *bridge_install_pattern_methods(PyObject *module,
     PyObject *match = PyDict_GetItemString(globals, "Match");
     PyObject *factory = PyDict_GetItemString(globals,
                                               "_ZigGenericAlias");
-    if (owner != pattern_type || match != (PyObject *)&ZigMatchType ||
+    if (owner != pattern_type || match != (PyObject *)state->match_type ||
         factory == NULL || !PyType_Check(factory) ||
         factory == (PyObject *)&Py_GenericAliasType ||
         !PyType_IsSubtype((PyTypeObject *)factory, &Py_GenericAliasType)) {
@@ -3781,26 +3929,29 @@ static PyObject *bridge_install_pattern_methods(PyObject *module,
     }
     ((PyTypeObject *)pattern_type)->tp_name = "re.Pattern";
     PyType_Modified((PyTypeObject *)pattern_type);
-    Py_XSETREF(zig_generic_alias_factory, factory_ref);
+    Py_XSETREF(state->generic_alias_factory, factory_ref);
     Py_RETURN_NONE;
 }
 
 static PyObject *bridge_initialize_pattern(PyObject *module, PyObject *const *args, Py_ssize_t nargs) {
-    (void)module;
     if (nargs != 9) {
         PyErr_Format(PyExc_TypeError, "initialize_pattern() takes exactly 9 arguments (%zd given)", nargs);
         return NULL;
     }
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) return NULL;
     static const size_t argument_indexes[] = {1, 2, 3, 5, 6, 7, 8};
     for (size_t index = 0; index < ZIG_PATTERN_ATTR_COUNT; index++) {
-        if (zig_pattern_attribute_keys[index] == NULL) {
-            zig_pattern_attribute_keys[index] = PyUnicode_InternFromString(
-                zig_pattern_attribute_names[index]);
-            if (zig_pattern_attribute_keys[index] == NULL) return NULL;
+        PyObject *key = state->pattern_attribute_keys[index];
+        if (key == NULL) {
+            PyErr_SetString(PyExc_RuntimeError,
+                            "the owned Zig pattern attribute is not initialized");
+            return NULL;
         }
-        if (PyObject_GenericSetAttr(
-                args[0], zig_pattern_attribute_keys[index],
-                args[argument_indexes[index]]) < 0) return NULL;
+        if (PyObject_GenericSetAttr(args[0], key,
+                                     args[argument_indexes[index]]) < 0) {
+            return NULL;
+        }
     }
     Py_RETURN_NONE;
 }
@@ -3839,34 +3990,88 @@ static PyMethodDef bridge_methods[] = {
     {NULL, NULL, 0, NULL},
 };
 
+static int zig_bridge_traverse(PyObject *module, visitproc visit, void *arg) {
+    ZigBridgeState *state = PyModule_GetState(module);
+    if (state == NULL) return 0;
+    Py_VISIT((PyObject *)state->match_type);
+    Py_VISIT((PyObject *)state->scanner_type);
+    Py_VISIT(state->default_endpos);
+    Py_VISIT(state->generic_alias_factory);
+    for (size_t index = 0; index < ZIG_PATTERN_ATTRIBUTE_COUNT; index++) {
+        Py_VISIT(state->pattern_attribute_keys[index]);
+    }
+    return 0;
+}
+
+static int zig_bridge_clear(PyObject *module) {
+    ZigBridgeState *state = PyModule_GetState(module);
+    if (state == NULL) return 0;
+    Py_CLEAR(state->match_type);
+    Py_CLEAR(state->scanner_type);
+    Py_CLEAR(state->default_endpos);
+    Py_CLEAR(state->generic_alias_factory);
+    for (size_t index = 0; index < ZIG_PATTERN_ATTRIBUTE_COUNT; index++) {
+        Py_CLEAR(state->pattern_attribute_keys[index]);
+    }
+    return 0;
+}
+
+static void zig_bridge_free(void *module) {
+    if (module != NULL) {
+        (void)zig_bridge_clear((PyObject *)module);
+    }
+}
+
+static int zig_bridge_exec(PyObject *module) {
+    ZigBridgeState *state = zig_bridge_state(module);
+    if (state == NULL) return -1;
+    if (state->match_type != NULL || state->scanner_type != NULL ||
+        state->default_endpos != NULL) {
+        PyErr_SetString(PyExc_RuntimeError,
+                        "the owned Zig bridge has already been initialized");
+        return -1;
+    }
+
+    state->match_type = (PyTypeObject *)PyType_FromModuleAndSpec(
+        module, &zig_match_spec, NULL);
+    if (state->match_type == NULL) return -1;
+    state->scanner_type = (PyTypeObject *)PyType_FromModuleAndSpec(
+        module, &zig_scanner_spec, NULL);
+    if (state->scanner_type == NULL) return -1;
+    state->default_endpos = PyLong_FromSsize_t(PY_SSIZE_T_MAX);
+    if (state->default_endpos == NULL) return -1;
+
+    for (size_t index = 0; index < ZIG_PATTERN_ATTRIBUTE_COUNT; index++) {
+        state->pattern_attribute_keys[index] = PyUnicode_InternFromString(
+            zig_pattern_attribute_names[index]);
+        if (state->pattern_attribute_keys[index] == NULL) return -1;
+    }
+    if (PyModule_AddObjectRef(module, "Match",
+                              (PyObject *)state->match_type) < 0) {
+        return -1;
+    }
+    return 0;
+}
+
+static PyModuleDef_Slot zig_bridge_slots[] = {
+    {Py_mod_exec, zig_bridge_exec},
+    {Py_mod_multiple_interpreters, Py_MOD_PER_INTERPRETER_GIL_SUPPORTED},
+    {Py_mod_gil, Py_MOD_GIL_USED},
+    {0, NULL},
+};
+
 static struct PyModuleDef bridge_module = {
     PyModuleDef_HEAD_INIT,
-    "_zig_bridge",
-    "Dependency-free CPython bridge for the from-scratch Zig regex probe.",
-    -1,
-    bridge_methods,
-    NULL,
-    NULL,
-    NULL,
-    NULL,
+    .m_name = "_zig_bridge",
+    .m_doc = "Dependency-free CPython bridge for the from-scratch Zig regex probe.",
+    .m_size = sizeof(ZigBridgeState),
+    .m_methods = bridge_methods,
+    .m_slots = zig_bridge_slots,
+    .m_traverse = zig_bridge_traverse,
+    .m_clear = zig_bridge_clear,
+    .m_free = zig_bridge_free,
 };
 
 PyMODINIT_FUNC PyInit__zig_bridge(void) {
-    if (PyType_Ready(&ZigMatchType) < 0 ||
-        PyType_Ready(&ZigIteratorType) < 0) return NULL;
-    if (ZigScannerType == NULL) {
-        ZigScannerType = (PyTypeObject *)PyType_FromSpec(&zig_scanner_spec);
-        if (ZigScannerType == NULL) return NULL;
-    }
-    if (zig_default_endpos == NULL) {
-        zig_default_endpos = PyLong_FromSsize_t(PY_SSIZE_T_MAX);
-        if (zig_default_endpos == NULL) return NULL;
-    }
-    PyObject *module = PyModule_Create(&bridge_module);
-    if (module == NULL) return NULL;
-    if (PyModule_AddObjectRef(module, "Match", (PyObject *)&ZigMatchType) < 0) {
-        Py_DECREF(module);
-        return NULL;
-    }
-    return module;
+    return PyModuleDef_Init(&bridge_module);
 }

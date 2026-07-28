@@ -7,6 +7,49 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze corrected, independently audited Zig engine source
+
+Freeze the complete source-owned Zig family before invoking the Zig
+compiler. Its [native Zig parser and matching engine](../candidates/zig/mini_regex.zig)
+is SHA-256
+`a917e7b1a06008be400e4c4a74b6caee5a552624dc46a7d67c932758f594ef28`.
+The [interpreter-local native Python bridge](../candidates/zig/py_bridge.c)
+is SHA-256
+`67edae144290254ba25f67f73350ff5d52ccfb2a209e3fbcc555fc4b3d4efd4b`.
+The [independently owned Python interface](../candidates/zig_candidate.py)
+is SHA-256
+`2d7ec411bc035091fea3f20857a4793b21092d3f490d20a9a0efaa418cda0862`.
+Require the exact public module version, `2.2.1`, paired escaped-token
+comment handling, an owned Zig parser and matcher, and native Python
+types with interpreter-local module state and complete garbage-collection
+traversal.
+
+Preserve the genuinely rejected initial bridge, SHA-256
+`06bb5e230ce06941d57185d7f0a5456524a3cb7d327d78602385294b8bb2a5b5`.
+The frozen anti-delegation audit correctly rejected its direct Python
+module-table lookup. Both Clang and GCC also exposed conversion of
+`PyUnicode_Tailmatch`'s full-width result to an `int`; GCC additionally
+identified a local variable that shadowed Python's native `digit` type.
+Fix the bridge, not the frozen audit. Derive only its own bridge module
+from its own authenticated Python pattern method, verify the module
+definition and native heap-type ownership, preserve true per-interpreter
+state, use the complete `Py_ssize_t` result, and remove the shadowed
+identifier.
+
+Run the **original, unmodified** independently frozen source-ownership
+audit and the corrected version-two source-build audit against all three
+real Zig owner files, normally and with an empty environment. Both gates
+pass with **zero** external regex packages, cross-family matchers,
+candidate imports, or native-library loads. Independently verify
+**162** source and hostile-pattern controls. Clang and GCC each verify
+the corrected bridge under strict C11 conversion, sign-conversion, and
+shadow warnings in both environments: **four** clean syntax checks.
+
+This source freeze does not start the Zig compiler, build a native
+engine, install a Python extension, run an oracle, time an operation,
+or open the holdout. Complete Zig compatibility, memory safety, and
+speed remain **NOT MEASURED**.
+
 ## Rebuild and independently audit the corrected C native engine
 
 Only after separately freezing and pushing the full Python standard,
