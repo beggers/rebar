@@ -7,6 +7,43 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the recovery-safe complete corrected C rerun
+
+Freeze the complete rerun before starting the repaired C candidate.
+Preserve both earlier failures, the **105** actual evidence owners,
+**110** historical reference paths, all **13** original Python suites,
+all **31,237** cases, and all **13** named private exceptions.
+
+Require the frozen original worker, aggregate runner, coordinator adapter,
+first-party reproducible C build, exact original C binary, and a fresh
+private recovery journal. Begin guaranteed restoration before replacing
+the original binary. A later run must start all **13** genuine original
+workers, retain all actual case records and mismatches, and correctly
+report any completed compatibility failure. Restore and authenticate the
+exact original binary before publishing either a passing or failing
+archive. Never reuse the previous C campaign label or its receipts.
+
+Freeze the [crash-safe complete original C test controller](../tools/run_owned_repaired_c_original_campaign_v3.py),
+SHA-256
+`bdf846bca02c80d15e37db8d26fad45d7dacd3f3dee7ec94ce4151315423994f`;
+[complete original-suite and recovery rules](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V3.md),
+SHA-256
+`d4aa6a11d6c1398109de454f3d23e5e20d488913a00b37adfd05b47f9f53522e`;
+and [exact immutable-worker, original-binary, and evidence contract](../oracle/phase2/repaired-c-original-campaign-v3.json),
+SHA-256
+`1150def4ccc3e3c64773d3bdf854e0f6b04d5b6560a6dc04deeba38c8049da16`.
+
+Both normal and clean-environment source-only tests reject **86** unsafe
+controls. Both independently pinned context checks preserve the complete
+original suite, all previous C failures, the corrected worker adapter,
+and the exact original native inode. They never start a candidate,
+activate a native module, read benchmark cases, or sample a clock.
+
+No corrected C test has run under this new controller. Its correctness,
+speed, memory, and undefined behavior remain **NOT MEASURED**. No
+candidate qualifies. The **4,194,304**-case final comparison remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze an independently derived first-party Rust public-contract repair
 
 Compare both original Python references with all signed records from the
