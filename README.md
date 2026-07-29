@@ -16,7 +16,7 @@ Python, another regular-expression package, or another candidate does not count.
 **Six** matching engines built from scratch. **Zero** fully compatible
 replacements so far. Speed compared with Python: **NOT MEASURED**.
 
-![Current results for six regular-expression engines built from scratch. Python's correctness reference passes, a first-party C input-buffer safety fix is frozen but not yet built, no replacement qualifies, and speed has not been measured.](docs/evidence/candidate-current-overview-v65.svg)
+![Current results for six regular-expression engines built from scratch. Python's correctness reference passes, the first-party Rust and C corrections are not yet built, no replacement qualifies, and speed has not been measured.](docs/evidence/candidate-current-overview-v66.svg)
 
 Python's corrected reference agrees on all **6,912** affected original
 checks. The unchanged original suite contains **31,237** checks in
@@ -30,10 +30,11 @@ first-party engines to be built and tested. Replacement qualification
 remains **BLOCKED**: the corresponding candidate runs are **NOT RUN**.
 
 The latest complete Rust run recorded **1,440** genuine differences,
-including a **512**-difference regression. Corrections that have not
-been rebuilt or retested are not counted as passing. No engine may
-wrap Python's matcher, an external regular-expression package, or
-another candidate. Runtime proof of that rule is **NOT ESTABLISHED**.
+including a **512**-difference regression. Its corrected, from-scratch
+build recipe is now frozen against the passing Python reference, but
+the corrected engine is **NOT BUILT** and **NOT TESTED**. No engine
+may wrap Python's matcher, an external regular-expression package,
+or another candidate. Runtime proof of that rule is **NOT ESTABLISHED**.
 
 A first-party C safety correction now retains ownership of its Python
 input buffer. It is source-frozen, **NOT BUILT**, and **NOT TESTED**;
@@ -43,7 +44,7 @@ the existing C result remains a **1,230**-difference failure.
 | --- | --- | --- | --- |
 | Python `re` | Pinned Python 3.14.6 | Original reference agrees; both extra 8,244-case runs pass | Reference; not timed |
 | Public `rebar` import | Still selects an unqualified Zig prototype | FAIL; `__version__` missing | NOT MEASURED |
-| Rust | Latest engine tested; new buffer fix not yet built | FAIL; 1,440 differences, 512 more than its previous run | NOT MEASURED |
+| Rust | Corrected build recipe frozen; not yet run | FAIL; 1,440 historical differences; new fix not tested | NOT MEASURED |
 | C | First-party buffer fix frozen; not built | FAIL; 1,230 historical differences; new fix not tested | NOT MEASURED |
 | Zig | First-party engine; corrected test prepared | Previous run: 1,764 differences | NOT MEASURED |
 | C++ | First-party engine | Previous run: 2,308 differences; five worker failures | NOT MEASURED |
@@ -96,7 +97,8 @@ explain every slowdown greater than **20%**. There is no winner.
 - [First-party Rust build protocol](oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V16.md), [actual build report](oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle.json.gz), and [durable build receipt](oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle-publication-receipt.json).
 - [Complete latest Rust compatibility report](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [durable result receipt](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [independent failure analysis](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json).
 - [Reproducible from-scratch Rust buffer correction](oracle/phase2/RUST-BUFFER-SHAPE-PICKLE-SOURCE-REPAIR-V2.md); its corrected source is frozen but not yet built or retested.
-- [Historical first-party Rust build recipe](oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V17.md); still **BLOCKED** because it binds the earlier certificate. Its corrected successor is **NOT FROZEN**.
+- [Correctly pinned from-scratch Rust build recipe](oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V18.md); independently frozen against the passing Python reference, **NOT BUILT**, and **NOT TESTED**.
+- [Historical first-party Rust build recipe](oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V17.md); still **BLOCKED** because it binds the earlier certificate. The separately frozen corrected recipe has **NOT RUN**.
 - [Separate public-import checks](oracle/phase1/P0-PUBLIC-ENTRYPOINT-IMPORT-V1.md) and [function-signature checks](oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md).
 - [Expanded, still-unopened final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256

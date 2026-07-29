@@ -7,6 +7,76 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected Rust build recipe without starting a build
+
+The [corrected first-party Rust build verifier](../tools/reproduce_owned_rust_buffer_shape_source_build_v18.py),
+[reproducible Rust build protocol](../oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V18.md),
+and [complete source-pinned Rust build contract](../oracle/phase2/rust-buffer-shape-source-build-v18.json)
+are a separate, independently frozen experiment. They bind the actual
+passing version-4 Python reference and the previously committed
+version-65 first-party C results graph. The corrected Rust engine is
+**NOT BUILT**, **NOT ACTIVATED**, and **NOT TESTED**. Passing a
+source-only check is not a successful native build or a passing
+matching-engine test.
+
+The verifier, protocol, and complete contract have respective
+SHA-256 values
+`5a464fbd62ac375d236fa2debce14ae1507ce1bf494efb35695210199bdbef8c`,
+`52513bb429416e182774558eebf2ae4e1d217e8656da673b9f765d4f3df75991`,
+and `e57d67e1b16bb13a3555c05c0b6b546b83ab3a6a7e63beec5c81896e01f92301`.
+Their exact sizes are **128,761**, **6,523**, and **23,099** bytes.
+Ordinary and clean-environment source tests each accept **six**
+positive controls and reject **364** hostile controls. Both complete
+source checks independently verify all **55** required owners, the
+passing Python reference, the genuinely committed version-65 graph,
+and **zero** compiler or matching-engine processes. A future native
+build specifies **28** separately witnessed steps; those steps have
+**NOT RUN**.
+
+The earlier version-17 Rust recipe remains permanently **BLOCKED**:
+it binds an older, blocked Python reference. Freezing a new,
+correctly pinned version-18 recipe does not change that historical
+result. The last actual complete Rust run remains **FAIL**, with
+**1,440** real differences and **14,853** explicitly verified passes.
+All **13** complete groups and **six** real failure examples remain
+unchanged in the original failure report and graph. The new Rust
+source contract includes smaller verification summaries; those
+summaries are not complete test results and do not replace the
+original groups or failure examples. The committed first-party C
+correction also remains
+**SOURCE FROZEN**, **NOT BUILT**, and **NOT TESTED**; the real
+previous C result remains **FAIL**, with **1,230** differences and
+**7,325** verified passes.
+
+The [current corrected-Rust source-freeze graph](evidence/candidate-current-overview-v66.svg),
+[complete current graph inputs](evidence/candidate-current-overview-v66.inputs.json),
+[complete machine-readable results](evidence/candidate-current-overview-v66.json),
+and [independent reproducible graph renderer](../tools/render_candidate_current_overview_v66.py)
+must retain the unchanged **31,237** original checks, **8,244**
+extra examples passed by each of two real Python workers, all
+**seven** genuine candidate blockers, all **six** first-party
+engine families, and **zero** passing replacements. No new compiler,
+matcher, candidate worker, reference worker, archive, clock, network
+request, or hidden example is used. Speed, memory, confidence,
+and undefined behavior are **NOT MEASURED**. The **4,194,304**
+planned final examples are **NOT GENERATED** and **NOT OPENED**.
+
+The exact version-66 renderer, inputs, machine-readable results,
+and visible graph have respective SHA-256 values
+`2f35f9b9d3c48e5a53bcc3002a783bfaaae5e0aee556e1d8baea524cee17be78`,
+`a0d96eb8e6882a4f32a42bfd55712d54b54ea0781c9f734154dca6f1b9327f8e`,
+`010776f60872c49fb494b1e7efdedb0aad1bcaf901f7fdbe927ec95a1d37b38d`,
+and `bd310ff999991413310e6da3e0fd9a71e66832133cd4a54640804863012813a5`.
+Their exact sizes are **103,273**, **1,054,796**, **2,920,618**,
+and **14,315** bytes. The immediate predecessor is the genuinely
+pushed version-65 graph. Exactly three new Rust source owners
+raise the independently authenticated evidence and history lower
+bounds from **220 / 225** to **223 / 228**. Both ordinary and
+clean-environment graph self-tests reject exactly **5,529** hostile
+controls. Both complete graph checks verify the full original
+**13** suite records and **six** failure events without using the
+abbreviated Rust source-contract summaries. No build is run.
+
 ## Freeze first-party C input-buffer ownership without claiming a build
 
 The [independently corrected first-party C engine](../candidates/c/variants/subject_buffer_ownership_v1/vm_native.c),
