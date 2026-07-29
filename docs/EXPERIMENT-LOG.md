@@ -7,6 +7,68 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the complete Rust retest without running a candidate
+
+The [independently written Rust original-suite runner](../tools/run_owned_repaired_rust_original_campaign_v11.py),
+[complete frozen Rust retest procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V11.md),
+and [exact Rust retest contract](../oracle/phase2/repaired-rust-original-campaign-v11.json)
+prepare all **31,237** original Python compatibility checks and **13**
+future test workers. Freezing this procedure does not start any worker,
+import or activate a replacement, rerun a test, or reopen a compressed
+report. The separate **8,244** additional reference cases are not
+silently added to the original denominator. The exact private location
+of the earlier Rust build is **NOT ESTABLISHED**, so executing the
+retest is **BLOCKED PENDING INDEPENDENTLY ATTESTED PRIVATE ROOT**.
+The runner must not guess, search for, substitute, or activate a
+different native engine. All full-size candidate tests remain
+**NOT RUN**; runtime independence remains **NOT ESTABLISHED**.
+
+The genuinely completed Rust native build remains **PASS**, with
+**28** build and inspection operations; the independently completed C
+build remains **PASS**, with **14** operations. The latest real Rust
+matching result remains **FAIL**, with **1,440** differences and
+**14,853** explicitly verified passes. The latest real C matching
+result remains **FAIL**, with **1,230** differences and **7,325**
+explicitly verified passes. All **13** complete Rust group results
+and all **six** genuine original mismatch events remain unchanged.
+
+The [current complete-Rust-retest results graph](evidence/candidate-current-overview-v70.svg),
+[full exact graph inputs](evidence/candidate-current-overview-v70.inputs.json),
+[complete machine-readable results](evidence/candidate-current-overview-v70.json),
+and [independent graph renderer](../tools/render_candidate_current_overview_v70.py)
+must distinguish **13** planned workers from **zero** actual workers.
+Exactly three new source owners advance the authenticated evidence and
+history lower bounds from **230 / 235** to **233 / 238**. Both normal
+and clean-environment graph self-tests reject **6,161** hostile
+controls. Candidate
+qualification and retest execution remain **BLOCKED**; performance,
+memory, confidence,
+and undefined behavior remain **NOT MEASURED**. The **4,194,304**
+final cases remain **NOT GENERATED** and **NOT OPENED**.
+
+The exact Rust retest runner, frozen protocol, and canonical contract
+have respective SHA-256 values
+`27bf88358d5a45a5b487680e70f5fa5b5192a05f053f33f6ddb651c972c94f2d`,
+`a3a5b35701aa6b149ff0b4fbebb9f6722dd08436d2f7e4f600f3db12c8c6ac2b`,
+and `e6cd2028e36d8ddac0937e6735132bf474327f2ff04855d44e6aa71f5f5c0f96`.
+Their sizes are **310,760**, **7,353**, and **16,783** bytes.
+Both normal and clean-environment self-tests accept **10** valid
+controls and reject **212** hostile controls. Both complete source
+checks authenticate **39** existing owners, both genuine native build
+receipts, the immediate version-69 predecessor, and **zero** candidate,
+archive, build, clock, or hidden-case operations.
+
+The compact version-70 graph renderer, complete graph inputs,
+machine-readable results, and visible chart have respective SHA-256
+values
+`35495c3f330d9e11e4ee5d9b16dbc057b91c34e22cc6cb7fc340df7894ddc5b7`,
+`719520244f366f538a2c3672ca575feebf47dc083028f24e84fbaa7b348913d2`,
+`124cc1583b065aa656ecb9fb0d93aa8beecfebf4998a2f58fb619dd7d609702c`,
+and `bb2ea5e22cd40f5ae767829f47c4bfcb4793e91126626d40507ba1887573670c`.
+Their sizes are **75,541**, **1,107,190**, **3,097,493**, and
+**6,992** bytes. The graph preserves every complete historic failure
+and truthfully reports that the newly frozen Rust retest is blocked.
+
 ## Run the independently written C build without claiming compatibility
 
 The separately frozen

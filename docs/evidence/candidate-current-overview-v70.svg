@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="1430" viewBox="0 0 1400 1430" role="img" aria-labelledby="v70-title v70-description">
+<title id="v70-title">Building a faster Python re: six original engines, no proven winner</title>
+<desc id="v70-description">Pinned Python 3.14.6 is the verified reference. Rust and C both compile from first-party source, but their latest real matching tests still fail. The new Rust compatibility campaign is source-frozen and blocked because the independently attested private native-build root is not established. Its 13 future workers have not run. All 31,237 original cases, 13 complete original result groups, and six complete mismatch events remain unchanged. No compressed archive or hidden 4,194,304-case holdout was opened. Speed, memory, runtime independence, and a winner are not measured.</desc>
+<style>.bg{fill:#f6f8fc}.card{fill:#fff;stroke:#d9e2ee;stroke-width:1}.title{font:700 31px system-ui,sans-serif;fill:#152536}.subtitle{font:16px system-ui,sans-serif;fill:#536578}.heading{font:700 19px system-ui,sans-serif;fill:#152536}.body{font:15px system-ui,sans-serif;fill:#26394b}.small{font:13px system-ui,sans-serif;fill:#536578}.foot{font:11px ui-monospace,monospace;fill:#536578}.good{fill:#137a48}.warn{fill:#9b6500}.fail{fill:#bf3548}.pillgood{fill:#e8f7ee}.pillwarn{fill:#fff3d7}.pillfail{fill:#ffebee}</style>
+<rect class="bg" width="1400" height="1430"/>
+<text x="54" y="72" class="title">Building a faster Python re</text>
+<text x="54" y="103" class="subtitle">Our own engines. Python is the reference. No candidate is proven compatible or faster.</text>
+<rect x="44" y="130" width="1312" height="118" rx="15" class="card"/>
+<text x="67" y="163" class="heading">Overall result compared with Python</text>
+<rect x="68" y="180" width="345" height="43" rx="10" class="pillfail"/>
+<text x="84" y="207" class="body fail">0 compatible candidates; speed NOT MEASURED</text>
+<text x="438" y="207" class="body">A successful native build does not mean the engine matches Python.</text>
+<rect x="44" y="264" width="1312" height="380" rx="15" class="card"/>
+<text x="67" y="298" class="heading">How the original, from-scratch engines are doing</text>
+<text x="68" y="327" class="small">The same frozen Python compatibility tests apply to every family. This is not a speed ranking.</text>
+<text x="70" y="370" class="body">Python reference</text>
+<text x="231" y="370" class="body good">Verified reference; stable CPython 3.14.6</text>
+<text x="70" y="415" class="body">Rust engine</text>
+<text x="231" y="415" class="body fail">Build PASS (28); matching FAIL: 1,440 differences; 14,853 independently verified passes</text>
+<text x="70" y="460" class="body">C engine</text>
+<text x="231" y="460" class="body fail">Build PASS (14); matching FAIL: 1,230 differences; 7,325 independently verified passes</text>
+<text x="70" y="505" class="body">Zig engine</text>
+<text x="231" y="505" class="body warn">Not correctness-qualified; performance NOT MEASURED</text>
+<text x="70" y="545" class="body">C++ engine</text>
+<text x="231" y="545" class="body warn">Not correctness-qualified; performance NOT MEASURED</text>
+<text x="70" y="585" class="body">Go engine</text>
+<text x="231" y="585" class="body warn">Not correctness-qualified; performance NOT MEASURED</text>
+<text x="70" y="625" class="body">Fortran engine</text>
+<text x="231" y="625" class="body warn">Not correctness-qualified; performance NOT MEASURED</text>
+<rect x="44" y="663" width="1312" height="208" rx="15" class="card"/>
+<text x="67" y="697" class="heading">Why the next Rust test is not running</text>
+<rect x="68" y="717" width="812" height="43" rx="10" class="pillwarn"/>
+<text x="83" y="744" class="body warn">BLOCKED PENDING INDEPENDENTLY ATTESTED PRIVATE ROOT</text>
+<text x="69" y="790" class="body">The Rust V11 original campaign is SOURCE FROZEN. Its 13 workers are planned; 0 have run.</text>
+<text x="69" y="820" class="body">Native build root and individual native artifact hashes: NOT ESTABLISHED / NOT MEASURED.</text>
+<text x="69" y="850" class="small">Future inspection requires separate authorization. This chart does not inspect, discover, or guess a root.</text>
+<rect x="44" y="888" width="1312" height="156" rx="15" class="card"/>
+<text x="67" y="921" class="heading">What has and has not been measured</text>
+<text x="69" y="956" class="body">Original compatibility cases: 31,237 across 13 complete groups; six complete failure events preserved.</text>
+<text x="69" y="986" class="body">Supplemental Python reference: 8,244 cases. New candidate matching: NOT RUN.</text>
+<text x="69" y="1016" class="body">Speed, memory, confidence intervals and runtime independence: NOT MEASURED / NOT ESTABLISHED.</text>
+<rect x="44" y="1062" width="1312" height="340" rx="15" class="card"/>
+<text x="67" y="1095" class="heading">Reproducible source and evidence</text>
+<text x="68" y="1120" class="foot">Graph renderer SHA-256: 35495c3f330d9e11e4ee5d9b16dbc057b91c34e22cc6cb7fc340df7894ddc5b7</text>
+<text x="68" y="1138" class="foot">Graph inputs SHA-256: 719520244f366f538a2c3672ca575feebf47dc083028f24e84fbaa7b348913d2</text>
+<text x="68" y="1156" class="foot">Current V69 predecessor renderer SHA-256: d5a074cba906402dc4f66e5127c88218e122a87743d713a3ce0f431c2994a7a2</text>
+<text x="68" y="1174" class="foot">Current V69 predecessor summary SHA-256: c112d1629e134ffc42f262ca70b4212397d17b7e52914f4a36a14f72e9eec923</text>
+<text x="68" y="1192" class="foot">First-party Rust V11 campaign source SHA-256: 27bf88358d5a45a5b487680e70f5fa5b5192a05f053f33f6ddb651c972c94f2d</text>
+<text x="68" y="1210" class="foot">First-party Rust V11 campaign protocol SHA-256: a3a5b35701aa6b149ff0b4fbebb9f6722dd08436d2f7e4f600f3db12c8c6ac2b</text>
+<text x="68" y="1228" class="foot">First-party Rust V11 campaign contract SHA-256: e6cd2028e36d8ddac0937e6735132bf474327f2ff04855d44e6aa71f5f5c0f96</text>
+<text x="68" y="1246" class="foot">Passing first-party Rust V18 build receipt SHA-256: 32c422b9624a2565afd8d710700e377aa39aae4aa93d3742da483843869f2104</text>
+<text x="68" y="1264" class="foot">Passing first-party C V16 build receipt SHA-256: 16794f5b1487b76a909a176948f4bbac8ed3108768f3127e27c44f9f392ae3d6</text>
+<text x="69" y="1305" class="small">Previous evidence lower bounds: 230 / 235; current source-only lower bounds: 233 / 238.</text>
+<text x="69" y="1330" class="small">Seven qualification blockers remain. Rust V17 remains BLOCKED. Qualified candidates: 0.</text>
+<text x="69" y="1355" class="small">Compressed build evidence: NOT OPENED. Hidden 4,194,304-case holdout: NOT GENERATED and NOT OPENED.</text>
+<text x="69" y="1380" class="small">Candidate workers, compiler launches, native activation, timing and hidden-case access by this graph: 0.</text>
+<!-- The graph authenticates only its three source owners and exact predecessor; it never opens compressed evidence, runs a candidate, guesses a native root, benchmarks, or opens the holdout. -->
+</svg>
