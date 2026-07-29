@@ -8,6 +8,32 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Publish the current, easy-to-read candidate comparison
+
+The independently frozen [version-89 headline renderer](../tools/render_candidate_current_overview_v89.py)
+generated the [current candidate-comparison chart](evidence/candidate-current-overview-v89.svg)
+exactly once. The complete, reproducible
+[graph inputs](evidence/candidate-current-overview-v89.inputs.json)
+and [validated evidence summary](evidence/candidate-current-overview-v89.summary.json)
+were published alongside it.
+
+The actual output hashes are:
+
+- Inputs: `77a6cb593906c342faa7266e4a8118b414605a2977968dcbdb30a8d547dc25fe`.
+- Summary: `951e13cb42d638a58bfd01621f682a4a3336c03b769179194d6120ff046a1f4d`.
+- Chart: `f2b58c8ad9eb41b7e266371f5d8a82430697ee3bc81b516d04e8f6d70ae79fa0`.
+
+Independent review verified every one of the **39** actual candidate
+group results and all **10** complete historical evidence pools.
+The new **3,007,567**-byte summary remains below the **4 MiB**
+limit. Both source environments passed all **9,957** adversarial
+checks. The readable chart preserves all six from-scratch language
+families and distinguishes verified checks, differing groups,
+infrastructure failures, and workers without proven candidate
+imports. No candidate qualifies; speed and memory remain
+**NOT MEASURED**, and the **14,155,776** proposed final cases remain
+unopened.
+
 ## Freeze a clear, evidence-backed candidate comparison
 
 The [version-89 headline renderer](../tools/render_candidate_current_overview_v89.py)

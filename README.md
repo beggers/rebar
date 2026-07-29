@@ -16,10 +16,9 @@ regular-expression package, or another candidate does not count.
 **Six** from-scratch engines. **Zero** fully compatible replacements.
 Speed versus Python: **NOT MEASURED**. There is no winner.
 
-![Python baseline compared with six independently written regular-expression engines. C and Rust build successfully; none passes every compatibility test, no relative speed has been measured, and the 14-million-case final comparison remains unopened.](docs/evidence/candidate-current-overview-v88.svg)
+![Python compared with six independently written regex engines. C passes 13,094 verified checks, Rust 12,942, and Zig 927; none passes all 31,237 compatibility checks, no speed has been measured, and the larger final comparison remains unopened.](docs/evidence/candidate-current-overview-v89.svg)
 
-This chart is an earlier snapshot. The table contains the latest
-complete candidate runs.
+Every engine is compared against the same **31,237** Python checks.
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
@@ -37,25 +36,11 @@ groups. A separate **8,244**-case collection covers additional real-world
 behavior; two independent Python reference runs each pass all **8,244**.
 These are separate test sets and are never combined or counted twice.
 
-First-party native source builds recorded **14** C, **28** Rust, and
-**26** Zig compiler and binary-inspection steps. The corrected C engine
-and both the literal-search and captured-result Rust engines each
-passed their own two independent build phases. No successful build
-proves compatibility.
-The corrected Rust engine attempted all **13** groups, completed
-**8**, verified **12,942** passing cases, and exposed at least
-**1,296** differences; **5** workers failed. The corrected C engine actually
-attempted all **13** groups, completed **5**, verified **13,094**
-passing cases, and exposed at least **236** differences; **7** groups
-had candidate failures and **1** had a result-encoding failure. The
-complete mismatch count is **NOT MEASURED**. The Zig engine actually
-attempted all **13** groups, completed **3**, and verified **927**
-passing cases; **10** groups encountered test-worker infrastructure
-failures. Its complete mismatch count is also **NOT MEASURED**.
-Zig's earlier **1,764** differences remain a separate historical
-result; no candidate qualifies.
-Full-suite matching is **NOT MEASURED**.
-Runtime independence is **NOT ESTABLISHED**.
+C, Rust, and Zig were built independently from project-owned source.
+Building an engine or passing some checks does not prove full Python
+compatibility. Complete mismatch totals are **NOT MEASURED** while
+test groups remain incomplete; runtime independence is
+**NOT ESTABLISHED**.
 
 ## Detailed correctness
 
@@ -87,7 +72,7 @@ slowdown over **20%**.
 
 ## Evidence
 
-- [Reproduce the current chart](docs/REPRODUCING.md), inspect its [published renderer](tools/render_candidate_current_overview_v88.py), or review the [next evidence-checked headline renderer](tools/render_candidate_current_overview_v89.py).
+- [Reproduce the current chart](docs/REPRODUCING.md) and inspect its [evidence-checked headline renderer](tools/render_candidate_current_overview_v89.py).
 - [Full experiment log, build evidence, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Complete Python correctness reference](oracle/phase1/P0-COMPLETENESS-V4.md).
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).

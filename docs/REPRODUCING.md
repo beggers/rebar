@@ -9,10 +9,56 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 ## Reproduce the current headline comparison
 
 The current chart compares unchanged Python with all six independently
-written engines. It records the real C and Rust source builds without
-claiming either build passes the compatibility suite. The larger
-**14,155,776**-case speed test remains unopened. No candidate is
-qualified, and no relative speed has been measured.
+written engines. It validates all **39** actual C, Rust, and Zig
+test-group results against the unchanged **31,237**-case Python
+reference. The separate **8,244** reference checks are not added to
+that denominator. No candidate is fully compatible, no speed has
+been measured, and the **14,155,776**-case final comparison remains
+unopened.
+
+This read-only command reconstructs the exact three published
+version-89 graph files without overwriting them, importing a
+candidate, compiling native code, or opening the holdout:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/render_candidate_current_overview_v89.py \
+  --verify-frozen-context \
+  --source-sha256 da15d1e4b58bdc04d83df3ebcc18995f1b5ffe662504dbdbd128e706f0371f09 \
+  --source-bytes 74653 \
+  --previous-source-sha256 b26143885163e913ec11d62f2d12bff1c8a85cbacbe0f16f242b01495f8fe46a \
+  --previous-inputs-sha256 3fed4008de0b2d1c7bbcb28661ab384e5b9ef39763e0a102659cf2798578e51d \
+  --previous-summary-sha256 85e826a424ea175f44cc639b1f0cfd61ed841059c43219e2cf96624316386e4d \
+  --previous-svg-sha256 ac16cc09cd445707f334d02f5034bb382c9936c1383c9c3acc241a81ef584436 \
+  --c-receipt-sha256 bba4b8498a37db0bf9651c0bb040deaf96f9eef363ba6f2e2c923379d7fa5080 \
+  --c-source-sha256 42d27c321a54cbe2a730ce20967f786bc354340c35501e9d2a4cd37b4948884e \
+  --c-protocol-sha256 99b3321a54cc36ad065f0d4178e34e0baf60349b4c85fb22794dbf26b33b9b0a \
+  --c-contract-sha256 ce59aa6e7b900095dad4875d6e911dd9983fa6834c7d810f2e8c729c1c880811 \
+  --rust-receipt-sha256 e48a4115a85d827cbf16a32b6b44390d2bf4b092e1823989c9bcafe874fa04fe \
+  --rust-source-sha256 146a47218b87ba15fbfdd357db6d10b101a2869f30b51413ef8f5d5df79a5b48 \
+  --rust-protocol-sha256 e54bfacda42669e35e7052b058d41cb230aa128a4b2f8568316c03766de908d1 \
+  --rust-contract-sha256 d97ab35ea90761a01d343648c1701e56140f81f27e0a7fc9a39cc5f7ff9f81c8 \
+  --zig-receipt-sha256 9df60f301c11e16231483b5444b246196f906ea7eb6072a2c227feeb0b6e8dc8 \
+  --zig-source-sha256 5c894208a3bab5358cc84dcbf4ebeb2c17c47a381b00698618e8e23a2e39d38d \
+  --zig-protocol-sha256 61fc1547a9b36dbb0aac90315a5bdaec544e8d599cb73dd51436153e995440dc \
+  --zig-contract-sha256 f1b651f3ca7a55ae16543301b4a31ef8e4ff8701318d06b25a94bf70cccf0fee
+```
+
+Expected files:
+
+```text
+docs/evidence/candidate-current-overview-v89.inputs.json
+77a6cb593906c342faa7266e4a8118b414605a2977968dcbdb30a8d547dc25fe
+
+docs/evidence/candidate-current-overview-v89.summary.json
+951e13cb42d638a58bfd01621f682a4a3336c03b769179194d6120ff046a1f4d
+
+docs/evidence/candidate-current-overview-v89.svg
+f2b58c8ad9eb41b7e266371f5d8a82430697ee3bc81b516d04e8f6d70ae79fa0
+```
+
+## Reproduce the preserved version-88 comparison
 
 The following command independently recomputes and verifies the exact
 three checked-in version-88 graph files without overwriting evidence.
@@ -64,8 +110,10 @@ were actually built in **two** independent phases. All **26** genuine
 compiler and native-inspection processes succeeded, and both phases
 produced byte-identical native engines and bridges. Verify the two
 public receipts only; do not inspect the private build location or
-start another build. A successful build is not a matching test: the
-corrected Zig candidate has **NOT RUN** against the frozen oracle.
+start another build. A successful build is not a matching test. When
+these historical build receipts were produced, corrected Zig
+matching had **NOT RUN**; the later actual version-9 result is
+recorded in the current headline comparison above.
 
 ```bash
 REBAR_ZIG_V13_ROOT_RECEIPT=oracle/phase2/evidence/zig-scanner-phrase-source-build-v13-phase2-v13-zig-scanner-phrase-v4-private-root-receipt.json
@@ -141,15 +189,16 @@ jq -e '
 ' "$REBAR_ZIG_V13_BUILD_RECEIPT"
 ```
 
-## Verify the current actual Zig native-build graph
+## Verify the preserved Zig native-build graph
 
 These four read-only checks authenticate the complete version-85
 predecessor and both independently durable Zig build receipts. All
 **12** distinct full canonical proof records and **72** references
 reconstruct across the original six engine families. The actual
-**26**-process Zig build is **PASS**; corrected Zig matching is
-**NOT RUN**. The real Rust result remains **eight** completed groups,
-**12,942** verified checks, and **five** worker failures. These
+**26**-process Zig build is **PASS**. At the time of this historical
+graph, corrected Zig matching was **NOT RUN**; the actual current C,
+Rust, and Zig outcomes are preserved in the version-89 comparison
+above. These
 checks never access a private build directory, load a native library,
 run a matching test, take performance measurements, or open the
 holdout.

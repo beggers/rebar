@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="970" viewBox="0 0 1440 970" role="img" aria-labelledby="title description">
+<title id="title">Progress toward a faster, fully compatible Python re</title>
+<desc id="description">Six independent first-party engines are compared against unchanged Python 3.14.6. The original compatibility test contains 31,237 checks in 13 groups. A separate set of 8,244 differential checks is not included in that denominator. C has 13,094 verified checks from two clean groups, three observed differing groups containing at least 236 differences, seven candidate execution failures, and one infrastructure failure. Rust has 12,942 verified checks from six clean groups, two observed differing groups containing at least 1,296 differences, and five infrastructure failures. Zig has 927 verified checks from three clean groups and ten infrastructure failures; candidate import is individually proven for seven workers and remains unknown for six. The complete mismatch totals for all three latest runs are not measured. C++, Go, and Fortran are retained as distinct first-party families. No engine is fully compatible, no speed or memory has been measured, and the proposed 14,155,776-case final comparison is sealed and has not been generated or run.</desc>
+<rect width="1440" height="970" rx="22" fill="#0b1220"/>
+<text x="44" y="60" fill="#f8fafc" font-size="31" font-family="system-ui,sans-serif" font-weight="730">Building a faster Python re, from scratch</text>
+<text x="44" y="97" fill="#cbd5e1" font-size="17" font-family="system-ui,sans-serif">6 independent engines · 0 fully compatible · speed NOT MEASURED</text>
+<rect x="44" y="119" width="1352" height="57" rx="11" fill="#172338"/>
+<text x="62" y="144" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif" font-weight="650">What the bars mean: checks actually confirmed against Python, out of 31,237.</text>
+<text x="62" y="165" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">Unfinished checks are unknown, not passes. The separate 8,244-check differential set is not counted.</text>
+<text x="45" y="211" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="650">ENGINE</text>
+<text x="161" y="211" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="650">CONFIRMED ORIGINAL CHECKS</text>
+<text x="724" y="211" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="650">WHAT ACTUALLY HAPPENED</text>
+<text x="1386" y="211" text-anchor="end" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="650">RESULT</text>
+<line x1="44" y1="226" x2="1396" y2="226" stroke="#334155"/>
+<text x="48" y="267" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Python re</text>
+<rect x="161" y="251" width="365" height="20" rx="6" fill="#1e293b"/>
+<rect x="161" y="251" width="365" height="20" rx="6" fill="#34d399"/>
+<text x="540" y="267" fill="#e2e8f0" font-size="13" font-family="system-ui,sans-serif">31,237 / 31,237</text>
+<text x="724" y="267" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">13 of 13 groups</text>
+<text x="1386" y="267" text-anchor="end" fill="#34d399" font-size="11" font-family="system-ui,sans-serif" font-weight="700">BASELINE</text>
+<text x="48" y="329" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">C</text>
+<rect x="161" y="313" width="365" height="20" rx="6" fill="#1e293b"/>
+<rect x="161" y="313" width="153" height="20" rx="6" fill="#fbbf24"/>
+<text x="540" y="329" fill="#e2e8f0" font-size="13" font-family="system-ui,sans-serif">13,094 / 31,237</text>
+<text x="724" y="329" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">2 clean · 3 differ · 7 errors · 1 infrastructure failure</text>
+<text x="1386" y="329" text-anchor="end" fill="#fbbf24" font-size="11" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<text x="48" y="391" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Rust</text>
+<rect x="161" y="375" width="365" height="20" rx="6" fill="#1e293b"/>
+<rect x="161" y="375" width="151" height="20" rx="6" fill="#fbbf24"/>
+<text x="540" y="391" fill="#e2e8f0" font-size="13" font-family="system-ui,sans-serif">12,942 / 31,237</text>
+<text x="724" y="391" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">6 clean · 2 differ · 5 infrastructure failures</text>
+<text x="1386" y="391" text-anchor="end" fill="#fbbf24" font-size="11" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<text x="48" y="453" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Zig</text>
+<rect x="161" y="437" width="365" height="20" rx="6" fill="#1e293b"/>
+<rect x="161" y="437" width="11" height="20" rx="6" fill="#fbbf24"/>
+<text x="540" y="453" fill="#e2e8f0" font-size="13" font-family="system-ui,sans-serif">927 / 31,237</text>
+<text x="724" y="453" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">3 clean · 10 infrastructure failures</text>
+<text x="1386" y="453" text-anchor="end" fill="#fbbf24" font-size="11" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<text x="48" y="515" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">C++</text>
+<rect x="161" y="499" width="365" height="20" rx="6" fill="#1e293b"/>
+<text x="540" y="515" fill="#e2e8f0" font-size="13" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="724" y="515" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Historical differences; current complete result not measured</text>
+<text x="1386" y="515" text-anchor="end" fill="#fb7185" font-size="11" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<text x="48" y="577" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Go</text>
+<rect x="161" y="561" width="365" height="20" rx="6" fill="#1e293b"/>
+<text x="540" y="577" fill="#e2e8f0" font-size="13" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="724" y="577" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Historical differences; current complete result not measured</text>
+<text x="1386" y="577" text-anchor="end" fill="#fb7185" font-size="11" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<text x="48" y="639" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Fortran</text>
+<rect x="161" y="623" width="365" height="20" rx="6" fill="#1e293b"/>
+<text x="540" y="639" fill="#e2e8f0" font-size="13" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="724" y="639" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Two builds disagreed; compatibility not measured</text>
+<text x="1386" y="639" text-anchor="end" fill="#fb7185" font-size="11" font-family="system-ui,sans-serif" font-weight="700">BUILD FAILED</text>
+<line x1="44" y1="677" x2="1396" y2="677" stroke="#334155"/>
+<text x="48" y="709" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">Compatibility, not just a successful build</text>
+<text x="48" y="738" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">C completed 5 of 13 groups; Rust completed 8 of 13; Zig completed 3 of 13.</text>
+<text x="48" y="761" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">Observed differences: C at least 236; Rust at least 1,296. Complete totals remain NOT MEASURED.</text>
+<text x="48" y="784" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">Zig: 7 worker imports individually proven; 6 unknown. Zero observed differences applies only to its 3 clean groups.</text>
+<text x="48" y="807" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">A published test report or reproducible native build does not mean the candidate passed.</text>
+<rect x="44" y="830" width="1352" height="91" rx="12" fill="#172338"/>
+<text x="62" y="858" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">Proposed final speed comparison: 14,155,776 cases</text>
+<text x="62" y="882" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">Not frozen, not generated, not opened, and not run. Speed, memory, confidence, and rankings: NOT MEASURED.</text>
+<text x="62" y="905" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">The earlier 4,194,304-case proposal remains preserved as history; no winner has been selected.</text>
+<text x="48" y="951" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif">Overview 89 · complete previous evidence preserved · no external regex wrapper · no fully compatible replacement.</text>
+</svg>
