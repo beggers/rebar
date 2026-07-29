@@ -15,7 +15,7 @@ Python, another regular-expression package, or another candidate does not count.
 **Six** from-scratch engine designs. **Zero** fully compatible
 replacements. Speed compared with Python: **NOT MEASURED**.
 
-![Six independently built Python regular-expression replacements compared with the original Python baseline. The latest Rust run found 1,440 differences; its newly corrected source has not yet been rebuilt or retested. No replacement passes all tests, no speed has been measured, and the 4.2-million-example final comparison remains unopened.](docs/evidence/candidate-current-overview-v59.svg)
+![Six independently built Python regular-expression replacements compared with Python. The latest Rust test found 1,440 differences. A corrected Rust build is frozen but blocked until the Python-reference checklist and 8,244 additional fuzz cases are reconciled. No replacement is fully compatible, no speed has been measured, and the 4.2-million-example final comparison remains unopened.](docs/evidence/candidate-current-overview-v60.svg)
 
 The independently built Rust engine has completed all **13** groups
 of Python's unchanged **31,237** original checks with **13** real
@@ -27,8 +27,16 @@ were restored exactly before the result was published.
 
 A narrowly scoped fix now keeps the original Python buffer alive during
 replacement. It is implemented in our own code and reproduces exactly
-from the failing source. It is **not yet built or retested**; it does
+from the failing source. A reproducible, two-independent-build recipe
+is frozen, but the correction is **not yet built or retested**; it does
 not change the reported result.
+
+The original test checklist still points to an older, superseded Python
+reference. The real Rust test used the corrected reference, but the
+checklist must be reconciled. A further **8,244** preserved fuzz and
+property checks have not yet been run against the candidates. New
+builds, compatibility claims, and benchmarks remain blocked until
+these gaps are resolved.
 
 No engine wraps Python's matcher, an external regular-expression
 package, or another candidate. The stronger runtime proof that no
@@ -66,25 +74,28 @@ and **24** balanced measurement rounds. Its examples are **NOT
 FROZEN**, **NOT GENERATED**, and **NOT OPENED**. Speed, memory, and
 confidence intervals are **NOT MEASURED**.
 
-First, three independently built engines must pass all **31,237**
-original checks, Python's two genuine **2,147,483,648**-character
-tests, and separate public-import, signature, and runtime-independence
-checks. The full-size replacement tests are **NOT RUN**. The winner
-must be at least **1.5×** faster overall, measurably faster on at
-least **60%** of cases, and explain every slowdown greater than
-**20%**. There is no winner.
+First, reconcile the original Python reference and account separately
+for all **8,244** additional fuzz and property checks. Then three
+independently built engines must pass all **31,237** original checks,
+the additional cases, Python's two genuine
+**2,147,483,648**-character tests, and separate public-import,
+signature, and runtime-independence checks. The full-size replacement
+tests are **NOT RUN**. The winner must be at least **1.5×** faster
+overall, measurably faster on at least **60%** of cases, and explain
+every slowdown greater than **20%**. There is no winner.
 
 ## Evidence and reproduction
 
 - [Reproduce the results and verify every graph](docs/REPRODUCING.md).
 - [Experiment log, original reports, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
-- [Frozen Python compatibility checks](oracle/phase1/P0-COMPLETENESS-V1.md).
+- [Original Python compatibility checks](oracle/phase1/P0-COMPLETENESS-V1.md); reconciliation with the corrected reference is pending.
 - [Python's original two-billion-character compatibility requirements](oracle/phase1/P0-LARGE-INPUT-INDEXING-V1.md).
 - [Corrected, independently verified Python reference](oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md).
 - [Six from-scratch engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md) and [independent no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [First-party Rust build protocol](oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V16.md), [actual build report](oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle.json.gz), and [durable build receipt](oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle-publication-receipt.json).
 - [Complete latest Rust compatibility report](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [durable result receipt](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [independent failure analysis](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json).
 - [Reproducible from-scratch Rust buffer correction](oracle/phase2/RUST-BUFFER-SHAPE-PICKLE-SOURCE-REPAIR-V2.md); its corrected source is frozen but not yet built or retested.
+- [Frozen, independently reproducible Rust build recipe](oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V17.md); compilation remains blocked until the Python-reference checklist is corrected.
 - [Separate public-import checks](oracle/phase1/P0-PUBLIC-ENTRYPOINT-IMPORT-V1.md) and [function-signature checks](oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md).
 - [Expanded, still-unopened final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256

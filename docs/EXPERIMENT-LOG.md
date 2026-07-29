@@ -7,6 +7,80 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze and correctly block the repaired Rust build
+
+The [independent Rust build source](../tools/reproduce_owned_rust_buffer_shape_source_build_v17.py),
+[build protocol](../oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V17.md),
+and [canonical build contract](../oracle/phase2/rust-buffer-shape-source-build-v17.json)
+freeze two separately reproducible offline compilations of the exact
+first-party Rust correction. Their respective SHA-256 values are
+`192062b278aaf5a7a3097d9b5d15218d8d26893a3a8e716fe585f217eeff3471`,
+`c53db893fce626325f806eb99868b900a35cbc220d9bbc5a9663aecdd2cadef3`,
+and `55809f7549dc138be966eaa4b8eaedac444cdcc7b84f4450f351738e4b59ad7b`.
+Their sizes are **107,961**, **6,694**, and **16,104** bytes.
+
+The recipe preserves the independently written Rust engine and
+first-party bridge. It derives the corrected bridge from the actual
+failing source and preserves the independently corrected public
+adapter. Each prospective offline compilation has **14** named
+compiler and native-inspection roles; **28** is the planned total, not
+an observed process count. Native outputs, compilation, matching, and
+memory remain **NOT MEASURED**.
+
+Independent review exposed an important correctness gate. The preserved
+original completeness matrix authenticates a historical public-type
+reference whose records have SHA-256
+`0b78702279b7ae2eb8be493bbf04df75719f36c2943f26c9df3e950f32d68e21`.
+The [actual candidate-context falsification](../oracle/phase1/evidence/public-type-candidate-context-falsification-v1.json)
+proves that reference is unsuitable in a candidate's Python execution
+context. The [corrected independently recorded Python reference](../oracle/phase1/evidence/public-type-reference-context-v1-cpython-3-14-6-candidate-context-p0-publication-receipt.json)
+does pass: two actual reference workers independently agree on all
+**6,912** public-type cases, with records SHA-256
+`6b26ac4eff9ec64cc3ae79872b3195b303a12bf40b96b55850b627857e614aa2`.
+The [actual version-4 candidate producer](../oracle/phase2/six-family-p0-producer-v4.json)
+and real Rust version-10 run use this corrected reference. The
+observed **1,440** differences and **14,853** verified passes remain
+valid and unchanged.
+
+Nevertheless, the master phase-one matrix does not yet integrate that
+corrected reference. A separately preserved
+[8,244-case differential, property, and fuzz corpus](../oracle/v2/expected.jsonl)
+has SHA-256
+`ae6a095bc0cd2b3ba1512a04f0d4fbe57916cf2d5b583fd4ecdda5c2c70a5bb2`.
+Its old Python-only self-check is not evidence of the two distinct
+reference workers required by this experiment. None of those
+**8,244** cases is silently added to the **31,237** original cases;
+candidate results for them are **NOT MEASURED**.
+
+The new builder therefore fails closed. Its actual build cannot start
+without an independently pinned, corrected phase-one reconciliation.
+Normal and sterile source-only self-tests each reject **353** hostile
+controls, including false corrected-reference pins and attempts to
+start a compiler, native engine, thread, clock, archive, or candidate.
+Both frozen-context checks authenticate **43** plaintext owners.
+
+The [current plain-language results graph](evidence/candidate-current-overview-v60.svg),
+[frozen graph inputs](evidence/candidate-current-overview-v60.inputs.json),
+[machine-readable results](evidence/candidate-current-overview-v60.json),
+and [independent graph renderer](../tools/render_candidate_current_overview_v60.py)
+record the old-reference failure, blocked build, unchanged real Rust
+result, and ungated additional fuzz checks. Their respective SHA-256
+values are
+`66975e14fed35b40e63fb332364d54a5f40aa714b40757580db57018fbd15534`,
+`b63da6a1b3f135a2e303b2ffb807a04aa25405d3f37c3233857a70a5e0e5cc3d`,
+`f766cdd9bee4d8a2eec8c4bd70148a4c58021156d36cb1d00858bce1d0d4e025`,
+and `5870676d9ccac46c04538b9ac77bd27d7b07bec5973d521635deef4a64be7fec`.
+Its normal and sterile self-tests reject exactly **4,825** real
+hostile controls. Exactly three new build-freeze source owners raise
+the authenticated evidence and history lower bounds to **204/209**.
+
+The build is **NOT RUN**, the Rust correction is **NOT BUILT**, the
+canonical corrected-reference crosswalk is **NOT ESTABLISHED**, and
+the additional fuzz cases are **NOT CANDIDATE-GATED**. There are
+**zero** fully compatible replacements. Speed, memory, and undefined
+behavior are **NOT MEASURED**; the final holdout remains **NOT
+GENERATED** and **NOT OPENED**.
+
 ## Freeze the genuine first-party Rust buffer-lifetime correction
 
 The latest real Rust result remains **FAIL**: all **31,237** original
@@ -49,7 +123,7 @@ archive, import, candidate, native-library, timing, network, and write
 attempts. Both independent context checks authenticate the same
 **13** genuine workers and **six** real mismatch examples.
 
-The [updated headline graph](evidence/candidate-current-overview-v59.svg),
+The [preserved version-59 headline graph](evidence/candidate-current-overview-v59.svg),
 [complete graph inputs](evidence/candidate-current-overview-v59.inputs.json),
 [machine-readable results](evidence/candidate-current-overview-v59.json),
 and [reproducible graph renderer](../tools/render_candidate_current_overview_v59.py)
@@ -147,7 +221,8 @@ In this preserved historical graph, unversioned Rust mismatch fields
 retain the earlier **928** result, while `actual_rust_v10_*` records
 the genuine later **1,440** result. The newer version-59 headline
 correctly normalizes every current field while preserving the explicitly
-historical version-7 results.
+historical version-7 results; the subsequent version-60 graph also
+discloses the newly discovered Python-reference discrepancy.
 
 There are **zero** fully compatible engines. Runtime non-delegation is
 **NOT ESTABLISHED**. Speed, memory, and undefined behavior are

@@ -9,7 +9,8 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 ## Evidence and reproduction
 
 - [Complete actual Rust failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [independently durable 13-worker result receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [complete plain-text 13-group failure and root-cause analysis](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json); **13** real workers completed all **31,237** original cases and observed **1,440** mismatches, **14,853** explicitly verified passes, and **zero** infrastructure failures. Receipt and analysis **PASS** preserve a candidate **FAIL**.
-- [Current real-worker results graph](../docs/evidence/candidate-current-overview-v59.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v59.inputs.json), [independently verified current machine-readable outcome](../docs/evidence/candidate-current-overview-v59.json), and [reproducible current renderer](../tools/render_candidate_current_overview_v59.py); verify all **13** real worker groups, **six** actual failures, and the **512**-difference regression without reopening the compressed report. Current result fields consistently report **1,440** differences and **14,853** verified passes; explicitly historical version-7 fields retain **928** differences and **8,965** verified passes. The new Rust buffer correction is source-only and has **NOT BEEN BUILT OR RUN**. Qualified replacements: **0**. Performance: **NOT MEASURED**. The **4,194,304**-example final comparison remains unopened.
+- [Current real-worker results graph](../docs/evidence/candidate-current-overview-v60.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v60.inputs.json), [independently verified current machine-readable outcome](../docs/evidence/candidate-current-overview-v60.json), and [reproducible current renderer](../tools/render_candidate_current_overview_v60.py); verify all **13** real worker groups, **six** actual failures, and the **512**-difference regression without reopening the compressed report. Current result fields consistently report **1,440** differences and **14,853** verified passes; explicitly historical version-7 fields retain **928** differences and **8,965** verified passes. The corrected Rust build remains **BLOCKED** until the phase-one Python-reference discrepancy and separately preserved **8,244** fuzz cases are reconciled. Qualified replacements: **0**. Performance: **NOT MEASURED**. The **4,194,304**-example final comparison remains unopened.
+- [Blocked first-party Rust two-build protocol](../oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V17.md), [exact frozen build contract](../oracle/phase2/rust-buffer-shape-source-build-v17.json), and [source-only independent build verifier](../tools/reproduce_owned_rust_buffer_shape_source_build_v17.py); the four normal and sterile source gates reject **353** hostile controls and authenticate **43** owners without starting a compiler or candidate.
 - [From-scratch Rust buffer-lifetime repair](../oracle/phase2/RUST-BUFFER-SHAPE-PICKLE-SOURCE-REPAIR-V2.md), [canonical source contract](../oracle/phase2/rust-buffer-shape-pickle-source-repair-v2.json), [source-only verifier](../tools/apply_owned_rust_buffer_shape_pickle_source_repair_v2.py), and [complete corrected first-party bridge](../candidates/rust/variants/buffer_shape_pickle_v2/py_bridge.c); both normal and empty-environment source gates reject **77** hostile controls without building, running a candidate, importing a matching engine, reopening compressed failures, or touching the holdout.
 - [Recovery-corrected complete Rust-test protocol](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V10.md), [independently frozen recovery and build-shape contract](../oracle/phase2/repaired-rust-original-campaign-v10.json), and [first-party version-10 runner](../tools/run_owned_repaired_rust_original_campaign_v10.py); source checks reject **247** hostile controls while preserving all **31,237** original checks. Its later real **13**-worker result is recorded by the separate complete report, receipt, and forensic summary.
 - [Historical version-57 recovery-corrected source-freeze overview](../docs/evidence/candidate-current-overview-v57.svg), [historical exact graph inputs](../docs/evidence/candidate-current-overview-v57.inputs.json), [historical source-freeze machine-readable evidence](../docs/evidence/candidate-current-overview-v57.json), and [reproducible historical renderer](../tools/render_candidate_current_overview_v57.py); record the state frozen before the real version-10 execution, never a passing candidate or matching result.
@@ -728,6 +729,20 @@ decompressing a matching archive, or opening the final comparison:
   --protocol-sha256 67ba62acc8e51a6868404ea3faeb1aaaacb1d053cc1c915bef0c397edf5ac408 \
   --contract-sha256 ffa76d1724396fae5816cf96e0ae2104bcce8fc5eb246b8306d4441db0fe4a1b
 
+# Verify the first-party two-build recipe without starting a compiler.
+"$PY" -I -B tools/reproduce_owned_rust_buffer_shape_source_build_v17.py \
+  --self-test \
+  --source-sha256 192062b278aaf5a7a3097d9b5d15218d8d26893a3a8e716fe585f217eeff3471 \
+  --protocol-sha256 c53db893fce626325f806eb99868b900a35cbc220d9bbc5a9663aecdd2cadef3 \
+  --contract-sha256 55809f7549dc138be966eaa4b8eaedac444cdcc7b84f4450f351738e4b59ad7b
+
+# Confirm the build remains blocked until the corrected Python checklist exists.
+"$PY" -I -B tools/reproduce_owned_rust_buffer_shape_source_build_v17.py \
+  --verify-frozen-context \
+  --source-sha256 192062b278aaf5a7a3097d9b5d15218d8d26893a3a8e716fe585f217eeff3471 \
+  --protocol-sha256 c53db893fce626325f806eb99868b900a35cbc220d9bbc5a9663aecdd2cadef3 \
+  --contract-sha256 55809f7549dc138be966eaa4b8eaedac444cdcc7b84f4450f351738e4b59ad7b
+
 # Verify the new first-party buffer correction without building or running it.
 "$PY" -I -B tools/apply_owned_rust_buffer_shape_pickle_source_repair_v2.py \
   --self-test \
@@ -742,7 +757,26 @@ decompressing a matching archive, or opening the final comparison:
   --protocol-sha256 79ad2b88f7542c791cdf48956d432e6d9f2dad00a485056972eea1664e41ff66 \
   --contract-sha256 0d5fe2ca190df54366b73850ce316a9d27f77c527bd5ddd8d5420d62dcb33be0
 
-# Verify the current headline graph's exact 4,743 hostile controls.
+# Verify the current blocked-build graph and its exact 4,825 hostile controls.
+"$PY" -I -B tools/render_candidate_current_overview_v60.py --self-test
+
+# Verify the actual results, Python-reference blocker, and unopened holdout.
+"$PY" -I -B tools/render_candidate_current_overview_v60.py \
+  --verify-frozen-context \
+  --source-sha256 66975e14fed35b40e63fb332364d54a5f40aa714b40757580db57018fbd15534 \
+  --source-bytes 84809 \
+  --previous-source-sha256 a5716931d30ab5f4dcb2bf5efa0bdb3fd24f7bad48f6ed77b5dce3714e547677 \
+  --previous-inputs-sha256 044d243432850b6eaa9f0d54b7bd8f77967dd0c234bfb64af9d37e27888e9fa3 \
+  --previous-summary-sha256 73dd4701a9613795aeafa60c1b76a98900a5020dbe31a78fdc1922b534a4c0b0 \
+  --previous-svg-sha256 9b3d0942adcd9bc29d13d895ba5e7a0acc2626520f1392a1c686ce341de43abe \
+  --build-source-sha256 192062b278aaf5a7a3097d9b5d15218d8d26893a3a8e716fe585f217eeff3471 \
+  --build-protocol-sha256 c53db893fce626325f806eb99868b900a35cbc220d9bbc5a9663aecdd2cadef3 \
+  --build-contract-sha256 55809f7549dc138be966eaa4b8eaedac444cdcc7b84f4450f351738e4b59ad7b \
+  --inputs-sha256 b63da6a1b3f135a2e303b2ffb807a04aa25405d3f37c3233857a70a5e0e5cc3d \
+  --summary-sha256 f766cdd9bee4d8a2eec8c4bd70148a4c58021156d36cb1d00858bce1d0d4e025 \
+  --svg-sha256 5870676d9ccac46c04538b9ac77bd27d7b07bec5973d521635deef4a64be7fec
+
+# Verify the preserved version-59 graph's exact 4,743 hostile controls.
 "$PY" -I -B tools/render_candidate_current_overview_v59.py --self-test
 
 # Reproduce the current results without reopening failures or building Rust.
