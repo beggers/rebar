@@ -8,16 +8,60 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
 ## Reproduce the current headline comparison
 
-The current graph reports the genuinely completed C, Rust, and Zig
-tests against the same **31,237** Python checks. C passes
-**13,094**, Rust **15,749**, and Zig **3,583**; none is fully
-compatible. Rust retains **1,296** genuinely observed differences
-and **1** incomplete subinterpreter group. The **8,244** extra
-reference checks remain separate. Speed and memory are **NOT
-MEASURED**, and the **14,155,776**-case holdout remains **NOT
-FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+The current graph reports the actual Rust, C, and Zig results against
+the same **31,237** Python checks. Rust passes **15,749**, C
+**13,094**, and Zig **4,607**; none is fully compatible. Zig has at
+least **1,700** observed differences and **1** incomplete
+interpreter-lifecycle group. Rust retains **1,296** observed
+differences and **1** incomplete group. The **8,244** extra reference
+checks remain separate. Speed and memory are **NOT MEASURED**, and
+the **14,155,776**-case holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
 
 This source-pinned, read-only command verifies all three current
+version-92 files without overwriting them, importing an engine,
+compiling code, opening an archive, or accessing the final holdout:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/render_candidate_current_overview_v92.py \
+  --verify-frozen-context \
+  --source-sha256 752abbfbf6df750a66aa4419e32d4d66d8ee592405a76b28a649f3cadf98627d \
+  --source-bytes 96987 \
+  --previous-source-sha256 eec50d8322ef5d758a87af98b4e743446d36baf65bb1bcf198d350ee920dd051 \
+  --previous-inputs-sha256 bb6f09340769e8c3429e312cca2ff4ae4a63d2d7ec5774a851afebb5cf3a592e \
+  --previous-summary-sha256 7a137275712f6ea18055c45922bc0c28babc0e9d933732bf574670bff76c6009 \
+  --previous-svg-sha256 65f03d0b14f80a17f82e172ece9b6b92548b05e1dd1024c770d7766115d3aa18 \
+  --zig-source-sha256 329c8ac8c50b3f61fc176e07267f9771a3878167e9ab5eb9246e06cafac31cf8 \
+  --zig-protocol-sha256 10bf90c29b0f23759acb3ea30ae9b364f90a9937d9b41388095b839e5ff5f551 \
+  --zig-contract-sha256 97a04675f4f8afc4a44061979a0a856bff2f5bb8cb9ed1381e6ee52168156b07 \
+  --zig-receipt-sha256 ce7605be25bbb71e1b06b65b9aa3f79cfd09b39f0ce5f076ed9d986f15ee8de9
+```
+
+Expected files:
+
+```text
+docs/evidence/candidate-current-overview-v92.inputs.json
+6c1e0a270ed5db1b6e7ebf389cc4448118eed633a946f8001404a11653f57306
+
+docs/evidence/candidate-current-overview-v92.summary.json
+7b00073b538f584d5f65cd1e05dbd8f3201ebfbcff119f8bead922ec95c90272
+
+docs/evidence/candidate-current-overview-v92.svg
+9a3e3d84a8681d73ebf529e243c80fd142db34a36438d763f250e75eb1b986c1
+```
+
+## Reproduce the preserved version-91 comparison
+
+The preserved version-91 graph reports the C, Rust, and Zig results
+available at its publication against the same **31,237** checks:
+C **13,094**, Rust **15,749**, and Zig **3,583**. Rust had
+**1,296** observed differences and **1** incomplete group. The extra
+**8,244** reference checks remain separate. No engine was fully
+compatible and no speed or memory was measured.
+
+This source-pinned, read-only command verifies all three preserved
 version-91 files without overwriting them, importing an engine,
 compiling code, opening an archive, or accessing the final holdout:
 

@@ -8,6 +8,26 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Publish the updated plain-language candidate comparison
+
+The [version-92 headline graph](evidence/candidate-current-overview-v92.svg)
+shows the actual from-scratch candidate results against the same
+**31,237** original Python checks: Rust **15,749**, C **13,094**,
+and Zig **4,607** verified passes. It preserves all **13** earlier
+evidence pools and all **13** independently guarded Zig worker results.
+
+The graph records all **5** measured Zig mismatch groups, at least
+**1,700** actual differences, and **1** genuine interpreter-lifecycle
+failure. It does not classify Zig, C, or Rust as fully compatible and
+keeps the extra **8,244** reference checks in their separate test set.
+The exact [frozen reproduction command and asset hashes](REPRODUCING.md)
+are committed.
+
+The renderer started **0** candidates or compilers, opened **0**
+archives or private roots, and measured **0** timings. Speed, memory,
+and undefined behavior remain **NOT MEASURED**. The **14,155,776**-case
+holdout remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the updated plain-language candidate comparison
 
 The [version-92 comparison renderer](../tools/render_candidate_current_overview_v92.py)

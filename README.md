@@ -16,12 +16,7 @@ regular-expression package, or another candidate does not count.
 **Six** from-scratch engines. **Zero** fully compatible replacements.
 Speed versus Python: **NOT MEASURED**. There is no winner.
 
-The newest Zig run passed **4,607** of the original Python checks and
-revealed at least **1,700** differences. The chart below is the previous
-published snapshot; its replacement is being generated from the newly
-preserved results.
-
-![Python compared with six independently written regular-expression engines. C passes 13,094 checks, Rust 15,749, and Zig 3,583; none passes all 31,237 compatibility checks, and speed has not been measured.](docs/evidence/candidate-current-overview-v91.svg)
+![Python compared with six independently written regular-expression engines. Rust passes 15,749 checks, C 13,094, and Zig 4,607; none passes all 31,237 compatibility checks, and speed has not been measured.](docs/evidence/candidate-current-overview-v92.svg)
 
 Every engine is compared against the same **31,237** Python checks.
 Passing some checks does not mean an engine can replace Python `re`.
@@ -78,7 +73,7 @@ slowdown over **20%**.
 
 ## Evidence
 
-- [Reproduce the published chart](docs/REPRODUCING.md), inspect its [previous renderer](tools/render_candidate_current_overview_v91.py), and review the [frozen updated comparison renderer](tools/render_candidate_current_overview_v92.py).
+- [Reproduce the current chart](docs/REPRODUCING.md) and inspect its [independently verified comparison renderer](tools/render_candidate_current_overview_v92.py).
 - [Full experiment log, build evidence, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Complete Python correctness reference](oracle/phase1/P0-COMPLETENESS-V4.md).
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
