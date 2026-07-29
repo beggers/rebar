@@ -7,6 +7,79 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a traceable Rust build without compiling an engine
+
+The [independently written traceable Rust build verifier](../tools/reproduce_owned_rust_buffer_shape_source_build_v19.py),
+[frozen traceable Rust build protocol](../oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V19.md),
+and [exact future Rust build contract](../oracle/phase2/rust-buffer-shape-source-build-v19.json)
+describe a separately identifiable, from-scratch Rust rebuild. This is
+a **source-only** experiment: the new build is **NOT RUN**. No compiler,
+candidate worker, native library, private build root, archived report,
+clock, or hidden benchmark is accessed.
+
+The previously recorded Rust build remains **PASS**, with **28**
+genuine build and inspection operations. The independently recorded C
+build remains **PASS**, with **14** operations. These historical build
+successes do not establish Python compatibility: the latest complete
+Rust result remains **FAIL**, with **1,440** differences and **14,853**
+verified passes; C remains **FAIL**, with **1,230** differences and
+**7,325** verified passes. All **13** original group results and all
+**six** genuine Rust failure events remain unchanged.
+
+The actual small C build receipt identifies the complete corrected
+input-buffer variant as
+`8131aea768a122308716b8a67903794aa03f2fed2e2022f53bb6aa7b7e10e962`,
+**222,212** source bytes. That exact corrected variant has already
+completed all **14** build and inspection steps; its new matching test
+remains **NOT RUN**. An older graph's inherited source-only
+description must never override the authenticated actual build.
+
+The earlier full Rust retest remains frozen with **13** planned workers
+and **zero** actual workers. Its original private Rust build location
+remains **NOT ESTABLISHED**, so inspection and candidate execution
+remain **BLOCKED PENDING INDEPENDENTLY ATTESTED PRIVATE ROOT**.
+Preparing a traceable future build does not prove that it ran or that
+its future private location was already observed.
+
+The [current traceable-build preparation graph](evidence/candidate-current-overview-v71.svg),
+[complete exact graph inputs](evidence/candidate-current-overview-v71.inputs.json),
+[complete machine-readable results](evidence/candidate-current-overview-v71.json),
+and [independent graph renderer](../tools/render_candidate_current_overview_v71.py)
+must preserve the actual version-70 predecessor and distinguish three
+new source owners from an actual build. The authenticated evidence and
+history lower bounds advance only from **233 / 238** to **236 / 241**.
+All **28** future build and inspection steps remain **NOT RUN**;
+**zero** traceable build roots or provenance receipts exist. Both graph
+self-tests reject **6,185** hostile controls. Every result projection
+must preserve the corrected C variant's actual **14**-step **PASS**.
+Correctness qualification
+remains **BLOCKED**; performance, memory, confidence, and undefined
+behavior remain **NOT MEASURED**. All **4,194,304** future final-test
+cases remain **NOT GENERATED** and **NOT OPENED**.
+
+The exact traceable-build source, frozen protocol, and canonical
+contract have respective SHA-256 values
+`650b33a10d253e09d48a423d12c8a1bb8180af4c4e96222aa13e72c75427bb5c`,
+`4cdc322b2a516b28bf771440202efaca77074f7c8cd31c25692dc6ffc81797b5`,
+and `78e31d32cd17e100613ea98cecec4051ca2f6563b0d3b198c66f69501171ac46`.
+Their sizes are **88,532**, **5,808**, and **14,975** bytes. Both
+ordinary and clean-environment source self-tests accept **two** valid
+controls and reject **203** hostile controls. Both frozen-context
+checks preserve the genuine Rust and C build receipts, the complete
+blocked Rust retest, and **zero** compiler, archive, root, candidate,
+native, clock, and hidden-case operations.
+
+The exact compact traceable-build graph renderer, complete inputs,
+machine-readable results, and visible chart have respective SHA-256
+values
+`449bab6c62755020c31b7048f7aece37393e3e88ef4f4426e414dfe1d69aed25`,
+`38a852abea0f4b96867b70326f5fbcecac08a6393c911a55ce64c78c4db2fa8b`,
+`ea5809db8bfd2dd73ee00084c24cd864a6a6eb05307f67de8416a35ba8e80a84`,
+and `ec3b2d82469eda70b1363f297755b4c7b4518aec43269da7582ccc1e6779a7ac`.
+Their sizes are **31,736**, **1,123,806**, **3,147,645**, and
+**4,770** bytes. The corrected C build passes all graph projections;
+its compatibility result is preserved separately as **FAIL**.
+
 ## Freeze the complete Rust retest without running a candidate
 
 The [independently written Rust original-suite runner](../tools/run_owned_repaired_rust_original_campaign_v11.py),
@@ -40,10 +113,9 @@ must distinguish **13** planned workers from **zero** actual workers.
 Exactly three new source owners advance the authenticated evidence and
 history lower bounds from **230 / 235** to **233 / 238**. Both normal
 and clean-environment graph self-tests reject **6,161** hostile
-controls. Candidate
-qualification and retest execution remain **BLOCKED**; performance,
-memory, confidence,
-and undefined behavior remain **NOT MEASURED**. The **4,194,304**
+controls. Candidate qualification and retest execution remain
+**BLOCKED**. Performance, memory, confidence, and undefined behavior
+remain **NOT MEASURED**. The **4,194,304**
 final cases remain **NOT GENERATED** and **NOT OPENED**.
 
 The exact Rust retest runner, frozen protocol, and canonical contract
