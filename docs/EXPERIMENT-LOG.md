@@ -8,6 +8,32 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the independently reproducible first-party Rust build
+
+The [version-20 Rust build procedure](../oracle/phase2/RUST-LITERAL-FINDALL-SOURCE-BUILD-V20.md),
+[machine-readable build contract](../oracle/phase2/rust-literal-findall-source-build-v20.json),
+and [offline source-build controller](../tools/reproduce_owned_rust_literal_findall_source_build_v20.py)
+identify the exact first-party Rust matcher, native bridge, original
+source files, and previously frozen single-pass literal experiment.
+An actual future build must run two independent, offline phases with
+**28** recorded compiler and native-inspection processes. It must
+publish a fresh, authenticated native-artifact and root-provenance
+receipt; evidence from the earlier Rust build cannot be reused as a
+result for the new source.
+
+Both source-only verification modes pass in ordinary and empty
+environments, including **345** rejected hostile controls. The
+procedure authenticates the current **14,155,776**-case unopened
+proposal and retains the older **4,194,304**-case proposal as separate
+historical evidence. It does not import Python's regex engine, wrap
+an external package, execute the Rust candidate, invoke a compiler,
+open an archive, generate a final case, or take a timing sample.
+
+The new native build is **NOT RUN**. Full compatibility, runtime
+independence, memory use, and performance remain **NOT MEASURED**;
+the final proposal is **NOT FROZEN**, **NOT GENERATED**, and
+**NOT OPENED**.
+
 ## Freeze a from-scratch Rust captured-result experiment
 
 The [complete cumulative Rust bridge](../candidates/rust/variants/buffer_shape_pickle_findall_captures_v1/py_bridge.c)
