@@ -8,6 +8,33 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the minimal first-party Zig cleanup correction
+
+All **13** workers in the actual Zig run reported the same native
+cleanup error, including the **7** otherwise passing groups. The
+[Zig lifetime correction](../oracle/phase2/ZIG-DEALLOCATOR-LIFETIME-SOURCE-REPAIR-V1.md)
+preserves the original engine and creates an independently owned
+variant with exactly **1** changed destructor. It captures the real
+project-owned native release function before Python clears module
+globals, and clears its handle before releasing it.
+
+The entire matching parser, compiler, native code, imports, instance
+layout, and all other source bytes remain unchanged. Actual synthetic
+checks prove cleanup after module-global destruction, safe partially
+initialized objects, exactly-once and reentrant release, and truthful
+propagation of real native cleanup errors. Ordinary and empty-
+environment tests each pass **77** hostile controls; all **20**
+forbidden source effects remain zero. Two independent reviewers
+reproduced all four source-only gates.
+
+The repaired Zig engine has **NOT RUN**. Whether the actual warning or
+interpreter failure disappears is **NOT MEASURED**. Compatibility and
+runtime independence are **NOT ESTABLISHED**; speed, memory, and
+undefined behavior are **NOT MEASURED**. The previous **4,607** passes
+and **1,700** observed differences are preserved; the **8,244**
+additional cases stay separate and the **14,155,776**-case holdout
+remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Publish the complete current first-party candidate comparison
 
 The [version-93 headline graph](evidence/candidate-current-overview-v93.svg)
