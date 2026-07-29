@@ -8,6 +8,33 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Build the corrected from-scratch Rust engine offline
+
+The [version-22 first-party Rust build](../oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-SOURCE-BUILD-V22.md)
+actually compiled the corrected Rust engine and its Python bridge in
+**2** independently owned offline phases. The
+[actual native-build receipt](../oracle/phase2/evidence/native-source-build-v22-rust-phase2-v22-rust-capture-shape-root-provenance-publication-receipt.json)
+reports **28** compiler and inspection processes; the
+[independent phase-provenance receipt](../oracle/phase2/evidence/native-source-build-v22-rust-phase2-v22-rust-capture-shape-root-provenance-root-provenance-receipt.json)
+proves **4** separate native outputs. The engine files match across
+both phases; the corrected bridge files also match across both.
+
+The two small public receipts provide the process count, not an
+independent list of process identifiers or individual compiler roles.
+Individual process identities remain **NOT ESTABLISHED FROM PUBLIC
+RECEIPTS**; the complete raw build archive is preserved without being
+reopened. The live source gate separately requires **28** distinct
+processes before either receipt can be published.
+
+All **9** original Rust source files and all original native targets
+remain unchanged. No matching candidate was imported or run. The
+actual correction changes exactly **2** project-owned bridge functions
+and has **0** external Rust packages. Its effect on the **240**
+substitution and **1,056** buffer differences is **NOT MEASURED**.
+Speed, memory, and undefined behavior are **NOT MEASURED**; the
+**14,155,776**-case final holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the corrected from-scratch Rust native rebuild
 
 The [version-22 Rust native build](../oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-SOURCE-BUILD-V22.md)
