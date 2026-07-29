@@ -8,6 +8,32 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete corrected first-party C compatibility suite
+
+The [version-9 C procedure](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V9.md)
+actually ran its verified, project-owned C engine against all **13**
+original Python test groups in **13** distinct worker processes.
+**7** groups completed. **3** matched Python exactly, verifying
+**13,606** of the original **31,237** checks.
+
+The other **4** completed groups record **16** managed-buffer,
+**248** public-type, **224** substitution, and **4** buffer-exporter
+differences: **492** genuinely observed mismatches. The remaining
+**6** groups reported candidate-execution failures, including the
+actual interpreter-lifecycle failure and a public-surface digest
+failure. There were **0** timeouts and **0** failures classified
+as infrastructure failures. The [small, complete result receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v9-c-phase2-v21-c-original-match-semantics-original-p0-v9-failures-publication-receipt.json)
+records every worker, failure, process, and original denominator.
+
+The recorder passed; the corrected C candidate failed. The global
+mismatch total is **NOT MEASURED** because **6** groups did not
+complete. The **3** original native, source, and adapter owners were
+restored to their exact bytes and physical identities. The raw failure
+archive was preserved without reopening it. The **8,244** additional
+reference cases remain separate; speed, memory, and undefined behavior
+are **NOT MEASURED**, and the **14,155,776**-case holdout remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the corrected from-scratch C compatibility run
 
 The [version-9 C procedure](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V9.md)
