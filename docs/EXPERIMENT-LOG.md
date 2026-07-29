@@ -8,6 +8,28 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected from-scratch Zig evidence transport
+
+The [version-12 Zig correctness procedure](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V12.md)
+is derived directly from the committed first-party version-10
+implementation. It never adopts or overwrites the rejected
+version-11 attempt. It preserves strict Python comparison before
+decoding genuine Unicode result data, with a fully reversible,
+collision-safe representation for unpaired surrogate characters.
+
+The previous real Zig outcome remains **6** clean groups,
+**3,583** verified cases, **1,540** observed differences, and **4**
+infrastructure failures. All **13** worker records, real native
+deallocation warnings, **10** individually proven guard installations,
+and **3** unknown guard results are retained. The candidate is not
+fully compatible; the complete mismatch total remains
+**NOT MEASURED**.
+
+The new procedure has **NOT RUN** a candidate. It preserves all
+**31,237** original checks, the separate **8,244** reference checks,
+and the unopened **14,155,776**-case final proposal. Compatibility,
+speed, memory, and undefined behavior remain **NOT MEASURED**.
+
 ## Run the complete guarded first-party Rust correctness suite
 
 The [version-20 Rust correctness procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V20.md)
