@@ -7,6 +7,69 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Complete the Python reference without qualifying a replacement
+
+The [independent phase-one readiness verifier](../tools/verify_owned_p0_completeness_v4.py),
+[reconciled reference protocol](../oracle/phase1/P0-COMPLETENESS-V4.md),
+and [canonical phase-one readiness certificate](../oracle/phase1/p0-completeness-v4.json)
+authenticate the separately pushed, genuine two-process Python result.
+Their respective SHA-256 values are
+`8c73af8913f54e2398e707dc4a44c173ca53e20c1161b84160d841ce2ff7760d`,
+`4a390db825fed994733390be8961a0f709d7f1f22195535e581e71cdea8111f2`,
+and `aab7a301f646755cec9956904cd6f97498d8293da454a925bf1f75cdfc85b3b1`.
+Their exact sizes are **29,094**, **4,261**, and **34,875** bytes.
+
+The original matrix remains **31,237** executions, **13** groups,
+**13** named private exclusions, **73** obligations, and **34**
+coverage mappings. The corrected original **6,912**-case Python
+reference and both actual **8,244**-case Python fuzz workers pass.
+Their complete original files, distinct inodes, actual process IDs,
+exit codes, stdout, seven seeds, **19** case categories, **45**
+historical mappings, and bounded complete corpus are authenticated.
+The historical version-2 certificate remains unchanged and **BLOCKED**.
+
+The new gate is explicitly limited to **phase-one Python-reference
+readiness**. It records **PASS** and permits first-party native
+candidate builds and correctness tests. A separate candidate
+qualification gate remains **BLOCKED** with exactly **seven** genuine
+blockers: original candidate compatibility, extra-case candidate
+compatibility, public import, callable signatures, genuine full-size
+search, genuine full-size substitution, and runtime non-delegation.
+There are **six** engine families and **zero** compatible replacements.
+The historical version-17 Rust recipe binds the unchanged earlier
+version-2 certificate; it therefore remains **BLOCKED** and **NOT
+RUN** until an independently frozen successor consumes the new
+version-4 readiness certificate.
+
+Both normal and sterile source self-tests reject exactly **28** real
+hostile controls; both independently run frozen-context checks pass.
+No source-only mode starts a reference worker, candidate, compiler,
+timer, network, compressed archive, or hidden holdout. Performance,
+memory, confidence, and undefined behavior remain **NOT MEASURED**.
+
+The [current phase-readiness results graph](evidence/candidate-current-overview-v64.svg),
+[complete exact graph inputs](evidence/candidate-current-overview-v64.inputs.json),
+[complete machine-readable graph](evidence/candidate-current-overview-v64.json),
+and [independent reproducible renderer](../tools/render_candidate_current_overview_v64.py)
+preserve the version-63 actual reference result, all **13** complete
+Rust groups and **six** failure witnesses, the **1,440** observed Rust
+differences, the sealed **4,194,304**-case holdout, and the difference
+between a passing Python oracle and an unqualified candidate.
+The renderer, exact inputs, complete summary, and SVG respectively have
+SHA-256 values
+`6e8364972fe69c4e6074df14ce69369d962773de64bedf576515744cf44e488f`,
+`6566c57fe58b501b54b056aae528d1e1087bec279718e5d175d99baca703cd76`,
+`feaf43cb6eeeb0d61f60ede20925d559cdafb66d8110f9607192dac542f51ae0`,
+and `1106fa228c5cf9ed3df94be344c58acf8513ac3be4b01b9c1a0bf058f76bb95f`.
+Their exact sizes are **120,686**, **1,004,674**, **2,775,659**, and
+**14,807** bytes. Normal and sterile graph self-tests each reject
+**5,228** controls. Both graph inputs and the complete snapshot record
+the immediate predecessor as version **63**. The three newly
+published readiness owners raise the authenticated evidence and
+history lower bounds to **216/221**. The historical version-17 Rust
+build is correctly recorded as **BLOCKED**, separately from the
+general phase-two native-build authorization.
+
 ## Run both genuine Python references for all 8,244 extra checks
 
 After the entire version-3 reference controller and version-62 graph

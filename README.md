@@ -16,7 +16,7 @@ Python, another regular-expression package, or another candidate does not count.
 **Six** matching engines built from scratch. **Zero** fully compatible
 replacements so far. Speed compared with Python: **NOT MEASURED**.
 
-![Current results for six regular-expression engines built from scratch. Both Python processes passed all 8,244 extra baseline checks. No replacement yet passes all compatibility requirements, and speed has not yet been measured.](docs/evidence/candidate-current-overview-v63.svg)
+![Current results for six regular-expression engines built from scratch. Python's original and expanded references pass, from-scratch candidate testing is authorized, no replacement has qualified, and speed has not been measured.](docs/evidence/candidate-current-overview-v64.svg)
 
 Python's corrected reference agrees on all **6,912** affected original
 checks. The unchanged original suite contains **31,237** checks in
@@ -25,9 +25,9 @@ patterns, invalid input, byte buffers, warnings, substitution, and other
 real `re` behavior. Its reproducible two-Python-process reference is
 now **PASS**: two genuinely separate Python processes each passed
 **8,244/8,244** cases, for **16,488** real reference checks. The
-corresponding candidate runs are **NOT RUN**, and the existing
-phase-one certificate remains **BLOCKED** until it is separately
-reconciled with this new evidence.
+complete Python-reference certificate now **PASSES** and permits
+first-party engines to be built and tested. Replacement qualification
+remains **BLOCKED**: the corresponding candidate runs are **NOT RUN**.
 
 The latest complete Rust run recorded **1,440** genuine differences,
 including a **512**-difference regression. Corrections that have not
@@ -68,10 +68,9 @@ and **24** balanced measurement rounds. Its examples are **NOT
 FROZEN**, **NOT GENERATED**, and **NOT OPENED**. Speed, memory, and
 confidence intervals are **NOT MEASURED**.
 
-Both independent Python reference runs for the separate **8,244**
-extra cases are now complete. Next, reconcile the frozen phase-one
-certificate with that evidence. Then require three independently
-built engines to pass the **31,237** original checks, the extra cases,
+The reconciled Python reference now permits candidate correctness
+tests. Require three independently built engines to pass the
+**31,237** original checks, the **8,244** extra cases,
 Python's two **2,147,483,648**-character requirements, and separate
 public-import, signature, and no-delegation checks. The full-size
 replacement tests are **NOT RUN**. A winner must be at least **1.5×**
@@ -82,7 +81,8 @@ explain every slowdown greater than **20%**. There is no winner.
 
 - [Reproduce the results and verify every graph](docs/REPRODUCING.md).
 - [Experiment log, original reports, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
-- [Corrected Python compatibility checklist](oracle/phase1/P0-COMPLETENESS-V2.md); the historical certificate remains **BLOCKED** until the newly passing extra-case reference is separately reconciled.
+- [Complete, reconciled Python correctness certificate](oracle/phase1/P0-COMPLETENESS-V4.md); reference readiness **PASS**, candidate qualification **BLOCKED**.
+- [Historical corrected Python compatibility checklist](oracle/phase1/P0-COMPLETENESS-V2.md); preserved unchanged as the earlier **BLOCKED** certificate.
 - [Frozen two-process reference for all 8,244 extra checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md) and [complete independently recorded passing result](oracle/phase1/evidence/differential-fuzz-reference-v3-cpython-3146-two-worker-8244-v3/two-independent-reference-result.json); two actual Python processes, **8,244/8,244** each.
 - [Original, preserved Python compatibility checklist](oracle/phase1/P0-COMPLETENESS-V1.md) and [separately frozen 8,244-case fuzz corpus](oracle/v2/expected.jsonl).
 - [Python's original two-billion-character compatibility requirements](oracle/phase1/P0-LARGE-INPUT-INDEXING-V1.md).
@@ -91,7 +91,7 @@ explain every slowdown greater than **20%**. There is no winner.
 - [First-party Rust build protocol](oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V16.md), [actual build report](oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle.json.gz), and [durable build receipt](oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle-publication-receipt.json).
 - [Complete latest Rust compatibility report](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [durable result receipt](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [independent failure analysis](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json).
 - [Reproducible from-scratch Rust buffer correction](oracle/phase2/RUST-BUFFER-SHAPE-PICKLE-SOURCE-REPAIR-V2.md); its corrected source is frozen but not yet built or retested.
-- [Frozen, independently reproducible Rust build recipe](oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V17.md); compilation remains blocked until all required Python-reference checks pass.
+- [Historical first-party Rust build recipe](oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V17.md); still **BLOCKED** because it binds the earlier certificate. Its corrected successor is **NOT FROZEN**.
 - [Separate public-import checks](oracle/phase1/P0-PUBLIC-ENTRYPOINT-IMPORT-V1.md) and [function-signature checks](oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md).
 - [Expanded, still-unopened final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256
