@@ -8,6 +8,20 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze an updated overall C and Rust comparison
+
+The [version-88 headline-chart renderer](../tools/render_candidate_current_overview_v88.py)
+preserves the complete previous six-engine comparison and separately
+authenticates both independently reproduced C and Rust builds. It
+distinguishes the C engine's **14** real build steps from the Rust
+engine's **28**, retains every earlier compatibility failure, and
+shows Python as the baseline. The **14,155,776** final cases remain
+unopened; speed and full compatibility remain **NOT MEASURED**.
+
+This step freezes and verifies the renderer only. Its new chart has
+**NOT** yet been generated; chart generation is a separately
+committed, reproducible experiment after the source is pushed.
+
 ## Record the actual first-party C build
 
 The [version-18 C build](../oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md)
