@@ -8,6 +8,25 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the actual Rust recovery-preflight failure
+
+The frozen [version-18 Rust campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V18.md)
+was actually attempted exactly once. The previously observed
+historical-helper ordering check passed, but an independent historical
+recovery-root check rejected the current engine before activation.
+The process exited **2** with `CampaignError`:
+`derive one exact distinct V16 recovery prefix and immutable root`.
+
+The exact [version-18 preflight output](../oracle/phase2/evidence/repaired-rust-original-campaign-v18-rust-phase2-v21-rust-captured-findall-root-provenance-original-p0-v18-entry-failure.json)
+records **0** candidate imports, **0** workers, **0** native loads,
+**0** private-root opens, and **0** hidden cases. This is a distinct
+failure from the preserved version-17 helper check; neither result
+is a matching observation or a candidate qualification.
+
+The latest completed Rust correctness results remain the earlier
+**8** groups and **12,942** verified cases. The **14,155,776**
+proposed final cases remain unopened; speed is **NOT MEASURED**.
+
 ## Freeze the corrected Rust helper-verification order
 
 The [version-18 Rust compatibility campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V18.md)
