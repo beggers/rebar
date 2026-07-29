@@ -7,6 +7,65 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the independently reproducible offline Rust build
+
+The first complete Rust test remains **FAIL**: **928** actual
+differences, **8,965** explicitly verified passing cases, and all
+**13** original groups completed without runner failures. The separate
+buffer and serialization source repairs have not been compiled or
+retested. This chunk freezes the exact recipe for an independently
+reproducible native build; it does not run the compiler.
+
+The [frozen first-party native-build verifier](../tools/reproduce_owned_rust_buffer_shape_source_build_v16.py)
+has SHA-256
+`bcea8f23fc5e52af1e8062145d75ef1a6ed835cea3ac113a155cc8ebf3116a8a`
+and **134,640** bytes. The [offline native-build protocol](../oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V16.md)
+has SHA-256
+`315f0a24e64b50804565f86c6ca4187024c4a1db5a23ab2f57c8805ed37f51f5`
+and **6,497** bytes. Its [complete reproducible-build source contract](../oracle/phase2/rust-buffer-shape-source-build-v16.json)
+has SHA-256
+`4f82f88da3329c6bacac2092af19d915d379f90101dcd9840366274355cc92b7`
+and **18,260** bytes.
+
+The verifier independently reconstructs the complete lineage from the
+original first-party Rust bridge, through the actually tested bridge,
+the frozen buffer repair, and the final combined serialization variant.
+It verifies the preserved Python adapter, local Rust lockfile, exact
+compiler identities, pinned CPython, both previous source repairs, and
+the immutable previous-results graph. A future explicit build must use
+two separate private directories and exactly **28** genuinely completed
+offline compiler and binary-inspection processes; those processes have
+**NOT RUN** during this source freeze.
+
+All four ordinary and empty-environment source and frozen-context
+checks pass **266** hostile safety controls. The source-only gate opens
+no archives, runs no engine, starts no compiler or clock, modifies no
+original files, and does not read the sealed final comparison. Three
+real source owners raise the evidence and historical-reference lower
+bounds to **179 / 184**. The combined Rust engine remains **NOT
+BUILT** and **NOT RUN**; correctness, memory, and speed remain **NOT
+MEASURED**. Runtime independence remains **NOT ESTABLISHED**.
+
+The [updated plain-language Rust build and overall-results graph](evidence/candidate-current-overview-v51.svg)
+keeps the actual **928** Rust failures and the unopened
+**4,194,304**-case comparison visible. A frozen build recipe is not a
+successful native build or a passing replacement.
+
+The [compact version-51 build-status graph generator](../tools/render_candidate_current_overview_v51.py)
+has SHA-256
+`2fc7a901aa8e94fae62793851643a7c776d0d2f16a01957cbeb14f1792f6ce4c`.
+Its [complete graph inputs](evidence/candidate-current-overview-v51.inputs.json)
+have SHA-256
+`b86813b7078479a121584d1e6bf98985d94ee8f22f524e53b9cce2da2723f767`.
+Its [full machine-readable build and candidate results](evidence/candidate-current-overview-v51.json)
+have SHA-256
+`c76d08488bbd3dae80db3e0ee46fdabeabc218b0f03e6e02bce74a3b190799ef`.
+The **2,250**-pixel accessible chart has SHA-256
+`76be0cfd9f3624a01be21738fb25075290a59319138af33af5a5029dc114efa5`.
+All ordinary and empty-environment graph gates pass **2,517** hostile
+controls without compiling, loading a candidate, opening a matching
+archive, or touching the holdout.
+
 ## Freeze the combined from-scratch Rust match-serialization repair
 
 The actual completed Rust result remains **928** observed differences,
