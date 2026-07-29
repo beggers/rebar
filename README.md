@@ -16,13 +16,13 @@ regular-expression package, or another candidate does not count.
 **Six** from-scratch engines. **Zero** fully compatible replacements.
 Speed versus Python: **NOT MEASURED**. There is no winner.
 
-![Python compared with six independently written regular-expression engines. A guarded full-suite Rust retest is frozen but has not run; no replacement has passed all compatibility tests or measured a speedup.](docs/evidence/candidate-current-overview-v77.svg)
+![Python compared with six independently written regular-expression engines. All 13 new Rust test workers failed before matching; no replacement has passed all compatibility tests or measured a speedup.](docs/evidence/candidate-current-overview-v78.svg)
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
 | Python `re` | Baseline; reference checks pass | Not timed |
 | Public `rebar` import | FAIL; still selects an unqualified Zig prototype | NOT MEASURED |
-| Rust | FAIL; 1,440 differences | NOT MEASURED |
+| Rust | FAIL; 13 startup failures; 1,440 earlier differences | NOT MEASURED |
 | C | FAIL; 1,230 differences | NOT MEASURED |
 | Zig | FAIL; 1,764 differences; scanner fix frozen, not built or tested | NOT MEASURED |
 | C++ | FAIL; 2,308 differences and five worker failures | NOT MEASURED |
@@ -38,9 +38,9 @@ The corrected, independently written C engine already passed **14**
 reproducible build checks. A separately traced Rust build passed **28**
 checks and recorded its compiled engine's identity. Neither engine has
 passed its full compatibility test. The old **13**-worker Rust test
-targets a different build and remains **BLOCKED**; testing the newly
-traced engine's guarded full-suite retest is **NOT RUN**. Runtime
-independence is **NOT ESTABLISHED**.
+targets a different build and remains **BLOCKED**. All **13** new Rust
+workers failed before matching; their correctness is **NOT MEASURED**.
+Runtime independence is **NOT ESTABLISHED**.
 
 ## Detailed correctness
 

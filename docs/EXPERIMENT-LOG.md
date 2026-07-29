@@ -7,6 +7,61 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Record the real Rust worker failure without inventing a match result
+
+The actual first-party version-12 Rust controller genuinely started
+**13** distinct workers for the unchanged **13**-suite,
+**31,237**-case original test. All **13** workers failed before
+completing a suite. Their result is **FAIL** with **13** infrastructure
+failures, **zero** complete suites, **zero** verified passes, and
+semantic correctness **NOT MEASURED**. This run did not observe new
+matching differences. The earlier complete Rust result of **1,440**
+differences and **14,853** verified passes remains historical and must
+not be assigned to the new attempt.
+
+The [independently durable real-run receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v12-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v12-failures-publication-receipt.json)
+is **6,744** bytes with SHA-256
+`6537561a46fe6b7ab294126628fa5d82c34f03c3d0bac6455112dae3eea11658`.
+It attests that the [preserved compressed failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v12-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v12-failures.json.gz)
+is **3,140** bytes with SHA-256
+`5efdfc734b65402ff629f90eac9ae045f2bd4c9837a169566f092e59eb1f150a`.
+The report remains unopened; verify its identity by the plain-text
+receipt and filesystem metadata only. The receipt independently
+confirms all **13** distinct worker processes and complete restoration
+of all **four** original target files before publication.
+
+Independent analysis of the frozen first-party worker source and a
+separate clean audit reproduces the startup conflict: its native
+loader uses Python's `ctypes.dlopen`, while the installed safeguard
+forbids that operation. The actual receipt contains neither individual
+worker error output nor evidence that a guard completed installation
+inside each worker. The reproduced source-level explanation is not an
+observed per-worker error, and runtime independence remains
+**NOT ESTABLISHED**.
+
+The [current actual-run results chart](evidence/candidate-current-overview-v78.svg),
+[complete chart inputs](evidence/candidate-current-overview-v78.inputs.json),
+[full machine-readable actual results](evidence/candidate-current-overview-v78.json),
+and [reproducible chart renderer](../tools/render_candidate_current_overview_v78.py)
+preserve all original suites and observed candidate failures. Exactly
+**two** independently durable failure-evidence owners raise the
+evidence and history lower bounds from **255 / 260** to **257 / 262**.
+Both read-only graph self-tests reject **6,805** hostile controls.
+The graph renderer, complete inputs, complete machine-readable results,
+and visible chart have respective SHA-256 values
+`9eb7fc8ec89c93e8b2ca9acb0aee5dd9398e2aae5103a9788c3bc0abb5f0cf2b`,
+`58ba719afc7e8fd0aef8abc3e1412a122072e1443034a498558d99ec17266685`,
+`d11dd0c8aa531f430d7a5fd693a24332c9332b7b3add7423121ce9c245ae069b`,
+and `ff645c702b0d0e4d7222a8b65bc6fa934f58d68e1bc405c6bdaf8caa4d6767ee`.
+Their exact sizes are **50,479**, **1,207,405**, **3,688,227**, and
+**5,138** bytes.
+Actual C matching still has **1,230** differences and **7,325**
+verified passes; actual Zig matching retains **1,764** differences
+and **3,711** verified passes. No candidate qualifies. The separate
+**8,244** supplemental checks and the proposed **4,194,304**-case
+holdout remain independent. Speed, memory, and statistical confidence
+are **NOT MEASURED**; the final holdout is **NOT OPENED**.
+
 ## Freeze the actual-build, guarded full-suite Rust retest
 
 The [independently runnable first-party Rust test controller](../tools/run_owned_repaired_rust_original_campaign_v12.py),
