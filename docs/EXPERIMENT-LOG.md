@@ -7,6 +7,79 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a recoverable Rust runner and report the real public import
+
+Freeze a new, separately owned Rust-only original-suite runner without
+editing or rerunning the failed version-six experiment. The
+[repaired version-seven Rust runner](../tools/run_owned_repaired_rust_original_campaign_v7.py)
+has SHA-256
+`eb6738e6f1c2315aa044c8a4a7978e6df750a9ef359e9ff0551df5f92ab23104`.
+Its [frozen Rust-only protocol](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V7.md)
+has SHA-256
+`0b5182a7eee74e586839abc3a0e8bdd122bac248e9cb3b76c603c5add9281840`.
+Its [complete machine-readable contract](../oracle/phase2/repaired-rust-original-campaign-v7.json)
+has SHA-256
+`9c8e85dcc5dcf0a00953b36dd02c29c2ab7b1ed0b4281eb27f6693c058d155e5`.
+
+Both ordinary and empty-environment source tests independently run the
+actual worker function on all **13** original suite routes, accounting
+for all **31,237** original cases. They preserve both complete Python
+reference results, all **96** corrected cache cases, a real simulated
+matching failure, the original upstream-suite route, and the nested
+subinterpreter route. The same source test invokes the actual recovery
+function against all four genuine original-file identities, succeeds
+when the Rust build archive is unavailable, and rejects altered journal
+schemas and digests. Its **517** hostile and **41** positive checks
+execute no real candidate, compiler, archive, timer, or benchmark.
+Passing these source controls is not a passing Rust matching campaign.
+
+Only the actual campaign controller may open the historical Rust build
+archive, and it must first install a real mutable accounting record.
+Candidate workers and recovery do not reopen that build archive. Preserve
+the actual earlier controller failure and its unreported historical
+archive access; actual Rust matching remains **NOT RUN**. Current
+authenticated evidence lower bounds are **166** owners and **171**
+references. Lower bounds of **168** and **173** are valid only after a
+future actual campaign writes two independently durable result owners;
+they are not present source-freeze results.
+
+The [updated overall Python and candidate graph](evidence/candidate-current-overview-v44.svg)
+also records the real public entrypoint. The tracked `rebar.py` has
+SHA-256
+`289769bd637ea525ae7e71d263377e15c0f394ba20619c11b98e266f57fcc34f`.
+It selects the previously failing Zig prototype and does not re-export
+Python's `__version__`. The tracked project configuration has SHA-256
+`7d50e8c6c2bc76a0e3ddcac6b5f157b013bcfd76944fdeb2c1c81e0181ae7825`
+and disables package installation. The public import is **FAIL**, not
+a selected winner; installed-artifact behavior is **NOT MEASURED**.
+The graph reads only the exact frozen source and failure evidence and
+does not import `rebar`, Zig, a native library, or a matching archive.
+
+The [version-44 graph generator](../tools/render_candidate_current_overview_v44.py)
+has SHA-256
+`10b64e05336485445b5199acdf4626854812c16df6c8248371860a764450324d`.
+Its [complete frozen inputs](evidence/candidate-current-overview-v44.inputs.json)
+have SHA-256
+`7b51e6fa89d7b1d3ccc043e0268f405fe072999d22bd6067aaf2f20ab43e0d94`.
+Its [full machine-readable results](evidence/candidate-current-overview-v44.json)
+have SHA-256
+`5fa65d50eb041b0e12384846c5a7de548581cbc5f9183b1f72bc5f3d703a41c9`.
+The generated chart has SHA-256
+`b23c43fab061df0cf192b9c5c869aee8854ad794397dc3c9512aa6f946150ab8`.
+Ordinary and empty-environment graph self-tests each reject **1,132**
+hostile controls without reading the previous failure files, starting
+a matching worker, or opening an archive.
+
+Six independently written source-engine designs and two independently
+frozen C and Rust runner paths are not six runnable or qualified
+replacements. Current corrected C and Rust matching have **NOT RUN**;
+all historical C, Rust, Zig, C++, and Go losses remain visible. The
+separate **50** Python signature cases have no candidate result. Actual
+multi-gigabyte inputs, debug-build memory and interrupts, additional
+platforms, sanitizer behavior, and runtime non-delegation remain
+**NOT MEASURED** or **NOT ESTABLISHED**. The **4,194,304**-case final
+comparison is unopened and performance remains **NOT MEASURED**.
+
 ## Preserve the actual failed first Rust compatibility attempt
 
 Execute the frozen, independently built Rust original-suite controller
@@ -36,7 +109,7 @@ no matching-result archive or receipt. Actual Rust compatibility and
 mismatch totals are **NOT MEASURED**; the failure is not a test-case
 mismatch.
 
-The [current actual Rust-failure and overall-results graph](evidence/candidate-current-overview-v43.svg)
+The [preserved first Rust-failure and overall-results graph](evidence/candidate-current-overview-v43.svg)
 preserves the exact controller result, both small evidence owners, and
 the previous [two-runner source-freeze graph](evidence/candidate-current-overview-v42.svg).
 Its [reproducible graph renderer](../tools/render_candidate_current_overview_v43.py)
@@ -92,7 +165,7 @@ process identifiers, partial results, and failed publication remain
 auditable. These source-only checks run no candidate, build, reference,
 benchmark, or hidden test and read no matching or reference archive.
 
-The [current separate C and Rust runner graph](evidence/candidate-current-overview-v42.svg)
+The [preserved separate C and Rust runner graph](evidence/candidate-current-overview-v42.svg)
 distinguishes **two** frozen, independently owned runner paths from the
 **six** first-party engine source designs. Corrected C and Rust matching
 both remain **NOT RUN**, and the other four designs have no frozen

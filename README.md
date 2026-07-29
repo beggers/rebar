@@ -13,31 +13,31 @@ Python, another regular-expression package, or another candidate does not count.
 ## Headline results
 
 The original **31,237** Python compatibility checks exposed **96** cases
-where the saved Python reference and replacement tests used different
-execution contexts. Two independent Python processes have now agreed on
-all **6,912** affected checks, including all **96** cases, in the correct
-context. No case has been removed. There is no compatible replacement,
-measured speedup, or winner.
+where the saved Python answer and the candidate tests ran differently.
+Two independent Python processes now agree on all **6,912** affected
+checks, including all **96** cases. No original case has been removed.
+There is no compatible replacement, measured speedup, or winner.
 
-Separate test-runner sources are frozen for **C and Rust**. The first
-real Rust attempt failed before any matching worker started: it checked
-the wrong historical helper. C has **NOT RUN** because its rebuilt
-native library must first be safely activated. Neither engine has a
-completed compatibility result. Zig, C++, Go, and Fortran remain
-independent source designs, not runnable or passing replacements. The
-separately frozen Zig scanner correction has **NOT BEEN APPLIED**.
+Separate original-suite test runners are frozen for **C and Rust**. The
+first Rust attempt failed before matching; its failure remains recorded.
+The repaired Rust runner now verifies all **13** real worker routes,
+lossless result writing, and safe recovery, but its new compatibility
+campaign has **NOT RUN**. C also has **NOT RUN**: its rebuilt native
+engine must first be safely activated. Zig, C++, Go, and Fortran are
+independently written designs, not passing replacements.
 
-![Python passes its corrected reference; the first Rust attempt fails before starting a matching test; C has not run; no replacement qualifies and speed remains unmeasured](docs/evidence/candidate-current-overview-v43.svg)
+![Python's corrected reference passes; the repaired Rust runner is frozen but untested; the current Zig-backed public import fails; no engine qualifies and speed remains unmeasured](docs/evidence/candidate-current-overview-v44.svg)
 
-The source and build checks reject outside matching packages and shared
-candidate engines. A complete execution-time proof that no candidate
-delegates matching to Python remains **NOT ESTABLISHED**. An earlier
-Zig build reduced its differences from **2,172** to **1,764** across
-all **13** original test groups, but did not qualify.
+The existing `rebar.py` prematurely selects the Zig prototype, which
+has **1,764** recorded compatibility differences and does not export
+Python's `__version__`. It is **not** a compatible public import and is
+**not** a winner. Installation has **NOT BEEN TESTED**.
 
-The corrected Rust engine builds identically in two independent offline
-source trees, but its first test stopped before activating or matching.
-The Rust results below therefore describe the previous tested build.
+The six engines use first-party matching code; they are not wrappers
+around an outside regular-expression package. A complete runtime proof
+against delegation to Python or another engine is **NOT ESTABLISHED**.
+The Rust, C, and Zig numbers below are earlier observed builds, not
+passing results for the repaired reference.
 
 Overall speed relative to Python: **NOT MEASURED**. Fair speed and memory
 measurements start only when three independent engines pass every check.
@@ -45,7 +45,8 @@ measurements start only when three independent engines pass every check.
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
 | Python `re` | Corrected reference agrees in two independent processes | Original suite unchanged; corrected reference: 6,912 / 6,912 | Reference; not timed |
-| Rust | First corrected attempt failed before any matching worker | Previous build: 8,965 verified; 1,036 differences | NOT MEASURED |
+| Public `rebar` import | Incorrectly selects an unqualified Zig prototype | FAIL; `__version__` missing | NOT MEASURED |
+| Rust | Repaired runner frozen; corrected matching has NOT RUN | Previous build: 8,965 verified; 1,036 differences | NOT MEASURED |
 | C | Corrected C-only test runner frozen; new test has NOT RUN | Previous build: 7,325 verified; 1,230 differences; all 13 groups completed | NOT MEASURED |
 | Zig | Independently written and built | 3,711 verified; 1,764 differences; all 13 groups completed | NOT MEASURED |
 | C++ | Independently written and built | 128 verified; 2,308 differences; five worker failures | NOT MEASURED |
@@ -61,6 +62,11 @@ signatures are frozen separately. Two independently isolated Python
 reference processes passed all **50** and produced identical results.
 Candidate results for these additional checks remain **NOT MEASURED**;
 the checks are not added to the original **31,237**.
+
+The measured baseline is pinned to a Linux x86-64 Python 3.14.6 release
+build. Actual multi-gigabyte candidate inputs, debug-build memory and
+interrupt behavior, other platforms, and sanitizer results remain
+**NOT MEASURED**; none is counted as a passing check.
 
 ## Detailed compatibility
 
@@ -84,7 +90,8 @@ balanced measurement rounds. Its cases remain **NOT FROZEN**,
 **NOT MEASURED**.
 
 First, three independently built engines must pass all **31,237**
-compatibility checks. To win, an engine must be at least **1.5×** faster
+original checks and the separate public-import, signature, and runtime
+independence gates. To win, an engine must be at least **1.5×** faster
 overall, measurably faster in at least **60%** of cases, and explain every
 slowdown greater than **20%**. There is no winner.
 
@@ -96,7 +103,8 @@ slowdown greater than **20%**. There is no winner.
 - [Frozen correction for the Python reference](oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md).
 - [Corrected six-engine test producer](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md).
 - [Corrected C-only original-suite runner](oracle/phase2/P0-CANDIDATE-PROTOCOL-V10.md).
-- [Independently corrected Rust-only original-suite runner](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V6.md).
+- [Repaired, recovery-safe Rust-only original-suite runner](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V7.md).
+- [Preserved first Rust-only runner](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V6.md).
 - [Actual first Rust controller failure](oracle/phase2/evidence/repaired-rust-original-campaign-v6-rust-phase2-v13-rust-pattern-repr-original-p0-entry-failure.json).
 - [Independently recorded Rust failure and build-record access](oracle/phase2/evidence/repaired-rust-original-campaign-v6-rust-phase2-v13-rust-pattern-repr-original-p0-entry-failure-observation.json).
 - [Unapplied from-scratch Zig scanner correction](oracle/phase2/ZIG-SCANNER-PHRASE-SOURCE-REPAIR-V3.md).
