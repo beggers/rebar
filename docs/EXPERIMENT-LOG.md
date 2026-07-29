@@ -8,6 +8,27 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the updated from-scratch candidate comparison
+
+The [version-90 headline renderer](../tools/render_candidate_current_overview_v90.py)
+is frozen before its next graph is generated. It preserves all **11**
+previous evidence pools and adds exactly **4** independently verified
+public owners from the actually completed version-10 Zig run. The
+current published graph and every historical graph remain unchanged.
+
+All four ordinary and empty-environment source-only gates pass; each
+self-test checks **10,239** adversarial cases. The next graph must
+report the actual observed counts: C **13,094**, Rust **12,942**, and
+Zig **3,583** matching cases out of the same **31,237** original
+checks. The **8,244** supplemental cases remain separate. Its evidence
+floors are **316** and **321**, and every input remains below the
+frozen four-megabyte limit.
+
+The three version-90 graph outputs have **NOT BEEN GENERATED**. No
+candidate is fully compatible; speed and memory are **NOT MEASURED**;
+the **14,155,776**-case proposed holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Preserve the actual corrected C native-build preflight failure
 
 The [version-19 corrected C build](../oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-SOURCE-BUILD-V19.md)

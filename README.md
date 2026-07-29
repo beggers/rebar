@@ -73,7 +73,7 @@ slowdown over **20%**.
 
 ## Evidence
 
-- [Reproduce the current chart](docs/REPRODUCING.md) and inspect its [evidence-checked headline renderer](tools/render_candidate_current_overview_v89.py).
+- [Reproduce the current chart](docs/REPRODUCING.md), inspect its [published headline renderer](tools/render_candidate_current_overview_v89.py), or review the separately frozen [next headline renderer](tools/render_candidate_current_overview_v90.py); its updated graph has not yet been generated.
 - [Full experiment log, build evidence, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Complete Python correctness reference](oracle/phase1/P0-COMPLETENESS-V4.md).
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
