@@ -8,6 +8,27 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the correction for the actual Zig test-controller failures
+
+The [version-9 first-party Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V9.md)
+addresses the two exact controller errors established by the
+preserved version-8 failure record. Its isolated original-suite
+observer verifies and changes only two historical source lines in
+memory: a forbidden, unused loader import and a candidate-role
+check that incorrectly rejected a correctly guarded Zig candidate.
+
+The original source files, **31,237** frozen cases, strict native
+guard, Zig matcher, all **13** worker groups, and original-file
+restoration requirements remain unchanged. Four normal and
+empty-environment verification checks and **54** adverse controls
+all passed; independent review confirmed that native loading and
+external regex fallbacks remain forbidden.
+
+This is a source freeze, not an actual matching result. The prior
+**13** Zig worker failures remain preserved. The **8,244**
+additional cases and **14,155,776** proposed final cases remain
+unrun, and speed and complete compatibility are **NOT MEASURED**.
+
 ## Run the complete first-party Rust compatibility test
 
 The [version-19 Rust campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V19.md)

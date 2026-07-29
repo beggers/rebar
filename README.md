@@ -51,6 +51,8 @@ had candidate failures and **1** had a result-encoding failure. The
 complete mismatch count is **NOT MEASURED**. All **13** Zig workers now import the
 project's candidate, but the shared test controller incorrectly
 requests a forbidden native loader; none produces a matching result.
+A corrected, independently checked Zig test controller is frozen but
+has not yet been run.
 Zig's earlier **1,764** differences remain a separate historical
 result; no candidate qualifies.
 Full-suite matching is **NOT MEASURED**.
@@ -92,7 +94,7 @@ slowdown over **20%**.
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
 - [Six independently written engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Guarded, exhaustive first-party C correctness](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V7.md), [complete public C test results](oracle/phase2/evidence/repaired-c-original-campaign-v7-c-phase2-v18-c-subject-buffer-root-provenance-original-p0-v7-failures-publication-receipt.json), [reproducible native source-build procedure](oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md), and [independently authenticated C build](oracle/phase2/evidence/native-source-build-v18-c-phase2-v18-c-subject-buffer-root-provenance-publication-receipt.json).
-- [Guard-clean, from-scratch Zig candidate and exhaustive, safely bounded correctness procedure](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V8.md); all **13** workers load the candidate, but the strict guard blocks the test controller's forbidden loader.
+- [Corrected first-party Zig compatibility procedure](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V9.md) and [preserved previous Zig result](oracle/phase2/evidence/repaired-zig-original-campaign-v8-phase2-v13-zig-guard-clean-v1-original-p0-v8-failures-publication-receipt.json); the corrected procedure has not yet run a candidate.
 - [Complete first-party Rust compatibility procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V19.md) and [complete public Rust test results](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v21-rust-captured-findall-root-provenance-original-p0-v19-failures-publication-receipt.json); all earlier attempts remain in the experiment log.
 - [From-scratch Rust literal-search](oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md), [captured-result experiments](oracle/phase2/RUST-CAPTURED-FINDALL-ONE-PASS-V1.md), and [exact Python scanner signatures](oracle/phase2/RUST-SCANNER-SIGNATURE-SOURCE-REPAIR-V22.md), with reproduced [literal](oracle/phase2/RUST-LITERAL-FINDALL-SOURCE-BUILD-V20.md) and [captured-result](oracle/phase2/RUST-CAPTURED-FINDALL-SOURCE-BUILD-V21.md) native builds; the scanner repair is not built, and full compatibility and speed are not established.
 - [Larger, unopened 14,155,776-case speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md) and [preserved earlier proposal](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
