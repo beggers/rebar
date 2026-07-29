@@ -8,6 +8,32 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Identify the actual Zig worker failure
+
+The [version-7 Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V7.md)
+actually reran all **13** original groups and exposed the real,
+identical worker exception in its public result:
+`ModuleNotFoundError: No module named 'candidates'`.
+
+Python's isolated interpreter could not find this project's own
+candidate package after the strict runtime guard was installed.
+The exception happened before any Zig candidate was imported or any
+regex case was observed. Every failure includes its exact activation
+stage, genuine exception, bounded traceback, and worker identity.
+
+The [complete version-7 public failure receipt](../oracle/phase2/evidence/repaired-zig-original-campaign-v7-phase2-v13-zig-guard-clean-v1-original-p0-v7-failures-publication-receipt.json)
+has SHA-256
+`b7e9091f24bde56dd67ecceacc3195e931916dffd7f7fd15c09e2bb301a365ab`.
+The unopened preserved report has producer-recorded SHA-256
+`4ead358c152259f2826a46658047c18961b868999b8eb08c69682db8a00d66e7`.
+
+All **13** real workers finished; **0** cases were verified, **0**
+groups were completed, and no worker timed out. All three original
+Zig files were restored. This is an established package-import
+failure, not a measured regex mismatch. The total mismatch count and
+relative speed remain **NOT MEASURED**; the **14,155,776** proposed
+final cases remain unopened.
+
 ## Freeze complete Zig worker-failure diagnostics
 
 The [version-7 Zig compatibility campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V7.md)

@@ -27,7 +27,7 @@ current results are below.
 | Public `rebar` import | FAIL; still selects an unqualified Zig prototype | NOT MEASURED |
 | Rust | FAIL; current run rejected; earlier 8/13 groups and 12,942 verified | NOT MEASURED |
 | C | FAIL; 3/13 groups; 3,366 verified; earlier run had 1,230 differences | NOT MEASURED |
-| Zig | FAIL; all 13 test workers failed; earlier run had 1,764 differences | NOT MEASURED |
+| Zig | FAIL; 13 workers could not import the project; earlier run had 1,764 differences | NOT MEASURED |
 | C++ | FAIL; 2,308 differences and five worker failures | NOT MEASURED |
 | Go | FAIL; 4,518 differences and four worker failures | NOT MEASURED |
 | Fortran | FAIL; independent builds disagree; matching not tested | NOT MEASURED |
@@ -48,7 +48,8 @@ preflight before starting any worker. The corrected C engine
 finished **3** of **13**
 groups and verified **3,366** passing cases; the complete mismatch
 count is **NOT MEASURED**. The corrected Zig test attempted all
-**13** groups, but all **13** workers failed before producing results.
+**13** groups, but isolated workers could not import the project's
+own candidate; none produced a matching result.
 Zig's earlier **1,764** differences remain a separate historical
 result; no candidate qualifies.
 Full-suite matching is **NOT MEASURED**.
@@ -90,7 +91,7 @@ slowdown over **20%**.
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
 - [Six independently written engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Guarded, exhaustive first-party C correctness](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V6.md), [reproducible native source-build procedure](oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md), and [independently authenticated C build](oracle/phase2/evidence/native-source-build-v18-c-phase2-v18-c-subject-buffer-root-provenance-publication-receipt.json); corrected run completed **3** of **13** groups.
-- [Guard-clean, from-scratch Zig candidate and exhaustive, safely bounded correctness procedure](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V7.md); the previous run records all **13** worker failures.
+- [Guard-clean, from-scratch Zig candidate and exhaustive, safely bounded correctness procedure](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V7.md); the actual run exposes the same import error in all **13** workers.
 - [Current captured-engine Rust compatibility campaign](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V17.md) and [earlier failure diagnostics](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V16.md); the latest preflight failed without running a candidate.
 - [From-scratch Rust literal-search](oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md), [captured-result experiments](oracle/phase2/RUST-CAPTURED-FINDALL-ONE-PASS-V1.md), and [exact Python scanner signatures](oracle/phase2/RUST-SCANNER-SIGNATURE-SOURCE-REPAIR-V22.md), with reproduced [literal](oracle/phase2/RUST-LITERAL-FINDALL-SOURCE-BUILD-V20.md) and [captured-result](oracle/phase2/RUST-CAPTURED-FINDALL-SOURCE-BUILD-V21.md) native builds; the scanner repair is not built, and full compatibility and speed are not established.
 - [Larger, unopened 14,155,776-case speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md) and [preserved earlier proposal](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
