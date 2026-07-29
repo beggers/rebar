@@ -8,6 +8,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
 ## Evidence and reproduction
 
+- [From-scratch Rust buffer and replacement source repair](../oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-REPAIR-V1.md), [complete frozen source-repair contract](../oracle/phase2/rust-buffer-shape-source-repair-v1.json), [full first-party Rust bridge variant](../candidates/rust/variants/buffer_shape_v1/py_bridge.c), and [archive-free repair verifier](../tools/apply_owned_rust_buffer_shape_source_repair_v1.py); the same Rust engine family remains **NOT BUILT**, **NOT RUN**, and **NOT MEASURED**. The last complete test still records **928** differences and **8,965** explicitly verified passes. Both ordinary and empty-environment source gates pass without reading mutable documentation, failure archives, or hidden tests.
 - [Frozen Python compatibility tests](../oracle/phase1/P0-COMPLETENESS-V1.md), [all 31,237 test cases](../oracle/phase1/p0-completeness-v1.json), and [independent test verifier](../tools/verify_p0_completeness_v1.py).
 - [Python's original two-billion-character test protocol](../oracle/phase1/P0-LARGE-INPUT-INDEXING-V1.md), [all 32 separately counted large-input source observations](../oracle/phase1/p0-large-input-indexing-v1.json), and [physically isolated upstream large-input verifier](../tools/verify_large_input_indexing_v1.py); both actual upstream methods require **2,147,483,648** characters, with the substitution returning **2,147,483,649** replacements. Historical Python references were allowed **42,949,672,960** bytes, but this source verifier allocates no large text and does not run a reference. The actual candidate-test limit is **5,147** characters, so both full-size candidate checks remain **NOT RUN**. All **330** safety controls pass and **28** prohibited effects are physically blocked. The separate **32** source observations are not added to the original **31,237**, the **50** signatures, or the other **32** public-import observations.
 - [Frozen actual-public-import protocol](../oracle/phase1/P0-PUBLIC-ENTRYPOINT-IMPORT-V1.md), [all 32 separately counted public-module observations](../oracle/phase1/p0-public-entrypoint-import-v1.json), and [physically isolated public-entrypoint verifier](../tools/verify_public_entrypoint_import_v1.py); the real Zig-backed entrypoint remains **FAIL**, its missing `__version__` is preserved, **191** safety controls pass, **33** forbidden effects are physically blocked, and no candidate, Python regular-expression engine, native library, or holdout is loaded. These **32** observations are not added to either the original **31,237** or the separate **50** signature checks.
@@ -85,7 +86,8 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Complete repaired C compatibility evidence](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures.json.gz), [independent safe-restoration receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures-publication-receipt.json), [all 13 original worker reports](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures.json.gz), and [original-suite aggregate receipt](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures-publication-receipt.json); eight complete groups pass, five retain 1,262 genuine differences, and no infrastructure failure occurred.
 - [Actual independent repaired Zig builds](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner.json.gz) and [complete native build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner-publication-receipt.json); exactly 26 genuine processes produce two identical first-party engine and bridge binaries without testing matching or measuring speed.
 - [Actual independent repaired Rust builds](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay.json.gz) and [complete offline-build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay-publication-receipt.json); exactly 28 genuine processes produce two identical dependency-free Rust engines and bridges without testing matching or measuring speed.
-- [Current Rust-failure and overall-results graph](../docs/evidence/candidate-current-overview-v48.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v48.inputs.json), [current machine-readable full-suite Rust and candidate results](../docs/evidence/candidate-current-overview-v48.json), and [reproducible current graph generator](../tools/render_candidate_current_overview_v48.py); the actual Rust engine fails **928** of its observed comparisons across **13** completed original groups, with **zero** worker failures. Both genuine full-size Python requirements and **32** boundary-source observations remain separate from the **31,237** original cases, **50** signature cases, and **32** public-import observations. No candidate is qualified, the final comparison is unopened, and speed is **NOT MEASURED**.
+- [Current compact overall-results graph](../docs/evidence/candidate-current-overview-v49.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v49.inputs.json), [current machine-readable candidate results](../docs/evidence/candidate-current-overview-v49.json), and [reproducible current graph generator](../tools/render_candidate_current_overview_v49.py); the real Rust result remains **928** differences and **8,965** explicitly verified passes across **13** completed groups. Its newly frozen buffer variant is the same Rust family and is **NOT BUILT** or **NOT RUN**. All six from-scratch designs, the original **31,237** cases, separately counted **50**, **32**, and **32** checks, and unopened **4,194,304**-case final comparison remain visible. No replacement is qualified; speed is **NOT MEASURED**.
+- [Historical Rust-failure and overall-results graph](../docs/evidence/candidate-current-overview-v48.svg), [historical version-48 graph inputs](../docs/evidence/candidate-current-overview-v48.inputs.json), [historical machine-readable full-suite Rust and candidate results](../docs/evidence/candidate-current-overview-v48.json), and [historical graph generator](../tools/render_candidate_current_overview_v48.py); the actual Rust engine fails **928** of its observed comparisons across **13** completed original groups, with **zero** worker failures. Both genuine full-size Python requirements and **32** boundary-source observations remain separate from the **31,237** original cases, **50** signature cases, and **32** public-import observations. No candidate is qualified, the final comparison is unopened, and speed is **NOT MEASURED**.
 - [Historical two-billion-character and overall-results graph](../docs/evidence/candidate-current-overview-v47.svg), [historical version-47 graph inputs](../docs/evidence/candidate-current-overview-v47.inputs.json), [historical machine-readable boundary and candidate results](../docs/evidence/candidate-current-overview-v47.json), and [historical graph generator](../tools/render_candidate_current_overview_v47.py); the **two** genuine full-size Python requirements and **32** boundary-source observations remain separate from the **31,237** original cases, **50** signature cases, and **32** public-import observations. Three separately frozen C, Rust, and Zig runner sources do not imply any passing candidate.
 - [Historical independently written Zig and overall-results graph](../docs/evidence/candidate-current-overview-v46.svg), [historical version-46 graph inputs](../docs/evidence/candidate-current-overview-v46.inputs.json), [historical machine-readable candidate and public-import results](../docs/evidence/candidate-current-overview-v46.json), and [historical graph generator](../tools/render_candidate_current_overview_v46.py); **three** separately frozen C, Rust, and Zig runner-source paths do not imply a runnable, matching, or qualified engine. Preserve all **31,237** original cases, the separate **50** and **32** public checks, the historical Zig and Rust failures, **zero** qualified replacements, and the expanded unopened comparison. Speed: **NOT MEASURED**.
 - [Historical independently audited public-import and candidate graph](../docs/evidence/candidate-current-overview-v45.svg), [historical graph inputs](../docs/evidence/candidate-current-overview-v45.inputs.json), [historical machine-readable public and candidate results](../docs/evidence/candidate-current-overview-v45.json), and [historical graph generator](../tools/render_candidate_current_overview_v45.py); preserve all **32** separately counted public observations, the unchanged **31,237** original cases, the separate **50** signature cases, every previous candidate failure, and the expanded unopened final comparison.
@@ -529,10 +531,48 @@ decompressing a matching archive, or opening the final comparison:
   --protocol-sha256 0a640ee044c52394fa897d0221d51dfc3d85e9abb95608367698f11fba8ca879 \
   --contract-sha256 23601fe4947c70979081d8248ee9891287e3fa618b554b97a8ee56024823bacf
 
-# Verify the current Rust-result graph's 2,260 synthetic safety controls.
+# Verify the first-party Rust source repair without building or running it.
+"$PY" -I -B tools/apply_owned_rust_buffer_shape_source_repair_v1.py \
+  --self-test \
+  --source-sha256 9c2a3642f2cda9fc85fd391baf4e0d57b25117f444d3a831592e8b62de3a627b \
+  --protocol-sha256 67ba62acc8e51a6868404ea3faeb1aaaacb1d053cc1c915bef0c397edf5ac408 \
+  --contract-sha256 ffa76d1724396fae5816cf96e0ae2104bcce8fc5eb246b8306d4441db0fe4a1b
+
+# Verify the exact source, previously tested bridge, and frozen current context.
+"$PY" -I -B tools/apply_owned_rust_buffer_shape_source_repair_v1.py \
+  --verify-frozen-context \
+  --source-sha256 9c2a3642f2cda9fc85fd391baf4e0d57b25117f444d3a831592e8b62de3a627b \
+  --protocol-sha256 67ba62acc8e51a6868404ea3faeb1aaaacb1d053cc1c915bef0c397edf5ac408 \
+  --contract-sha256 ffa76d1724396fae5816cf96e0ae2104bcce8fc5eb246b8306d4441db0fe4a1b
+
+# Verify the current compact graph's 2,347 source-only safety controls.
+"$PY" -I -B tools/render_candidate_current_overview_v49.py --self-test
+
+# Verify the current graph without building, matching, or opening an archive.
+"$PY" -I -B tools/render_candidate_current_overview_v49.py \
+  --verify-frozen-context \
+  --source-sha256 03ae29acb80817de9cfbd512e919702cea1a761f2bfa69c638b4644f179304b0 \
+  --source-bytes 74565 \
+  --previous-source-sha256 29604bd560dcba08f95ca8bcc792bf277c43a4680d94a82990fd341a1b0f6394 \
+  --previous-inputs-sha256 d1bc5998012a8f174788a4c28fad7fa1116078a3cbb859b0f952eb65777e33da \
+  --previous-summary-sha256 bfd591aebf6aea805c8f6a4b5665d87ceca6b2574513bb5cdfb8331b36176305 \
+  --previous-svg-sha256 cf8955199d714854faeea4d5c0cabf4431010949a7b7d5ed81d5b65f14b74903 \
+  --variant-source-sha256 29421096dc81759ca11c53080b7f838cc29ad16baa7e379c18c8417d35ab37b3 \
+  --variant-source-bytes 180436 \
+  --feature-verifier-sha256 9c2a3642f2cda9fc85fd391baf4e0d57b25117f444d3a831592e8b62de3a627b \
+  --feature-verifier-bytes 64345 \
+  --feature-protocol-sha256 67ba62acc8e51a6868404ea3faeb1aaaacb1d053cc1c915bef0c397edf5ac408 \
+  --feature-protocol-bytes 5033 \
+  --feature-contract-sha256 ffa76d1724396fae5816cf96e0ae2104bcce8fc5eb246b8306d4441db0fe4a1b \
+  --feature-contract-bytes 11454 \
+  --inputs-sha256 0d78d45480bfd701024b733d33c43651a6ae29c760ac8f88c9404ee061d5bc76 \
+  --summary-sha256 1b5dad9574883e45b6bad5b2c9ec69f59a77e2ab079d7ed23a226280a4a4f4a4 \
+  --svg-sha256 761d1303e617827b79f0dd3ee24ab062d1282ea5cf568c4ca89c65a8ae19b75c
+
+# Verify the historical version-48 Rust-result graph's safety controls.
 "$PY" -I -B tools/render_candidate_current_overview_v48.py --self-test
 
-# Verify the current graph without rerunning Rust or opening its failure archive.
+# Verify the historical version-48 graph without rerunning Rust or opening its archive.
 "$PY" -I -B tools/render_candidate_current_overview_v48.py \
   --verify-frozen-context \
   --source-sha256 29604bd560dcba08f95ca8bcc792bf277c43a4680d94a82990fd341a1b0f6394 \
