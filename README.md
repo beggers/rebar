@@ -20,15 +20,14 @@ There is no compatible replacement, measured speedup, or winner.
 
 Separate original-suite test runners are frozen for **C, Rust, and Zig**. The
 first Rust attempt failed before matching; its failure remains recorded.
-The repaired Rust runner now verifies all **13** real worker routes,
-lossless result writing, and safe recovery, but its new compatibility
-campaign has **NOT RUN**. C also has **NOT RUN**: its rebuilt native
-engine must first be safely activated. Zig now has its own pinned
-Zig matcher, C bridge, worker, and controller; its new complete
-compatibility campaign has **NOT RUN**. C++, Go, and Fortran remain
-independently written designs, not passing replacements.
+The repaired Rust engine has now genuinely completed all **13** test
+groups, exposing **928** compatibility differences with no test-runner
+failures; all four original engine files were safely restored. Rust
+does **not** pass. The corrected C and Zig runs have **NOT RUN**.
+C++, Go, and Fortran remain independently written designs, not passing
+replacements.
 
-![Python's reference passes; three from-scratch candidate runners are frozen; Python's two-billion-character tests are separately tracked; no replacement qualifies and speed remains unmeasured](docs/evidence/candidate-current-overview-v47.svg)
+![Python's reference passes; the independently written Rust engine fails 928 compatibility checks; C and Zig are not yet retested; no replacement qualifies and speed remains unmeasured](docs/evidence/candidate-current-overview-v48.svg)
 
 Python's own test suite also requires searching and replacing text with
 **2,147,483,648** characters. The original Python results are recorded,
@@ -49,8 +48,8 @@ import a candidate or add a case to the original **31,237** checks.
 The six engines use first-party matching code; they are not wrappers
 around an outside regular-expression package. A complete runtime proof
 against delegation to Python or another engine is **NOT ESTABLISHED**.
-The Rust, C, and Zig numbers below are earlier observed builds, not
-passing results for the repaired reference.
+Rust's result below is the actual corrected-reference test. C and Zig
+results describe earlier observed builds, not new passing replacements.
 
 Overall speed relative to Python: **NOT MEASURED**. Fair speed and memory
 measurements start only when three independent engines pass every check.
@@ -59,7 +58,7 @@ measurements start only when three independent engines pass every check.
 | --- | --- | --- | --- |
 | Python `re` | Corrected reference agrees in two independent processes | Original suite unchanged; corrected reference: 6,912 / 6,912 | Reference; not timed |
 | Public `rebar` import | Incorrectly selects an unqualified Zig prototype | FAIL; `__version__` missing | NOT MEASURED |
-| Rust | Repaired runner frozen; corrected matching has NOT RUN | Previous build: 8,965 verified; 1,036 differences | NOT MEASURED |
+| Rust | Corrected engine tested; all 13 groups completed safely | 8,965 verified; 928 differences; zero worker failures | NOT MEASURED |
 | C | Corrected C-only test runner frozen; new test has NOT RUN | Previous build: 7,325 verified; 1,230 differences; all 13 groups completed | NOT MEASURED |
 | Zig | Dedicated Zig-only runner frozen; new test has NOT RUN | Previous build: 3,711 verified; 1,764 differences; all 13 groups completed | NOT MEASURED |
 | C++ | Independently written and built | 128 verified; 2,308 differences; five worker failures | NOT MEASURED |
@@ -120,6 +119,8 @@ at least **60%** of cases, and explain every slowdown greater than
 - [Corrected six-engine test producer](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md).
 - [Corrected C-only original-suite runner](oracle/phase2/P0-CANDIDATE-PROTOCOL-V10.md).
 - [Repaired, recovery-safe Rust-only original-suite runner](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V7.md).
+- [Actual complete corrected Rust compatibility failures](oracle/phase2/evidence/repaired-rust-original-campaign-v7-rust-phase2-v13-rust-pattern-repr-original-p0-failures.json.gz).
+- [Independent durable Rust result and original-file restoration](oracle/phase2/evidence/repaired-rust-original-campaign-v7-rust-phase2-v13-rust-pattern-repr-original-p0-failures-publication-receipt.json).
 - [Independent Zig-only original-suite runner and native bridge](oracle/phase2/ZIG-ORIGINAL-P0-CANDIDATE-PROTOCOL-V1.md).
 - [Preserved first Rust-only runner](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V6.md).
 - [Actual first Rust controller failure](oracle/phase2/evidence/repaired-rust-original-campaign-v6-rust-phase2-v13-rust-pattern-repr-original-p0-entry-failure.json).

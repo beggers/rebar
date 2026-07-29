@@ -7,6 +7,74 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the corrected from-scratch Rust engine against every original group
+
+After separately committing and pushing the genuine large-input oracle,
+run the frozen [first-party Rust original-suite controller](../tools/run_owned_repaired_rust_original_campaign_v7.py)
+exactly once. Its **13** distinct Rust worker processes all complete the
+unchanged **31,237** original checks. The result is a genuine candidate
+**FAIL**: **928** compatibility differences, **8,965** explicitly
+verified passing checks, and **zero** test-runner failures. Do not
+subtract the differences from 31,237 and call every remaining case a
+verified pass.
+
+The authenticated complete failure archive accounts for every observed
+difference: **32** match-serialization cases, **224** replacement and
+buffer-order cases, and **672** match-expansion and replacement-shape
+cases. All other **10** original groups complete without a mismatch.
+These are actual diagnostic results, not repaired or waived cases.
+
+The complete [losslessly preserved Rust failure archive](../oracle/phase2/evidence/repaired-rust-original-campaign-v7-rust-phase2-v13-rust-pattern-repr-original-p0-failures.json.gz)
+has SHA-256
+`4112b4e6372f4f94d59eece2e514bda21001f0828d686162e18b631911fc2c99`
+and contains **3,668,825** compressed bytes. Its separately durable
+[failure-publication and original-file-restoration receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v7-rust-phase2-v13-rust-pattern-repr-original-p0-failures-publication-receipt.json)
+has SHA-256
+`b87ff02f10103c1c8e7da7ed7ef77cd58936af2fe9e9b3c47448e8a449b01943`
+and contains **8,450** bytes. Publication **PASS** means the actual
+candidate **FAIL** was preserved; it is not a passing Rust result.
+
+The controller wrote and announced recovery journal SHA-256
+`034c10076147677c775674643f06c3c1362f0ace47c45bc40fd4fe11df4ec843`
+before changing a file. All **four** original Rust source, adapter,
+engine, and bridge device identities and inodes were restored and
+independently checked before publication. Both result owners exist as
+distinct private files; only now do authenticated evidence and history
+lower bounds increase from **166 / 171** to **168 / 173**.
+
+The already-frozen Rust runner authenticates version **43** as its
+historical source-freeze snapshot. The actual current predecessor is
+the independently committed and pushed version-**47** graph. Version 43
+is not recast as current. The complete corrected Python reference,
+all **96** retained cache cases, historical Rust, C, and Zig failures,
+and all **13** named private waivers remain unchanged.
+
+The two genuine two-billion-character Rust checks have **NOT RUN**;
+the separate **50** signature cases and **32** actual-public-import
+observations do not become passing candidate tests. Runtime
+non-delegation remains **NOT ESTABLISHED**. No speed or memory test ran,
+no external regular-expression package was introduced, no holdout was
+opened, and no winner was selected.
+
+The [updated Rust and overall-results chart](evidence/candidate-current-overview-v48.svg)
+keeps the complete recorded failure visible alongside every earlier
+candidate and the genuine large-input limitations.
+
+The [version-48 reproducible graph generator](../tools/render_candidate_current_overview_v48.py)
+has SHA-256
+`29604bd560dcba08f95ca8bcc792bf277c43a4680d94a82990fd341a1b0f6394`.
+Its [complete graph inputs](evidence/candidate-current-overview-v48.inputs.json)
+have SHA-256
+`d1bc5998012a8f174788a4c28fad7fa1116078a3cbb859b0f952eb65777e33da`.
+Its [machine-readable results](evidence/candidate-current-overview-v48.json)
+have SHA-256
+`bfd591aebf6aea805c8f6a4b5665d87ceca6b2574513bb5cdfb8331b36176305`.
+The generated chart has SHA-256
+`cf8955199d714854faeea4d5c0cabf4431010949a7b7d5ed81d5b65f14b74903`.
+All ordinary and empty-environment source and frozen-context checks
+pass, including **2,260** safety controls. Graph verification neither
+opens the compressed failure archive nor runs a candidate.
+
 ## Freeze Python's real two-billion-character compatibility checks
 
 Python's original regular-expression tests require two genuine inputs of
