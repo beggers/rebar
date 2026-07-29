@@ -7,6 +7,56 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Record the actual corrected Rust run without guessing its failure
+
+The corrected version-13 first-party Rust campaign actually started
+**13** distinct original-suite workers. All **13** failed during
+startup and **zero** completed a test group. The candidate outcome is
+**FAIL** with **13** infrastructure failures; semantic mismatches and
+new correctness remain **NOT MEASURED**. This is a second genuine
+failed attempt, separate from the earlier version-12 **13**-worker
+failure. Neither attempt can be presented as a completed matching test.
+
+The [independently durable corrected-run receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v13-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v13-failures-publication-receipt.json)
+is **6,744** bytes and has SHA-256
+`6f990183501953c42af374a896fad6b64f909514c731cb9de4fb37faf4d3bf86`.
+It attests that the [preserved compressed corrected-run report](../oracle/phase2/evidence/repaired-rust-original-campaign-v13-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v13-failures.json.gz)
+is **3,141** bytes and has SHA-256
+`e54521842f0faa955052ab0336022a39b9d9f2f3f0d763f0328758ea6be743d3`.
+The receipt confirms **13** distinct worker process identities,
+**zero** duplicates, complete restoration of all **four** original
+source and native targets, and no reopened build report or speed test.
+
+The small publication receipt does not contain individual worker error
+output and does not prove that an isolation safeguard was installed in
+each worker. Receipt **PASS** means durable evidence publication only;
+candidate correctness is **FAIL** and runtime independence remains
+**NOT ESTABLISHED**.
+
+A separately authorized one-time inspection of the exact corrected
+failure archive verified its fingerprint and inode before and after
+reading. All **13** preserved suite failures contain the same
+parent-side observation:
+`CampaignError: require complete frozen JSON bytes: complete actual V13 original worker`.
+All child return codes, standard output, standard error, and traceback
+fields are absent. The historical worker controller discards those
+fields before creating its failure record. The evidence establishes a
+parent JSON-parsing failure only; the child startup cause, guard
+installation, and a `ctypes` explanation remain **NOT ESTABLISHED**.
+The next runner must preserve the child's real diagnostic output.
+
+The [current corrected-run results chart](evidence/candidate-current-overview-v80.svg),
+[complete corrected-run graph inputs](evidence/candidate-current-overview-v80.inputs.json),
+[full machine-readable actual results](evidence/candidate-current-overview-v80.json),
+and [reproducible actual-result renderer](../tools/render_candidate_current_overview_v80.py)
+preserve both real infrastructure failures and the complete
+**31,237** original tests. The prior completed Rust result remains
+**1,440** differences and **14,853** verified passes; C retains
+**1,230 / 7,325**, and Zig retains **1,764 / 3,711**. The **8,244**
+supplemental cases are separate. No candidate is qualified, no speed
+or memory result is measured, and the **4,194,304**-case final holdout
+is **NOT OPENED**.
+
 ## Freeze the precise Rust startup correction without rerunning it
 
 The [corrected first-party Rust campaign](../tools/run_owned_repaired_rust_original_campaign_v13.py),
@@ -122,6 +172,18 @@ and **3,711** verified passes. No candidate qualifies. The separate
 **8,244** supplemental checks and the proposed **4,194,304**-case
 holdout remain independent. Speed, memory, and statistical confidence
 are **NOT MEASURED**; the final holdout is **NOT OPENED**.
+
+Exactly **two** independently durable failure-evidence owners raise
+the evidence and history lower bounds from **260 / 265** to
+**262 / 267**. Both graph self-tests reject **7,162** hostile
+controls. The exact actual-result chart renderer, complete inputs,
+full results, and visible chart have respective SHA-256 values
+`8454705356bffd9e3c576b24df9ab8e572aff96c401ed60bd74657c8b5a1dd5a`,
+`5f881e270b5080f1579e79ac16e79a5a53a905d1e708b7b47e2ea1c68a02ea19`,
+`21d0e0fc7c9603d7a2e83a66deb549947481334a8b51d65fff2d82038628f19d`,
+and `28fbe95147ca9dbf9d4a5874f6efa0d8d0f5ffc439c61d1f7bb361224a907547`.
+Their exact sizes are **57,094**, **1,229,041**, **3,852,490**, and
+**5,298** bytes.
 
 ## Freeze the actual-build, guarded full-suite Rust retest
 
