@@ -1,0 +1,140 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="2250" viewBox="0 0 1440 2250" role="img" aria-labelledby="v52-title v52-description">
+<title id="v52-title">Building a faster Python re: no compatible replacement yet; Rust native build passes; full compatibility is not yet proved</title>
+<desc id="v52-description">The pinned Python 3.14.6 baseline was independently verified. The latest actual Rust replacement completed 13 workers, failed 928 compatibility checks and explicitly verified 8,965 passing observations; it is not compatible. The combined first-party buffer and match-serialization source belongs to the same Rust family. Its offline native build passed and recorded 28 successful compiler operations. The rebuilt candidate has not been matching-tested. There are six replacement families, one actually tested family and zero currently runnable or qualified replacements. Speed, memory and repair effectiveness are not measured. The 31,237 original checks, 50 signature checks, 32 public observations and 32 large-input observations are separate. The 4,194,304-case final comparison has not been generated or opened. Historical Rust, C and Zig failures are preserved. Two and only two genuine durable build-result owners raise actual current lower bounds from 179 and 184 to 181 and 186; the small Rust failure receipt proves no failure-category breakdown.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,sans-serif}.title{font-size:32px;font-weight:780;fill:#162b49}.lead{font-size:16px;fill:#445773}.heading{font-size:20px;font-weight:760;fill:#162b49}.label{font-size:13px;font-weight:720;fill:#53667d}.value{font-size:23px;font-weight:800;fill:#162b49}.body{font-size:15px;fill:#41536a}.small{font-size:12px;fill:#53667d}.name{font-size:16px;font-weight:750;fill:#162b49}.green{fill:#087443}.orange{fill:#a84725}.amber{fill:#875a08}.slate{fill:#53667d}.foot{font-size:10px;fill:#445773}.strong{font-weight:760}</style>
+<rect width="1440" height="2250" rx="22" fill="#f4f7fb"/>
+<text x="44" y="55" class="title">Building a faster Python re</text>
+<text x="46" y="86" class="lead">The goal: match Python exactly, then measure whether any from-scratch replacement is actually faster.</text>
+<rect x="44" y="108" width="260" height="112" rx="14" fill="#fff" stroke="#d8e2ed"/>
+<text x="60" y="136" class="label">Python</text>
+<text x="60" y="170" class="value green">VERIFIED</text>
+<text x="60" y="198" class="small">Pinned stable reference</text>
+<rect x="317" y="108" width="260" height="112" rx="14" fill="#fff" stroke="#d8e2ed"/>
+<text x="333" y="136" class="label">Rust</text>
+<text x="333" y="170" class="value orange">928 DIFFERENCES</text>
+<text x="333" y="198" class="small">Actually tested; failed</text>
+<rect x="590" y="108" width="260" height="112" rx="14" fill="#fff" stroke="#d8e2ed"/>
+<text x="606" y="136" class="label">Compatible replacements</text>
+<text x="606" y="170" class="value orange">0</text>
+<text x="606" y="198" class="small">None is ready to use</text>
+<rect x="863" y="108" width="260" height="112" rx="14" fill="#fff" stroke="#d8e2ed"/>
+<text x="879" y="136" class="label">Speed versus Python</text>
+<text x="879" y="170" class="value slate">NOT MEASURED</text>
+<text x="879" y="198" class="small">No valid benchmark yet</text>
+<rect x="1136" y="108" width="260" height="112" rx="14" fill="#fff" stroke="#d8e2ed"/>
+<text x="1152" y="136" class="label">Final comparison</text>
+<text x="1152" y="170" class="value slate">4.2m UNOPENED</text>
+<text x="1152" y="198" class="small">4,194,304 hidden checks</text>
+<rect x="44" y="237" width="1352" height="113" rx="15" fill="#fff1ed" stroke="#e6b5a9"/>
+<text x="65" y="269" class="heading orange">Rust was tested and is not compatible</text>
+<text x="67" y="298" class="body">13 real workers completed the frozen original comparison. Rust produced 928 differences and 8,965 explicitly verified passes.</text>
+<text x="67" y="326" class="body">A successful evidence receipt means the failure was saved; it does not mean the replacement passed.</text>
+<rect x="44" y="364" width="1352" height="108" rx="15" fill="#edf4ff" stroke="#bfd0ee"/>
+<text x="65" y="398" class="heading">Rust native build: PASS — candidate matching NOT RUN</text>
+<text x="67" y="427" class="body">The combined first-party Rust bridge was successfully built offline. Matching is NOT RUN; it is the same Rust family, not a seventh replacement.</text>
+<text x="67" y="452" class="small">Repair effectiveness, compatibility, speed and memory: NOT MEASURED.</text>
+<rect x="44" y="488" width="1352" height="437" rx="16" fill="#fff" stroke="#d8e2ed"/>
+<text x="64" y="523" class="heading">Overall: how each replacement compares with Python</text>
+<text x="67" y="548" class="small">One row per existing family. A source idea, historical run or saved receipt is not a passing result.</text>
+<text x="70" y="576" class="label">FAMILY</text>
+<text x="218" y="576" class="label">CURRENT RESULT</text>
+<text x="525" y="576" class="label">WHAT WE ACTUALLY KNOW</text>
+<text x="1220" y="576" class="label">SPEED</text>
+<line x1="65" y1="588" x2="1374" y2="588" stroke="#dae4ee"/>
+<text x="70" y="617" class="name">Python</text>
+<text x="218" y="617" class="body green strong">Verified baseline</text>
+<text x="525" y="617" class="body">Two independent reference processes agree</text>
+<text x="1220" y="617" class="small green">BASELINE</text>
+<rect x="58" y="637" width="1318" height="37" rx="7" fill="#f7f9fc"/>
+<text x="70" y="659" class="name">Rust</text>
+<text x="218" y="659" class="body orange strong">928 compatibility differences</text>
+<text x="525" y="659" class="body">Old matching failed; rebuilt candidate not matching-tested</text>
+<text x="1220" y="659" class="small orange">NOT MEASURED</text>
+<text x="70" y="701" class="name">C</text>
+<text x="218" y="701" class="body amber strong">Not retested</text>
+<text x="525" y="701" class="body">Earlier attempts: 1,262 and 1,230 differences</text>
+<text x="1220" y="701" class="small amber">NOT MEASURED</text>
+<rect x="58" y="721" width="1318" height="37" rx="7" fill="#f7f9fc"/>
+<text x="70" y="743" class="name">Zig</text>
+<text x="218" y="743" class="body amber strong">Not retested</text>
+<text x="525" y="743" class="body">Earlier attempts: 2,172 and 1,764 differences</text>
+<text x="1220" y="743" class="small amber">NOT MEASURED</text>
+<text x="70" y="785" class="name">C++</text>
+<text x="218" y="785" class="body slate strong">Not tested</text>
+<text x="525" y="785" class="body">First-party design; no frozen runnable test runner</text>
+<text x="1220" y="785" class="small slate">NOT MEASURED</text>
+<rect x="58" y="805" width="1318" height="37" rx="7" fill="#f7f9fc"/>
+<text x="70" y="827" class="name">Go</text>
+<text x="218" y="827" class="body slate strong">Not tested</text>
+<text x="525" y="827" class="body">First-party design; no frozen runnable test runner</text>
+<text x="1220" y="827" class="small slate">NOT MEASURED</text>
+<text x="70" y="869" class="name">Fortran</text>
+<text x="218" y="869" class="body slate strong">Not tested</text>
+<text x="525" y="869" class="body">First-party design; no frozen runnable test runner</text>
+<text x="1220" y="869" class="small slate">NOT MEASURED</text>
+<text x="67" y="909" class="small">One Rust family has actually been tested. Currently active: 0. Compatible: 0. No replacement has a measured speed.</text>
+<rect x="44" y="942" width="1352" height="155" rx="16" fill="#fff" stroke="#d8e2ed"/>
+<text x="64" y="977" class="heading">Keep the different checks separate</text>
+<text x="67" y="1004" class="small">These are different denominators; none is quietly added to another.</text>
+<text x="66" y="1043" class="value">31,237</text>
+<text x="66" y="1070" class="small">Original compatibility checks</text>
+<text x="404" y="1043" class="value">50</text>
+<text x="404" y="1070" class="small">Additional signature checks</text>
+<text x="742" y="1043" class="value">32</text>
+<text x="742" y="1070" class="small">Public-interface observations</text>
+<text x="1080" y="1043" class="value">32</text>
+<text x="1080" y="1070" class="small">Large-input observations</text>
+<rect x="44" y="1114" width="1352" height="222" rx="16" fill="#fff" stroke="#d8e2ed"/>
+<text x="64" y="1148" class="heading">Additional checks at a glance</text>
+<text x="67" y="1174" class="small">Observed source and interface conditions only; these are not replacement test passes.</text>
+<text x="68" y="1203" class="name">Public interface: 32</text>
+<rect x="306" y="1188" width="476" height="19" fill="#178552"/>
+<rect x="782" y="1188" width="196" height="19" fill="#ba593c"/>
+<rect x="978" y="1188" width="168" height="19" fill="#8090a4"/>
+<rect x="1146" y="1188" width="28" height="19" fill="#bd9137"/>
+<rect x="1174" y="1188" width="28" height="19" fill="#7668a5"/>
+<text x="68" y="1230" class="small">17 pass · 7 fail · 6 not measured · 1 not established · 1 not opened</text>
+<text x="68" y="1264" class="name">Large inputs: 32</text>
+<rect x="306" y="1249" width="616" height="19" fill="#178552"/>
+<rect x="922" y="1249" width="28" height="19" fill="#ba593c"/>
+<rect x="950" y="1249" width="84" height="19" fill="#6987ad"/>
+<rect x="1034" y="1249" width="56" height="19" fill="#bd9137"/>
+<rect x="1090" y="1249" width="84" height="19" fill="#8090a4"/>
+<rect x="1174" y="1249" width="28" height="19" fill="#7668a5"/>
+<text x="68" y="1291" class="small">22 pass · 1 fail · 3 not run · 2 not established · 3 not measured · 1 not opened</text>
+<text x="68" y="1316" class="small">The two genuine 2,147,483,648-byte Python tests have not been run by any replacement.</text>
+<rect x="44" y="1352" width="1352" height="175" rx="16" fill="#fff" stroke="#d8e2ed"/>
+<text x="64" y="1387" class="heading">Previous failures remain visible</text>
+<text x="67" y="1420" class="body"><tspan class="strong">Rust:</tspan> current 928; historical 1,036 and 1,087.</text>
+<text x="67" y="1450" class="body"><tspan class="strong">C:</tspan> historical 1,230 and 1,262.</text>
+<text x="67" y="1480" class="body"><tspan class="strong">Zig:</tspan> historical 1,764 and 2,172.</text>
+<text x="67" y="1507" class="small">No historical result claims that the new source-only Rust idea has been tested.</text>
+<rect x="44" y="1544" width="1352" height="163" rx="16" fill="#fff" stroke="#d8e2ed"/>
+<text x="64" y="1578" class="heading">What is still unproven</text>
+<text x="67" y="1608" class="body">Runtime independence: NOT ESTABLISHED. Speed, memory and uncertainty: NOT MEASURED.</text>
+<text x="67" y="1637" class="body">Final comparison: all 4,194,304 hidden checks remain NOT GENERATED and NOT OPENED.</text>
+<text x="67" y="1666" class="small">No candidate, compiler, native library, benchmark, clock or compressed evidence is run by this graph.</text>
+<rect x="44" y="1723" width="1352" height="118" rx="16" fill="#edf4ff" stroke="#bfd0ee"/>
+<text x="64" y="1756" class="heading">Actual offline native build passed; matching still not run</text>
+<text x="67" y="1787" class="body">Exactly two new durable build-result owners raise actual current lower bounds from 179 / 184 to 181 / 186.</text>
+<text x="67" y="1814" class="small">The existing failure receipt does not prove a breakdown of individual failure categories.</text>
+<rect x="44" y="1858" width="1352" height="361" rx="16" fill="#fff" stroke="#d8e2ed"/>
+<text x="64" y="1888" class="heading">Exact reproducible build evidence</text>
+<text x="65" y="1914" class="foot">Graph inputs SHA-256: 7d8731e70fcd510dc2c2e3a4fb3ebdf5d05941eb8bcb23ae9bfc37203186671a</text>
+<text x="65" y="1932" class="foot">Graph renderer SHA-256: 08f510f86c70505e37db560f57fbc550d1f72fbd7408eab809e8bcdb5701c426</text>
+<text x="65" y="1950" class="foot">Historical V51 graph inputs SHA-256: b86813b7078479a121584d1e6bf98985d94ee8f22f524e53b9cce2da2723f767</text>
+<text x="65" y="1968" class="foot">Historical V51 graph renderer SHA-256: 2fc7a901aa8e94fae62793851643a7c776d0d2f16a01957cbeb14f1792f6ce4c</text>
+<text x="65" y="1986" class="foot">Historical V51 graph summary SHA-256: c76d08488bbd3dae80db3e0ee46fdabeabc218b0f03e6e02bce74a3b190799ef</text>
+<text x="65" y="2004" class="foot">Historical V51 graph image SHA-256: 76be0cfd9f3624a01be21738fb25075290a59319138af33af5a5029dc114efa5</text>
+<text x="65" y="2022" class="foot">Preserved first-party buffer source SHA-256: 29421096dc81759ca11c53080b7f838cc29ad16baa7e379c18c8417d35ab37b3</text>
+<text x="65" y="2040" class="foot">Preserved combined first-party source SHA-256: 00271ad5fff71e2f2e30cda6b446a61d0c300cb91eec2091b8ada17662d9a335</text>
+<text x="65" y="2058" class="foot">Frozen V16 native-build source SHA-256: bcea8f23fc5e52af1e8062145d75ef1a6ed835cea3ac113a155cc8ebf3116a8a</text>
+<text x="65" y="2076" class="foot">Frozen V16 native-build protocol SHA-256: 315f0a24e64b50804565f86c6ca4187024c4a1db5a23ab2f57c8805ed37f51f5</text>
+<text x="65" y="2094" class="foot">Frozen V16 native-build contract SHA-256: 4f82f88da3329c6bacac2092af19d915d379f90101dcd9840366274355cc92b7</text>
+<text x="65" y="2112" class="foot">Actual durable build publication receipt SHA-256: c893812a1796cce056de5e2feff2289df34ff816158685730205996549e338cb</text>
+<text x="65" y="2130" class="foot">Actual build archive SHA-256 (receipt-attested; not opened): c24c0e1544003b231bac3e45601faabfd1c1e5c181d89fce7d660a2df4a29270</text>
+<text x="65" y="2167" class="small">28 compiler operations are recorded. Phase identity and native binary hashes are not contained in the small receipt.</text>
+<text x="65" y="2187" class="small">Historical receipt lower bounds 178 / 183 are not the actual current 181 / 186.</text>
+<text x="65" y="2207" class="small">Candidate matching: NOT RUN. Holdout: unopened. Winning faster replacement: none.</text>
+<!-- Build PASS only. No archive content, candidate matching, native loading, timing or hidden holdout is accessed by this graph. -->
+</svg>

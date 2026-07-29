@@ -7,6 +7,67 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Independently build the combined first-party Rust engine
+
+The frozen Rust build has now actually run **once** and succeeded. It
+compiled our own Rust matching engine and our own Python bridge offline,
+using the first-party buffer and match-serialization repairs. The
+authenticated build recorded **28** completed compiler and binary-check
+operations. The frozen build verifies both independently constructed
+build phases before reporting success. It is not an external
+regular-expression wrapper, a matching test, or a speed result.
+
+The [compressed real build report](../oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle.json.gz)
+has SHA-256
+`c24c0e1544003b231bac3e45601faabfd1c1e5c181d89fce7d660a2df4a29270`
+and **109,671** bytes. The [independently durable build receipt](../oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle-publication-receipt.json)
+has SHA-256
+`c893812a1796cce056de5e2feff2289df34ff816158685730205996549e338cb`
+and **3,459** bytes. The receipt separately authenticates successful
+building, both first-party overlays, all **28** compiler operations,
+the full report's hash and durable publication, and **zero** candidate
+workers, matching trials, benchmark samples, or opened hidden cases.
+Its `PASS` means durable publication only; it does not mean a candidate
+passed the compatibility suite.
+
+The receipt preserves its historical version-50 accounting:
+**176 / 181** evidence and reference lower bounds before publication
+and **178 / 183** after. Those are expressly not the current project
+totals. The independently authenticated actual version-51 state was
+**179 / 184**; the two genuinely new report owners produce actual
+version-52 lower bounds of **181 / 186**. The original four Rust
+source and native-file identities remain unchanged.
+
+The newly built engine's original-suite correctness is **NOT RUN**.
+The latest actual matching result remains **FAIL**, with **928**
+differences, **8,965** verified passing checks, **13** completed
+groups, and no infrastructure failures. Qualified replacements:
+**0**. Runtime non-delegation: **NOT ESTABLISHED**. Speed, memory,
+confidence intervals, and undefined behavior: **NOT MEASURED**. The
+**4,194,304**-case final comparison remains **NOT FROZEN**, **NOT
+GENERATED**, and **NOT OPENED**.
+
+The [clearer actual-build and overall-results graph](evidence/candidate-current-overview-v52.svg)
+keeps the successful first-party build distinct from the unrun
+correctness test and the genuine earlier Rust failures.
+
+The [independent version-52 graph generator](../tools/render_candidate_current_overview_v52.py)
+has SHA-256
+`08f510f86c70505e37db560f57fbc550d1f72fbd7408eab809e8bcdb5701c426`
+and **64,494** bytes. Its [complete graph inputs](evidence/candidate-current-overview-v52.inputs.json)
+have SHA-256
+`7d8731e70fcd510dc2c2e3a4fb3ebdf5d05941eb8bcb23ae9bfc37203186671a`
+and **592,900** bytes. Its [machine-readable complete results](evidence/candidate-current-overview-v52.json)
+have SHA-256
+`8d4b54dba7989b2627ebee17cd1bd07bf39ec855824ce6339cfa7e45821a2488`
+and **1,630,637** bytes. The accessible [actual-build graph](evidence/candidate-current-overview-v52.svg)
+has SHA-256
+`fd6d95314b593878764a653eb07c81678cb57ba137fd5539ba892e44f3621397`
+and **13,968** bytes. The graph authenticates the small build receipt
+and verifies the build archive's file identity without opening,
+hashing, or decompressing the archive. Its ordinary and
+empty-environment tests retain all **2,648** hostile safety controls.
+
 ## Freeze the independently reproducible offline Rust build
 
 The first complete Rust test remains **FAIL**: **928** actual
