@@ -8,6 +8,32 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Identify the actual guarded Zig controller failure
+
+The [version-8 Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V8.md)
+actually resolved the prior package-import failure: all **13**
+isolated workers imported the authenticated first-party Zig
+candidate after installing the strict runtime guard.
+
+The immutable original-suite controller then incorrectly identified
+the first worker as a Rust candidate. The other **12** groups invoked
+a `ctypes.dlopen` native-loader path, which the no-delegation guard
+correctly rejected. Every genuine stage, exception, worker identity,
+and full bounded traceback is in the public failure receipt. This
+is a controller failure, not permission to weaken the guard.
+
+The [complete version-8 Zig failure receipt](../oracle/phase2/evidence/repaired-zig-original-campaign-v8-phase2-v13-zig-guard-clean-v1-original-p0-v8-failures-publication-receipt.json)
+has SHA-256
+`2a5d0a13f5141edf56cdd9af5537ba615326b03d8187fda863ae2f5740499652`.
+The unopened preserved report has producer-recorded SHA-256
+`f7d716b94695168ed589f541c4d06c81a593bed6743d0965534a67ecff4be021`.
+
+All **13** original groups were attempted; **0** completed, **0**
+timed out, and **0** cases were verified. All original Zig files
+were restored. The full mismatch count and speed are **NOT
+MEASURED**. The **8,244** additional cases and **14,155,776**
+proposed final cases remain unrun.
+
 ## Freeze the authenticated Zig package-import correction
 
 The [version-8 first-party Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V8.md)
