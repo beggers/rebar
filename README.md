@@ -79,7 +79,7 @@ slowdown over **20%**.
 - [Complete Python correctness reference](oracle/phase1/P0-COMPLETENESS-V4.md).
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
 - [Six independently written engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
-- [Guarded first-party C correctness procedure](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V5.md); authenticated native-root evidence still required.
+- [Guarded first-party C correctness](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V5.md) and [reproducible native source-build procedure](oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md); authenticated native-root evidence still required.
 - [Guard-clean, from-scratch Zig candidate and correctness procedure](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V5.md); full-suite rerun not yet performed.
 - [Reproducible Rust compatibility-failure diagnostics](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V16.md); new full-suite run not yet performed.
 - [From-scratch Rust literal-search](oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md) and [captured-result experiments](oracle/phase2/RUST-CAPTURED-FINDALL-ONE-PASS-V1.md), with a [reproduced first-party source build](oracle/phase2/RUST-LITERAL-FINDALL-SOURCE-BUILD-V20.md); compatibility and speed not yet established.

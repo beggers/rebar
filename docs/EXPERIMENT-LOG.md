@@ -8,6 +8,31 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a reproducible, first-party C source build
+
+The [version-18 C build procedure](../oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md),
+[canonical build contract](../oracle/phase2/c-subject-buffer-source-build-v18.json),
+and [first-party source-build controller](../tools/reproduce_owned_c_subject_buffer_source_build_v18.py)
+bind the exact, independently written C matching engine and corrected
+buffer-ownership implementation. The controller verifies the C source,
+Python adapter, and **five** native compiler-toolchain identities. A
+future offline build must record **14** genuine compiler and native
+inspection steps and publish independent, authenticated native-build
+and root-provenance receipts.
+
+Both source-only verification modes pass in ordinary and empty
+environments with **144** hostile checks. The controller preserves
+all **31,237** original Python checks, the separate **8,244** extra
+checks, the historical C failures, and the current **14,155,776**
+unopened proposal. It does not run a compiler, activate an engine,
+open a native root, inspect a compressed archive, use an external
+regex package, or access the final holdout.
+
+The new C native build and root provenance are **NOT RUN**. Full
+compatibility, speed, and memory remain **NOT MEASURED**, and the
+final proposal remains **NOT FROZEN**, **NOT GENERATED**, and
+**NOT OPENED**. Pre-existing version-17 user files remain untouched.
+
 ## Freeze a guard-clean, independently written Zig candidate
 
 The [complete first-party Zig adapter](../candidates/zig/variants/scanner_phrase_guard_clean_v1/zig_candidate.py)
