@@ -8,6 +8,40 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete first-party Zig compatibility test
+
+The [version-9 Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V9.md)
+actually attempted all **13** original compatibility groups in
+distinct workers. The original upstream, Python buffer-protocol,
+and threaded-pattern groups matched Python completely, verifying
+**151**, **264**, and **512** cases for a total of **927**.
+
+The other **10** groups reported actual infrastructure failures.
+Three original public-contract controllers rejected an already
+selected candidate. Five workers could not return a complete result
+because their JSON exceeded or failed the frozen result reader. One
+private-interpreter group reported an actual child-lifecycle failure;
+the remaining public-surface worker rejected a real normalized
+Python value. These are worker and reporting failures, not measured
+semantic differences.
+
+All **13** workers were real and distinct. Only **7** rows contain
+positive proof that the guard was installed before the candidate
+was imported; the other **6** do not establish that fact. No worker
+timed out, and all **3** original Zig files were restored. Since
+**10** groups did not complete, the total mismatch count is
+**NOT MEASURED**, even though the three completed groups matched.
+
+The [complete public Zig failure result](../oracle/phase2/evidence/repaired-zig-original-campaign-v9-phase2-v13-zig-guard-clean-v1-original-p0-v9-failures-publication-receipt.json)
+has SHA-256
+`9df60f301c11e16231483b5444b246196f906ea7eb6072a2c227feeb0b6e8dc8`.
+Its unopened compressed report has producer-recorded SHA-256
+`370fbb7096c10dc4a06abe38a36e0a606eb1844742e1d2d2dc15884b7108a54f`.
+Publication succeeded; the candidate **FAILS**. The **8,244**
+additional checks and **14,155,776** proposed final cases remain
+unrun, and speed, memory, and undefined behavior are
+**NOT MEASURED**.
+
 ## Freeze the correction for the actual Zig test-controller failures
 
 The [version-9 first-party Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V9.md)
