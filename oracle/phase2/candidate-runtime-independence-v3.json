@@ -1,0 +1,269 @@
+{
+  "schema": "rebar-owned-candidate-runtime-independence-v3-source-freeze",
+  "version": 3,
+  "status": "SOURCE FROZEN; RUNTIME GUARD NOT RUN ON A CANDIDATE",
+  "goal_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+  "source": {
+    "bytes": 59765,
+    "device": 2064,
+    "inode": 430856,
+    "mode": "0600",
+    "nlink": 1,
+    "path": "tools/verify_owned_candidate_runtime_independence_v3.py",
+    "sha256": "03f051e428ee31bb671d8ced82f02d7a9fe3520f24191aba78d2e8a0697202c2"
+  },
+  "protocol": {
+    "bytes": 5297,
+    "device": 2064,
+    "inode": 525096,
+    "mode": "0600",
+    "nlink": 1,
+    "path": "oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V3.md",
+    "sha256": "d3437b642d322ccccf12851981555cb596ff7f9c5a12e0a6a389d6b80b5a068a"
+  },
+  "immutable_predecessor_v2": {
+    "version": 2,
+    "owners": {
+      "source": {
+        "bytes": 67097,
+        "device": 2064,
+        "inode": 431371,
+        "mode": "0600",
+        "nlink": 1,
+        "path": "tools/verify_owned_candidate_runtime_independence_v2.py",
+        "sha256": "f693b1576b63ae5ebe45663801834c05e7d03671a5d6f2b4beb1b62034d37c0a"
+      },
+      "protocol": {
+        "bytes": 4437,
+        "device": 2064,
+        "inode": 524886,
+        "mode": "0600",
+        "nlink": 1,
+        "path": "oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V2.md",
+        "sha256": "2f11a29e08b6616d053269bc99e5283b5548ce88c74b384e1c5979c2e1d2288c"
+      },
+      "contract": {
+        "bytes": 7671,
+        "device": 2064,
+        "inode": 524887,
+        "mode": "0600",
+        "nlink": 1,
+        "path": "oracle/phase2/candidate-runtime-independence-v2.json",
+        "sha256": "813bbab0898d5a65a6b43533f7bfa024c4c215609c4f9fa6eb0f4cbe2791f473"
+      }
+    },
+    "policy": "EXACT AUTHENTICATED V2 RUNTIME POLICY SUBCLASS",
+    "prepare_family": "INHERITED EXACT V2 FUNCTION AND GLOBALS",
+    "child_bootstrap": "UNCHANGED AUTHENTICATED V2 CHILD SOURCE",
+    "status": "SOURCE FROZEN; RUNTIME GUARD NOT RUN ON A CANDIDATE",
+    "runtime_non_delegation": "NOT ESTABLISHED"
+  },
+  "immutable_producer_v5": {
+    "version": 5,
+    "owners": {
+      "source": {
+        "bytes": 102286,
+        "device": 2064,
+        "inode": 431370,
+        "mode": "0600",
+        "nlink": 1,
+        "path": "tools/run_owned_six_family_original_p0_producer_v5.py",
+        "sha256": "b4886f424945d3a182a90737fd965fbc4a6e82cafa1c9ee456a9ea405ee18538"
+      },
+      "protocol": {
+        "bytes": 5270,
+        "device": 2064,
+        "inode": 524884,
+        "mode": "0600",
+        "nlink": 1,
+        "path": "oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md",
+        "sha256": "9cfd1fc189d555a596b84b6073471554dab6bd67c1b343c66b744f4dc7b053a4"
+      },
+      "contract": {
+        "bytes": 21036,
+        "device": 2064,
+        "inode": 524885,
+        "mode": "0600",
+        "nlink": 1,
+        "path": "oracle/phase2/six-family-p0-producer-v5.json",
+        "sha256": "c751b8882fa331b4850271e68a1b43f965b5ddcb77c7ad0d0b4d3dec8ba79b53"
+      }
+    },
+    "source_mutated": false,
+    "child_guard_identity": "EXACT V2 PREPARE GLOBALS AND CHILD PINS",
+    "create_boundary": "AUTHENTICATED V5 GUARDED CREATE CLOSURE",
+    "status": "SOURCE FROZEN; NO CANDIDATE EXECUTED OR QUALIFIED"
+  },
+  "pinned_cpython": {
+    "implementation": "cpython",
+    "version": "3.14.6",
+    "executable": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+    "flags": ["-I", "-B", "-S"],
+    "public_interpreter_source": {
+      "absolute_path": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/lib/python3.14/concurrent/interpreters/__init__.py",
+      "sha256": "040e47f07bdfb28c67798fa7764fac1d79e13fd0fc0db9c85ee5dae8e1edf249",
+      "bytes": 7707,
+      "device": 2049,
+      "inode": 9595896,
+      "mode": "0600",
+      "nlink": 1
+    }
+  },
+  "phase_one": {
+    "version": 4,
+    "owners": {
+      "source": {
+        "bytes": 29094,
+        "device": 2064,
+        "inode": 428927,
+        "mode": "0600",
+        "nlink": 1,
+        "path": "tools/verify_owned_p0_completeness_v4.py",
+        "sha256": "8c73af8913f54e2398e707dc4a44c173ca53e20c1161b84160d841ce2ff7760d"
+      },
+      "protocol": {
+        "bytes": 4261,
+        "device": 2064,
+        "inode": 524712,
+        "mode": "0600",
+        "nlink": 1,
+        "path": "oracle/phase1/P0-COMPLETENESS-V4.md",
+        "sha256": "4a390db825fed994733390be8961a0f709d7f1f22195535e581e71cdea8111f2"
+      },
+      "contract": {
+        "bytes": 34875,
+        "device": 2064,
+        "inode": 524713,
+        "mode": "0600",
+        "nlink": 1,
+        "path": "oracle/phase1/p0-completeness-v4.json",
+        "sha256": "aab7a301f646755cec9956904cd6f97498d8293da454a925bf1f75cdfc85b3b1"
+      }
+    },
+    "status": "PASS",
+    "original_case_execution_denominator": 31237,
+    "original_suite_count": 13,
+    "original_obligation_count": 73,
+    "named_private_waiver_count": 13,
+    "separate_supplemental_case_count": 8244,
+    "supplemental_cases_counted_in_original_denominator": false
+  },
+  "first_party_candidate_families": {
+    "rust": "candidates.rust_candidate",
+    "c": "candidates.vm_candidate",
+    "zig": "candidates.zig_candidate",
+    "cpp": "candidates.cpp_candidate",
+    "go": "candidates.go_candidate",
+    "fortran": "candidates.fortran_candidate"
+  },
+  "family_bridge_policy": {
+    "rust": {
+      "candidate_module": "candidates.rust_candidate",
+      "owned_bridge_module": "candidates._rust_bridge"
+    },
+    "c": {
+      "candidate_module": "candidates.vm_candidate",
+      "owned_bridge_module": "candidates._vm_native"
+    },
+    "zig": {
+      "candidate_module": "candidates.zig_candidate",
+      "owned_bridge_module": "candidates._zig_bridge"
+    },
+    "cpp": {
+      "candidate_module": "candidates.cpp_candidate",
+      "owned_bridge_module": "candidates._cpp_bridge"
+    },
+    "go": {
+      "candidate_module": "candidates.go_candidate",
+      "owned_bridge_module": "candidates._go_bridge"
+    },
+    "fortran": {
+      "candidate_module": "candidates.fortran_candidate",
+      "owned_bridge_module": "candidates._fortran_bridge"
+    }
+  },
+  "native_owner_policy": {
+    "required_field_count": 14,
+    "required_fields": [
+      "absolute_path",
+      "bytes",
+      "device",
+      "family",
+      "file_name",
+      "inode",
+      "mode",
+      "native_loaded",
+      "nlink",
+      "relative",
+      "role",
+      "sha256",
+      "size_bytes",
+      "uid"
+    ],
+    "extra_or_missing_fields": "FORBIDDEN",
+    "native_loaded": false,
+    "identity": "EXACT PREPARED FAMILY SOURCE-OWNED NATIVE ARTIFACT"
+  },
+  "subinterpreter_bootstrap": {
+    "suite": "subinterpreter_v2",
+    "original_case_count": 128,
+    "expected_interpreters_created": 11,
+    "expected_interpreters_destroyed": 11,
+    "expected_case_interpreter_exec_calls": 394,
+    "expected_bootstrap_interpreter_exec_calls": 11,
+    "expected_cleanup_interpreter_exec_calls": 11,
+    "expected_total_real_interpreter_exec_calls": 416,
+    "creation_audit_event": "cpython.PyInterpreterState_New",
+    "creation_audit_arguments": "NOT MEASURED",
+    "creation_identity": "AUTHENTICATED NATIVE PROVIDER FRAME AND REAL LIVE-SET DELTA",
+    "execution_boundary": "SOURCE-AUTHENTICATED concurrent.interpreters.Interpreter.exec",
+    "first_execution": "UNCHANGED V2 CHALLENGE-BOUND CHILD GUARD",
+    "positive_attestation": "REAL UNIQUE OPERATING-SYSTEM PIPE",
+    "unrestricted_creation": false,
+    "legacy_interpreter_audit_events": "FORBIDDEN; NOT EMITTED AS GENUINE EXECUTION",
+    "actual_interpreters_created": 0,
+    "actual_interpreters_destroyed": 0,
+    "actual_case_interpreter_exec_calls": 0,
+    "actual_bootstrap_interpreter_exec_calls": 0,
+    "actual_cleanup_interpreter_exec_calls": 0,
+    "actual_child_guards_installed": 0,
+    "candidate_status": "NOT RUN"
+  },
+  "source_only_effects": {
+    "candidate_imports": 0,
+    "candidate_workers_started": 0,
+    "clock_samples": 0,
+    "compiler_processes_started": 0,
+    "compressed_archives_opened": 0,
+    "hidden_cases_read": 0,
+    "holdout_cases_opened": 0,
+    "native_libraries_loaded": 0,
+    "native_roots_opened": 0,
+    "network_requests": 0,
+    "reference_workers_started": 0,
+    "subinterpreters_created": 0,
+    "subprocesses_started": 0,
+    "threads_started": 0,
+    "timing_trials_run": 0
+  },
+  "runtime_isolation_policy": {
+    "bootstrap": "CPython -I -B -S; audit hook before candidate import",
+    "candidate_alias": "sys.modules['re'] is the attested candidate",
+    "stdlib_re_engine": "FORBIDDEN",
+    "stdlib_sre_engine": "FORBIDDEN",
+    "external_regex_package": "FORBIDDEN",
+    "cross_candidate_engine": "FORBIDDEN",
+    "matching_fallback": "FORBIDDEN",
+    "native_loader": "ONLY INDIVIDUALLY ATTESTED FAMILY ARTIFACTS",
+    "guard_installed_before_candidate_import": true,
+    "source_gate_interpreters": "NOT CREATED"
+  },
+  "candidate_matching": "NOT RUN",
+  "runtime_non_delegation": "NOT ESTABLISHED",
+  "holdout": "NOT OPENED",
+  "performance": "NOT MEASURED",
+  "memory": "NOT MEASURED",
+  "undefined_behavior": "NOT MEASURED",
+  "qualified_candidate_count": 0,
+  "winner_selected": false
+}

@@ -8,6 +8,31 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze checks that recognize real Python interpreters
+
+The original isolation checks looked for interpreter events that the
+pinned Python 3.14.6 does not actually emit. As a result, a real
+interpreter could be rejected before the engine's matching behavior
+was tested. The [corrected interpreter checks](../oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V3.md)
+verify Python's actual interpreter-creation event, the identity of
+the genuine executing function, real child interpreters, and the
+original challenge sent to each child.
+
+The correction preserves the exact original isolation policy, its
+no-wrapping and no-delegation rules, and the unchanged original test
+producer. It requires **11** genuine interpreters and **416** actual
+child calls; no fabricated Python event or lookalike function counts.
+Each ordinary and empty-environment source check passes **136**
+hostile controls. The source checks create **0** interpreters, start
+**0** candidates, and open **0** holdout cases.
+
+The corrected guard has **NOT RUN** against a candidate. Full
+compatibility and actual runtime independence are **NOT ESTABLISHED**.
+The **31,237** original checks and separate **8,244** additional
+checks are unchanged. Speed, memory, and undefined behavior are
+**NOT MEASURED**, and the **14,155,776**-case holdout remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the minimal first-party Zig cleanup correction
 
 All **13** workers in the actual Zig run reported the same native
