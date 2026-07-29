@@ -8,6 +8,34 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the complete from-scratch Rust compatibility run
+
+The [version-21 Rust test](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V21.md)
+uses the genuinely compiled, dependency-free Rust engine and its
+independently owned Python binding. The published build receipts
+prove **2** independently reproduced build phases and **28** total
+build processes; individual compiler identities are **NOT PUBLISHED**.
+
+The procedure preserves every one of the **13** original test groups,
+all **31,237** checks, the genuine previous **15,749** passing
+checks, and the **1,296** previously observed differences. It
+installs the verified real-Python isolation checks before loading
+the engine, requires **11** real child interpreters and **416**
+actual child calls, and restores all **4** original Rust files.
+
+Both ordinary- and empty-environment source checks pass **324**
+hostile controls, including **10** attempted path-traversal escapes.
+Two independent reviewers separately verified all four source checks.
+The verification loads **0** candidates or native libraries,
+creates **0** children, and opens **0** private archives or holdout
+cases.
+
+The new Rust candidate run has **NOT STARTED**. The additional
+**8,244** reference cases remain separate. Full compatibility and
+runtime independence are **NOT ESTABLISHED**; speed, memory, and
+undefined behavior are **NOT MEASURED**. The **14,155,776**-case
+holdout remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the next from-scratch Zig compatibility run
 
 The [version-13 Zig test](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V13.md)
