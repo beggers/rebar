@@ -8,6 +8,27 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected from-scratch C rebuild
+
+The [version-20 corrected C build](../oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-SOURCE-BUILD-V20.md)
+preserves the authentic earlier failed preflight and independently
+verifies the actual installed original C extension. It derives the
+new native source solely from the project's original C parser,
+compiler, and matching engine. It neither wraps an external
+regular-expression package nor calls another candidate.
+
+Two independent reviewers and all four ordinary and empty-environment
+source-only checks pass. Each self-test covers **94** adversarial
+controls and blocks **49** prohibited operations. The eventual
+rebuild must execute **2** independent phases and **14** precisely
+identified compiler and verification operations, restore the original
+native file, and preserve all build failures.
+
+The corrected native engine has **NOT BEEN BUILT** or tested. The
+original **31,237** checks, separate **8,244** checks, and
+**14,155,776**-case proposed holdout are unchanged. Compatibility,
+speed, memory, and undefined behavior are **NOT MEASURED**.
+
 ## Publish the clearer current from-scratch comparison
 
 The [published version-90 graph](evidence/candidate-current-overview-v90.svg)
