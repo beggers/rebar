@@ -8,6 +8,32 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the next from-scratch Zig compatibility run
+
+The [version-13 Zig test](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V13.md)
+freezes a complete rerun of the independently written, project-owned
+Zig engine against all **31,237** original Python checks. It uses only
+the already published cleanup correction and Python's genuine
+interpreter checks. It does not wrap Python, an external package, or
+another engine.
+
+The exact previous results remain unchanged: **13** actual workers,
+**12** completed test groups, **4,607** passing checks, at least
+**1,700** observed differences, and a cleanup warning in each of the
+**13** groups. The previous interpreter group did not complete; its
+reported guard count does not prove that a real child interpreter
+was checked.
+
+Both ordinary- and empty-environment source checks pass **232**
+hostile controls, with all **25** prohibited side effects at zero.
+Successful and failed future reports must both use the correct
+version-13 evidence names; older, misleading names are rejected.
+The new engine run, genuine child-interpreter results, cleanup
+outcome, and additional **8,244** candidate checks are **NOT RUN**
+or **NOT MEASURED**. The **14,155,776**-case final test remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**; speed, memory,
+and undefined behavior remain **NOT MEASURED**.
+
 ## Freeze checks that recognize real Python interpreters
 
 The original isolation checks looked for interpreter events that the

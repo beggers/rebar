@@ -79,6 +79,7 @@ slowdown over **20%**.
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
 - [Six independently written engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Genuine CPython interpreter and no-delegation checks](oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V3.md). The corrected checks are independently verified; no candidate has yet run under them.
+- [Next from-scratch Zig compatibility run](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V13.md). Its corrected cleanup and genuine-interpreter checks are frozen; the new candidate test has **NOT RUN**.
 - Latest independently preserved results: [C](oracle/phase2/evidence/repaired-c-original-campaign-v9-c-phase2-v21-c-original-match-semantics-original-p0-v9-failures-publication-receipt.json), [Zig](oracle/phase2/evidence/repaired-zig-original-campaign-v12-phase2-v13-zig-guard-clean-v1-original-p0-v12-failures-publication-receipt.json), and [Rust](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v21-rust-captured-findall-root-provenance-original-p0-v20-failures-publication-receipt.json). The complete procedures, build records, fixes, and earlier failures are in the experiment log.
 - [Larger, unopened 14,155,776-case speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md) and [preserved earlier proposal](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256
