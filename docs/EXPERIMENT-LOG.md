@@ -8,6 +8,30 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a clear, reproducible headline comparison
+
+The [version-87 headline-chart renderer](../tools/render_candidate_current_overview_v87.py)
+prepares a reproducible overview of Python and all six independently
+written engine families. It preserves all previous compatibility
+failures, the actual first-party Rust native-build receipts, both
+historical proposal sizes, and the current **14,155,776**-case sealed
+comparison. Its result is generated from authenticated evidence,
+not edited by hand.
+
+Both source-only verification modes independently pass in ordinary
+and empty environments, including **9,188** hostile checks. They
+preserve and reconstruct every earlier graph record while keeping
+the complete generated result below **4 MiB**. Source verification
+does not write a graph, import a matching engine, open the final
+test, or invent a speed measurement. The graph is generated only
+after this renderer is separately committed and pushed.
+
+No candidate is qualified. The new Rust literal engine has an actual
+native **BUILD PASS** only; its captured-result variant is not yet
+built. Matching, memory, and performance remain **NOT MEASURED**.
+The final proposal remains **NOT FROZEN**, **NOT GENERATED**, and
+**NOT OPENED**.
+
 ## Freeze a reproducible, first-party C source build
 
 The [version-18 C build procedure](../oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md),
