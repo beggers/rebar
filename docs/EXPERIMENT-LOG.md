@@ -8,6 +8,26 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the authenticated Zig package-import correction
+
+The [version-8 first-party Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V8.md)
+corrects the actual, publicly recorded version-7 worker failure. It
+verifies the exact project directory, the owned `candidates`
+namespace, and the candidate source before adding only that verified
+project directory to the isolated Python import path.
+
+Python remains in isolated mode. The original no-delegation guard is
+installed before importing the first-party Zig candidate; no
+environment search, third-party package, fallback engine, or stdlib
+regex matcher is added. All **31,237** original cases, **13** groups,
+**120-second** bounds, complete worker diagnostics, and atomic
+recovery remain unchanged.
+
+This is a source freeze, not a successful Zig test. Candidate
+matching is **NOT RUN**. The prior genuine **13** import failures
+remain preserved. The **8,244** additional cases and **14,155,776**
+proposed final cases remain unrun; speed is **NOT MEASURED**.
+
 ## Preserve the actual Rust recovery-preflight failure
 
 The frozen [version-18 Rust campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V18.md)
