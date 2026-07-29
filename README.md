@@ -16,7 +16,7 @@ regular-expression package, or another candidate does not count.
 **Six** from-scratch engines. **Zero** fully compatible replacements.
 Speed versus Python: **NOT MEASURED**. There is no winner.
 
-![Python compared with six independently written regular-expression engines. Zig's own native engine now builds reproducibly, but its compatibility has not yet been retested. No replacement has passed all tests or measured a speedup.](docs/evidence/candidate-current-overview-v86.svg)
+![Python compared with six independently written regular-expression engines. The new Rust engine builds reproducibly, no replacement has passed every compatibility test, no speed has been measured, and the 14-million-case final comparison remains unopened.](docs/evidence/candidate-current-overview-v87.svg)
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
@@ -27,7 +27,7 @@ Speed versus Python: **NOT MEASURED**. There is no winner.
 | Zig | FAIL; 1,764 differences; native build passes | NOT MEASURED |
 | C++ | FAIL; 2,308 differences and five worker failures | NOT MEASURED |
 | Go | FAIL; 4,518 differences and four worker failures | NOT MEASURED |
-| Fortran | NOT TESTED | NOT MEASURED |
+| Fortran | FAIL; independent builds disagree; matching not tested | NOT MEASURED |
 
 The frozen original Python suite contains **31,237** checks in **13**
 groups. A separate **8,244**-case collection covers additional real-world

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1300" height="838" viewBox="0 0 1300 838" role="img" aria-labelledby="title description">
+<title id="title">Can a from-scratch replacement beat Python re?</title>
+<desc id="description">Unmodified Python is compared with six independently written regular-expression engines. None is fully compatible and no speed has been measured. The first-party Rust literal engine really built in two offline phases using 28 compiler and inspection steps, but the latest complete compatibility attempt still finished only 8 of 13 groups with 12,942 explicitly verified checks and five genuine failures. The newer captured-search variant is not built. Fortran was built twice, produced different native outputs and failed reproducibility. The 14,155,776-case final comparison is only a proposal: it has not been frozen, generated, opened or run.</desc>
+<rect width="1300" height="838" rx="20" fill="#0b1220"/>
+<text x="38" y="52" fill="#f8fafc" font-size="27" font-family="system-ui,sans-serif" font-weight="700">Building a faster Python re, from scratch</text>
+<text x="38" y="87" fill="#cbd5e1" font-size="17" font-family="system-ui,sans-serif">6 independent engines · 0 fully compatible · speed NOT MEASURED</text>
+<line x1="38" y1="109" x2="1262" y2="109" stroke="#334155"/>
+<circle cx="48" cy="144" r="6" fill="#34d399"/>
+<text x="66" y="149" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Python re</text>
+<text x="172" y="149" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">The unchanged Python 3.14.6 reference</text>
+<text x="1248" y="149" text-anchor="end" fill="#34d399" font-size="12" font-family="system-ui,sans-serif" font-weight="700">BASELINE</text>
+<circle cx="48" cy="195" r="6" fill="#fbbf24"/>
+<text x="66" y="200" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Rust</text>
+<text x="172" y="200" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">8 of 13 groups passed; 5 failed. New literal engine built twice.</text>
+<text x="1248" y="200" text-anchor="end" fill="#fbbf24" font-size="12" font-family="system-ui,sans-serif" font-weight="700">BUILD PASS; TESTS FAIL</text>
+<circle cx="48" cy="246" r="6" fill="#fb7185"/>
+<text x="66" y="251" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">C</text>
+<text x="172" y="251" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">1,230 observed differences from Python</text>
+<text x="1248" y="251" text-anchor="end" fill="#fb7185" font-size="12" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="48" cy="297" r="6" fill="#fb7185"/>
+<text x="66" y="302" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Zig</text>
+<text x="172" y="302" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">1,764 observed differences; own engine also built twice</text>
+<text x="1248" y="302" text-anchor="end" fill="#fb7185" font-size="12" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="48" cy="348" r="6" fill="#fb7185"/>
+<text x="66" y="353" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">C++</text>
+<text x="172" y="353" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">2,308 differences and five startup failures</text>
+<text x="1248" y="353" text-anchor="end" fill="#fb7185" font-size="12" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="48" cy="399" r="6" fill="#fb7185"/>
+<text x="66" y="404" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Go</text>
+<text x="172" y="404" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">4,518 differences and four startup failures</text>
+<text x="1248" y="404" text-anchor="end" fill="#fb7185" font-size="12" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="48" cy="450" r="6" fill="#fb7185"/>
+<text x="66" y="455" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Fortran</text>
+<text x="172" y="455" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Built twice; the outputs disagree. Matching not measured.</text>
+<text x="1248" y="455" text-anchor="end" fill="#fb7185" font-size="12" font-family="system-ui,sans-serif" font-weight="700">BUILD FAILED</text>
+<line x1="38" y1="495" x2="1262" y2="495" stroke="#334155"/>
+<text x="38" y="529" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif" font-weight="650">Compatibility: 31,237 original Python checks; 8,244 additional checks are counted separately.</text>
+<text x="38" y="560" fill="#fcd34d" font-size="14" font-family="system-ui,sans-serif">Rust: 12,942 verified original checks; 8 of 13 groups finished; 5 genuine failures.</text>
+<text x="38" y="590" fill="#93c5fd" font-size="14" font-family="system-ui,sans-serif">Rust literal engine: actually built twice using 28 first-party build steps. Build success is not a test pass.</text>
+<text x="38" y="620" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">New grouped-findall Rust source: not built, not tested, and not timed.</text>
+<text x="38" y="650" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">Fortran: two actual builds disagreed. Its reproducibility failed; matching remains not measured.</text>
+<text x="38" y="680" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">No wrapped regex package, Python matcher, cross-engine fallback, or selected winner.</text>
+<text x="38" y="714" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif" font-weight="650">Planned final comparison: 14,155,776 cases.</text>
+<text x="38" y="744" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">Not frozen, not generated, not opened, and not run. Speed, memory, and confidence: NOT MEASURED.</text>
+<text x="38" y="774" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">The previous 4,194,304-case proposal is preserved only as historical evidence.</text>
+<text x="38" y="815" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif">Overview 87 · complete independently verifiable historical evidence · no winner.</text>
+</svg>

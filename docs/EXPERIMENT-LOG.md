@@ -8,6 +8,33 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Publish the reproducible, plain-language headline comparison
+
+The [generated six-engine comparison](evidence/candidate-current-overview-v87.svg),
+[complete machine-readable results](evidence/candidate-current-overview-v87.json),
+and [exact chart inputs](evidence/candidate-current-overview-v87.inputs.json)
+are generated directly from the separately frozen
+[version-87 chart renderer](../tools/render_candidate_current_overview_v87.py).
+Their respective SHA-256 values are
+`7af85c8f26d47ec5b7ff7813aa7bfd3ceec5f82498b60da8be5884558c521101`,
+`1bd2765e4f22cc279872a5ab0253b1c55422899fad996bc2bc1aac4d4f300233`,
+and `03c191f676a4551b6643a3c57d86f57cac21a51517e40a86926bf49e5176a8ee`.
+
+The complete result preserves every earlier compatibility failure,
+all **12** historical evidence records, and the two actual Rust
+native-build receipts. It records **299** authenticated evidence
+owners and **304** history references without claiming a complete
+repository-wide census. The result is **4,106,304** bytes, below
+the **4 MiB** limit, without dropping or rewriting historical data.
+
+The chart shows unchanged Python as the baseline, all six
+independently written candidate engines, the real **28**-process
+Rust build, the still-unbuilt captured-result variant, and the
+previously hidden Fortran reproducibility failure. It reports zero
+qualified candidates, every relative speed as **NOT MEASURED**, and
+the **14,155,776**-case final comparison as **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**. No graph is edited by hand.
+
 ## Freeze a clear, reproducible headline comparison
 
 The [version-87 headline-chart renderer](../tools/render_candidate_current_overview_v87.py)

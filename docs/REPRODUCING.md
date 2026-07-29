@@ -6,6 +6,67 @@ below are source-only or read-only unless a command explicitly says otherwise.
 The current results and charts remain in [the project README](../README.md);
 experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
+## Reproduce the current headline comparison
+
+The current headline chart compares unchanged Python against all six
+independently written engines, records the actually reproduced Rust
+native build, and displays the **14,155,776**-case final test as an
+unopened proposal. No candidate is fully qualified and no relative
+speed has been measured.
+
+The following command regenerates only the three checked-in version-87
+chart files. It does not compile an engine, execute a matching
+candidate, run a benchmark, or access the final test. Replace
+`--render` with `--verify-frozen-context` for a completely read-only
+verification.
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/render_candidate_current_overview_v87.py --render \
+  --source-sha256 176ff7cee7735bb6a25475bf3d8f112def2ea0ff12779b28e1469c2fb85cdd44 \
+  --source-bytes 82214 \
+  --previous-source-sha256 49c529c7f8b695c501dd03f9d35056c2853c73fcd36425718d8bfceb599b1a7d \
+  --previous-inputs-sha256 42c534652a350eada8704581ebf8aa52c77687b6904e9fb486f03c2f117cbe6c \
+  --previous-summary-sha256 ed728687e919410e6e9dae22ad3c976aa900d7a857f85231aaa93d0fc674f7cc \
+  --previous-svg-sha256 4bbf196a48997dbee3ea6b966d9a4eefce860962861675ad202506f685a80e55 \
+  --rust-literal-v1-source-sha256 21fb0878e344ead0bba49f932120a35a897ca44cfd7710287861ebc6415c555e \
+  --rust-literal-v1-protocol-sha256 842d51127db54a26d0dd9f874f38834f122f7888ea71c6f3fe77b8911bbd65d6 \
+  --rust-literal-v1-contract-sha256 a2226d823610a578aeb65e9a51a2a33517348b6c51130ad89db840cc50833164 \
+  --rust-literal-v1-variant-sha256 b707e924a23980385b0c5b0306daecd55bbb03d6f2511437f0532b6d39b2a112 \
+  --rust-diagnostic-v16-source-sha256 4705f5afb0639812e4902a455c11cee469b78a2a8f78bd64e1bf3388390d060e \
+  --rust-diagnostic-v16-protocol-sha256 b168f394244c1f2e2f1051a0d9ed038fd11b596708667b9c8dc196b3f8f2c66f \
+  --rust-diagnostic-v16-contract-sha256 1879abea2cfc3665ec5e0eeb9549286f1d566806f4f49482064855199a86d46b \
+  --expanded-holdout-v1-source-sha256 3dd9abcbd7a87486186ee8da804de595e65d79020a3fe33413d0157dde4f3309 \
+  --expanded-holdout-v1-protocol-sha256 818f1636d87ae721912f04a3fc8294ac04a59dff4a272319aa29a393f52a4fd4 \
+  --expanded-holdout-v1-contract-sha256 676aac4f48c9404f5253c89b692efde5c425170f8d9f152b4f85b3e2a5225a76 \
+  --rust-captured-v1-source-sha256 61c4d4beda9baf82150a8ae5e47f78eb1363595a583f0317626e93beb5373832 \
+  --rust-captured-v1-protocol-sha256 ffcaeec11704a81a2fd5ca25d7fc746c8a66fab033bb1f108f0e6c19445079fe \
+  --rust-captured-v1-contract-sha256 ec396c100f606923f08d1969f283a9bb2bcf35dbf9edf9e9c5d2360057f9079b \
+  --rust-captured-v1-variant-sha256 a0b9e7fbfc92da4c3b97608cf156fb0ca2f94fb5358901b7b6baa0a819fffc8a \
+  --rust-build-v20-source-sha256 e1c30d8713d1acafdffba28123966dc9814ea765b97cf3ad09da3ccf42c97b0e \
+  --rust-build-v20-protocol-sha256 3393f73b11c6ad38c9f8dffc9f36e02ba11da64997ef351220e600bbae975f86 \
+  --rust-build-v20-contract-sha256 5b584cc225226928e22169903d1a7f8712039b4ae3d34dd5a634f8174f4d8eb0 \
+  --c-diagnostic-v5-source-sha256 a98e080fa3c9b556122316966723ea7f69589ffddd6293e1ebe199c0dde07810 \
+  --c-diagnostic-v5-protocol-sha256 bec733d3181da1198fc44c6b22cb45d7df8a6721ef073e09cde7650c47453237 \
+  --c-diagnostic-v5-contract-sha256 95de401d8a63a6a7272d86ef062c775100ce7305d74fec85be1ed7b0236381f2 \
+  --build-receipt-sha256 b9945838778c800f59a505021503655ea5bb4b3e11e1f0cf17f4be48cadde1b0 \
+  --root-receipt-sha256 bb5bd524a7bd8c4b3845c9654e81981cb6136c4fcff7a5e52ca375ce75e745aa
+```
+
+Expected files:
+
+```text
+docs/evidence/candidate-current-overview-v87.inputs.json
+03c191f676a4551b6643a3c57d86f57cac21a51517e40a86926bf49e5176a8ee
+
+docs/evidence/candidate-current-overview-v87.json
+1bd2765e4f22cc279872a5ab0253b1c55422899fad996bc2bc1aac4d4f300233
+
+docs/evidence/candidate-current-overview-v87.svg
+7af85c8f26d47ec5b7ff7813aa7bfd3ceec5f82498b60da8be5884558c521101
+```
+
 ## Verify the actual independently built Zig engine
 
 The project's own parser, regular-expression engine, and C-API bridge
