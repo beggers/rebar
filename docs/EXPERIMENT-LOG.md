@@ -7,6 +7,72 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a from-scratch safeguard against delegated matching
+
+The [independently written runtime safeguard](../tools/verify_owned_candidate_runtime_independence_v1.py),
+[frozen guard procedure](../oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V1.md),
+and [exact machine-readable guard contract](../oracle/phase2/candidate-runtime-independence-v1.json)
+freeze a real audit hook and deny-first import guard without importing or
+running a candidate. The guard rejects Python's `re` and `_sre` engines,
+external regular-expression packages, cross-candidate delegation,
+unapproved native loaders, subprocesses, and substituted `re` aliases.
+An authenticated candidate and the original suite's data-only
+`re._constants.MAXGROUPS` remain explicitly distinguished from matching
+engines.
+
+Both ordinary and empty-environment self-tests and context checks
+**PASS**. Each physically rejects **45** hostile controls. All actual
+candidate imports, candidate and reference workers, native loads,
+private-root and compressed-archive reads, spawned processes, network
+requests, timing samples, and holdout reads remain **zero**. This is a
+source freeze, not an executed candidate audit: runtime independence is
+**NOT ESTABLISHED**.
+
+The guard freezes the genuinely pushed version-73 graph, all **13**
+complete original suite results and all **six** actual mismatch
+witnesses. The **31,237** original cases and separate **8,244**
+supplemental cases retain their separate denominators. The corrected
+Zig scanner retains exactly **1,024** cases, **64** corrected and
+**960** preserved, but remains **NOT BUILT** and **NOT TESTED**.
+Actual Zig matching remains **FAIL**, with **1,764** differences and
+**3,711** verified passes. Actual Rust matching remains **FAIL**, with
+**1,440** differences and **14,853** verified passes; its separately
+recorded build retains **28** passing operations and root device
+**2049**. Actual C matching remains **FAIL**, with **1,230**
+differences and **7,325** verified passes; its independently recorded
+build retains **14** passing operations. The historical Rust retest
+remains **BLOCKED**; the traced Rust engine's matching test remains
+**NOT RUN**.
+
+Exactly **three** independently authenticated safeguard owners advance
+the graph's evidence and history lower bounds from **243 / 248** to
+**246 / 251**. The [current runtime-safeguard results graph](evidence/candidate-current-overview-v74.svg),
+[complete graph inputs](evidence/candidate-current-overview-v74.inputs.json),
+[full machine-readable results](evidence/candidate-current-overview-v74.json),
+and [independent graph renderer](../tools/render_candidate_current_overview_v74.py)
+must preserve the actual version-73 predecessor and every candidate
+failure. Both graph self-tests reject **6,332** hostile controls,
+including all **6,311** inherited controls and **21** new guard
+controls. Six from-scratch families remain; **zero** qualify.
+
+The exact safeguard source, procedure, and contract have respective
+SHA-256 values
+`c511d72053957aaebeafe23d57c7d5438c72c00307bcbfed167a776666d0baa9`,
+`7d0cd123f7306eb1468d65bf10ff224151752bc16d6e587576bb6a3ccb7a8795`,
+and `a784f0bc315a4cb946c09d160ed00387becd7fec9585a1e488d48a6c0f63f2fe`.
+Their exact sizes are **35,270**, **3,464**, and **3,987** bytes.
+The exact graph renderer, complete inputs, machine-readable results,
+and visible chart have respective SHA-256 values
+`7fecafe25316c98bd6c86d6f82779250abb54ca3451abc84e04e2d8bc505d21d`,
+`aa54170b8e4c426de1210f90c47b16677af80482418fb3cdf3327c173542b425`,
+`006f402dd3f8ec8150b844f8584d17d22afcd2fae99434e745bf6dbf3682a283`,
+and `1fac5fe3540dc0493e49ce581a30a04e1b843a73beddef8a876b8a6ae45a8060`.
+Their exact sizes are **30,742**, **1,153,735**, **3,266,545**, and
+**4,699** bytes. All graph verification remains read-only.
+Speed, memory, confidence, and undefined behavior remain
+**NOT MEASURED**. The **4,194,304** final cases remain
+**NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze the independently written Zig scanner correction
 
 The [complete corrected Zig adapter](../candidates/zig/variants/scanner_phrase_v4/zig_candidate.py),
