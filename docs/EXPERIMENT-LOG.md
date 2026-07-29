@@ -8,6 +8,33 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a from-scratch Rust captured-result experiment
+
+The [complete cumulative Rust bridge](../candidates/rust/variants/buffer_shape_pickle_findall_captures_v1/py_bridge.c)
+retains the earlier first-party single-pass literal search and changes
+exactly one additional result-building function. When a search returns
+exactly two capturing groups, it constructs the required Python tuple
+directly while preserving group order, missing groups, input buffers,
+allocation failures, object ownership, and the existing Rust matcher.
+
+The already public **864**-case development report independently
+identifies **48** relevant `findall` cases: **44** return captured
+results and **four** correctly return no matches. This is verified
+workload coverage, not a speed measurement.
+
+The [captured-search protocol](../oracle/phase2/RUST-CAPTURED-FINDALL-ONE-PASS-V1.md),
+[canonical contract](../oracle/phase2/rust-captured-findall-one-pass-v1.json),
+and [source-only verifier](../tools/verify_owned_rust_captured_findall_source_v1.py)
+pass both isolated modes in ordinary and empty environments. They
+authenticate **23** evidence files and pass **260** positive and
+**1,426** hostile checks without executing an engine, loading an
+external matcher, taking a timing, or opening the final test.
+
+The cumulative Rust variant is **NOT BUILT**, **NOT RUN**, and
+**NOT BENCHMARKED**. Full compatibility, memory, runtime independence,
+and performance are **NOT MEASURED**. The **14,155,776**-case
+proposal remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Expand the sealed final comparison without opening it
 
 The [larger final-comparison proposal](../oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md)
