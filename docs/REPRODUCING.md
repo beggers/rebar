@@ -9,7 +9,8 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 ## Evidence and reproduction
 
 - [Complete actual Rust failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [independently durable 13-worker result receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [complete plain-text 13-group failure and root-cause analysis](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json); **13** real workers completed all **31,237** original cases and observed **1,440** mismatches, **14,853** explicitly verified passes, and **zero** infrastructure failures. Receipt and analysis **PASS** preserve a candidate **FAIL**.
-- [Current real-worker results graph](../docs/evidence/candidate-current-overview-v60.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v60.inputs.json), [independently verified current machine-readable outcome](../docs/evidence/candidate-current-overview-v60.json), and [reproducible current renderer](../tools/render_candidate_current_overview_v60.py); verify all **13** real worker groups, **six** actual failures, and the **512**-difference regression without reopening the compressed report. Current result fields consistently report **1,440** differences and **14,853** verified passes; explicitly historical version-7 fields retain **928** differences and **8,965** verified passes. The corrected Rust build remains **BLOCKED** until the phase-one Python-reference discrepancy and separately preserved **8,244** fuzz cases are reconciled. Qualified replacements: **0**. Performance: **NOT MEASURED**. The **4,194,304**-example final comparison remains unopened.
+- [Current real-worker results graph](../docs/evidence/candidate-current-overview-v61.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v61.inputs.json), [independently verified current machine-readable outcome](../docs/evidence/candidate-current-overview-v61.json), and [reproducible current renderer](../tools/render_candidate_current_overview_v61.py); preserve all **13** genuine Rust worker groups, **six** actual failures, and the **512**-difference regression. The public-type Python reference is independently reconciled; all **8,244** preserved fuzz cases are verified, but their two genuine Python-reference runs remain **NOT RUN**. The full correctness gate and Rust build remain **BLOCKED**. Qualified replacements: **0**. Performance: **NOT MEASURED**. The **4,194,304**-example final comparison remains unopened.
+- [Corrected phase-one Python-reference protocol](../oracle/phase1/P0-COMPLETENESS-V2.md), [exact version-2 completeness certificate](../oracle/phase1/p0-completeness-v2.json), and [independently owned source verifier](../tools/verify_owned_p0_completeness_v2.py); preserve all **31,237** original cases, **13** groups, and **13** named exceptions while verifying the actual two-worker **6,912**-case reference and every separate **8,244**-case fuzz record. Its reference crosswalk is **PASS**; its overall candidate gate remains **BLOCKED**.
 - [Blocked first-party Rust two-build protocol](../oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V17.md), [exact frozen build contract](../oracle/phase2/rust-buffer-shape-source-build-v17.json), and [source-only independent build verifier](../tools/reproduce_owned_rust_buffer_shape_source_build_v17.py); the four normal and sterile source gates reject **353** hostile controls and authenticate **43** owners without starting a compiler or candidate.
 - [From-scratch Rust buffer-lifetime repair](../oracle/phase2/RUST-BUFFER-SHAPE-PICKLE-SOURCE-REPAIR-V2.md), [canonical source contract](../oracle/phase2/rust-buffer-shape-pickle-source-repair-v2.json), [source-only verifier](../tools/apply_owned_rust_buffer_shape_pickle_source_repair_v2.py), and [complete corrected first-party bridge](../candidates/rust/variants/buffer_shape_pickle_v2/py_bridge.c); both normal and empty-environment source gates reject **77** hostile controls without building, running a candidate, importing a matching engine, reopening compressed failures, or touching the holdout.
 - [Recovery-corrected complete Rust-test protocol](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V10.md), [independently frozen recovery and build-shape contract](../oracle/phase2/repaired-rust-original-campaign-v10.json), and [first-party version-10 runner](../tools/run_owned_repaired_rust_original_campaign_v10.py); source checks reject **247** hostile controls while preserving all **31,237** original checks. Its later real **13**-worker result is recorded by the separate complete report, receipt, and forensic summary.
@@ -729,6 +730,20 @@ decompressing a matching archive, or opening the final comparison:
   --protocol-sha256 67ba62acc8e51a6868404ea3faeb1aaaacb1d053cc1c915bef0c397edf5ac408 \
   --contract-sha256 ffa76d1724396fae5816cf96e0ae2104bcce8fc5eb246b8306d4441db0fe4a1b
 
+# Verify the corrected Python reference and all 8,244 preserved fuzz records.
+"$PY" -I -B tools/verify_owned_p0_completeness_v2.py \
+  --self-test \
+  --source-sha256 381afcd537885d8878d9f14caefae23145a5aa5a2434f88d65a6330170d7c6d6 \
+  --protocol-sha256 827cebfa4fb6e1167f738b5e0ec14df5b5223c76883112988b68ea77a1c31f2e \
+  --contract-sha256 fcd7abac619a6a4733e090cf49acbb958f8162eeb7dc6909a9d14501809e8237
+
+# Verify the original denominator and the intentionally blocked candidate gate.
+"$PY" -I -B tools/verify_owned_p0_completeness_v2.py \
+  --verify-frozen-context \
+  --source-sha256 381afcd537885d8878d9f14caefae23145a5aa5a2434f88d65a6330170d7c6d6 \
+  --protocol-sha256 827cebfa4fb6e1167f738b5e0ec14df5b5223c76883112988b68ea77a1c31f2e \
+  --contract-sha256 fcd7abac619a6a4733e090cf49acbb958f8162eeb7dc6909a9d14501809e8237
+
 # Verify the first-party two-build recipe without starting a compiler.
 "$PY" -I -B tools/reproduce_owned_rust_buffer_shape_source_build_v17.py \
   --self-test \
@@ -757,7 +772,26 @@ decompressing a matching archive, or opening the final comparison:
   --protocol-sha256 79ad2b88f7542c791cdf48956d432e6d9f2dad00a485056972eea1664e41ff66 \
   --contract-sha256 0d5fe2ca190df54366b73850ce316a9d27f77c527bd5ddd8d5420d62dcb33be0
 
-# Verify the current blocked-build graph and its exact 4,825 hostile controls.
+# Verify the current corrected-reference graph and its 4,967 hostile controls.
+"$PY" -I -B tools/render_candidate_current_overview_v61.py --self-test
+
+# Verify the corrected reference while keeping the complete candidate gate blocked.
+"$PY" -I -B tools/render_candidate_current_overview_v61.py \
+  --verify-frozen-context \
+  --source-sha256 07d0df394407ad1c6496ac837a7c55304bda68602a57c017e8d06deb3f45dd52 \
+  --source-bytes 97292 \
+  --previous-source-sha256 66975e14fed35b40e63fb332364d54a5f40aa714b40757580db57018fbd15534 \
+  --previous-inputs-sha256 b63da6a1b3f135a2e303b2ffb807a04aa25405d3f37c3233857a70a5e0e5cc3d \
+  --previous-summary-sha256 f766cdd9bee4d8a2eec8c4bd70148a4c58021156d36cb1d00858bce1d0d4e025 \
+  --previous-svg-sha256 5870676d9ccac46c04538b9ac77bd27d7b07bec5973d521635deef4a64be7fec \
+  --oracle-source-sha256 381afcd537885d8878d9f14caefae23145a5aa5a2434f88d65a6330170d7c6d6 \
+  --oracle-protocol-sha256 827cebfa4fb6e1167f738b5e0ec14df5b5223c76883112988b68ea77a1c31f2e \
+  --oracle-contract-sha256 fcd7abac619a6a4733e090cf49acbb958f8162eeb7dc6909a9d14501809e8237 \
+  --inputs-sha256 9be09cfe487efde257116ddd4e58e7ff78152394c6fc3d5e2b95356f7b56f2e2 \
+  --summary-sha256 0a71008327f2212d3e337b7c3f265904fe65bba10e5a43133eaaed7cb6367b24 \
+  --svg-sha256 fd40f66d731185151dad7d692c1abab7d15e98a29e2df63eade3bb9d86d03fb0
+
+# Verify the preserved version-60 graph and its 4,825 hostile controls.
 "$PY" -I -B tools/render_candidate_current_overview_v60.py --self-test
 
 # Verify the actual results, Python-reference blocker, and unopened holdout.

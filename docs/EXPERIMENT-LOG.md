@@ -7,6 +7,76 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Reconcile the Python reference and freeze every additional fuzz case
+
+The [independently owned source verifier](../tools/verify_owned_p0_completeness_v2.py),
+[additive correctness protocol](../oracle/phase1/P0-COMPLETENESS-V2.md),
+and [canonical corrected checklist](../oracle/phase1/p0-completeness-v2.json)
+repair the public-type Python-reference discrepancy without editing or
+replacing the historical version-1 checklist. Their respective source
+SHA-256 values are
+`381afcd537885d8878d9f14caefae23145a5aa5a2434f88d65a6330170d7c6d6`,
+`827cebfa4fb6e1167f738b5e0ec14df5b5223c76883112988b68ea77a1c31f2e`,
+and `fcd7abac619a6a4733e090cf49acbb958f8162eeb7dc6909a9d14501809e8237`.
+Their sizes are **105,065**, **8,136**, and **28,440** bytes.
+
+The preserved original checklist still contains exactly **31,237**
+cases, **13** test groups, **13** named private exceptions, **73**
+mapped requirements, and **34** detailed mappings. Its previous
+public-type reference remains correctly marked **FALSIFIED** for a
+candidate's execution context. Two genuinely separate recorded Python
+workers, process IDs **81** and **82**, independently agree on the
+correct **6,912** public-type cases. The corrected full-record SHA-256
+is `6b26ac4eff9ec64cc3ae79872b3195b303a12bf40b96b55850b627857e614aa2`;
+the separately verified cache-vector SHA-256 is
+`587cf35555472940522d6ae3a73053fb7e98492befe581cc024444bed8e264ad`.
+The candidate-facing reference cross-check is **PASS**; no new
+reference worker is invented.
+
+The verifier authenticates all **8,244** preserved differential,
+property, and fuzz records directly from the committed **7,602,476**-
+byte plaintext corpus. It individually checks every record, all
+**8,244** distinct IDs, **19** case categories, **45** historical
+mapped requirements, and all **seven** fixed seeds. Its streaming
+limit is **262,144** bytes per record; the longest real record is
+**83,667** payload bytes, or **83,668** with its final newline. The
+corpus SHA-256 remains
+`ae6a095bc0cd2b3ba1512a04f0d4fbe57916cf2d5b583fd4ecdda5c2c70a5bb2`.
+No fuzz cases or historical abstract exceptions are silently added to
+the original **31,237** cases or **13** named exceptions.
+
+Both normal and sterile source self-tests reject exactly **53**
+adversarial controls. Both complete context checks authenticate
+**63** historical plaintext owners. No source gate opens a failure
+archive or the holdout, imports a candidate, starts a reference
+worker, uses a clock, compiles an engine, or rewrites historical files.
+
+The [current plain-language correctness graph](evidence/candidate-current-overview-v61.svg),
+[exact current graph inputs](evidence/candidate-current-overview-v61.inputs.json),
+[complete current graph evidence](evidence/candidate-current-overview-v61.json),
+and [reproducible graph renderer](../tools/render_candidate_current_overview_v61.py)
+separately show the corrected Python-reference **PASS** and the full
+candidate gate **BLOCKED**. Their respective SHA-256 values are
+`07d0df394407ad1c6496ac837a7c55304bda68602a57c017e8d06deb3f45dd52`,
+`9be09cfe487efde257116ddd4e58e7ff78152394c6fc3d5e2b95356f7b56f2e2`,
+`0a71008327f2212d3e337b7c3f265904fe65bba10e5a43133eaaed7cb6367b24`,
+and `fd40f66d731185151dad7d692c1abab7d15e98a29e2df63eade3bb9d86d03fb0`.
+Normal and sterile graph self-tests reject exactly **4,967** controls.
+All **13** real historical Rust worker records and all **six** complete
+mismatch witnesses independently equal the published forensic evidence;
+the compressed report is never reopened. Exactly three new oracle
+source owners raise the authenticated evidence and history lower
+bounds to **207/212**.
+
+The version-2 checklist's overall status is deliberately **BLOCKED**.
+The **8,244** cases have not yet been replayed by two independent
+Python-reference workers, nor run against a candidate. Public import
+still fails; candidate signature checks, genuine two-gigabyte checks,
+and runtime non-delegation are not complete. The corrected Rust build
+remains physically blocked. Qualified replacements: **0**; speed,
+memory, and confidence: **NOT MEASURED**; the expanded holdout remains
+**NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze and correctly block the repaired Rust build
 
 The [independent Rust build source](../tools/reproduce_owned_rust_buffer_shape_source_build_v17.py),
@@ -59,7 +129,7 @@ controls, including false corrected-reference pins and attempts to
 start a compiler, native engine, thread, clock, archive, or candidate.
 Both frozen-context checks authenticate **43** plaintext owners.
 
-The [current plain-language results graph](evidence/candidate-current-overview-v60.svg),
+The [preserved version-60 results graph](evidence/candidate-current-overview-v60.svg),
 [frozen graph inputs](evidence/candidate-current-overview-v60.inputs.json),
 [machine-readable results](evidence/candidate-current-overview-v60.json),
 and [independent graph renderer](../tools/render_candidate_current_overview_v60.py)
