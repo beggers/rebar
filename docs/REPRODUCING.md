@@ -6,6 +6,138 @@ below are source-only or read-only unless a command explicitly says otherwise.
 The current results and charts remain in [the project README](../README.md);
 experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
+## Verify the actual independently built Zig engine
+
+The project's own parser, regular-expression engine, and C-API bridge
+were actually built in **two** independent phases. All **26** genuine
+compiler and native-inspection processes succeeded, and both phases
+produced byte-identical native engines and bridges. Verify the two
+public receipts only; do not inspect the private build location or
+start another build. A successful build is not a matching test: the
+corrected Zig candidate has **NOT RUN** against the frozen oracle.
+
+```bash
+REBAR_ZIG_V13_ROOT_RECEIPT=oracle/phase2/evidence/zig-scanner-phrase-source-build-v13-phase2-v13-zig-scanner-phrase-v4-private-root-receipt.json
+REBAR_ZIG_V13_BUILD_RECEIPT=oracle/phase2/evidence/zig-scanner-phrase-source-build-v13-phase2-v13-zig-scanner-phrase-v4-build-receipt.json
+
+sha256sum "$REBAR_ZIG_V13_ROOT_RECEIPT" "$REBAR_ZIG_V13_BUILD_RECEIPT"
+
+jq -e '
+  .status == "PASS"
+  and .actual_process_count == 26
+  and .phase_names == ["reference-a", "reference-b"]
+  and (.phases | length == 2)
+  and .source_snapshots_per_completed_phase == 3
+  and .source_sha256 == "673cb1a5a1b2b70d36e77032e01312fda2887828a8898900f1c91378fde8687e"
+  and .protocol_sha256 == "b8c3622d64041386c6202f0d980632c9e03a8c90c08455d1c38a50260ae68a40"
+  and .contract_sha256 == "6b0b918da55d55144c1384d915027f9ba360048c910a4225568abce6fd3efd15"
+  and .candidate_correctness == "NOT MEASURED"
+  and .candidate_workers_started == 0
+  and .native_activations == 0
+  and .compressed_archives_created == 0
+  and .holdout == "NOT OPENED"
+  and .performance == "NOT MEASURED"
+' "$REBAR_ZIG_V13_ROOT_RECEIPT"
+
+jq -e '
+  .status == "PASS"
+  and .private_root_receipt_sha256 == "03f661f87c9a061cb1fd1af49041b1dc5e616449ed91feb0575a1f013fafb3c2"
+  and .source_sha256 == "673cb1a5a1b2b70d36e77032e01312fda2887828a8898900f1c91378fde8687e"
+  and .protocol_sha256 == "b8c3622d64041386c6202f0d980632c9e03a8c90c08455d1c38a50260ae68a40"
+  and .contract_sha256 == "6b0b918da55d55144c1384d915027f9ba360048c910a4225568abce6fd3efd15"
+  and .candidate_correctness == "NOT MEASURED"
+  and .holdout == "NOT OPENED"
+  and .performance == "NOT MEASURED"
+  and (.complete_actual_build
+    | .status == "PASS"
+      and .actual_process_count == 26
+      and .actual_source_snapshot_count == 6
+      and .expected_process_count_only_after_success == 26
+      and (.build_phases | length == 2)
+      and (.processes
+        | length == 26
+          and (map(.pid) | unique | length == 26)
+          and all(.returncode == 0))
+      and .reproducibility.status == "PASS"
+      and .reproducibility.all_native_artifacts_byte_identical == true
+      and .reproducibility.compiler_process_count == 26
+      and .reproducibility.unique_compiler_process_count == 26
+      and .reproducibility.independent_phase_count == 2
+      and .reproducibility.source_snapshot_count == 6
+      and .reproducibility.native_roles.engine.byte_identical == true
+      and .reproducibility.native_roles.engine.bytes == 108888
+      and .reproducibility.native_roles.engine.sha256 == "caeb5ee7f5f9035f85e3ea2eb1d11396a1ca27f3c15ba585d7bbad40d9a87071"
+      and .reproducibility.native_roles.bridge.byte_identical == true
+      and .reproducibility.native_roles.bridge.bytes == 133656
+      and .reproducibility.native_roles.bridge.sha256 == "3dfd80e26773d83acfc83cba7f0df1b85a796ed0059aaa6d855ec0a3b5a93121"
+      and .external_regex_dependency_count == 0
+      and .cross_family_engine_count == 0
+      and .stdlib_regex_engine_count == 0
+      and .native_libraries_loaded == 0
+      and .native_activations == 0
+      and .network_requests == 0
+      and .candidate_workers_started == 0
+      and .candidate_matching == "NOT RUN"
+      and .candidate_correctness == "NOT MEASURED"
+      and .candidate_qualified == false
+      and .original_case_execution_denominator == 31237
+      and .original_suite_count == 13
+      and .benchmark_files_opened == 0
+      and .holdout_files_opened == 0
+      and .clock_samples == 0
+      and .holdout == "NOT OPENED"
+      and .performance == "NOT MEASURED")
+' "$REBAR_ZIG_V13_BUILD_RECEIPT"
+```
+
+## Verify the current actual Zig native-build graph
+
+These four read-only checks authenticate the complete version-85
+predecessor and both independently durable Zig build receipts. All
+**12** distinct full canonical proof records and **72** references
+reconstruct across the original six engine families. The actual
+**26**-process Zig build is **PASS**; corrected Zig matching is
+**NOT RUN**. The real Rust result remains **eight** completed groups,
+**12,942** verified checks, and **five** worker failures. These
+checks never access a private build directory, load a native library,
+run a matching test, take performance measurements, or open the
+holdout.
+
+Both graph self-tests reject **8,616** hostile controls.
+
+```bash
+REBAR_ZIG_V13_BUILD_GRAPH_PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+REBAR_ZIG_V13_BUILD_GRAPH_ARGS=(
+  --source-sha256 49c529c7f8b695c501dd03f9d35056c2853c73fcd36425718d8bfceb599b1a7d
+  --source-bytes 75354
+  --previous-source-sha256 90a66dfe3d239cba478b278e63dc5b90c65243117b5f961fe7b2f71c6999bfd0
+  --previous-inputs-sha256 80a2f6992f895145368581004f0bfccf69898467af01e32b854b7598380841bb
+  --previous-summary-sha256 f9e712902186d8df7b73d3b92aa6a45e3917cadb0d879e5d8d8c626ce07e4d32
+  --previous-svg-sha256 e69496318003461c0983b236e749a28c55c04ddcf593d84e388453947356c9a1
+  --root-receipt-sha256 03f661f87c9a061cb1fd1af49041b1dc5e616449ed91feb0575a1f013fafb3c2
+  --build-receipt-sha256 8d86fd25025caf440937679a7893aa2d72308f86eccd577073dbe502a341725d
+  --inputs-sha256 42c534652a350eada8704581ebf8aa52c77687b6904e9fb486f03c2f117cbe6c
+  --summary-sha256 ed728687e919410e6e9dae22ad3c976aa900d7a857f85231aaa93d0fc674f7cc
+  --svg-sha256 4bbf196a48997dbee3ea6b966d9a4eefce860962861675ad202506f685a80e55
+)
+
+"$REBAR_ZIG_V13_BUILD_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v86.py --self-test
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_ZIG_V13_BUILD_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v86.py --self-test
+
+"$REBAR_ZIG_V13_BUILD_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v86.py \
+  --verify-frozen-context "${REBAR_ZIG_V13_BUILD_GRAPH_ARGS[@]}"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_ZIG_V13_BUILD_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v86.py \
+  --verify-frozen-context "${REBAR_ZIG_V13_BUILD_GRAPH_ARGS[@]}"
+```
+
 ## Verify the frozen from-scratch Zig native build
 
 These four source-only checks authenticate the project's own Zig
@@ -14,9 +146,10 @@ C-API bridge; all four pushed version-84 graph owners; and the exact
 planned **two**-phase, **26**-process native build. Both self-tests
 reject **175** hostile controls. None of the four checks starts a
 compiler, loads a native library, builds the candidate, tests Zig,
-opens a compressed report, or changes the final holdout. The corrected Zig
-build and matching test are **NOT RUN**. The previous **1,764**
-observed differences remain a candidate **FAIL**.
+opens a compressed report, or changes the final holdout. The separate
+actual Zig native build is **PASS**; these source checks do not
+repeat it. Corrected candidate matching remains **NOT RUN**, and the
+previous **1,764** differences remain a candidate **FAIL**.
 
 ```bash
 REBAR_ZIG_V13_PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
@@ -49,7 +182,7 @@ env -i PATH=/usr/bin:/bin LC_ALL=C \
   --verify-frozen-context "${REBAR_ZIG_V13_ARGS[@]}"
 ```
 
-## Verify the current from-scratch Zig source-freeze graph
+## Verify the historical from-scratch Zig source-freeze graph
 
 These four read-only checks authenticate the complete version-84
 predecessor, all **three** independently written Zig build owners,
@@ -1047,8 +1180,10 @@ env -i PATH=/usr/bin:/bin LC_ALL=C \
 ## Evidence and reproduction
 
 - [Complete actual Rust failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [independently durable 13-worker result receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [complete plain-text 13-group failure and root-cause analysis](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json); **13** real workers completed all **31,237** original cases and observed **1,440** mismatches, **14,853** explicitly verified passes, and **zero** infrastructure failures. Receipt and analysis **PASS** preserve a candidate **FAIL**.
-- [Current independently generated first-party Zig source-freeze graph](../docs/evidence/candidate-current-overview-v85.svg), [complete Zig source-freeze graph inputs](../docs/evidence/candidate-current-overview-v85.inputs.json), [complete machine-readable first-party Zig results](../docs/evidence/candidate-current-overview-v85.json), and [reproducible Zig source-freeze renderer](../tools/render_candidate_current_overview_v85.py); preserve all **11** complete proof records, all **66** references, every actual Rust result, and Zig's independently written parser, compiler, engine, and bridge. Corrected Zig build and matching are **NOT RUN**.
-- [Frozen from-scratch Zig native-build controller](../tools/reproduce_owned_zig_scanner_phrase_source_build_v13.py), [complete first-party Zig build procedure](../oracle/phase2/ZIG-SCANNER-PHRASE-SOURCE-BUILD-V13.md), and [exact native Zig build contract](../oracle/phase2/zig-scanner-phrase-source-build-v13.json); **two** future build phases and **26** planned native processes, **zero** actual compilers, build **NOT RUN**, and corrected matching **NOT RUN**.
+- [Current independently generated actual Zig native-build graph](../docs/evidence/candidate-current-overview-v86.svg), [complete actual-build graph inputs](../docs/evidence/candidate-current-overview-v86.inputs.json), [complete machine-readable native-build results](../docs/evidence/candidate-current-overview-v86.json), and [reproducible actual-build renderer](../tools/render_candidate_current_overview_v86.py); preserve all **12** complete proof records, **72** references, **26** genuine successful Zig build processes, and the actual incomplete Rust campaign. Native build **PASS**; corrected matching **NOT RUN**.
+- [Actual independent Zig private-root receipt](../oracle/phase2/evidence/zig-scanner-phrase-source-build-v13-phase2-v13-zig-scanner-phrase-v4-private-root-receipt.json) and [complete public first-party Zig native-build receipt](../oracle/phase2/evidence/zig-scanner-phrase-source-build-v13-phase2-v13-zig-scanner-phrase-v4-build-receipt.json); **two** independently built phases, **26** distinct successful compiler and inspection processes, byte-identical own engines and own C bridges, build **PASS**, and corrected candidate matching **NOT RUN**.
+- [Historical first-party Zig source-freeze graph](../docs/evidence/candidate-current-overview-v85.svg), [complete historical Zig source-freeze graph inputs](../docs/evidence/candidate-current-overview-v85.inputs.json), [historical machine-readable first-party Zig results](../docs/evidence/candidate-current-overview-v85.json), and [reproducible historical Zig source-freeze renderer](../tools/render_candidate_current_overview_v85.py); preserve all **11** complete proof records and **66** references before the separately recorded actual first-party native build.
+- [Frozen from-scratch Zig native-build controller](../tools/reproduce_owned_zig_scanner_phrase_source_build_v13.py), [complete first-party Zig build procedure](../oracle/phase2/ZIG-SCANNER-PHRASE-SOURCE-BUILD-V13.md), and [exact native Zig build contract](../oracle/phase2/zig-scanner-phrase-source-build-v13.json); the separately recorded actual **two** phases and **26** native processes **PASS**. Corrected candidate matching is **NOT RUN**.
 - [Historical actual Rust results graph](../docs/evidence/candidate-current-overview-v84.svg), [complete historical actual-results inputs](../docs/evidence/candidate-current-overview-v84.inputs.json), [historical machine-readable Rust run results](../docs/evidence/candidate-current-overview-v84.json), and [reproducible actual-results renderer](../tools/render_candidate_current_overview_v84.py); preserve all **four** actual Rust attempts, **eight** completed groups, **12,942** verified cases, **five** worker failures, all **nine** prior proofs, and all **54** historical references without reopening compressed evidence.
 - [Actual corrected Rust run receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v15-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v15-failures-publication-receipt.json) and [preserved actual-run compressed report](../oracle/phase2/evidence/repaired-rust-original-campaign-v15-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v15-failures.json.gz); **13** distinct workers, **eight** completed groups, **12,942** verified cases, **five** infrastructure failures, complete restoration, and full-suite semantic mismatch **NOT MEASURED**. Receipt **PASS** records a candidate **FAIL**.
 - [Historical lossless proof-registry source graph](../docs/evidence/candidate-current-overview-v83.svg), [complete historical proof-registry graph inputs](../docs/evidence/candidate-current-overview-v83.inputs.json), [historical machine-readable proof-registry results](../docs/evidence/candidate-current-overview-v83.json), and [reproducible historical proof-registry renderer](../tools/render_candidate_current_overview_v83.py); retain all **nine** complete SHA-256-addressed proofs and **54** references before the separately recorded version-15 result.

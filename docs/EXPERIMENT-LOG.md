@@ -7,6 +7,76 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Record the independently built first-party Zig engine
+
+One real offline Zig build completed **two** independent phases,
+`reference-a` and `reference-b`. All **26** uniquely identified
+compiler and native-inspection processes succeeded. Each phase
+compiled the project's own complete Zig parser, compiler, and
+regular-expression engine and its own direct CPython C-API bridge.
+Both independently built engines match byte for byte; both
+independently built bridges also match byte for byte. The build uses
+no Python matching engine, `_sre`, external regular-expression
+package, another candidate, network, or runtime fallback.
+
+The complete first-party Zig native engine is **108,888** bytes with
+SHA-256
+`caeb5ee7f5f9035f85e3ea2eb1d11396a1ca27f3c15ba585d7bbad40d9a87071`.
+The complete first-party C-API bridge is **133,656** bytes with
+SHA-256
+`3dfd80e26773d83acfc83cba7f0df1b85a796ed0059aaa6d855ec0a3b5a93121`.
+Exactly **six** separately owned first-party source snapshots
+support the two actual builds. These verified native artifacts
+establish a reproducible **BUILD PASS**, not matching correctness.
+
+The [actual private-root build receipt](../oracle/phase2/evidence/zig-scanner-phrase-source-build-v13-phase2-v13-zig-scanner-phrase-v4-private-root-receipt.json)
+is **74,891** bytes with SHA-256
+`03f661f87c9a061cb1fd1af49041b1dc5e616449ed91feb0575a1f013fafb3c2`.
+The [independently durable complete build receipt](../oracle/phase2/evidence/zig-scanner-phrase-source-build-v13-phase2-v13-zig-scanner-phrase-v4-build-receipt.json)
+is **170,856** bytes with SHA-256
+`8d86fd25025caf440937679a7893aa2d72308f86eccd577073dbe502a341725d`.
+The complete receipt independently authenticates the exact root
+receipt, all **26** process identities, all return codes, both
+native engines, and both bridges. Verify only these two public
+receipts; do not inspect or reopen the private build root.
+
+No corrected Zig matching test has run. Its last completed original
+test remains **FAIL**, with **1,764** semantic differences and
+**3,711** individually verified passing cases. The public import
+still selects an unqualified prototype. Native build **PASS** does
+not prove the public API, full correctness, runtime independence,
+candidate qualification, or speed.
+
+The [current first-party Zig build-results graph](evidence/candidate-current-overview-v86.svg),
+[complete build-results graph inputs](evidence/candidate-current-overview-v86.inputs.json),
+[complete machine-readable native-build results](evidence/candidate-current-overview-v86.json),
+and [reproducible actual-build renderer](../tools/render_candidate_current_overview_v86.py)
+preserve all **11** preceding complete proof records and **66**
+references. One independently authenticated actual-build record adds
+**six** exact new references: **12** complete proofs and **72**
+references across the six first-party families. Authenticated
+evidence and history lower bounds are **277 / 282**.
+
+Both graph self-tests reject **8,616** hostile controls. The exact
+actual Zig build renderer, complete inputs, machine-readable build
+summary, and visible chart have respective SHA-256 values
+`49c529c7f8b695c501dd03f9d35056c2853c73fcd36425718d8bfceb599b1a7d`,
+`42c534652a350eada8704581ebf8aa52c77687b6904e9fb486f03c2f117cbe6c`,
+`ed728687e919410e6e9dae22ad3c976aa900d7a857f85231aaa93d0fc674f7cc`,
+and `4bbf196a48997dbee3ea6b966d9a4eefce860962861675ad202506f685a80e55`.
+Their exact sizes are **75,354**, **1,345,744**, **4,128,155**,
+and **6,214** bytes. The complete graph remains below **4,194,304**
+bytes without dropping any historical evidence or build outcome.
+
+The separate actual Rust run still completed **eight** of **13**
+groups, verified **12,942** checks, and suffered **five** worker
+failures; its full mismatch count remains **NOT MEASURED**. All
+**31,237** original checks and **8,244** separate extra checks are
+preserved. No candidate is fully qualified. Runtime independence is
+**NOT ESTABLISHED**; speed, memory, and statistical confidence are
+**NOT MEASURED**; and the proposed **4,194,304**-case holdout
+remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze an independently written Zig engine without claiming a build
 
 The [first-party Zig native-build controller](../tools/reproduce_owned_zig_scanner_phrase_source_build_v13.py),

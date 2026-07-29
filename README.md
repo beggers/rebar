@@ -16,7 +16,7 @@ regular-expression package, or another candidate does not count.
 **Six** from-scratch engines. **Zero** fully compatible replacements.
 Speed versus Python: **NOT MEASURED**. There is no winner.
 
-![Python compared with six independently written regular-expression engines. Rust completed eight of 13 test groups, while the corrected from-scratch Zig engine has not yet been built. No replacement has passed all tests or measured a speedup.](docs/evidence/candidate-current-overview-v85.svg)
+![Python compared with six independently written regular-expression engines. Zig's own native engine now builds reproducibly, but its compatibility has not yet been retested. No replacement has passed all tests or measured a speedup.](docs/evidence/candidate-current-overview-v86.svg)
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
@@ -24,7 +24,7 @@ Speed versus Python: **NOT MEASURED**. There is no winner.
 | Public `rebar` import | FAIL; still selects an unqualified Zig prototype | NOT MEASURED |
 | Rust | FAIL; 8/13 groups; 12,942/31,237 verified | NOT MEASURED |
 | C | FAIL; 1,230 differences | NOT MEASURED |
-| Zig | FAIL; 1,764 differences; corrected build not run | NOT MEASURED |
+| Zig | FAIL; 1,764 differences; native build passes | NOT MEASURED |
 | C++ | FAIL; 2,308 differences and five worker failures | NOT MEASURED |
 | Go | FAIL; 4,518 differences and four worker failures | NOT MEASURED |
 | Fortran | NOT TESTED | NOT MEASURED |
@@ -34,12 +34,12 @@ groups. A separate **8,244**-case collection covers additional real-world
 behavior; two independent Python reference runs each pass all **8,244**.
 These are separate test sets and are never combined or counted twice.
 
-The corrected, independently written C engine already passed **14**
-reproducible build checks. A separately traced Rust build passed **28**
-checks and recorded its compiled engine's identity. Neither engine has
-passed its full compatibility test. Rust finished **8** of **13**
-groups, verified **12,942** cases, and had **5** worker failures.
-Full-suite matching is **NOT MEASURED**; its earlier losses remain.
+First-party native builds passed **14** C checks, **28** Rust checks,
+and **26** Zig checks. No successful build proves compatibility.
+Rust finished **8** of **13** groups and verified **12,942** cases;
+**5** workers failed. The corrected Zig matching test is **NOT RUN**.
+Zig's earlier **1,764** differences remain; no candidate qualifies.
+Full-suite matching is **NOT MEASURED**.
 Runtime independence is **NOT ESTABLISHED**.
 
 ## Detailed correctness
