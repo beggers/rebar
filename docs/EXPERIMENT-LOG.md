@@ -7,6 +7,62 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Record the corrected Rust runner's real recovery failure
+
+The frozen version-9 runner was committed and pushed before its one
+authorized execution. It correctly verified all **28** real build
+processes, read and decompressed the genuine build report exactly once,
+and then created one owner-only, empty recovery directory. An inherited
+version-2 helper still accepted only version-2 directory names and
+rejected the real version-9 directory before attempting a lock.
+
+The exact original helper error is:
+
+> accept only one exact owner-only Rust campaign root
+
+The runner's final cleanup exposed a separate outer error:
+
+> never publish without a prepared and fully restored journal
+
+The original error survives in **13** synthetic error records. None of
+those records is an actual test: all have `actual_worker_started=false`,
+`fully_observed=false`, and no process. Their `worker_attempted=true`
+flags describe placeholders, not real worker processes. The actual
+ledger reports **zero** attempted groups, **zero** candidate workers,
+**zero** native activations, **zero** locks, **zero** recovery journals,
+and **zero** original-file replacements. All four original file hashes
+and identities are unchanged. The empty recovery directory was really
+created and remains recorded; no journal-based restoration occurred.
+
+The [exact original controller output](../oracle/phase2/evidence/repaired-rust-original-campaign-v9-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure.json)
+has SHA-256
+`70b9089b16faa499da3688d466d0355b87ca42d0382c9da59e08f063a7990471`
+and **8,075** bytes. Its [independently verified, full-placeholder observation](../oracle/phase2/evidence/repaired-rust-original-campaign-v9-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure-observation.json)
+has SHA-256
+`687d401e1112218de26e5dd0525e8c60cb79b5f4b204272cd8c91b83182eb3f6`
+and **15,992** bytes. Observation **PASS** authenticates a real
+controller **FAIL**; it is not a passing Rust candidate.
+
+The [current failure overview](evidence/candidate-current-overview-v56.svg),
+[exact graph inputs](evidence/candidate-current-overview-v56.inputs.json),
+[complete machine-readable failure evidence](evidence/candidate-current-overview-v56.json),
+and [independently reproducible renderer](../tools/render_candidate_current_overview_v56.py)
+retain both runner failures and the actual older Rust result of
+**928** differences. The renderer rejects **3,711** hostile source
+controls. Its source, inputs, summary, and chart have SHA-256 values
+`991dee73be4c847eab8ebeaf27e04992d38310e8b0bcb97b4a6405ccc149b8a2`,
+`63446b32a01b2a731ed8f6ddf4ffbb7077fa1bc1ede3ad081012ba7a0611b554`,
+`cceb572a6daf4683fd01bd758cbc4206b2dfc5b5eb8f5c45bd2de07b9934c1fe`,
+and `7ea80defb808389c1b00f58731e0b74b3958c72e2814368d94b9ef44e6a1a5b1`,
+respectively. The actual authenticated evidence and history lower bounds
+are **191 / 196**.
+
+All **31,237** original checks and **13** groups remain unchanged.
+The repaired candidate's matching is **NOT RUN**; no replacement
+qualifies. Runtime non-delegation is **NOT ESTABLISHED**. Speed, memory,
+and undefined behavior are **NOT MEASURED**. The **4,194,304**-example
+holdout remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the corrected complete Rust test
 
 The first Rust test runner rejected a real build because it expected a

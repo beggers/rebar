@@ -15,16 +15,16 @@ Python, another regular-expression package, or another candidate does not count.
 **Six** from-scratch engine designs. **Zero** fully compatible
 replacements. Speed compared with Python: **NOT MEASURED**.
 
-![Six from-scratch regular-expression engines; a corrected full-suite Rust test is ready but has not run; the previous runner failure and 928 genuine previous Rust differences remain visible; no engine qualifies; speed is unmeasured; the 4.2-million-example final comparison remains unopened](docs/evidence/candidate-current-overview-v55.svg)
+![Six from-scratch regular-expression engines; the repaired Rust test stops on a verified recovery-directory error before starting any case; the previous 928 genuine Rust differences remain visible; no engine qualifies; speed is unmeasured; the 4.2-million-example final comparison remains unopened](docs/evidence/candidate-current-overview-v56.svg)
 
 The new Rust engine, including both first-party compatibility repairs,
 has successfully completed an independently reproducible offline build.
-Its first complete-test attempt exposed a runner bug before the engine
-was activated or any case was tested. A corrected full-suite runner is
-now independently frozen and verified against the real build records.
-**The newly built engine has not yet taken the compatibility test.**
-All four original files remained unchanged; the first failure is
-preserved in full.
+Its first complete-test attempt exposed a build-record bug. The next
+runner fixed that bug, then exposed an older recovery helper that
+rejected the new runner's directory. Neither attempt activated the
+engine or started a test. **The newly built engine has not yet taken
+the compatibility test.** Both failures are preserved, and all four
+original files remain unchanged.
 The last complete Rust test found **928** differences across all
 **13** groups of Python's unchanged **31,237** original checks.
 
@@ -36,7 +36,7 @@ engine delegates matching is **NOT ESTABLISHED**. There is no winner.
 | --- | --- | --- | --- |
 | Python `re` | Python 3.14.6; independently verified reference | Reference checks agree | Reference; not timed |
 | Public `rebar` import | Still selects an unqualified Zig prototype | FAIL; `__version__` missing | NOT MEASURED |
-| Rust | First-party engine built; corrected full-suite test frozen | New engine NOT TESTED; previous run: 928 differences | NOT MEASURED |
+| Rust | First-party engine built; recovery helper stopped full-suite test | New engine NOT TESTED; previous run: 928 differences | NOT MEASURED |
 | C | First-party engine; corrected test prepared | Previous run: 1,230 differences | NOT MEASURED |
 | Zig | First-party engine; corrected test prepared | Previous run: 1,764 differences | NOT MEASURED |
 | C++ | First-party engine | Previous run: 2,308 differences; five worker failures | NOT MEASURED |

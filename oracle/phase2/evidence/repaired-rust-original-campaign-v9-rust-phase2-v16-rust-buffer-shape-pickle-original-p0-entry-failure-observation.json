@@ -1,0 +1,259 @@
+{
+  "schema": "rebar-owned-repaired-rust-original-campaign-v9-entry-failure-observation-v1",
+  "version": 1,
+  "status": "PASS",
+  "observation_pass_means": "DURABLE INDEPENDENT OBSERVATION OF A FAILED CANDIDATE CONTROLLER; NOT A PASSING CANDIDATE",
+  "observed_operation": "ONE AUTHORIZED RUST V9 ORIGINAL-CAMPAIGN RUN",
+  "actual_pushed_runner_head": "5f79b6c337c5644112e80875ecd448f13660dd84",
+  "actual_pushed_runner_head_provenance": "ROOT ATTESTED; OBSERVER DID NOT EXECUTE GIT",
+  "frozen_runner": {
+    "source": {
+      "path": "tools/run_owned_repaired_rust_original_campaign_v9.py",
+      "sha256": "629f6d361e2e3cd2eeb762223076d5511707d52241189fc4bd4c73045bb9287c",
+      "bytes": 173643
+    },
+    "protocol": {
+      "path": "oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V9.md",
+      "sha256": "9dfec149359a2088e384da1b3b5851fc8ac0c5f6ed8bfdb1414671a7ecbf6850",
+      "bytes": 12690
+    },
+    "contract": {
+      "path": "oracle/phase2/repaired-rust-original-campaign-v9.json",
+      "sha256": "782576f45cbc7bc97775233051d82889778f095a4595e336ec4afb5f2ffc3a82",
+      "bytes": 15235
+    }
+  },
+  "frozen_current_v55_graph": {
+    "version": 55,
+    "renderer": {
+      "path": "tools/render_candidate_current_overview_v55.py",
+      "sha256": "75b0a1d1530aa99d914e2730ff99510bd7820716bb6c8d7d8376c03753625da8",
+      "bytes": 69062
+    },
+    "inputs": {
+      "path": "docs/evidence/candidate-current-overview-v55.inputs.json",
+      "sha256": "845cebe4110369ff5b25165eb3b3b6e1df5ce507b9536f1c278b419a7daa8e8b",
+      "bytes": 648992
+    },
+    "summary": {
+      "path": "docs/evidence/candidate-current-overview-v55.json",
+      "sha256": "14d4408e8791d212cf4976f4e4083674d1dc9563367a0cef829c6c8ca961b508",
+      "bytes": 1794857
+    },
+    "chart": {
+      "path": "docs/evidence/candidate-current-overview-v55.svg",
+      "sha256": "43098acf7bb5240271d9bcec627f92bf80ebb2a7701d16221f8c419f342369f8",
+      "bytes": 13997
+    },
+    "authenticated_evidence_owner_lower_bound": 189,
+    "authenticated_history_reference_lower_bound": 194,
+    "global_evidence_owner_census": "NOT MEASURED"
+  },
+  "exact_recorded_controller_stdout": {
+    "path": "oracle/phase2/evidence/repaired-rust-original-campaign-v9-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure.json",
+    "sha256": "70b9089b16faa499da3688d466d0355b87ca42d0382c9da59e08f063a7990471",
+    "bytes": 8075,
+    "device": 2064,
+    "inode": 525025,
+    "mode": "0600",
+    "nlink": 1,
+    "schema": "rebar-owned-repaired-rust-original-campaign-v9-entry-failure",
+    "status": "FAIL",
+    "source_only_zero_effects_claimed": false
+  },
+  "observed_failure": {
+    "schema": "rebar-owned-repaired-rust-original-campaign-v9-entry-failure",
+    "status": "FAIL",
+    "actual_operation_mode": "AUTHORIZED RUN",
+    "error_type": "CampaignError",
+    "error_message": "never publish without a prepared and fully restored journal",
+    "source_line": 3111,
+    "failure_category": "OWNER-ONLY RECOVERY ROOT CREATED; INCOMPATIBLE HISTORICAL HELPER PREFIX REJECTS ROOT BEFORE LOCK OR ACTIVATION",
+    "candidate_matching": "NOT RUN",
+    "full_original_case_denominator": 31237,
+    "original_suite_count": 13,
+    "named_private_waiver_count": 13,
+    "additional_private_waiver_count": 0,
+    "attempted_suite_count": 0,
+    "started_suite_count": 0,
+    "completed_suite_count": 0,
+    "actual_candidate_workers": 0,
+    "actual_native_activations": 0,
+    "semantic_mismatch_count": "NOT MEASURED",
+    "verified_passing_case_count": "NOT MEASURED",
+    "candidate_qualified": false
+  },
+  "actual_failed_suite_placeholders": {
+    "provenance": "ALL 13 RETAINED ROWS FROM THE AUTHENTICATED ACTUAL CONTROLLER FAILURE; NO ROW REPRESENTS A STARTED OR OBSERVED CANDIDATE WORKER",
+    "retained_suite_count": 13,
+    "case_execution_denominator": 31237,
+    "shared_inner_error_message": "accept only one exact owner-only Rust campaign root",
+    "all_rows_are_synthetic_infrastructure_placeholders": true,
+    "placeholder_worker_attempted_means_a_real_worker_was_attempted": false,
+    "placeholder_verified_passing_count_is_a_real_observed_pass_count": false,
+    "actual_ledger_attempted_suite_count": 0,
+    "actual_ledger_started_suite_count": 0,
+    "actual_ledger_fully_observed_suite_count": 0,
+    "actual_ledger_candidate_workers": 0,
+    "actual_ledger_worker_attempts": [],
+    "actual_ledger_worker_process_ids": [],
+    "rows": [
+      {"suite": "original_bounded_v5", "case_execution_denominator": 151, "error_message": "accept only one exact owner-only Rust campaign root", "failure_class": "INFRASTRUCTURE FAILURE", "worker_attempted": true, "actual_worker_started": false, "fully_observed": false, "process": null, "mismatch_count": "NOT MEASURED", "verified_passing_case_count": 0},
+      {"suite": "public_v3", "case_execution_denominator": 864, "error_message": "accept only one exact owner-only Rust campaign root", "failure_class": "INFRASTRUCTURE FAILURE", "worker_attempted": true, "actual_worker_started": false, "fully_observed": false, "process": null, "mismatch_count": "NOT MEASURED", "verified_passing_case_count": 0},
+      {"suite": "scanner_v3", "case_execution_denominator": 1024, "error_message": "accept only one exact owner-only Rust campaign root", "failure_class": "INFRASTRUCTURE FAILURE", "worker_attempted": true, "actual_worker_started": false, "fully_observed": false, "process": null, "mismatch_count": "NOT MEASURED", "verified_passing_case_count": 0},
+      {"suite": "buffer_v3", "case_execution_denominator": 768, "error_message": "accept only one exact owner-only Rust campaign root", "failure_class": "INFRASTRUCTURE FAILURE", "worker_attempted": true, "actual_worker_started": false, "fully_observed": false, "process": null, "mismatch_count": "NOT MEASURED", "verified_passing_case_count": 0},
+      {"suite": "managed_v1", "case_execution_denominator": 1024, "error_message": "accept only one exact owner-only Rust campaign root", "failure_class": "INFRASTRUCTURE FAILURE", "worker_attempted": true, "actual_worker_started": false, "fully_observed": false, "process": null, "mismatch_count": "NOT MEASURED", "verified_passing_case_count": 0},
+      {"suite": "scanner_verbose_v1", "case_execution_denominator": 2854, "error_message": "accept only one exact owner-only Rust campaign root", "failure_class": "INFRASTRUCTURE FAILURE", "worker_attempted": true, "actual_worker_started": false, "fully_observed": false, "process": null, "mismatch_count": "NOT MEASURED", "verified_passing_case_count": 0},
+      {"suite": "public_types_v1", "case_execution_denominator": 6912, "error_message": "accept only one exact owner-only Rust campaign root", "failure_class": "INFRASTRUCTURE FAILURE", "worker_attempted": true, "actual_worker_started": false, "fully_observed": false, "process": null, "mismatch_count": "NOT MEASURED", "verified_passing_case_count": 0},
+      {"suite": "substitution_v2", "case_execution_denominator": 5120, "error_message": "accept only one exact owner-only Rust campaign root", "failure_class": "INFRASTRUCTURE FAILURE", "worker_attempted": true, "actual_worker_started": false, "fully_observed": false, "process": null, "mismatch_count": "NOT MEASURED", "verified_passing_case_count": 0},
+      {"suite": "shape_v2", "case_execution_denominator": 10240, "error_message": "accept only one exact owner-only Rust campaign root", "failure_class": "INFRASTRUCTURE FAILURE", "worker_attempted": true, "actual_worker_started": false, "fully_observed": false, "process": null, "mismatch_count": "NOT MEASURED", "verified_passing_case_count": 0},
+      {"suite": "public_surface_v19", "case_execution_denominator": 1376, "error_message": "accept only one exact owner-only Rust campaign root", "failure_class": "INFRASTRUCTURE FAILURE", "worker_attempted": true, "actual_worker_started": false, "fully_observed": false, "process": null, "mismatch_count": "NOT MEASURED", "verified_passing_case_count": 0},
+      {"suite": "subinterpreter_v2", "case_execution_denominator": 128, "error_message": "accept only one exact owner-only Rust campaign root", "failure_class": "INFRASTRUCTURE FAILURE", "worker_attempted": true, "actual_worker_started": false, "fully_observed": false, "process": null, "mismatch_count": "NOT MEASURED", "verified_passing_case_count": 0},
+      {"suite": "pep688_v4", "case_execution_denominator": 264, "error_message": "accept only one exact owner-only Rust campaign root", "failure_class": "INFRASTRUCTURE FAILURE", "worker_attempted": true, "actual_worker_started": false, "fully_observed": false, "process": null, "mismatch_count": "NOT MEASURED", "verified_passing_case_count": 0},
+      {"suite": "threaded_pattern_v1", "case_execution_denominator": 512, "error_message": "accept only one exact owner-only Rust campaign root", "failure_class": "INFRASTRUCTURE FAILURE", "worker_attempted": true, "actual_worker_started": false, "fully_observed": false, "process": null, "mismatch_count": "NOT MEASURED", "verified_passing_case_count": 0}
+    ]
+  },
+  "root_cause": {
+    "summary": "The V9 campaign reuses the frozen V7 recovery helper without rebinding the frozen V2 helper's version-2-only private-directory prefix to the real version-9 recovery root.",
+    "verified_source_cause": "V7 open_recovery_lock creates and counts the exact V9 root, then calls V2 private_directory before setting recovery_lock_attempted. V2 checked_private_root accepts only the incompatible rebar-phase2-repaired-rust-original-campaign-v2- prefix. V9 configures the historical V2 label and roles but never rebinds PRIVATE_PREFIX. The caller-provided V9 root therefore cannot pass the V2 directory check.",
+    "historical_v2_source": {
+      "path": "tools/run_owned_repaired_rust_original_campaign_v2.py",
+      "sha256": "a6ffce3eb9ff09f27f3e35f84b35b9d1aba6e29dae225c56c036de85e089b7b3",
+      "private_prefix_line": 55,
+      "private_prefix": "rebar-phase2-repaired-rust-original-campaign-v2-",
+      "root_validator_line": 1371
+    },
+    "historical_v7_source": {
+      "path": "tools/run_owned_repaired_rust_original_campaign_v7.py",
+      "sha256": "eb6738e6f1c2315aa044c8a4a7978e6df750a9ef359e9ff0551df5f92ab23104",
+      "recovery_lock_function_line": 7762
+    },
+    "v9_historical_helper_configuration_line": 2334,
+    "v9_final_masking_requirement_line": 3111,
+    "verified_effect_sequence": [
+      "ONE COMPLETE V16 BUILD ARCHIVE READ AND GZIP INFLATION",
+      "GENUINE V16 PRIVATE BUILD AND FIRST-PARTY NATIVE PROVENANCE AUTHENTICATED",
+      "HISTORICAL V2 HELPER SOURCE AND MODULE PREFLIGHT PASS",
+      "EXACTLY ONE OWNER-ONLY V9 RECOVERY ROOT CREATED",
+      "V2 VERSION-2-ONLY ROOT VALIDATOR REACHED BEFORE ANY LOCK ATTEMPT",
+      "NO LOCK, NO JOURNAL, NO ACTIVATION, NO WORKER, NO TARGET REPLACEMENT",
+      "FINAL PREPARED-AND-RESTORED-JOURNAL REQUIREMENT MASKS THE INNER TRACEBACK; ALL 13 SYNTHETIC FAILURE ROWS PRESERVE THE INNER ERROR MESSAGE"
+    ],
+    "original_inner_exception": "accept only one exact owner-only Rust campaign root",
+    "original_inner_exception_provenance": "IDENTICALLY RECORDED IN EACH OF THE 13 AUTHENTICATED SYNTHETIC RETAINED-SUITE ROWS; NONE REPRESENTS AN EXECUTED WORKER",
+    "original_inner_traceback": "MASKED BY THE FINAL PREPARED-JOURNAL REQUIREMENT; NOT INVENTED",
+    "outer_exception": "never publish without a prepared and fully restored journal",
+    "required_future_fix": "Freeze a new append-only campaign version that rebinds the historical V2 helper's private prefix before private_directory, verifies the exact caller-pinned owner-only versioned root, covers real helper prefix acceptance and rejection in source-only controls, and retains original-inode recovery and all complete original CPython cases.",
+    "withdrawn_oracle_cases": 0,
+    "new_private_waivers": 0
+  },
+  "actual_build_archive_effects": {
+    "compressed_build_archive_sha256": "c24c0e1544003b231bac3e45601faabfd1c1e5c181d89fce7d660a2df4a29270",
+    "actual_archive_read_count": 1,
+    "actual_archive_inflation_count": 1,
+    "compressed_bytes_read": 109671,
+    "uncompressed_bytes_read": 765382,
+    "uncompressed_sha256": "c89af182cdb8e98dc05a4538e620c1db8404fbd7a11a3d43fea54f9da609f9c5",
+    "archive_read_by_independent_observer": false
+  },
+  "actual_historical_helper_effects": {
+    "historical_v2_helper_preflight_attempted": true,
+    "historical_v2_helper_source_preflight_status": "PASS",
+    "historical_v2_helper_module_preflight_status": "PASS"
+  },
+  "actual_target_effects": {
+    "canonical_target_replacements": 0,
+    "actual_native_activations": 0,
+    "activated_target_roles": [],
+    "recovery_root_creation_attempted": true,
+    "recovery_roots_created": 1,
+    "recovery_root": {
+      "path": "/tmp/rebar-phase2-repaired-rust-original-campaign-v9-phase2-v16-rust-buffer-shape-pickle-original-p0",
+      "device": 2049,
+      "inode": 11673090,
+      "mode": "0700",
+      "directory_is_empty": true,
+      "directory_identity_provenance": "INDEPENDENTLY ATTESTED BY ROOT; OBSERVER DID NOT OPEN, ENUMERATE, OR MODIFY THE DIRECTORY"
+    },
+    "recovery_lock_attempted": false,
+    "recovery_locks_acquired": 0,
+    "recovery_journal_creation_attempted": false,
+    "recovery_journals_created": 0,
+    "recovery_journal_announced": false,
+    "restoration_attempted": false,
+    "restored_target_roles": [],
+    "all_four_original_targets_unchanged_without_recovery": true,
+    "all_four_original_targets_restored_by_a_recovery": false,
+    "all_four_original_targets_restored": false,
+    "original_target_identity_provenance": "INDEPENDENTLY ATTESTED BY ROOT BEFORE AND AFTER THE RUN; OBSERVER DID NOT ACCESS THE CANDIDATE TARGETS",
+    "original_targets": [
+      {
+        "role": "bridge_source",
+        "path": "candidates/rust/py_bridge.c",
+        "sha256": "f8a0918aaf8a78f363f6d755770636d26acd45fb83c9abcf997a6e052748ea8b",
+        "bytes": 175676,
+        "device": 2064,
+        "inode": 419054,
+        "mode": "0600",
+        "nlink": 1
+      },
+      {
+        "role": "adapter",
+        "path": "candidates/rust_candidate.py",
+        "sha256": "6fb66ef6c3f143475426dd3d5b97c52dbe251f8d2ddd0ef3d5de7ec553a0351b",
+        "bytes": 31151,
+        "device": 2064,
+        "inode": 428100,
+        "mode": "0600",
+        "nlink": 1
+      },
+      {
+        "role": "engine",
+        "path": "candidates/_rust_engine.so",
+        "sha256": "f8cd2e8ecac5ab6a12eb933e6d1d234700a71ab64fc1578800f46ce93d25b8b4",
+        "bytes": 660440,
+        "device": 2064,
+        "inode": 430563,
+        "mode": "0755",
+        "nlink": 1
+      },
+      {
+        "role": "bridge",
+        "path": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "6fdd114c812b63acce88ef56b8077da5a260c8719ffe2058d29e5be418a26f15",
+        "bytes": 144992,
+        "device": 2064,
+        "inode": 430629,
+        "mode": "0755",
+        "nlink": 1
+      }
+    ]
+  },
+  "historical_actual_candidate_matching": {
+    "status": "FAIL",
+    "semantic_mismatch_count": 928,
+    "verified_passing_case_count": 8965,
+    "completed_suite_count": 13,
+    "distinct_worker_process_id_count": 13,
+    "passing_cases_derived_by_subtraction": false
+  },
+  "actual_reference_workers": 0,
+  "actual_clock_samples": 0,
+  "actual_timing_trials": 0,
+  "hidden_cases_read": 0,
+  "authenticated_evidence_owner_lower_bound_before_publication": 189,
+  "authenticated_history_reference_lower_bound_before_publication": 194,
+  "new_actual_observation_owner_count": 2,
+  "resulting_authenticated_evidence_owner_lower_bound": 191,
+  "resulting_authenticated_history_reference_lower_bound": 196,
+  "global_evidence_owner_census": "NOT MEASURED",
+  "from_scratch_candidate_family_count": 6,
+  "qualified_candidate_count": 0,
+  "runtime_non_delegation": "NOT ESTABLISHED",
+  "performance": "NOT MEASURED",
+  "memory": "NOT MEASURED",
+  "confidence_intervals": "NOT MEASURED",
+  "undefined_behavior": "NOT MEASURED",
+  "holdout": "NOT OPENED",
+  "winner_selected": false
+}
