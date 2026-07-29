@@ -55,10 +55,14 @@ a passing replacement or a speed measurement.
 
 ## Final speed comparison
 
-The proposed final test contains **4,194,304** unseen cases and **24**
-balanced rounds. Its cases are **NOT FROZEN**, **NOT GENERATED**, and
-**NOT OPENED**. Speed, memory, and statistical confidence are
-**NOT MEASURED**.
+The latest proposed final test covers **14,155,776** unseen cases across
+**36** Python operations, **24** kinds of regular expressions, and both
+text and byte-oriented inputs. All four participants would run every case
+in **24** balanced rounds. The earlier **4,194,304**-case proposal is
+preserved.
+
+The larger test is **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+Speed, memory, and statistical confidence are **NOT MEASURED**.
 
 Do not start this test until three independent engines pass both test
 sets, the original two-billion-character checks, public API checks,
@@ -75,7 +79,7 @@ slowdown over **20%**.
 - [Six independently written engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Reproducible Rust compatibility-failure diagnostics](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V16.md); new full-suite run not yet performed.
 - [From-scratch, one-pass Rust search experiment](oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md); not yet built, tested, or timed.
-- [Expanded, unopened final speed-test protocol](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
+- [Larger, unopened 14,155,776-case speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md) and [preserved earlier proposal](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256
   `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`;
   [later clarifications](AMENDMENTS.md).

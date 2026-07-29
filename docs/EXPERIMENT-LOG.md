@@ -4,8 +4,37 @@ This log preserves the chronological work behind the concise [README](../README.
 
 Historical entries describe an earlier, retired benchmark. It opened once,
 exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
-must never be reused. The new, expanded 4,194,304-case final comparison is
-a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+must never be reused. The separate **4,194,304**-case proposal and the
+newer **14,155,776**-case proposal are both **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
+## Expand the sealed final comparison without opening it
+
+The [larger final-comparison proposal](../oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md)
+and [machine-readable contract](../oracle/phase3/expanded-sealed-holdout-v1.json)
+define **14,155,776** proposed cases: **36** Python operations,
+**24** pattern families, **four** valid input types, **four** valid
+operation-specific lifecycle states, and **1,024** variants per group.
+This is **3.375** times the
+[previously preserved 4,194,304-case proposal](EXPANDED-HOLDOUT-PROTOCOL-V1.md).
+Neither proposal generates or reveals a test case, hidden seed, or result.
+
+Every proposed case would be checked against unchanged Python **3.14.6**
+and timed in **24** completely balanced rounds. Python and three
+independently written candidates would produce **1,358,954,496**
+correctness-gated timing observations. The raw clock values alone would
+require **10.125 GiB**; actual runtime, compressed size, memory use,
+statistical power, and performance remain **NOT MEASURED**. The test
+cannot begin before all three first-party engines pass both complete
+correctness suites and a live audit against Python's matcher, external
+regular-expression packages, and hidden fallback.
+
+The [isolated proposal verifier](../tools/verify_expanded_sealed_holdout_v1.py)
+passes both source-only modes in ordinary and empty environments. Its
+**25** hostile checks and **nine** blocked external effects confirm
+that verifying the proposal does not load an engine, start a process,
+measure a clock, open the final test, or write a file. The proposal is
+**NOT FROZEN**, **NOT GENERATED**, **NOT OPENED**, and **NOT RUN**.
 
 ## Freeze reproducible Rust compatibility-failure diagnostics
 
