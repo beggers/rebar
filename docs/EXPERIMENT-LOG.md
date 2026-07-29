@@ -8,6 +8,23 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze precise first-party Rust scanner compatibility
+
+The [version-22 Rust scanner-signature repair](../oracle/phase2/RUST-SCANNER-SIGNATURE-SOURCE-REPAIR-V22.md)
+uses the complete, authenticated version-21 Rust bridge as its base.
+It changes exactly two native method descriptions so that the four
+bound and unbound scanner signatures agree with isolated CPython
+**3.14.6**, including Python's exact empty documentation.
+
+The native matcher, compiled program, scanner type name, engine,
+captures, and runtime guard are unchanged. A deterministic
+in-memory source transformation produces SHA-256
+`6639104f618b5a905d0883b02e5183b9a3b6ac6db0587b1dfa7b074990f3bb75`.
+The four signature cases are source-based predictions, not recorded
+candidate results. This variant is **NOT BUILT** and candidate
+matching is **NOT RUN**. All **14,155,776** proposed final cases
+remain unopened; speed is **NOT MEASURED**.
+
 ## Freeze the full test for the current Rust engine
 
 The [version-17 first-party Rust campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V17.md)
