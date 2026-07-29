@@ -8,6 +8,35 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Record the actual first-party Rust captured-result build
+
+The [version-21 cumulative Rust build](../oracle/phase2/RUST-CAPTURED-FINDALL-SOURCE-BUILD-V21.md)
+actually compiled the project's own Rust parser, matching engine,
+single-pass literal search, and improved two-capture result
+construction. Two independent offline phases completed all **28**
+compiler and binary-inspection processes. Both phases reproduced
+the same first-party engine and the exact cumulative captured-result
+bridge.
+
+The [actual captured-result build receipt](../oracle/phase2/evidence/native-source-build-v21-rust-phase2-v21-rust-captured-findall-root-provenance-publication-receipt.json)
+has SHA-256
+`bc3ebdc835ef6a89d351c4541863274d410e2685d35eacdc9668f4bf3a474102`.
+The [separate captured-result native-root receipt](../oracle/phase2/evidence/native-source-build-v21-rust-phase2-v21-rust-captured-findall-root-provenance-root-provenance-receipt.json)
+has SHA-256
+`73cee9c0a4f44d113da96b505eb0e9224577584b75c347e6fd351995d1d09a4e`.
+The producer-recorded, preserved compressed report has SHA-256
+`19e6bb346fd0a6a510772db6071899696bce2906cc92674a2bd757047cbf9372`.
+Its contents are not reopened to verify the two small public receipts.
+
+This result is a genuine **BUILD PASS** and **ROOT-PROVENANCE PASS**
+for the cumulative captured-result variant, not a compatibility
+or timing result. No matching worker, Python regex engine, external
+package, final benchmark, or timer ran. The earlier version-87
+headline chart is explicitly preserved as the snapshot before this
+build. The final **14,155,776**-case proposal remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**. Speed and full compatibility
+are **NOT MEASURED**.
+
 ## Publish the reproducible, plain-language headline comparison
 
 The [generated six-engine comparison](evidence/candidate-current-overview-v87.svg),

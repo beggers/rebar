@@ -18,6 +18,10 @@ Speed versus Python: **NOT MEASURED**. There is no winner.
 
 ![Python compared with six independently written regular-expression engines. The new Rust engine builds reproducibly, no replacement has passed every compatibility test, no speed has been measured, and the 14-million-case final comparison remains unopened.](docs/evidence/candidate-current-overview-v87.svg)
 
+This reproducible chart predates the newer captured-result Rust build.
+Both Rust variants now build successfully; neither has passed all
+compatibility checks or been timed.
+
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
 | Python `re` | Baseline; reference checks pass | Not timed |
@@ -35,9 +39,9 @@ behavior; two independent Python reference runs each pass all **8,244**.
 These are separate test sets and are never combined or counted twice.
 
 First-party native source builds recorded **14** C, **28** Rust, and
-**26** Zig compiler and binary-inspection steps. The new Rust literal-search
-engine also passed both independent build phases; its captured-result
-variant has not yet been built. No successful build proves compatibility.
+**26** Zig compiler and binary-inspection steps. Both the literal-search
+and captured-result Rust engines passed their own independent build
+phases. No successful build proves compatibility.
 Rust finished **8** of **13** groups and verified **12,942** cases;
 **5** workers failed. The corrected Zig matching test is **NOT RUN**.
 Zig's earlier **1,764** differences remain; no candidate qualifies.
@@ -82,7 +86,7 @@ slowdown over **20%**.
 - [Guarded first-party C correctness](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V5.md) and [reproducible native source-build procedure](oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md); authenticated native-root evidence still required.
 - [Guard-clean, from-scratch Zig candidate and correctness procedure](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V5.md); full-suite rerun not yet performed.
 - [Reproducible Rust compatibility-failure diagnostics](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V16.md); new full-suite run not yet performed.
-- [From-scratch Rust literal-search](oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md) and [captured-result experiments](oracle/phase2/RUST-CAPTURED-FINDALL-ONE-PASS-V1.md), with a [reproduced first-party source build](oracle/phase2/RUST-LITERAL-FINDALL-SOURCE-BUILD-V20.md); compatibility and speed not yet established.
+- [From-scratch Rust literal-search](oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md) and [captured-result experiments](oracle/phase2/RUST-CAPTURED-FINDALL-ONE-PASS-V1.md), with reproduced [literal](oracle/phase2/RUST-LITERAL-FINDALL-SOURCE-BUILD-V20.md) and [captured-result](oracle/phase2/RUST-CAPTURED-FINDALL-SOURCE-BUILD-V21.md) native builds; compatibility and speed not yet established.
 - [Larger, unopened 14,155,776-case speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md) and [preserved earlier proposal](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256
   `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`;
