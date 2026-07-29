@@ -7,6 +7,72 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the independently written Zig scanner correction
+
+The [complete corrected Zig adapter](../candidates/zig/variants/scanner_phrase_v4/zig_candidate.py),
+[independent scanner source verifier](../tools/apply_owned_zig_scanner_phrase_source_repair_v4.py),
+[frozen Zig scanner procedure](../oracle/phase2/ZIG-SCANNER-PHRASE-SOURCE-REPAIR-V4.md),
+and [exact scanner source contract](../oracle/phase2/zig-scanner-phrase-source-repair-v4.json)
+freeze a genuine change to the existing, independently written Zig
+engine. This is source-only: the corrected engine is **NOT BUILT**,
+**NOT ACTIVATED**, and **NOT TESTED**. It is not a seventh engine, a
+Python `re` wrapper, an external regular-expression package, or another
+candidate's engine.
+
+The immutable **1,024**-case scanner matrix has **32** families with
+**32** variations each. The new source changes **64** capture-overflow
+cases and preserves **960** other cases. Those are source-derived
+observations, not **64** newly executed candidate tests or a measured
+reduction in matching failures. The **620** separate verbose-scanner
+differences remain unrepaired.
+
+The latest real full Zig result remains **FAIL**, with **1,764**
+differences, **3,711** independently verified passing cases, and
+**13** completed workers. The corrected Rust build remains **PASS**
+with **28** actual operations and its latest full matching result
+remains **FAIL**, with **1,440** differences and **14,853** verified
+passes. The corrected C build remains **PASS** with **14** operations,
+while its last complete match remains **FAIL**, with **1,230**
+differences and **7,325** verified passes. No source freeze changes
+those actual compatibility results.
+
+The [current frozen-Zig-scanner graph](evidence/candidate-current-overview-v73.svg),
+[complete exact graph inputs](evidence/candidate-current-overview-v73.inputs.json),
+[complete machine-readable results](evidence/candidate-current-overview-v73.json),
+and [independent graph renderer](../tools/render_candidate_current_overview_v73.py)
+must preserve the genuinely published version-72 predecessor and both
+successful native builds. Exactly **four** new scanner source owners
+raise authenticated evidence and history lower bounds from
+**239 / 244** to **243 / 248**. Both graph self-tests reject
+**6,311** hostile controls. The corrected Zig build and matching
+remain **NOT RUN**; runtime independence is **NOT ESTABLISHED**;
+qualification remains **BLOCKED**; and speed, memory, confidence,
+and undefined behavior remain **NOT MEASURED**. The **4,194,304**
+final cases remain **NOT GENERATED** and **NOT OPENED**.
+
+The exact complete Zig variant, independent source verifier, protocol,
+and machine contract have respective SHA-256 values
+`0ab9f56b469df7939af8a221a4deac9351de2162960085ca7fa2d69179480e2b`,
+`31dafa08a8f394a8803fa352dd31c806fdac7aa6ee9160e67f2d5f60b2736a63`,
+`e17a46e13652e2950171d84096a0bf812020c88168589c17e50e1bab187339cf`,
+and `5c8f9a220bf93fc56e9d8054002ea4358323c23a9a951d3ce28201b59947b19c`.
+Their exact sizes are **68,530**, **65,425**, **6,919**, and
+**11,500** bytes. Both source self-tests reject **230** hostile
+controls and physically block **18** unsafe effects. Both complete
+context checks confirm the same preserved matrix and **zero** native
+builds, candidate workers, matcher imports, archive reads, clocks,
+or opened hidden cases.
+
+The exact Zig-scanner graph renderer, complete inputs,
+machine-readable results, and visible chart have respective SHA-256
+values
+`484878fe7045f4fea8cf6e03cf99c6dce5e2216f28a1bfb9b10fb48b1d7fdead`,
+`a83eb8d1eaf1dd70cc33df7e2664ccaf52dc93f508da048c2efe4c8f14901fc2`,
+`5a44336584886dfe1ef97ad81e810407fe0df772437238918cc3ba1714bc7618`,
+and `cdcdc323dddd4d3d5b77a5d75cd93e826c6cb6e480c5db5aab9d6555abfa5a31`.
+Their exact sizes are **34,407**, **1,148,124**, **3,221,471**, and
+**4,769** bytes. They do not execute a Zig compiler or a matching test.
+
 ## Build Rust once and independently record its real binary identity
 
 The separately frozen

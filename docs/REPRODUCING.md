@@ -9,7 +9,9 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 ## Evidence and reproduction
 
 - [Complete actual Rust failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [independently durable 13-worker result receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [complete plain-text 13-group failure and root-cause analysis](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json); **13** real workers completed all **31,237** original cases and observed **1,440** mismatches, **14,853** explicitly verified passes, and **zero** infrastructure failures. Receipt and analysis **PASS** preserve a candidate **FAIL**.
-- [Current independently generated results graph](../docs/evidence/candidate-current-overview-v72.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v72.inputs.json), [current machine-readable results](../docs/evidence/candidate-current-overview-v72.json), and [reproducible compact renderer](../tools/render_candidate_current_overview_v72.py); preserve the corrected C build **PASS** with **14** operations, the actual traceable Rust build **PASS** with **28**, the actual C and Rust matching **FAIL**, and the genuinely published Rust root receipt. Candidate qualification remains **BLOCKED**, speed **NOT MEASURED**, and the final comparison **NOT OPENED**.
+- [Current independently generated results graph](../docs/evidence/candidate-current-overview-v73.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v73.inputs.json), [current machine-readable results](../docs/evidence/candidate-current-overview-v73.json), and [reproducible compact renderer](../tools/render_candidate_current_overview_v73.py); preserve the independently written Zig scanner correction as **NOT BUILT** and **NOT TESTED**, Zig's actual **1,764** failures, Rust and C's actual build passes, and all existing candidate matching failures. Qualification remains **BLOCKED**, speed **NOT MEASURED**, and the final comparison **NOT OPENED**.
+- [Complete independently written Zig scanner correction](../candidates/zig/variants/scanner_phrase_v4/zig_candidate.py), [frozen Zig scanner protocol](../oracle/phase2/ZIG-SCANNER-PHRASE-SOURCE-REPAIR-V4.md), [complete scanner source contract](../oracle/phase2/zig-scanner-phrase-source-repair-v4.json), and [independent source-only Zig verifier](../tools/apply_owned_zig_scanner_phrase_source_repair_v4.py); **64** source-corrected and **960** preserved scanner cases, **zero** new candidate workers, and corrected build and matching **NOT RUN**.
+- [Historical actual traceable Rust build results](../docs/evidence/candidate-current-overview-v72.svg), [complete historical version-72 graph inputs](../docs/evidence/candidate-current-overview-v72.inputs.json), [historical version-72 machine-readable results](../docs/evidence/candidate-current-overview-v72.json), and [historical compact renderer](../tools/render_candidate_current_overview_v72.py); preserve the separately recorded actual **28**-step Rust build and genuine private-root receipt before the Zig scanner correction.
 - [Complete compressed traceable Rust build report](../oracle/phase2/evidence/native-source-build-v19-rust-phase2-v19-rust-buffer-shape-root-provenance.json.gz), [independently durable actual Rust build receipt](../oracle/phase2/evidence/native-source-build-v19-rust-phase2-v19-rust-buffer-shape-root-provenance-publication-receipt.json), and [separate actual private-root provenance receipt](../oracle/phase2/evidence/native-source-build-v19-rust-phase2-v19-rust-buffer-shape-root-provenance-root-provenance-receipt.json); **28** real build and inspection operations **PASS**, matching remains **NOT RUN**, and the compressed report remains unopened.
 - [Frozen traceable Rust build protocol](../oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V19.md), [exact traceable-build contract](../oracle/phase2/rust-buffer-shape-source-build-v19.json), and [independently written source-only Rust build verifier](../tools/reproduce_owned_rust_buffer_shape_source_build_v19.py); the separately recorded **28** actual build steps and genuine root receipt **PASS**, while corrected candidate matching remains **NOT RUN**.
 - [Historical traceable-build source-freeze graph](../docs/evidence/candidate-current-overview-v71.svg), [complete historical version-71 graph inputs](../docs/evidence/candidate-current-overview-v71.inputs.json), [historical version-71 machine-readable results](../docs/evidence/candidate-current-overview-v71.json), and [historical compact renderer](../tools/render_candidate_current_overview_v71.py); preserve the separately pushed traceable Rust build plan before its actual build executed.
@@ -151,9 +153,149 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Proposed 4,194,304-case final comparison](../docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); examples remain **NOT GENERATED** and **NOT OPENED**.
 - [Original objective](../GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; [later clarifications](../AMENDMENTS.md).
 
-## Independently reproduce the current traceable Rust build results
+## Independently reproduce the current Zig scanner results
 
-The current results record the actual Rust build's **28** completed
+The current graph preserves the complete original **1,024**-case
+scanner matrix and the independently written Zig correction. Its
+**64** corrected cases and **960** unchanged cases are source facts,
+not a completed Zig matching run or a reduced failure total.
+
+```sh
+REBAR_REFERENCE_PYTHON=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+REBAR_GRAPH73_SOURCE_SHA256=484878fe7045f4fea8cf6e03cf99c6dce5e2216f28a1bfb9b10fb48b1d7fdead
+REBAR_GRAPH73_INPUTS_SHA256=a83eb8d1eaf1dd70cc33df7e2664ccaf52dc93f508da048c2efe4c8f14901fc2
+REBAR_GRAPH73_RESULTS_SHA256=5a44336584886dfe1ef97ad81e810407fe0df772437238918cc3ba1714bc7618
+REBAR_GRAPH73_SVG_SHA256=cdcdc323dddd4d3d5b77a5d75cd93e826c6cb6e480c5db5aab9d6555abfa5a31
+
+sha256sum \
+  tools/render_candidate_current_overview_v73.py \
+  docs/evidence/candidate-current-overview-v73.inputs.json \
+  docs/evidence/candidate-current-overview-v73.json \
+  docs/evidence/candidate-current-overview-v73.svg
+
+"$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v73.py --self-test
+
+env -i PATH=/usr/bin:/bin LC_ALL=C "$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v73.py --self-test
+
+"$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v73.py --verify-frozen-context \
+  --source-sha256 "$REBAR_GRAPH73_SOURCE_SHA256" \
+  --source-bytes 34407 \
+  --previous-source-sha256 b279901481d2f4f6bc1adeae542d5aacf2453dedbcff88a944a79ce5c8478753 \
+  --previous-inputs-sha256 28f235f8bbb7e49de25a1194fa0693e9764d3e5b0ef7a3e5a4da8e273f22eaef \
+  --previous-summary-sha256 2b5dba28961c0842fc15df1afdca49eeb20613df05b31c1bd4a16491f7f9c25b \
+  --previous-svg-sha256 eb2708426467a85a6d7ee592c4dde21fc08b57f8a17822a0b60732f44f22e804 \
+  --feature-source-sha256 31dafa08a8f394a8803fa352dd31c806fdac7aa6ee9160e67f2d5f60b2736a63 \
+  --feature-protocol-sha256 e17a46e13652e2950171d84096a0bf812020c88168589c17e50e1bab187339cf \
+  --feature-contract-sha256 5c8f9a220bf93fc56e9d8054002ea4358323c23a9a951d3ce28201b59947b19c \
+  --feature-variant-sha256 0ab9f56b469df7939af8a221a4deac9351de2162960085ca7fa2d69179480e2b \
+  --inputs-sha256 "$REBAR_GRAPH73_INPUTS_SHA256" \
+  --summary-sha256 "$REBAR_GRAPH73_RESULTS_SHA256" \
+  --svg-sha256 "$REBAR_GRAPH73_SVG_SHA256"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C "$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v73.py --verify-frozen-context \
+  --source-sha256 "$REBAR_GRAPH73_SOURCE_SHA256" \
+  --source-bytes 34407 \
+  --previous-source-sha256 b279901481d2f4f6bc1adeae542d5aacf2453dedbcff88a944a79ce5c8478753 \
+  --previous-inputs-sha256 28f235f8bbb7e49de25a1194fa0693e9764d3e5b0ef7a3e5a4da8e273f22eaef \
+  --previous-summary-sha256 2b5dba28961c0842fc15df1afdca49eeb20613df05b31c1bd4a16491f7f9c25b \
+  --previous-svg-sha256 eb2708426467a85a6d7ee592c4dde21fc08b57f8a17822a0b60732f44f22e804 \
+  --feature-source-sha256 31dafa08a8f394a8803fa352dd31c806fdac7aa6ee9160e67f2d5f60b2736a63 \
+  --feature-protocol-sha256 e17a46e13652e2950171d84096a0bf812020c88168589c17e50e1bab187339cf \
+  --feature-contract-sha256 5c8f9a220bf93fc56e9d8054002ea4358323c23a9a951d3ce28201b59947b19c \
+  --feature-variant-sha256 0ab9f56b469df7939af8a221a4deac9351de2162960085ca7fa2d69179480e2b \
+  --inputs-sha256 "$REBAR_GRAPH73_INPUTS_SHA256" \
+  --summary-sha256 "$REBAR_GRAPH73_RESULTS_SHA256" \
+  --svg-sha256 "$REBAR_GRAPH73_SVG_SHA256"
+```
+
+Both graph self-tests must reject **6,311** hostile controls. Both
+context checks must report genuine predecessor **72**, evidence and
+history lower bounds **243 / 248**, exactly **1,024** original scanner
+cases, **64** source-corrected cases, and **960** unchanged cases.
+The corrected Zig build and matching remain **NOT RUN**. Preserve all
+**1,764** earlier Zig differences, all **13** complete Rust original
+results and **six** genuine mismatch events, C's **14** passing build
+operations, Rust's **28** passing build operations, all actual
+candidate failures, and the unopened final holdout.
+
+## Verify the frozen Zig scanner source without building it
+
+These four checks verify the complete **1,024**-case scanner matrix and
+the newly frozen Zig adapter. They do not import, build, activate, or
+test the corrected engine. The previous **1,764** actual Zig failures
+remain unchanged.
+
+```sh
+REBAR_REFERENCE_PYTHON=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+REBAR_ZIG_V4_VARIANT_SHA256=0ab9f56b469df7939af8a221a4deac9351de2162960085ca7fa2d69179480e2b
+REBAR_ZIG_V4_SOURCE_SHA256=31dafa08a8f394a8803fa352dd31c806fdac7aa6ee9160e67f2d5f60b2736a63
+REBAR_ZIG_V4_PROTOCOL_SHA256=e17a46e13652e2950171d84096a0bf812020c88168589c17e50e1bab187339cf
+REBAR_ZIG_V4_CONTRACT_SHA256=5c8f9a220bf93fc56e9d8054002ea4358323c23a9a951d3ce28201b59947b19c
+
+sha256sum \
+  candidates/zig/variants/scanner_phrase_v4/zig_candidate.py \
+  tools/apply_owned_zig_scanner_phrase_source_repair_v4.py \
+  oracle/phase2/ZIG-SCANNER-PHRASE-SOURCE-REPAIR-V4.md \
+  oracle/phase2/zig-scanner-phrase-source-repair-v4.json
+
+"$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/apply_owned_zig_scanner_phrase_source_repair_v4.py --self-test \
+  --source-sha256 "$REBAR_ZIG_V4_SOURCE_SHA256" \
+  --protocol-sha256 "$REBAR_ZIG_V4_PROTOCOL_SHA256" \
+  --contract-sha256 "$REBAR_ZIG_V4_CONTRACT_SHA256" \
+  --graph-source-sha256 b279901481d2f4f6bc1adeae542d5aacf2453dedbcff88a944a79ce5c8478753 \
+  --graph-inputs-sha256 28f235f8bbb7e49de25a1194fa0693e9764d3e5b0ef7a3e5a4da8e273f22eaef \
+  --graph-summary-sha256 2b5dba28961c0842fc15df1afdca49eeb20613df05b31c1bd4a16491f7f9c25b \
+  --graph-svg-sha256 eb2708426467a85a6d7ee592c4dde21fc08b57f8a17822a0b60732f44f22e804
+
+env -i PATH=/usr/bin:/bin LC_ALL=C "$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/apply_owned_zig_scanner_phrase_source_repair_v4.py --self-test \
+  --source-sha256 "$REBAR_ZIG_V4_SOURCE_SHA256" \
+  --protocol-sha256 "$REBAR_ZIG_V4_PROTOCOL_SHA256" \
+  --contract-sha256 "$REBAR_ZIG_V4_CONTRACT_SHA256" \
+  --graph-source-sha256 b279901481d2f4f6bc1adeae542d5aacf2453dedbcff88a944a79ce5c8478753 \
+  --graph-inputs-sha256 28f235f8bbb7e49de25a1194fa0693e9764d3e5b0ef7a3e5a4da8e273f22eaef \
+  --graph-summary-sha256 2b5dba28961c0842fc15df1afdca49eeb20613df05b31c1bd4a16491f7f9c25b \
+  --graph-svg-sha256 eb2708426467a85a6d7ee592c4dde21fc08b57f8a17822a0b60732f44f22e804
+
+"$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/apply_owned_zig_scanner_phrase_source_repair_v4.py \
+  --verify-frozen-context \
+  --source-sha256 "$REBAR_ZIG_V4_SOURCE_SHA256" \
+  --protocol-sha256 "$REBAR_ZIG_V4_PROTOCOL_SHA256" \
+  --contract-sha256 "$REBAR_ZIG_V4_CONTRACT_SHA256" \
+  --graph-source-sha256 b279901481d2f4f6bc1adeae542d5aacf2453dedbcff88a944a79ce5c8478753 \
+  --graph-inputs-sha256 28f235f8bbb7e49de25a1194fa0693e9764d3e5b0ef7a3e5a4da8e273f22eaef \
+  --graph-summary-sha256 2b5dba28961c0842fc15df1afdca49eeb20613df05b31c1bd4a16491f7f9c25b \
+  --graph-svg-sha256 eb2708426467a85a6d7ee592c4dde21fc08b57f8a17822a0b60732f44f22e804
+
+env -i PATH=/usr/bin:/bin LC_ALL=C "$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/apply_owned_zig_scanner_phrase_source_repair_v4.py \
+  --verify-frozen-context \
+  --source-sha256 "$REBAR_ZIG_V4_SOURCE_SHA256" \
+  --protocol-sha256 "$REBAR_ZIG_V4_PROTOCOL_SHA256" \
+  --contract-sha256 "$REBAR_ZIG_V4_CONTRACT_SHA256" \
+  --graph-source-sha256 b279901481d2f4f6bc1adeae542d5aacf2453dedbcff88a944a79ce5c8478753 \
+  --graph-inputs-sha256 28f235f8bbb7e49de25a1194fa0693e9764d3e5b0ef7a3e5a4da8e273f22eaef \
+  --graph-summary-sha256 2b5dba28961c0842fc15df1afdca49eeb20613df05b31c1bd4a16491f7f9c25b \
+  --graph-svg-sha256 eb2708426467a85a6d7ee592c4dde21fc08b57f8a17822a0b60732f44f22e804
+```
+
+Each self-test must reject **230** hostile controls and physically
+block **18** unsafe effects. Each full context must preserve exactly
+**1,024** original scanner cases, **64** source-corrected cases,
+**960** unchanged cases, the actual earlier **1,764** Zig failures,
+and the **620** unrepaired verbose-scanner failures. Corrected Zig
+compilation, candidate matching, and performance remain **NOT RUN**
+or **NOT MEASURED**.
+
+## Independently reproduce the historical traceable Rust build results
+
+The historical version-72 results record the actual Rust build's **28** completed
 operations and separately durable root identity without opening its
 compressed report. They preserve C's **14** successful build steps,
 both engines' real compatibility failures, and the old Rust retest's
