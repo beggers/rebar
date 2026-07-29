@@ -18,16 +18,16 @@ Speed versus Python: **NOT MEASURED**. There is no winner.
 
 ![Python compared with six independently written regular-expression engines. The new Rust engine builds reproducibly, no replacement has passed every compatibility test, no speed has been measured, and the 14-million-case final comparison remains unopened.](docs/evidence/candidate-current-overview-v87.svg)
 
-This reproducible chart predates the newer captured-result Rust build.
-Both Rust variants now build successfully; neither has passed all
-compatibility checks or been timed.
+This reproducible chart predates the newer C and captured-result Rust
+builds. The C engine and both Rust variants now build successfully;
+none has passed all compatibility checks or been timed.
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
 | Python `re` | Baseline; reference checks pass | Not timed |
 | Public `rebar` import | FAIL; still selects an unqualified Zig prototype | NOT MEASURED |
 | Rust | FAIL; 8/13 groups; 12,942/31,237 verified | NOT MEASURED |
-| C | FAIL; 1,230 differences | NOT MEASURED |
+| C | FAIL; 1,230 differences; native build passes | NOT MEASURED |
 | Zig | FAIL; 1,764 differences; native build passes | NOT MEASURED |
 | C++ | FAIL; 2,308 differences and five worker failures | NOT MEASURED |
 | Go | FAIL; 4,518 differences and four worker failures | NOT MEASURED |
@@ -39,9 +39,10 @@ behavior; two independent Python reference runs each pass all **8,244**.
 These are separate test sets and are never combined or counted twice.
 
 First-party native source builds recorded **14** C, **28** Rust, and
-**26** Zig compiler and binary-inspection steps. Both the literal-search
-and captured-result Rust engines passed their own independent build
-phases. No successful build proves compatibility.
+**26** Zig compiler and binary-inspection steps. The corrected C engine
+and both the literal-search and captured-result Rust engines each
+passed their own two independent build phases. No successful build
+proves compatibility.
 Rust finished **8** of **13** groups and verified **12,942** cases;
 **5** workers failed. The corrected Zig matching test is **NOT RUN**.
 Zig's earlier **1,764** differences remain; no candidate qualifies.
@@ -83,7 +84,7 @@ slowdown over **20%**.
 - [Complete Python correctness reference](oracle/phase1/P0-COMPLETENESS-V4.md).
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
 - [Six independently written engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
-- [Guarded first-party C correctness](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V5.md) and [reproducible native source-build procedure](oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md); authenticated native-root evidence still required.
+- [Guarded first-party C correctness](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V5.md), [reproducible native source-build procedure](oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md), and [independently authenticated C build](oracle/phase2/evidence/native-source-build-v18-c-phase2-v18-c-subject-buffer-root-provenance-publication-receipt.json); corrected-engine compatibility not yet established.
 - [Guard-clean, from-scratch Zig candidate and correctness procedure](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V5.md); full-suite rerun not yet performed.
 - [Reproducible Rust compatibility-failure diagnostics](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V16.md); new full-suite run not yet performed.
 - [From-scratch Rust literal-search](oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md) and [captured-result experiments](oracle/phase2/RUST-CAPTURED-FINDALL-ONE-PASS-V1.md), with reproduced [literal](oracle/phase2/RUST-LITERAL-FINDALL-SOURCE-BUILD-V20.md) and [captured-result](oracle/phase2/RUST-CAPTURED-FINDALL-SOURCE-BUILD-V21.md) native builds; compatibility and speed not yet established.

@@ -8,6 +8,33 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Record the actual first-party C build
+
+The [version-18 C build](../oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md)
+actually compiled the project's independently written C parser and
+matching engine, including its complete corrected subject-buffer
+implementation. Two independent offline phases completed all **14**
+compiler and binary-inspection processes and reproduced the same
+native engine. No Python or third-party regex engine was used.
+
+The [actual C build receipt](../oracle/phase2/evidence/native-source-build-v18-c-phase2-v18-c-subject-buffer-root-provenance-publication-receipt.json)
+has SHA-256
+`4070feca7129fdcf3dc9762fae853649c68c722940af6157ecdcfa59d23e65ae`.
+The [independent native-root receipt](../oracle/phase2/evidence/native-source-build-v18-c-phase2-v18-c-subject-buffer-root-provenance-root-provenance-receipt.json)
+has SHA-256
+`a231eec31b29ca796c75cee03b702a3e35a9195e74675c8f56209419dfeb03c8`.
+The preserved compressed report has producer-recorded SHA-256
+`412b900038f0f9765593f67f1eef086359a5dbbbad1c90e967d211e0b8bbc504`.
+It is not reopened to verify either public receipt.
+
+The result proves a reproducible C **BUILD PASS** and independent
+native-root ownership. It is not a matching, full compatibility,
+speed, memory, or runtime-independence result. The corrected engine's
+full matching test remains **NOT RUN**; the earlier C result still has
+**1,230** actual differences. The version-87 chart is the preceding
+historical snapshot. All **14,155,776** proposed final cases remain
+unopened. Qualified candidates: **0**.
+
 ## Record the actual first-party Rust captured-result build
 
 The [version-21 cumulative Rust build](../oracle/phase2/RUST-CAPTURED-FINDALL-SOURCE-BUILD-V21.md)
