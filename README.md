@@ -19,6 +19,7 @@ Speed versus Python: **NOT MEASURED**. There is no winner.
 ![Python compared with six independently written regex engines. C passes 13,094 verified checks, Rust 12,942, and Zig 927; none passes all 31,237 compatibility checks, no speed has been measured, and the larger final comparison remains unopened.](docs/evidence/candidate-current-overview-v89.svg)
 
 Every engine is compared against the same **31,237** Python checks.
+The graph preserves the previous Zig run; the latest result is below.
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
@@ -26,7 +27,7 @@ Every engine is compared against the same **31,237** Python checks.
 | Public `rebar` import | FAIL; still selects an unqualified Zig prototype | NOT MEASURED |
 | Rust | FAIL; 8/13 groups completed; 12,942 passed; at least 1,296 differences | NOT MEASURED |
 | C | FAIL; 5/13 groups completed; 13,094 passed; at least 236 differences | NOT MEASURED |
-| Zig | FAIL; 3/13 groups completed; 927 passed; 10 worker failures | NOT MEASURED |
+| Zig | FAIL; 9/13 groups completed; 3,583 passed; at least 1,540 differences | NOT MEASURED |
 | C++ | FAIL; 2,308 differences and five worker failures | NOT MEASURED |
 | Go | FAIL; 4,518 differences and four worker failures | NOT MEASURED |
 | Fortran | FAIL; independent builds disagree; matching not tested | NOT MEASURED |
@@ -78,7 +79,7 @@ slowdown over **20%**.
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
 - [Six independently written engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Guarded, exhaustive first-party C correctness](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V7.md), [complete public C test results](oracle/phase2/evidence/repaired-c-original-campaign-v7-c-phase2-v18-c-subject-buffer-root-provenance-original-p0-v7-failures-publication-receipt.json), [reproducible native source-build procedure](oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md), [independently authenticated C build](oracle/phase2/evidence/native-source-build-v18-c-phase2-v18-c-subject-buffer-root-provenance-publication-receipt.json), and a [not-yet-built C match-object compatibility correction](oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-V1.md).
-- [Complete first-party Zig compatibility procedure](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V9.md), [complete public Zig test results](oracle/phase2/evidence/repaired-zig-original-campaign-v9-phase2-v13-zig-guard-clean-v1-original-p0-v9-failures-publication-receipt.json), and [frozen, not-yet-run worker-reporting correction](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V10.md).
+- [Complete first-party Zig compatibility procedure](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V10.md), [latest complete public Zig test results](oracle/phase2/evidence/repaired-zig-original-campaign-v10-phase2-v13-zig-guard-clean-v1-original-p0-v10-failures-publication-receipt.json), and [preserved previous Zig results](oracle/phase2/evidence/repaired-zig-original-campaign-v9-phase2-v13-zig-guard-clean-v1-original-p0-v9-failures-publication-receipt.json).
 - [Complete first-party Rust compatibility procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V19.md) and [complete public Rust test results](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v21-rust-captured-findall-root-provenance-original-p0-v19-failures-publication-receipt.json); all earlier attempts remain in the experiment log.
 - [From-scratch Rust literal-search](oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md), [captured-result experiments](oracle/phase2/RUST-CAPTURED-FINDALL-ONE-PASS-V1.md), and [exact Python scanner signatures](oracle/phase2/RUST-SCANNER-SIGNATURE-SOURCE-REPAIR-V22.md), with reproduced [literal](oracle/phase2/RUST-LITERAL-FINDALL-SOURCE-BUILD-V20.md) and [captured-result](oracle/phase2/RUST-CAPTURED-FINDALL-SOURCE-BUILD-V21.md) native builds; the scanner repair is not built, and full compatibility and speed are not established.
 - [Larger, unopened 14,155,776-case speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md) and [preserved earlier proposal](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).

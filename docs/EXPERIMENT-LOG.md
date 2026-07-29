@@ -8,6 +8,32 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the corrected, complete first-party Zig compatibility test
+
+The [version-10 Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V10.md)
+actually ran all **13** frozen original groups in distinct workers.
+Nine groups completed. Six matched Python completely, verifying
+**3,583** cases; three exposed **620**, **248**, and **672** genuine
+differences, for an observed lower bound of **1,540**.
+
+Of the remaining **4** infrastructure failures, **3** identify a
+strict JSON reader rejecting actual unpaired Unicode surrogates;
+the fourth preserves the actual private-interpreter lifecycle
+failure. Exactly **10** rows individually establish guarded
+first-party candidate import; the other **3** do not. No worker
+timed out. All **3** original Zig files were restored.
+
+The [complete public version-10 result](../oracle/phase2/evidence/repaired-zig-original-campaign-v10-phase2-v13-zig-guard-clean-v1-original-p0-v10-failures-publication-receipt.json)
+has SHA-256
+`a13fad7e8e55af47235ddabd8f12d607a2c352b4d5b5d22f9422627381a10da7`.
+Its unopened compressed report has producer-recorded SHA-256
+`d32590e3a718be024c8016c741ca12321f66f8cc545bc3d1321286d4f3fe6ba4`.
+Durable publication succeeded; the candidate **FAILS**. The full
+mismatch count is **NOT MEASURED** because four groups did not
+complete. The **8,244** additional checks and **14,155,776**
+proposed final cases remain unrun; performance and memory are
+**NOT MEASURED**.
+
 ## Freeze the measured Zig worker-reporting corrections
 
 The [version-10 first-party Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V10.md)
