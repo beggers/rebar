@@ -8,6 +8,32 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a guarded first-party C correctness procedure
+
+The [version-5 C correctness procedure](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V5.md),
+[machine-readable contract](../oracle/phase2/repaired-c-original-campaign-v5.json),
+and [isolated original-suite controller](../tools/run_owned_repaired_c_original_campaign_v5.py)
+preserve the complete first-party C parser, compiler, and matching
+engine; all **31,237** original Python checks; and the separate
+**8,244** additional checks. The previous actual C result remains a
+failure with **1,230** differences and **7,325** individually
+verified passing observations.
+
+An earlier native C build recorded **14** genuine compiler and
+inspection processes, but its receipt does not identify the exact
+private root or loaded native artifact. The new controller reports
+that missing provenance explicitly and rejects an actual correctness
+run until a freshly built first-party artifact has its own
+authenticated root receipt. It cannot silently test an older engine,
+use Python's matcher, or load an external regular-expression package.
+
+Both source-only verification modes pass in ordinary and empty
+environments, including **33** hostile checks. No candidate,
+compiler, archive, final case, or timer is run. C compatibility,
+runtime independence, and speed remain **NOT MEASURED** for the
+corrected build; the **14,155,776**-case final proposal remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the independently reproducible first-party Rust build
 
 The [version-20 Rust build procedure](../oracle/phase2/RUST-LITERAL-FINDALL-SOURCE-BUILD-V20.md),
