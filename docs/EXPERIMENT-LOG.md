@@ -8,6 +8,27 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the full test for the current Rust engine
+
+The [version-17 first-party Rust campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V17.md)
+authenticates the actual captured-result Rust engine, both independently
+compiled native copies, and all **28** genuine version-21 build steps.
+It tests the currently built engine rather than silently reusing an
+older Rust binary.
+
+The runner preserves all **31,237** original cases in all **13** groups,
+including the existing private waivers, and checks every complete
+group result before publishing it. The public failure record preserves
+worker identity, diagnostic details, recovery, and authenticated
+per-group results. The **8,244** additional cases remain a separate
+correctness gate.
+
+This commit freezes the test; it does not execute a Rust candidate.
+The prior **8** completed groups, **12,942** observed passing cases,
+and **5** worker failures remain the latest actual results. The
+**14,155,776** proposed performance cases remain unopened;
+relative speed is **NOT MEASURED**, and no candidate is qualified.
+
 ## Freeze the complete, bounded Zig compatibility test
 
 The [version-6 first-party Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V6.md)
