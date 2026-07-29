@@ -9,7 +9,9 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 ## Evidence and reproduction
 
 - [Complete actual Rust failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [independently durable 13-worker result receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [complete plain-text 13-group failure and root-cause analysis](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json); **13** real workers completed all **31,237** original cases and observed **1,440** mismatches, **14,853** explicitly verified passes, and **zero** infrastructure failures. Receipt and analysis **PASS** preserve a candidate **FAIL**.
-- [Current real-worker results graph](../docs/evidence/candidate-current-overview-v61.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v61.inputs.json), [independently verified current machine-readable outcome](../docs/evidence/candidate-current-overview-v61.json), and [reproducible current renderer](../tools/render_candidate_current_overview_v61.py); preserve all **13** genuine Rust worker groups, **six** actual failures, and the **512**-difference regression. The public-type Python reference is independently reconciled; all **8,244** preserved fuzz cases are verified, but their two genuine Python-reference runs remain **NOT RUN**. The full correctness gate and Rust build remain **BLOCKED**. Qualified replacements: **0**. Performance: **NOT MEASURED**. The **4,194,304**-example final comparison remains unopened.
+- [Current independently generated results graph](../docs/evidence/candidate-current-overview-v62.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v62.inputs.json), [current machine-readable results](../docs/evidence/candidate-current-overview-v62.json), and [reproducible current renderer](../tools/render_candidate_current_overview_v62.py); preserve all **13** actual Rust worker groups, **six** complete genuine failures, and the **512**-difference regression. The two-process baseline procedure for all **8,244** extra cases is frozen, but its actual references are **NOT RUN**. The overall gate remains **BLOCKED**; compatible replacements **0**; performance **NOT MEASURED**; final comparison **NOT OPENED**.
+- [Frozen independently reproducible two-Python-reference procedure](../oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md), [exact canonical source contract](../oracle/phase1/p0-differential-fuzz-reference-v3.json), and [first-party genuine two-process controller](../tools/run_owned_differential_fuzz_reference_v3.py); four normal and sterile source checks authenticate **61** inherited owners, genuinely stream both frozen corpora, and reject **26** hostile controls without starting a reference, importing a candidate, running a matcher, opening a compressed report, or accessing the holdout.
+- [Historical version-61 real-worker results graph](../docs/evidence/candidate-current-overview-v61.svg), [historical graph inputs](../docs/evidence/candidate-current-overview-v61.inputs.json), [historical machine-readable outcome](../docs/evidence/candidate-current-overview-v61.json), and [historical renderer](../tools/render_candidate_current_overview_v61.py); preserve the exact prior state before the independently runnable extra two-reference procedure was frozen.
 - [Corrected phase-one Python-reference protocol](../oracle/phase1/P0-COMPLETENESS-V2.md), [exact version-2 completeness certificate](../oracle/phase1/p0-completeness-v2.json), and [independently owned source verifier](../tools/verify_owned_p0_completeness_v2.py); preserve all **31,237** original cases, **13** groups, and **13** named exceptions while verifying the actual two-worker **6,912**-case reference and every separate **8,244**-case fuzz record. Its reference crosswalk is **PASS**; its overall candidate gate remains **BLOCKED**.
 - [Blocked first-party Rust two-build protocol](../oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V17.md), [exact frozen build contract](../oracle/phase2/rust-buffer-shape-source-build-v17.json), and [source-only independent build verifier](../tools/reproduce_owned_rust_buffer_shape_source_build_v17.py); the four normal and sterile source gates reject **353** hostile controls and authenticate **43** owners without starting a compiler or candidate.
 - [From-scratch Rust buffer-lifetime repair](../oracle/phase2/RUST-BUFFER-SHAPE-PICKLE-SOURCE-REPAIR-V2.md), [canonical source contract](../oracle/phase2/rust-buffer-shape-pickle-source-repair-v2.json), [source-only verifier](../tools/apply_owned_rust_buffer_shape_pickle_source_repair_v2.py), and [complete corrected first-party bridge](../candidates/rust/variants/buffer_shape_pickle_v2/py_bridge.c); both normal and empty-environment source gates reject **77** hostile controls without building, running a candidate, importing a matching engine, reopening compressed failures, or touching the holdout.
@@ -128,6 +130,115 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Full experiment log, build reports, previous graphs, failures, and rejected designs](../docs/EXPERIMENT-LOG.md).
 - [Proposed 4,194,304-case final comparison](../docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); examples remain **NOT GENERATED** and **NOT OPENED**.
 - [Original objective](../GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; [later clarifications](../AMENDMENTS.md).
+
+## Verify the frozen extra-case Python reference without starting it
+
+The complete original denominator remains **31,237**. The following
+four source-only commands independently authenticate the separate
+**8,244** extra cases. They do not start either reference process.
+
+```sh
+REBAR_REFERENCE_PYTHON=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+REBAR_FUZZ_REFERENCE_SOURCE_SHA256=9367bf224996296a9c8a0e01040d0776b292984e1a8b7a6362c8e943c27438ac
+REBAR_FUZZ_REFERENCE_PROTOCOL_SHA256=8d67e3f4162945a454d8945abac3880a9c42620a04c2332ac2adc52f013305b6
+REBAR_FUZZ_REFERENCE_CONTRACT_SHA256=2bd17e82cedb55467aad59e360a61665c0f534a23e33c3d0cad440a6114182ff
+
+sha256sum \
+  tools/run_owned_differential_fuzz_reference_v3.py \
+  oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md \
+  oracle/phase1/p0-differential-fuzz-reference-v3.json
+
+"$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/run_owned_differential_fuzz_reference_v3.py --self-test \
+  --source-sha256 "$REBAR_FUZZ_REFERENCE_SOURCE_SHA256" \
+  --protocol-sha256 "$REBAR_FUZZ_REFERENCE_PROTOCOL_SHA256" \
+  --contract-sha256 "$REBAR_FUZZ_REFERENCE_CONTRACT_SHA256"
+
+"$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/run_owned_differential_fuzz_reference_v3.py --verify-frozen-context \
+  --source-sha256 "$REBAR_FUZZ_REFERENCE_SOURCE_SHA256" \
+  --protocol-sha256 "$REBAR_FUZZ_REFERENCE_PROTOCOL_SHA256" \
+  --contract-sha256 "$REBAR_FUZZ_REFERENCE_CONTRACT_SHA256"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C "$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/run_owned_differential_fuzz_reference_v3.py --self-test \
+  --source-sha256 "$REBAR_FUZZ_REFERENCE_SOURCE_SHA256" \
+  --protocol-sha256 "$REBAR_FUZZ_REFERENCE_PROTOCOL_SHA256" \
+  --contract-sha256 "$REBAR_FUZZ_REFERENCE_CONTRACT_SHA256"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C "$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/run_owned_differential_fuzz_reference_v3.py --verify-frozen-context \
+  --source-sha256 "$REBAR_FUZZ_REFERENCE_SOURCE_SHA256" \
+  --protocol-sha256 "$REBAR_FUZZ_REFERENCE_PROTOCOL_SHA256" \
+  --contract-sha256 "$REBAR_FUZZ_REFERENCE_CONTRACT_SHA256"
+```
+
+Both self-tests must report `PASS`, **26** rejected controls,
+`reference_status: NOT RUN`, and `phase_gate_status: BLOCKED`.
+Both context checks must report `PASS`, **61** inherited owners,
+**19** case kinds, **45** mapped obligations, zero reference and
+candidate workers, and an unopened holdout. The actual two-process
+run is a separately committed experiment; do not confuse these
+checks with an executed baseline.
+
+## Independently reproduce the current headline graph
+
+The current graph is source-pinned to the corrected, actually pushed
+version-61 graph and to the complete version-3 extra-case reference
+procedure. All four commands are read-only: they start **zero**
+reference or candidate workers and do not measure performance.
+
+```sh
+REBAR_REFERENCE_PYTHON=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+
+sha256sum \
+  tools/render_candidate_current_overview_v62.py \
+  docs/evidence/candidate-current-overview-v62.inputs.json \
+  docs/evidence/candidate-current-overview-v62.json \
+  docs/evidence/candidate-current-overview-v62.svg
+
+"$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v62.py --self-test
+
+env -i PATH=/usr/bin:/bin LC_ALL=C "$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v62.py --self-test
+
+"$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v62.py --verify-frozen-context \
+  --source-sha256 f36b72ceb617487c8f49083364d13bcb53dd45380979ea193db8cedcc0d28233 \
+  --source-bytes 69780 \
+  --previous-source-sha256 07d0df394407ad1c6496ac837a7c55304bda68602a57c017e8d06deb3f45dd52 \
+  --previous-inputs-sha256 9be09cfe487efde257116ddd4e58e7ff78152394c6fc3d5e2b95356f7b56f2e2 \
+  --previous-summary-sha256 0a71008327f2212d3e337b7c3f265904fe65bba10e5a43133eaaed7cb6367b24 \
+  --previous-svg-sha256 fd40f66d731185151dad7d692c1abab7d15e98a29e2df63eade3bb9d86d03fb0 \
+  --reference-source-sha256 9367bf224996296a9c8a0e01040d0776b292984e1a8b7a6362c8e943c27438ac \
+  --reference-protocol-sha256 8d67e3f4162945a454d8945abac3880a9c42620a04c2332ac2adc52f013305b6 \
+  --reference-contract-sha256 2bd17e82cedb55467aad59e360a61665c0f534a23e33c3d0cad440a6114182ff \
+  --inputs-sha256 c90559020a86e6c5805e22bc363e5731435db9d1acc079d4ac50c36a61ccd043 \
+  --summary-sha256 5877ac4b94e531e14b50b58c540e0e5b9334af8281328edb64b7633f079ab759 \
+  --svg-sha256 8c3a2261326fcec9944b57347bccb7c8553062e863792da8c5e106cf65389c57
+
+env -i PATH=/usr/bin:/bin LC_ALL=C "$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v62.py --verify-frozen-context \
+  --source-sha256 f36b72ceb617487c8f49083364d13bcb53dd45380979ea193db8cedcc0d28233 \
+  --source-bytes 69780 \
+  --previous-source-sha256 07d0df394407ad1c6496ac837a7c55304bda68602a57c017e8d06deb3f45dd52 \
+  --previous-inputs-sha256 9be09cfe487efde257116ddd4e58e7ff78152394c6fc3d5e2b95356f7b56f2e2 \
+  --previous-summary-sha256 0a71008327f2212d3e337b7c3f265904fe65bba10e5a43133eaaed7cb6367b24 \
+  --previous-svg-sha256 fd40f66d731185151dad7d692c1abab7d15e98a29e2df63eade3bb9d86d03fb0 \
+  --reference-source-sha256 9367bf224996296a9c8a0e01040d0776b292984e1a8b7a6362c8e943c27438ac \
+  --reference-protocol-sha256 8d67e3f4162945a454d8945abac3880a9c42620a04c2332ac2adc52f013305b6 \
+  --reference-contract-sha256 2bd17e82cedb55467aad59e360a61665c0f534a23e33c3d0cad440a6114182ff \
+  --inputs-sha256 c90559020a86e6c5805e22bc363e5731435db9d1acc079d4ac50c36a61ccd043 \
+  --summary-sha256 5877ac4b94e531e14b50b58c540e0e5b9334af8281328edb64b7633f079ab759 \
+  --svg-sha256 8c3a2261326fcec9944b57347bccb7c8553062e863792da8c5e106cf65389c57
+```
+
+Both graph self-tests must report `PASS`, **5,046** rejected controls,
+and actual predecessor **61**. Both context checks must report `PASS`,
+an immediate predecessor of **61**, the preserved **1,440** actual
+Rust differences, **210** evidence owners, **215** history references,
+zero extra-case reference workers, and an unopened holdout.
 
 ## Verify the real Rust controller failure without rerunning it
 

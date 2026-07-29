@@ -7,6 +7,71 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze an actual two-process Python reference for every extra check
+
+The [first-party two-reference controller](../tools/run_owned_differential_fuzz_reference_v3.py),
+[complete frozen procedure](../oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md),
+and [canonical source contract](../oracle/phase1/p0-differential-fuzz-reference-v3.json)
+make the next Python-only baseline experiment independently reproducible.
+Their respective SHA-256 values are
+`9367bf224996296a9c8a0e01040d0776b292984e1a8b7a6362c8e943c27438ac`,
+`8d67e3f4162945a454d8945abac3880a9c42620a04c2332ac2adc52f013305b6`,
+and `2bd17e82cedb55467aad59e360a61665c0f534a23e33c3d0cad440a6114182ff`.
+Their exact sizes are **43,757**, **3,929**, and **5,288** bytes.
+
+Each future worker must execute the unchanged original
+`tools/oracle_v2.py verify --module re` using the pinned Python **3.14.6**
+binary. The source uses real independently recorded operating-system
+process identifiers, separate complete original-result files, concurrently
+drained standard-output and error streams, the original named helper,
+C locale, and unmodified warning behavior. It preserves every genuine
+failure. Those workers are planned, not observed: actual workers **0**;
+actual process identifiers **none**; two-process reference **NOT RUN**.
+
+The controller independently hashes **61** inherited plaintext owners.
+Both the **8,244**-record supplemental corpus and its **2,048**-record
+parent are genuinely streamed rather than loaded whole, and the maximum
+allowed line and worker stream are each **262,144** bytes. The exact
+supplemental bytes, **19** case categories, **45** historical obligations,
+and all **seven** seeds remain unchanged. The original denominator stays
+**31,237** in **13** groups with **13** named private exceptions.
+
+Both normal and sterile self-tests genuinely reject **26** hostile
+controls; both complete frozen-context checks pass. Two separate
+reviewers independently reran all four source-only checks and caught
+and resolved an initial whole-file-buffering error before publication.
+The corrected narrow Python-reference crosswalk remains **PASS**, while
+complete phase one remains **BLOCKED**. Source-only checks start no
+Python-reference worker, replacement engine, compiler, or timer and
+open no compressed failure or hidden holdout.
+
+The [current plain-language results graph](evidence/candidate-current-overview-v62.svg),
+[frozen graph inputs](evidence/candidate-current-overview-v62.inputs.json),
+[complete graph evidence](evidence/candidate-current-overview-v62.json),
+and [reproducible graph renderer](../tools/render_candidate_current_overview_v62.py)
+preserve all earlier real Rust failures. They label the extra
+two-process reference **NOT RUN**, the full gate **BLOCKED**, fully
+compatible replacements **0**, and performance **NOT MEASURED**.
+The graph renderer, exact inputs, complete summary, and SVG have the
+respective SHA-256 values
+`f36b72ceb617487c8f49083364d13bcb53dd45380979ea193db8cedcc0d28233`,
+`c90559020a86e6c5805e22bc363e5731435db9d1acc079d4ac50c36a61ccd043`,
+`5877ac4b94e531e14b50b58c540e0e5b9334af8281328edb64b7633f079ab759`,
+and `8c3a2261326fcec9944b57347bccb7c8553062e863792da8c5e106cf65389c57`.
+Their exact sizes are **69,780**, **960,530**, **2,637,309**, and
+**14,649** bytes. Normal and sterile graph self-tests each reject
+**5,046** real hostile controls. The graph independently authenticates
+all **13** historical Rust suite records and all **six** complete
+genuine mismatch witnesses against the original plaintext analysis,
+without opening its compressed failure report.
+
+The immediate predecessor is accurately recorded as graph version
+**61** in the inputs, summary, and full snapshot; the old version
+**57** is kept only as preserved history. The three new reference
+owners raise the authenticated evidence and history lower bounds to
+**210/215**. The **4,194,304**-example holdout remains **NOT
+GENERATED** and **NOT OPENED**.
+
 ## Reconcile the Python reference and freeze every additional fuzz case
 
 The [independently owned source verifier](../tools/verify_owned_p0_completeness_v2.py),

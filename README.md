@@ -13,40 +13,27 @@ Python, another regular-expression package, or another candidate does not count.
 
 ## Results at a glance
 
-**Six** from-scratch engine designs. **Zero** fully compatible
-replacements. Speed compared with Python: **NOT MEASURED**.
+**Six** matching engines built from scratch. **Zero** fully compatible
+replacements so far. Speed compared with Python: **NOT MEASURED**.
 
-![Six independently built regular-expression replacements compared with Python. The corrected Python reference is verified. Rust still has 1,440 observed differences, and the complete test gate remains blocked until 8,244 additional cases receive two independent reference runs. No replacement qualifies, no speed is measured, and the final comparison remains unopened.](docs/evidence/candidate-current-overview-v61.svg)
+![Current results for six regular-expression engines built from scratch. The original Python baseline is verified, the additional 8,244-case two-process baseline is ready but has not yet run, no engine passes all required checks, and no speed comparison has been measured.](docs/evidence/candidate-current-overview-v62.svg)
 
-The independently built Rust engine has completed all **13** groups
-of Python's unchanged **31,237** original checks with **13** real
-test workers and no infrastructure failures. It is **not compatible**:
-the run found **1,440** differences, **512 more** than the previous
-Rust result of **928**. The three failures concern buffer lifetime,
-substitution, and replacement shape. All four original engine files
-were restored exactly before the result was published.
+Python's corrected reference agrees on all **6,912** affected original
+checks. The unchanged original suite contains **31,237** checks in
+**13** groups. A separate **8,244**-case collection covers generated
+patterns, invalid input, byte buffers, warnings, substitution, and other
+real `re` behavior. Its reproducible two-Python-process reference is
+now frozen, but its actual reference and candidate runs are **NOT RUN**.
 
-A narrowly scoped fix now keeps the original Python buffer alive during
-replacement. It is implemented in our own code and reproduces exactly
-from the failing source. A reproducible, two-independent-build recipe
-is frozen, but the correction is **not yet built or retested**; it does
-not change the reported result.
-
-The original test checklist has now been reconciled with the corrected
-Python reference; two independently recorded Python workers agree on
-all **6,912** affected cases. Every one of the additional **8,244**
-fuzz and property cases is frozen and individually verified. Those
-extra cases still need two independent Python-reference runs and
-complete candidate runs. Builds, compatibility claims, and benchmarks
-remain blocked until those checks genuinely pass.
-
-No engine wraps Python's matcher, an external regular-expression
-package, or another candidate. The stronger runtime proof that no
-engine delegates matching is **NOT ESTABLISHED**. There is no winner.
+The latest complete Rust run recorded **1,440** genuine differences,
+including a **512**-difference regression. Corrections that have not
+been rebuilt or retested are not counted as passing. No engine may
+wrap Python's matcher, an external regular-expression package, or
+another candidate. Runtime proof of that rule is **NOT ESTABLISHED**.
 
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
-| Python `re` | Pinned Python 3.14.6 | Original reference agrees; extra fuzz replay pending | Reference; not timed |
+| Python `re` | Pinned Python 3.14.6 | Original reference agrees; extra two-process replay not run | Reference; not timed |
 | Public `rebar` import | Still selects an unqualified Zig prototype | FAIL; `__version__` missing | NOT MEASURED |
 | Rust | Latest engine tested; new buffer fix not yet built | FAIL; 1,440 differences, 512 more than its previous run | NOT MEASURED |
 | C | First-party engine; corrected test prepared | Previous run: 1,230 differences | NOT MEASURED |
@@ -55,8 +42,9 @@ engine delegates matching is **NOT ESTABLISHED**. There is no winner.
 | Go | First-party engine | Previous run: 4,518 differences; four worker failures | NOT MEASURED |
 | Fortran | First-party engine | NOT TESTED | NOT MEASURED |
 
-Failed or interrupted groups are never counted as passes. All previous
-failures remain available in the [experiment log](docs/EXPERIMENT-LOG.md).
+Failed or interrupted checks are never counted as passes. Full results,
+rejected approaches, and experiment-by-experiment notes are in the
+[experiment log](docs/EXPERIMENT-LOG.md).
 
 ## Detailed compatibility
 
@@ -76,22 +64,21 @@ and **24** balanced measurement rounds. Its examples are **NOT
 FROZEN**, **NOT GENERATED**, and **NOT OPENED**. Speed, memory, and
 confidence intervals are **NOT MEASURED**.
 
-First, independently verify all **8,244** additional fuzz and property
-checks against Python, without adding them to the **31,237** original
-cases. Then three
-independently built engines must pass all **31,237** original checks,
-the additional cases, Python's two genuine
-**2,147,483,648**-character tests, and separate public-import,
-signature, and runtime-independence checks. The full-size replacement
-tests are **NOT RUN**. The winner must be at least **1.5×** faster
-overall, measurably faster on at least **60%** of cases, and explain
-every slowdown greater than **20%**. There is no winner.
+First, run the frozen two-process Python reference for the separate
+**8,244** extra cases. Then require three independently built engines
+to pass the **31,237** original checks, the additional cases,
+Python's two **2,147,483,648**-character requirements, and separate
+public-import, signature, and no-delegation checks. The full-size
+replacement tests are **NOT RUN**. A winner must be at least **1.5×**
+faster overall, faster on at least **60%** of measured cases, and
+explain every slowdown greater than **20%**. There is no winner.
 
 ## Evidence and reproduction
 
 - [Reproduce the results and verify every graph](docs/REPRODUCING.md).
 - [Experiment log, original reports, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Corrected Python compatibility checklist](oracle/phase1/P0-COMPLETENESS-V2.md); the original checks stay fixed, while the extra fuzz reference remains pending.
+- [Frozen two-process reference for all 8,244 extra checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md); source verified, actual reference **NOT RUN**.
 - [Original, preserved Python compatibility checklist](oracle/phase1/P0-COMPLETENESS-V1.md) and [separately frozen 8,244-case fuzz corpus](oracle/v2/expected.jsonl).
 - [Python's original two-billion-character compatibility requirements](oracle/phase1/P0-LARGE-INPUT-INDEXING-V1.md).
 - [Corrected, independently verified Python reference](oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md).
