@@ -8,6 +8,28 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze genuine first-party Rust substitution corrections
+
+The [first-party Rust substitution and buffer experiment](../oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V1.md)
+derives two exact corrections from the actual, independently built
+Rust bridge. It preserves Python's nested-buffer error position and
+the distinct exceptions required for failed replacement buffers.
+It changes neither the optimized native capture path nor the
+required subject and replacement acquisition order.
+
+Both independent reviewers and all four ordinary and
+empty-environment source checks passed **113** adversarial and
+**15** isolation controls. The complete corrected bridge exists only
+as authenticated in-memory source; it has **NOT BEEN BUILT** or
+run against any candidate test.
+
+The actual prior Rust results remain **12,942** verified cases,
+**240** substitution differences, **1,056** shape differences,
+and **5** incomplete groups. Whether the source changes fix any
+observed differences is **NOT MEASURED**. The **31,237** original
+checks, separate **8,244** additional checks, and unopened
+**14,155,776**-case final proposal are unchanged.
+
 ## Run the corrected, complete first-party Zig compatibility test
 
 The [version-10 Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V10.md)
