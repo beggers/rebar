@@ -8,6 +8,27 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Publish the complete current first-party candidate comparison
+
+The [version-93 headline graph](evidence/candidate-current-overview-v93.svg)
+shows the latest actual results against the same **31,237** original
+Python checks: Rust **15,749**, C **13,606**, and Zig **4,607**
+verified passes. It preserves all **14** previous evidence pools and
+adds all **13** actual corrected-C worker results without inventing
+unpublished C guard evidence.
+
+The graph retains C's **4** mismatch groups, **492** observed
+differences, **6** genuine execution failures, and **0** infrastructure
+failures. It preserves every Zig and Rust failure and keeps the **8,244**
+additional checks separate. The [reproduction guide](REPRODUCING.md)
+records every pinned source and deterministic generated-file hash.
+
+The graph starts **0** candidates and compilers, opens **0** archives,
+and takes **0** clock samples. No candidate is fully compatible. Speed,
+memory, and undefined behavior remain **NOT MEASURED**; the
+**14,155,776**-case holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the comparison after the corrected C run
 
 The [version-93 comparison renderer](../tools/render_candidate_current_overview_v93.py)
