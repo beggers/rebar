@@ -8,6 +8,27 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the reproducible corrected first-party C build
+
+The [version-19 first-party C build](../oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-SOURCE-BUILD-V19.md)
+authenticates the previously frozen match-object correction before
+reproducing its exact corrected native source. Its planned build
+uses **2** independent private phases and **14** separately
+identified compiler and inspection operations. It explicitly
+rejects the older, uncorrected C engine.
+
+Independent review and four ordinary and empty-environment
+source-only gates passed **78** adversarial controls and **45**
+physically blocked operations. The complete build remains
+**NOT RUN**: no compiler, native library, candidate, private build
+directory, or benchmark was opened during this freeze. Any future
+build must preserve the installed candidate, authenticate both
+phase outputs, and record every failure.
+
+The **31,237** original cases, separate **8,244** additional
+checks, and sealed **14,155,776**-case final proposal remain
+unchanged. Compatibility and speed are **NOT MEASURED**.
+
 ## Freeze genuine first-party Rust substitution corrections
 
 The [first-party Rust substitution and buffer experiment](../oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V1.md)
