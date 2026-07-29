@@ -7,6 +7,72 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the genuine first-party Rust buffer-lifetime correction
+
+The latest real Rust result remains **FAIL**: all **31,237** original
+checks, **13** distinct completed workers, **1,440** observed
+differences, and **14,853** explicitly verified passing cases. The
+previous real run had **928** differences and **8,965** verified
+passes. The new source freeze does not run a candidate and does not
+change either result.
+
+The [independent original-failure analysis](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json)
+attributes all **16** buffer-lifetime, **368** substitution, and
+**1,056** changing-buffer failures to the actually tested Rust bridge.
+It copied a live Python buffer and released the real original subject
+too early. All **13** complete worker observations and **six** actual
+failing examples are authenticated without reopening the compressed
+failure report; unavailable expected event vectors remain **NOT
+MEASURED**.
+
+The [corrected first-party bridge](../candidates/rust/variants/buffer_shape_pickle_v2/py_bridge.c)
+has SHA-256
+`afc6bb5f04c9d69c938fbae060ca83e0c774c8eda26e0416caadd9550634f740`
+and **179,961** bytes. It is derived exactly from the **181,004**-byte
+failed bridge. Only the premature copy, its declaration, and eight
+obsolete snapshot cleanups are removed; the real original buffer and
+all eight genuine cleanup exits are retained. Every byte outside the
+single changed function is unchanged.
+
+The [source-only verification tool](../tools/apply_owned_rust_buffer_shape_pickle_source_repair_v2.py)
+has SHA-256
+`7f22016b20da990b0ddb85114bf76a187918612ef68aae97c94d81518d3eb322`
+and **47,145** bytes. The [repair protocol](../oracle/phase2/RUST-BUFFER-SHAPE-PICKLE-SOURCE-REPAIR-V2.md)
+has SHA-256
+`79ad2b88f7542c791cdf48956d432e6d9f2dad00a485056972eea1664e41ff66`
+and **4,060** bytes. The [canonical source contract](../oracle/phase2/rust-buffer-shape-pickle-source-repair-v2.json)
+has SHA-256
+`0d5fe2ca190df54366b73850ce316a9d27f77c527bd5ddd8d5420d62dcb33be0`
+and **7,486** bytes. Normal and empty-environment self-tests both
+reject **77** hostile controls, including **14** physically blocked
+archive, import, candidate, native-library, timing, network, and write
+attempts. Both independent context checks authenticate the same
+**13** genuine workers and **six** real mismatch examples.
+
+The [updated headline graph](evidence/candidate-current-overview-v59.svg),
+[complete graph inputs](evidence/candidate-current-overview-v59.inputs.json),
+[machine-readable results](evidence/candidate-current-overview-v59.json),
+and [reproducible graph renderer](../tools/render_candidate_current_overview_v59.py)
+now consistently identify the latest Rust result as **1,440** differences
+and **14,853** verified passes. The explicitly historical result remains
+**928** differences and **8,965** verified passes. Their respective
+SHA-256 values are
+`a5716931d30ab5f4dcb2bf5efa0bdb3fd24f7bad48f6ed77b5dce3714e547677`,
+`044d243432850b6eaa9f0d54b7bd8f77967dd0c234bfb64af9d37e27888e9fa3`,
+`73dd4701a9613795aeafa60c1b76a98900a5020dbe31a78fdc1922b534a4c0b0`,
+and `9b3d0942adcd9bc29d13d895ba5e7a0acc2626520f1392a1c686ce341de43abe`.
+Both normal and clean-environment graph checks reject exactly **4,743**
+hostile controls. The four source owners raise the documented evidence
+and history lower bounds from **197/202** to **201/206**; these are
+lower bounds, not a guessed global count.
+
+This is an independently implemented source correction, **NOT A
+BUILD**, **NOT A NEW TEST RUN**, and **NOT A PASSING CANDIDATE**.
+Qualified replacements: **0**. Runtime non-delegation: **NOT
+ESTABLISHED**. Speed, memory, and undefined behavior: **NOT
+MEASURED**. The expanded final comparison remains **NOT GENERATED**
+and **NOT OPENED**.
+
 ## Run and falsify the recovery-corrected Rust engine
 
 The frozen version-10 runner was pushed before its single real
@@ -64,10 +130,10 @@ original match-subject buffer in `rust_substitute_core`. Its next fix
 must preserve the real exporter throughout substitution, without
 modifying the frozen suite.
 
-The [current actual-results graph](evidence/candidate-current-overview-v58.svg),
-[exact graph inputs](evidence/candidate-current-overview-v58.inputs.json),
-[complete machine-readable outcome](evidence/candidate-current-overview-v58.json),
-and [reproducible results renderer](../tools/render_candidate_current_overview_v58.py)
+The [preserved version-58 results graph](evidence/candidate-current-overview-v58.svg),
+[historical graph inputs](evidence/candidate-current-overview-v58.inputs.json),
+[historical machine-readable outcome](evidence/candidate-current-overview-v58.json),
+and [historical renderer](../tools/render_candidate_current_overview_v58.py)
 record **197** authenticated evidence owners and **202** historical
 references. The renderer rejects **4,672** hostile source controls and
 authenticates all worker-group results from the small receipt and
@@ -77,9 +143,11 @@ respective SHA-256 values are
 `3c58f7aa410ce287e1a718a2eb93e5cf9c7b6121bd1f0d404fbc7e67c9f6fd30`,
 `5d94286c55bce81a2b12fb54b39cb04e543cdad2588e21f3a13ade3adb03fd9a`,
 and `25477c207348b7cdfee3aa24071b27354f31553fde55033dc7eff5852e81e04d`.
-In historical graph fields, unversioned Rust mismatch values retain the
-earlier **928** result; the latest `actual_rust_v10_*` fields,
-current Rust row, and headline chart all record **1,440**.
+In this preserved historical graph, unversioned Rust mismatch fields
+retain the earlier **928** result, while `actual_rust_v10_*` records
+the genuine later **1,440** result. The newer version-59 headline
+correctly normalizes every current field while preserving the explicitly
+historical version-7 results.
 
 There are **zero** fully compatible engines. Runtime non-delegation is
 **NOT ESTABLISHED**. Speed, memory, and undefined behavior are

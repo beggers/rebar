@@ -15,7 +15,7 @@ Python, another regular-expression package, or another candidate does not count.
 **Six** from-scratch engine designs. **Zero** fully compatible
 replacements. Speed compared with Python: **NOT MEASURED**.
 
-![Six from-scratch regular-expression engines; all 13 Rust test groups really ran and found 1,440 differences, 512 more than the earlier Rust result; all failing buffer, substitution, and replacement groups remain visible; no engine qualifies; speed is unmeasured; the 4.2-million-example final comparison remains unopened](docs/evidence/candidate-current-overview-v58.svg)
+![Six independently built Python regular-expression replacements compared with the original Python baseline. The latest Rust run found 1,440 differences; its newly corrected source has not yet been rebuilt or retested. No replacement passes all tests, no speed has been measured, and the 4.2-million-example final comparison remains unopened.](docs/evidence/candidate-current-overview-v59.svg)
 
 The independently built Rust engine has completed all **13** groups
 of Python's unchanged **31,237** original checks with **13** real
@@ -25,6 +25,11 @@ Rust result of **928**. The three failures concern buffer lifetime,
 substitution, and replacement shape. All four original engine files
 were restored exactly before the result was published.
 
+A narrowly scoped fix now keeps the original Python buffer alive during
+replacement. It is implemented in our own code and reproduces exactly
+from the failing source. It is **not yet built or retested**; it does
+not change the reported result.
+
 No engine wraps Python's matcher, an external regular-expression
 package, or another candidate. The stronger runtime proof that no
 engine delegates matching is **NOT ESTABLISHED**. There is no winner.
@@ -33,7 +38,7 @@ engine delegates matching is **NOT ESTABLISHED**. There is no winner.
 | --- | --- | --- | --- |
 | Python `re` | Python 3.14.6; independently verified reference | Reference checks agree | Reference; not timed |
 | Public `rebar` import | Still selects an unqualified Zig prototype | FAIL; `__version__` missing | NOT MEASURED |
-| Rust | First-party engine built; all 13 real test groups completed | FAIL; 1,440 differences, 512 more than its previous run | NOT MEASURED |
+| Rust | Latest engine tested; new buffer fix not yet built | FAIL; 1,440 differences, 512 more than its previous run | NOT MEASURED |
 | C | First-party engine; corrected test prepared | Previous run: 1,230 differences | NOT MEASURED |
 | Zig | First-party engine; corrected test prepared | Previous run: 1,764 differences | NOT MEASURED |
 | C++ | First-party engine | Previous run: 2,308 differences; five worker failures | NOT MEASURED |
@@ -78,9 +83,8 @@ least **60%** of cases, and explain every slowdown greater than
 - [Corrected, independently verified Python reference](oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md).
 - [Six from-scratch engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md) and [independent no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [First-party Rust build protocol](oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V16.md), [actual build report](oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle.json.gz), and [durable build receipt](oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle-publication-receipt.json).
-- [Frozen complete Rust compatibility test and safe recovery](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V8.md).
-- [Exact failed Rust test attempt](oracle/phase2/evidence/repaired-rust-original-campaign-v8-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure.json) and [independent failure and unchanged-file observation](oracle/phase2/evidence/repaired-rust-original-campaign-v8-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure-observation.json).
-- [Last complete Rust compatibility result](oracle/phase2/evidence/repaired-rust-original-campaign-v7-rust-phase2-v13-rust-pattern-repr-original-p0-failures.json.gz) and [independent failure and safe-restoration receipt](oracle/phase2/evidence/repaired-rust-original-campaign-v7-rust-phase2-v13-rust-pattern-repr-original-p0-failures-publication-receipt.json).
+- [Complete latest Rust compatibility report](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [durable result receipt](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [independent failure analysis](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json).
+- [Reproducible from-scratch Rust buffer correction](oracle/phase2/RUST-BUFFER-SHAPE-PICKLE-SOURCE-REPAIR-V2.md); its corrected source is frozen but not yet built or retested.
 - [Separate public-import checks](oracle/phase1/P0-PUBLIC-ENTRYPOINT-IMPORT-V1.md) and [function-signature checks](oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md).
 - [Expanded, still-unopened final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256
