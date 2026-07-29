@@ -7,6 +7,62 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the recovery-corrected complete Rust test
+
+The independently verified version-10 runner fixes the actual
+version-9 recovery failure without changing the reference tests or
+the built Rust engine. It authenticates the frozen version-2 helper,
+rebinds its exact directory prefix to the new version-10 directory,
+and verifies both inherited directory checks **before reading the
+build archive or creating a directory**. It separately adapts the real,
+authenticated Rust build records to the nested shape required by the
+version-7 activation helper; the original build report remains
+unchanged.
+
+All **28** genuine build processes, both independently compiled native
+files, all **31,237** original checks, **13** test groups, and **13**
+named private waivers remain frozen. Source tests verify the exact
+version-10 worker, journal, and recovery identities, reject old and
+mixed recovery directories, preserve original inner exceptions, and
+never invent worker results before activation. The normal and
+empty-environment self-tests both accept **13** valid controls and
+reject **247** hostile controls. Both frozen-context checks authenticate
+**34** owners. No source-only check opens a build report, starts a
+worker, creates a directory, activates a native file, samples a clock,
+or opens the holdout.
+
+The [recovery-corrected runner](../tools/run_owned_repaired_rust_original_campaign_v10.py)
+has SHA-256
+`038870e88e9dfbe2f9d97892fb98558787d1142bb94559e3060023c8e562a81c`
+and **211,733** bytes. Its [frozen protocol](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V10.md)
+has SHA-256
+`cf425c2517f7fa066a30a340b830d8782e0000872efa3eaf00c764ce45ef0659`
+and **16,618** bytes. Its [machine-readable contract](../oracle/phase2/repaired-rust-original-campaign-v10.json)
+has SHA-256
+`57c36f414d052e798fc1f9ccfcd10aeddd5f6571d95679a995c6935d86f3dda7`
+and **17,426** bytes.
+
+The [current overview](evidence/candidate-current-overview-v57.svg),
+[exact graph inputs](evidence/candidate-current-overview-v57.inputs.json),
+[complete current evidence](evidence/candidate-current-overview-v57.json),
+and [independently reproducible renderer](../tools/render_candidate_current_overview_v57.py)
+record **194** authenticated evidence owners and **199** historical
+references. The renderer rejects **3,920** hostile source controls.
+Its source, inputs, summary, and chart have SHA-256 values
+`40ff10a3b34ef9a82b9680def680328556713b2f755c5e25cf7a77e401f3d8a7`,
+`3ffcb566a674178e055fc17d2811254967780c4160bdd99eb226ebe97d38a69e`,
+`a54b936503ea8524f4cdd7d6c2ef37ef9c7042cec114267e4e1ec0da60ed8b30`,
+and `ff884fccc3da9ace71f12cb7a4a09313fffd4b1b421cd71394ff71b0a17ca038`,
+respectively.
+
+This is a **source freeze**, not a candidate result. The corrected
+Rust engine is **NOT TESTED**; its previous actual matching result
+remains **928** differences. Both real pre-matching failures remain
+recorded. No candidate qualifies, runtime non-delegation is
+**NOT ESTABLISHED**, and speed, memory, and undefined behavior are
+**NOT MEASURED**. The **4,194,304**-example holdout remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Record the corrected Rust runner's real recovery failure
 
 The frozen version-9 runner was committed and pushed before its one

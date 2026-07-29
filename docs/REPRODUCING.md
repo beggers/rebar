@@ -8,8 +8,10 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
 ## Evidence and reproduction
 
+- [Recovery-corrected complete Rust-test protocol](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V10.md), [independently frozen recovery and build-shape contract](../oracle/phase2/repaired-rust-original-campaign-v10.json), and [first-party version-10 runner](../tools/run_owned_repaired_rust_original_campaign_v10.py); verify the real versioned recovery directory and activation build shape before any build archive, native activation, or matching worker. Both source tests reject **247** hostile controls while preserving all **31,237** original checks. This is a freeze: candidate matching is **NOT RUN**.
+- [Current recovery-corrected test overview](../docs/evidence/candidate-current-overview-v57.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v57.inputs.json), [complete current machine-readable evidence](../docs/evidence/candidate-current-overview-v57.json), and [reproducible current renderer](../tools/render_candidate_current_overview_v57.py); preserve both previous real runner failures, all **13** non-worker placeholders, and the **928** previous observed Rust differences. Qualified replacements: **0**. Performance: **NOT MEASURED**. The **4,194,304**-example final comparison remains unopened.
 - [Actual corrected Rust-runner failure](../oracle/phase2/evidence/repaired-rust-original-campaign-v9-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure.json) and [independently verified original error and all 13 synthetic placeholders](../oracle/phase2/evidence/repaired-rust-original-campaign-v9-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure-observation.json); the one real run reads the build archive once and creates one empty recovery directory, but starts **zero** workers, opens **zero** locks, activates **zero** native engines, and runs **zero** cases. The genuine inherited version-2 helper rejects the version-9 directory. Observation **PASS** authenticates controller **FAIL**, not candidate matching.
-- [Current actual Rust-runner failure overview](../docs/evidence/candidate-current-overview-v56.svg), [current exact graph inputs](../docs/evidence/candidate-current-overview-v56.inputs.json), [complete current machine-readable outcome](../docs/evidence/candidate-current-overview-v56.json), and [reproducible current renderer](../tools/render_candidate_current_overview_v56.py); independently verify all **13** synthetic records against the actual controller output without treating them as real tests. Qualified replacements: **0**. Performance: **NOT MEASURED**. The **4,194,304**-example final comparison is unopened.
+- [Historical version-56 actual Rust-runner failure overview](../docs/evidence/candidate-current-overview-v56.svg), [preserved failure graph inputs](../docs/evidence/candidate-current-overview-v56.inputs.json), [complete historical machine-readable outcome](../docs/evidence/candidate-current-overview-v56.json), and [reproducible historical renderer](../tools/render_candidate_current_overview_v56.py); independently verify all **13** real synthetic records against the actual controller output without treating them as started or observed tests.
 - [Corrected complete Rust-test protocol](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V9.md), [independently frozen corrected contract](../oracle/phase2/repaired-rust-original-campaign-v9.json), and [first-party version-9 runner](../tools/run_owned_repaired_rust_original_campaign_v9.py); authenticate all **28** real compiler processes without requiring an invented phase field, while preserving all **31,237** original checks and **13** groups. The source tests reject **212** hostile controls. This is a source freeze: corrected candidate matching remains **NOT RUN**.
 - [Historical version-55 corrected-test freeze overview](../docs/evidence/candidate-current-overview-v55.svg), [historical exact graph inputs](../docs/evidence/candidate-current-overview-v55.inputs.json), [historical machine-readable source-freeze evidence](../docs/evidence/candidate-current-overview-v55.json), and [independently reproducible historical renderer](../tools/render_candidate_current_overview_v55.py); preserve the state frozen and pushed before the one real version-9 attempt. The overview labels matching **NOT RUN** and never substitutes source-only checks for the subsequently recorded controller failure.
 - [Actual first repaired-Rust controller failure](../oracle/phase2/evidence/repaired-rust-original-campaign-v8-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure.json) and [independent root-cause and unchanged-original-file observation](../oracle/phase2/evidence/repaired-rust-original-campaign-v8-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure-observation.json); the one authorized run read the correct build archive once but started **zero** workers and executed **zero** cases. The genuine version-16 report does not emit the per-process phase field incorrectly required by the runner. Observation **PASS** records a controller **FAIL**, not candidate matching. The repaired candidate remains **NOT TESTED**.
@@ -723,7 +725,43 @@ decompressing a matching archive, or opening the final comparison:
   --protocol-sha256 67ba62acc8e51a6868404ea3faeb1aaaacb1d053cc1c915bef0c397edf5ac408 \
   --contract-sha256 ffa76d1724396fae5816cf96e0ae2104bcce8fc5eb246b8306d4441db0fe4a1b
 
-# Verify the complete version-56 actual-failure graph's 3,711 controls.
+# Verify the complete recovery-corrected graph's 3,920 hostile controls.
+"$PY" -I -B tools/render_candidate_current_overview_v57.py --self-test
+
+# Verify all current evidence without running the corrected Rust engine.
+"$PY" -I -B tools/render_candidate_current_overview_v57.py \
+  --verify-frozen-context \
+  --source-sha256 40ff10a3b34ef9a82b9680def680328556713b2f755c5e25cf7a77e401f3d8a7 \
+  --source-bytes 85869 \
+  --previous-source-sha256 991dee73be4c847eab8ebeaf27e04992d38310e8b0bcb97b4a6405ccc149b8a2 \
+  --previous-inputs-sha256 63446b32a01b2a731ed8f6ddf4ffbb7077fa1bc1ede3ad081012ba7a0611b554 \
+  --previous-summary-sha256 cceb572a6daf4683fd01bd758cbc4206b2dfc5b5eb8f5c45bd2de07b9934c1fe \
+  --previous-svg-sha256 7ea80defb808389c1b00f58731e0b74b3958c72e2814368d94b9ef44e6a1a5b1 \
+  --runner-source-sha256 038870e88e9dfbe2f9d97892fb98558787d1142bb94559e3060023c8e562a81c \
+  --runner-source-bytes 211733 \
+  --runner-protocol-sha256 cf425c2517f7fa066a30a340b830d8782e0000872efa3eaf00c764ce45ef0659 \
+  --runner-protocol-bytes 16618 \
+  --runner-contract-sha256 57c36f414d052e798fc1f9ccfcd10aeddd5f6571d95679a995c6935d86f3dda7 \
+  --runner-contract-bytes 17426 \
+  --inputs-sha256 3ffcb566a674178e055fc17d2811254967780c4160bdd99eb226ebe97d38a69e \
+  --summary-sha256 a54b936503ea8524f4cdd7d6c2ef37ef9c7042cec114267e4e1ec0da60ed8b30 \
+  --svg-sha256 ff884fccc3da9ace71f12cb7a4a09313fffd4b1b421cd71394ff71b0a17ca038
+
+# Verify the corrected recovery runner's 247 hostile source-only controls.
+"$PY" -I -B tools/run_owned_repaired_rust_original_campaign_v10.py \
+  --self-test \
+  --source-sha256 038870e88e9dfbe2f9d97892fb98558787d1142bb94559e3060023c8e562a81c \
+  --protocol-sha256 cf425c2517f7fa066a30a340b830d8782e0000872efa3eaf00c764ce45ef0659 \
+  --contract-sha256 57c36f414d052e798fc1f9ccfcd10aeddd5f6571d95679a995c6935d86f3dda7
+
+# Authenticate all original cases and recovery identities without activation.
+"$PY" -I -B tools/run_owned_repaired_rust_original_campaign_v10.py \
+  --verify-frozen-context \
+  --source-sha256 038870e88e9dfbe2f9d97892fb98558787d1142bb94559e3060023c8e562a81c \
+  --protocol-sha256 cf425c2517f7fa066a30a340b830d8782e0000872efa3eaf00c764ce45ef0659 \
+  --contract-sha256 57c36f414d052e798fc1f9ccfcd10aeddd5f6571d95679a995c6935d86f3dda7
+
+# Verify the preserved version-56 actual-failure graph's 3,711 controls.
 "$PY" -I -B tools/render_candidate_current_overview_v56.py --self-test
 
 # Verify both real runner errors and all 13 exact synthetic error records.
