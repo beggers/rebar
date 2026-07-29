@@ -9,6 +9,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 ## Evidence and reproduction
 
 - [Frozen Python compatibility tests](../oracle/phase1/P0-COMPLETENESS-V1.md), [all 31,237 test cases](../oracle/phase1/p0-completeness-v1.json), and [independent test verifier](../tools/verify_p0_completeness_v1.py).
+- [Frozen actual-public-import protocol](../oracle/phase1/P0-PUBLIC-ENTRYPOINT-IMPORT-V1.md), [all 32 separately counted public-module observations](../oracle/phase1/p0-public-entrypoint-import-v1.json), and [physically isolated public-entrypoint verifier](../tools/verify_public_entrypoint_import_v1.py); the real Zig-backed entrypoint remains **FAIL**, its missing `__version__` is preserved, **191** safety controls pass, **33** forbidden effects are physically blocked, and no candidate, Python regular-expression engine, native library, or holdout is loaded. These **32** observations are not added to either the original **31,237** or the separate **50** signature checks.
 - [Separately frozen public callable signature checks](../oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md), [all 50 additional function, pattern, match, and scanner cases](../oracle/phase1/p0-callable-introspection-v1.json), and [independent source-only verifier](../tools/verify_python_re_callable_introspection_v1.py); the original **31,237** cases are unchanged, and **two** separate Python reference processes passed all **50** additional checks. Candidate signature checks have **NOT RUN**.
 - [Actual 96-case candidate-context Python reference falsification](../oracle/phase1/evidence/public-type-candidate-context-falsification-v1.json); the original public-type helper produces `__main__` when run as a script and its qualified module name when imported by a candidate worker. Pinned Python alone reproduces all **96** differences. Preserve all **31,237** original cases, the genuine C subclass-equality failure, and every recorded Zig failure.
 - [Frozen recovery-safe same-context Python reference](../oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md), [complete corrected-reference contract](../oracle/phase1/p0-public-type-reference-context-v1.json), and [independently verified two-worker reference controller](../tools/verify_owned_public_type_reference_context_v1.py); two actual Python workers each pass all **6,912** unchanged public-type cases and preserve all **96** original case IDs. Existing replacement runners still bind the rejected original reference and remain **BLOCKED** until a separately frozen successor consumes the corrected reference.
@@ -81,7 +82,8 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Complete repaired C compatibility evidence](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures.json.gz), [independent safe-restoration receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures-publication-receipt.json), [all 13 original worker reports](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures.json.gz), and [original-suite aggregate receipt](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures-publication-receipt.json); eight complete groups pass, five retain 1,262 genuine differences, and no infrastructure failure occurred.
 - [Actual independent repaired Zig builds](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner.json.gz) and [complete native build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner-publication-receipt.json); exactly 26 genuine processes produce two identical first-party engine and bridge binaries without testing matching or measuring speed.
 - [Actual independent repaired Rust builds](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay.json.gz) and [complete offline-build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay-publication-receipt.json); exactly 28 genuine processes produce two identical dependency-free Rust engines and bridges without testing matching or measuring speed.
-- [Current recovery-safe Rust and public-entrypoint graph](../docs/evidence/candidate-current-overview-v44.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v44.inputs.json), [current machine-readable results](../docs/evidence/candidate-current-overview-v44.json), and [source-pinned current graph generator](../tools/render_candidate_current_overview_v44.py); the repaired Rust runner is frozen but its actual campaign has **NOT RUN**. The current public import still selects the unqualified Zig prototype and omits `__version__`. Preserve the previous actual Rust failure, its genuine build-archive effect, all **31,237** original cases, **six** first-party source designs, **two** frozen source-runner paths, **zero** qualified engines, and the unopened final comparison. Speed: **NOT MEASURED**.
+- [Current separately audited public-import and candidate graph](../docs/evidence/candidate-current-overview-v45.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v45.inputs.json), [current machine-readable public and candidate results](../docs/evidence/candidate-current-overview-v45.json), and [source-pinned current graph generator](../tools/render_candidate_current_overview_v45.py); the **32** separately counted public observations preserve **17** passes, **7** failures, **6** unmeasured outcomes, **1** unestablished runtime guarantee, and **1** unopened holdout. Preserve the unchanged **31,237** original cases, the separate **50** signature cases, the previous Rust failure, **six** independently written engines, **zero** qualified replacements, and the expanded unopened final comparison. Speed: **NOT MEASURED**.
+- [Historical recovery-safe Rust and public-entrypoint graph](../docs/evidence/candidate-current-overview-v44.svg), [historical graph inputs](../docs/evidence/candidate-current-overview-v44.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v44.json), and [historical graph generator](../tools/render_candidate_current_overview_v44.py); preserve the repaired Rust runner before its actual campaign, the unqualified Zig-backed public import, the historical Rust failure and build-archive effect, and all original evidence unchanged.
 - [Historical first Rust-failure and overall-results graph](../docs/evidence/candidate-current-overview-v43.svg), [historical independently authenticated graph inputs](../docs/evidence/candidate-current-overview-v43.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v43.json), and [historical graph generator](../tools/render_candidate_current_overview_v43.py); one actual Rust controller attempt fails before candidate matching. It reads one historical source-build archive but **zero** matching or Python-reference archives; the frozen controller omitted the build-archive effect. All original cases and historical failures remain unchanged.
 - [Historical C and Rust runner source-freeze graph](../docs/evidence/candidate-current-overview-v42.svg), [historical graph inputs](../docs/evidence/candidate-current-overview-v42.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v42.json), and [historical graph generator](../tools/render_candidate_current_overview_v42.py); this preserves the exact independently frozen state before the real Rust controller failure.
 - [Historical C-only test runner and overall-results graph](../docs/evidence/candidate-current-overview-v41.svg), [historical C-only graph inputs](../docs/evidence/candidate-current-overview-v41.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v41.json), and [historical graph generator](../tools/render_candidate_current_overview_v41.py); this preserves the authentic state before the separate Rust-only runner was frozen.
@@ -104,6 +106,11 @@ Run the source-only safety checks without opening the final comparison:
 PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
 
 "$PY" -I -B tools/verify_p0_completeness_v1.py --self-test
+"$PY" -I -B tools/verify_public_entrypoint_import_v1.py \
+  --self-test \
+  --source-sha256 c0a61c4cf520e82bf0c327a17c06daf64f57a1dcfd20b37c6e9f7b84177108b4 \
+  --protocol-sha256 01ace52c6285142733bdcb2b4556feb43226e01c8b181b84019b8fa8c42697c0 \
+  --contract-sha256 b80ba35a6af481f0dd1c5b9141e2995f7b0ffd12f8ffa7060bab50344ddbda47
 "$PY" -I -B tools/run_owned_six_family_original_p0_producer_v4.py --self-test
 "$PY" -I -B tools/run_owned_repaired_rust_original_campaign_v7.py \
   --self-test \
@@ -405,10 +412,46 @@ decompressing a matching archive, or opening the final comparison:
   --protocol-sha256 ddc5c212d3e188bc1d1cdde992bf872a38962e64d3b07d6ec7c275ba4f55f13c \
   --contract-sha256 ce044f18be388ab0608d0bd3bb68751e6970973f8e6ef758971e75e6d6b584a5
 
-# Verify the current graph's synthetic safety checks without real owner access.
+# Verify the public-entrypoint freeze without importing rebar or any engine.
+"$PY" -I -B tools/verify_public_entrypoint_import_v1.py \
+  --verify-frozen-context \
+  --source-sha256 c0a61c4cf520e82bf0c327a17c06daf64f57a1dcfd20b37c6e9f7b84177108b4 \
+  --protocol-sha256 01ace52c6285142733bdcb2b4556feb43226e01c8b181b84019b8fa8c42697c0 \
+  --contract-sha256 b80ba35a6af481f0dd1c5b9141e2995f7b0ffd12f8ffa7060bab50344ddbda47
+
+# Verify the current public-import graph's synthetic safety checks.
+"$PY" -I -B tools/render_candidate_current_overview_v45.py --self-test
+
+# Verify the current separately counted public-import and candidate graph.
+"$PY" -I -B tools/render_candidate_current_overview_v45.py \
+  --verify-frozen-context \
+  --source-sha256 07a7e1b6c96434e66e852e0eb784326816d340edb338d2e89de4f1d6918bb586 \
+  --source-bytes 68616 \
+  --previous-source-sha256 10b64e05336485445b5199acdf4626854812c16df6c8248371860a764450324d \
+  --previous-inputs-sha256 7b51e6fa89d7b1d3ccc043e0268f405fe072999d22bd6067aaf2f20ab43e0d94 \
+  --previous-summary-sha256 5fa65d50eb041b0e12384846c5a7de548581cbc5f9183b1f72bc5f3d703a41c9 \
+  --previous-svg-sha256 b23c43fab061df0cf192b9c5c869aee8854ad794397dc3c9512aa6f946150ab8 \
+  --failure-sha256 88367fd41665bbeafb0645e3b03130ca97c1c54729863372d422e693169420d7 \
+  --observation-sha256 51846c742aafbfc2c42ddad75836310bba518b3a76d0f8fa1548a55128852ad6 \
+  --rust-source-sha256 eb6738e6f1c2315aa044c8a4a7978e6df750a9ef359e9ff0551df5f92ab23104 \
+  --rust-protocol-sha256 0b5182a7eee74e586839abc3a0e8bdd122bac248e9cb3b76c603c5add9281840 \
+  --rust-contract-sha256 9c8e85dcc5dcf0a00953b36dd02c29c2ab7b1ed0b4281eb27f6693c058d155e5 \
+  --public-module-sha256 289769bd637ea525ae7e71d263377e15c0f394ba20619c11b98e266f57fcc34f \
+  --public-module-bytes 212 \
+  --public-project-sha256 7d50e8c6c2bc76a0e3ddcac6b5f157b013bcfd76944fdeb2c1c81e0181ae7825 \
+  --public-project-bytes 224 \
+  --public-oracle-source-sha256 c0a61c4cf520e82bf0c327a17c06daf64f57a1dcfd20b37c6e9f7b84177108b4 \
+  --public-oracle-protocol-sha256 01ace52c6285142733bdcb2b4556feb43226e01c8b181b84019b8fa8c42697c0 \
+  --public-oracle-contract-sha256 b80ba35a6af481f0dd1c5b9141e2995f7b0ffd12f8ffa7060bab50344ddbda47 \
+  --public-case-matrix-sha256 f67f8d4d62f9939c94250ad2e4df55b14df013df7212aa66930ecc3a772d2a58 \
+  --inputs-sha256 cbc1b861fe59067e64adf396493630360f6bf616fe1f51598220aabafadea4a5 \
+  --summary-sha256 1086a7bd72116b590d00f5216835534ec745265a0f249d3cd5eb05a3701ff840 \
+  --svg-sha256 1c9d56fd4b8480bab9cedc2e95b6449a414cb68a02ee447963454db5b4242b2b
+
+# Verify the historical version-44 graph's synthetic safety checks.
 "$PY" -I -B tools/render_candidate_current_overview_v44.py --self-test
 
-# Verify the current Rust recovery and public-import graph without running an engine.
+# Verify the historical Rust-recovery graph without running an engine.
 "$PY" -I -B tools/render_candidate_current_overview_v44.py \
   --verify-frozen-context \
   --source-sha256 10b64e05336485445b5199acdf4626854812c16df6c8248371860a764450324d \

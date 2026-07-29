@@ -7,6 +7,73 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the actual public-import compatibility audit
+
+Freeze a separate source-only test for the module a user would actually
+select with `import rebar as re`. The
+[independent public-entrypoint verifier](../tools/verify_public_entrypoint_import_v1.py)
+has SHA-256
+`c0a61c4cf520e82bf0c327a17c06daf64f57a1dcfd20b37c6e9f7b84177108b4`.
+The [frozen public-entrypoint protocol](../oracle/phase1/P0-PUBLIC-ENTRYPOINT-IMPORT-V1.md)
+has SHA-256
+`01ace52c6285142733bdcb2b4556feb43226e01c8b181b84019b8fa8c42697c0`.
+The [complete entrypoint contract and observation matrix](../oracle/phase1/p0-public-entrypoint-import-v1.json)
+has SHA-256
+`b80ba35a6af481f0dd1c5b9141e2995f7b0ffd12f8ffa7060bab50344ddbda47`.
+
+All **32** individually named public-module observations have matrix
+SHA-256
+`f67f8d4d62f9939c94250ad2e4df55b14df013df7212aa66930ecc3a772d2a58`.
+Exactly **17** observations pass, **7** fail, **6** are
+**NOT MEASURED**, **1** is **NOT ESTABLISHED**, and **1** is
+**NOT OPENED**. These 32 observations do not change the **31,237**
+original cases, their **13** suites or **13** named private waivers;
+the existing **50** additional public-signature checks also remain a
+separate denominator.
+
+Preserve every genuine public failure: missing `__version__`, no
+qualified winner, selection of a failing historical Zig candidate,
+premature candidate selection, a potential eager native bridge import,
+a potential eager engine load, and disabled package installation.
+The potential native loads are determined from exact source; neither
+the candidate nor the public module is imported by this verifier.
+Python's ordered wildcard exports and direct `DEBUG` and `Scanner`
+attributes agree and remain correctly recorded as passing.
+
+The verifier installs a real Python audit hook before reading any
+frozen owner. Its ordinary and empty-environment self-tests each check
+**191** distinct safety controls and physically block **33** actual
+attempts to import a regular-expression engine, start a process, load
+a native library, read an archive or holdout, use the network, write a
+file, execute injected code, or observe a performance clock. All real
+candidate imports, public imports, Python `re` or `_sre` imports,
+native loads, archive reads, timing trials, and holdout accesses are
+zero. Both pinned frozen-context modes independently authenticate
+all **20** real source owners, including the pushed version-44 graph
+and the recovery-safe Rust runner.
+
+The [public-import and overall-results graph](evidence/candidate-current-overview-v45.svg)
+shows the separate 32-observation breakdown and the unchanged earlier
+compatibility results. It preserves the
+[previous version-44 overall-results graph](evidence/candidate-current-overview-v44.svg),
+the actual first Rust-controller failure and its historical build-archive
+access, all previous candidate losses, and the expanded unopened final
+comparison. It does not run an engine or select a winner.
+
+The [version-45 graph generator](../tools/render_candidate_current_overview_v45.py)
+has SHA-256
+`07a7e1b6c96434e66e852e0eb784326816d340edb338d2e89de4f1d6918bb586`.
+Its [complete graph inputs](evidence/candidate-current-overview-v45.inputs.json)
+have SHA-256
+`cbc1b861fe59067e64adf396493630360f6bf616fe1f51598220aabafadea4a5`.
+Its [complete machine-readable public and candidate results](evidence/candidate-current-overview-v45.json)
+have SHA-256
+`1086a7bd72116b590d00f5216835534ec745265a0f249d3cd5eb05a3701ff840`.
+The reproducibly generated chart has SHA-256
+`1c9d56fd4b8480bab9cedc2e95b6449a414cb68a02ee447963454db5b4242b2b`.
+Ordinary and empty-environment graph self-tests each reject **1,341**
+hostile controls and authenticate no real archive or candidate.
+
 ## Freeze a recoverable Rust runner and report the real public import
 
 Freeze a new, separately owned Rust-only original-suite runner without

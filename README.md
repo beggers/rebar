@@ -26,12 +26,17 @@ campaign has **NOT RUN**. C also has **NOT RUN**: its rebuilt native
 engine must first be safely activated. Zig, C++, Go, and Fortran are
 independently written designs, not passing replacements.
 
-![Python's corrected reference passes; the repaired Rust runner is frozen but untested; the current Zig-backed public import fails; no engine qualifies and speed remains unmeasured](docs/evidence/candidate-current-overview-v44.svg)
+![Python's reference passes; the separate public-import audit exposes seven failures; all candidate engines remain unqualified and speed remains unmeasured](docs/evidence/candidate-current-overview-v45.svg)
 
 The existing `rebar.py` prematurely selects the Zig prototype, which
 has **1,764** recorded compatibility differences and does not export
 Python's `__version__`. It is **not** a compatible public import and is
 **not** a winner. Installation has **NOT BEEN TESTED**.
+
+A separately frozen **32**-check public-import audit records **17**
+passing observations, **7** failures, **6** unmeasured items, **1**
+unestablished guarantee, and **1** unopened final holdout. It does not
+import a candidate or add a case to the original **31,237** checks.
 
 The six engines use first-party matching code; they are not wrappers
 around an outside regular-expression package. A complete runtime proof
@@ -100,6 +105,7 @@ slowdown greater than **20%**. There is no winner.
 - [Reproduce the results and verify every graph](docs/REPRODUCING.md).
 - [Experiment log, original reports, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Frozen Python compatibility checks](oracle/phase1/P0-COMPLETENESS-V1.md).
+- [Frozen 32-check public-import and no-premature-winner audit](oracle/phase1/P0-PUBLIC-ENTRYPOINT-IMPORT-V1.md).
 - [Frozen correction for the Python reference](oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md).
 - [Corrected six-engine test producer](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md).
 - [Corrected C-only original-suite runner](oracle/phase2/P0-CANDIDATE-PROTOCOL-V10.md).
