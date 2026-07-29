@@ -8,6 +8,28 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze one genuine first-party C match-object correction
+
+The [first-party C match-object experiment](../oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-V1.md)
+corrects one source-level incompatibility established by the frozen
+Python contract: match objects must reject pickling for all six
+supported pickle protocols. The exact proposed C-source change was
+derived in memory only. No candidate file or compiled library was
+changed, built, or executed.
+
+Independent review and four ordinary and empty-environment checks
+passed **53** hostile controls and **37** physically blocked
+operations. The frozen original test source, match copying, buffer
+acquisition and release order, and all **31,237** original cases
+remain unchanged. Previously observed surrogate, normalized-value,
+and threaded-result reporting errors are preserved separately;
+the correction does not claim to repair them.
+
+Whether this source correction improves the **236** previously
+observed C differences is **NOT MEASURED**. The **8,244** additional
+cases and **14,155,776** proposed final cases remain unrun. No
+performance result or candidate qualification is claimed.
+
 ## Run the complete first-party Zig compatibility test
 
 The [version-9 Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V9.md)
