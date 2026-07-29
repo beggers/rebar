@@ -8,6 +8,35 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Record the actual first-party Rust literal-engine build
+
+The frozen version-20 controller completed a real, offline build of
+the project's own Rust parser, compiler, matching engine, and
+single-pass literal-search bridge. Two independent private phases
+completed all **28** compiler and native-inspection processes. Both
+phases produced the same first-party Rust engine and native bridge.
+The bridge is built from the exact frozen single-pass source, not
+Python's matcher, an external package, or another candidate.
+
+The [actual build-publication receipt](../oracle/phase2/evidence/native-source-build-v20-rust-phase2-v20-rust-literal-findall-root-provenance-publication-receipt.json)
+has SHA-256
+`b9945838778c800f59a505021503655ea5bb4b3e11e1f0cf17f4be48cadde1b0`.
+The independently published
+[native-root provenance receipt](../oracle/phase2/evidence/native-source-build-v20-rust-phase2-v20-rust-literal-findall-root-provenance-root-provenance-receipt.json)
+has SHA-256
+`bb5bd524a7bd8c4b3845c9654e81981cb6136c4fcff7a5e52ca375ce75e745aa`.
+Their complete, preserved compressed build report has SHA-256
+`0edfe0559f45b00a295cce4094bc7ddc85acd87ef0f4205cdac8c8e3f970f883`.
+The report is not reopened to verify its two public receipts.
+
+This is a genuine **BUILD PASS** and **ROOT-PROVENANCE PASS**, not
+a compatibility result. The separate captured-result variant remains
+**NOT BUILT**. No Rust correctness worker, final case, timing trial,
+or external regex engine was run. Full compatibility, runtime
+independence, memory, and speed remain **NOT MEASURED**. The current
+**14,155,776**-case proposal is **NOT FROZEN**, **NOT GENERATED**,
+and **NOT OPENED**.
+
 ## Freeze a guarded first-party C correctness procedure
 
 The [version-5 C correctness procedure](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V5.md),
@@ -55,7 +84,8 @@ historical evidence. It does not import Python's regex engine, wrap
 an external package, execute the Rust candidate, invoke a compiler,
 open an archive, generate a final case, or take a timing sample.
 
-The new native build is **NOT RUN**. Full compatibility, runtime
+At the time this source procedure was frozen, the new native build
+was **NOT RUN**. Full compatibility, runtime
 independence, memory use, and performance remain **NOT MEASURED**;
 the final proposal is **NOT FROZEN**, **NOT GENERATED**, and
 **NOT OPENED**.
@@ -158,8 +188,9 @@ record the exact one-function change and its ownership.
 
 The existing **864**-case public practice benchmark contains **zero**
 literal `findall` cases, so it cannot show whether this experiment is
-faster. The new variant is **NOT BUILT**, **NOT TESTED**, and **NOT
-MEASURED**. The actual Rust result remains **FAIL**, with **12,942**
+faster. At the time this source variant was frozen, it was
+**NOT BUILT**, **NOT TESTED**, and **NOT MEASURED**. The actual Rust
+correctness result remains **FAIL**, with **12,942**
 verified original checks, **eight** finished groups, and **five** worker
 failures. No final holdout case is generated or opened.
 

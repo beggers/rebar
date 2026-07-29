@@ -34,8 +34,10 @@ groups. A separate **8,244**-case collection covers additional real-world
 behavior; two independent Python reference runs each pass all **8,244**.
 These are separate test sets and are never combined or counted twice.
 
-First-party native builds passed **14** C checks, **28** Rust checks,
-and **26** Zig checks. No successful build proves compatibility.
+First-party native source builds recorded **14** C, **28** Rust, and
+**26** Zig compiler and binary-inspection steps. The new Rust literal-search
+engine also passed both independent build phases; its captured-result
+variant has not yet been built. No successful build proves compatibility.
 Rust finished **8** of **13** groups and verified **12,942** cases;
 **5** workers failed. The corrected Zig matching test is **NOT RUN**.
 Zig's earlier **1,764** differences remain; no candidate qualifies.
@@ -79,7 +81,7 @@ slowdown over **20%**.
 - [Six independently written engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Guarded first-party C correctness procedure](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V5.md); authenticated native-root evidence still required.
 - [Reproducible Rust compatibility-failure diagnostics](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V16.md); new full-suite run not yet performed.
-- [From-scratch Rust literal-search](oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md) and [captured-result experiments](oracle/phase2/RUST-CAPTURED-FINDALL-ONE-PASS-V1.md), with a [reproducible first-party source-build procedure](oracle/phase2/RUST-LITERAL-FINDALL-SOURCE-BUILD-V20.md); not yet built, tested, or timed.
+- [From-scratch Rust literal-search](oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md) and [captured-result experiments](oracle/phase2/RUST-CAPTURED-FINDALL-ONE-PASS-V1.md), with a [reproduced first-party source build](oracle/phase2/RUST-LITERAL-FINDALL-SOURCE-BUILD-V20.md); compatibility and speed not yet established.
 - [Larger, unopened 14,155,776-case speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md) and [preserved earlier proposal](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256
   `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`;
