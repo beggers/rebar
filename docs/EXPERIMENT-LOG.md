@@ -8,6 +8,28 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Publish the current Python-to-candidate comparison
+
+The [version-91 headline graph](evidence/candidate-current-overview-v91.svg)
+now shows the genuinely observed current results against the same
+**31,237** original Python checks: C **13,094**, Rust **15,749**,
+and Zig **3,583** passing cases. It preserves all **12** earlier
+graph-evidence pools and independently authenticates all **13**
+rows of the latest actual Rust campaign.
+
+The graph visibly preserves the Rust candidate's **2** mismatch
+groups, observed **1,296** differences, and **1** real
+subinterpreter failure. It does not call the candidate fully
+compatible, present the **8,244** separate checks as original cases,
+or label older results as current. Its complete
+[reproduction command and deterministic file hashes](REPRODUCING.md)
+are recorded.
+
+The graph starts **0** candidates and **0** compilers, opens **0**
+private roots or archives, and samples **0** clocks. Speed, memory,
+and undefined behavior are **NOT MEASURED**. The **14,155,776**-case
+holdout remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the latest from-scratch candidate comparison
 
 The [version-91 headline renderer](../tools/render_candidate_current_overview_v91.py)
