@@ -7,6 +7,63 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the actual failed first Rust compatibility attempt
+
+Execute the frozen, independently built Rust original-suite controller
+exactly once against the corrected Python reference. It exits **1**
+before starting a Rust worker. The immutable version-two helper really
+identifies its historical Rust adapter as
+`81089bab906c9bb511fe0779d8e1ddf735850fce62eaac06ca1e6c678856578c`.
+The version-six controller incorrectly expects the separate
+`f8afb6c6e020faad3452b59ceb84abc957ee74d1397397008b3178856abe01a5`
+historical identity. Preserve both valid historical identities rather
+than changing an already frozen source or silently retrying.
+
+The [exact actual Rust controller-failure output](../oracle/phase2/evidence/repaired-rust-original-campaign-v6-rust-phase2-v13-rust-pattern-repr-original-p0-entry-failure.json)
+has SHA-256
+`88367fd41665bbeafb0645e3b03130ca97c1c54729863372d422e693169420d7`.
+Its [independent failure and archive-access observation](../oracle/phase2/evidence/repaired-rust-original-campaign-v6-rust-phase2-v13-rust-pattern-repr-original-p0-entry-failure-observation.json)
+has SHA-256
+`51846c742aafbfc2c42ddad75836310bba518b3a76d0f8fa1548a55128852ad6`.
+
+The attempt really inflates **one** already published Rust source-build
+archive: **108,985** compressed bytes and **760,477** uncompressed
+bytes. The frozen controller fails to report this actual build-archive
+effect. Record the omission explicitly. It reads **zero** matching and
+Python-reference archives, starts **zero** candidate workers, changes
+**zero** native targets, creates **zero** recovery roots, and publishes
+no matching-result archive or receipt. Actual Rust compatibility and
+mismatch totals are **NOT MEASURED**; the failure is not a test-case
+mismatch.
+
+The [current actual Rust-failure and overall-results graph](evidence/candidate-current-overview-v43.svg)
+preserves the exact controller result, both small evidence owners, and
+the previous [two-runner source-freeze graph](evidence/candidate-current-overview-v42.svg).
+Its [reproducible graph renderer](../tools/render_candidate_current_overview_v43.py)
+has SHA-256
+`3b3647a2090fd98e89ea421b2d2a3018983e1014adecf9f0b30731b54ca51e8b`.
+The [complete graph inputs](evidence/candidate-current-overview-v43.inputs.json)
+have SHA-256
+`394fb27e12b9a48fbd8bdd353930084891c09118e0cfa49fc90f596124e15017`;
+the [machine-readable actual results](evidence/candidate-current-overview-v43.json)
+have SHA-256
+`1c5ea146e6d40f0e81f2fe274f2a1a50fe01efdd074ca7ea5b36cca420d16bf0`;
+and the generated graph has SHA-256
+`bee43e78aa59a806927a50e1e807181c62a3f6497d75add1834de2c75fdc546b`.
+Ordinary and empty-environment graph source checks reject **891**
+hostile controls. The graph verifies only the two exact small failure
+records and preserved predecessor; it opens **zero** build, matching,
+or Python-reference archives. This graph-side zero does not erase the
+**one** real build archive opened by the failed Rust attempt.
+
+There are **six** independent source designs and **two** frozen test
+runner sources; neither C nor Rust has established a runnable, passing
+corrected candidate. The original **31,237** cases, **13** groups,
+**13** named private waivers, and all earlier candidate failures remain
+unchanged. Runtime non-delegation is **NOT ESTABLISHED**; speed,
+memory, and undefined behavior remain **NOT MEASURED**. The expanded
+final comparison remains unopened.
+
 ## Freeze the separate Rust-only compatibility runner
 
 Freeze a genuinely separate Rust-specific original-suite runner after the

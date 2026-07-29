@@ -19,14 +19,15 @@ all **6,912** affected checks, including all **96** cases, in the correct
 context. No case has been removed. There is no compatible replacement,
 measured speedup, or winner.
 
-Separate, independently checked test runners are now frozen for **C and
-Rust**. Neither engine has run its corrected complete matching test.
-The remaining Zig, C++, Go, and Fortran engines are independent source
-designs, not runnable or passing replacements. Six designs must never
-be reported as six tested candidates. The separately frozen Zig
-scanner correction has **NOT BEEN APPLIED**.
+Separate test-runner sources are frozen for **C and Rust**. The first
+real Rust attempt failed before any matching worker started: it checked
+the wrong historical helper. C has **NOT RUN** because its rebuilt
+native library must first be safely activated. Neither engine has a
+completed compatibility result. Zig, C++, Go, and Fortran remain
+independent source designs, not runnable or passing replacements. The
+separately frozen Zig scanner correction has **NOT BEEN APPLIED**.
 
-![Python passes its corrected reference; separate C and Rust test runners are frozen but neither engine has been tested; six from-scratch designs are not six passing replacements; speed remains unmeasured](docs/evidence/candidate-current-overview-v42.svg)
+![Python passes its corrected reference; the first Rust attempt fails before starting a matching test; C has not run; no replacement qualifies and speed remains unmeasured](docs/evidence/candidate-current-overview-v43.svg)
 
 The source and build checks reject outside matching packages and shared
 candidate engines. A complete execution-time proof that no candidate
@@ -34,9 +35,9 @@ delegates matching to Python remains **NOT ESTABLISHED**. An earlier
 Zig build reduced its differences from **2,172** to **1,764** across
 all **13** original test groups, but did not qualify.
 
-The next corrected Rust engine now builds identically from scratch in
-two independent offline source trees. Its full matching test has
-**NOT RUN**, so the Rust result below is the previous actually tested build.
+The corrected Rust engine builds identically in two independent offline
+source trees, but its first test stopped before activating or matching.
+The Rust results below therefore describe the previous tested build.
 
 Overall speed relative to Python: **NOT MEASURED**. Fair speed and memory
 measurements start only when three independent engines pass every check.
@@ -44,7 +45,7 @@ measurements start only when three independent engines pass every check.
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
 | Python `re` | Corrected reference agrees in two independent processes | Original suite unchanged; corrected reference: 6,912 / 6,912 | Reference; not timed |
-| Rust | Corrected Rust-only test runner frozen; new test has NOT RUN | Previous build: 8,965 verified; 1,036 differences | NOT MEASURED |
+| Rust | First corrected attempt failed before any matching worker | Previous build: 8,965 verified; 1,036 differences | NOT MEASURED |
 | C | Corrected C-only test runner frozen; new test has NOT RUN | Previous build: 7,325 verified; 1,230 differences; all 13 groups completed | NOT MEASURED |
 | Zig | Independently written and built | 3,711 verified; 1,764 differences; all 13 groups completed | NOT MEASURED |
 | C++ | Independently written and built | 128 verified; 2,308 differences; five worker failures | NOT MEASURED |
@@ -96,6 +97,8 @@ slowdown greater than **20%**. There is no winner.
 - [Corrected six-engine test producer](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md).
 - [Corrected C-only original-suite runner](oracle/phase2/P0-CANDIDATE-PROTOCOL-V10.md).
 - [Independently corrected Rust-only original-suite runner](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V6.md).
+- [Actual first Rust controller failure](oracle/phase2/evidence/repaired-rust-original-campaign-v6-rust-phase2-v13-rust-pattern-repr-original-p0-entry-failure.json).
+- [Independently recorded Rust failure and build-record access](oracle/phase2/evidence/repaired-rust-original-campaign-v6-rust-phase2-v13-rust-pattern-repr-original-p0-entry-failure-observation.json).
 - [Unapplied from-scratch Zig scanner correction](oracle/phase2/ZIG-SCANNER-PHRASE-SOURCE-REPAIR-V3.md).
 - [Separately frozen public-signature checks](oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md).
 - [Frozen two-process Python signature reference](oracle/phase1/CALLABLE-INTROSPECTION-REFERENCE-V2.md).

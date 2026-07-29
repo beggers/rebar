@@ -1,0 +1,122 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="2370" viewBox="0 0 1440 2370" role="img" aria-labelledby="v43-title v43-description">
+<title id="v43-title">Building a faster Python re: corrected Python baseline passes; Rust preflight fails before any candidate test</title>
+<desc id="v43-description">Two real isolated Python 3.14.6 processes independently passed the same complete 6,912 original reference cases, including all 96 previously misidentified text and bytes cases. The original denominator remains 31,237 cases in 13 suites. Rust, C, and Zig have preserved historical failures; Go, C++, and Fortran have not been retested. C and Rust have frozen runner sources but zero candidates are actually runnable. One real Rust controller failed its historical helper check before activating a candidate or starting a test; C, Zig, Go, C++ and Fortran remain untested. No replacement is qualified, speed and memory are not measured, and the 4,194,304-case final holdout remains unopened.</desc>
+<style>text{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}.title{font-size:27px;font-weight:760;fill:#16324f}.heading{font-size:19px;font-weight:750;fill:#16324f}.body{font-size:14px;fill:#42556c}.name{font-size:14px;font-weight:720;fill:#16324f}.good{font-size:18px;font-weight:780;fill:#087a4b}.goodbody{font-size:14px;fill:#1d644b}.warning{font-size:16px;font-weight:760;fill:#905500}.warnbody{font-size:13px;fill:#74511e}.pass{font-size:12px;font-weight:760;fill:#087a4b}.fail{font-size:12px;font-weight:750;fill:#a75c13}.pending{font-size:12px;font-weight:740;fill:#53667b}.big{font-size:20px;font-weight:760;fill:#16324f}.small{font-size:11px;fill:#42556c}.foot{font-size:10px;fill:#53667b}</style>
+<rect width="1440" height="1930" rx="22" fill="#f4f7fb"/>
+<text x="44" y="54" class="title">Can we build a faster replacement for Python re?</text>
+<text x="46" y="81" class="body">Python now agrees with itself. Six first-party source designs; two frozen runner sources; zero actually runnable replacements.</text>
+<rect x="44" y="100" width="1352" height="91" rx="14" fill="#effaf4" stroke="#a9dbbd"/>
+<text x="65" y="136" class="good">PYTHON BASELINE FIXED AND VERIFIED — 2 INDEPENDENT PROCESSES PASS</text>
+<text x="67" y="166" class="goodbody">Each real Python process passed all 6,912 original cases, including all 96 previously misidentified text and byte cases.</text>
+<rect x="44" y="204" width="1352" height="86" rx="14" fill="#fff8e9" stroke="#ead5a3"/>
+<text x="65" y="238" class="warning">RUST PREFLIGHT FAILED — ZERO CANDIDATE TEST WORKERS STARTED</text>
+<text x="67" y="265" class="warnbody">The actual Rust controller failed before any of the 31,237 compatibility tests. C matching has not run.</text>
+<rect x="44" y="302" width="1352" height="91" rx="14" fill="#fff1ed" stroke="#e6b3a6"/>
+<text x="65" y="337" class="warning">ONE HISTORICAL BUILD ARCHIVE WAS READ; THE RUST FAILURE LEDGER OMITTED THAT EFFECT</text>
+<text x="67" y="365" class="body">Actual build: 108,985 compressed bytes → 760,477 verified bytes. Matching/reference archives: 0. Candidate workers: 0.</text>
+<rect x="44" y="412" width="1352" height="91" rx="14" fill="#eef5ff" stroke="#b6cbee"/>
+<text x="65" y="447" class="warning">RUST SOURCE RUNNER FAILED BEFORE ACTIVATION; ZERO CANDIDATES RUNNABLE</text>
+<text x="67" y="475" class="body">Two frozen first-party runner sources; six source designs; zero runnable or qualified replacements. Rust matching and speed are not measured.</text>
+<rect x="44" y="522" width="1352" height="91" rx="14" fill="#eef5ff" stroke="#b6cbee"/>
+<text x="65" y="557" class="warning">CORRECTED C TEST RUNNER FROZEN; C MATCHING NOT RUN</text>
+<text x="67" y="585" class="body">One real Rust preflight failed. C remains untested; the other four remain source-only. No matching worker started.</text>
+<rect x="44" y="632" width="1352" height="91" rx="14" fill="#eef5ff" stroke="#b6cbee"/>
+<text x="65" y="667" class="warning">ZIG SCANNER CORRECTION FROZEN — 64 OF 1,024 CASES TARGETED; NOT APPLIED OR TESTED</text>
+<text x="67" y="695" class="body">Previous Zig result remains 1,764 differences and 3,711 passing cases. Compatibility and speed improvements have not been measured.</text>
+<rect x="44" y="747" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="53" y="780" class="big">31,237</text>
+<text x="53" y="805" class="small">unchanged original cases</text>
+<rect x="239" y="747" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="248" y="780" class="big">2 × 6,912</text>
+<text x="248" y="805" class="small">real Python observations</text>
+<rect x="434" y="747" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="443" y="780" class="big">96 / 96</text>
+<text x="443" y="805" class="small">old reference cases fixed</text>
+<rect x="629" y="747" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="638" y="780" class="big">6</text>
+<text x="638" y="805" class="small">first-party source designs</text>
+<rect x="824" y="747" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="833" y="780" class="big">0</text>
+<text x="833" y="805" class="small">qualified replacements</text>
+<rect x="1019" y="747" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="1028" y="780" class="big">1</text>
+<text x="1028" y="805" class="small">failed Rust preflights</text>
+<rect x="1214" y="747" width="184" height="82" rx="11" fill="#fff" stroke="#dae4ee"/>
+<text x="1223" y="780" class="big">≥166 / 171</text>
+<text x="1223" y="805" class="small">authenticated lower bounds</text>
+<rect x="44" y="847" width="1352" height="515" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="882" class="heading">1. Overall: Rust preflight failed; no replacement is runnable</text>
+<text x="66" y="908" class="body">Historical replacement results are kept visible. They are not results against the newly corrected baseline.</text>
+<text x="67" y="947" class="name">Python baseline — same context as replacements</text>
+<text x="1367" y="947" class="pass" text-anchor="end">PASS — TWO REAL PROCESSES</text>
+<rect x="68" y="958" width="485" height="9" rx="4" fill="#edf1f5"/>
+<rect x="68" y="958" width="485" height="9" rx="4" fill="#168653"/>
+<text x="569" y="967" class="small">6,912 of 6,912 checks passed in each real process</text>
+<text x="67" y="1003" class="name">Rust — actual preflight failed; historical failures preserved</text>
+<text x="1367" y="1003" class="fail" text-anchor="end">PREFLIGHT FAILED; ZERO TEST WORKERS</text>
+<rect x="68" y="1014" width="485" height="9" rx="4" fill="#edf1f5"/>
+<rect x="68" y="1014" width="285" height="9" rx="4" fill="#b77a36"/>
+<text x="569" y="1023" class="small">0 new workers; current differences NOT MEASURED; old 1,036 differences / 8,965 passes</text>
+<text x="67" y="1059" class="name">C — previously tested version</text>
+<text x="1367" y="1059" class="fail" text-anchor="end">HISTORICAL FAILURE; NEW RUN BLOCKED</text>
+<rect x="68" y="1070" width="485" height="9" rx="4" fill="#edf1f5"/>
+<rect x="68" y="1070" width="338" height="9" rx="4" fill="#b77a36"/>
+<text x="569" y="1079" class="small">1,230 historical differences; 7,325 historical passes</text>
+<text x="67" y="1115" class="name">Zig — previously tested version</text>
+<text x="1367" y="1115" class="fail" text-anchor="end">HISTORICAL FAILURE; NEW RUN BLOCKED</text>
+<rect x="68" y="1126" width="485" height="9" rx="4" fill="#edf1f5"/>
+<rect x="68" y="1126" width="485" height="9" rx="4" fill="#b77a36"/>
+<text x="569" y="1135" class="small">1,764 historical differences; 3,711 historical passes</text>
+<text x="67" y="1171" class="name">Go — first-party replacement family</text>
+<text x="1367" y="1171" class="pending" text-anchor="end">NOT RUN; BLOCKED</text>
+<rect x="68" y="1182" width="485" height="9" rx="4" fill="#edf1f5"/>
+<text x="569" y="1191" class="small">No current correctness result and no speed measurement</text>
+<text x="67" y="1227" class="name">C++ — first-party replacement family</text>
+<text x="1367" y="1227" class="pending" text-anchor="end">NOT RUN; BLOCKED</text>
+<rect x="68" y="1238" width="485" height="9" rx="4" fill="#edf1f5"/>
+<text x="569" y="1247" class="small">No current correctness result and no speed measurement</text>
+<text x="67" y="1283" class="name">Fortran — first-party replacement family</text>
+<text x="1367" y="1283" class="pending" text-anchor="end">NOT RUN; BLOCKED</text>
+<rect x="68" y="1294" width="485" height="9" rx="4" fill="#edf1f5"/>
+<text x="569" y="1303" class="small">No current correctness result and no speed measurement</text>
+<rect x="44" y="1381" width="1352" height="264" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="1416" class="heading">2. What the corrected Python reference actually proves</text>
+<text x="67" y="1446" class="body">Two separately launched, isolated CPython 3.14.6 workers, process IDs 81 and 82, both passed.</text>
+<text x="67" y="1472" class="body">Each independently evaluated every one of the same 6,912 original public-behavior cases.</text>
+<text x="67" y="1498" class="body">Both complete result vectors agree, giving 13,824 observed reference operations.</text>
+<text x="67" y="1524" class="body">All 96 original text-and-bytes subclass cases are retained and now agree in the candidate-facing context.</text>
+<text x="67" y="1550" class="body">The earlier 96-case reference failure remains preserved; no case was removed or waived.</text>
+<text x="67" y="1576" class="body">The complete real archive and its separate durable receipt both independently report PASS.</text>
+<text x="67" y="1602" class="body">The other 50 Python signature checks remain separate; they are not added to the 31,237-case total.</text>
+<rect x="44" y="1664" width="1352" height="274" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="1699" class="heading">3. What remains blocked or unmeasured</text>
+<text x="67" y="1732" class="name">Separate replacement test runners</text>
+<text x="370" y="1732" class="body">Two runner sources are frozen, but Rust preflight failed and zero candidates are runnable.</text>
+<text x="67" y="1760" class="name">Rust, C, Zig, Go, C++, Fortran</text>
+<text x="370" y="1760" class="body">Rust matching NOT RUN after preflight failure; C NOT RUN; four other runners NOT FROZEN.</text>
+<text x="67" y="1788" class="name">Compatibility-qualified replacements</text>
+<text x="370" y="1788" class="body">NONE: a corrected Python baseline is not a passing replacement.</text>
+<text x="67" y="1816" class="name">Runtime independence</text>
+<text x="370" y="1816" class="body">NOT ESTABLISHED; first-party source and builds are not a runtime audit.</text>
+<text x="67" y="1844" class="name">Speed, memory, and confidence</text>
+<text x="370" y="1844" class="body">NOT MEASURED; no honest replacement benchmark has been started.</text>
+<text x="67" y="1872" class="name">4,194,304-case final holdout</text>
+<text x="370" y="1872" class="body">NOT OPENED and NOT GENERATED; no hidden case has been accessed.</text>
+<text x="67" y="1900" class="name">Winning faster replacement</text>
+<text x="370" y="1900" class="body">NONE: prove complete compatibility before measuring or selecting a winner.</text>
+<rect x="44" y="1957" width="1352" height="230" rx="15" fill="#fff" stroke="#dae4ee"/>
+<text x="64" y="1992" class="heading">4. Independently reproducible evidence</text>
+<text x="67" y="2021" class="body">Replay and preserve the complete immutable V38 graph, including the actual old 96-case falsification.</text>
+<text x="67" y="2044" class="body">Authenticate the separately pushed corrected source contract and both exact actual reference owners.</text>
+<text x="67" y="2067" class="body">Inflate exactly the one new 1,374,913-byte reference archive and verify all 73,371,145 result bytes.</text>
+<text x="67" y="2090" class="body">Independently authenticate both distinct real worker IDs, all 13,824 observations, and both 96-case vectors.</text>
+<text x="67" y="2113" class="body">Preserve every historical Rust, C, and Zig failure and the genuine C subclass-equality mismatch.</text>
+<text x="67" y="2136" class="body">Two new exact failure-observation owners raise the authenticated lower bounds from 164/169 to at least 166/171.</text>
+<text x="47" y="2217" class="foot">Graph inputs SHA-256: 394fb27e12b9a48fbd8bdd353930084891c09118e0cfa49fc90f596124e15017</text>
+<text x="47" y="2239" class="foot">Graph renderer SHA-256: 3b3647a2090fd98e89ea421b2d2a3018983e1014adecf9f0b30731b54ca51e8b</text>
+<text x="47" y="2261" class="foot">Actual corrected reference archive SHA-256: c4906928850329fa3576576221e713ce653adae17a02a4de4bac4cb006389e05</text>
+<text x="47" y="2283" class="foot">Actual corrected reference receipt SHA-256: ff8ddfaa14ff2eb09bde02ecb3566c84d204a41373c6b842eb34598c4de2f966</text>
+<text x="47" y="2305" class="foot">Both complete Python result vectors SHA-256: 6b26ac4eff9ec64cc3ae79872b3195b303a12bf40b96b55850b627857e614aa2</text>
+<text x="47" y="2327" class="foot">All 96 retained corrected cases SHA-256: 587cf35555472940522d6ae3a73053fb7e98492befe581cc024444bed8e264ad</text>
+<!-- Zig source correction is frozen only; matching, native builds, speed measurements and the holdout remain blocked. -->
+</svg>
