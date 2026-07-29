@@ -1,0 +1,142 @@
+{
+  "schema": "rebar-owned-repaired-rust-original-campaign-v8-entry-failure-observation-v1",
+  "version": 1,
+  "status": "PASS",
+  "observation_pass_means": "DURABLE OBSERVATION OF A FAILED CANDIDATE CONTROLLER; NOT A PASSING CANDIDATE",
+  "observed_operation": "ONE AUTHORIZED RUST V8 ORIGINAL-CAMPAIGN RUN",
+  "actual_pushed_runner_head": "32d737e9b8642da92399c414a8f87a4c7c9ae5e7",
+  "frozen_runner": {
+    "source": {
+      "path": "tools/run_owned_repaired_rust_original_campaign_v8.py",
+      "sha256": "eb36dd1b16775e00525f9d0ad4d1bab46318d4c652c0cf6653bd1aa8776265aa",
+      "bytes": 164002
+    },
+    "protocol": {
+      "path": "oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V8.md",
+      "sha256": "9afa6f964bceaa950e4031bcd00b27a615635a6bb6ed3eb66cd60ba1f123ec30",
+      "bytes": 10563
+    },
+    "contract": {
+      "path": "oracle/phase2/repaired-rust-original-campaign-v8.json",
+      "sha256": "7780c4d14fe043ebe25ff50b4a437e6a0c9ba975f6d4cc47a833bbfbe3cdcf80",
+      "bytes": 13749
+    }
+  },
+  "observed_failure": {
+    "schema": "rebar-owned-repaired-rust-original-campaign-v8-entry-failure",
+    "status": "FAIL",
+    "error_type": "CampaignError",
+    "error_message": "reject a missing, invented, crossed, or duplicate build PID",
+    "source_line": 1327,
+    "failure_category": "AUTHENTIC BUILD-PROCESS SHAPE REJECTED BEFORE CANDIDATE ACTIVATION",
+    "candidate_matching": "NOT RUN",
+    "full_original_case_denominator": 31237,
+    "original_suite_count": 13,
+    "started_suite_count": 0,
+    "completed_suite_count": 0,
+    "actual_candidate_workers": 0,
+    "actual_native_activations": 0,
+    "semantic_mismatch_count": "NOT MEASURED",
+    "verified_passing_case_count": "NOT MEASURED",
+    "candidate_qualified": false
+  },
+  "exact_recorded_controller_stdout": {
+    "path": "oracle/phase2/evidence/repaired-rust-original-campaign-v8-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure.json",
+    "sha256": "6a955d8ce361650395d1d7a4090a9bb1a6348b135143e2d65e63c8f5e196f9d0",
+    "bytes": 4348,
+    "device": 2064,
+    "inode": 525012,
+    "mode": "600",
+    "nlink": 1,
+    "lossless_original_controller_json": true
+  },
+  "actual_build_archive_effects": {
+    "compressed_build_archive_sha256": "c24c0e1544003b231bac3e45601faabfd1c1e5c181d89fce7d660a2df4a29270",
+    "actual_archive_read_count": 1,
+    "actual_archive_inflation_count": 1,
+    "compressed_bytes_read": 109671,
+    "uncompressed_bytes_read": 765382,
+    "uncompressed_sha256": "c89af182cdb8e98dc05a4538e620c1db8404fbd7a11a3d43fea54f9da609f9c5"
+  },
+  "actual_target_effects": {
+    "canonical_target_replacements": 0,
+    "recovery_roots_created": 0,
+    "recovery_journals_created": 0,
+    "activated_target_roles": [],
+    "restored_target_roles": [],
+    "all_four_original_targets_unchanged_without_recovery": true,
+    "all_four_original_targets_restored_by_a_recovery": false,
+    "original_targets": [
+      {
+        "path": "candidates/rust/py_bridge.c",
+        "sha256": "f8a0918aaf8a78f363f6d755770636d26acd45fb83c9abcf997a6e052748ea8b",
+        "bytes": 175676,
+        "device": 2064,
+        "inode": 419054,
+        "mode": "0600",
+        "nlink": 1
+      },
+      {
+        "path": "candidates/rust_candidate.py",
+        "sha256": "6fb66ef6c3f143475426dd3d5b97c52dbe251f8d2ddd0ef3d5de7ec553a0351b",
+        "bytes": 31151,
+        "device": 2064,
+        "inode": 428100,
+        "mode": "0600",
+        "nlink": 1
+      },
+      {
+        "path": "candidates/_rust_engine.so",
+        "sha256": "f8cd2e8ecac5ab6a12eb933e6d1d234700a71ab64fc1578800f46ce93d25b8b4",
+        "bytes": 660440,
+        "device": 2064,
+        "inode": 430563,
+        "mode": "0755",
+        "nlink": 1
+      },
+      {
+        "path": "candidates/_rust_bridge.cpython-314-x86_64-linux-gnu.so",
+        "sha256": "6fdd114c812b63acce88ef56b8077da5a260c8719ffe2058d29e5be418a26f15",
+        "bytes": 144992,
+        "device": 2064,
+        "inode": 430629,
+        "mode": "0755",
+        "nlink": 1
+      }
+    ]
+  },
+  "root_cause": {
+    "summary": "The V8 controller incorrectly requires a per-operation phase field not emitted or required by the authentic independently frozen V16 build.",
+    "validator_source": "tools/run_owned_repaired_rust_original_campaign_v8.py",
+    "validator_function": "validate_build_report",
+    "authoritative_build_source": "tools/reproduce_owned_rust_buffer_shape_source_build_v16.py",
+    "authoritative_build_function": "verify_reproduced_phases",
+    "required_future_fix": "Derive the phase from the authenticated ordered operation index and phase list while retaining exact names, unique process IDs, successful exits, and all report-bound source and native identities.",
+    "withdrawn_oracle_cases": 0,
+    "new_private_waivers": 0
+  },
+  "historical_actual_candidate_matching": {
+    "status": "FAIL",
+    "semantic_mismatch_count": 928,
+    "verified_passing_case_count": 8965,
+    "completed_suite_count": 13,
+    "distinct_worker_process_id_count": 13
+  },
+  "authenticated_evidence_owner_lower_bound_before_publication": 184,
+  "authenticated_history_reference_lower_bound_before_publication": 189,
+  "new_actual_observation_owner_count": 2,
+  "resulting_authenticated_evidence_owner_lower_bound": 186,
+  "resulting_authenticated_history_reference_lower_bound": 191,
+  "global_evidence_owner_census": "NOT MEASURED",
+  "actual_reference_workers": 0,
+  "actual_clock_samples": 0,
+  "actual_timing_trials": 0,
+  "hidden_cases_read": 0,
+  "runtime_non_delegation": "NOT ESTABLISHED",
+  "performance": "NOT MEASURED",
+  "memory": "NOT MEASURED",
+  "confidence_intervals": "NOT MEASURED",
+  "undefined_behavior": "NOT MEASURED",
+  "holdout": "NOT OPENED",
+  "winner_selected": false
+}

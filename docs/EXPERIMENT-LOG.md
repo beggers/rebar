@@ -7,6 +7,73 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Record the first repaired-Rust runner failure
+
+The independently frozen full-suite Rust campaign was pushed before
+its first and only authorized execution. The controller read the
+genuine, first-party native-build report exactly **once** and stopped
+before running any regular-expression test. Its exact error was:
+
+> reject a missing, invented, crossed, or duplicate build PID
+
+This is a **test-controller failure**, not a semantic Rust result.
+The genuine native-build report has **28** correctly ordered, unique,
+successful process records. The version-8 controller incorrectly
+required each actual process record to contain an explicit build-phase
+field, which the frozen version-16 builder never emitted or required.
+The correct future repair is to derive each phase from the verified
+process order while retaining the genuine process names, process
+identity, successful exit, source checks, and native-file checks.
+No test is removed or weakened.
+
+The [complete, unmodified controller failure](../oracle/phase2/evidence/repaired-rust-original-campaign-v8-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure.json)
+has SHA-256
+`6a955d8ce361650395d1d7a4090a9bb1a6348b135143e2d65e63c8f5e196f9d0`
+and **4,348** bytes. The [separate independently checked failure and unchanged-file observation](../oracle/phase2/evidence/repaired-rust-original-campaign-v8-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure-observation.json)
+has SHA-256
+`76e476bd4d61dd0dc456c796953f024f98d6c581910ce9d30b6379f6ec8cac23`
+and **5,739** bytes. Observation `PASS` means that the actual
+controller failure was faithfully recorded; it does not mean that
+Rust matching passed.
+
+The real operation opened and decompressed its exact pinned build
+archive **once**. It started **zero** candidate workers, activated
+**zero** native libraries, created **zero** recovery journals,
+replaced **zero** original files, ran **zero** compatibility cases,
+and sampled **zero** benchmark times. All four original Rust source
+and native-file hashes and file identities remain unchanged. They did
+not need restoration because they were never modified.
+
+The previous genuine Rust matching result remains **928** observed
+differences and **8,965** verified passes across **13** workers. The
+new engine's matching is **NOT RUN**, not a new passing or failing
+matching result. Exactly **two** real failure-evidence owners advance
+the actual current evidence and historical-reference lower bounds
+from **184 / 189** to **186 / 191**. Runtime non-delegation remains
+**NOT ESTABLISHED**; speed, memory, uncertainty, and undefined
+behavior remain **NOT MEASURED**. The **4,194,304**-case performance
+holdout remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
+The [current test-failure and overall-results graph](evidence/candidate-current-overview-v54.svg)
+visibly distinguishes the runner failure from the latest actual Rust
+matching results. It does not read a compressed archive, execute a
+candidate, or imply a speed result.
+
+The [independently reproducible failure-graph generator](../tools/render_candidate_current_overview_v54.py)
+has SHA-256
+`d8fb850038ece0494cf6c85e324a8437b190dbcf606262ad640a25e4a94064ca`
+and **73,705** bytes. The [complete failure-graph inputs](evidence/candidate-current-overview-v54.inputs.json)
+have SHA-256
+`d64ea510aabf46d6fe904977ef170ea73bd9d3470226a4cad83876e2bb8af478`
+and **627,777** bytes. The [complete machine-readable outcome](evidence/candidate-current-overview-v54.json)
+has SHA-256
+`146ae2ed7fe6ba91f4c30e027e02d2ca8b9589c6d57e4bccc59da64fcd76a625`
+and **1,732,575** bytes. The accessible **2,250**-pixel graph has
+SHA-256
+`56aef3b0bbfc4602c65b6a968f778273e7e46f185e4090010c883ce2ba500728`
+and **14,034** bytes. It validates both exact small failure reports
+without loading, hashing, or decompressing a build archive.
+
 ## Freeze the repaired Rust engine's complete compatibility test
 
 The new first-party Rust engine has been built, but its matching

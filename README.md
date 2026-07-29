@@ -15,12 +15,14 @@ Python, another regular-expression package, or another candidate does not count.
 **Six** from-scratch engine designs. **Zero** fully compatible
 replacements. Speed compared with Python: **NOT MEASURED**.
 
-![Six independently written regular-expression engines; Rust's first-party build succeeds and its full Python compatibility test is frozen but not yet run; the latest completed test found 928 differences; no engine qualifies; speed remains unmeasured; the 4.2-million-example final comparison is unopened](docs/evidence/candidate-current-overview-v53.svg)
+![Six from-scratch regular-expression engines; the repaired Rust engine builds, but its first test runner stopped before testing any case; the latest completed Rust test still has 928 differences; no engine qualifies; speed is unmeasured; the 4.2-million-example final comparison remains unopened](docs/evidence/candidate-current-overview-v54.svg)
 
 The new Rust engine, including both first-party compatibility repairs,
 has successfully completed an independently reproducible offline build.
-Its complete, recovery-safe compatibility test is now frozen.
-**The newly built engine has not yet taken that test.**
+Its first complete-test attempt exposed a runner bug before the engine
+was activated or any case was tested. **The newly built engine has not
+yet taken the compatibility test.** All four original files remained
+unchanged; the runner failure is preserved in full.
 The last complete Rust test found **928** differences across all
 **13** groups of Python's unchanged **31,237** original checks.
 
@@ -32,7 +34,7 @@ engine delegates matching is **NOT ESTABLISHED**. There is no winner.
 | --- | --- | --- | --- |
 | Python `re` | Python 3.14.6; independently verified reference | Reference checks agree | Reference; not timed |
 | Public `rebar` import | Still selects an unqualified Zig prototype | FAIL; `__version__` missing | NOT MEASURED |
-| Rust | First-party engine built; complete test frozen | New test NOT RUN; previous run: 928 differences | NOT MEASURED |
+| Rust | First-party engine built; test runner stopped before matching | New engine NOT TESTED; previous run: 928 differences | NOT MEASURED |
 | C | First-party engine; corrected test prepared | Previous run: 1,230 differences | NOT MEASURED |
 | Zig | First-party engine; corrected test prepared | Previous run: 1,764 differences | NOT MEASURED |
 | C++ | First-party engine | Previous run: 2,308 differences; five worker failures | NOT MEASURED |
@@ -78,6 +80,7 @@ least **60%** of cases, and explain every slowdown greater than
 - [Six from-scratch engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md) and [independent no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [First-party Rust build protocol](oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V16.md), [actual build report](oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle.json.gz), and [durable build receipt](oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle-publication-receipt.json).
 - [Frozen complete Rust compatibility test and safe recovery](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V8.md).
+- [Exact failed Rust test attempt](oracle/phase2/evidence/repaired-rust-original-campaign-v8-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure.json) and [independent failure and unchanged-file observation](oracle/phase2/evidence/repaired-rust-original-campaign-v8-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure-observation.json).
 - [Last complete Rust compatibility result](oracle/phase2/evidence/repaired-rust-original-campaign-v7-rust-phase2-v13-rust-pattern-repr-original-p0-failures.json.gz) and [independent failure and safe-restoration receipt](oracle/phase2/evidence/repaired-rust-original-campaign-v7-rust-phase2-v13-rust-pattern-repr-original-p0-failures-publication-receipt.json).
 - [Separate public-import checks](oracle/phase1/P0-PUBLIC-ENTRYPOINT-IMPORT-V1.md) and [function-signature checks](oracle/phase1/P0-CALLABLE-INTROSPECTION-V1.md).
 - [Expanded, still-unopened final comparison](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
