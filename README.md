@@ -18,8 +18,8 @@ Speed versus Python: **NOT MEASURED**. There is no winner.
 
 ![Python baseline compared with six independently written regular-expression engines. C and Rust build successfully; none passes every compatibility test, no relative speed has been measured, and the 14-million-case final comparison remains unopened.](docs/evidence/candidate-current-overview-v88.svg)
 
-The chart precedes the latest C and Zig tests and Rust preflight;
-current results are below.
+This chart is an earlier snapshot. The table contains the latest
+complete candidate runs.
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
@@ -87,7 +87,7 @@ slowdown over **20%**.
 
 ## Evidence
 
-- [Reproduce the current chart](docs/REPRODUCING.md) and inspect its [fully sourced headline-comparison renderer](tools/render_candidate_current_overview_v88.py).
+- [Reproduce the current chart](docs/REPRODUCING.md), inspect its [published renderer](tools/render_candidate_current_overview_v88.py), or review the [next evidence-checked headline renderer](tools/render_candidate_current_overview_v89.py).
 - [Full experiment log, build evidence, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Complete Python correctness reference](oracle/phase1/P0-COMPLETENESS-V4.md).
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).

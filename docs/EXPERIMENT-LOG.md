@@ -8,6 +8,29 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a clear, evidence-backed candidate comparison
+
+The [version-89 headline renderer](../tools/render_candidate_current_overview_v89.py)
+authenticates the complete published C, Rust, and Zig compatibility
+results before drawing any comparison. It independently validates
+all **39** original test-group rows, the unchanged **31,237**-case
+denominator, and every historical version-88 evidence collection.
+
+The proposed chart distinguishes genuinely passing groups from
+completed mismatch groups and incomplete workers. It preserves the
+actual C **13,094**, Rust **12,942**, and Zig **927** verified cases;
+the C **236** and Rust **1,296** differences are explicitly lower
+bounds. Zig's **7** proven guarded candidate imports remain
+distinct from **6** workers without that proof. No partial result
+is treated as a full replacement or a speed measurement.
+
+Four ordinary and empty-environment adversarial and frozen-context
+checks pass. The preserved prior evidence and the complete new
+summary remain below the **4 MiB** publication limit. The **8,244**
+additional checks remain separate, and the **14,155,776** proposed
+final cases remain unopened. This step freezes the renderer; the
+new chart has **NOT BEEN GENERATED**.
+
 ## Freeze one genuine first-party C match-object correction
 
 The [first-party C match-object experiment](../oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-V1.md)
