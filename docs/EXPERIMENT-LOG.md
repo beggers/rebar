@@ -8,6 +8,29 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the correction for the actual Rust recovery failures
+
+The [version-19 first-party Rust campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V19.md)
+preserves both recorded version-17 and version-18 failures. It
+authenticates the genuine historical helper before selecting the
+current Rust engine and corrects exactly one obsolete recovery-path
+constant in the same historical recovery function. The function's
+identity, instructions, native engine, strict no-delegation guard,
+and all **31,237** original cases remain unchanged.
+
+The normal and empty-environment source and frozen-context checks
+all passed, including **189** adverse controls. Two independent
+reviews confirmed that the original version-18 error is reproduced
+before correction, that the corrected historical recovery then
+succeeds, and that no candidate, native library, private build
+directory, compressed evidence, or performance test is opened.
+
+This is a source freeze, not an actual candidate run. The earlier
+**8** completed groups and **12,942** verified Rust cases remain the
+latest observed results. The **8,244** additional cases are separate,
+the proposed **14,155,776**-case holdout remains unopened, and
+compatibility and speed are **NOT MEASURED**.
+
 ## Run the complete first-party C compatibility test
 
 The frozen [version-7 C campaign](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V7.md)
