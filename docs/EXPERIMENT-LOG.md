@@ -8,6 +8,31 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete guarded first-party Rust correctness suite
+
+The [version-20 Rust correctness procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V20.md)
+was genuinely executed against all **13** frozen original Python test
+groups in **13** distinct worker processes. **12** groups completed:
+**10** matched Python exactly, verifying **15,749** cases, and the
+substitution and shape groups revealed **240** and **1,056** genuine
+differences.
+
+The remaining subinterpreter group exposes **1** real guarded child
+lifecycle failure. Its complete original standard output, standard
+error, traceback, native-import evidence, process identity, and
+exception chain are preserved in the
+[published failure receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v21-rust-captured-findall-root-provenance-original-p0-v20-failures-publication-receipt.json).
+The observed **1,296** differences are a lower bound, not a complete
+total; **128** subinterpreter cases remain unobserved. The durable
+receipt passed; the Rust candidate failed.
+
+All **4** original Rust source and native targets were restored and
+independently reverified. The complete archived result is preserved
+without being reopened. The **31,237** original denominator,
+separate **8,244** checks, and unopened **14,155,776**-case holdout
+are unchanged. Speed, memory, and undefined behavior remain
+**NOT MEASURED**.
+
 ## Build the corrected from-scratch C engine twice
 
 The [portable version-21 C source](../oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-SOURCE-BUILD-V21.md)
