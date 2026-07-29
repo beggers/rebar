@@ -73,6 +73,7 @@ slowdown over **20%**.
 - [Complete Python correctness reference](oracle/phase1/P0-COMPLETENESS-V4.md).
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
 - [Six independently written engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
+- [From-scratch, one-pass Rust search experiment](oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md); not yet built, tested, or timed.
 - [Expanded, unopened final speed-test protocol](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256
   `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`;

@@ -7,6 +7,32 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a from-scratch, one-pass Rust search experiment
+
+The [complete first-party Rust bridge variant](../candidates/rust/variants/buffer_shape_pickle_findall_v1/py_bridge.c)
+preserves the previously built Rust engine, its Python integration, and its
+buffer and serialization fixes. It changes exactly one native function: a
+literal `findall` search now collects results as it finds them, instead of
+scanning the entire input once to count matches and again to collect them.
+It does not wrap Python's matcher, an external regular-expression package,
+or any other candidate.
+
+The original bridge remains unchanged, with SHA-256
+`afc6bb5f04c9d69c938fbae060ca83e0c774c8eda26e0416caadd9550634f740`.
+The complete new bridge has SHA-256
+`b707e924a23980385b0c5b0306daecd55bbb03d6f2511437f0532b6d39b2a112`.
+The [source-freeze procedure](../oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md),
+[machine-readable contract](../oracle/phase2/rust-literal-findall-one-pass-v1.json),
+and [independent source verifier](../tools/verify_owned_rust_literal_findall_source_v1.py)
+record the exact one-function change and its ownership.
+
+The existing **864**-case public practice benchmark contains **zero**
+literal `findall` cases, so it cannot show whether this experiment is
+faster. The new variant is **NOT BUILT**, **NOT TESTED**, and **NOT
+MEASURED**. The actual Rust result remains **FAIL**, with **12,942**
+verified original checks, **eight** finished groups, and **five** worker
+failures. No final holdout case is generated or opened.
+
 ## Record the independently built first-party Zig engine
 
 One real offline Zig build completed **two** independent phases,
