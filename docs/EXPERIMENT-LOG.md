@@ -8,6 +8,25 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the actual Rust preflight failure
+
+The committed [version-17 Rust campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V17.md)
+was attempted exactly once against the authenticated captured-result
+engine. It exited with code **2** before opening a native build root,
+loading a candidate, or starting any correctness worker.
+
+The exact [recorded preflight output](../oracle/phase2/evidence/repaired-rust-original-campaign-v17-rust-phase2-v21-rust-captured-findall-root-provenance-original-p0-v17-entry-failure.json)
+reports `CampaignError`: the frozen historical version-2 Rust helper
+was incorrectly checked against newer native-role identities. This is
+an authentication failure, not a matching result. Every candidate,
+native, worker, reference, timing, private-root, and hidden-case
+counter is **0**.
+
+The earlier Rust result remains separately **8** completed groups,
+**12,942** verified cases, and **5** failed workers. Current Rust
+matching is **NOT RUN**; full compatibility is **NOT MEASURED**.
+The **14,155,776** final cases remain unopened. No winner is chosen.
+
 ## Run the complete corrected C-engine test
 
 The frozen [version-6 C campaign](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V6.md)
