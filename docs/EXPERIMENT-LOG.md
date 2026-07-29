@@ -8,6 +8,34 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the measured Zig worker-reporting corrections
+
+The [version-10 first-party Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V10.md)
+preserves the complete version-9 result, including **927** genuine
+passes, all **10** infrastructure failures, and the **7** workers
+with positively established guarded candidate imports. The other
+**6** workers' import status remains unknown.
+
+Five genuine workers produced complete reports between **4,574,867**
+and **33,063,343** bytes, exceeding the existing **4 MiB** reader.
+The new controller applies a **64 MiB** bound only to actual Zig
+worker reports; the frozen original reader and every Python test
+remain unchanged. It separately authenticates the original-only
+controller and actual public-surface value without permitting
+native loaders, another regex engine, or forged module identities.
+
+Independent review first rejected an earlier source-only negative
+control that failed to catch the expected original-reader exception.
+The corrected source passed all four ordinary and empty-environment
+checks and **76** hostile controls, with two independent reviews.
+No destructor warning is suppressed or attributed as a matching
+failure.
+
+This is a source freeze; the version-10 candidate has **NOT RUN**.
+All **31,237** original cases, the separate **8,244** checks,
+and the unopened **14,155,776**-case proposal are preserved.
+Performance and compatibility remain **NOT MEASURED**.
+
 ## Publish the current, easy-to-read candidate comparison
 
 The independently frozen [version-89 headline renderer](../tools/render_candidate_current_overview_v89.py)
