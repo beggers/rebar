@@ -8,6 +8,30 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected from-scratch C compatibility run
+
+The [version-9 C procedure](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V9.md)
+authenticates the **2** actually compiled first-party C build phases,
+all **14** distinct compiler and inspection processes, the corrected
+C source, and the byte-identical native C outputs. It preserves all
+**13** original test groups, their **31,237**-case denominator, the
+previous **13,094** verified passing C cases, and all previously
+observed failures.
+
+The procedure constructs complete, strictly authenticated native-file
+descriptions for the unchanged Python-isolation guard and preserves
+the genuine earlier interpreter-lifecycle failure. It does not assert
+that this failure is fixed. Source-only tests in ordinary and empty
+environments each pass **89** hostile controls and confirm all **16**
+prohibited effects remain zero. Two separate reviewers independently
+passed the same four checks.
+
+The corrected C candidate has **NOT RUN**. Its full compatibility
+and runtime independence are **NOT ESTABLISHED**. Speed, memory,
+and undefined behavior are **NOT MEASURED**; the **8,244** additional
+checks remain separate, and the **14,155,776**-case final holdout
+remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Publish the updated plain-language candidate comparison
 
 The [version-92 headline graph](evidence/candidate-current-overview-v92.svg)
