@@ -8,6 +8,30 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the portable from-scratch C engine rebuild
+
+The [version-21 first-party C build](../oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-SOURCE-BUILD-V21.md)
+preserves both real earlier C build failures and the complete original
+C matching implementation. It fixes both unavailable randomness calls:
+private directories use `os.urandom(16)`, and atomic recovery journals
+use `os.urandom(12)`. Both changes are made to the authenticated
+project-owned build code, with no external matcher, fallback, or
+candidate delegation.
+
+Two independent reviewers and all four ordinary and empty-environment
+source-only gates pass **114** hostile controls, block **55** forbidden
+operations, and verify **48** original source and evidence owners. The
+source freeze generates **0** random bytes, creates **0** private
+roots, starts **0** compilers, and runs **0** candidates. A later
+separately authorized build must prove both independent native
+outputs, all **14** compiler and inspection operations, full failure
+recovery, and the unchanged installed original C extension.
+
+No version-21 C engine has yet been built or tested. The original
+**31,237** checks, separate **8,244** reference checks, and unopened
+**14,155,776**-case holdout remain unchanged. Compatibility, speed,
+memory, and undefined behavior are **NOT MEASURED**.
+
 ## Freeze the corrected first-party C correctness reporter
 
 The [version-8 C correctness procedure](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V8.md)
