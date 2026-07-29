@@ -8,6 +8,27 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the comparison after the corrected C run
+
+The [version-93 comparison renderer](../tools/render_candidate_current_overview_v93.py)
+is independently frozen and checked before any new graph is generated.
+It preserves all **14** previous evidence pools and separately
+authenticates the exact corrected C procedure and its actual small
+failure receipt.
+
+The next chart must show the same **31,237** original checks: Rust
+**15,749**, C **13,606**, and Zig **4,607** verified passes. It must
+retain C's **492** observed differences, **6** candidate-execution
+failures, and **0** infrastructure failures. It does not invent
+per-worker C guard evidence. Both ordinary- and empty-environment
+verification and hostile-input checks passed; all **3** prospective
+chart files remain **NOT GENERATED**.
+
+The extra **8,244** checks stay separate. Speed, memory, and undefined
+behavior remain **NOT MEASURED**, no candidate has qualified, and the
+**14,155,776**-case holdout is **NOT FROZEN**, **NOT GENERATED**,
+and **NOT OPENED**.
+
 ## Run the complete corrected first-party C compatibility suite
 
 The [version-9 C procedure](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V9.md)
