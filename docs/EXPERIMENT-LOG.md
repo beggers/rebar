@@ -8,6 +8,26 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the updated plain-language candidate comparison
+
+The [version-92 comparison renderer](../tools/render_candidate_current_overview_v92.py)
+is frozen and verified before producing any new graph. It preserves all
+**13** previous evidence pools and independently authenticates the actual
+Zig failure receipt and all **13** distinct, guarded Zig workers.
+
+The next chart must compare the same **31,237** original Python checks:
+Rust **15,749**, C **13,094**, and Zig **4,607** verified passes. Zig's
+**5** observed mismatch groups, at least **1,700** differences, and
+**1** incomplete interpreter-lifecycle group remain visible. The
+separate **8,244** reference cases are not added to the denominator.
+
+Both ordinary and empty-environment source verification and hostile-input
+tests passed. The next graph is **NOT GENERATED**. No matching engine,
+compiler, private archive, or final holdout was opened. Speed, memory,
+and undefined behavior remain **NOT MEASURED**; no candidate has
+qualified and the **14,155,776**-case holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Run the complete guarded from-scratch Zig compatibility suite
 
 The [version-12 Zig procedure](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V12.md)
