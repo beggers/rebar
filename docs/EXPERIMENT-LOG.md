@@ -7,6 +7,55 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected complete Rust test
+
+The first Rust test runner rejected a real build because it expected a
+build-phase field that the real compiler records do not contain. The new
+version-9 runner derives the phase from the authenticated process order.
+It still verifies all **28** unique successful compiler processes, both
+independently built native files, every source identity, and all **31,237**
+unchanged Python checks across **13** groups. A supplied phase is accepted
+only if it agrees with the independently verified order.
+
+The [corrected runner](../tools/run_owned_repaired_rust_original_campaign_v9.py)
+has SHA-256
+`629f6d361e2e3cd2eeb762223076d5511707d52241189fc4bd4c73045bb9287c`
+and **173,643** bytes. Its [frozen protocol](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V9.md)
+has SHA-256
+`9dfec149359a2088e384da1b3b5851fc8ac0c5f6ed8bfdb1414671a7ecbf6850`
+and **12,690** bytes. Its [machine-readable contract](../oracle/phase2/repaired-rust-original-campaign-v9.json)
+has SHA-256
+`782576f45cbc7bc97775233051d82889778f095a4595e336ec4afb5f2ffc3a82`
+and **15,235** bytes.
+
+The normal and empty-environment source tests both accept **9** valid
+controls and reject all **212** hostile controls, including each of the
+**28** wrong compiler phases. Both frozen-context checks separately
+authenticate **32** source and evidence owners. These are runner checks,
+not regular-expression matching: they start **zero** candidate workers,
+open **zero** build archives, activate **zero** native files, sample
+**zero** clocks, and never read the final holdout.
+
+The [current overview](evidence/candidate-current-overview-v55.svg),
+[frozen graph inputs](evidence/candidate-current-overview-v55.inputs.json),
+[complete machine-readable evidence](evidence/candidate-current-overview-v55.json),
+and [reproducible renderer](../tools/render_candidate_current_overview_v55.py)
+record **189** authenticated evidence owners and **194** historical
+references. The renderer rejects **3,171** hostile source controls. Its
+source, inputs, summary, and chart have SHA-256 values
+`75b0a1d1530aa99d914e2730ff99510bd7820716bb6c8d7d8376c03753625da8`,
+`845cebe4110369ff5b25165eb3b3b6e1df5ce507b9536f1c278b419a7daa8e8b`,
+`14d4408e8791d212cf4976f4e4083674d1dc9563367a0cef829c6c8ca961b508`,
+and `43098acf7bb5240271d9bcec627f92bf80ebb2a7701d16221f8c419f342369f8`,
+respectively.
+
+The real version-8 runner failure and the previous actual Rust result of
+**928** differences remain unchanged. The corrected engine is
+**NOT TESTED**, no replacement qualifies, runtime non-delegation is
+**NOT ESTABLISHED**, and speed, memory, and undefined behavior are
+**NOT MEASURED**. The **4,194,304**-example holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Record the first repaired-Rust runner failure
 
 The independently frozen full-suite Rust campaign was pushed before

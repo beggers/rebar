@@ -8,6 +8,8 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
 ## Evidence and reproduction
 
+- [Corrected complete Rust-test protocol](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V9.md), [independently frozen corrected contract](../oracle/phase2/repaired-rust-original-campaign-v9.json), and [first-party version-9 runner](../tools/run_owned_repaired_rust_original_campaign_v9.py); authenticate all **28** real compiler processes without requiring an invented phase field, while preserving all **31,237** original checks and **13** groups. The source tests reject **212** hostile controls. This is a source freeze: corrected candidate matching remains **NOT RUN**.
+- [Current corrected-test overview](../docs/evidence/candidate-current-overview-v55.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v55.inputs.json), [complete current machine-readable evidence](../docs/evidence/candidate-current-overview-v55.json), and [independently reproducible current renderer](../tools/render_candidate_current_overview_v55.py); the graph preserves the real previous runner failure and the **928** previous Rust differences, and clearly labels the corrected test **NOT RUN**. Qualified replacements: **0**. Performance: **NOT MEASURED**. The **4,194,304**-example final comparison is unopened.
 - [Actual first repaired-Rust controller failure](../oracle/phase2/evidence/repaired-rust-original-campaign-v8-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure.json) and [independent root-cause and unchanged-original-file observation](../oracle/phase2/evidence/repaired-rust-original-campaign-v8-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-entry-failure-observation.json); the one authorized run read the correct build archive once but started **zero** workers and executed **zero** cases. The genuine version-16 report does not emit the per-process phase field incorrectly required by the runner. Observation **PASS** records a controller **FAIL**, not candidate matching. The repaired candidate remains **NOT TESTED**.
 - [Frozen full original-suite Rust protocol](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V8.md), [complete exact case, build, and recovery contract](../oracle/phase2/repaired-rust-original-campaign-v8.json), and [independently recovery-safe first-party original-suite runner](../tools/run_owned_repaired_rust_original_campaign_v8.py); all **31,237** original cases, **13** groups, and **13** private waivers are preserved. All four source-only gates pass without opening a build archive, loading a native file, or running the engine. The actual corrected Rust test remains **NOT RUN**.
 - [Actual first-party offline Rust build report](../oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle.json.gz) and [independent durable build receipt](../oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle-publication-receipt.json); the frozen native build actually passed, recording **28** offline compiler and binary-check operations. The newly built engine's matching is **NOT RUN**. Receipt **PASS** means durable publication only. The latest actual compatibility result remains **928** differences and **8,965** verified passes.
@@ -91,7 +93,7 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Complete repaired C compatibility evidence](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures.json.gz), [independent safe-restoration receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v3-c-phase2-v10-live-original-p0-failures-publication-receipt.json), [all 13 original worker reports](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures.json.gz), and [original-suite aggregate receipt](../oracle/phase2/evidence/frozen-p0-candidate-v9-c-phase2-v10-live-original-p0-failures-publication-receipt.json); eight complete groups pass, five retain 1,262 genuine differences, and no infrastructure failure occurred.
 - [Actual independent repaired Zig builds](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner.json.gz) and [complete native build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-zig-phase2-v11-zig-scanner-publication-receipt.json); exactly 26 genuine processes produce two identical first-party engine and bridge binaries without testing matching or measuring speed.
 - [Actual independent repaired Rust builds](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay.json.gz) and [complete offline-build and durable publication receipt](../oracle/phase2/evidence/native-source-build-v11-rust-phase2-v11-rust-dual-overlay-publication-receipt.json); exactly 28 genuine processes produce two identical dependency-free Rust engines and bridges without testing matching or measuring speed.
-- [Current test-controller failure and overall-results graph](../docs/evidence/candidate-current-overview-v54.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v54.inputs.json), [complete current machine-readable failure and candidate evidence](../docs/evidence/candidate-current-overview-v54.json), and [reproducible current graph generator](../tools/render_candidate_current_overview_v54.py); the first attempt stops before running any matching case. The native build remains independently successful, while the previous genuine Rust result retains **928** differences and **8,965** verified passes. All **31,237** original cases, six first-party engines, and the unopened **4,194,304**-case comparison remain unchanged. Qualified replacements: **0**. Performance: **NOT MEASURED**.
+- [Preserved version-54 test-controller failure graph](../docs/evidence/candidate-current-overview-v54.svg), [historical graph inputs](../docs/evidence/candidate-current-overview-v54.inputs.json), [historical failure and candidate evidence](../docs/evidence/candidate-current-overview-v54.json), and [reproducible historical renderer](../tools/render_candidate_current_overview_v54.py); the first attempt stops before running any matching case. The native build remains independently successful, while the previous genuine Rust result retains **928** differences and **8,965** verified passes. All **31,237** original cases, six first-party engines, and the unopened **4,194,304**-case comparison remain unchanged. Qualified replacements: **0**. Performance: **NOT MEASURED**.
 - [Historical version-53 frozen original-suite graph](../docs/evidence/candidate-current-overview-v53.svg), [historical frozen-test graph inputs](../docs/evidence/candidate-current-overview-v53.inputs.json), [historical frozen-test results](../docs/evidence/candidate-current-overview-v53.json), and [historical frozen-test graph generator](../tools/render_candidate_current_overview_v53.py); this records the actual **184 / 189** evidence and reference lower bounds before the one genuine controller failure.
 - [Historical version-52 independently completed build graph](../docs/evidence/candidate-current-overview-v52.svg), [historical build graph inputs](../docs/evidence/candidate-current-overview-v52.inputs.json), [historical machine-readable build results](../docs/evidence/candidate-current-overview-v52.json), and [historical actual-build graph generator](../tools/render_candidate_current_overview_v52.py); this authenticates the actual offline build and the **181 / 186** evidence and reference lower bounds that existed before the full-suite runner was frozen.
 - [Historical version-51 pre-build graph](../docs/evidence/candidate-current-overview-v51.svg), [historical version-51 graph inputs](../docs/evidence/candidate-current-overview-v51.inputs.json), [historical machine-readable pre-build results](../docs/evidence/candidate-current-overview-v51.json), and [historical pre-build graph generator](../tools/render_candidate_current_overview_v51.py); this authentically preserves the exact frozen state before the first-party build ran and its **179 / 184** evidence and reference lower bounds.
@@ -719,7 +721,43 @@ decompressing a matching archive, or opening the final comparison:
   --protocol-sha256 67ba62acc8e51a6868404ea3faeb1aaaacb1d053cc1c915bef0c397edf5ac408 \
   --contract-sha256 ffa76d1724396fae5816cf96e0ae2104bcce8fc5eb246b8306d4441db0fe4a1b
 
-# Verify the frozen full-suite Rust runner's 184 hostile source controls.
+# Verify the corrected full-suite Rust runner's 212 hostile source controls.
+"$PY" -I -B tools/run_owned_repaired_rust_original_campaign_v9.py \
+  --self-test \
+  --source-sha256 629f6d361e2e3cd2eeb762223076d5511707d52241189fc4bd4c73045bb9287c \
+  --protocol-sha256 9dfec149359a2088e384da1b3b5851fc8ac0c5f6ed8bfdb1414671a7ecbf6850 \
+  --contract-sha256 782576f45cbc7bc97775233051d82889778f095a4595e336ec4afb5f2ffc3a82
+
+# Authenticate all original cases and real build records without running Rust.
+"$PY" -I -B tools/run_owned_repaired_rust_original_campaign_v9.py \
+  --verify-frozen-context \
+  --source-sha256 629f6d361e2e3cd2eeb762223076d5511707d52241189fc4bd4c73045bb9287c \
+  --protocol-sha256 9dfec149359a2088e384da1b3b5851fc8ac0c5f6ed8bfdb1414671a7ecbf6850 \
+  --contract-sha256 782576f45cbc7bc97775233051d82889778f095a4595e336ec4afb5f2ffc3a82
+
+# Verify all 3,171 corrected-test overview controls without running an engine.
+"$PY" -I -B tools/render_candidate_current_overview_v55.py --self-test
+
+# Verify every current graph, runner, previous-result, and source identity.
+"$PY" -I -B tools/render_candidate_current_overview_v55.py \
+  --verify-frozen-context \
+  --source-sha256 75b0a1d1530aa99d914e2730ff99510bd7820716bb6c8d7d8376c03753625da8 \
+  --source-bytes 69062 \
+  --previous-source-sha256 d8fb850038ece0494cf6c85e324a8437b190dbcf606262ad640a25e4a94064ca \
+  --previous-inputs-sha256 d64ea510aabf46d6fe904977ef170ea73bd9d3470226a4cad83876e2bb8af478 \
+  --previous-summary-sha256 146ae2ed7fe6ba91f4c30e027e02d2ca8b9589c6d57e4bccc59da64fcd76a625 \
+  --previous-svg-sha256 56aef3b0bbfc4602c65b6a968f778273e7e46f185e4090010c883ce2ba500728 \
+  --runner-source-sha256 629f6d361e2e3cd2eeb762223076d5511707d52241189fc4bd4c73045bb9287c \
+  --runner-source-bytes 173643 \
+  --runner-protocol-sha256 9dfec149359a2088e384da1b3b5851fc8ac0c5f6ed8bfdb1414671a7ecbf6850 \
+  --runner-protocol-bytes 12690 \
+  --runner-contract-sha256 782576f45cbc7bc97775233051d82889778f095a4595e336ec4afb5f2ffc3a82 \
+  --runner-contract-bytes 15235 \
+  --inputs-sha256 845cebe4110369ff5b25165eb3b3b6e1df5ce507b9536f1c278b419a7daa8e8b \
+  --summary-sha256 14d4408e8791d212cf4976f4e4083674d1dc9563367a0cef829c6c8ca961b508 \
+  --svg-sha256 43098acf7bb5240271d9bcec627f92bf80ebb2a7701d16221f8c419f342369f8
+
+# Verify the preserved first Rust runner's 184 hostile source controls.
 "$PY" -I -B tools/run_owned_repaired_rust_original_campaign_v8.py \
   --self-test \
   --source-sha256 eb36dd1b16775e00525f9d0ad4d1bab46318d4c652c0cf6653bd1aa8776265aa \
@@ -733,7 +771,7 @@ decompressing a matching archive, or opening the final comparison:
   --protocol-sha256 9afa6f964bceaa950e4031bcd00b27a615635a6bb6ed3eb66cd60ba1f123ec30 \
   --contract-sha256 7780c4d14fe043ebe25ff50b4a437e6a0c9ba975f6d4cc47a833bbfbe3cdcf80
 
-# Verify the current pre-matching failure graph without running an engine.
+# Verify the preserved version-54 failure graph without running an engine.
 "$PY" -I -B tools/render_candidate_current_overview_v54.py --self-test
 
 # Verify the complete failure graph and both small real-result files.
