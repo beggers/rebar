@@ -8,6 +8,24 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the complete corrected C-engine test
+
+The [version-6 first-party C campaign](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V6.md)
+authenticates the actually built, corrected C engine, both independent
+version-18 build phases, and their **14** genuine compiler and
+binary-verification steps. It refuses an older engine, an external
+regex library, Python's matcher, or another candidate.
+
+All **13** unchanged test groups and **31,237** original cases must
+be attempted. Each group receives **120 seconds**, with actual worker
+identities, failures, source hashes, and restored original files
+recorded separately. The **8,244** additional cases remain a distinct
+gate. The earlier **1,230** C mismatches are preserved; the corrected
+engine has **NOT RUN** at this source-freeze step.
+
+The **14,155,776** proposed performance cases remain unopened.
+Speed is **NOT MEASURED**, and no candidate is qualified.
+
 ## Run the complete first-party Zig test
 
 The frozen [version-6 Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V6.md)
