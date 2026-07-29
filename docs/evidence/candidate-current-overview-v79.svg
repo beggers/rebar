@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="658" viewBox="0 0 1120 658" role="img" aria-labelledby="title description">
+<title id="title">Python and six independently written regular-expression engines</title>
+<desc id="description">A surgical Rust worker-startup fix is frozen but has not been tested. The previous thirteen actual Rust worker failures and all historical compatibility differences remain visible. No replacement is qualified, no speed is measured, and the larger performance holdout is unopened.</desc>
+<rect width="1120" height="658" rx="18" fill="#0b1220"/>
+<text x="34" y="48" fill="#f8fafc" font-size="26" font-family="system-ui,sans-serif" font-weight="700">Building a faster Python re, from scratch</text>
+<text x="34" y="81" fill="#cbd5e1" font-size="16" font-family="system-ui,sans-serif">6 independent engines · 0 fully compatible · speed NOT MEASURED</text>
+<line x1="34" y1="104" x2="1086" y2="104" stroke="#334155"/>
+<circle cx="43" cy="137" r="6" fill="#22c55e"/>
+<text x="62" y="142" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Python re</text>
+<text x="175" y="142" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">All original reference checks pass</text>
+<text x="1068" y="142" text-anchor="end" fill="#22c55e" font-size="13" font-family="system-ui,sans-serif" font-weight="700">BASELINE</text>
+<circle cx="43" cy="184" r="6" fill="#f59e0b"/>
+<text x="62" y="189" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Rust</text>
+<text x="175" y="189" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Startup fix ready; previous retest had 13 worker failures</text>
+<text x="1068" y="189" text-anchor="end" fill="#f59e0b" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT RETESTED</text>
+<circle cx="43" cy="231" r="6" fill="#f59e0b"/>
+<text x="62" y="236" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">C</text>
+<text x="175" y="236" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">1,230 earlier differences; corrected build passes</text>
+<text x="1068" y="236" text-anchor="end" fill="#f59e0b" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="278" r="6" fill="#f59e0b"/>
+<text x="62" y="283" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Zig</text>
+<text x="175" y="283" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">1,764 earlier differences; scanner fix not retested</text>
+<text x="1068" y="283" text-anchor="end" fill="#f59e0b" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="325" r="6" fill="#fb7185"/>
+<text x="62" y="330" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">C++</text>
+<text x="175" y="330" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">2,308 differences; five worker failures</text>
+<text x="1068" y="330" text-anchor="end" fill="#fb7185" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="372" r="6" fill="#fb7185"/>
+<text x="62" y="377" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Go</text>
+<text x="175" y="377" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">4,518 differences; four worker failures</text>
+<text x="1068" y="377" text-anchor="end" fill="#fb7185" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="419" r="6" fill="#94a3b8"/>
+<text x="62" y="424" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Fortran</text>
+<text x="175" y="424" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Full Python compatibility has not been tested</text>
+<text x="1068" y="424" text-anchor="end" fill="#94a3b8" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT TESTED</text>
+<line x1="34" y1="462" x2="1086" y2="462" stroke="#334155"/>
+<text x="34" y="493" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif" font-weight="650">31,237 original Python checks; 8,244 separate extra checks.</text>
+<text x="34" y="521" fill="#fda4af" font-size="14" font-family="system-ui,sans-serif">Previous actual Rust retest: 13 worker failures; 0 completed test groups.</text>
+<text x="34" y="549" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Narrow worker-startup fix: SOURCE READY. Corrected full-suite retest: NOT RUN.</text>
+<text x="34" y="577" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">No weaker safeguards, Python matcher, external regex, or borrowed engine.</text>
+<text x="34" y="605" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">New Rust compatibility and speed: NOT MEASURED. No candidate is qualified.</text>
+<text x="34" y="633" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Final 4,194,304-case speed test: NOT FROZEN, NOT GENERATED, NOT OPENED.</text>
+<text x="34" y="651" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">Overview 79 · corrected runner frozen · prior failure preserved.</text>
+</svg>

@@ -7,6 +7,67 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the precise Rust startup correction without rerunning it
+
+The [corrected first-party Rust campaign](../tools/run_owned_repaired_rust_original_campaign_v13.py),
+[complete startup-repair procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V13.md),
+and [frozen repair contract](../oracle/phase2/repaired-rust-original-campaign-v13.json)
+address the independently reproduced cause of the real **13**-worker
+startup failure. Four separately authenticated historical modules
+contain one eager `ctypes` import each: the old worker at line **18**,
+its first recovery helper at line **16**, its second recovery helper
+at line **15**, and the old test producer at line **21**. A guarded
+worker cannot import them unchanged because loading `ctypes` triggers
+the forbidden `ctypes.dlopen` event.
+
+Version 13 verifies each complete original source, confirms the exact
+line and unique import in its original syntax, and replaces only that
+statement in memory with a local object that rejects all native-loader
+operations. It does not weaken the safeguard, install Python's matcher,
+permit arbitrary libraries, edit historical source, skip interpreter
+or thread cases, or modify the original **31,237**-case test. All
+four normal and empty-environment source checks **PASS** and reject
+**34** hostile controls. The corrected candidate matching run is
+**NOT RUN**; runtime independence remains **NOT ESTABLISHED**.
+
+The actual previous Rust attempt remains **FAIL**: **13** distinct
+workers started, **zero** completed a suite, and **13** failed during
+startup. Its semantic correctness is **NOT MEASURED**. The distinct
+historical complete Rust result remains **1,440** differences and
+**14,853** verified passes. The independently durable failure receipt
+and sealed report remain unchanged, and all **four** original target
+files were restored before failure publication. Actual C still has
+**1,230** differences and **7,325** verified passes; Zig retains
+**1,764** differences and **3,711** verified passes.
+
+The [current startup-repair chart](evidence/candidate-current-overview-v79.svg),
+[complete chart inputs](evidence/candidate-current-overview-v79.inputs.json),
+[full machine-readable results](evidence/candidate-current-overview-v79.json),
+and [independent chart renderer](../tools/render_candidate_current_overview_v79.py)
+preserve every failure and all **13** original suites. The **three**
+independent correction owners increase evidence and history lower
+bounds from **257 / 262** to **260 / 265**.
+Both frozen graph self-tests reject **7,021** hostile controls.
+
+The exact repaired source, protocol, and contract have respective
+SHA-256 values
+`2b1a6a928df45e9dbad561b3101689de3ee5cac49df5269f18254ebf0f529f14`,
+`21091d90c571c751dea19f10a57adfa1e1997f5178cba047df755391619e20fb`,
+and `94f0acafa2e6c5ecf3c79f272ef1ded39c894a2abb00d50b35d420ddac84a5fe`.
+Their exact sizes are **59,547**, **10,348**, and **9,205** bytes.
+The independent graph renderer, complete inputs, complete results,
+and visible chart have respective SHA-256 values
+`b8842b64072747b5a78f6104fd9dabf31e7d9d03b96f9165783786638e8d4dca`,
+`27c192d9d4f9757c4f2a19a552a2bea25b6253334b5f28399113fe2b73d422a4`,
+`608ffddb23d7b4f74c69f72b6d377bf4ee3f5a9ef617e78fb931594b05f6d1a8`,
+and `d51062fe987e0be10665f6f935a635e17dc00c43cd11ce6abe31a300cd7a7b73`.
+Their exact sizes are **55,696**, **1,218,955**, **3,777,178**, and
+**5,341** bytes.
+No candidate is qualified. Speed, memory, and statistical confidence
+remain **NOT MEASURED**; the separate **8,244** supplemental cases
+retain their own denominator and the final **4,194,304** test cases
+remain **NOT GENERATED** and **NOT OPENED**.
+
 ## Record the real Rust worker failure without inventing a match result
 
 The actual first-party version-12 Rust controller genuinely started
