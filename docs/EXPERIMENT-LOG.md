@@ -8,6 +8,27 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze complete Zig worker-failure diagnostics
+
+The [version-7 Zig compatibility campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V7.md)
+preserves the exact **13** real version-6 infrastructure failures
+without pretending to know their cause. It fixes the observed
+diagnostic blind spot: authentication, native activation, guard
+installation, candidate loading, and each actual test are all
+inside a bounded, stage-aware worker exception handler.
+
+The public receipt and final output must preserve the actual failure
+class, message, bounded traceback, and literal error text for all
+**13** workers. A first-party Unicode serializer requires no Python
+regex engine or lazy external codec. All **31,237** original tests,
+independent Zig source, **120-second** group limits, strict
+no-delegation guard, and original-file recovery are unchanged.
+
+This is a source freeze, not a new candidate result. Version-7
+matching is **NOT RUN**. The **8,244** additional cases and
+**14,155,776** proposed final cases remain unrun; speed is
+**NOT MEASURED** and no candidate is qualified.
+
 ## Preserve the actual Rust preflight failure
 
 The committed [version-17 Rust campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V17.md)
