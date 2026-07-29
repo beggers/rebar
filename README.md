@@ -18,14 +18,14 @@ Speed versus Python: **NOT MEASURED**. There is no winner.
 
 ![Python baseline compared with six independently written regular-expression engines. C and Rust build successfully; none passes every compatibility test, no relative speed has been measured, and the 14-million-case final comparison remains unopened.](docs/evidence/candidate-current-overview-v88.svg)
 
-The chart precedes the latest Zig test; the up-to-date results are below.
+The chart precedes the latest C and Zig tests; current results are below.
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
 | Python `re` | Baseline; reference checks pass | Not timed |
 | Public `rebar` import | FAIL; still selects an unqualified Zig prototype | NOT MEASURED |
 | Rust | FAIL; 8/13 groups; 12,942/31,237 verified | NOT MEASURED |
-| C | FAIL; 1,230 differences; native build passes | NOT MEASURED |
+| C | FAIL; 3/13 groups; 3,366 verified; earlier run had 1,230 differences | NOT MEASURED |
 | Zig | FAIL; all 13 test workers failed; earlier run had 1,764 differences | NOT MEASURED |
 | C++ | FAIL; 2,308 differences and five worker failures | NOT MEASURED |
 | Go | FAIL; 4,518 differences and four worker failures | NOT MEASURED |
@@ -42,8 +42,10 @@ and both the literal-search and captured-result Rust engines each
 passed their own two independent build phases. No successful build
 proves compatibility.
 Rust finished **8** of **13** groups and verified **12,942** cases;
-**5** workers failed. The corrected Zig test attempted all **13**
-groups, but all **13** workers failed before producing results.
+**5** workers failed. The corrected C engine finished **3** of **13**
+groups and verified **3,366** passing cases; the complete mismatch
+count is **NOT MEASURED**. The corrected Zig test attempted all
+**13** groups, but all **13** workers failed before producing results.
 Zig's earlier **1,764** differences remain a separate historical
 result; no candidate qualifies.
 Full-suite matching is **NOT MEASURED**.
@@ -84,7 +86,7 @@ slowdown over **20%**.
 - [Complete Python correctness reference](oracle/phase1/P0-COMPLETENESS-V4.md).
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
 - [Six independently written engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
-- [Guarded, exhaustive first-party C correctness](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V6.md), [reproducible native source-build procedure](oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md), and [independently authenticated C build](oracle/phase2/evidence/native-source-build-v18-c-phase2-v18-c-subject-buffer-root-provenance-publication-receipt.json); corrected-engine compatibility not yet established.
+- [Guarded, exhaustive first-party C correctness](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V6.md), [reproducible native source-build procedure](oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md), and [independently authenticated C build](oracle/phase2/evidence/native-source-build-v18-c-phase2-v18-c-subject-buffer-root-provenance-publication-receipt.json); corrected run completed **3** of **13** groups.
 - [Guard-clean, from-scratch Zig candidate and exhaustive, safely bounded correctness procedure](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V6.md); latest run records all **13** worker failures.
 - [Current captured-engine Rust compatibility campaign](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V17.md) and [earlier failure diagnostics](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V16.md); corrected full-suite matching not yet run.
 - [From-scratch Rust literal-search](oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md), [captured-result experiments](oracle/phase2/RUST-CAPTURED-FINDALL-ONE-PASS-V1.md), and [exact Python scanner signatures](oracle/phase2/RUST-SCANNER-SIGNATURE-SOURCE-REPAIR-V22.md), with reproduced [literal](oracle/phase2/RUST-LITERAL-FINDALL-SOURCE-BUILD-V20.md) and [captured-result](oracle/phase2/RUST-CAPTURED-FINDALL-SOURCE-BUILD-V21.md) native builds; the scanner repair is not built, and full compatibility and speed are not established.

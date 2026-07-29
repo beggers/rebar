@@ -8,6 +8,35 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete corrected C-engine test
+
+The frozen [version-6 C campaign](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V6.md)
+actually started **13** distinct workers and attempted all **13**
+unchanged CPython test groups. It completed **3** groups and verified
+**3,366** passing cases. Five groups reported candidate-execution
+failures and another **5** reported infrastructure failures. No worker
+timed out. The total mismatch count is **NOT MEASURED**, because
+the remaining groups did not produce complete observations.
+
+The [public C failure receipt](../oracle/phase2/evidence/repaired-c-original-campaign-v6-c-phase2-v18-c-subject-buffer-root-provenance-original-p0-v6-failures-publication-receipt.json)
+has SHA-256
+`868fdd4df9ed960113c324c1dda82d12d2e700d5c32213a4d8c147384b64b081`.
+The preserved compressed report has producer-recorded SHA-256
+`ecfd95c5f739999a6f39f06c2d11ed62594913803cec3809b7475dfa811f1afa`.
+The archive remains unopened.
+
+Live controller output separately observed complete passes in the
+**2,854**-case scanner group and **512**-case threading group,
+plus **4** observed differences in the **264**-case Python buffer
+group. The compact public receipt does not independently include
+those individual group names or the observed mismatch lower bound;
+they must not be substituted for a complete mismatch count.
+
+The original C native file was restored. Candidate status is **FAIL**;
+publication success does not mean compatibility. The **8,244**
+additional cases and the **14,155,776** proposed final cases remain
+unrun. Speed is **NOT MEASURED**, and no candidate is qualified.
+
 ## Freeze the complete corrected C-engine test
 
 The [version-6 first-party C campaign](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V6.md)
