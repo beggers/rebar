@@ -7,6 +7,86 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the repaired Rust engine's complete compatibility test
+
+The new first-party Rust engine has been built, but its matching
+behavior has **NOT RUN**. This chunk freezes the exact full-suite
+experiment before execution. It preserves all **31,237** original
+Python checks, all **13** original groups, exactly the **13** named
+private waivers, the corrected Python reference, and the independently
+compiled Rust engine and bridge. There is no external matching package,
+fallback, newly removed test, performance trial, or opened holdout.
+
+The [recovery-safe full-suite Rust runner](../tools/run_owned_repaired_rust_original_campaign_v8.py)
+has SHA-256
+`eb36dd1b16775e00525f9d0ad4d1bab46318d4c652c0cf6653bd1aa8776265aa`
+and **164,002** bytes. The [frozen full-suite and recovery protocol](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V8.md)
+has SHA-256
+`9afa6f964bceaa950e4031bcd00b27a615635a6bb6ed3eb66cd60ba1f123ec30`
+and **10,563** bytes. The [complete original-suite source contract](../oracle/phase2/repaired-rust-original-campaign-v8.json)
+has SHA-256
+`7780c4d14fe043ebe25ff50b4a437e6a0c9ba975f6d4cc47a833bbfbe3cdcf80`
+and **13,749** bytes.
+
+All ordinary and empty-environment source and context gates pass,
+including **184** genuinely rejected hostile controls. They verify
+**30** pinned source owners while starting **zero** candidates,
+workers, compilers, clocks, private-build-root checks, native loads,
+archive reads, or hidden performance cases. The frozen future run has
+its own first-party, streaming result writer: it cannot silently reuse
+the old version-43 result label or claim that the version-13 Rust
+build is the new version-16 engine. Recovery checks use the actual
+first-party restoration report and restore all four original Rust
+file identities before publishing a candidate result.
+
+A separately performed coordinator provenance check read the existing
+version-16 build archive **twice**. Its first attempt correctly
+rejected an assumption that private-directory identities were stored
+in the build report; they are not. The successful second attempt
+verified both genuine private build phases, all **18** distinct source
+file identities, all **four** independently created native files, the
+**28** distinct actual compiler operations, and the report's exact
+uncompressed SHA-256
+`c89af182cdb8e98dc05a4538e620c1db8404fbd7a11a3d43fea54f9da609f9c5`.
+The corrected Rust engine is
+`5e79f92b10d47f73919796af2349e44e7d16eceb515cc07571d0beaaec4a405f`
+(**658,344** bytes); its first-party Python bridge is
+`324b811bfb3567d7f530d0a316a337897f84529defe83544e31ae34407b83e04`
+(**148,832** bytes). These checks did not activate a candidate. They
+are distinct from the future runner's independently counted
+one-archive access and from the source gates' **zero** archive reads.
+
+Three independently frozen source owners raise actual evidence and
+historical-reference lower bounds from **181 / 186** to **184 / 189**.
+The frozen source contract also preserves the version-52 historical
+publication floor; it is not the later current graph. The latest
+actual compatibility result remains **FAIL**: **928** observed
+differences, **8,965** verified passes, and **13** completed original
+groups. Qualified replacements: **0**. Runtime independence:
+**NOT ESTABLISHED**. Speed, memory, confidence intervals, and
+undefined behavior: **NOT MEASURED**. The **4,194,304**-case final
+comparison is **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
+The [compact full-suite and overall-results graph](evidence/candidate-current-overview-v53.svg)
+keeps the passing first-party build, frozen but unrun full-suite test,
+real previous Rust failures, and actual lower bounds distinct. Its
+[reproducible graph generator](../tools/render_candidate_current_overview_v53.py)
+has SHA-256
+`db189f1363344ea60246856bf99bb16a1716121402bd3cae441ff285729dfa26`
+and **66,130** bytes. The [complete graph inputs](evidence/candidate-current-overview-v53.inputs.json)
+have SHA-256
+`6091b9af13a5b3b20a0f6f8748c2924302befa18ce7f4a61966dc1941299f7aa`
+and **612,623** bytes. The [complete machine-readable results](evidence/candidate-current-overview-v53.json)
+have SHA-256
+`f77af624365ca510c750c529787500429a831cf1f4b478ceb5f614f6802579e6`
+and **1,688,446** bytes. The accessible **2,250**-pixel graph has
+SHA-256
+`f44910f17160e1e22958424b9627151cbdd2ebbd364d138490c67640d0b877c4`
+and **14,069** bytes. All ordinary and empty-environment graph gates
+pass **2,797** hostile source controls without opening an archive,
+loading native code, running a candidate, timing anything, or touching
+the final comparison.
+
 ## Independently build the combined first-party Rust engine
 
 The frozen Rust build has now actually run **once** and succeeded. It
