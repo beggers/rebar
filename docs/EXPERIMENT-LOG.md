@@ -8,6 +8,35 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the actual Rust failure before any matching
+
+The [complete Rust pre-activation failure](../oracle/phase2/evidence/rust-original-campaign-v21-v3-preactivation-contract-failure.json)
+records **1** genuine attempt to run the committed version-21
+procedure. It exited with status **2** before starting a candidate,
+loading a native engine, creating a child interpreter, or running a
+single Python test.
+
+The frozen source-only contract correctly requires a protective
+verification wall. The actual matching run correctly does not use
+that source-only wall. Comparing the unchanged whole contract during
+activation rejected that single mode-specific difference:
+
+```text
+V21 campaign rejected: CampaignError: reject missing, altered, or extra original-campaign obligations
+```
+
+The complete **102**-byte failure, all caller pins, the exact
+committed source, and all **4** restored original Rust files are
+preserved. There is no new Rust matching result, candidate failure
+count, or successful worker. The genuine previous **15,749** passes
+and at least **1,296** differences are unchanged.
+
+All **31,237** original checks and the separate **8,244** reference
+cases remain intact. The **14,155,776**-case speed test remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**. Runtime
+independence, speed, memory, and safety remain **NOT ESTABLISHED**
+or **NOT MEASURED**.
+
 ## Freeze the complete from-scratch C compatibility run
 
 The [version-10 C test](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V10.md)
