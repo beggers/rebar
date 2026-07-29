@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1230" height="724" viewBox="0 0 1230 724" role="img" aria-labelledby="title description">
+<title id="title">How six from-scratch regular-expression engines compare with Python</title>
+<desc id="description">Python is the original reference. The repaired Rust candidate genuinely started thirteen distinct workers, completed eight of thirteen test groups, and explicitly verified twelve thousand nine hundred forty-two of the thirty-one thousand two hundred thirty-seven original checks. Five groups had infrastructure failures, so complete semantic compatibility was not measured and Rust remains unqualified. The complete public first child output reported an original upstream test failure and also showed a pattern-destruction cleanup error; the cleanup observation is not evidence of the underlying failure cause. All six independent engines, every historical failure, and all original test evidence are retained. No performance result is available and the final holdout remains closed.</desc>
+<rect width="1230" height="724" rx="18" fill="#0b1220"/>
+<text x="34" y="48" fill="#f8fafc" font-size="26" font-family="system-ui,sans-serif" font-weight="700">Building a faster Python re, from scratch</text>
+<text x="34" y="81" fill="#cbd5e1" font-size="16" font-family="system-ui,sans-serif">6 independent engines · 0 fully compatible · speed NOT MEASURED</text>
+<line x1="34" y1="104" x2="1196" y2="104" stroke="#334155"/>
+<circle cx="43" cy="137" r="6" fill="#22c55e"/>
+<text x="62" y="142" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Python re</text>
+<text x="175" y="142" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Original compatibility reference</text>
+<text x="1178" y="142" text-anchor="end" fill="#22c55e" font-size="13" font-family="system-ui,sans-serif" font-weight="700">BASELINE</text>
+<circle cx="43" cy="184" r="6" fill="#fb7185"/>
+<text x="62" y="189" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Rust</text>
+<text x="175" y="189" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">12,942 verified checks; 8 of 13 groups completed</text>
+<text x="1178" y="189" text-anchor="end" fill="#fb7185" font-size="13" font-family="system-ui,sans-serif" font-weight="700">5 GROUPS FAILED</text>
+<circle cx="43" cy="231" r="6" fill="#f59e0b"/>
+<text x="62" y="236" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">C</text>
+<text x="175" y="236" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">1,230 previously observed differences</text>
+<text x="1178" y="236" text-anchor="end" fill="#f59e0b" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="278" r="6" fill="#f59e0b"/>
+<text x="62" y="283" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Zig</text>
+<text x="175" y="283" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">1,764 previously observed differences</text>
+<text x="1178" y="283" text-anchor="end" fill="#f59e0b" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="325" r="6" fill="#fb7185"/>
+<text x="62" y="330" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">C++</text>
+<text x="175" y="330" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">2,308 differences; five startup failures</text>
+<text x="1178" y="330" text-anchor="end" fill="#fb7185" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="372" r="6" fill="#fb7185"/>
+<text x="62" y="377" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Go</text>
+<text x="175" y="377" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">4,518 differences; four startup failures</text>
+<text x="1178" y="377" text-anchor="end" fill="#fb7185" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="419" r="6" fill="#94a3b8"/>
+<text x="62" y="424" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Fortran</text>
+<text x="175" y="424" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Complete Python compatibility not tested</text>
+<text x="1178" y="424" text-anchor="end" fill="#94a3b8" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT TESTED</text>
+<line x1="34" y1="462" x2="1196" y2="462" stroke="#334155"/>
+<text x="34" y="493" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif" font-weight="650">31,237 original Python checks; 8,244 separate additional checks.</text>
+<text x="34" y="522" fill="#fcd34d" font-size="14" font-family="system-ui,sans-serif">Real corrected Rust run: 12,942 verified cases; 8/13 completed groups; 5 infrastructure failures.</text>
+<text x="34" y="550" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">Actual first output reported an upstream test failure and separately showed a cleanup error.</text>
+<text x="34" y="578" fill="#fda4af" font-size="13" font-family="system-ui,sans-serif">Underlying cause and full compatibility: NOT ESTABLISHED. Completed groups are not claimed as passing groups.</text>
+<text x="34" y="606" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">All earlier failures, all original test results, and all six independent candidates remain visible.</text>
+<text x="34" y="634" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Speed, memory, and runtime independence: NOT MEASURED or NOT ESTABLISHED.</text>
+<text x="34" y="662" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">Final 4,194,304-case comparison: NOT FROZEN, NOT GENERATED, NOT OPENED.</text>
+<text x="34" y="701" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif">Overview 84 · actual results, complete public diagnostics, and no selected winner.</text>
+</svg>

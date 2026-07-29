@@ -16,13 +16,13 @@ regular-expression package, or another candidate does not count.
 **Six** from-scratch engines. **Zero** fully compatible replacements.
 Speed versus Python: **NOT MEASURED**. There is no winner.
 
-![Python compared with six independently written regular-expression engines. Three Rust attempts failed; a corrected native bridge has not yet been tested. No replacement has passed all tests or measured a speedup.](docs/evidence/candidate-current-overview-v83.svg)
+![Python compared with six independently written regular-expression engines. Rust completed eight of 13 test groups but five failed. No replacement has passed all tests or measured a speedup.](docs/evidence/candidate-current-overview-v84.svg)
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
 | Python `re` | Baseline; reference checks pass | Not timed |
 | Public `rebar` import | FAIL; still selects an unqualified Zig prototype | NOT MEASURED |
-| Rust | FAIL; 1,440 earlier differences; bridge fix not run | NOT MEASURED |
+| Rust | FAIL; 8/13 groups; 12,942/31,237 verified | NOT MEASURED |
 | C | FAIL; 1,230 differences | NOT MEASURED |
 | Zig | FAIL; 1,764 differences; scanner fix frozen, not built or tested | NOT MEASURED |
 | C++ | FAIL; 2,308 differences and five worker failures | NOT MEASURED |
@@ -37,9 +37,9 @@ These are separate test sets and are never combined or counted twice.
 The corrected, independently written C engine already passed **14**
 reproducible build checks. A separately traced Rust build passed **28**
 checks and recorded its compiled engine's identity. Neither engine has
-passed its full compatibility test. The old **13**-worker Rust test
-targets a different build and remains **BLOCKED**. Three Rust runs lost
-all **13** workers; the corrected bridge test is **NOT RUN**.
+passed its full compatibility test. Rust finished **8** of **13**
+groups, verified **12,942** cases, and had **5** worker failures.
+Full-suite matching is **NOT MEASURED**; its earlier losses remain.
 Runtime independence is **NOT ESTABLISHED**.
 
 ## Detailed correctness

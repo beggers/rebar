@@ -7,6 +7,76 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Record the actual corrected Rust run without hiding unfinished tests
+
+One actual version-15 Rust run started **13** distinct workers for the
+unchanged **13** original test groups and **31,237** Python checks.
+Exactly **eight** groups completed and **12,942** individual cases
+were verified; **five** workers failed before completing their
+groups. Completed groups are not automatically passing groups.
+Because not all **31,237** checks were observed, the complete
+semantic mismatch count is **NOT MEASURED**. Candidate correctness
+is **FAIL**, not a partial pass or a qualified replacement.
+
+The [independently durable actual-run receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v15-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v15-failures-publication-receipt.json)
+is **18,510** bytes and has SHA-256
+`5b1cfdc72f88c3a847f65f5a06da77cd27557ca2c2306320b6c8d44a91e28578`.
+The receipt attests that the [preserved compressed actual-run report](../oracle/phase2/evidence/repaired-rust-original-campaign-v15-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v15-failures.json.gz)
+is **3,398,500** bytes and has SHA-256
+`5a37a942a2404529f8e0aeb3f5d512d0433e2bf52333f11cfd72b5127440fa5f`.
+Verify the compressed report by the small receipt and filesystem
+metadata only; do not reopen, decompress, hash, or overwrite it.
+The receipt confirms **13** distinct process identities, **eight**
+completed groups, **five** fully recorded infrastructure failures,
+and restoration of all **four** original files before publication.
+Receipt **PASS** establishes evidence publication, not candidate
+correctness; the candidate itself remains **FAIL**.
+
+Unlike the earlier small version-14 receipt, the version-15 public
+receipt contains the complete first worker's bounded standard error
+and traceback. Its **4,629** standard-error bytes have SHA-256
+`820507908b62a191e52be17c646e75c324b365b1c77682d5060c64f40bca156c`
+and begin with the directly observed rejection:
+
+```text
+V15 campaign rejected: the guarded literal original upstream test failed
+```
+
+The same stream also contains **17** ignored `Pattern.__del__`
+object-cleanup warnings reporting
+`AttributeError: 'NoneType' object has no attribute 'free'`.
+These warnings were observed during one failed group; they do not
+establish the original test's underlying exception, explain every
+failed worker, or prove a regular-expression mismatch. The exact
+underlying upstream failure remains under investigation.
+
+The [current actual Rust results chart](evidence/candidate-current-overview-v84.svg),
+[complete actual-results graph inputs](evidence/candidate-current-overview-v84.inputs.json),
+[complete machine-readable run results](evidence/candidate-current-overview-v84.json),
+and [reproducible actual-results renderer](../tools/render_candidate_current_overview_v84.py)
+retain all **three** previous **13**-worker failures, the earlier
+completed **1,440 / 14,853** Rust matching result, and all six
+language families. The established canonical proof pool retains all
+**nine** complete proofs and **54** family references; a separately
+verified outcome proof preserves the new result across all **six**
+candidate rows without omitting the prior evidence. Authenticated
+evidence and history lower bounds are **272 / 277**. Both graph
+self-tests reject **8,298** hostile controls. The exact actual-result
+renderer, complete inputs, machine-readable summary, and visible
+chart have respective SHA-256 values
+`00f9767cf82571ae10246f80a12d2c87a221f1a97f8d8c3baecce32e8eda3a8d`,
+`08a83e53458e457f9cc62ca876a25e9291c58f048a5f9bbe93a4784b82ff027a`,
+`9f801745dbed779b2cd02aacd5fc6aaeecf016a8e33c37ae1eee043ffab18bca`,
+and `8f140d26cfc0759abd5599c8604d143d1e9da660f91d3dc5a72da1749a175d03`.
+Their exact sizes are **72,026**, **1,320,360**, **3,798,003**,
+and **6,100** bytes. The full summary remains below the
+**4,194,304**-byte limit without dropping any evidence. The original
+**31,237** checks and separate **8,244** extra checks are never
+combined. Runtime independence is **NOT ESTABLISHED**; no candidate
+qualifies; speed, memory, and confidence are **NOT MEASURED**; and
+the proposed **4,194,304**-case holdout is **NOT GENERATED** and
+**NOT OPENED**.
+
 ## Freeze the exact native-bridge correction without running it
 
 The [first-party native-bridge correction](../tools/run_owned_repaired_rust_original_campaign_v15.py),

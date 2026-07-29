@@ -6,14 +6,142 @@ below are source-only or read-only unless a command explicitly says otherwise.
 The current results and charts remain in [the project README](../README.md);
 experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
+## Verify the actual corrected Rust result without opening its report
+
+The corrected Rust run started **13** distinct workers. **Eight**
+test groups completed and **12,942** original cases were verified;
+**five** workers failed. This is a candidate **FAIL**: the complete
+**31,237**-case mismatch count is **NOT MEASURED**. The small public
+receipt, not the compressed report, provides the first worker's
+complete bounded standard error and traceback. Its observed
+`Pattern.__del__` cleanup warnings do not prove the underlying
+failure. Verify only the receipt and archive metadata; do not reopen,
+decompress, hash, or overwrite the compressed report.
+
+```bash
+REBAR_RUST_V15_ACTUAL_RECEIPT=oracle/phase2/evidence/repaired-rust-original-campaign-v15-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v15-failures-publication-receipt.json
+REBAR_RUST_V15_ACTUAL_ARCHIVE=oracle/phase2/evidence/repaired-rust-original-campaign-v15-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v15-failures.json.gz
+
+sha256sum "$REBAR_RUST_V15_ACTUAL_RECEIPT"
+
+jq -e '
+  .status == "PASS"
+  and .publication_status == "PASS"
+  and .candidate_status == "FAIL"
+  and .suite_count == 13
+  and .case_execution_denominator == 31237
+  and .started_suite_count == 13
+  and .actual_candidate_workers == 13
+  and .distinct_worker_process_id_count == 13
+  and .duplicate_worker_process_id_count == 0
+  and .missing_worker_process_id_count == 0
+  and .completed_suite_count == 8
+  and .infrastructure_failure_count == 5
+  and .semantic_mismatch_count == "NOT MEASURED"
+  and .verified_passing_case_count == 12942
+  and .all_four_original_targets_restored == true
+  and .restoration_verified_before_publication == true
+  and .preserved_previous_rust_semantic_mismatch_count == 1440
+  and .preserved_previous_rust_verified_passing_case_count == 14853
+  and .worker_failure_capture_complete == true
+  and .worker_failure_capture_count == 5
+  and .worker_failure_capture.actual_failure_count == 5
+  and .worker_failure_capture.all_failure_metadata_preserved == true
+  and (.worker_failure_capture.suite_failure_summaries
+    | length == 5
+      and all(
+        .returncode == 2
+        and .stderr_complete == true
+        and .traceback_complete == true
+      ))
+  and (.worker_failure_capture.first_worker_failure
+    | .suite == "original_bounded_v5"
+      and .pid == 81
+      and .returncode == 2
+      and .stdout_complete == true
+      and .stdout_size_bytes == 0
+      and .stderr_complete == true
+      and .stderr_size_bytes == 4629
+      and .stderr_sha256 == "820507908b62a191e52be17c646e75c324b365b1c77682d5060c64f40bca156c"
+      and .traceback_complete == true
+      and .traceback_sha256 == "bdfd444430a78e04ce09047720c5758683408bfdd0681ad92f41b2932dc3a860"
+      and (.stderr.base64
+        | @base64d
+        | startswith("V15 campaign rejected: the guarded literal original upstream test failed\n"))
+      and (.stderr.base64
+        | @base64d
+        | split("\n")
+        | map(select(contains("Pattern.__del__")))
+        | length == 17))
+  and .archive.sha256 == "5a37a942a2404529f8e0aeb3f5d512d0433e2bf52333f11cfd72b5127440fa5f"
+  and .archive.size_bytes == 3398500
+  and .benchmark_files_read == 0
+  and .hidden_cases_read == 0
+  and .clock_samples == 0
+  and .timing_trials_run == 0
+  and .holdout == "NOT OPENED"
+  and .performance == "NOT MEASURED"
+  and .candidate_qualified == false
+  and .winner_selected == false
+' "$REBAR_RUST_V15_ACTUAL_RECEIPT"
+
+stat -c '%d %i %s %a %h %n' "$REBAR_RUST_V15_ACTUAL_ARCHIVE"
+```
+
+## Verify the current actual Rust results graph
+
+These four read-only checks reject **8,298** hostile controls and
+authenticate the complete version-83
+predecessor, its **nine** complete proof records and **54** family
+references, and the actual version-15 public receipt. The new
+separately preserved outcome reconstructs correctly for all **six**
+families. The checks retain all **four** actual Rust attempts,
+including **eight** completed groups, **12,942** verified cases,
+and **five** current worker failures. They never read the compressed
+report, start a candidate, inspect a private build directory, time
+an operation, or open the final holdout.
+
+```bash
+REBAR_RUST_V15_ACTUAL_GRAPH_PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+REBAR_RUST_V15_ACTUAL_GRAPH_ARGS=(
+  --source-sha256 00f9767cf82571ae10246f80a12d2c87a221f1a97f8d8c3baecce32e8eda3a8d
+  --source-bytes 72026
+  --previous-source-sha256 0d9424fd52b73908e9e2cc46d7d01637fd8435e8ce34df6cce62d2006845c57c
+  --previous-inputs-sha256 bf4a2c72bb530dbeb8ac5e1c5995a3f8fcc56412303eff80fff7f3f076b0d68d
+  --previous-summary-sha256 4ac765869b885d93fe648b5bb71ce1fcdcbbc5d5a9b5eb0896f28a33209293fd
+  --previous-svg-sha256 71517916fc6cbab43ebb9039d7f8b9249d275e388a218eb00ba421b376376b77
+  --receipt-sha256 5b1cfdc72f88c3a847f65f5a06da77cd27557ca2c2306320b6c8d44a91e28578
+  --inputs-sha256 08a83e53458e457f9cc62ca876a25e9291c58f048a5f9bbe93a4784b82ff027a
+  --summary-sha256 9f801745dbed779b2cd02aacd5fc6aaeecf016a8e33c37ae1eee043ffab18bca
+  --svg-sha256 8f140d26cfc0759abd5599c8604d143d1e9da660f91d3dc5a72da1749a175d03
+)
+
+"$REBAR_RUST_V15_ACTUAL_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v84.py --self-test
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_RUST_V15_ACTUAL_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v84.py --self-test
+
+"$REBAR_RUST_V15_ACTUAL_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v84.py \
+  --verify-frozen-context "${REBAR_RUST_V15_ACTUAL_GRAPH_ARGS[@]}"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_RUST_V15_ACTUAL_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v84.py \
+  --verify-frozen-context "${REBAR_RUST_V15_ACTUAL_GRAPH_ARGS[@]}"
+```
+
 ## Verify the frozen Rust native-bridge correction
 
 These four checks validate the authenticated correction at all
 **three** actual native-stage call sites without weakening the
 runtime guard, loading a native library, running Rust matching, or
-changing any original test. All three previous **13**-worker losses
-remain genuine. The corrected version-15 candidate test is
-**NOT RUN**; runtime independence is **NOT ESTABLISHED**.
+changing any original test. All three earlier **13**-worker losses
+remain genuine. The separately recorded actual version-15 run
+**FAILS**; these four checks verify only its frozen source. Runtime
+independence remains **NOT ESTABLISHED**.
 
 ```bash
 REBAR_RUST_V15_PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
@@ -42,7 +170,7 @@ env -i PATH=/usr/bin:/bin LC_ALL=C \
   --verify-frozen-context "${REBAR_RUST_V15_ARGS[@]}"
 ```
 
-## Verify the current lossless proof-registry graph
+## Verify the historical lossless proof-registry graph
 
 These four read-only checks reject **8,065** hostile controls and
 authenticate the complete version-82
@@ -828,8 +956,10 @@ env -i PATH=/usr/bin:/bin LC_ALL=C \
 ## Evidence and reproduction
 
 - [Complete actual Rust failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [independently durable 13-worker result receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [complete plain-text 13-group failure and root-cause analysis](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json); **13** real workers completed all **31,237** original cases and observed **1,440** mismatches, **14,853** explicitly verified passes, and **zero** infrastructure failures. Receipt and analysis **PASS** preserve a candidate **FAIL**.
-- [Current independently generated lossless proof-registry graph](../docs/evidence/candidate-current-overview-v83.svg), [complete proof-registry graph inputs](../docs/evidence/candidate-current-overview-v83.inputs.json), [complete machine-readable proof-registry results](../docs/evidence/candidate-current-overview-v83.json), and [reproducible proof-registry renderer](../tools/render_candidate_current_overview_v83.py); authenticate all **nine** complete SHA-256-addressed proof records, expand all **six** preceding candidate rows exactly, and preserve every actual Rust failure without reopening compressed evidence.
-- [Frozen first-party native-bridge attestation correction](../tools/run_owned_repaired_rust_original_campaign_v15.py), [complete native-bridge correction procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V15.md), and [exact bridge-correction contract](../oracle/phase2/repaired-rust-original-campaign-v15.json); authenticate all **three** active native-stage sites without changing the runtime guard. Actual corrected matching is **NOT RUN**.
+- [Current independently generated actual Rust results graph](../docs/evidence/candidate-current-overview-v84.svg), [complete actual-results graph inputs](../docs/evidence/candidate-current-overview-v84.inputs.json), [complete machine-readable actual-run results](../docs/evidence/candidate-current-overview-v84.json), and [reproducible actual-results renderer](../tools/render_candidate_current_overview_v84.py); preserve all **four** actual Rust attempts, **eight** completed groups, **12,942** verified cases, **five** worker failures, all **nine** existing proofs, and all **54** historical references without reopening compressed evidence.
+- [Actual corrected Rust run receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v15-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v15-failures-publication-receipt.json) and [preserved actual-run compressed report](../oracle/phase2/evidence/repaired-rust-original-campaign-v15-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v15-failures.json.gz); **13** distinct workers, **eight** completed groups, **12,942** verified cases, **five** infrastructure failures, complete restoration, and full-suite semantic mismatch **NOT MEASURED**. Receipt **PASS** records a candidate **FAIL**.
+- [Historical lossless proof-registry source graph](../docs/evidence/candidate-current-overview-v83.svg), [complete historical proof-registry graph inputs](../docs/evidence/candidate-current-overview-v83.inputs.json), [historical machine-readable proof-registry results](../docs/evidence/candidate-current-overview-v83.json), and [reproducible historical proof-registry renderer](../tools/render_candidate_current_overview_v83.py); retain all **nine** complete SHA-256-addressed proofs and **54** references before the separately recorded version-15 result.
+- [Frozen first-party native-bridge attestation correction](../tools/run_owned_repaired_rust_original_campaign_v15.py), [complete native-bridge correction procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V15.md), and [exact bridge-correction contract](../oracle/phase2/repaired-rust-original-campaign-v15.json); authenticate all **three** active native-stage sites without changing the runtime guard. The separately recorded actual candidate matching **FAILS**.
 - [Historical actual-failure results graph](../docs/evidence/candidate-current-overview-v82.svg), [complete historical actual graph inputs](../docs/evidence/candidate-current-overview-v82.inputs.json), [historical machine-readable diagnostic results](../docs/evidence/candidate-current-overview-v82.json), and [reproducible actual-diagnostics renderer](../tools/render_candidate_current_overview_v82.py); preserve all **three** actual **13**-worker Rust failures, the complete historical matching differences, and the actual version-14 native-bridge rejection without opening compressed evidence.
 - [Actual complete-diagnostics Rust failure receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v14-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v14-failures-publication-receipt.json) and [preserved actual-diagnostics compressed report](../oracle/phase2/evidence/repaired-rust-original-campaign-v14-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v14-failures.json.gz); **13** recorded worker identities, exit statuses, standard-error hashes, and tracebacks, **zero** completed suites, all **four** original files restored, and semantic correctness **NOT MEASURED**.
 - [Historical diagnostics-source graph](../docs/evidence/candidate-current-overview-v81.svg), [complete historical source-graph inputs](../docs/evidence/candidate-current-overview-v81.inputs.json), [historical machine-readable source results](../docs/evidence/candidate-current-overview-v81.json), and [reproducible historical source renderer](../tools/render_candidate_current_overview_v81.py); preserve the exact two-loss state frozen before the separately recorded third actual worker failure.
