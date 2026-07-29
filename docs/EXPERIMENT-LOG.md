@@ -8,6 +8,31 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the actual corrected C native-build preflight failure
+
+The [version-19 corrected C build](../oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-SOURCE-BUILD-V19.md)
+was authorized and attempted exactly once. Before starting any
+compiler or creating a build directory, its original-native
+authentication rejected a genuine baseline mismatch.
+
+The frozen builder expected the earlier **163,504**-byte native
+file with SHA-256
+`f3794f963819a9af3798c1d97f32edcbc2a117f9ed20c56ec554a605de82eeae`.
+The actual installed original is **149,976** bytes, inode
+**430300**, with SHA-256
+`075350a17d4909cd6f8dbe5e808e7b6444760f54bb60af013e0f812e22cfb7fd`.
+The exact
+[preactivation diagnostic](../oracle/phase2/evidence/c-original-match-semantics-source-build-v19-preactivation-failure.json)
+records exit **1** and
+`BuildError: reject a substituted actual owned candidate snapshot`.
+
+Source-order verification independently confirms **0** compiler
+processes, **0** private build roots, **0** completed phases,
+**0** generated build receipts, and no replaced native files.
+No C correctness improvement was measured. The original
+**31,237**-case tests, separate **8,244** additional checks,
+and sealed **14,155,776**-case holdout remain unchanged.
+
 ## Freeze the reproducible corrected first-party C build
 
 The [version-19 first-party C build](../oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-SOURCE-BUILD-V19.md)
