@@ -8,6 +8,25 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected Rust helper-verification order
+
+The [version-18 Rust compatibility campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V18.md)
+corrects the exact, recorded version-17 preflight failure. It
+authenticates the immutable historical Rust helper using its actual
+historical source and native owners before the original controller
+selects the current captured-result Rust engine.
+
+The fix does not rewrite a historical contract, replace a candidate,
+change the matching engine, or relax the no-delegation guard. It
+preserves all **31,237** original cases, **13** group results,
+authenticated source owners, full failure records, native recovery,
+and the separately recorded **8,244** additional cases.
+
+This step freezes the corrected source only. Candidate matching is
+**NOT RUN**; the actual version-17 preflight failure is preserved.
+The **14,155,776** proposed final cases remain unopened; relative
+speed and complete compatibility are **NOT MEASURED**.
+
 ## Identify the actual Zig worker failure
 
 The [version-7 Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V7.md)
