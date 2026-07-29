@@ -7,6 +7,69 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected C build without running a compiler
+
+The [first-party C build verifier](../tools/reproduce_owned_c_subject_buffer_source_build_v16.py),
+[complete reproducible C build protocol](../oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V16.md),
+and [frozen C source-build contract](../oracle/phase2/c-subject-buffer-source-build-v16.json)
+are a separate source-only experiment. They bind the genuinely
+published passing Python reference, the independently frozen C
+subject-buffer correction, and the version-67 graph containing
+the actual successful Rust build. They prepare **14** future
+offline C build and inspection steps without executing one.
+The corrected first-party C engine remains **NOT BUILT**,
+**NOT ACTIVATED**, and **NOT TESTED**.
+
+The C build verifier, protocol, and exact canonical contract have
+respective SHA-256 values
+`655b1c72c66fe9bfd06d96c7daeca3d2eb4817a5e28fdbbd737bbfd59713aa90`,
+`19b9ef86be5ce0c77c0addc40cfdefbbfb05102adfdd7baa38b39d62b08497a9`,
+and `7ea6bbe9a72a95e905e21cd1c45ac9a5b25620980f40d1ea141163642142a3c7`.
+Their exact sizes are **79,602**, **4,778**, and **12,543** bytes.
+Both ordinary and clean-environment self-tests accept **four**
+positive controls, reject **123** hostile controls, and physically
+block **32** prohibited operations. Both complete source checks
+verify the already published version-67 graph, the passing Rust
+build, the corrected Python reference, and **zero** C compiler
+processes. The **14** C build steps are planned, not observed.
+
+The latest complete actual C result remains **FAIL**, with
+**1,230** differences and **7,325** verified passes. The real
+first-party Rust build remains **PASS**, with **28** completed
+build and inspection operations; its latest actual matching
+result still remains **FAIL**, with **1,440** differences and
+**14,853** verified passes. No old receipt is substituted for
+the latest graph. All **13** complete Rust suite results and
+all **six** genuine failure events are retained exactly.
+
+The [current C source-build results graph](evidence/candidate-current-overview-v68.svg),
+[complete exact graph inputs](evidence/candidate-current-overview-v68.inputs.json),
+[complete machine-readable results](evidence/candidate-current-overview-v68.json),
+and [independent graph renderer](../tools/render_candidate_current_overview_v68.py)
+must preserve Rust build **PASS**, C build **NOT RUN**,
+candidate qualification **BLOCKED**, all **six** independent
+engine families, and **zero** compatible replacements. Exactly
+three C source owners advance the evidence and history lower
+bounds from **225 / 230** to **228 / 233**. No candidate,
+compiler, reference worker, native library, compressed archive,
+clock, or benchmark is started or opened. Runtime independence
+remains **NOT ESTABLISHED**. Performance, memory, confidence,
+and undefined behavior are **NOT MEASURED**. The **4,194,304**
+planned final examples remain **NOT GENERATED** and **NOT OPENED**.
+
+The exact version-68 renderer, full graph inputs, machine-readable
+results, and visible chart have respective SHA-256 values
+`22753bd1058d235d363ba3e057585289256ee7e969aa742690de78b2df8a6652`,
+`33ddfbe988cb37f7e4a188eb4c50ea89f3f5b15ce25eace111dcde8eb84d7090`,
+`e4d214417fb7e90e84a541718dafa11ce513feb0a46874925695c95a1967aaea`,
+and `69ba9464583d4d3f0b76610cbcc620bd7d9473cf4f6faf1a2c20b96ea190a736`.
+Their exact sizes are **209,910**, **1,079,347**, **3,007,017**,
+and **14,344** bytes. Both ordinary and clean-environment graph
+self-tests reject exactly **5,813** hostile controls. Both full
+graph checks authenticate the actual successful Rust build and
+the complete original Rust failure observations while physically
+preserving the corrected C engine as **NOT BUILT**.
+
 ## Run the corrected first-party Rust build without claiming compatibility
 
 The separately committed, corrected
