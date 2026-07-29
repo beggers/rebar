@@ -16,7 +16,7 @@ regular-expression package, or another candidate does not count.
 **Six** from-scratch engines. **Zero** fully compatible replacements.
 Speed versus Python: **NOT MEASURED**. There is no winner.
 
-![Python compared with six independently written regular-expression engines. The complete original Python test suite and hardened no-fallback safeguard are frozen; no replacement has passed all compatibility tests or measured a speedup.](docs/evidence/candidate-current-overview-v76.svg)
+![Python compared with six independently written regular-expression engines. A guarded full-suite Rust retest is frozen but has not run; no replacement has passed all compatibility tests or measured a speedup.](docs/evidence/candidate-current-overview-v77.svg)
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
@@ -39,8 +39,8 @@ reproducible build checks. A separately traced Rust build passed **28**
 checks and recorded its compiled engine's identity. Neither engine has
 passed its full compatibility test. The old **13**-worker Rust test
 targets a different build and remains **BLOCKED**; testing the newly
-traced engine is **NOT RUN**. The complete original test suite and
-hardened safeguard are frozen; independence is **NOT ESTABLISHED**.
+traced engine's guarded full-suite retest is **NOT RUN**. Runtime
+independence is **NOT ESTABLISHED**.
 
 ## Detailed correctness
 

@@ -6,6 +6,79 @@ below are source-only or read-only unless a command explicitly says otherwise.
 The current results and charts remain in [the project README](../README.md);
 experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
+## Verify the guarded original Rust retest without running a candidate
+
+The full **13**-worker, **31,237**-case Rust campaign is source-frozen;
+its actual matching run remains **NOT RUN**. These four checks verify
+the authentic Rust build, complete original test producer, and hardened
+safeguard without importing an engine or reading its private build root.
+
+```bash
+REBAR_RUST_TEST_PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+REBAR_RUST_TEST_ARGS=(
+  --source-sha256 fc3a40901989bf0ccef6fe5296101c6bb456a6d3117d8b60e75c2cdf1eb113f9
+  --protocol-sha256 1473e2d1f8967f6dfd565d8e3c05dec7383e8705d624cffab2fb0c13342a1674
+  --contract-sha256 6ccc0f18dbcc7ff6f401d42f5fabb199420e2a1afe79558d035efcfc607fa375
+)
+
+"$REBAR_RUST_TEST_PY" -I -B -S \
+  tools/run_owned_repaired_rust_original_campaign_v12.py \
+  --self-test "${REBAR_RUST_TEST_ARGS[@]}"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_RUST_TEST_PY" -I -B -S \
+  tools/run_owned_repaired_rust_original_campaign_v12.py \
+  --self-test "${REBAR_RUST_TEST_ARGS[@]}"
+
+"$REBAR_RUST_TEST_PY" -I -B -S \
+  tools/run_owned_repaired_rust_original_campaign_v12.py \
+  --verify-frozen-context "${REBAR_RUST_TEST_ARGS[@]}"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_RUST_TEST_PY" -I -B -S \
+  tools/run_owned_repaired_rust_original_campaign_v12.py \
+  --verify-frozen-context "${REBAR_RUST_TEST_ARGS[@]}"
+```
+
+## Verify the current guarded-Rust-test results graph
+
+All four checks reproduce the **31,237**-case original-test chart and
+reject **6,653** hostile controls without running the Rust candidate.
+
+```bash
+REBAR_RUST_GRAPH_PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+REBAR_RUST_GRAPH_ARGS=(
+  --source-sha256 c0114a8ff0c4234a02e8df38c126ab3d242afeed626bc5654e12b18886e920dd
+  --source-bytes 43873
+  --previous-source-sha256 ac825ba68a8a8c2845569403a9b348db8d5cf1009a3d6cf8df0db1e322b53a1c
+  --previous-inputs-sha256 3e945e54576468e9e53cc757b1f0bb64064571e3862757666152a4f1b0963e9f
+  --previous-summary-sha256 a7a09e9ccfaadeffc4a49ffdb229835658b4845dfd2fc8081edd1921997d58b1
+  --previous-svg-sha256 4aabb86916a20c9dc000bd2aad5fd99b7e339f5be8f2fb44f131dd2254130f40
+  --feature-source-sha256 fc3a40901989bf0ccef6fe5296101c6bb456a6d3117d8b60e75c2cdf1eb113f9
+  --feature-protocol-sha256 1473e2d1f8967f6dfd565d8e3c05dec7383e8705d624cffab2fb0c13342a1674
+  --feature-contract-sha256 6ccc0f18dbcc7ff6f401d42f5fabb199420e2a1afe79558d035efcfc607fa375
+  --inputs-sha256 18a1118afed337294ca445a51be24d410e8007b962857c412f0ba589747c026e
+  --summary-sha256 66e6ad03ca0b42dc971751adbc3a7caa91810602538600cf475b6b7fd14bc66d
+  --svg-sha256 8e438ab789f6a3ac683fde2a7faa7138e58e0567aa6b08134bea0cd805788996
+)
+
+"$REBAR_RUST_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v77.py --self-test
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_RUST_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v77.py --self-test
+
+"$REBAR_RUST_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v77.py \
+  --verify-frozen-context "${REBAR_RUST_GRAPH_ARGS[@]}"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_RUST_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v77.py \
+  --verify-frozen-context "${REBAR_RUST_GRAPH_ARGS[@]}"
+```
+
 ## Verify the full original Python tests without running a candidate
 
 The clean original producer retains all **13** groups and **31,237**
@@ -38,7 +111,7 @@ env -i PATH=/usr/bin:/bin LC_ALL=C \
   --verify-frozen-context "${REBAR_PRODUCER_ARGS[@]}"
 ```
 
-## Verify the current complete-original-suite results graph
+## Verify the historical version-76 complete-original-suite graph
 
 These read-only checks reproduce the original-test chart and reject
 **6,519** hostile controls. They do not run or time a candidate.
@@ -237,7 +310,9 @@ env -i PATH=/usr/bin:/bin LC_ALL=C \
 ## Evidence and reproduction
 
 - [Complete actual Rust failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [independently durable 13-worker result receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [complete plain-text 13-group failure and root-cause analysis](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json); **13** real workers completed all **31,237** original cases and observed **1,440** mismatches, **14,853** explicitly verified passes, and **zero** infrastructure failures. Receipt and analysis **PASS** preserve a candidate **FAIL**.
-- [Current independently generated results graph](../docs/evidence/candidate-current-overview-v76.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v76.inputs.json), [current machine-readable results](../docs/evidence/candidate-current-overview-v76.json), and [reproducible compact renderer](../tools/render_candidate_current_overview_v76.py); preserve all **31,237** unchanged Python cases, all actual candidate failures, the hardened safeguard, and the unopened holdout. No candidate matching has run.
+- [Current independently generated results graph](../docs/evidence/candidate-current-overview-v77.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v77.inputs.json), [current machine-readable results](../docs/evidence/candidate-current-overview-v77.json), and [reproducible compact renderer](../tools/render_candidate_current_overview_v77.py); retain all **31,237** unchanged original cases, the genuine Rust build, complete safe original producer, all observed failures, the sealed holdout, and the new full Rust retest as **NOT RUN**.
+- [Frozen first-party guarded Rust retest](../tools/run_owned_repaired_rust_original_campaign_v12.py), [complete Rust original-suite procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V12.md), and [exact frozen Rust test contract](../oracle/phase2/repaired-rust-original-campaign-v12.json); all four source checks pass without running or qualifying a candidate.
+- [Historical complete original-suite graph](../docs/evidence/candidate-current-overview-v76.svg), [historical original-test inputs](../docs/evidence/candidate-current-overview-v76.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v76.json), and [historical original-test renderer](../tools/render_candidate_current_overview_v76.py); preserve the complete Python test evaluator and all observed results before the Rust retest was frozen.
 - [Clean complete original Python test producer](../tools/run_owned_six_family_original_p0_producer_v5.py), [exact original-test procedure](../oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md), and [complete original producer contract](../oracle/phase2/six-family-p0-producer-v5.json); four source checks reject **110** hostile controls without importing a candidate or Python's matcher.
 - [Historical hardened-safeguard results graph](../docs/evidence/candidate-current-overview-v75.svg), [historical graph inputs](../docs/evidence/candidate-current-overview-v75.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v75.json), and [historical compact renderer](../tools/render_candidate_current_overview_v75.py); preserve the first-party bridge and genuine protected-interpreter safeguard.
 - [Hardened no-fallback safeguard](../tools/verify_owned_candidate_runtime_independence_v2.py), [complete safe native-bridge and interpreter procedure](../oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V2.md), and [exact safeguard contract](../oracle/phase2/candidate-runtime-independence-v2.json); all four source checks reject **72** hostile controls without running a candidate.

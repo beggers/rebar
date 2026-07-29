@@ -7,6 +7,66 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the actual-build, guarded full-suite Rust retest
+
+The [independently runnable first-party Rust test controller](../tools/run_owned_repaired_rust_original_campaign_v12.py),
+[complete guarded-Rust test procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V12.md),
+and [exact frozen Rust test contract](../oracle/phase2/repaired-rust-original-campaign-v12.json)
+freeze the complete original **13**-worker, **31,237**-case test
+against the independently verified Rust source build. They preserve
+the separate **8,244** supplemental cases, all **13** named private
+waivers, the immutable original suites, and the genuine version-19
+build's **28** passing operations.
+
+The actual controller, worker, and recovery paths are executable only
+under separately supplied, independently authenticated build,
+original-test producer, recovery, runtime-guard, and native-file
+authority. An actual worker must install the hardened, no-fallback
+safeguard before importing the one verified Rust engine. It uses the
+complete clean original-suite evaluator, all genuine interpreter,
+thread, and locale cases, and exact-identity file recovery. The older
+version-11 Rust controller remains **BLOCKED** because it targets a
+different version-18 build. No source verification imports or executes
+either candidate.
+
+All four ordinary and empty-environment source-only checks **PASS**.
+They launch **zero** actual candidate workers; the new version-12 Rust
+matching test is **NOT RUN** and runtime independence is **NOT
+ESTABLISHED**. The [current guarded-Rust results chart](evidence/candidate-current-overview-v77.svg),
+[complete chart inputs](evidence/candidate-current-overview-v77.inputs.json),
+[full machine-readable results](evidence/candidate-current-overview-v77.json),
+and [independent chart renderer](../tools/render_candidate_current_overview_v77.py)
+retain every existing original result. Exactly **three** independently
+authenticated Rust test owners raise the evidence and history lower
+bounds from **252 / 257** to **255 / 260**. Both chart self-tests
+reject **6,653** hostile controls without starting a candidate.
+
+Actual Rust matching remains **FAIL**, with **1,440** differences and
+**14,853** verified passes. Actual C matching remains **FAIL**, with
+**1,230** differences and **7,325** verified passes despite its **14**
+passing build operations. Actual Zig matching remains **FAIL**, with
+**1,764** differences and **3,711** verified passes; its scanner
+correction remains **NOT BUILT** and **NOT TESTED**. There are still
+six independent candidate families and **zero** qualified engines.
+
+The exact Rust test source, protocol, and machine contract have
+respective SHA-256 values
+`fc3a40901989bf0ccef6fe5296101c6bb456a6d3117d8b60e75c2cdf1eb113f9`,
+`1473e2d1f8967f6dfd565d8e3c05dec7383e8705d624cffab2fb0c13342a1674`,
+and `6ccc0f18dbcc7ff6f401d42f5fabb199420e2a1afe79558d035efcfc607fa375`.
+Their exact sizes are **72,836**, **8,755**, and **7,240** bytes.
+The exact chart renderer, complete inputs, full results, and visible
+chart have respective SHA-256 values
+`c0114a8ff0c4234a02e8df38c126ab3d242afeed626bc5654e12b18886e920dd`,
+`18a1118afed337294ca445a51be24d410e8007b962857c412f0ba589747c026e`,
+`66e6ad03ca0b42dc971751adbc3a7caa91810602538600cf475b6b7fd14bc66d`,
+and `8e438ab789f6a3ac683fde2a7faa7138e58e0567aa6b08134bea0cd805788996`.
+Their exact sizes are **43,873**, **1,197,447**, **3,570,569**, and
+**4,826** bytes.
+Speed, memory, confidence, and undefined behavior remain
+**NOT MEASURED**. The **4,194,304** final test cases remain
+**NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze the complete original Python tests without loading Python's matcher
 
 The [clean first-party original test producer](../tools/run_owned_six_family_original_p0_producer_v5.py),
