@@ -8,6 +8,27 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Publish the clearer current from-scratch comparison
+
+The [published version-90 graph](evidence/candidate-current-overview-v90.svg)
+updates the headline with the genuinely executed version-10 Zig run.
+Against the same **31,237** original Python checks, C passes
+**13,094**, Rust passes **12,942**, and Zig passes **3,583**. Zig
+completed **9** of **13** groups, with **6** clean groups, at least
+**1,540** observed differences, and **4** infrastructure failures.
+Its remaining full mismatch total is **NOT MEASURED**.
+
+The deterministic renderer preserves all **11** previous evidence
+pools, independently verifies the **4** additional public Zig owners,
+and keeps the **8,244** supplemental checks separate. The complete
+[reproduction command and expected hashes](REPRODUCING.md) are
+published. The renderer does not start a candidate, compile an
+engine, open an archive, read the holdout, or sample a clock.
+
+No engine qualifies as a Python `re` replacement. Speed, memory, and
+undefined behavior are **NOT MEASURED**. The **14,155,776**-case
+holdout remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the updated from-scratch candidate comparison
 
 The [version-90 headline renderer](../tools/render_candidate_current_overview_v90.py)

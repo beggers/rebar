@@ -8,7 +8,52 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
 ## Reproduce the current headline comparison
 
-The current chart compares unchanged Python with all six independently
+The current graph reports the latest genuinely completed C, Rust, and
+Zig tests against the same **31,237** Python checks. C passes
+**13,094**, Rust passes **12,942**, and Zig passes **3,583**; none is
+fully compatible. The separate **8,244** reference checks are never
+added to the original denominator. Speed and memory are **NOT
+MEASURED**, and the **14,155,776**-case holdout is **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
+The following read-only, source-pinned command reconstructs and
+verifies all three version-90 graph files without overwriting them,
+importing a candidate, compiling code, opening an archive, or reading
+the final holdout:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 PYTHONHASHSEED=0 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/render_candidate_current_overview_v90.py \
+  --verify-frozen-context \
+  --source-sha256 be8322ca4ebc0f76a71ecf0c13e37bb2c367a065acf5d69c1b3c4d34b18f0aa8 \
+  --source-bytes 79370 \
+  --previous-source-sha256 da15d1e4b58bdc04d83df3ebcc18995f1b5ffe662504dbdbd128e706f0371f09 \
+  --previous-inputs-sha256 77a6cb593906c342faa7266e4a8118b414605a2977968dcbdb30a8d547dc25fe \
+  --previous-summary-sha256 951e13cb42d638a58bfd01621f682a4a3336c03b769179194d6120ff046a1f4d \
+  --previous-svg-sha256 f2b58c8ad9eb41b7e266371f5d8a82430697ee3bc81b516d04e8f6d70ae79fa0 \
+  --zig-source-sha256 514c00a001c78bded833e6752f995986d3f7f1ac1535cddfb641fe0c5ec9ddd2 \
+  --zig-protocol-sha256 411c9c7cb62c4851ddcf58da8568f994420abcd2095cb1ec582203839c6f1e15 \
+  --zig-contract-sha256 5635b3e87a4b3158b107219c037fc13448dd92cc2296143024be825cfe1b4ffd \
+  --zig-receipt-sha256 a13fad7e8e55af47235ddabd8f12d607a2c352b4d5b5d22f9422627381a10da7
+```
+
+Expected files:
+
+```text
+docs/evidence/candidate-current-overview-v90.inputs.json
+77f1f751682c245e5f62a3f0ff292718bad570e1fe3cdc5df597b4c5f1ce874a
+
+docs/evidence/candidate-current-overview-v90.summary.json
+4c602a4879b1f65fb1482e8504ec2dfc32fa5448ff3a9ee19110854929022fa7
+
+docs/evidence/candidate-current-overview-v90.svg
+4a81e160eef4ea731f4e723e4c8c90272249ee730babcfb4519edec612963807
+```
+
+## Reproduce the preserved version-89 comparison
+
+The preserved chart compares unchanged Python with all six independently
 written engines. It validates all **39** actual C, Rust, and Zig
 test-group results against the unchanged **31,237**-case Python
 reference. The separate **8,244** reference checks are not added to
