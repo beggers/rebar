@@ -8,6 +8,34 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the complete from-scratch C compatibility run
+
+The [version-10 C test](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V10.md)
+uses the independently built, project-owned C engine and all **13**
+original Python test groups. It preserves the previous **13,606**
+passing checks, the **492** actually observed differences, and all
+**6** unfinished groups; the full mismatch total remains
+**NOT MEASURED**.
+
+A prior harness incorrectly rejected Python's genuine original
+digest function because it compared separately compiled code.
+The corrected check verifies the exact untouched, complete original
+Python module and its real function identity. It does not change,
+replace, or weaken the original test.
+
+Ordinary and empty-environment source checks each pass **99** hostile
+controls with all **16** candidate, native, archive, timing, and
+holdout side effects at zero. Two independent reviewers separately
+verified all four checks. The future run still requires all
+**31,237** original cases, the exact **11** real child interpreters,
+and **416** genuine interpreter calls.
+
+The new C test has **NOT RUN**. The **8,244** extra reference cases
+remain separate. Compatibility, actual runtime independence, speed,
+memory, and safety are **NOT ESTABLISHED** or **NOT MEASURED**. The
+**14,155,776**-case holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the complete from-scratch Rust compatibility run
 
 The [version-21 Rust test](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V21.md)
