@@ -7,6 +7,71 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run both genuine Python references for all 8,244 extra checks
+
+After the entire version-3 reference controller and version-62 graph
+were independently verified, committed, and pushed as
+`17279cf34bea97985360d95edcf64850a7cbc9e3`, the exact frozen
+controller ran **once** with the fresh label
+`cpython-3146-two-worker-8244-v3`. The actual outcome is **PASS**.
+
+Two genuinely observed pinned CPython **3.14.6** processes, IDs
+**81** and **82**, each ran the unchanged original
+`tools/oracle_v2.py verify --module re`. Both exited successfully,
+passed all **8,244** separate supplemental cases, recorded all
+**45** mapped requirements, and produced **zero** failures. This is
+**16,488 actual reference-case executions**, not a candidate result.
+Both workers independently used the original runner, locale, warning
+semantics, and full frozen corpus.
+
+Their independently preserved original result files are
+[reference one](../oracle/phase1/evidence/differential-fuzz-reference-v3-cpython-3146-two-worker-8244-v3/reference-1.json)
+and [reference two](../oracle/phase1/evidence/differential-fuzz-reference-v3-cpython-3146-two-worker-8244-v3/reference-2.json).
+Both are exactly **270** bytes with SHA-256
+`98e91a0b0ca63ec6718e32d682219df65d12bf0d947fe54934caf4b42412b8ce`.
+They are different genuine, private owners, with respective inodes
+**524693** and **524692**. Their matching content reproduces Python's
+old self-result; it is the new, complete, independently observed
+two-process report that supplies the previously missing provenance.
+
+That [durable complete two-worker reference result](../oracle/phase1/evidence/differential-fuzz-reference-v3-cpython-3146-two-worker-8244-v3/two-independent-reference-result.json)
+is exactly **3,658** bytes, has inode **524707**, and has SHA-256
+`8377e9c526a487c2e8838d7b8ba74e595b42d069f572bf7ed29f926f82d5b096`.
+It independently records both real process IDs, both zero exit codes,
+both complete per-worker owners, all **19** case categories, all
+**seven** seeds, the exact corpus digest, both complete empty failure
+lists, and the original separate **31,237**-case denominator.
+
+The historical version-2 phase-one certificate is preserved exactly
+and still says **BLOCKED**. The separately frozen and actually run
+supplemental Python reference is **PASS**. Candidates have not yet
+run those cases; phase-one certification must be reconciled in its
+own subsequent chunk. Public-import, signature, genuine full-size,
+and runtime-independence requirements remain open. Fully compatible
+engines: **0**; speed and memory: **NOT MEASURED**; the final
+comparison remains **NOT GENERATED** and **NOT OPENED**.
+
+The [updated headline results graph](evidence/candidate-current-overview-v63.svg),
+[complete graph inputs](evidence/candidate-current-overview-v63.inputs.json),
+[complete machine-readable graph](evidence/candidate-current-overview-v63.json),
+and [independently reproducible renderer](../tools/render_candidate_current_overview_v63.py)
+retain all **13** previously observed Rust worker groups and all
+**six** complete genuine failure witnesses. They distinguish the
+passing Python-only reference from an unqualified replacement. The
+renderer, exact inputs, complete summary, and SVG respectively have
+SHA-256 values
+`4f33bd240aa70ca8a47de1c56ec8eb405da4f23f587cfab362f4a7ebbed648c4`,
+`fafba28ae2628e1f1b9747a865747a0ad35ba943b746c95893b0fd3381b91581`,
+`e78207ec0e2af2470287d3afbc12bee0270d29fa7ed7483a1f62eb72a0b4016c`,
+and `9860367eb080240efd36e5c241fe0f7d6305d351d87152e2007b92beff496d7e`.
+Their exact sizes are **67,015**, **967,168**, **2,660,089**, and
+**14,765** bytes. Both ordinary and sterile graph self-tests genuinely
+reject **5,126** hostile controls. The immediate predecessor is
+accurately recorded as version **62**. The actual three new evidence
+owners raise the authenticated owner and history lower bounds to
+**213/218**; no candidate, compiler, clock, archive, or holdout is
+activated by the graph.
+
 ## Freeze an actual two-process Python reference for every extra check
 
 The [first-party two-reference controller](../tools/run_owned_differential_fuzz_reference_v3.py),

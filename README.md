@@ -16,14 +16,18 @@ Python, another regular-expression package, or another candidate does not count.
 **Six** matching engines built from scratch. **Zero** fully compatible
 replacements so far. Speed compared with Python: **NOT MEASURED**.
 
-![Current results for six regular-expression engines built from scratch. The original Python baseline is verified, the additional 8,244-case two-process baseline is ready but has not yet run, no engine passes all required checks, and no speed comparison has been measured.](docs/evidence/candidate-current-overview-v62.svg)
+![Current results for six regular-expression engines built from scratch. Both Python processes passed all 8,244 extra baseline checks. No replacement yet passes all compatibility requirements, and speed has not yet been measured.](docs/evidence/candidate-current-overview-v63.svg)
 
 Python's corrected reference agrees on all **6,912** affected original
 checks. The unchanged original suite contains **31,237** checks in
 **13** groups. A separate **8,244**-case collection covers generated
 patterns, invalid input, byte buffers, warnings, substitution, and other
 real `re` behavior. Its reproducible two-Python-process reference is
-now frozen, but its actual reference and candidate runs are **NOT RUN**.
+now **PASS**: two genuinely separate Python processes each passed
+**8,244/8,244** cases, for **16,488** real reference checks. The
+corresponding candidate runs are **NOT RUN**, and the existing
+phase-one certificate remains **BLOCKED** until it is separately
+reconciled with this new evidence.
 
 The latest complete Rust run recorded **1,440** genuine differences,
 including a **512**-difference regression. Corrections that have not
@@ -33,7 +37,7 @@ another candidate. Runtime proof of that rule is **NOT ESTABLISHED**.
 
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
-| Python `re` | Pinned Python 3.14.6 | Original reference agrees; extra two-process replay not run | Reference; not timed |
+| Python `re` | Pinned Python 3.14.6 | Original reference agrees; both extra 8,244-case runs pass | Reference; not timed |
 | Public `rebar` import | Still selects an unqualified Zig prototype | FAIL; `__version__` missing | NOT MEASURED |
 | Rust | Latest engine tested; new buffer fix not yet built | FAIL; 1,440 differences, 512 more than its previous run | NOT MEASURED |
 | C | First-party engine; corrected test prepared | Previous run: 1,230 differences | NOT MEASURED |
@@ -64,9 +68,10 @@ and **24** balanced measurement rounds. Its examples are **NOT
 FROZEN**, **NOT GENERATED**, and **NOT OPENED**. Speed, memory, and
 confidence intervals are **NOT MEASURED**.
 
-First, run the frozen two-process Python reference for the separate
-**8,244** extra cases. Then require three independently built engines
-to pass the **31,237** original checks, the additional cases,
+Both independent Python reference runs for the separate **8,244**
+extra cases are now complete. Next, reconcile the frozen phase-one
+certificate with that evidence. Then require three independently
+built engines to pass the **31,237** original checks, the extra cases,
 Python's two **2,147,483,648**-character requirements, and separate
 public-import, signature, and no-delegation checks. The full-size
 replacement tests are **NOT RUN**. A winner must be at least **1.5×**
@@ -77,8 +82,8 @@ explain every slowdown greater than **20%**. There is no winner.
 
 - [Reproduce the results and verify every graph](docs/REPRODUCING.md).
 - [Experiment log, original reports, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
-- [Corrected Python compatibility checklist](oracle/phase1/P0-COMPLETENESS-V2.md); the original checks stay fixed, while the extra fuzz reference remains pending.
-- [Frozen two-process reference for all 8,244 extra checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md); source verified, actual reference **NOT RUN**.
+- [Corrected Python compatibility checklist](oracle/phase1/P0-COMPLETENESS-V2.md); the historical certificate remains **BLOCKED** until the newly passing extra-case reference is separately reconciled.
+- [Frozen two-process reference for all 8,244 extra checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md) and [complete independently recorded passing result](oracle/phase1/evidence/differential-fuzz-reference-v3-cpython-3146-two-worker-8244-v3/two-independent-reference-result.json); two actual Python processes, **8,244/8,244** each.
 - [Original, preserved Python compatibility checklist](oracle/phase1/P0-COMPLETENESS-V1.md) and [separately frozen 8,244-case fuzz corpus](oracle/v2/expected.jsonl).
 - [Python's original two-billion-character compatibility requirements](oracle/phase1/P0-LARGE-INPUT-INDEXING-V1.md).
 - [Corrected, independently verified Python reference](oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md).
