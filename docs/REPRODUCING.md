@@ -8,63 +8,53 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
 ## Reproduce the current headline comparison
 
-The current headline chart compares unchanged Python against all six
-independently written engines, records the actually reproduced Rust
-native build, and displays the **14,155,776**-case final test as an
-unopened proposal. No candidate is fully qualified and no relative
-speed has been measured.
+The current chart compares unchanged Python with all six independently
+written engines. It records the real C and Rust source builds without
+claiming either build passes the compatibility suite. The larger
+**14,155,776**-case speed test remains unopened. No candidate is
+qualified, and no relative speed has been measured.
 
-The following command regenerates only the three checked-in version-87
-chart files. It does not compile an engine, execute a matching
-candidate, run a benchmark, or access the final test. Replace
-`--render` with `--verify-frozen-context` for a completely read-only
-verification.
+The following command independently recomputes and verifies the exact
+three checked-in version-88 graph files without overwriting evidence.
+It does not compile an engine, import a matching candidate, run a
+benchmark, or access the final test. Initial publication alone uses
+`--render` before the three output files exist; it refuses to overwrite
+already published results.
 
 ```bash
 env -i PATH=/usr/bin:/bin LC_ALL=C \
   /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
-  -I -B -S tools/render_candidate_current_overview_v87.py --render \
-  --source-sha256 176ff7cee7735bb6a25475bf3d8f112def2ea0ff12779b28e1469c2fb85cdd44 \
-  --source-bytes 82214 \
-  --previous-source-sha256 49c529c7f8b695c501dd03f9d35056c2853c73fcd36425718d8bfceb599b1a7d \
-  --previous-inputs-sha256 42c534652a350eada8704581ebf8aa52c77687b6904e9fb486f03c2f117cbe6c \
-  --previous-summary-sha256 ed728687e919410e6e9dae22ad3c976aa900d7a857f85231aaa93d0fc674f7cc \
-  --previous-svg-sha256 4bbf196a48997dbee3ea6b966d9a4eefce860962861675ad202506f685a80e55 \
-  --rust-literal-v1-source-sha256 21fb0878e344ead0bba49f932120a35a897ca44cfd7710287861ebc6415c555e \
-  --rust-literal-v1-protocol-sha256 842d51127db54a26d0dd9f874f38834f122f7888ea71c6f3fe77b8911bbd65d6 \
-  --rust-literal-v1-contract-sha256 a2226d823610a578aeb65e9a51a2a33517348b6c51130ad89db840cc50833164 \
-  --rust-literal-v1-variant-sha256 b707e924a23980385b0c5b0306daecd55bbb03d6f2511437f0532b6d39b2a112 \
-  --rust-diagnostic-v16-source-sha256 4705f5afb0639812e4902a455c11cee469b78a2a8f78bd64e1bf3388390d060e \
-  --rust-diagnostic-v16-protocol-sha256 b168f394244c1f2e2f1051a0d9ed038fd11b596708667b9c8dc196b3f8f2c66f \
-  --rust-diagnostic-v16-contract-sha256 1879abea2cfc3665ec5e0eeb9549286f1d566806f4f49482064855199a86d46b \
-  --expanded-holdout-v1-source-sha256 3dd9abcbd7a87486186ee8da804de595e65d79020a3fe33413d0157dde4f3309 \
-  --expanded-holdout-v1-protocol-sha256 818f1636d87ae721912f04a3fc8294ac04a59dff4a272319aa29a393f52a4fd4 \
-  --expanded-holdout-v1-contract-sha256 676aac4f48c9404f5253c89b692efde5c425170f8d9f152b4f85b3e2a5225a76 \
-  --rust-captured-v1-source-sha256 61c4d4beda9baf82150a8ae5e47f78eb1363595a583f0317626e93beb5373832 \
-  --rust-captured-v1-protocol-sha256 ffcaeec11704a81a2fd5ca25d7fc746c8a66fab033bb1f108f0e6c19445079fe \
-  --rust-captured-v1-contract-sha256 ec396c100f606923f08d1969f283a9bb2bcf35dbf9edf9e9c5d2360057f9079b \
-  --rust-captured-v1-variant-sha256 a0b9e7fbfc92da4c3b97608cf156fb0ca2f94fb5358901b7b6baa0a819fffc8a \
-  --rust-build-v20-source-sha256 e1c30d8713d1acafdffba28123966dc9814ea765b97cf3ad09da3ccf42c97b0e \
-  --rust-build-v20-protocol-sha256 3393f73b11c6ad38c9f8dffc9f36e02ba11da64997ef351220e600bbae975f86 \
-  --rust-build-v20-contract-sha256 5b584cc225226928e22169903d1a7f8712039b4ae3d34dd5a634f8174f4d8eb0 \
-  --c-diagnostic-v5-source-sha256 a98e080fa3c9b556122316966723ea7f69589ffddd6293e1ebe199c0dde07810 \
-  --c-diagnostic-v5-protocol-sha256 bec733d3181da1198fc44c6b22cb45d7df8a6721ef073e09cde7650c47453237 \
-  --c-diagnostic-v5-contract-sha256 95de401d8a63a6a7272d86ef062c775100ce7305d74fec85be1ed7b0236381f2 \
-  --build-receipt-sha256 b9945838778c800f59a505021503655ea5bb4b3e11e1f0cf17f4be48cadde1b0 \
-  --root-receipt-sha256 bb5bd524a7bd8c4b3845c9654e81981cb6136c4fcff7a5e52ca375ce75e745aa
+  -I -B -S tools/render_candidate_current_overview_v88.py \
+  --verify-frozen-context \
+  --source-sha256 b26143885163e913ec11d62f2d12bff1c8a85cbacbe0f16f242b01495f8fe46a \
+  --source-bytes 89262 \
+  --previous-source-sha256 176ff7cee7735bb6a25475bf3d8f112def2ea0ff12779b28e1469c2fb85cdd44 \
+  --previous-inputs-sha256 03c191f676a4551b6643a3c57d86f57cac21a51517e40a86926bf49e5176a8ee \
+  --previous-summary-sha256 1bd2765e4f22cc279872a5ab0253b1c55422899fad996bc2bc1aac4d4f300233 \
+  --previous-svg-sha256 7af85c8f26d47ec5b7ff7813aa7bfd3ceec5f82498b60da8be5884558c521101 \
+  --feature-source-sha256 bc5f5b4efd8b20a564692e14f972c77267c58ac44a560b432a0a1cc38e794c58 \
+  --feature-protocol-sha256 d7c137d2432c2f28f4b6b26fdde3a591b92f7d62e6018d047cfa0b3ccfe0a8c4 \
+  --feature-contract-sha256 61e14e1d47f55759a73721635594b69ba098541bc83c9046c99c0c282223fd4a \
+  --build-receipt-sha256 bc3ebdc835ef6a89d351c4541863274d410e2685d35eacdc9668f4bf3a474102 \
+  --root-receipt-sha256 73cee9c0a4f44d113da96b505eb0e9224577584b75c347e6fd351995d1d09a4e \
+  --c-feature-source-sha256 bf50ac15a7fdc7633e5804da066a77ee1342540228245cd33a5d977bfdfdc339 \
+  --c-feature-protocol-sha256 97ab6a9881e2e2cf7c779660459adb00f7bb9e6db5e5b63da5c75d00f250c5aa \
+  --c-feature-contract-sha256 aa68e0da13d666ea02565fe5aed347d5a34150e768df70fc5acc4a1e594b1a6a \
+  --c-build-receipt-sha256 4070feca7129fdcf3dc9762fae853649c68c722940af6157ecdcfa59d23e65ae \
+  --c-root-receipt-sha256 a231eec31b29ca796c75cee03b702a3e35a9195e74675c8f56209419dfeb03c8
 ```
 
 Expected files:
 
 ```text
-docs/evidence/candidate-current-overview-v87.inputs.json
-03c191f676a4551b6643a3c57d86f57cac21a51517e40a86926bf49e5176a8ee
+docs/evidence/candidate-current-overview-v88.inputs.json
+3fed4008de0b2d1c7bbcb28661ab384e5b9ef39763e0a102659cf2798578e51d
 
-docs/evidence/candidate-current-overview-v87.json
-1bd2765e4f22cc279872a5ab0253b1c55422899fad996bc2bc1aac4d4f300233
+docs/evidence/candidate-current-overview-v88.json
+85e826a424ea175f44cc639b1f0cfd61ed841059c43219e2cf96624316386e4d
 
-docs/evidence/candidate-current-overview-v87.svg
-7af85c8f26d47ec5b7ff7813aa7bfd3ceec5f82498b60da8be5884558c521101
+docs/evidence/candidate-current-overview-v88.svg
+ac16cc09cd445707f334d02f5034bb382c9936c1383c9c3acc241a81ef584436
 ```
 
 ## Verify the actual independently built Zig engine

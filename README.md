@@ -16,11 +16,7 @@ regular-expression package, or another candidate does not count.
 **Six** from-scratch engines. **Zero** fully compatible replacements.
 Speed versus Python: **NOT MEASURED**. There is no winner.
 
-![Python compared with six independently written regular-expression engines. The new Rust engine builds reproducibly, no replacement has passed every compatibility test, no speed has been measured, and the 14-million-case final comparison remains unopened.](docs/evidence/candidate-current-overview-v87.svg)
-
-This reproducible chart predates the newer C and captured-result Rust
-builds. The C engine and both Rust variants now build successfully;
-none has passed all compatibility checks or been timed.
+![Python baseline compared with six independently written regular-expression engines. C and Rust build successfully; none passes every compatibility test, no relative speed has been measured, and the 14-million-case final comparison remains unopened.](docs/evidence/candidate-current-overview-v88.svg)
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
@@ -79,7 +75,7 @@ slowdown over **20%**.
 
 ## Evidence
 
-- [Reproduce the current chart](docs/REPRODUCING.md), [its renderer](tools/render_candidate_current_overview_v87.py), and the [next, fully sourced comparison renderer](tools/render_candidate_current_overview_v88.py); the updated chart is generated only after the new renderer is frozen.
+- [Reproduce the current chart](docs/REPRODUCING.md) and inspect its [fully sourced headline-comparison renderer](tools/render_candidate_current_overview_v88.py).
 - [Full experiment log, build evidence, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Complete Python correctness reference](oracle/phase1/P0-COMPLETENESS-V4.md).
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).

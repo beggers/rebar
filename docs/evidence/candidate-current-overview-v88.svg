@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1320" height="840" viewBox="0 0 1320 840" role="img" aria-labelledby="title description">
+<title id="title">Searching for a faster, fully compatible Python re</title>
+<desc id="description">Python is compared with six independent, from-scratch regular-expression engines. The Rust literal and captured-result versions were each genuinely built in two offline phases with 28 first-party compiler and inspection steps. The C subject-buffer version was genuinely built in two offline phases with 14 first-party compiler and inspection steps. These actual build successes establish reproducible compilation only, not Python compatibility, runtime independence, or speed. The latest Rust correctness attempt completed eight of thirteen original groups, explicitly verified 12,942 checks and preserved five genuine worker failures. The complete historical Rust run has 1,440 differences and 14,853 passes; the actual historical C run has 1,230 differences and 7,325 passes. Fortran was built twice and the outputs disagreed. The proposed 14,155,776-case final comparison remains not frozen, not generated, unopened and unrun. No candidate has qualified; no performance or memory has been measured; no winner exists.</desc>
+<rect width="1320" height="840" rx="20" fill="#0b1220"/>
+<text x="38" y="52" fill="#f8fafc" font-size="27" font-family="system-ui,sans-serif" font-weight="700">Building a faster Python re, from scratch</text>
+<text x="38" y="88" fill="#cbd5e1" font-size="17" font-family="system-ui,sans-serif">6 independent engines · 0 fully compatible · speed NOT MEASURED</text>
+<line x1="38" y1="110" x2="1282" y2="110" stroke="#334155"/>
+<circle cx="48" cy="145" r="6" fill="#34d399"/>
+<text x="66" y="150" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Python re</text>
+<text x="175" y="150" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">The unchanged Python 3.14.6 comparison point</text>
+<text x="1268" y="150" text-anchor="end" fill="#34d399" font-size="12" font-family="system-ui,sans-serif" font-weight="700">BASELINE</text>
+<circle cx="48" cy="196" r="6" fill="#fbbf24"/>
+<text x="66" y="201" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Rust</text>
+<text x="175" y="201" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Both first-party versions built twice; 8/13 test groups passed</text>
+<text x="1268" y="201" text-anchor="end" fill="#fbbf24" font-size="12" font-family="system-ui,sans-serif" font-weight="700">BUILDS PASS; TESTS FAIL</text>
+<circle cx="48" cy="247" r="6" fill="#fbbf24"/>
+<text x="66" y="252" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">C</text>
+<text x="175" y="252" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Built twice; 1,230 previous differences remain</text>
+<text x="1268" y="252" text-anchor="end" fill="#fbbf24" font-size="12" font-family="system-ui,sans-serif" font-weight="700">BUILD PASS; TESTS FAIL</text>
+<circle cx="48" cy="298" r="6" fill="#fb7185"/>
+<text x="66" y="303" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Zig</text>
+<text x="175" y="303" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">1,764 recorded differences; own engine built twice</text>
+<text x="1268" y="303" text-anchor="end" fill="#fb7185" font-size="12" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="48" cy="349" r="6" fill="#fb7185"/>
+<text x="66" y="354" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">C++</text>
+<text x="175" y="354" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">2,308 differences and five startup failures</text>
+<text x="1268" y="354" text-anchor="end" fill="#fb7185" font-size="12" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="48" cy="400" r="6" fill="#fb7185"/>
+<text x="66" y="405" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Go</text>
+<text x="175" y="405" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">4,518 differences and four startup failures</text>
+<text x="1268" y="405" text-anchor="end" fill="#fb7185" font-size="12" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="48" cy="451" r="6" fill="#fb7185"/>
+<text x="66" y="456" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Fortran</text>
+<text x="175" y="456" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Two builds produced different outputs</text>
+<text x="1268" y="456" text-anchor="end" fill="#fb7185" font-size="12" font-family="system-ui,sans-serif" font-weight="700">BUILD FAILED</text>
+<line x1="38" y1="495" x2="1282" y2="495" stroke="#334155"/>
+<text x="38" y="530" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif" font-weight="650">Compatibility target: all 31,237 original Python checks and 8,244 separate additional checks.</text>
+<text x="38" y="561" fill="#fcd34d" font-size="14" font-family="system-ui,sans-serif">Latest Rust result: 12,942 verified checks; 8 of 13 groups finished; 5 genuine failures.</text>
+<text x="38" y="592" fill="#93c5fd" font-size="13" font-family="system-ui,sans-serif">Rust literal: 2 phases, 28 steps. Rust captured: 2 phases, 28 steps. C subject-buffer: 2 phases, 14 steps.</text>
+<text x="38" y="622" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">These real builds prove reproducible compilation only, not compatibility, independence, or speed.</text>
+<text x="38" y="652" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">Fortran was actually built twice; its different outputs failed the reproducibility check.</text>
+<text x="38" y="682" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">No external regex package, borrowed engine, fallback, or selected winner.</text>
+<text x="38" y="717" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif" font-weight="650">Proposed final comparison: 14,155,776 cases.</text>
+<text x="38" y="748" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">Not frozen, not generated, not opened, and not run. Speed and memory: NOT MEASURED.</text>
+<text x="38" y="779" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">The old 4,194,304-case proposal is preserved separately as historical evidence.</text>
+<text x="38" y="819" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif">Overview 88 · all prior evidence preserved · no fully compatible candidate · no winner.</text>
+</svg>

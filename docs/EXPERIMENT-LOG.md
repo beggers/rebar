@@ -8,6 +8,32 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Publish the overall Python, C, and Rust comparison
+
+The [version-88 headline chart](evidence/candidate-current-overview-v88.svg)
+was generated exactly once from its separately pushed, authenticated
+[renderer](../tools/render_candidate_current_overview_v88.py). It
+compares unchanged Python against all six independently written
+engines and clearly separates successful first-party builds from
+actual Python-compatibility results.
+
+The [complete chart inputs](evidence/candidate-current-overview-v88.inputs.json)
+have SHA-256
+`3fed4008de0b2d1c7bbcb28661ab384e5b9ef39763e0a102659cf2798578e51d`.
+The [complete result](evidence/candidate-current-overview-v88.json)
+has SHA-256
+`85e826a424ea175f44cc639b1f0cfd61ed841059c43219e2cf96624316386e4d`.
+The generated SVG has SHA-256
+`ac16cc09cd445707f334d02f5034bb382c9936c1383c9c3acc241a81ef584436`.
+The full result is **4,183,967** bytes, below the **4 MiB** limit;
+all earlier evidence and six engine families are retained.
+
+The graph correctly records **14** genuine C build steps and **28**
+for each Rust build, without claiming that a successful build passes
+the compatibility suite. No candidate is qualified. All relative
+speeds remain **NOT MEASURED**. The **14,155,776**-case final
+proposal is still **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze an updated overall C and Rust comparison
 
 The [version-88 headline-chart renderer](../tools/render_candidate_current_overview_v88.py)
