@@ -8,6 +8,26 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the latest from-scratch candidate comparison
+
+The [version-91 headline renderer](../tools/render_candidate_current_overview_v91.py)
+is frozen before producing any new graph. It preserves all **12**
+previous graph-evidence pools, every earlier C, Rust, and Zig test
+row, and the complete version-90 chart. It independently adds
+exactly **4** authentic public owners from the actually completed
+version-20 Rust correctness experiment.
+
+The next chart must show the same **31,237** original Python checks:
+C has **13,094** observed passes, Rust **15,749**, and Zig
+**3,583**. Rust still has **1,296** observed differences and
+**1** incomplete lifecycle group; it is not fully compatible.
+The **8,244** extra reference checks remain separate, and the
+evidence-owner lower bounds are **320** and **325**.
+
+No version-91 graph has been generated. No candidate has qualified,
+and speed and memory remain **NOT MEASURED**. The **14,155,776**-case
+holdout is **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the corrected from-scratch Zig evidence transport
 
 The [version-12 Zig correctness procedure](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V12.md)
