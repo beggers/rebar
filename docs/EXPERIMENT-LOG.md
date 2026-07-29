@@ -8,6 +8,28 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze bounded, complete first-party C result reporting
+
+The [version-7 C compatibility campaign](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V7.md)
+fixes an observed version-6 infrastructure problem: a worker could
+return more valid JSON than the frozen **4 MiB** result reader
+accepts. The new first-party worker bounds each complete result to
+**3 MiB** while recording a streaming digest of every observation
+and explicitly disclosing any truncated human-readable prefix.
+
+All **13** original groups, **31,237** test cases, real worker
+identities, observed mismatch lower bounds, complete error classes,
+and genuine tracebacks remain in the public receipt. The corrected
+version-18 C engine, strict no-delegation guard, **120-second**
+per-group bounds, verified locale, and safe native restoration are
+unchanged.
+
+This source freeze is not an actual candidate result. The prior
+**3** completed groups and **3,366** verified cases remain the
+latest measured C observations. The **8,244** additional cases and
+**14,155,776** proposed final cases remain unrun. Speed is
+**NOT MEASURED**.
+
 ## Identify the actual guarded Zig controller failure
 
 The [version-8 Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V8.md)
