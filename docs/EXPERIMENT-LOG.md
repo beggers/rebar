@@ -7,6 +7,62 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the independently written C build without claiming compatibility
+
+The separately frozen
+[first-party C build procedure](../oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V16.md)
+has now run exactly once. Both independent offline phases **PASS**, with
+**14** real compiler and build-inspection steps and **two** independently
+applied source overlays. This verifies that the independently written C
+engine builds. It does not import, activate, or test that engine.
+
+The [complete, compressed C build report](../oracle/phase2/evidence/native-source-build-v16-c-phase2-v16-c-subject-buffer-original-p0.json.gz)
+is **37,795** bytes. Its SHA-256,
+`45cf839dd4fcb7615d70af79bc38b4695911159b109c9a79fd1d7d037b338f55`,
+is attested solely by the
+[separately readable durable C build receipt](../oracle/phase2/evidence/native-source-build-v16-c-phase2-v16-c-subject-buffer-original-p0-publication-receipt.json).
+That receipt is **2,671** bytes and has SHA-256
+`16794f5b1487b76a909a176948f4bbac8ed3108768f3127e27c44f9f392ae3d6`.
+The compressed report is not reopened to verify the result.
+
+The receipt identifies its genuinely frozen version-67 source context;
+that historical build authorization is not substituted for the
+independently pushed version-68 immediate predecessor. The latest real
+C matching result remains **FAIL**, with **1,230** differences and
+**7,325** explicitly verified passes. The separately verified Rust
+native build remains **PASS**, with **28** real build and inspection
+steps; its latest complete matching result remains **FAIL**, with
+**1,440** differences and **14,853** verified passes. All **13**
+original Rust results and all **six** genuine failure events remain
+unchanged.
+
+The [current C and Rust build results graph](evidence/candidate-current-overview-v69.svg),
+[complete exact graph inputs](evidence/candidate-current-overview-v69.inputs.json),
+[complete machine-readable results](evidence/candidate-current-overview-v69.json),
+and [independent graph renderer](../tools/render_candidate_current_overview_v69.py)
+report two successful native builds, not two compatible replacements.
+Exactly **two** independently published C build-evidence owners
+advance the authenticated evidence and history lower bounds from
+**228 / 233** to **230 / 235**. Both ordinary and clean-environment
+graph self-tests reject exactly **5,931** hostile controls. Individual
+C compiler process identifiers and native artifact hashes are not
+available in the small receipt and are **NOT MEASURED**.
+Corrected candidate matching is
+**NOT RUN**, runtime independence is **NOT ESTABLISHED**, and
+replacement qualification remains **BLOCKED**. Speed, memory,
+confidence, and undefined behavior remain **NOT MEASURED**. All
+**4,194,304** final examples remain **NOT GENERATED** and **NOT OPENED**.
+
+The exact version-69 graph renderer, complete graph inputs,
+machine-readable results, and visible chart have respective SHA-256
+values
+`d5a074cba906402dc4f66e5127c88218e122a87743d713a3ce0f431c2994a7a2`,
+`75631c80b75bea22c713ea4c4f486e96deb85280161ff64000e5b78e4d5056c1`,
+`c112d1629e134ffc42f262ca70b4212397d17b7e52914f4a36a14f72e9eec923`,
+and `2cc3316348aec8d0f8f223ea3cb771779854d7eea86a1cd3d2c157f8de30869b`.
+Their exact sizes are **261,888**, **1,085,629**, **3,032,584**, and
+**14,597** bytes.
+
 ## Freeze the corrected C build without running a compiler
 
 The [first-party C build verifier](../tools/reproduce_owned_c_subject_buffer_source_build_v16.py),

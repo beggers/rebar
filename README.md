@@ -16,7 +16,7 @@ Python, another regular-expression package, or another candidate does not count.
 **Six** matching engines built from scratch. **Zero** fully compatible
 replacements so far. Speed compared with Python: **NOT MEASURED**.
 
-![Current results for six regular-expression engines built from scratch. Python's correctness reference passes, the Rust engine builds reproducibly, the C build is prepared but has not run, and no speedup or passing replacement has been measured.](docs/evidence/candidate-current-overview-v68.svg)
+![Current results for six regular-expression engines built from scratch. Python's correctness reference passes, Rust and C both build reproducibly, neither corrected build has passed compatibility testing, and no speedup or passing replacement has been measured.](docs/evidence/candidate-current-overview-v69.svg)
 
 Python's corrected reference agrees on all **6,912** affected original
 checks. The unchanged original suite contains **31,237** checks in
@@ -40,17 +40,17 @@ an external regular-expression package, or another candidate.
 Runtime proof of that rule is **NOT ESTABLISHED**.
 
 A first-party C safety correction now retains ownership of its Python
-input buffer. Its reproducible build recipe is now frozen, but the
-corrected engine is **NOT BUILT** and **NOT TESTED**; its **14**
-planned build and inspection steps have **NOT RUN**. The existing
-C result remains a **1,230**-difference failure.
+input buffer. Its corrected engine has now been built successfully in
+two independent offline phases, completing **14** verified build and
+inspection steps. Its compatibility tests are **NOT RUN**, so the
+existing C result remains a **1,230**-difference failure.
 
 | Engine | Current build | Complete compatibility | Speed against Python |
 | --- | --- | --- | --- |
 | Python `re` | Pinned Python 3.14.6 | Original reference agrees; both extra 8,244-case runs pass | Reference; not timed |
 | Public `rebar` import | Still selects an unqualified Zig prototype | FAIL; `__version__` missing | NOT MEASURED |
 | Rust | Two reproducible native builds pass | FAIL; latest real test has 1,440 differences; new build not tested | NOT MEASURED |
-| C | Corrected build recipe frozen; build not run | FAIL; latest test has 1,230 differences; new fix not tested | NOT MEASURED |
+| C | Two reproducible native builds pass | FAIL; latest test has 1,230 differences; new build not tested | NOT MEASURED |
 | Zig | First-party engine; corrected test prepared | Previous run: 1,764 differences | NOT MEASURED |
 | C++ | First-party engine | Previous run: 2,308 differences; five worker failures | NOT MEASURED |
 | Go | First-party engine | Previous run: 4,518 differences; four worker failures | NOT MEASURED |
@@ -98,8 +98,9 @@ explain every slowdown greater than **20%**. There is no winner.
 - [Python's original two-billion-character compatibility requirements](oracle/phase1/P0-LARGE-INPUT-INDEXING-V1.md).
 - [Corrected, independently verified Python reference](oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md).
 - [Six from-scratch engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md) and [independent no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
-- [From-scratch C input-buffer ownership correction](oracle/phase2/C-SUBJECT-BUFFER-OWNERSHIP-V1.md); independently frozen source, **NOT BUILT** and **NOT TESTED**.
-- [Reproducible from-scratch C build recipe](oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V16.md); **14** planned build and inspection steps, **NOT RUN**.
+- [From-scratch C input-buffer ownership correction](oracle/phase2/C-SUBJECT-BUFFER-OWNERSHIP-V1.md); independently written and built, but **NOT TESTED**.
+- [Reproducible from-scratch C build recipe](oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V16.md); two offline build phases and **14** build and inspection steps **PASS**, while corrected matching remains **NOT RUN**.
+- [Complete compressed C build report](oracle/phase2/evidence/native-source-build-v16-c-phase2-v16-c-subject-buffer-original-p0.json.gz) and [independent durable C build receipt](oracle/phase2/evidence/native-source-build-v16-c-phase2-v16-c-subject-buffer-original-p0-publication-receipt.json); successful native build only, **zero** candidate tests.
 - [First-party Rust build protocol](oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V16.md), [actual build report](oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle.json.gz), and [durable build receipt](oracle/phase2/evidence/native-source-build-v16-rust-phase2-v16-rust-buffer-shape-pickle-publication-receipt.json).
 - [Complete latest Rust compatibility report](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [durable result receipt](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [independent failure analysis](oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json).
 - [Reproducible from-scratch Rust buffer correction](oracle/phase2/RUST-BUFFER-SHAPE-PICKLE-SOURCE-REPAIR-V2.md); its corrected source is frozen but not yet built or retested.

@@ -9,8 +9,10 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 ## Evidence and reproduction
 
 - [Complete actual Rust failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [independently durable 13-worker result receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [complete plain-text 13-group failure and root-cause analysis](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json); **13** real workers completed all **31,237** original cases and observed **1,440** mismatches, **14,853** explicitly verified passes, and **zero** infrastructure failures. Receipt and analysis **PASS** preserve a candidate **FAIL**.
-- [Current independently generated results graph](../docs/evidence/candidate-current-overview-v68.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v68.inputs.json), [current machine-readable results](../docs/evidence/candidate-current-overview-v68.json), and [reproducible current renderer](../tools/render_candidate_current_overview_v68.py); preserve Rust native build **PASS**, the new C build as **NOT RUN**, actual Rust and C matching **FAIL**, and all original test groups and failure events. Candidate qualification remains **BLOCKED**, speed **NOT MEASURED**, and the final comparison **NOT OPENED**.
-- [Corrected first-party C build recipe](../oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V16.md), [exact first-party C build contract](../oracle/phase2/c-subject-buffer-source-build-v16.json), and [independent C source-build verifier](../tools/reproduce_owned_c_subject_buffer_source_build_v16.py); all four source-only checks pass, both self-tests reject **123** hostile controls, and **32** prohibited effects are physically blocked. The **14** offline C build and inspection steps have **NOT RUN**, and the previous C matching result remains **FAIL** with **1,230** differences.
+- [Current independently generated results graph](../docs/evidence/candidate-current-overview-v69.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v69.inputs.json), [current machine-readable results](../docs/evidence/candidate-current-overview-v69.json), and [reproducible current renderer](../tools/render_candidate_current_overview_v69.py); preserve actual C and Rust native builds **PASS**, actual C and Rust matching **FAIL**, and all original test groups and failure events. Candidate qualification remains **BLOCKED**, speed **NOT MEASURED**, and the final comparison **NOT OPENED**.
+- [Actual compressed first-party C build report](../oracle/phase2/evidence/native-source-build-v16-c-phase2-v16-c-subject-buffer-original-p0.json.gz) and [independently durable actual C build receipt](../oracle/phase2/evidence/native-source-build-v16-c-phase2-v16-c-subject-buffer-original-p0-publication-receipt.json); the receipt independently verifies **14** real build and inspection steps, two first-party source overlays, **zero** candidate tests, build **PASS**, and compatibility **NOT RUN**. The compressed report stays unopened.
+- [Corrected first-party C build recipe](../oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V16.md), [exact first-party C build contract](../oracle/phase2/c-subject-buffer-source-build-v16.json), and [independent C source-build verifier](../tools/reproduce_owned_c_subject_buffer_source_build_v16.py); all four source-only checks pass, both self-tests reject **123** hostile controls, and **32** prohibited effects are physically blocked. Its separately recorded **14** offline build and inspection steps now **PASS**; the previous C matching result remains **FAIL** with **1,230** differences.
+- [Historical C source-freeze results graph](../docs/evidence/candidate-current-overview-v68.svg), [exact version-68 graph inputs](../docs/evidence/candidate-current-overview-v68.inputs.json), [historical version-68 machine-readable results](../docs/evidence/candidate-current-overview-v68.json), and [reproducible version-68 renderer](../tools/render_candidate_current_overview_v68.py); accurately record the separately pushed C build recipe before the actual C build ran.
 - [Historical successful Rust build graph](../docs/evidence/candidate-current-overview-v67.svg), [exact version-67 graph inputs](../docs/evidence/candidate-current-overview-v67.inputs.json), [historical version-67 machine-readable results](../docs/evidence/candidate-current-overview-v67.json), and [reproducible version-67 renderer](../tools/render_candidate_current_overview_v67.py); record the separately pushed real **28**-step Rust build before the C build source was frozen.
 - [Actual compressed first-party Rust build report](../oracle/phase2/evidence/native-source-build-v18-rust-phase2-v18-rust-buffer-shape-pickle-lifetime.json.gz) and [independently durable actual Rust build receipt](../oracle/phase2/evidence/native-source-build-v18-rust-phase2-v18-rust-buffer-shape-pickle-lifetime-publication-receipt.json); the receipt independently verifies **28** real build and inspection steps, two first-party source overlays, **zero** candidate tests, build **PASS**, and compatibility **NOT RUN**. Its frozen graph and previous matching values are historical, not the current result.
 - [Historical corrected-Rust source-freeze graph](../docs/evidence/candidate-current-overview-v66.svg), [exact version-66 inputs](../docs/evidence/candidate-current-overview-v66.inputs.json), [historical version-66 machine-readable results](../docs/evidence/candidate-current-overview-v66.json), and [reproducible version-66 renderer](../tools/render_candidate_current_overview_v66.py); accurately record the corrected Rust source as **NOT BUILT** before the separately committed real build ran.
@@ -143,12 +145,143 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Proposed 4,194,304-case final comparison](../docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); examples remain **NOT GENERATED** and **NOT OPENED**.
 - [Original objective](../GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; [later clarifications](../AMENDMENTS.md).
 
-## Independently reproduce the current Rust and C build results graph
+## Independently reproduce the current C and Rust build results graph
 
-The current graph records the actual **PASSING** Rust native
+The current graph records both genuine native builds: **14** C build
+and inspection steps and **28** Rust build and inspection steps. It
+does not claim that either corrected engine has passed a compatibility
+test. These four commands never open a compressed build report, run a
+native engine, measure performance, or open the final comparison.
+
+```sh
+REBAR_REFERENCE_PYTHON=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+REBAR_GRAPH69_SOURCE_SHA256=d5a074cba906402dc4f66e5127c88218e122a87743d713a3ce0f431c2994a7a2
+REBAR_GRAPH69_INPUTS_SHA256=75631c80b75bea22c713ea4c4f486e96deb85280161ff64000e5b78e4d5056c1
+REBAR_GRAPH69_RESULTS_SHA256=c112d1629e134ffc42f262ca70b4212397d17b7e52914f4a36a14f72e9eec923
+REBAR_GRAPH69_SVG_SHA256=2cc3316348aec8d0f8f223ea3cb771779854d7eea86a1cd3d2c157f8de30869b
+
+sha256sum \
+  tools/render_candidate_current_overview_v69.py \
+  docs/evidence/candidate-current-overview-v69.inputs.json \
+  docs/evidence/candidate-current-overview-v69.json \
+  docs/evidence/candidate-current-overview-v69.svg
+
+"$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v69.py --self-test
+
+env -i PATH=/usr/bin:/bin LC_ALL=C "$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v69.py --self-test
+
+"$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v69.py --verify-frozen-context \
+  --source-sha256 "$REBAR_GRAPH69_SOURCE_SHA256" \
+  --source-bytes 261888 \
+  --previous-source-sha256 22753bd1058d235d363ba3e057585289256ee7e969aa742690de78b2df8a6652 \
+  --previous-inputs-sha256 33ddfbe988cb37f7e4a188eb4c50ea89f3f5b15ce25eace111dcde8eb84d7090 \
+  --previous-summary-sha256 e4d214417fb7e90e84a541718dafa11ce513feb0a46874925695c95a1967aaea \
+  --previous-svg-sha256 69ba9464583d4d3f0b76610cbcc620bd7d9473cf4f6faf1a2c20b96ea190a736 \
+  --feature-receipt-sha256 16794f5b1487b76a909a176948f4bbac8ed3108768f3127e27c44f9f392ae3d6 \
+  --feature-archive-sha256 45cf839dd4fcb7615d70af79bc38b4695911159b109c9a79fd1d7d037b338f55 \
+  --readiness-source-sha256 8c73af8913f54e2398e707dc4a44c173ca53e20c1161b84160d841ce2ff7760d \
+  --readiness-protocol-sha256 4a390db825fed994733390be8961a0f709d7f1f22195535e581e71cdea8111f2 \
+  --readiness-contract-sha256 aab7a301f646755cec9956904cd6f97498d8293da454a925bf1f75cdfc85b3b1 \
+  --inputs-sha256 "$REBAR_GRAPH69_INPUTS_SHA256" \
+  --summary-sha256 "$REBAR_GRAPH69_RESULTS_SHA256" \
+  --svg-sha256 "$REBAR_GRAPH69_SVG_SHA256"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C "$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v69.py --verify-frozen-context \
+  --source-sha256 "$REBAR_GRAPH69_SOURCE_SHA256" \
+  --source-bytes 261888 \
+  --previous-source-sha256 22753bd1058d235d363ba3e057585289256ee7e969aa742690de78b2df8a6652 \
+  --previous-inputs-sha256 33ddfbe988cb37f7e4a188eb4c50ea89f3f5b15ce25eace111dcde8eb84d7090 \
+  --previous-summary-sha256 e4d214417fb7e90e84a541718dafa11ce513feb0a46874925695c95a1967aaea \
+  --previous-svg-sha256 69ba9464583d4d3f0b76610cbcc620bd7d9473cf4f6faf1a2c20b96ea190a736 \
+  --feature-receipt-sha256 16794f5b1487b76a909a176948f4bbac8ed3108768f3127e27c44f9f392ae3d6 \
+  --feature-archive-sha256 45cf839dd4fcb7615d70af79bc38b4695911159b109c9a79fd1d7d037b338f55 \
+  --readiness-source-sha256 8c73af8913f54e2398e707dc4a44c173ca53e20c1161b84160d841ce2ff7760d \
+  --readiness-protocol-sha256 4a390db825fed994733390be8961a0f709d7f1f22195535e581e71cdea8111f2 \
+  --readiness-contract-sha256 aab7a301f646755cec9956904cd6f97498d8293da454a925bf1f75cdfc85b3b1 \
+  --inputs-sha256 "$REBAR_GRAPH69_INPUTS_SHA256" \
+  --summary-sha256 "$REBAR_GRAPH69_RESULTS_SHA256" \
+  --svg-sha256 "$REBAR_GRAPH69_SVG_SHA256"
+```
+
+Both self-tests must reject exactly **5,931** hostile controls. Both
+complete checks must authenticate immediate predecessor **68**,
+evidence and history lower bounds **230 / 235**, actual C build
+**PASS** with **14** operations, actual Rust build **PASS** with
+**28** operations, **1,230** genuine C matching differences,
+**1,440** genuine Rust differences, all **13** complete Rust results,
+and all **six** genuine failure events. No candidate passes, no
+speed is measured, and no compressed archive or hidden example opens.
+
+## Verify the actual C build without reopening its report
+
+The durable receipt proves that the independently written C engine was
+built twice offline, with **14** real build and inspection operations.
+Read and hash only this small receipt. Check the compressed report's
+size and inode without opening, decompressing, or hashing it.
+
+```sh
+REBAR_C_V16_BUILD_RECEIPT=oracle/phase2/evidence/native-source-build-v16-c-phase2-v16-c-subject-buffer-original-p0-publication-receipt.json
+REBAR_C_V16_BUILD_ARCHIVE=oracle/phase2/evidence/native-source-build-v16-c-phase2-v16-c-subject-buffer-original-p0.json.gz
+
+sha256sum "$REBAR_C_V16_BUILD_RECEIPT"
+
+stat -c '%n %s %i %h %a %d' \
+  "$REBAR_C_V16_BUILD_ARCHIVE" "$REBAR_C_V16_BUILD_RECEIPT"
+
+jq -e '
+  .schema == "rebar-phase2-owned-c-subject-buffer-source-build-v16-durable-publication-receipt"
+  and .status == "PASS"
+  and .build_status == "PASS"
+  and .publication_pass_means == "DURABLE BUILD PUBLICATION ONLY"
+  and .actual_compiler_process_count == 14
+  and .expected_compiler_process_count == 14
+  and .actual_source_apply_count == 2
+  and .expected_source_apply_count == 2
+  and .archive_sha256 == "45cf839dd4fcb7615d70af79bc38b4695911159b109c9a79fd1d7d037b338f55"
+  and .archive_bytes == 37795
+  and .archive_publication.sha256 == .archive_sha256
+  and .archive_publication.bytes == .archive_bytes
+  and .archive_publication.inode == 524750
+  and .archive_publication.same_inode_readback_verified == true
+  and .published_overview_version == 67
+  and .historical_c_candidate_status == "FAIL"
+  and .historical_c_semantic_mismatch_count == 1230
+  and .historical_c_verified_passing_case_count == 7325
+  and .current_rust_candidate_status == "FAIL"
+  and .current_rust_semantic_mismatch_count == 1440
+  and .current_rust_verified_passing_case_count == 14853
+  and .candidate_processes_started == 0
+  and .native_libraries_loaded == 0
+  and .installed_native_activated == false
+  and .historical_archives_opened == 0
+  and .hidden_cases_read == 0
+  and .clock_samples == 0
+  and .runtime_non_delegation == "NOT ESTABLISHED"
+  and .performance == "NOT MEASURED"
+  and .memory == "NOT MEASURED"
+  and .holdout == "NOT OPENED"
+  and .qualified_candidate_count == 0
+  and .winner_selected == false
+' "$REBAR_C_V16_BUILD_RECEIPT"
+```
+
+The receipt must have SHA-256
+`16794f5b1487b76a909a176948f4bbac8ed3108768f3127e27c44f9f392ae3d6`.
+Its **37,795**-byte archive has inode **524750**; its **2,671**-byte
+receipt has inode **524751**. The receipt's version-67 build context
+is historical: it does not replace the version-68 immediate graph
+predecessor. A successful build does not pass a compatibility test.
+
+## Independently reproduce the historical C source-freeze graph
+
+The historical version-68 graph records the actual **PASSING** Rust native
 build and the corrected C build plan without confusing build
-success with Python compatibility. C's **14** future build
-operations have **NOT RUN**. All four graph commands leave
+success with Python compatibility. At the time of this snapshot,
+C's **14** future build operations had **NOT RUN**. All four graph commands leave
 matching engines, native libraries, compressed archives, and
 hidden test cases unopened.
 
