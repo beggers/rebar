@@ -7,6 +7,68 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the corrected first-party Rust build without claiming compatibility
+
+The separately committed, corrected
+[first-party Rust version-18 build procedure](../oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V18.md)
+has now actually run once. Both independent offline build phases
+completed, including **28** actual compiler and artifact-inspection
+steps. The pinned, fail-closed build procedure requires both
+independently built Rust engines and both Python bridges to match
+byte-for-byte before it can report **PASS**. The successful run
+does not import the replacement, start a candidate worker, run a
+Python compatibility test, measure speed, or open a hidden example.
+
+The [complete, compressed first-party build report](../oracle/phase2/evidence/native-source-build-v18-rust-phase2-v18-rust-buffer-shape-pickle-lifetime.json.gz)
+is **109,345** bytes; its SHA-256,
+`f59818e4aaea2999a5fec608d4d8ed761d372e1725548e3c3ff57773d01dffdc`,
+is attested by the separately readable
+[durable build-publication receipt](../oracle/phase2/evidence/native-source-build-v18-rust-phase2-v18-rust-buffer-shape-pickle-lifetime-publication-receipt.json).
+That **3,486**-byte receipt has SHA-256
+`32c422b9624a2565afd8d710700e377aa39aae4aa93d3742da483843869f2104`.
+The report is not reopened when verifying this result. Individual
+process identifiers, private build paths, and native-artifact
+hashes are not available in the small receipt and are not
+invented or shown as independently inspected.
+
+The successful receipt honestly refers to its frozen version-65
+source context and the older Rust result of **928** differences.
+Those are historical facts, not the current project state. The
+actual immediate predecessor is the independently pushed version-66
+graph. The latest complete Rust compatibility run still recorded
+**1,440** real differences and **14,853** explicitly verified
+passes; all **13** complete original results and all **six**
+genuine failure events remain unchanged. The C engine still has
+**1,230** real differences and **7,325** verified passes; its
+corrected source is still **NOT BUILT**.
+
+The [current actual-Rust-build results graph](evidence/candidate-current-overview-v67.svg),
+[complete graph inputs](evidence/candidate-current-overview-v67.inputs.json),
+[complete machine-readable results](evidence/candidate-current-overview-v67.json),
+and [independent graph renderer](../tools/render_candidate_current_overview_v67.py)
+must distinguish build **PASS** from matching **NOT RUN** and
+candidate qualification **BLOCKED**. Exactly two genuine build
+evidence owners advance the current evidence and history lower
+bounds from **223 / 228** to **225 / 230**. The historical
+version-17 Rust recipe stays **BLOCKED**. Runtime independence
+is **NOT ESTABLISHED**. Speed, memory, confidence, and undefined
+behavior are **NOT MEASURED**. All **4,194,304** final examples remain **NOT
+GENERATED** and **NOT OPENED**.
+
+The exact version-67 graph renderer, complete inputs, complete
+machine-readable results, and visible chart have respective
+SHA-256 values
+`37a5632885a05d1b2e1eb0aaeaa9d862e55d29744ac274e7ccf803c12f64ff04`,
+`7750b4f619f713226c8971b33cfd0f852282be5cfcc9ae7f1e6f7358d2a10382`,
+`45e69fef0e5b072c6fd8ee575b9e875aca36a214777bd1996da405d3ec25e252`,
+and `b2dd7168b9686025afc2afac3846f60af11ab5563fed42b01cc1819fc4199037`.
+Their exact sizes are **157,037**, **1,062,468**, **2,949,727**,
+and **14,642** bytes. Both ordinary and clean-environment graph
+self-tests reject exactly **5,650** hostile controls. Both complete
+graph checks preserve every full original Rust failure record and
+the separately preserved C result. The compressed build archive
+is not read by either graph check.
+
 ## Freeze the corrected Rust build recipe without starting a build
 
 The [corrected first-party Rust build verifier](../tools/reproduce_owned_rust_buffer_shape_source_build_v18.py),
