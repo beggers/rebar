@@ -7,6 +7,73 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Build Rust once and independently record its real binary identity
+
+The separately frozen
+[traceable first-party Rust build](../oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-BUILD-V19.md)
+has now genuinely completed once. Both independent offline phases
+**PASS**, with exactly **28** compiler and build-inspection operations.
+The live build also published an independently durable receipt binding
+its actual private-root device, inode, two phases, and compiled
+artifacts. This is a build result, not a compatibility result.
+
+The [complete compressed build report](../oracle/phase2/evidence/native-source-build-v19-rust-phase2-v19-rust-buffer-shape-root-provenance.json.gz)
+is **108,250** bytes; its SHA-256,
+`c4e3971fc207af50081d920a98d29dc06b5bdce07c5e1fb19e3e6fdf99a1c1bb`,
+is attested by the separately readable
+[durable Rust build receipt](../oracle/phase2/evidence/native-source-build-v19-rust-phase2-v19-rust-buffer-shape-root-provenance-publication-receipt.json).
+That **3,486**-byte receipt has SHA-256
+`27fbe6ec2077b05c1f8fe0b340f962d8d8f637b893c57d381108c9ed606cd0dc`.
+The separate **4,367**-byte
+[durable private-root provenance receipt](../oracle/phase2/evidence/native-source-build-v19-rust-phase2-v19-rust-buffer-shape-root-provenance-root-provenance-receipt.json)
+has SHA-256
+`de13207235055665c605cce1b88a8f2127f291b84a5954119a033c7f4e9a3c99`.
+Verify the archive by receipt and filesystem metadata only; never
+open, decompress, or rehash it. The actual private root is on device
+**2049**, not the evidence files' device **2064**; it has protected
+mode **0700** and was captured during live build verification.
+
+The tiny build receipt genuinely freezes its earlier version-70 build
+context and an old **928**-difference Rust observation. Those values
+are historical, not current compatibility results or current evidence
+counts. The latest complete real Rust result remains **FAIL**, with
+**1,440** differences and **14,853** explicitly verified passes. C
+remains **FAIL**, with **1,230** differences and **7,325** verified
+passes; its corrected input-buffer engine remains genuinely built
+with **14** passing build operations. All **13** complete original
+Rust results and all **six** real mismatch events remain unchanged.
+
+The old full-suite Rust retest explicitly binds the untraceable
+version-18 build. A new version-19 root does not satisfy that frozen
+contract, so its **13** planned workers remain **NOT RUN** and its
+execution remains **BLOCKED PENDING INDEPENDENTLY ATTESTED PRIVATE
+ROOT**. The newly traced version-19 engine's own matching test is
+also **NOT RUN**.
+
+The [current actual traceable-build results graph](evidence/candidate-current-overview-v72.svg),
+[complete exact graph inputs](evidence/candidate-current-overview-v72.inputs.json),
+[full machine-readable results](evidence/candidate-current-overview-v72.json),
+and [independent graph renderer](../tools/render_candidate_current_overview_v72.py)
+must preserve the actual version-71 predecessor. Exactly **three**
+independently durable build-evidence owners advance the authenticated
+evidence and history lower bounds from **236 / 241** to **239 / 244**.
+Both graph self-tests reject **6,290** hostile controls. Runtime
+independence remains **NOT ESTABLISHED**; correctness
+qualification remains **BLOCKED**; speed, memory, confidence, and
+undefined behavior remain **NOT MEASURED**. The **4,194,304** final
+cases remain **NOT GENERATED** and **NOT OPENED**.
+
+The exact actual-build graph renderer, full graph inputs,
+machine-readable results, and visible chart have respective SHA-256
+values
+`b279901481d2f4f6bc1adeae542d5aacf2453dedbcff88a944a79ce5c8478753`,
+`28f235f8bbb7e49de25a1194fa0693e9764d3e5b0ef7a3e5a4da8e273f22eaef`,
+`2b5dba28961c0842fc15df1afdca49eeb20613df05b31c1bd4a16491f7f9c25b`,
+and `eb2708426467a85a6d7ee592c4dde21fc08b57f8a17822a0b60732f44f22e804`.
+Their exact sizes are **37,922**, **1,134,228**, **3,179,471**, and
+**4,734** bytes. All build, failure, and root evidence is preserved;
+the compressed archive remains unopened.
+
 ## Freeze a traceable Rust build without compiling an engine
 
 The [independently written traceable Rust build verifier](../tools/reproduce_owned_rust_buffer_shape_source_build_v19.py),

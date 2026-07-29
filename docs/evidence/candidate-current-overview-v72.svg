@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1060" height="570" viewBox="0 0 1060 570" role="img" aria-labelledby="title description">
+<title id="title">Python and six from-scratch regular-expression engines</title>
+<desc id="description">Python is the correctness baseline. Rust and C have reproducible first-party builds, but no replacement has passed all compatibility tests and speed has not been measured.</desc>
+<rect width="1060" height="570" rx="18" fill="#0b1220"/>
+<text x="34" y="47" fill="#f8fafc" font-size="25" font-family="system-ui,sans-serif" font-weight="700">Building a faster Python re, from scratch</text>
+<text x="34" y="78" fill="#cbd5e1" font-size="16" font-family="system-ui,sans-serif">6 independent engines · 0 compatible replacements · speed NOT MEASURED</text>
+<line x1="34" y1="99" x2="1026" y2="99" stroke="#334155"/>
+<circle cx="43" cy="131" r="6" fill="#22c55e"/>
+<text x="62" y="136" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Python re</text>
+<text x="179" y="136" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Correctness reference passes</text>
+<text x="1007" y="136" text-anchor="end" fill="#22c55e" font-size="13" font-family="system-ui,sans-serif" font-weight="700">BASELINE</text>
+<circle cx="43" cy="176" r="6" fill="#f59e0b"/>
+<text x="62" y="181" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Rust</text>
+<text x="179" y="181" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Traceable build passes; 1,440 earlier differences</text>
+<text x="1007" y="181" text-anchor="end" fill="#f59e0b" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="221" r="6" fill="#f59e0b"/>
+<text x="62" y="226" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">C</text>
+<text x="179" y="226" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Corrected build passes; 1,230 earlier differences</text>
+<text x="1007" y="226" text-anchor="end" fill="#f59e0b" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="266" r="6" fill="#fb7185"/>
+<text x="62" y="271" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Zig</text>
+<text x="179" y="271" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">1,764 earlier differences</text>
+<text x="1007" y="271" text-anchor="end" fill="#fb7185" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="311" r="6" fill="#fb7185"/>
+<text x="62" y="316" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">C++</text>
+<text x="179" y="316" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">2,308 differences; five worker failures</text>
+<text x="1007" y="316" text-anchor="end" fill="#fb7185" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="356" r="6" fill="#fb7185"/>
+<text x="62" y="361" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Go</text>
+<text x="179" y="361" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">4,518 differences; four worker failures</text>
+<text x="1007" y="361" text-anchor="end" fill="#fb7185" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="401" r="6" fill="#94a3b8"/>
+<text x="62" y="406" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Fortran</text>
+<text x="179" y="406" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Full Python compatibility not tested</text>
+<text x="1007" y="406" text-anchor="end" fill="#94a3b8" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT TESTED</text>
+<line x1="34" y1="442" x2="1026" y2="442" stroke="#334155"/>
+<text x="34" y="473" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif" font-weight="650">Compatibility reference: 31,237 original Python checks; 8,244 extra checks are separate.</text>
+<text x="34" y="500" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Traceable Rust build: PASS, 28 checks · Corrected C build: PASS, 14 checks.</text>
+<text x="34" y="527" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Final comparison: 4,194,304 proposed cases; NOT GENERATED, NOT OPENED, NOT MEASURED.</text>
+<text x="34" y="551" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif">Overview 72 · independent build evidence is not a passing compatibility result.</text>
+</svg>

@@ -16,7 +16,7 @@ regular-expression package, or another candidate does not count.
 **Six** from-scratch engines. **Zero** fully compatible replacements.
 Speed versus Python: **NOT MEASURED**. There is no winner.
 
-![Comparison of Python and six independently written regular-expression engines. Rust and C build, but none of the replacements has passed all compatibility tests or measured a speedup.](docs/evidence/candidate-current-overview-v71.svg)
+![Comparison of Python and six independently written regular-expression engines. Rust and C build, but none of the replacements has passed all compatibility tests or measured a speedup.](docs/evidence/candidate-current-overview-v72.svg)
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
@@ -35,11 +35,12 @@ behavior; two independent Python reference runs each pass all **8,244**.
 These are separate test sets and are never combined or counted twice.
 
 The corrected, independently written C engine already passed **14**
-reproducible build checks; Rust passed **28**. Neither corrected engine
-has passed its full compatibility retest. Rust's **13**-worker retest is
-**BLOCKED** until its exact compiled engine can be independently
-identified. A traceable Rust rebuild is **NOT RUN**. Proof that production
-engines never delegate matching is **NOT ESTABLISHED**.
+reproducible build checks. A separately traced Rust build passed **28**
+checks and recorded its compiled engine's identity. Neither engine has
+passed its full compatibility test. The old **13**-worker Rust test
+targets a different build and remains **BLOCKED**; testing the newly
+traced engine is **NOT RUN**. Proof that production engines never
+delegate matching is **NOT ESTABLISHED**.
 
 ## Detailed correctness
 
