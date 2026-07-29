@@ -7,6 +7,75 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze an independently written Zig engine without claiming a build
+
+The [first-party Zig native-build controller](../tools/reproduce_owned_zig_scanner_phrase_source_build_v13.py),
+[complete Zig build procedure](../oracle/phase2/ZIG-SCANNER-PHRASE-SOURCE-BUILD-V13.md),
+and [exact machine-readable Zig contract](../oracle/phase2/zig-scanner-phrase-source-build-v13.json)
+freeze a future build of the project's own complete Zig
+regular-expression parser, compiler, and matching engine. Its own
+CPython C-API bridge links directly to that Zig engine. Neither
+component wraps Python's `re`, `_sre`, an external regular-expression
+package, or another candidate. The previously recorded Zig result
+remains **FAIL**, with **1,764** matching differences and **3,711**
+individually verified cases.
+
+A later explicitly authorized native build would run **two**
+independent phases of **13** processes each, for **26** planned
+compiler and native-inspection processes. These are planned, not
+observed: the corrected Zig build is **NOT RUN**, native
+reproducibility is **NOT MEASURED**, the corrected matching test is
+**NOT RUN**, and no candidate is qualified. Source verification
+neither invokes a compiler nor loads an engine. The corrected scanner
+preserves all **1,024** original scanner cases, including **64**
+source-corrected examples and **960** unchanged examples; these are
+source facts, not newly executed candidate tests.
+
+The exact source, complete procedure, and contract have respective
+SHA-256 values
+`673cb1a5a1b2b70d36e77032e01312fda2887828a8898900f1c91378fde8687e`,
+`b8c3622d64041386c6202f0d980632c9e03a8c90c08455d1c38a50260ae68a40`,
+and `6b0b918da55d55144c1384d915027f9ba360048c910a4225568abce6fd3efd15`.
+Their exact sizes are **123,672**, **8,765**, and **21,331** bytes.
+All four ordinary and empty-environment source checks pass. Both
+self-tests reject **175** hostile controls and block **17** classes
+of external effects without running Zig, accessing a private native
+build, or opening a compressed report.
+
+The [current first-party Zig source-freeze chart](evidence/candidate-current-overview-v85.svg),
+[complete Zig source-freeze graph inputs](evidence/candidate-current-overview-v85.inputs.json),
+[complete machine-readable Zig source results](evidence/candidate-current-overview-v85.json),
+and [reproducible Zig source-freeze renderer](../tools/render_candidate_current_overview_v85.py)
+retain all **nine** complete historical proofs and their **54**
+references, the real Rust result's independent outcome proof and its
+**six** references, and one distinct first-party Zig source proof
+with **six** references. All **11** canonical proof records and
+**66** references remain independently reconstructable. Authenticated
+evidence and history lower bounds after the three new source owners
+are **275 / 280**.
+
+Both graph self-tests reject **8,446** hostile controls. The exact
+Zig source-freeze renderer, complete inputs, machine-readable
+summary, and visible chart have respective SHA-256 values
+`90a66dfe3d239cba478b278e63dc5b90c65243117b5f961fe7b2f71c6999bfd0`,
+`80a2f6992f895145368581004f0bfccf69898467af01e32b854b7598380841bb`,
+`f9e712902186d8df7b73d3b92aa6a45e3917cadb0d879e5d8d8c626ce07e4d32`,
+and `e69496318003461c0983b236e749a28c55c04ddcf593d84e388453947356c9a1`.
+Their exact sizes are **75,303**, **1,344,687**, **3,873,825**,
+and **6,152** bytes. The complete summary remains below the
+**4,194,304**-byte limit without removing historical evidence.
+
+The real Rust result remains **FAIL**: **13** workers, **eight**
+completed groups, **12,942** verified cases, **five** infrastructure
+failures, and complete semantic correctness **NOT MEASURED**. The
+cleanup warnings are observations, not a proven cause. All
+**31,237** original checks, all **13** suites, the separate
+**8,244** extra checks, and all six independently written engine
+families remain unchanged. Runtime independence is **NOT
+ESTABLISHED**. Speed, memory, and confidence are **NOT MEASURED**;
+the proposed **4,194,304**-case holdout is **NOT GENERATED** and
+**NOT OPENED**; and there is no winner.
+
 ## Record the actual corrected Rust run without hiding unfinished tests
 
 One actual version-15 Rust run started **13** distinct workers for the

@@ -16,7 +16,7 @@ regular-expression package, or another candidate does not count.
 **Six** from-scratch engines. **Zero** fully compatible replacements.
 Speed versus Python: **NOT MEASURED**. There is no winner.
 
-![Python compared with six independently written regular-expression engines. Rust completed eight of 13 test groups but five failed. No replacement has passed all tests or measured a speedup.](docs/evidence/candidate-current-overview-v84.svg)
+![Python compared with six independently written regular-expression engines. Rust completed eight of 13 test groups, while the corrected from-scratch Zig engine has not yet been built. No replacement has passed all tests or measured a speedup.](docs/evidence/candidate-current-overview-v85.svg)
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
@@ -24,7 +24,7 @@ Speed versus Python: **NOT MEASURED**. There is no winner.
 | Public `rebar` import | FAIL; still selects an unqualified Zig prototype | NOT MEASURED |
 | Rust | FAIL; 8/13 groups; 12,942/31,237 verified | NOT MEASURED |
 | C | FAIL; 1,230 differences | NOT MEASURED |
-| Zig | FAIL; 1,764 differences; scanner fix frozen, not built or tested | NOT MEASURED |
+| Zig | FAIL; 1,764 differences; corrected build not run | NOT MEASURED |
 | C++ | FAIL; 2,308 differences and five worker failures | NOT MEASURED |
 | Go | FAIL; 4,518 differences and four worker failures | NOT MEASURED |
 | Fortran | NOT TESTED | NOT MEASURED |
