@@ -8,6 +8,31 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete first-party C compatibility test
+
+The frozen [version-7 C campaign](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V7.md)
+actually ran one distinct isolated worker for each of the **13**
+original compatibility groups. It preserved every group and the
+complete **31,237**-case denominator in its
+[public result](../oracle/phase2/evidence/repaired-c-original-campaign-v7-c-phase2-v18-c-subject-buffer-root-provenance-original-p0-v7-failures-publication-receipt.json),
+SHA-256
+`bba4b8498a37db0bf9651c0bb040deaf96f9eef363ba6f2e2c923379d7fa5080`.
+
+The candidate completed **5** groups and verified **13,094** passing
+cases. Three of those completed groups also showed **16**, **216**,
+and **4** real differences, for an observed lower bound of **236**.
+Another **7** groups reported candidate execution failures, and
+**1** reported a genuine JSON-encoding failure involving an unpaired
+surrogate. The overall mismatch count is **NOT MEASURED**. No worker
+timed out, and the original native file was restored.
+
+Publishing the result succeeded; the C candidate itself **FAILS**.
+Its compressed report has producer-recorded SHA-256
+`5975fb4549ee6d848b2fc94dc58217982efcaf8ffc839c75d0e98430aa1eaab7`
+and was not opened. The **8,244** additional cases and
+**14,155,776** proposed final cases remain unrun and unopened.
+Speed, memory, and undefined behavior are **NOT MEASURED**.
+
 ## Freeze bounded, complete first-party C result reporting
 
 The [version-7 C compatibility campaign](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V7.md)

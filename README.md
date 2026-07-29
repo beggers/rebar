@@ -26,7 +26,7 @@ current results are below.
 | Python `re` | Baseline; reference checks pass | Not timed |
 | Public `rebar` import | FAIL; still selects an unqualified Zig prototype | NOT MEASURED |
 | Rust | FAIL; recovery preflight rejected; earlier 8/13 groups and 12,942 verified | NOT MEASURED |
-| C | FAIL; 3/13 groups; 3,366 verified; earlier run had 1,230 differences | NOT MEASURED |
+| C | FAIL; 5/13 groups completed; 13,094 passed; at least 236 differences | NOT MEASURED |
 | Zig | FAIL; candidate imports, but all 13 test workers fail; earlier 1,764 differences | NOT MEASURED |
 | C++ | FAIL; 2,308 differences and five worker failures | NOT MEASURED |
 | Go | FAIL; 4,518 differences and four worker failures | NOT MEASURED |
@@ -44,10 +44,11 @@ passed their own two independent build phases. No successful build
 proves compatibility.
 Rust previously finished **8** of **13** groups and verified **12,942**
 cases; **5** workers failed. Its current run was rejected during
-preflight before starting any worker. The corrected C engine
-finished **3** of **13**
-groups and verified **3,366** passing cases; the complete mismatch
-count is **NOT MEASURED**. All **13** Zig workers now import the
+preflight before starting any worker. The corrected C engine actually
+attempted all **13** groups, completed **5**, verified **13,094**
+passing cases, and exposed at least **236** differences; **7** groups
+had candidate failures and **1** had a result-encoding failure. The
+complete mismatch count is **NOT MEASURED**. All **13** Zig workers now import the
 project's candidate, but the shared test controller incorrectly
 requests a forbidden native loader; none produces a matching result.
 Zig's earlier **1,764** differences remain a separate historical
@@ -90,7 +91,7 @@ slowdown over **20%**.
 - [Complete Python correctness reference](oracle/phase1/P0-COMPLETENESS-V4.md).
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
 - [Six independently written engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
-- [Guarded, exhaustive first-party C correctness](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V7.md), [reproducible native source-build procedure](oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md), and [independently authenticated C build](oracle/phase2/evidence/native-source-build-v18-c-phase2-v18-c-subject-buffer-root-provenance-publication-receipt.json); the previous run completed **3** of **13** groups.
+- [Guarded, exhaustive first-party C correctness](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V7.md), [complete public C test results](oracle/phase2/evidence/repaired-c-original-campaign-v7-c-phase2-v18-c-subject-buffer-root-provenance-original-p0-v7-failures-publication-receipt.json), [reproducible native source-build procedure](oracle/phase2/C-SUBJECT-BUFFER-SOURCE-BUILD-V18.md), and [independently authenticated C build](oracle/phase2/evidence/native-source-build-v18-c-phase2-v18-c-subject-buffer-root-provenance-publication-receipt.json).
 - [Guard-clean, from-scratch Zig candidate and exhaustive, safely bounded correctness procedure](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V8.md); all **13** workers load the candidate, but the strict guard blocks the test controller's forbidden loader.
 - [Captured-engine Rust compatibility campaign](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V18.md) and [preserved earlier failure diagnostics](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V17.md); the latest recovery preflight failed without running a candidate.
 - [From-scratch Rust literal-search](oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md), [captured-result experiments](oracle/phase2/RUST-CAPTURED-FINDALL-ONE-PASS-V1.md), and [exact Python scanner signatures](oracle/phase2/RUST-SCANNER-SIGNATURE-SOURCE-REPAIR-V22.md), with reproduced [literal](oracle/phase2/RUST-LITERAL-FINDALL-SOURCE-BUILD-V20.md) and [captured-result](oracle/phase2/RUST-CAPTURED-FINDALL-SOURCE-BUILD-V21.md) native builds; the scanner repair is not built, and full compatibility and speed are not established.
