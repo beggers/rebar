@@ -80,6 +80,7 @@ slowdown over **20%**.
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
 - [Six independently written engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Guarded first-party C correctness procedure](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V5.md); authenticated native-root evidence still required.
+- [Guard-clean, from-scratch Zig candidate and correctness procedure](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V5.md); full-suite rerun not yet performed.
 - [Reproducible Rust compatibility-failure diagnostics](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V16.md); new full-suite run not yet performed.
 - [From-scratch Rust literal-search](oracle/phase2/RUST-LITERAL-FINDALL-ONE-PASS-V1.md) and [captured-result experiments](oracle/phase2/RUST-CAPTURED-FINDALL-ONE-PASS-V1.md), with a [reproduced first-party source build](oracle/phase2/RUST-LITERAL-FINDALL-SOURCE-BUILD-V20.md); compatibility and speed not yet established.
 - [Larger, unopened 14,155,776-case speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md) and [preserved earlier proposal](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).

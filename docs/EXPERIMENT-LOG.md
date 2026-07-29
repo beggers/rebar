@@ -8,6 +8,34 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a guard-clean, independently written Zig candidate
+
+The [complete first-party Zig adapter](../candidates/zig/variants/scanner_phrase_guard_clean_v1/zig_candidate.py)
+retains the previously built Zig parser, compiler, matching engine,
+scanner, and directly linked Python bridge. It removes exactly one
+unused dynamic-library import and the dead native-loader setup.
+Every matching and scanner operation still calls the project's own
+authenticated Zig engine. The strict isolation guard is unchanged;
+no Python matching engine, external regex package, alternate
+candidate, or fallback is introduced.
+
+The [guarded Zig original-suite procedure](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V5.md),
+[canonical contract](../oracle/phase2/repaired-zig-original-campaign-v5.json),
+and [first-party campaign controller](../tools/run_owned_repaired_zig_original_campaign_v5.py)
+authenticate the already-published **26**-process Zig native build,
+all **31,237** original Python checks, the separate **8,244** extra
+checks, and the new **14,155,776**-case unopened proposal. Both
+source-only verification modes pass in ordinary and empty
+environments, including **31** hostile checks. The existing
+user-owned version-4 files remain untouched.
+
+The last completed Zig correctness result remains **FAIL**, with
+**1,764** observed differences. The guard-clean Zig candidate has
+**NOT RUN** the original suite or additional checks. Compatibility,
+speed, memory, and runtime independence remain **NOT MEASURED**;
+the final proposal is **NOT FROZEN**, **NOT GENERATED**, and
+**NOT OPENED**.
+
 ## Record the actual first-party Rust literal-engine build
 
 The frozen version-20 controller completed a real, offline build of
