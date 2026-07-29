@@ -1,0 +1,299 @@
+{
+  "schema": "rebar-owned-repaired-rust-original-campaign-v10-failures-forensic-summary-v1",
+  "version": 1,
+  "status": "PASS",
+  "analysis_status": "PASS",
+  "analysis_pass_means": "INDEPENDENT AUTHENTICATION OF A FAILED CANDIDATE ONLY; NOT A PASSING CANDIDATE",
+  "family": "rust",
+  "label": "phase2-v16-rust-buffer-shape-pickle-original-p0-v10",
+  "candidate_status": "FAIL",
+  "candidate_qualified": false,
+  "frozen_runner": {
+    "source": {
+      "path": "tools/run_owned_repaired_rust_original_campaign_v10.py",
+      "sha256": "038870e88e9dfbe2f9d97892fb98558787d1142bb94559e3060023c8e562a81c",
+      "bytes": 211733
+    },
+    "protocol": {
+      "path": "oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V10.md",
+      "sha256": "cf425c2517f7fa066a30a340b830d8782e0000872efa3eaf00c764ce45ef0659",
+      "bytes": 16618
+    },
+    "contract": {
+      "path": "oracle/phase2/repaired-rust-original-campaign-v10.json",
+      "sha256": "57c36f414d052e798fc1f9ccfcd10aeddd5f6571d95679a995c6935d86f3dda7",
+      "bytes": 17426
+    },
+    "authenticated_graph_version": 56
+  },
+  "failure_archive": {
+    "path": "oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz",
+    "sha256": "4be5a40ca3cdb0323eeb613a80c8eb22509dcbc21423156abbf0961fef19405e",
+    "bytes": 3746528,
+    "device": 2064,
+    "inode": 525043,
+    "mode": "0600",
+    "nlink": 1,
+    "uncompressed_sha256": "9e077ed42b0d092d0a53a640561a32ce4e4ab15d53ac2fa5c22d19c2664d4893",
+    "uncompressed_bytes": 5385134,
+    "independent_forensic_archive_open_count": 1,
+    "independent_forensic_archive_inflation_count": 1,
+    "compressed_hash_authenticated_in_the_same_open": true,
+    "all_13_embedded_worker_stdout_streams_authenticated": true,
+    "all_13_embedded_original_observation_streams_authenticated": true,
+    "any_other_archive_opened": false
+  },
+  "durable_publication_receipt": {
+    "path": "oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json",
+    "sha256": "8735e5351f62de2a77369eb8401e225cebd31434b09f07db40e79550ba7cc7d2",
+    "bytes": 6708,
+    "device": 2064,
+    "inode": 525044,
+    "mode": "0600",
+    "nlink": 1,
+    "status": "PASS",
+    "publication_status": "PASS",
+    "publication_pass_means": "DURABLE PUBLICATION ONLY",
+    "candidate_status": "FAIL"
+  },
+  "frozen_original_v4_producer": {
+    "version": 4,
+    "source_sha256": "e0bab3833f6b8274b79e19b1dd7ca28c45931ef3efea8eefcc5cdfb0505af3d8",
+    "protocol_sha256": "e82b3469853406bf36812f016688aa3e6403b8d98d025a29fb9d0a9704ea2aa5",
+    "contract_sha256": "c22ff77b4947659510634e3fb802f82b559b8938dd26ba2d58552f3e761fa1d5",
+    "reference_records_sha256": "6b26ac4eff9ec64cc3ae79872b3195b303a12bf40b96b55850b627857e614aa2",
+    "reference_cache_records_sha256": "587cf35555472940522d6ae3a73053fb7e98492befe581cc024444bed8e264ad",
+    "reference_process_ids": [81, 82],
+    "original_suite_count": 13,
+    "original_case_execution_denominator": 31237,
+    "named_private_waiver_count": 13,
+    "new_or_withdrawn_private_waiver_count": 0
+  },
+  "suite_results": [
+    {"suite": "original_bounded_v5", "case_execution_denominator": 151, "semantic_mismatch_count": 0, "explicitly_verified_passing_case_count": 151, "failure_class": "PASS", "actual_worker_process_id": 81, "actual_worker_started": true, "fully_observed": true, "candidate_record_count": 152, "debug_build_skip_count": 1, "reference_records_sha256": "b6f23860b340ff326347bdd103505c04bb2b84c21fc874758bd278bc90390276", "complete_original_observation_sha256": "2362b2425b556c9fd8994e26b11e573bcabd5774d848e709be59d5813cca3f0e"},
+    {"suite": "public_v3", "case_execution_denominator": 864, "semantic_mismatch_count": 0, "explicitly_verified_passing_case_count": 864, "failure_class": "PASS", "actual_worker_process_id": 87, "actual_worker_started": true, "fully_observed": true, "candidate_record_count": 864, "reference_records_sha256": "0ae84d65f16976e046a267704585306c3968703194d26bbc3c5223b746304f7c", "complete_original_observation_sha256": "3d2dfe7c7839b97bcdfba8ca7f14fed5693796155b2cfc70280a95426d0bf017"},
+    {"suite": "scanner_v3", "case_execution_denominator": 1024, "semantic_mismatch_count": 0, "explicitly_verified_passing_case_count": 1024, "failure_class": "PASS", "actual_worker_process_id": 88, "actual_worker_started": true, "fully_observed": true, "candidate_record_count": 1024, "reference_records_sha256": "37de08e1991adf28990e35b72c2130ebafa78c72b04750d28550cce08555666d", "complete_original_observation_sha256": "29f6dd8a0374e4678d6afdc82e9830cc5e670b5de33279229c9cdd2d640f61d8"},
+    {"suite": "buffer_v3", "case_execution_denominator": 768, "semantic_mismatch_count": 0, "explicitly_verified_passing_case_count": 768, "failure_class": "PASS", "actual_worker_process_id": 89, "actual_worker_started": true, "fully_observed": true, "candidate_record_count": 768, "reference_records_sha256": "8312263785cd49f7283ab8c6fac13443befe9c5a3d739b2e068aebdcf3f59b75", "complete_original_observation_sha256": "3e5eb6aa9468cfbb1f108aa301d62463c5c46ff6e70d7f171e3e2bba875c6c64"},
+    {"suite": "managed_v1", "case_execution_denominator": 1024, "semantic_mismatch_count": 16, "explicitly_verified_passing_case_count": 0, "failure_class": "SEMANTIC MISMATCH", "actual_worker_process_id": 90, "actual_worker_started": true, "fully_observed": true, "candidate_record_count": 1024, "reference_records_sha256": "80293f5332300220f38c3f017d38611a5514b1b686918e692a53491945b196df", "complete_original_observation_sha256": "7fa929d3a5bc86b57551d7a3b2d5a2e09b68b9c78abb2990b6f8be08bb4f92e9"},
+    {"suite": "scanner_verbose_v1", "case_execution_denominator": 2854, "semantic_mismatch_count": 0, "explicitly_verified_passing_case_count": 2854, "failure_class": "PASS", "actual_worker_process_id": 91, "actual_worker_started": true, "fully_observed": true, "candidate_record_count": 2854, "reference_records_sha256": "d7e2d499eb4dbe6ae0f8743d8b152e4835898656daa8b3167598636ef7be6012", "complete_original_observation_sha256": "6cf713c798b38b37b6952091031e3a0a16b07d57c0e4a72c3c90b92ee31e232b"},
+    {"suite": "public_types_v1", "case_execution_denominator": 6912, "semantic_mismatch_count": 0, "explicitly_verified_passing_case_count": 6912, "failure_class": "PASS", "actual_worker_process_id": 92, "actual_worker_started": true, "fully_observed": true, "candidate_record_count": 6912, "reference_records_sha256": "6b26ac4eff9ec64cc3ae79872b3195b303a12bf40b96b55850b627857e614aa2", "complete_original_observation_sha256": "0d2a072f778559e34ed721c2b39773b5f72943be7698ffb286fcb1868f180a32"},
+    {"suite": "substitution_v2", "case_execution_denominator": 5120, "semantic_mismatch_count": 368, "explicitly_verified_passing_case_count": 0, "failure_class": "SEMANTIC MISMATCH", "actual_worker_process_id": 93, "actual_worker_started": true, "fully_observed": true, "candidate_record_count": 5120, "reference_records_sha256": "2bc65461b9ac60fd19a3c66856bd33ee48db038ab6a5de62193837800840f61b", "complete_original_observation_sha256": "20a175a2ff4e3303f22535cfd3d5b63642deda1957ba27f6599da7f12e58a737"},
+    {"suite": "shape_v2", "case_execution_denominator": 10240, "semantic_mismatch_count": 1056, "explicitly_verified_passing_case_count": 0, "failure_class": "SEMANTIC MISMATCH", "actual_worker_process_id": 94, "actual_worker_started": true, "fully_observed": true, "candidate_record_count": 10240, "reference_records_sha256": "58bbc78828ba2d4cde6b99cbebea815ce9381cda24d0acec03f6cc095b8b643c", "complete_original_observation_sha256": "25e4359d03f4af1759d558b2ce9731ea6fab120427d44c3ee408aebb7fbb0ab8"},
+    {"suite": "public_surface_v19", "case_execution_denominator": 1376, "semantic_mismatch_count": 0, "explicitly_verified_passing_case_count": 1376, "failure_class": "PASS", "actual_worker_process_id": 95, "actual_worker_started": true, "fully_observed": true, "candidate_record_count": 1376, "reference_records_sha256": "c002fc9e82bb73e592ffa3b5ba73731070004eb892cf85cfcf288fe7693b0aef", "complete_original_observation_sha256": "d3241f96436f0c3663a47236900b5b5d172e89f5605f5069cc6ac08ae6ab9a08"},
+    {"suite": "subinterpreter_v2", "case_execution_denominator": 128, "semantic_mismatch_count": 0, "explicitly_verified_passing_case_count": 128, "failure_class": "PASS", "actual_worker_process_id": 196, "actual_worker_started": true, "fully_observed": true, "candidate_record_count": 128, "reference_records_sha256": "450fccc859099ca78aec725911b6195695cd932ad281af931ca7945cec8c51e8", "complete_original_observation_sha256": "1fbaffcf7c2f4759a3b36646a1e00421c048bd7dec097c48b05960ca75f38266"},
+    {"suite": "pep688_v4", "case_execution_denominator": 264, "semantic_mismatch_count": 0, "explicitly_verified_passing_case_count": 264, "failure_class": "PASS", "actual_worker_process_id": 197, "actual_worker_started": true, "fully_observed": true, "candidate_record_count": 264, "reference_records_sha256": "7827586e0c7d4f43ac1fbd288f6b28f6a44b810b46274830d3803505c76692a8", "complete_original_observation_sha256": "005156dd7f52ae471ba86d5ec379d3a5e69a83a1675821ff05ba1f85950ae65f"},
+    {"suite": "threaded_pattern_v1", "case_execution_denominator": 512, "semantic_mismatch_count": 0, "explicitly_verified_passing_case_count": 512, "failure_class": "PASS", "actual_worker_process_id": 198, "actual_worker_started": true, "fully_observed": true, "candidate_record_count": 512, "reference_records_sha256": "928ea100d6fdaecc7c1dcf01e32c24fd98a146964c0955989a8149c1216ffe81", "complete_original_observation_sha256": "fce2d433447c8a4615989fdd6ad0395d1d243699497025f8d2dfd806b4f8ca90"}
+  ],
+  "actual_result_totals": {
+    "suite_count": 13,
+    "case_execution_denominator": 31237,
+    "named_private_waiver_count": 13,
+    "attempted_suite_count": 13,
+    "started_suite_count": 13,
+    "completed_suite_count": 13,
+    "actual_candidate_workers": 13,
+    "actual_worker_process_ids": [81, 87, 88, 89, 90, 91, 92, 93, 94, 95, 196, 197, 198],
+    "distinct_worker_process_id_count": 13,
+    "duplicate_worker_process_id_count": 0,
+    "missing_worker_process_id_count": 0,
+    "all_original_observation_vectors_complete": true,
+    "missing_original_case_observations": 0,
+    "semantic_mismatch_count": 1440,
+    "verified_passing_case_count": 14853,
+    "verified_passing_cases_derived_by_subtraction": false,
+    "records_from_fully_observed_failed_suites_are_counted_as_passing": false,
+    "infrastructure_failure_count": 0,
+    "candidate_status": "FAIL",
+    "candidate_qualified": false
+  },
+  "historical_comparison": {
+    "previous_actual_rust_semantic_mismatch_count": 928,
+    "previous_actual_rust_explicitly_verified_passing_case_count": 8965,
+    "new_actual_rust_semantic_mismatch_count": 1440,
+    "new_actual_rust_explicitly_verified_passing_case_count": 14853,
+    "semantic_mismatch_regression": 512,
+    "per_suite_regression": [
+      {"suite": "managed_v1", "previous_mismatches": 0, "current_mismatches": 16, "difference": 16},
+      {"suite": "public_types_v1", "previous_mismatches": 32, "current_mismatches": 0, "difference": -32},
+      {"suite": "substitution_v2", "previous_mismatches": 224, "current_mismatches": 368, "difference": 144},
+      {"suite": "shape_v2", "previous_mismatches": 672, "current_mismatches": 1056, "difference": 384}
+    ],
+    "regression_derived_from_complete_mismatch_vectors": true,
+    "passing_cases_derived_by_subtraction": false
+  },
+  "first_party_semantic_root_cause": {
+    "source_path": "candidates/rust/variants/buffer_shape_pickle_v1/py_bridge.c",
+    "source_sha256": "00271ad5fff71e2f2e30cda6b446a61d0c300cb91eec2091b8ada17662d9a335",
+    "source_bytes": 181004,
+    "function": "rust_substitute_core",
+    "function_line": 3546,
+    "first_subject_open_line": 3558,
+    "premature_snapshot_line": 3566,
+    "premature_original_subject_release_line": 3573,
+    "snapshot_subject_reopen_line": 3574,
+    "failure_interval": "3557-3579",
+    "summary": "A noncallback exporting subject is acquired once, immediately copied into a bytes snapshot, released and reopened as bytes. The first-party engine then substitutes against the snapshot instead of maintaining CPython's real exporter acquire/release lifetime and nested outer/inner event order.",
+    "affected_genuine_suite_mismatches": {
+      "managed_v1": 16,
+      "substitution_v2": 368,
+      "shape_v2": 1056
+    },
+    "observed_high_frequency_difference_paths": [
+      {"suite": "shape_v2", "path": "outcome.events[3].role", "mismatch_record_count": 1024},
+      {"suite": "shape_v2", "path": "outcome.events[3].nested_hex", "mismatch_record_count": 896},
+      {"suite": "shape_v2", "path": "outcome.events[4].role", "mismatch_record_count": 768},
+      {"suite": "shape_v2", "path": "outcome.events.length", "mismatch_record_count": 736},
+      {"suite": "substitution_v2", "path": "outcome.events.length", "mismatch_record_count": 272},
+      {"suite": "substitution_v2", "path": "outcome.events[3].backing_after_hex", "mismatch_record_count": 240}
+    ],
+    "recommended_next_independent_source_chunk": "Freeze a new append-only first-party bridge variant that preserves the real exporting subject through substitution, reproduces CPython's per-match reentrant acquire/release and nested subject/replacement order, and independently tests normal, callback, error, zero-length and shape-changing exporter cleanup without changing the frozen original oracle."
+  },
+  "earliest_genuine_mismatch_witnesses": [
+    {
+      "suite": "managed_v1",
+      "case": "managed-buffer-lifetime.v1.0453",
+      "group": "pep688-subject-acquire-release",
+      "stage": "sub",
+      "backing_hex": "616c706861343220626574613720213463623765376166",
+      "expected_events_complete": true,
+      "actual_events_complete": true,
+      "expected_events": [
+        {"event": "acquire", "role": "subject", "behavior": "stable", "active_before": 0, "active_after": 1, "flags": 0, "backing_before_hex": "616c706861343220626574613720213463623765376166", "backing_after_hex": "616c706861343220626574613720213463623765376166"},
+        {"event": "acquire", "role": "subject", "behavior": "stable", "active_before": 1, "active_after": 2, "flags": 0, "backing_before_hex": "616c706861343220626574613720213463623765376166", "backing_after_hex": "616c706861343220626574613720213463623765376166"},
+        {"event": "release", "role": "subject", "behavior": "stable", "active_before": 2, "active_after": 1, "flags": null, "backing_before_hex": "616c706861343220626574613720213463623765376166", "backing_after_hex": "616c706861343220626574613720213463623765376166"},
+        {"event": "release", "role": "subject", "behavior": "stable", "active_before": 1, "active_after": 0, "flags": null, "backing_before_hex": "616c706861343220626574613720213463623765376166", "backing_after_hex": "616c706861343220626574613720213463623765376166"}
+      ],
+      "actual_events": [
+        {"event": "acquire", "role": "subject", "behavior": "stable", "active_before": 0, "active_after": 1, "flags": 0, "backing_before_hex": "616c706861343220626574613720213463623765376166", "backing_after_hex": "616c706861343220626574613720213463623765376166"},
+        {"event": "release", "role": "subject", "behavior": "stable", "active_before": 1, "active_after": 0, "flags": null, "backing_before_hex": "616c706861343220626574613720213463623765376166", "backing_after_hex": "616c706861343220626574613720213463623765376166"}
+      ],
+      "return_value_matches_reference": true
+    },
+    {
+      "suite": "managed_v1",
+      "case": "managed-buffer-lifetime.v1.0454",
+      "group": "pep688-subject-acquire-release",
+      "stage": "subn",
+      "backing_hex": "616c706861343220626574613720216634623439393637",
+      "expected_events_complete": true,
+      "actual_events_complete": true,
+      "expected_events": [
+        {"event": "acquire", "role": "subject", "behavior": "stable", "active_before": 0, "active_after": 1, "flags": 0, "backing_before_hex": "616c706861343220626574613720216634623439393637", "backing_after_hex": "616c706861343220626574613720216634623439393637"},
+        {"event": "acquire", "role": "subject", "behavior": "stable", "active_before": 1, "active_after": 2, "flags": 0, "backing_before_hex": "616c706861343220626574613720216634623439393637", "backing_after_hex": "616c706861343220626574613720216634623439393637"},
+        {"event": "release", "role": "subject", "behavior": "stable", "active_before": 2, "active_after": 1, "flags": null, "backing_before_hex": "616c706861343220626574613720216634623439393637", "backing_after_hex": "616c706861343220626574613720216634623439393637"},
+        {"event": "acquire", "role": "subject", "behavior": "stable", "active_before": 1, "active_after": 2, "flags": 0, "backing_before_hex": "616c706861343220626574613720216634623439393637", "backing_after_hex": "616c706861343220626574613720216634623439393637"},
+        {"event": "release", "role": "subject", "behavior": "stable", "active_before": 2, "active_after": 1, "flags": null, "backing_before_hex": "616c706861343220626574613720216634623439393637", "backing_after_hex": "616c706861343220626574613720216634623439393637"},
+        {"event": "release", "role": "subject", "behavior": "stable", "active_before": 1, "active_after": 0, "flags": null, "backing_before_hex": "616c706861343220626574613720216634623439393637", "backing_after_hex": "616c706861343220626574613720216634623439393637"}
+      ],
+      "actual_events": [
+        {"event": "acquire", "role": "subject", "behavior": "stable", "active_before": 0, "active_after": 1, "flags": 0, "backing_before_hex": "616c706861343220626574613720216634623439393637", "backing_after_hex": "616c706861343220626574613720216634623439393637"},
+        {"event": "release", "role": "subject", "behavior": "stable", "active_before": 1, "active_after": 0, "flags": null, "backing_before_hex": "616c706861343220626574613720216634623439393637", "backing_after_hex": "616c706861343220626574613720216634623439393637"}
+      ],
+      "return_value_matches_reference": true
+    },
+    {
+      "suite": "substitution_v2",
+      "case": "substitution-buffer-semantics.v1.03521",
+      "api": "module.subn",
+      "cohort": "pep688-stable-subject",
+      "backing_hex": "616c70686134322062657461372067616d6d613320666264363361623864306330",
+      "expected_events_complete": false,
+      "expected_events": "NOT MEASURED FROM THE RETAINED SINGLE-READ FORENSIC PROJECTION",
+      "expected_event_count": 35,
+      "actual_events_complete": true,
+      "actual_events": [
+        {"event": "phase", "name": "materialize-start"},
+        {"event": "phase", "name": "materialize-complete"},
+        {"event": "phase", "name": "operation-start"},
+        {"event": "acquire", "role": "subject", "behavior": "stable", "active_before": 0, "active_after": 1, "flags": 0, "backing_before_hex": "616c70686134322062657461372067616d6d613320666264363361623864306330", "backing_after_hex": "616c70686134322062657461372067616d6d613320666264363361623864306330"},
+        {"event": "release", "role": "subject", "behavior": "stable", "active_before": 1, "active_after": 0, "flags": null, "backing_before_hex": "616c70686134322062657461372067616d6d613320666264363361623864306330", "backing_after_hex": "616c70686134322062657461372067616d6d613320666264363361623864306330"},
+        {"event": "phase", "name": "operation-return"},
+        {"event": "phase", "name": "cleanup-complete"}
+      ],
+      "return_value_matches_reference": true
+    },
+    {
+      "suite": "substitution_v2",
+      "case": "substitution-buffer-semantics.v1.03522",
+      "api": "pattern.sub",
+      "cohort": "pep688-stable-subject",
+      "backing_hex": "616c70686134322062657461372067616d6d613320343636326531633632373136",
+      "expected_events_complete": false,
+      "expected_events": "NOT MEASURED FROM THE RETAINED SINGLE-READ FORENSIC PROJECTION",
+      "expected_event_count": 27,
+      "actual_events_complete": true,
+      "actual_events": [
+        {"event": "phase", "name": "materialize-start"},
+        {"event": "phase", "name": "materialize-complete"},
+        {"event": "phase", "name": "operation-start"},
+        {"event": "acquire", "role": "subject", "behavior": "stable", "active_before": 0, "active_after": 1, "flags": 0, "backing_before_hex": "616c70686134322062657461372067616d6d613320343636326531633632373136", "backing_after_hex": "616c70686134322062657461372067616d6d613320343636326531633632373136"},
+        {"event": "release", "role": "subject", "behavior": "stable", "active_before": 1, "active_after": 0, "flags": null, "backing_before_hex": "616c70686134322062657461372067616d6d613320343636326531633632373136", "backing_after_hex": "616c70686134322062657461372067616d6d613320343636326531633632373136"},
+        {"event": "phase", "name": "operation-return"},
+        {"event": "phase", "name": "cleanup-complete"}
+      ],
+      "return_value_matches_reference": true
+    },
+    {
+      "suite": "shape_v2",
+      "case": "shape-changing-buffer-semantics.v1.00020",
+      "api": "module.sub",
+      "cohort": "outer-zero-nested-zero",
+      "expected_events_complete": false,
+      "actual_events_complete": false,
+      "expected_events": "NOT MEASURED FROM THE RETAINED SINGLE-READ FORENSIC PROJECTION",
+      "actual_events": "NOT MEASURED FROM THE RETAINED SINGLE-READ FORENSIC PROJECTION",
+      "expected_event_count": 13,
+      "actual_event_count": 13,
+      "authenticated_difference_paths": ["outcome.events[3].role", "outcome.events[4].role", "outcome.events[5].role", "outcome.events[6].role", "outcome.events[7].role", "outcome.events[8].role", "outcome.events[9].role", "outcome.events[10].role"],
+      "return_value_matches_reference": true
+    },
+    {
+      "suite": "shape_v2",
+      "case": "shape-changing-buffer-semantics.v1.00021",
+      "api": "module.subn",
+      "cohort": "outer-zero-nested-zero",
+      "expected_events_complete": false,
+      "actual_events_complete": false,
+      "expected_events": "NOT MEASURED FROM THE RETAINED SINGLE-READ FORENSIC PROJECTION",
+      "actual_events": "NOT MEASURED FROM THE RETAINED SINGLE-READ FORENSIC PROJECTION",
+      "expected_event_count": 17,
+      "actual_event_count": 17,
+      "authenticated_difference_paths": ["outcome.events[3].role", "outcome.events[4].role", "outcome.events[5].role", "outcome.events[6].role", "outcome.events[7].role", "outcome.events[8].role", "outcome.events[9].role", "outcome.events[10].role"],
+      "return_value_matches_reference": true
+    }
+  ],
+  "recovery_and_boundary_effects": {
+    "actual_v16_build_archive_read_count": 1,
+    "actual_v16_build_archive_gzip_inflation_count": 1,
+    "all_four_original_targets_restored": true,
+    "restoration_verified_before_publication": true,
+    "actual_reference_workers_started": 0,
+    "hidden_cases_read": 0,
+    "benchmark_files_read": 0,
+    "clock_samples": 0,
+    "timing_trials_run": 0
+  },
+  "phase_history": [
+    {"phase": "rust-original-campaign-v7", "candidate_status": "FAIL", "actual_semantic_mismatch_count": 928, "explicitly_verified_passing_case_count": 8965, "suite_count": 13, "verified_passing_cases_derived_by_subtraction": false},
+    {"phase": "rust-original-campaign-v8", "candidate_status": "NOT RUN", "controller_status": "FAIL BEFORE CANDIDATE ACTIVATION", "actual_candidate_workers": 0},
+    {"phase": "rust-original-campaign-v9", "candidate_status": "NOT RUN", "controller_status": "FAIL BEFORE CANDIDATE ACTIVATION", "actual_candidate_workers": 0, "recorded_inner_error": "accept only one exact owner-only Rust campaign root"},
+    {"phase": "rust-original-campaign-v10", "candidate_status": "FAIL", "actual_semantic_mismatch_count": 1440, "explicitly_verified_passing_case_count": 14853, "suite_count": 13, "actual_candidate_workers": 13, "verified_passing_cases_derived_by_subtraction": false}
+  ],
+  "authenticated_evidence_owner_lower_bound_before_publication": 194,
+  "authenticated_history_reference_lower_bound_before_publication": 199,
+  "new_actual_candidate_evidence_owner_count": 2,
+  "new_independent_forensic_summary_owner_count": 1,
+  "new_actual_evidence_owner_count": 3,
+  "resulting_authenticated_evidence_owner_lower_bound": 197,
+  "resulting_authenticated_history_reference_lower_bound": 202,
+  "global_evidence_owner_census": "NOT MEASURED",
+  "from_scratch_candidate_family_count": 6,
+  "qualified_candidate_count": 0,
+  "runtime_non_delegation": "NOT ESTABLISHED",
+  "performance": "NOT MEASURED",
+  "memory": "NOT MEASURED",
+  "confidence_intervals": "NOT MEASURED",
+  "undefined_behavior": "NOT MEASURED",
+  "holdout": "NOT OPENED",
+  "winner_selected": false
+}

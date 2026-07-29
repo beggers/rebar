@@ -7,6 +7,85 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Run and falsify the recovery-corrected Rust engine
+
+The frozen version-10 runner was pushed before its single real
+execution. It started **13** distinct workers, completed all **13**
+groups of the unchanged **31,237** original checks, produced complete
+observation records, and restored all four original files by their
+exact hashes and file identities. Infrastructure failures: **0**.
+
+Candidate result: **FAIL**. The real workers observed **1,440**
+semantic differences and independently verified **14,853** passing
+cases. The verified pass total is taken from fully passing groups;
+it is never calculated by subtracting failures from the complete test
+count. The previous real Rust result had **928** differences, so the
+new run regressed by **512**.
+
+| Original test group | Frozen cases | Observed differences | Explicitly verified passes |
+| --- | ---: | ---: | ---: |
+| Original bounded behavior | 151 | 0 | 151 |
+| Public functions | 864 | 0 | 864 |
+| Scanners | 1,024 | 0 | 1,024 |
+| Buffers | 768 | 0 | 768 |
+| Managed buffer lifetime | 1,024 | 16 | 0 |
+| Verbose scanners | 2,854 | 0 | 2,854 |
+| Public types | 6,912 | 0 | 6,912 |
+| Substitution | 5,120 | 368 | 0 |
+| Replacement and buffer shape | 10,240 | 1,056 | 0 |
+| Public surface | 1,376 | 0 | 1,376 |
+| Subinterpreters | 128 | 0 | 128 |
+| Python buffer protocol | 264 | 0 | 264 |
+| Threaded patterns | 512 | 0 | 512 |
+| Total | 31,237 | 1,440 | 14,853 |
+
+All **16,384** cases in the three failing groups were actually
+observed; they are not recorded as passing. Compared with the previous
+run, public-type failures improved from **32** to **0**, managed-buffer
+failures changed from **0** to **16**, substitution failures from
+**224** to **368**, and shape failures from **672** to **1,056**.
+
+The [complete compressed failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz)
+has SHA-256
+`4be5a40ca3cdb0323eeb613a80c8eb22509dcbc21423156abbf0961fef19405e`
+and **3,746,528** bytes. Its [separate actual-worker publication receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json)
+has SHA-256
+`8735e5351f62de2a77369eb8401e225cebd31434b09f07db40e79550ba7cc7d2`
+and **6,708** bytes. Receipt **PASS** means that a failed candidate's
+complete result was durably recorded, not that the candidate passed.
+
+The [independent 13-worker failure and root-cause summary](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json)
+has SHA-256
+`6e04771a48b4a460ad58ac9795ef91a697a33fa0aeae4671c9b3c9b35e4820cd`
+and **24,701** bytes. It independently validates all **13** worker
+vectors and **six** real failing examples. Their shared cause is
+the first-party Rust bridge's premature snapshot and release of the
+original match-subject buffer in `rust_substitute_core`. Its next fix
+must preserve the real exporter throughout substitution, without
+modifying the frozen suite.
+
+The [current actual-results graph](evidence/candidate-current-overview-v58.svg),
+[exact graph inputs](evidence/candidate-current-overview-v58.inputs.json),
+[complete machine-readable outcome](evidence/candidate-current-overview-v58.json),
+and [reproducible results renderer](../tools/render_candidate_current_overview_v58.py)
+record **197** authenticated evidence owners and **202** historical
+references. The renderer rejects **4,672** hostile source controls and
+authenticates all worker-group results from the small receipt and
+forensic summary without reopening the compressed report. Their
+respective SHA-256 values are
+`98658308205a0dc25e1bf7cc5d8295408f248c1e4fdf62e1dee5782decb82c70`,
+`3c58f7aa410ce287e1a718a2eb93e5cf9c7b6121bd1f0d404fbc7e67c9f6fd30`,
+`5d94286c55bce81a2b12fb54b39cb04e543cdad2588e21f3a13ade3adb03fd9a`,
+and `25477c207348b7cdfee3aa24071b27354f31553fde55033dc7eff5852e81e04d`.
+In historical graph fields, unversioned Rust mismatch values retain the
+earlier **928** result; the latest `actual_rust_v10_*` fields,
+current Rust row, and headline chart all record **1,440**.
+
+There are **zero** fully compatible engines. Runtime non-delegation is
+**NOT ESTABLISHED**. Speed, memory, and undefined behavior are
+**NOT MEASURED**. The **4,194,304**-example comparison remains
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the recovery-corrected complete Rust test
 
 The independently verified version-10 runner fixes the actual
