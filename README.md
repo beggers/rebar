@@ -16,7 +16,7 @@ regular-expression package, or another candidate does not count.
 **Six** from-scratch engines. **Zero** fully compatible replacements.
 Speed versus Python: **NOT MEASURED**. There is no winner.
 
-![Python compared with six independently written regular-expression engines. The hardened no-fallback safeguard supports a candidate's own code and protected interpreters; no replacement has passed all compatibility tests or measured a speedup.](docs/evidence/candidate-current-overview-v75.svg)
+![Python compared with six independently written regular-expression engines. The complete original Python test suite and hardened no-fallback safeguard are frozen; no replacement has passed all compatibility tests or measured a speedup.](docs/evidence/candidate-current-overview-v76.svg)
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
@@ -39,8 +39,8 @@ reproducible build checks. A separately traced Rust build passed **28**
 checks and recorded its compiled engine's identity. Neither engine has
 passed its full compatibility test. The old **13**-worker Rust test
 targets a different build and remains **BLOCKED**; testing the newly
-traced engine is **NOT RUN**. The safeguard now supports an engine's own
-code and protected interpreters; independence is **NOT ESTABLISHED**.
+traced engine is **NOT RUN**. The complete original test suite and
+hardened safeguard are frozen; independence is **NOT ESTABLISHED**.
 
 ## Detailed correctness
 
@@ -72,7 +72,7 @@ slowdown over **20%**.
 - [Full experiment log, build evidence, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Complete Python correctness reference](oracle/phase1/P0-COMPLETENESS-V4.md).
 - [Independent reference for the 8,244 additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
-- [Six independently written engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md) and [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
+- [Six independently written engine families](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Expanded, unopened final speed-test protocol](docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md).
 - [Original objective](GOAL.md), SHA-256
   `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`;

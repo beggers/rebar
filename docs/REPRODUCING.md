@@ -6,6 +6,77 @@ below are source-only or read-only unless a command explicitly says otherwise.
 The current results and charts remain in [the project README](../README.md);
 experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
+## Verify the full original Python tests without running a candidate
+
+The clean original producer retains all **13** groups and **31,237**
+upstream cases without loading Python's matching engine into a
+candidate. These four source-only checks reject **110** hostile
+controls. Candidate matching remains **NOT RUN**.
+
+```bash
+REBAR_PRODUCER_PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+REBAR_PRODUCER_ARGS=(
+  --source-sha256 b4886f424945d3a182a90737fd965fbc4a6e82cafa1c9ee456a9ea405ee18538
+  --protocol-sha256 9cfd1fc189d555a596b84b6073471554dab6bd67c1b343c66b744f4dc7b053a4
+  --contract-sha256 c751b8882fa331b4850271e68a1b43f965b5ddcb77c7ad0d0b4d3dec8ba79b53
+)
+
+"$REBAR_PRODUCER_PY" -I -B -S \
+  tools/run_owned_six_family_original_p0_producer_v5.py --self-test
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_PRODUCER_PY" -I -B -S \
+  tools/run_owned_six_family_original_p0_producer_v5.py --self-test
+
+"$REBAR_PRODUCER_PY" -I -B -S \
+  tools/run_owned_six_family_original_p0_producer_v5.py \
+  --verify-frozen-context "${REBAR_PRODUCER_ARGS[@]}"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_PRODUCER_PY" -I -B -S \
+  tools/run_owned_six_family_original_p0_producer_v5.py \
+  --verify-frozen-context "${REBAR_PRODUCER_ARGS[@]}"
+```
+
+## Verify the current complete-original-suite results graph
+
+These read-only checks reproduce the original-test chart and reject
+**6,519** hostile controls. They do not run or time a candidate.
+
+```bash
+REBAR_ORIGINAL_GRAPH_PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+REBAR_ORIGINAL_GRAPH_ARGS=(
+  --source-sha256 ac825ba68a8a8c2845569403a9b348db8d5cf1009a3d6cf8df0db1e322b53a1c
+  --source-bytes 42970
+  --previous-source-sha256 0610a7ba73f13eec6c9e59d766971568581b056cb54057b8dbaa95798d0c78fe
+  --previous-inputs-sha256 5a3d9eed1e46b941c5456ff601ce04167b4d451c25ff07d9a6a2279ea54689cb
+  --previous-summary-sha256 a8214d808a1edf13ba2afb6181864133415751bdaaa7e384f72a1699ad805f5f
+  --previous-svg-sha256 62763a4668c3ccbafbb0aed4e2c22533c6bf830d0e76c0ea3bb3883aa0bfb37f
+  --feature-source-sha256 b4886f424945d3a182a90737fd965fbc4a6e82cafa1c9ee456a9ea405ee18538
+  --feature-protocol-sha256 9cfd1fc189d555a596b84b6073471554dab6bd67c1b343c66b744f4dc7b053a4
+  --feature-contract-sha256 c751b8882fa331b4850271e68a1b43f965b5ddcb77c7ad0d0b4d3dec8ba79b53
+  --inputs-sha256 3e945e54576468e9e53cc757b1f0bb64064571e3862757666152a4f1b0963e9f
+  --summary-sha256 a7a09e9ccfaadeffc4a49ffdb229835658b4845dfd2fc8081edd1921997d58b1
+  --svg-sha256 4aabb86916a20c9dc000bd2aad5fd99b7e339f5be8f2fb44f131dd2254130f40
+)
+
+"$REBAR_ORIGINAL_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v76.py --self-test
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_ORIGINAL_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v76.py --self-test
+
+"$REBAR_ORIGINAL_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v76.py \
+  --verify-frozen-context "${REBAR_ORIGINAL_GRAPH_ARGS[@]}"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_ORIGINAL_GRAPH_PY" -I -B \
+  tools/render_candidate_current_overview_v76.py \
+  --verify-frozen-context "${REBAR_ORIGINAL_GRAPH_ARGS[@]}"
+```
+
 ## Verify the hardened safeguard without running an engine
 
 The version-2 safeguard supports one authenticated first-party bridge
@@ -44,7 +115,7 @@ env -i PATH=/usr/bin:/bin LC_ALL=C \
   --verify-frozen-context "${REBAR_GUARD_ARGS[@]}"
 ```
 
-## Verify the current hardened-safeguard results graph
+## Verify the historical version-75 hardened-safeguard results graph
 
 The four read-only graph checks preserve all original results and
 reject **6,429** hostile controls. They do not execute a candidate.
@@ -166,7 +237,9 @@ env -i PATH=/usr/bin:/bin LC_ALL=C \
 ## Evidence and reproduction
 
 - [Complete actual Rust failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [independently durable 13-worker result receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [complete plain-text 13-group failure and root-cause analysis](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json); **13** real workers completed all **31,237** original cases and observed **1,440** mismatches, **14,853** explicitly verified passes, and **zero** infrastructure failures. Receipt and analysis **PASS** preserve a candidate **FAIL**.
-- [Current independently generated results graph](../docs/evidence/candidate-current-overview-v75.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v75.inputs.json), [current machine-readable results](../docs/evidence/candidate-current-overview-v75.json), and [reproducible compact renderer](../tools/render_candidate_current_overview_v75.py); preserve the hardened safeguard as **NOT RUN ON A CANDIDATE**, runtime independence as **NOT ESTABLISHED**, all genuine original failures, both separately successful native builds, and the unopened holdout.
+- [Current independently generated results graph](../docs/evidence/candidate-current-overview-v76.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v76.inputs.json), [current machine-readable results](../docs/evidence/candidate-current-overview-v76.json), and [reproducible compact renderer](../tools/render_candidate_current_overview_v76.py); preserve all **31,237** unchanged Python cases, all actual candidate failures, the hardened safeguard, and the unopened holdout. No candidate matching has run.
+- [Clean complete original Python test producer](../tools/run_owned_six_family_original_p0_producer_v5.py), [exact original-test procedure](../oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md), and [complete original producer contract](../oracle/phase2/six-family-p0-producer-v5.json); four source checks reject **110** hostile controls without importing a candidate or Python's matcher.
+- [Historical hardened-safeguard results graph](../docs/evidence/candidate-current-overview-v75.svg), [historical graph inputs](../docs/evidence/candidate-current-overview-v75.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v75.json), and [historical compact renderer](../tools/render_candidate_current_overview_v75.py); preserve the first-party bridge and genuine protected-interpreter safeguard.
 - [Hardened no-fallback safeguard](../tools/verify_owned_candidate_runtime_independence_v2.py), [complete safe native-bridge and interpreter procedure](../oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V2.md), and [exact safeguard contract](../oracle/phase2/candidate-runtime-independence-v2.json); all four source checks reject **72** hostile controls without running a candidate.
 - [Historical version-74 results graph](../docs/evidence/candidate-current-overview-v74.svg), [historical graph inputs](../docs/evidence/candidate-current-overview-v74.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v74.json), and [historical renderer](../tools/render_candidate_current_overview_v74.py); preserve the original source-only safeguard before native-bridge and genuine interpreter support.
 - [Frozen first-party no-delegation safeguard](../tools/verify_owned_candidate_runtime_independence_v1.py), [exact safeguard procedure](../oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V1.md), and [complete machine-readable safeguard contract](../oracle/phase2/candidate-runtime-independence-v1.json); all four ordinary and empty-environment checks reject **45** hostile controls with **zero** actual candidate imports or executions. Runtime independence remains **NOT ESTABLISHED**.

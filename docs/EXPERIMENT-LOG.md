@@ -7,6 +7,72 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the complete original Python tests without loading Python's matcher
+
+The [clean first-party original test producer](../tools/run_owned_six_family_original_p0_producer_v5.py),
+[complete original-suite procedure](../oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md),
+and [frozen exact producer contract](../oracle/phase2/six-family-p0-producer-v5.json)
+preserve all **13** real Python suites and all **31,237** original
+case executions. The separate **8,244**-case additional reference is
+not combined with those original cases. The complete upstream file has
+**165** methods: **152** public records, **151** actually executable
+records, one genuine debug-build skip, and exactly **13** named
+private exclusions. All **73** obligations, **34** cross-reference
+entries, six candidate families, and **25** independently authored
+candidate source files remain frozen.
+
+The historical version-4 producer is preserved but cannot establish
+candidate independence: its candidate-side observer imports Python's
+own `re` and `_sre`, and its nested-interpreter setup can restore the
+standard-library matcher. Version 5 installs the independently audited
+first-party safeguard before importing exactly one candidate and
+forbids the original matcher, third-party packages, borrowed engines,
+and fallback. The source freezes real original test evaluation,
+guarded child-interpreter setup, **512** original shared-pattern cases
+using **32** real worker threads, and separately prepared locale
+fixtures. No source-only check actually
+starts a thread, an interpreter, a reference, or a candidate.
+
+Both ordinary and empty-environment producer self-tests and context
+checks **PASS** and reject **110** hostile controls. The actual
+candidate matching run remains **NOT RUN**, runtime independence
+remains **NOT ESTABLISHED**, and no candidate has qualified.
+
+The [current original-test results chart](evidence/candidate-current-overview-v76.svg),
+[complete frozen chart inputs](evidence/candidate-current-overview-v76.inputs.json),
+[full original-test results](evidence/candidate-current-overview-v76.json),
+and [reproducible chart renderer](../tools/render_candidate_current_overview_v76.py)
+preserve every previous real failure and all **six** complete mismatch
+witnesses. Exactly **three** original-test source owners raise the
+authenticated evidence and history lower bounds from **249 / 254** to
+**252 / 257**. Both read-only chart self-tests reject **6,519** hostile
+controls.
+
+Rust still has **1,440** matching differences and **14,853** verified
+passes; its independently recorded source build retains **28** passing
+operations. C still has **1,230** differences and **7,325** verified
+passes despite **14** passing build operations. Zig still has **1,764**
+differences and **3,711** verified passes; its scanner correction
+remains **NOT BUILT** and **NOT TESTED**. No source check changes or
+replaces any observed matching result.
+
+The exact clean producer source, protocol, and contract have SHA-256
+values
+`b4886f424945d3a182a90737fd965fbc4a6e82cafa1c9ee456a9ea405ee18538`,
+`9cfd1fc189d555a596b84b6073471554dab6bd67c1b343c66b744f4dc7b053a4`,
+and `c751b8882fa331b4850271e68a1b43f965b5ddcb77c7ad0d0b4d3dec8ba79b53`;
+their exact sizes are **102,286**, **5,270**, and **21,036** bytes.
+The exact chart renderer, complete inputs, full results, and visible
+chart have SHA-256 values
+`ac825ba68a8a8c2845569403a9b348db8d5cf1009a3d6cf8df0db1e322b53a1c`,
+`3e945e54576468e9e53cc757b1f0bb64064571e3862757666152a4f1b0963e9f`,
+`a7a09e9ccfaadeffc4a49ffdb229835658b4845dfd2fc8081edd1921997d58b1`,
+and `4aabb86916a20c9dc000bd2aad5fd99b7e339f5be8f2fb44f131dd2254130f40`;
+their exact sizes are **42,970**, **1,188,201**, **3,542,645**, and
+**4,886** bytes. Performance, memory, confidence, and undefined
+behavior remain **NOT MEASURED**. The **4,194,304** final cases remain
+**NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze a hardened safeguard that supports real Python interpreters
 
 The [version-2 first-party safeguard](../tools/verify_owned_candidate_runtime_independence_v2.py),

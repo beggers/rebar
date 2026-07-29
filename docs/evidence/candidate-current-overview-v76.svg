@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="605" viewBox="0 0 1080 605" role="img" aria-labelledby="title description">
+<title id="title">Python compared with six independently written regex engines</title>
+<desc id="description">A clean runner now preserves every original Python test without importing Python's matcher into a candidate. No candidate has passed and no speed is measured.</desc>
+<rect width="1080" height="605" rx="18" fill="#0b1220"/>
+<text x="34" y="47" fill="#f8fafc" font-size="25" font-family="system-ui,sans-serif" font-weight="700">Building a faster Python re, from scratch</text>
+<text x="34" y="78" fill="#cbd5e1" font-size="16" font-family="system-ui,sans-serif">6 independent engines · 0 fully compatible · speed NOT MEASURED</text>
+<line x1="34" y1="100" x2="1046" y2="100" stroke="#334155"/>
+<circle cx="43" cy="132" r="6" fill="#22c55e"/>
+<text x="62" y="137" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Python re</text>
+<text x="180" y="137" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Original Python correctness checks pass</text>
+<text x="1027" y="137" text-anchor="end" fill="#22c55e" font-size="13" font-family="system-ui,sans-serif" font-weight="700">BASELINE</text>
+<circle cx="43" cy="178" r="6" fill="#f59e0b"/>
+<text x="62" y="183" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Rust</text>
+<text x="180" y="183" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Build passes; 1,440 earlier differences</text>
+<text x="1027" y="183" text-anchor="end" fill="#f59e0b" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="224" r="6" fill="#f59e0b"/>
+<text x="62" y="229" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">C</text>
+<text x="180" y="229" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Build passes; 1,230 earlier differences</text>
+<text x="1027" y="229" text-anchor="end" fill="#f59e0b" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="270" r="6" fill="#f59e0b"/>
+<text x="62" y="275" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Zig</text>
+<text x="180" y="275" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">64 scanner fixes; 1,764 earlier differences</text>
+<text x="1027" y="275" text-anchor="end" fill="#f59e0b" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT RETESTED</text>
+<circle cx="43" cy="316" r="6" fill="#fb7185"/>
+<text x="62" y="321" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">C++</text>
+<text x="180" y="321" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">2,308 differences; five worker failures</text>
+<text x="1027" y="321" text-anchor="end" fill="#fb7185" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="362" r="6" fill="#fb7185"/>
+<text x="62" y="367" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Go</text>
+<text x="180" y="367" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">4,518 differences; four worker failures</text>
+<text x="1027" y="367" text-anchor="end" fill="#fb7185" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT COMPATIBLE</text>
+<circle cx="43" cy="408" r="6" fill="#94a3b8"/>
+<text x="62" y="413" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="650">Fortran</text>
+<text x="180" y="413" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Full Python compatibility not tested</text>
+<text x="1027" y="413" text-anchor="end" fill="#94a3b8" font-size="13" font-family="system-ui,sans-serif" font-weight="700">NOT TESTED</text>
+<line x1="34" y1="449" x2="1046" y2="449" stroke="#334155"/>
+<text x="34" y="479" fill="#f8fafc" font-size="15" font-family="system-ui,sans-serif" font-weight="650">31,237 unchanged Python checks; 8,244 separate additional checks.</text>
+<text x="34" y="506" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Clean test runner frozen: no Python matcher, external engine, or candidate fallback.</text>
+<text x="34" y="533" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">All six engines and individually guarded child interpreters; candidate run NOT STARTED.</text>
+<text x="34" y="560" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Final 4,194,304-case speed test: NOT FROZEN, NOT GENERATED, NOT OPENED.</text>
+<text x="34" y="587" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif">Overview 76 · complete original tests · no qualified candidate · no speed claims.</text>
+</svg>
