@@ -8,6 +8,25 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected first-party C correctness reporter
+
+The [version-8 C correctness procedure](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V8.md)
+preserves all **31,237** original Python checks and all real previous
+C failures. It makes genuine unpaired Unicode characters, nested
+Python result objects, and whole-result hashes transportable after the
+actual semantic comparison. It changes no reference answer, matcher,
+test, candidate, or strict no-delegation rule.
+
+The previous genuine C run still reports **13,094** passing cases,
+at least **236** real differences, **7** candidate-execution failures,
+and **1** separate infrastructure failure. Its original native build
+is not the newer match-corrected C variant. Freezing this improved
+reporter does **NOT** execute either engine or establish compatibility.
+
+The separate **8,244** checks and unopened **14,155,776**-case final
+proposal remain unchanged. Complete mismatch totals, compatibility,
+speed, memory, and undefined behavior are **NOT MEASURED**.
+
 ## Freeze the corrected first-party Rust test harness
 
 The [version-20 Rust correctness procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V20.md)
