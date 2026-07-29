@@ -8,6 +8,33 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete first-party Zig test
+
+The frozen [version-6 Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V6.md)
+actually started **13** distinct, independently isolated workers and
+attempted all **13** frozen test groups. Every worker exited with the
+same infrastructure failure before returning a test result. There
+were **0** timeouts, **0** completed groups, and **0** verified
+passing cases. The total regex mismatch count is **NOT MEASURED**;
+the previous **1,764** mismatches remain a separate historical result.
+
+The [complete public failure receipt](../oracle/phase2/evidence/repaired-zig-original-campaign-v6-phase2-v13-zig-guard-clean-v1-original-p0-v6-failures-publication-receipt.json)
+has SHA-256
+`c04bab24727a44ee56f6fd0e38129c0504b48ece8ad3a1fa73639f5d89cc2d52`.
+All workers produced the same **106-byte** failure stream, SHA-256
+`0eae62828a696afbaaaa1212c0979f0b86afe95f59d1870f3ad0dea7fe2c08b7`.
+The preserved compressed report has producer-recorded SHA-256
+`a8e16f1dadd4d7b8448ca890ddf87573023211b2ba1cdadccfb9b262a68f8ba7`;
+it has not been reopened.
+
+The runner restored all three original Zig files and correctly marks
+the candidate **FAIL**. A successful publication is not a candidate
+pass. The exact underlying worker error is **NOT ESTABLISHED**
+because the plaintext receipt records the failure digest rather than
+the **106-byte** message. The **8,244** additional cases and the
+**14,155,776** proposed final cases remain unrun. Speed is
+**NOT MEASURED**, and no candidate qualifies.
+
 ## Freeze precise first-party Rust scanner compatibility
 
 The [version-22 Rust scanner-signature repair](../oracle/phase2/RUST-SCANNER-SIGNATURE-SOURCE-REPAIR-V22.md)
