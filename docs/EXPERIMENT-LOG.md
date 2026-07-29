@@ -8,6 +8,33 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete first-party Rust compatibility test
+
+The [version-19 Rust campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V19.md)
+passed its genuine activation and recovery checks and started all
+**13** original compatibility groups in separate workers. Its
+[complete public result](../oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v21-rust-captured-findall-root-provenance-original-p0-v19-failures-publication-receipt.json)
+has SHA-256
+`e48a4115a85d827cbf16a32b6b44390d2bf4b092e1823989c9bcafe874fa04fe`.
+
+Six groups matched Python completely, verifying **12,942** passing
+cases. Two further groups completed and exposed **240** substitution
+differences and **1,056** match-shape differences, for an observed
+lower bound of **1,296**. The other **5** groups reported worker
+infrastructure failures; the first complete traceback identifies
+`CampaignError: reject an incomplete, borrowed, or falsified V16 worker`.
+All **4** original native and source files were restored. Because
+five groups did not complete, the total mismatch count is
+**NOT MEASURED**.
+
+Publishing the actual failure evidence succeeded; the Rust candidate
+itself **FAILS**. Its unopened compressed report has
+producer-recorded SHA-256
+`403566c1b4d280f9f15cab57e637562c32b018c6f2a848bedb0fccf7af3ea23c`.
+The **8,244** additional cases and the **14,155,776** proposed
+final cases remain unrun and unopened. Speed, memory, and undefined
+behavior are **NOT MEASURED**.
+
 ## Freeze the correction for the actual Rust recovery failures
 
 The [version-19 first-party Rust campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V19.md)
