@@ -18,15 +18,17 @@ Two independent Python processes now agree on all **6,912** affected
 checks, including all **96** cases. No original case has been removed.
 There is no compatible replacement, measured speedup, or winner.
 
-Separate original-suite test runners are frozen for **C and Rust**. The
+Separate original-suite test runners are frozen for **C, Rust, and Zig**. The
 first Rust attempt failed before matching; its failure remains recorded.
 The repaired Rust runner now verifies all **13** real worker routes,
 lossless result writing, and safe recovery, but its new compatibility
 campaign has **NOT RUN**. C also has **NOT RUN**: its rebuilt native
-engine must first be safely activated. Zig, C++, Go, and Fortran are
+engine must first be safely activated. Zig now has its own pinned
+Zig matcher, C bridge, worker, and controller; its new complete
+compatibility campaign has **NOT RUN**. C++, Go, and Fortran remain
 independently written designs, not passing replacements.
 
-![Python's reference passes; the separate public-import audit exposes seven failures; all candidate engines remain unqualified and speed remains unmeasured](docs/evidence/candidate-current-overview-v45.svg)
+![Python's reference passes; three independently written candidate runners are frozen; the public Zig import still fails; no engine qualifies and speed remains unmeasured](docs/evidence/candidate-current-overview-v46.svg)
 
 The existing `rebar.py` prematurely selects the Zig prototype, which
 has **1,764** recorded compatibility differences and does not export
@@ -53,7 +55,7 @@ measurements start only when three independent engines pass every check.
 | Public `rebar` import | Incorrectly selects an unqualified Zig prototype | FAIL; `__version__` missing | NOT MEASURED |
 | Rust | Repaired runner frozen; corrected matching has NOT RUN | Previous build: 8,965 verified; 1,036 differences | NOT MEASURED |
 | C | Corrected C-only test runner frozen; new test has NOT RUN | Previous build: 7,325 verified; 1,230 differences; all 13 groups completed | NOT MEASURED |
-| Zig | Independently written and built | 3,711 verified; 1,764 differences; all 13 groups completed | NOT MEASURED |
+| Zig | Dedicated Zig-only runner frozen; new test has NOT RUN | Previous build: 3,711 verified; 1,764 differences; all 13 groups completed | NOT MEASURED |
 | C++ | Independently written and built | 128 verified; 2,308 differences; five worker failures | NOT MEASURED |
 | Go | New build paused; failure recorder needs correction | 128 verified; 4,518 differences; four worker failures | NOT MEASURED |
 | Fortran | Independently written | NOT TESTED | NOT MEASURED |
@@ -110,6 +112,7 @@ slowdown greater than **20%**. There is no winner.
 - [Corrected six-engine test producer](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md).
 - [Corrected C-only original-suite runner](oracle/phase2/P0-CANDIDATE-PROTOCOL-V10.md).
 - [Repaired, recovery-safe Rust-only original-suite runner](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V7.md).
+- [Independent Zig-only original-suite runner and native bridge](oracle/phase2/ZIG-ORIGINAL-P0-CANDIDATE-PROTOCOL-V1.md).
 - [Preserved first Rust-only runner](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V6.md).
 - [Actual first Rust controller failure](oracle/phase2/evidence/repaired-rust-original-campaign-v6-rust-phase2-v13-rust-pattern-repr-original-p0-entry-failure.json).
 - [Independently recorded Rust failure and build-record access](oracle/phase2/evidence/repaired-rust-original-campaign-v6-rust-phase2-v13-rust-pattern-repr-original-p0-entry-failure-observation.json).

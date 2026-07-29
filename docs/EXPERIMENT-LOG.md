@@ -7,6 +7,71 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze an independently written Zig original-suite runner
+
+Freeze a genuine Zig-only worker and controller against the current
+Python baseline. The
+[independent Zig original-suite worker](../tools/run_frozen_zig_original_p0_candidate_worker_v1.py)
+has SHA-256
+`ddafdc5b1fe06dbfa6449cbfde768d7fee6d16953b3c769c1e30aa600e3c62f9`.
+Its [separately owned Zig-only controller](../tools/run_frozen_zig_original_p0_candidate_v1.py)
+has SHA-256
+`8c9be13232fdbab7ff01b2313a816fd80e033fb5b6d0bf3d8cb07444eeba4856`.
+The [frozen Zig original-suite protocol](../oracle/phase2/ZIG-ORIGINAL-P0-CANDIDATE-PROTOCOL-V1.md)
+has SHA-256
+`294dfb6bc8e286d8415b329f8b2918b856ab3b2d1afb8261e3e04663028fda3c`.
+The [complete canonical Zig source contract](../oracle/phase2/zig-original-p0-candidate-protocol-v1.json)
+has SHA-256
+`1ff289540457ecba4e91b3b9491b3c42872a5db09b95815b8f58fcdc34315470`.
+
+The actual first-party Zig matcher has SHA-256
+`a917e7b1a06008be400e4c4a74b6caee5a552624dc46a7d67c932758f594ef28`.
+Its own C-to-Python bridge has SHA-256
+`67edae144290254ba25f67f73350ff5d52ccfb2a209e3fbcc555fc4b3d4efd4b`.
+Its Python adapter has SHA-256
+`2d7ec411bc035091fea3f20857a4793b21092d3f490d20a9a0efaa418cda0862`.
+The pinned official Zig compiler has SHA-256
+`2317bbb91798556d9d0f38aabdac23db83f0979b25f767259ae474546724087c`.
+This is an independently implemented parser, compiler, matching engine,
+and native bridge; it is not a wrapper around another regular-expression
+package, Python's `_sre`, or another candidate. The compiler is only
+authenticated, not run, during this source-freeze chunk.
+
+All **eight** ordinary and empty-environment source and frozen-context
+checks independently pass. Worker self-tests reject **94** hostile
+fixtures and controller self-tests reject **83**. Both paths preserve
+the original **31,237** cases, **13** suites, **13** named private
+waivers, both independently corrected Python reference vectors, and all
+**96** affected cache cases. They independently preserve the separate
+**32** public-import observations, the existing **50** signature
+checks, the actual earlier Zig **1,764** differences, and the genuine
+Rust controller failure with one historical build-archive access.
+
+The [updated Zig and overall-results graph](evidence/candidate-current-overview-v46.svg)
+records **three** separately frozen C, Rust, and Zig source-runner
+families, not three complete or passing candidates. The Zig engine has
+**NOT BEEN ACTIVATED** by this experiment and its corrected full
+compatibility campaign has **NOT RUN**. Runtime non-delegation is
+**NOT ESTABLISHED**. No candidate, Python reference, compiler, native
+library, archive, benchmark, hidden case, or holdout runs during the
+source gates. Performance remains **NOT MEASURED**.
+
+The [version-46 Zig graph generator](../tools/render_candidate_current_overview_v46.py)
+has SHA-256
+`ddb25b70d9f87ad3b6eabbc7c2917a434739931ad2f5b5d194b5cb25706a9334`.
+Its [complete current graph inputs](evidence/candidate-current-overview-v46.inputs.json)
+have SHA-256
+`c0633ec12f5aad3d0e0fb8fe29f143ccb6801ec63d5960c85afd47d982c4653d`.
+Its [full candidate and public-import results](evidence/candidate-current-overview-v46.json)
+have SHA-256
+`ec5ecbbcb765bb845a133ad81d02312eb29e6b18718d5e4b346ff10e74c10b3f`.
+The reproducibly generated chart has SHA-256
+`913f8af0eae80bc48640551b589556a685f81b69f218783afc04e8d7e3746c14`.
+The visible chart correctly identifies its own renderer and inputs;
+the older version-44 and version-45 inputs are explicitly historical.
+Both graph self-tests reject **1,718** hostile controls without
+running a compiler, candidate, benchmark, or hidden test.
+
 ## Freeze the actual public-import compatibility audit
 
 Freeze a separate source-only test for the module a user would actually
