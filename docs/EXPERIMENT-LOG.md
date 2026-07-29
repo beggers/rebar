@@ -8,6 +8,28 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Record the actual corrected C portability failure
+
+The [version-20 corrected C rebuild](../oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-SOURCE-BUILD-V20.md)
+was authorized and attempted exactly once after its source freeze was
+committed and pushed. It correctly verified the original native
+extension and all **5** toolchain files. The pinned Python 3.14.6 build
+does not expose `os.getrandom`, so generating an unpredictable private
+directory name failed with `AttributeError` before any directory was
+created.
+
+The [complete retained failure record](../oracle/phase2/evidence/c-original-match-semantics-source-build-v20-preactivation-failure.json)
+proves **0** compiler processes, **0** private roots, **0** build
+phases, **0** journals, and **0** new build receipts. It also records a
+second, not-yet-reached `os.getrandom` call used by journal creation;
+fixing only the first call would not produce a working build.
+
+The original C extension retains its exact hash, inode, permissions,
+and size. The existing **31,237** checks and separate **8,244**
+checks are unchanged. No candidate was qualified or timed, and the
+**14,155,776**-case proposed holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the corrected from-scratch C rebuild
 
 The [version-20 corrected C build](../oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-SOURCE-BUILD-V20.md)
