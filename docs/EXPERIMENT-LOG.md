@@ -7,6 +7,58 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze truthful Rust worker diagnostics before another rerun
+
+The [first-party worker-diagnostics correction](../tools/run_owned_repaired_rust_original_campaign_v14.py),
+[complete diagnostic-capture procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V14.md),
+and [exact machine-readable worker contract](../oracle/phase2/repaired-rust-original-campaign-v14.json)
+retain the unchanged **13**-suite, **31,237**-case original Python
+test. Two real earlier Rust runs each started **13** distinct workers,
+completed **zero** suites, and produced **13** infrastructure
+failures. The historical worker controller discarded child exit codes,
+standard output, standard error, and tracebacks; neither attempt
+established a child-level cause or runtime-guard proof.
+
+Version 14 preserves the authenticated first-party worker's actual
+return code, process identity, standard output, standard error, and
+communication failures. It retains the exact four-source guarded
+native-loader correction and never permits Python's `re` or `_sre`,
+external matching, arbitrary native libraries, or reduced original
+tests. All four ordinary and empty-environment source checks **PASS**
+and reject **39** hostile controls. These are source checks: the new
+candidate rerun is **NOT RUN**, its matching correctness is
+**NOT MEASURED**, and runtime independence is **NOT ESTABLISHED**.
+
+The [current worker-diagnostics chart](evidence/candidate-current-overview-v81.svg),
+[complete diagnostics graph inputs](evidence/candidate-current-overview-v81.inputs.json),
+[full machine-readable diagnostics results](evidence/candidate-current-overview-v81.json),
+and [reproducible diagnostics chart renderer](../tools/render_candidate_current_overview_v81.py)
+preserve both actual prior infrastructure failures and all original
+test results. Three new first-party diagnostics owners increase
+evidence and history lower bounds from **262 / 267** to **265 / 270**.
+Both graph self-tests reject **7,423** hostile controls.
+Rust's earlier completed matching result remains **1,440** differences
+and **14,853** verified passes. C retains **1,230 / 7,325**, and Zig
+retains **1,764 / 3,711**. No candidate qualifies.
+
+The exact diagnostic-fix source, procedure, and contract have
+respective SHA-256 values
+`8115b05911d47c0d22a6cb85a405e91b26c00921112494d6317e5a5853d5c99e`,
+`ac7700fab0576a2856ff38e6ac7ad1d0f2a5f0c6e5a0207012518f13f8fe11a2`,
+and `fc1ecfaa8eb9663c874bffe70746d6aa76d9de21ad49552ace65dd9f46da15e3`.
+Their exact sizes are **88,399**, **13,686**, and **10,502** bytes.
+The frozen graph renderer, complete inputs, exact results, and visible
+chart have respective SHA-256 values
+`db7afc1611821337dfe02303573cc51b980e806d1b7d4d3a3110444cb8c89bc9`,
+`86583e9c56f47206f12709d2faaa80a693784ea47f72c20370cf59ac204ec053`,
+`97b52e5a112095d100ca6c919c5473242b180066f30314f0472e425b14842670`,
+and `f8fc8d32551de71b0c8408706d13b5af65ffdd50e6fb95c64c5ba0f5bf1867cf`.
+Their exact sizes are **62,030**, **1,242,618**, **3,955,572**, and
+**5,363** bytes.
+The separate **8,244** extra cases retain their own denominator;
+speed, memory, and confidence are **NOT MEASURED**; and the proposed
+**4,194,304**-case final holdout is **NOT OPENED**.
+
 ## Record the actual corrected Rust run without guessing its failure
 
 The corrected version-13 first-party Rust campaign actually started
