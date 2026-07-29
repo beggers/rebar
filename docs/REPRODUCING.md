@@ -6,6 +6,83 @@ below are source-only or read-only unless a command explicitly says otherwise.
 The current results and charts remain in [the project README](../README.md);
 experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
+## Verify the hardened safeguard without running an engine
+
+The version-2 safeguard supports one authenticated first-party bridge
+and individually guarded genuine Python interpreters. Its four tests
+reject **72** hostile controls without importing an engine or opening
+the final holdout. Actual engine independence is **NOT ESTABLISHED**.
+
+```bash
+REBAR_GUARD_PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+REBAR_GUARD_ARGS=(
+  --source-sha256 f693b1576b63ae5ebe45663801834c05e7d03671a5d6f2b4beb1b62034d37c0a
+  --protocol-sha256 2f11a29e08b6616d053269bc99e5283b5548ce88c74b384e1c5979c2e1d2288c
+  --contract-sha256 813bbab0898d5a65a6b43533f7bfa024c4c215609c4f9fa6eb0f4cbe2791f473
+  --graph-source-sha256 7fecafe25316c98bd6c86d6f82779250abb54ca3451abc84e04e2d8bc505d21d
+  --graph-inputs-sha256 aa54170b8e4c426de1210f90c47b16677af80482418fb3cdf3327c173542b425
+  --graph-summary-sha256 006f402dd3f8ec8150b844f8584d17d22afcd2fae99434e745bf6dbf3682a283
+  --graph-svg-sha256 1fac5fe3540dc0493e49ce581a30a04e1b843a73beddef8a876b8a6ae45a8060
+)
+
+"$REBAR_GUARD_PY" -I -B -S \
+  tools/verify_owned_candidate_runtime_independence_v2.py \
+  --self-test "${REBAR_GUARD_ARGS[@]}"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_GUARD_PY" -I -B -S \
+  tools/verify_owned_candidate_runtime_independence_v2.py \
+  --self-test "${REBAR_GUARD_ARGS[@]}"
+
+"$REBAR_GUARD_PY" -I -B -S \
+  tools/verify_owned_candidate_runtime_independence_v2.py \
+  --verify-frozen-context "${REBAR_GUARD_ARGS[@]}"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_GUARD_PY" -I -B -S \
+  tools/verify_owned_candidate_runtime_independence_v2.py \
+  --verify-frozen-context "${REBAR_GUARD_ARGS[@]}"
+```
+
+## Verify the current hardened-safeguard results graph
+
+The four read-only graph checks preserve all original results and
+reject **6,429** hostile controls. They do not execute a candidate.
+
+```bash
+REBAR_CURRENT_PY=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+REBAR_CURRENT_ARGS=(
+  --source-sha256 0610a7ba73f13eec6c9e59d766971568581b056cb54057b8dbaa95798d0c78fe
+  --source-bytes 44198
+  --previous-source-sha256 7fecafe25316c98bd6c86d6f82779250abb54ca3451abc84e04e2d8bc505d21d
+  --previous-inputs-sha256 aa54170b8e4c426de1210f90c47b16677af80482418fb3cdf3327c173542b425
+  --previous-summary-sha256 006f402dd3f8ec8150b844f8584d17d22afcd2fae99434e745bf6dbf3682a283
+  --previous-svg-sha256 1fac5fe3540dc0493e49ce581a30a04e1b843a73beddef8a876b8a6ae45a8060
+  --feature-source-sha256 f693b1576b63ae5ebe45663801834c05e7d03671a5d6f2b4beb1b62034d37c0a
+  --feature-protocol-sha256 2f11a29e08b6616d053269bc99e5283b5548ce88c74b384e1c5979c2e1d2288c
+  --feature-contract-sha256 813bbab0898d5a65a6b43533f7bfa024c4c215609c4f9fa6eb0f4cbe2791f473
+  --inputs-sha256 5a3d9eed1e46b941c5456ff601ce04167b4d451c25ff07d9a6a2279ea54689cb
+  --summary-sha256 a8214d808a1edf13ba2afb6181864133415751bdaaa7e384f72a1699ad805f5f
+  --svg-sha256 62763a4668c3ccbafbb0aed4e2c22533c6bf830d0e76c0ea3bb3883aa0bfb37f
+)
+
+"$REBAR_CURRENT_PY" -I -B \
+  tools/render_candidate_current_overview_v75.py --self-test
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_CURRENT_PY" -I -B \
+  tools/render_candidate_current_overview_v75.py --self-test
+
+"$REBAR_CURRENT_PY" -I -B \
+  tools/render_candidate_current_overview_v75.py \
+  --verify-frozen-context "${REBAR_CURRENT_ARGS[@]}"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C \
+  "$REBAR_CURRENT_PY" -I -B \
+  tools/render_candidate_current_overview_v75.py \
+  --verify-frozen-context "${REBAR_CURRENT_ARGS[@]}"
+```
+
 ## Verify the frozen no-delegation safeguard without running an engine
 
 The safeguard is **SOURCE FROZEN**. It has not been run against an
@@ -46,7 +123,7 @@ env -i PATH=/usr/bin:/bin LC_ALL=C \
   --verify-frozen-context "${REBAR_RUNTIME_ARGS[@]}"
 ```
 
-## Verify the current no-delegation-safeguard results graph
+## Verify the historical version-74 safeguard results graph
 
 These four read-only checks authenticate the complete version-74 chart
 and all **6,332** hostile controls. They do not run the safeguard on an
@@ -89,7 +166,9 @@ env -i PATH=/usr/bin:/bin LC_ALL=C \
 ## Evidence and reproduction
 
 - [Complete actual Rust failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [independently durable 13-worker result receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [complete plain-text 13-group failure and root-cause analysis](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json); **13** real workers completed all **31,237** original cases and observed **1,440** mismatches, **14,853** explicitly verified passes, and **zero** infrastructure failures. Receipt and analysis **PASS** preserve a candidate **FAIL**.
-- [Current independently generated results graph](../docs/evidence/candidate-current-overview-v74.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v74.inputs.json), [current machine-readable results](../docs/evidence/candidate-current-overview-v74.json), and [reproducible compact renderer](../tools/render_candidate_current_overview_v74.py); preserve the frozen safeguard as **NOT RUN ON A CANDIDATE**, runtime independence as **NOT ESTABLISHED**, the independently written Zig correction as **NOT BUILT** and **NOT TESTED**, all actual candidate failures, and both successful native builds. Qualification remains **BLOCKED**, speed **NOT MEASURED**, and the final comparison **NOT OPENED**.
+- [Current independently generated results graph](../docs/evidence/candidate-current-overview-v75.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v75.inputs.json), [current machine-readable results](../docs/evidence/candidate-current-overview-v75.json), and [reproducible compact renderer](../tools/render_candidate_current_overview_v75.py); preserve the hardened safeguard as **NOT RUN ON A CANDIDATE**, runtime independence as **NOT ESTABLISHED**, all genuine original failures, both separately successful native builds, and the unopened holdout.
+- [Hardened no-fallback safeguard](../tools/verify_owned_candidate_runtime_independence_v2.py), [complete safe native-bridge and interpreter procedure](../oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V2.md), and [exact safeguard contract](../oracle/phase2/candidate-runtime-independence-v2.json); all four source checks reject **72** hostile controls without running a candidate.
+- [Historical version-74 results graph](../docs/evidence/candidate-current-overview-v74.svg), [historical graph inputs](../docs/evidence/candidate-current-overview-v74.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v74.json), and [historical renderer](../tools/render_candidate_current_overview_v74.py); preserve the original source-only safeguard before native-bridge and genuine interpreter support.
 - [Frozen first-party no-delegation safeguard](../tools/verify_owned_candidate_runtime_independence_v1.py), [exact safeguard procedure](../oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V1.md), and [complete machine-readable safeguard contract](../oracle/phase2/candidate-runtime-independence-v1.json); all four ordinary and empty-environment checks reject **45** hostile controls with **zero** actual candidate imports or executions. Runtime independence remains **NOT ESTABLISHED**.
 - [Historical independently generated Zig scanner graph](../docs/evidence/candidate-current-overview-v73.svg), [complete historical graph inputs](../docs/evidence/candidate-current-overview-v73.inputs.json), [historical machine-readable results](../docs/evidence/candidate-current-overview-v73.json), and [historical renderer](../tools/render_candidate_current_overview_v73.py); freeze exactly **64** corrected and **960** preserved scanner cases without building or testing the corrected Zig engine.
 - [Complete independently written Zig scanner correction](../candidates/zig/variants/scanner_phrase_v4/zig_candidate.py), [frozen Zig scanner protocol](../oracle/phase2/ZIG-SCANNER-PHRASE-SOURCE-REPAIR-V4.md), [complete scanner source contract](../oracle/phase2/zig-scanner-phrase-source-repair-v4.json), and [independent source-only Zig verifier](../tools/apply_owned_zig_scanner_phrase_source_repair_v4.py); **64** source-corrected and **960** preserved scanner cases, **zero** new candidate workers, and corrected build and matching **NOT RUN**.

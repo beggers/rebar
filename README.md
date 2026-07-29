@@ -16,7 +16,7 @@ regular-expression package, or another candidate does not count.
 **Six** from-scratch engines. **Zero** fully compatible replacements.
 Speed versus Python: **NOT MEASURED**. There is no winner.
 
-![Comparison of Python and six independently written regular-expression engines. Rust and C build, Zig's scanner correction and a no-delegation safeguard are frozen, and no replacement has passed all compatibility tests or measured a speedup.](docs/evidence/candidate-current-overview-v74.svg)
+![Python compared with six independently written regular-expression engines. The hardened no-fallback safeguard supports a candidate's own code and protected interpreters; no replacement has passed all compatibility tests or measured a speedup.](docs/evidence/candidate-current-overview-v75.svg)
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
@@ -39,8 +39,8 @@ reproducible build checks. A separately traced Rust build passed **28**
 checks and recorded its compiled engine's identity. Neither engine has
 passed its full compatibility test. The old **13**-worker Rust test
 targets a different build and remains **BLOCKED**; testing the newly
-traced engine is **NOT RUN**. The frozen no-delegation safeguard has not
-run on an engine. Runtime independence is **NOT ESTABLISHED**.
+traced engine is **NOT RUN**. The safeguard now supports an engine's own
+code and protected interpreters; independence is **NOT ESTABLISHED**.
 
 ## Detailed correctness
 

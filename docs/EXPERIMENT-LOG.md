@@ -7,6 +7,72 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a hardened safeguard that supports real Python interpreters
+
+The [version-2 first-party safeguard](../tools/verify_owned_candidate_runtime_independence_v2.py),
+[complete isolation procedure](../oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V2.md),
+and [exact machine-readable policy](../oracle/phase2/candidate-runtime-independence-v2.json)
+allow only a selected first-party engine's independently authenticated
+native bridge. Python's `re` and `_sre`, external matching packages,
+another candidate, substituted native code, unapproved processes, and
+network fallback remain forbidden. The unchanged original suite's real
+nested interpreters receive separately installed and independently
+verified safeguards.
+
+Two local proposals were rejected before publication. The first left
+the candidate's `re` alias installed after nested-interpreter cleanup,
+so all **11** original child interpreters would fail. The second could
+be fooled into accepting all **11** child identities and **416**
+lifecycle events without creating a real interpreter. Neither proposal
+nor its draft chart was staged. The final safeguard checks the genuine
+interpreter provider, the actual distinct children, a real operating-
+system pipe, a non-reusable challenge, original alias cleanup, and all
+**394** unchanged original child case executions. Independent review
+physically rejected the entire earlier forgery and actually passed the
+unchanged original cleanup.
+
+Both normal and empty-environment source self-tests and context checks
+**PASS**, each rejecting **72** hostile controls. They start **zero**
+candidate workers, native loads, compilers, archive reads, private-root
+reads, benchmark clocks, or hidden tests. The actual safeguard audit is
+**NOT RUN** and runtime independence is **NOT ESTABLISHED**.
+
+The [current independently generated overview](evidence/candidate-current-overview-v75.svg),
+[complete overview inputs](evidence/candidate-current-overview-v75.inputs.json),
+[full machine-readable overview](evidence/candidate-current-overview-v75.json),
+and [reproducible renderer](../tools/render_candidate_current_overview_v75.py)
+preserve all **13** original suites, all **31,237** original cases,
+all **six** genuine failure witnesses, and the separate **8,244** extra
+cases. Exactly **three** new authenticated safeguard owners advance
+the evidence and history lower bounds from **246 / 251** to
+**249 / 254**. Both graph self-tests reject **6,429** hostile controls.
+
+Rust still has **1,440** genuine differences and **14,853** verified
+passes; its separate source build retains **28** passing operations
+and its newer matching test is **NOT RUN**. C still has **1,230**
+differences and **7,325** verified passes despite its **14** passing
+build operations. Zig still has **1,764** differences and **3,711**
+verified passes; its **1,024**-case scanner source correction remains
+**NOT BUILT** and **NOT TESTED**. Six candidate families remain; none
+qualifies.
+
+The safeguard source, protocol, and contract have respective SHA-256
+values
+`f693b1576b63ae5ebe45663801834c05e7d03671a5d6f2b4beb1b62034d37c0a`,
+`2f11a29e08b6616d053269bc99e5283b5548ce88c74b384e1c5979c2e1d2288c`,
+and `813bbab0898d5a65a6b43533f7bfa024c4c215609c4f9fa6eb0f4cbe2791f473`;
+their exact sizes are **67,097**, **4,437**, and **7,671** bytes.
+The graph renderer, complete inputs, complete results, and visible
+chart have respective SHA-256 values
+`0610a7ba73f13eec6c9e59d766971568581b056cb54057b8dbaa95798d0c78fe`,
+`5a3d9eed1e46b941c5456ff601ce04167b4d451c25ff07d9a6a2279ea54689cb`,
+`a8214d808a1edf13ba2afb6181864133415751bdaaa7e384f72a1699ad805f5f`,
+and `62763a4668c3ccbafbb0aed4e2c22533c6bf830d0e76c0ea3bb3883aa0bfb37f`;
+their exact sizes are **44,198**, **1,164,810**, **3,355,331**, and
+**4,897** bytes. Compatibility qualification, speed, memory, and
+confidence remain **NOT MEASURED**. The **4,194,304** proposed final
+cases remain **NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze a from-scratch safeguard against delegated matching
 
 The [independently written runtime safeguard](../tools/verify_owned_candidate_runtime_independence_v1.py),
