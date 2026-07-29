@@ -7,6 +7,70 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Record the actual Rust worker diagnostics and native-bridge failure
+
+The actual version-14 first-party Rust test started **13** distinct
+workers, with process identities **81–93**, for the unchanged **13**
+original groups and **31,237** Python checks. Each worker exited with
+status **2**, emitted **zero** bytes of standard output, and recorded
+the same complete **76**-byte standard-error diagnostic. No worker
+completed its group: the candidate **FAILS** with **13** infrastructure
+failures, **zero** newly verified passes, and semantic matching
+**NOT MEASURED**. This is a third genuine failure, separate from both
+earlier **13**-worker failures.
+
+The [independently durable actual-run receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v14-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v14-failures-publication-receipt.json)
+is **14,932** bytes with SHA-256
+`09c5ef5dd4919e8005d755a22d77615556a451202ab94c3ed11def2ba8825654`.
+It attests that the [compressed actual failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v14-rust-phase2-v19-rust-buffer-shape-root-provenance-original-p0-v14-failures.json.gz)
+is **4,489** bytes with SHA-256
+`e2045474932ce3fa0512cf26324a05d224d8516ba1b382ff1cca817cc726387c`.
+The small receipt independently preserves every worker's process
+identity, exit status, complete-stream lengths and hashes, and complete
+traceback hash. It also confirms that all **four** original files were
+restored before publication. Receipt **PASS** describes durable
+publication only; the actual candidate is **FAIL**.
+
+One separately authorized read-only inspection of that exact compressed
+report verified its SHA-256 and inode before and after reading. Every
+one of the **13** preserved workers emitted exactly:
+
+```text
+V14 campaign rejected: runtime guard blocked unattested-native-owner:bridge
+```
+
+The actual standard-error bytes end in one newline and have SHA-256
+`18c24a3c760f8ffe862dfb0216f74225719929d601db6289719b026a43efa239`.
+The plain-text receipt records this byte count and hash, not the
+standard-error text; the actual message is established by the one
+authorized report inspection. The recorded failure is the safeguard
+rejecting the candidate's own insufficiently attested native bridge,
+not a measured regular-expression mismatch. It does not establish a
+successful guarded candidate or runtime independence.
+
+The [current actual-diagnostics results chart](evidence/candidate-current-overview-v82.svg),
+[complete actual-diagnostics graph inputs](evidence/candidate-current-overview-v82.inputs.json),
+[full machine-readable actual results](evidence/candidate-current-overview-v82.json),
+and [reproducible actual-diagnostics renderer](../tools/render_candidate_current_overview_v82.py)
+preserve all **three** real Rust infrastructure failures and all
+historical matching results. The separately durable receipt and
+compressed report increase evidence and history lower bounds to
+**267 / 272**. Both graph self-tests reject **7,569** hostile
+controls. The exact renderer, complete inputs, machine-readable
+results, and visible chart have respective SHA-256 values
+`9c6bfd10a8a1663e4490f3b0a34acff6b0c90b92c6d39a34b35a20cf102f3b75`,
+`5d589797ecb24fc7de7aa4fdbe67c28196309c53d4e3dce26a0fd7e08055e507`,
+`2a43659f9c2d8df3c25e7cd536abf8f9181513642bd05e456352ed6e87ee0212`,
+and `89cfda78296840200fb4e55bcd04dc45f1966456ad2991d339bb9b997c8c5c51`.
+Their exact sizes are **63,759**, **1,269,829**, **4,167,573**, and
+**5,500** bytes. Rust's earlier completed matching result remains
+**1,440** differences and **14,853** verified passes; C retains
+**1,230 / 7,325**, and Zig retains **1,764 / 3,711**. The separate
+**8,244** extra checks keep their own denominator. No candidate
+qualifies, runtime independence is **NOT ESTABLISHED**, speed and
+memory are **NOT MEASURED**, and the proposed **4,194,304**-case
+final holdout is **NOT GENERATED** and **NOT OPENED**.
+
 ## Freeze truthful Rust worker diagnostics before another rerun
 
 The [first-party worker-diagnostics correction](../tools/run_owned_repaired_rust_original_campaign_v14.py),
