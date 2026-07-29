@@ -16,13 +16,13 @@ regular-expression package, or another candidate does not count.
 **Six** from-scratch engines. **Zero** fully compatible replacements.
 Speed versus Python: **NOT MEASURED**. There is no winner.
 
-![Python compared with six independently written regular-expression engines. Three Rust attempts failed; the latest identifies 13 native-bridge rejections. No replacement has passed all tests or measured a speedup.](docs/evidence/candidate-current-overview-v82.svg)
+![Python compared with six independently written regular-expression engines. Three Rust attempts failed; a corrected native bridge has not yet been tested. No replacement has passed all tests or measured a speedup.](docs/evidence/candidate-current-overview-v83.svg)
 
 | Engine | Compatibility with Python | Speed versus Python |
 | --- | --- | --- |
 | Python `re` | Baseline; reference checks pass | Not timed |
 | Public `rebar` import | FAIL; still selects an unqualified Zig prototype | NOT MEASURED |
-| Rust | FAIL; 13 bridge rejections; 1,440 earlier differences | NOT MEASURED |
+| Rust | FAIL; 1,440 earlier differences; bridge fix not run | NOT MEASURED |
 | C | FAIL; 1,230 differences | NOT MEASURED |
 | Zig | FAIL; 1,764 differences; scanner fix frozen, not built or tested | NOT MEASURED |
 | C++ | FAIL; 2,308 differences and five worker failures | NOT MEASURED |
@@ -39,7 +39,7 @@ reproducible build checks. A separately traced Rust build passed **28**
 checks and recorded its compiled engine's identity. Neither engine has
 passed its full compatibility test. The old **13**-worker Rust test
 targets a different build and remains **BLOCKED**. Three Rust runs lost
-all **13** workers; the latest identifies a native-bridge rejection.
+all **13** workers; the corrected bridge test is **NOT RUN**.
 Runtime independence is **NOT ESTABLISHED**.
 
 ## Detailed correctness

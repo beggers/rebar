@@ -7,6 +7,76 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the exact native-bridge correction without running it
+
+The [first-party native-bridge correction](../tools/run_owned_repaired_rust_original_campaign_v15.py),
+[complete guarded native-bridge procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V15.md),
+and [exact machine-readable bridge contract](../oracle/phase2/repaired-rust-original-campaign-v15.json)
+address the actual version-14 worker failure. The correction covers
+all **three** actual version-7 native-stage call sites. It identifies
+only the authenticated first-party Rust engine and native bridge;
+it does not disable the existing runtime guard, permit arbitrary
+libraries, use Python's `re` or `_sre`, delegate regular-expression
+matching, change a test, or run the candidate.
+
+All four ordinary and empty-environment source checks **PASS** and
+reject **50** hostile controls. The exact corrected source, complete
+procedure, and contract have respective SHA-256 values
+`4fae63c422ba57770a7dc3b514828eef2e714b83f4f27899450eafa45ab3e9cf`,
+`0c3de861493026b9a2e09713c39dd5018d320c06956006f0568babf61a8bdb24`,
+and `ef01910b0ac165965631a9349f0fffa94c7881145f37d705f3f494bcd6ce5d6b`.
+Their exact sizes are **119,006**, **11,921**, and **13,079** bytes.
+Passing source controls never count as a candidate run or a matching
+result.
+
+All **three** genuine earlier Rust attempts remain **FAIL**: each
+started **13** workers and completed **zero** original groups. The
+version-14 standard-error message,
+`V14 campaign rejected: runtime guard blocked unattested-native-owner:bridge`,
+was recovered by one independently authorized read-only inspection of
+the verified report; its small durable receipt attests the exact
+**76**-byte message hash and does not contain the text itself. The
+original files were restored in every published failed attempt.
+The previous complete Rust matching result remains **1,440** genuine
+differences and **14,853** verified passes. C retains **1,230 /
+7,325** and Zig retains **1,764 / 3,711**. The new version-15
+corrected matching run is **NOT RUN**, and runtime independence is
+**NOT ESTABLISHED**.
+
+The [current lossless proof-registry chart](evidence/candidate-current-overview-v83.svg),
+[complete proof-registry graph inputs](evidence/candidate-current-overview-v83.inputs.json),
+[full machine-readable proof-registry results](evidence/candidate-current-overview-v83.json),
+and [reproducible proof-registry renderer](../tools/render_candidate_current_overview_v83.py)
+retain every complete prior evidence record. The renderer stores
+**nine** complete canonical proof records once under their full
+SHA-256 digests in the machine-readable results' top-level
+`lossless_family_evidence_pool`. All **six** preceding candidate rows retain each of
+their **nine** independently verified proof references: **54** exact
+references in total. Expansion reconstructs every complete original
+row and the canonical version-82 predecessor exactly. Actual failure
+receipts, every original test, and all provenance stay verifiable.
+Deduplication never removes a proof, weakens an owner,
+conceals a loss, changes a denominator, or discards matching evidence.
+The output must remain below **4,194,304** bytes before publication.
+Both graph self-tests reject **8,065** hostile controls. The three
+verified new source owners increase authenticated evidence and
+history lower bounds to **270 / 275**. The exact graph renderer,
+complete inputs, machine-readable results, and visible chart have
+respective SHA-256 values
+`0d9424fd52b73908e9e2cc46d7d01637fd8435e8ce34df6cce62d2006845c57c`,
+`bf4a2c72bb530dbeb8ac5e1c5995a3f8fcc56412303eff80fff7f3f076b0d68d`,
+`4ac765869b885d93fe648b5bb71ce1fcdcbbc5d5a9b5eb0896f28a33209293fd`,
+and `71517916fc6cbab43ebb9039d7f8b9249d275e388a218eb00ba421b376376b77`.
+Their exact sizes are **66,060**, **1,285,630**, **3,690,560**, and
+**5,723** bytes. Exact deduplication removes **477,013** repeated
+bytes compared with version 82 and leaves **503,744** bytes below
+the **4,194,304**-byte limit without removing any verified history.
+The original **31,237** checks and separate **8,244** extra checks
+remain distinct. No candidate qualifies. Speed, memory, and
+confidence remain **NOT MEASURED**, and the separate proposed
+**4,194,304**-case performance holdout remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Record the actual Rust worker diagnostics and native-bridge failure
 
 The actual version-14 first-party Rust test started **13** distinct
