@@ -8,6 +8,25 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected first-party Rust test harness
+
+The [version-20 Rust correctness procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V20.md)
+corrects how the original Python harness recognizes an already
+selected, independently written Rust engine. It preserves the exact
+original tests, the strict no-delegation guard, both real observer
+sites, and every previously observed failure. It does not wrap or
+borrow another regular-expression engine.
+
+The latest actual Rust results remain **12,942** matching cases,
+**1,296** observed differences, **5** incomplete groups, and **17**
+real object-lifetime warnings. The harness change neither repairs
+those warnings nor proves that all incomplete groups share one cause.
+
+The source-only experiment has **NOT RUN** a candidate. It keeps the
+**31,237** original checks, the separate **8,244** checks, and the
+unopened **14,155,776**-case final proposal unchanged. Compatibility,
+speed, memory, and undefined behavior are **NOT MEASURED**.
+
 ## Record the actual corrected C portability failure
 
 The [version-20 corrected C rebuild](../oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-SOURCE-BUILD-V20.md)
