@@ -8,6 +8,32 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete guarded from-scratch Zig compatibility suite
+
+The [version-12 Zig procedure](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V12.md)
+ran all **13** original Python test groups using **13** distinct worker
+processes. Every worker installed the independent guard before importing
+the project's own Zig engine. **12** groups completed and **7** matched
+Python exactly, verifying **4,607** of the **31,237** original checks.
+
+Five completed groups reveal **620** scanner, **248** public-type,
+**64** substitution, **672** result-shape, and **96** public-surface
+differences: **1,700** genuinely observed mismatches. The remaining
+subinterpreter group exposes **1** guarded lifecycle failure. Its
+exception, traceback, and real native-deallocation warnings are visible
+in the [complete plaintext failure receipt](../oracle/phase2/evidence/repaired-zig-original-campaign-v12-phase2-v13-zig-guard-clean-v1-original-p0-v12-failures-publication-receipt.json).
+The complete underlying worker output is preserved in its separately
+recorded raw archive; the archive has not been reopened.
+
+The procedure passed as a durable recorder; the Zig candidate failed.
+The global mismatch total is **NOT MEASURED** because the failed
+subinterpreter group's **128** cases did not complete. All **3** original
+Zig source and native targets were restored to their exact original
+hashes and physical identities. The separate **8,244** reference cases
+were not added to the original denominator. Speed, memory, and undefined
+behavior remain **NOT MEASURED**; the **14,155,776**-case final holdout
+remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Build the corrected from-scratch Rust engine offline
 
 The [version-22 first-party Rust build](../oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-SOURCE-BUILD-V22.md)
