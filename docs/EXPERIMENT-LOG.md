@@ -8,6 +8,24 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the complete, bounded Zig compatibility test
+
+The [version-6 first-party Zig campaign](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V6.md)
+connects the authenticated, independently built Zig engine and its
+guard-clean adapter to every unchanged CPython test. It attempts all
+**31,237** original cases in all **13** groups, even when a preceding
+group fails. Each group receives **120 seconds**; the allowances total
+**1,560 seconds**, excluding startup, recovery, and publication.
+
+Every timeout, failed group, worker identity, and observed result must
+appear in both the durable public receipt and the final output.
+Incomplete tests remain failures; no missing case counts as a pass.
+The **8,244** additional cases stay separate. Candidate matching is
+**NOT RUN** at this source-freeze stage; the existing **1,764** Zig
+differences remain unchanged. The final **14,155,776** cases remain
+unopened; relative speed is **NOT MEASURED**, and no candidate is
+qualified.
+
 ## Publish the overall Python, C, and Rust comparison
 
 The [version-88 headline chart](evidence/candidate-current-overview-v88.svg)
