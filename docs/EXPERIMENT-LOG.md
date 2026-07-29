@@ -8,6 +8,30 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected from-scratch Rust native rebuild
+
+The [version-22 Rust native build](../oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-SOURCE-BUILD-V22.md)
+uses the project's own Rust matching engine and its own Python C
+bridge. It has **1** Rust package and **0** external dependencies.
+It targets the previously observed **240** substitution differences
+and **1,056** buffer-shape differences by correcting exactly **2**
+bridge functions; the matching engine and **17**-line capture fast
+path remain unchanged.
+
+Both independent source reviewers and all four ordinary and empty-
+environment checks pass **108** hostile controls and block **18**
+prohibited operations. The frozen build requires **2** independently
+compiled offline phases and **28** genuine compiler and binary-
+inspection processes; it must preserve both native outputs, its
+recovery journal, and every original Rust source file.
+
+No version-22 build or candidate has been run. The most recent actual
+Rust result remains **15,749** verified passes and **1,296** observed
+differences; the global mismatch total and the correction's effect
+remain **NOT MEASURED**. The **31,237** original checks, separate
+**8,244** checks, and unopened **14,155,776**-case holdout are
+unchanged.
+
 ## Publish the current Python-to-candidate comparison
 
 The [version-91 headline graph](evidence/candidate-current-overview-v91.svg)
