@@ -7,6 +7,71 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the combined from-scratch Rust match-serialization repair
+
+The actual completed Rust result remains **928** observed differences,
+**8,965** explicitly verified passes, and all **13** original groups
+completed without worker failures. The original archived failures
+include **32** Python match-serialization differences. This source
+experiment freezes a repair; it does not rerun those checks or claim
+that the new code passes them.
+
+The [combined first-party Rust bridge variant](../candidates/rust/variants/buffer_shape_pickle_v1/py_bridge.c)
+has SHA-256
+`00271ad5fff71e2f2e30cda6b446a61d0c300cb91eec2091b8ada17662d9a335`
+and **181,004** bytes. It preserves the complete previously frozen
+Rust buffer repair and adds exactly three independently verified
+changes to the existing, from-scratch Rust-to-Python bridge. Python's
+existing native match constructor is preserved. Matches and scanners
+share the existing first-party reconstruction behavior, and Python's
+real signed-integer protocol conversion supplies the appropriate
+serialization behavior and errors. No external regular-expression
+package, Python regex engine, other candidate, or matching fallback is
+introduced.
+
+The [source-only match-serialization verifier](../tools/apply_owned_rust_match_pickle_source_repair_v1.py)
+has SHA-256
+`85383f4cdf93eef0130390e1114cbd1703edce154ca274d2427c6943e46b3517`
+and **81,784** bytes. Its [frozen serialization protocol](../oracle/phase2/RUST-MATCH-PICKLE-SOURCE-REPAIR-V1.md)
+has SHA-256
+`fad29fdcd3956ae99f9db40afae33b51eb99fb743baf89540a4ee7aafb7ac1af`
+and **5,105** bytes. Its [complete serialization source contract](../oracle/phase2/rust-match-pickle-source-repair-v1.json)
+has SHA-256
+`5456535223cb029d41e8739696bde30b2b7127995fd0ef30286ff0488b1ed133`
+and **15,276** bytes.
+
+All four ordinary and empty-environment source and frozen-context
+checks pass, including **65** hostile source controls and **12**
+physical audit-wall controls. They authenticate **50** bounded
+plaintext owners without opening an archive, importing a candidate,
+building an engine, accessing mutable project documentation, running a
+clock, or reading the final comparison. The combined variant remains
+the same Rust candidate family: **NOT BUILT**, **NOT RUN**, and
+**NOT MEASURED**. Four actual new source owners raise the historical
+evidence and reference lower bounds to **176 / 181**. Runtime
+non-delegation remains **NOT ESTABLISHED**.
+
+The [updated overall-results graph](evidence/candidate-current-overview-v50.svg)
+preserves the actual **928** Rust differences, both separately frozen
+first-party Rust repairs, all six engine designs, and the unopened
+**4,194,304**-case final comparison. It reports no winner, corrected
+match, or speedup.
+
+The [compact version-50 graph generator](../tools/render_candidate_current_overview_v50.py)
+has SHA-256
+`4077fbf6703e98325c4b4eacea95d27608a3bb21a93143024094154385787f45`.
+Its [complete graph inputs](evidence/candidate-current-overview-v50.inputs.json)
+have SHA-256
+`8506587243c98fa75a14dfc74cfc918772a74eadebc3f2728772d1d0d94bd726`.
+Its [full machine-readable results](evidence/candidate-current-overview-v50.json)
+have SHA-256
+`60f0648be19016e5d8ebfa01f93c2c50c32aa4fb981fc0d518902b8b9985005e`.
+The **2,250**-pixel accessible chart has SHA-256
+`a114a7b813c4c1fc470950639adc50ffb7118dd91a31d9f63dee6ba46e04f8b9`.
+All four ordinary and empty-environment graph gates pass **2,434**
+hostile source controls. They do not build, import, or test any Rust
+variant and do not open a failure archive or the final holdout.
+
 ## Freeze the from-scratch Rust buffer and replacement repair
 
 The complete last Rust run still has **928** actual compatibility

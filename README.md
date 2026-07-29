@@ -31,11 +31,13 @@ does **not** pass. The corrected C and Zig runs have **NOT RUN**.
 C++, Go, and Fortran remain independently written designs, not passing
 replacements.
 
-A targeted, from-scratch Rust buffer and replacement repair is frozen as
-separately inspectable source. It has **NOT BEEN BUILT** and has
-**NOT RUN**; the latest actual Rust result remains **928** differences.
+Two targeted, from-scratch Rust repairs are frozen as independently
+inspectable source: Python-compatible buffer and replacement behavior,
+and exact match serialization. The combined engine has **NOT BEEN
+BUILT** and has **NOT RUN**; the latest actual result remains **928**
+differences.
 
-![Python verified; Rust has 928 observed differences; six independently written designs; zero compatible replacements; speed unmeasured; the 4.2-million-case comparison remains unopened](docs/evidence/candidate-current-overview-v49.svg)
+![Python verified; Rust has 928 observed differences; buffer and serialization repairs remain untested; six independently written designs; zero compatible replacements; speed unmeasured; the 4.2-million-case comparison remains unopened](docs/evidence/candidate-current-overview-v50.svg)
 
 Python's own test suite also requires searching and replacing text with
 **2,147,483,648** characters. The original Python results are recorded,
@@ -66,7 +68,7 @@ measurements start only when three independent engines pass every check.
 | --- | --- | --- | --- |
 | Python `re` | Corrected reference agrees in two independent processes | Original suite unchanged; corrected reference: 6,912 / 6,912 | Reference; not timed |
 | Public `rebar` import | Incorrectly selects an unqualified Zig prototype | FAIL; `__version__` missing | NOT MEASURED |
-| Rust | Original run complete; buffer repair frozen, not built or retested | 8,965 verified; 928 differences; zero worker failures | NOT MEASURED |
+| Rust | Original run complete; buffer and serialization repairs frozen, not built or retested | 8,965 verified; 928 differences; zero worker failures | NOT MEASURED |
 | C | Corrected C-only test runner frozen; new test has NOT RUN | Previous build: 7,325 verified; 1,230 differences; all 13 groups completed | NOT MEASURED |
 | Zig | Dedicated Zig-only runner frozen; new test has NOT RUN | Previous build: 3,711 verified; 1,764 differences; all 13 groups completed | NOT MEASURED |
 | C++ | Independently written and built | 128 verified; 2,308 differences; five worker failures | NOT MEASURED |
@@ -128,6 +130,7 @@ at least **60%** of cases, and explain every slowdown greater than
 - [Corrected C-only original-suite runner](oracle/phase2/P0-CANDIDATE-PROTOCOL-V10.md).
 - [Repaired, recovery-safe Rust-only original-suite runner](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V7.md).
 - [From-scratch Rust buffer and replacement source repair](oracle/phase2/RUST-BUFFER-SHAPE-SOURCE-REPAIR-V1.md).
+- [From-scratch Rust match-serialization source repair](oracle/phase2/RUST-MATCH-PICKLE-SOURCE-REPAIR-V1.md).
 - [Actual complete corrected Rust compatibility failures](oracle/phase2/evidence/repaired-rust-original-campaign-v7-rust-phase2-v13-rust-pattern-repr-original-p0-failures.json.gz).
 - [Independent durable Rust result and original-file restoration](oracle/phase2/evidence/repaired-rust-original-campaign-v7-rust-phase2-v13-rust-pattern-repr-original-p0-failures-publication-receipt.json).
 - [Independent Zig-only original-suite runner and native bridge](oracle/phase2/ZIG-ORIGINAL-P0-CANDIDATE-PROTOCOL-V1.md).
