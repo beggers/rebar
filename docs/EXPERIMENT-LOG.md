@@ -7,6 +7,75 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze Python's real two-billion-character compatibility checks
+
+Python's original regular-expression tests require two genuine inputs of
+exactly **2,147,483,648** characters. `ReTests.test_large_search` must
+return both match positions without truncation. `ReTests.test_large_subn`
+must return the unchanged text and **2,147,483,649** replacements. The
+[independent large-input verifier](../tools/verify_large_input_indexing_v1.py)
+has SHA-256
+`57a9e0d0e456b854cb46dfadb2b23db244597f01904fcf93587b1f5d8a5e4544`.
+The [frozen upstream large-input protocol](../oracle/phase1/P0-LARGE-INPUT-INDEXING-V1.md)
+has SHA-256
+`0a640ee044c52394fa897d0221d51dfc3d85e9abb95608367698f11fba8ca879`.
+The [complete separately counted boundary-observation contract](../oracle/phase1/p0-large-input-indexing-v1.json)
+has SHA-256
+`23601fe4947c70979081d8248ee9891287e3fa618b554b97a8ee56024823bacf`.
+
+The verifier authenticates the actual pinned Python source and both real
+upstream test methods. It preserves separately recorded historical
+two-process Python reference results and their original
+**42,949,672,960**-byte memory allowance; the verifier neither reruns
+those historical references nor claims that their memory allowance is a
+measurement. Existing replacement tests actually cap inputs at **5,147**
+characters. Neither full-size candidate check has run, so full-size
+replacement compatibility is **NOT ESTABLISHED**.
+
+Its separately identified **32** source observations have SHA-256
+`a105aea287d093ff977819dda8971f592c3ed396eabd3133e5c52838ce8e2f65`:
+**22 PASS**, **1 FAIL**, **3 NOT RUN**, **2 NOT ESTABLISHED**,
+**3 NOT MEASURED**, and **1 NOT OPENED**. The failure preserves the actual
+unqualified Zig-backed public import. These observations are not
+matching results and are not added to the original **31,237** cases,
+**13** suites, **13** named private waivers, the separate **50**
+signature checks, or the other **32** public-import observations.
+
+The source contract binds the already-pushed version-46 project snapshot;
+the new chart authenticates that real historical snapshot instead of
+pretending the large-input oracle was frozen after its own future graph.
+All four ordinary and empty-environment source and context checks pass.
+They verify **330** distinct safety controls and physically reject
+**28** prohibited actions. No two-billion-character input is created;
+no candidate, Python matcher, native library, compiler, archive,
+benchmark, memory probe, network, process, or hidden case is opened.
+The frozen C, Rust, and Zig runner sources remain three separately
+written designs, not runnable or correctness-qualified replacements.
+Runtime non-delegation remains **NOT ESTABLISHED**.
+
+The [current large-input and overall-results graph](evidence/candidate-current-overview-v47.svg)
+keeps Python's actual original requirements separate from all matching,
+signature, and public-import totals. It preserves every earlier failure,
+the historical version-46 graph, the unopened **4,194,304**-case final
+comparison, and all unpublished performance. There is no winner;
+speed and memory remain **NOT MEASURED**.
+
+The [version-47 reproducible graph generator](../tools/render_candidate_current_overview_v47.py)
+has SHA-256
+`6deb2ffa07d50c1db2526afbea997bce3ebc1e518f569e4c8e3296c1351e5b43`.
+Its [complete graph inputs](evidence/candidate-current-overview-v47.inputs.json)
+have SHA-256
+`e68b649124623525120af790d01939ea75adee6ac249d38a55b5a6d57fd72dbf`.
+Its [complete machine-readable results](evidence/candidate-current-overview-v47.json)
+have SHA-256
+`64fd1ad62eeb6c43748a4da19a66f869c93d3eafd9202375032c6214d79df05a`.
+The generated chart has SHA-256
+`0c39d603f9bfeb2d2a2be41654653368405b25da9910b1fe18854350c4338b3c`.
+Its actual current inputs and generator appear visibly in the chart;
+previous graph hashes are explicitly historical. Both graph self-tests
+reject **2,068** hostile controls without running a candidate, archive,
+compiler, benchmark, or large-input test.
+
 ## Freeze an independently written Zig original-suite runner
 
 Freeze a genuine Zig-only worker and controller against the current

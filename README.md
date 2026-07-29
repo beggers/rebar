@@ -28,7 +28,13 @@ Zig matcher, C bridge, worker, and controller; its new complete
 compatibility campaign has **NOT RUN**. C++, Go, and Fortran remain
 independently written designs, not passing replacements.
 
-![Python's reference passes; three independently written candidate runners are frozen; the public Zig import still fails; no engine qualifies and speed remains unmeasured](docs/evidence/candidate-current-overview-v46.svg)
+![Python's reference passes; three from-scratch candidate runners are frozen; Python's two-billion-character tests are separately tracked; no replacement qualifies and speed remains unmeasured](docs/evidence/candidate-current-overview-v47.svg)
+
+Python's own test suite also requires searching and replacing text with
+**2,147,483,648** characters. The original Python results are recorded,
+but no replacement has run either full-size test: current candidate
+tests stop at **5,147** characters. These two original requirements
+are tracked separately; they do not change the **31,237**-check total.
 
 The existing `rebar.py` prematurely selects the Zig prototype, which
 has **1,764** recorded compatibility differences and does not export
@@ -70,10 +76,10 @@ reference processes passed all **50** and produced identical results.
 Candidate results for these additional checks remain **NOT MEASURED**;
 the checks are not added to the original **31,237**.
 
-The measured baseline is pinned to a Linux x86-64 Python 3.14.6 release
-build. Actual multi-gigabyte candidate inputs, debug-build memory and
-interrupt behavior, other platforms, and sanitizer results remain
-**NOT MEASURED**; none is counted as a passing check.
+The baseline is pinned to a Linux x86-64 Python 3.14.6 release build.
+Full-size candidate inputs, debug-build memory and interrupt behavior,
+other platforms, and sanitizer results remain **NOT MEASURED**; none
+is counted as a passing check.
 
 ## Detailed compatibility
 
@@ -97,16 +103,18 @@ balanced measurement rounds. Its cases remain **NOT FROZEN**,
 **NOT MEASURED**.
 
 First, three independently built engines must pass all **31,237**
-original checks and the separate public-import, signature, and runtime
-independence gates. To win, an engine must be at least **1.5×** faster
-overall, measurably faster in at least **60%** of cases, and explain every
-slowdown greater than **20%**. There is no winner.
+original checks, the genuine full-size Python tests, and the separate
+public-import, signature, and runtime independence gates. To win, an
+engine must be at least **1.5×** faster overall, measurably faster in
+at least **60%** of cases, and explain every slowdown greater than
+**20%**. There is no winner.
 
 ## Evidence and reproduction
 
 - [Reproduce the results and verify every graph](docs/REPRODUCING.md).
 - [Experiment log, original reports, failures, and rejected designs](docs/EXPERIMENT-LOG.md).
 - [Frozen Python compatibility checks](oracle/phase1/P0-COMPLETENESS-V1.md).
+- [Python's original two-billion-character compatibility requirements](oracle/phase1/P0-LARGE-INPUT-INDEXING-V1.md).
 - [Frozen 32-check public-import and no-premature-winner audit](oracle/phase1/P0-PUBLIC-ENTRYPOINT-IMPORT-V1.md).
 - [Frozen correction for the Python reference](oracle/phase1/P0-PUBLIC-TYPE-REFERENCE-CONTEXT-V1.md).
 - [Corrected six-engine test producer](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V4.md).
