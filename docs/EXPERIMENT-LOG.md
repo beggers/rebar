@@ -7,6 +7,66 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze first-party C input-buffer ownership without claiming a build
+
+The [independently corrected first-party C engine](../candidates/c/variants/subject_buffer_ownership_v1/vm_native.c),
+[source-only verifier](../tools/apply_owned_c_subject_buffer_ownership_v1.py),
+[complete C buffer-ownership protocol](../oracle/phase2/C-SUBJECT-BUFFER-OWNERSHIP-V1.md),
+and [canonical frozen correction contract](../oracle/phase2/c-subject-buffer-ownership-v1.json)
+preserve the candidate's own native engine and its original failures.
+Their respective SHA-256 values are
+`8131aea768a122308716b8a67903794aa03f2fed2e2022f53bb6aa7b7e10e962`,
+`8262295a9e84c5fa30fe4e83102236fbaa233c914fb0c570d5fce3cdaf8605d2`,
+`997af2edeced019663886aa7e20873506e4b13ee361bf5ce8d533e3ad2ea7393`,
+and `b2ef8b9f5f9c7262be0e639d17436d0e1e8637d5649741bf2aa1538ebef3eb6a`.
+Their exact sizes are **222,212**, **80,090**, **5,527**, and
+**12,435** bytes.
+
+The variant is genuine first-party C source, not a wrapper around
+Python, another regex package, or another candidate. It retains the
+Python subject buffer for the complete matching lifetime. Source-only
+verification does not compile it, activate it, import its matcher,
+or run a correctness case. The historical real C result remains
+**FAIL**, with **1,230** observed differences and **7,325** explicitly
+verified passes. The latest real Rust result separately remains
+**FAIL**, with **1,440** differences and **14,853** verified passes.
+
+Both normal and sterile C source self-tests pass **42** positive
+controls, reject **78** actual hostile controls, and physically block
+**29** prohibited effects. Both complete frozen-context checks pass
+against the independently passing phase-one Python oracle. Source
+ownership is **SOURCE FROZEN**; the native candidate is **NOT BUILT**;
+correctness matching is **NOT RUN**; fully qualified candidates remain
+**0**. No timing, archive, hidden case, compiler, or Python reference
+worker is run.
+
+The [headline first-party C source graph](evidence/candidate-current-overview-v65.svg),
+[complete graph inputs](evidence/candidate-current-overview-v65.inputs.json),
+[complete machine-readable C snapshot](evidence/candidate-current-overview-v65.json),
+and [reproducible overview renderer](../tools/render_candidate_current_overview_v65.py)
+preserve both passing **8,244**-case Python workers, all **31,237**
+original cases, all **13** complete Rust groups and **six** exact
+mismatch witnesses, all **seven** blocked candidate requirements,
+the historically blocked version-17 Rust build, and the sealed
+**4,194,304**-case final comparison. Speed and memory remain
+**NOT MEASURED**.
+
+The exact version-65 graph renderer, complete inputs, complete
+machine-readable results, and visible chart have SHA-256 values
+`c31b8d8e2ee91fa5a6e0405a33afc0a015d0f998bd3ed661af3b997263c629a9`,
+`423897540b5e8e6952388a699840592985c9fc26417d06bb4da2ea318a018d2d`,
+`20258eb7683598687528f93656691dbd4863e0c18c62aac474d60f84f00b206b`,
+and `280ff4f0b7f5f1cee13ce78adfe5f85f551dd372826c0e0a1653d43b8b1f3688`.
+Their exact sizes are **53,483**, **1,027,081**, **2,831,105**,
+and **14,132** bytes. The immediate predecessor is the unmodified
+version-64 graph. The four genuine C source owners increase the
+independently authenticated evidence and history lower bounds from
+**216 / 221** to **220 / 225**; those lower bounds are not claimed
+to count the entire repository. Both ordinary and clean-environment
+graph self-tests reject exactly **5,384** hostile controls. Both
+independent full graph checks pass without running a candidate,
+compiler, matcher, benchmark, reference worker, or hidden test.
+
 ## Complete the Python reference without qualifying a replacement
 
 The [independent phase-one readiness verifier](../tools/verify_owned_p0_completeness_v4.py),

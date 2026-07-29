@@ -9,7 +9,9 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 ## Evidence and reproduction
 
 - [Complete actual Rust failure report](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures.json.gz), [independently durable 13-worker result receipt](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-publication-receipt.json), and [complete plain-text 13-group failure and root-cause analysis](../oracle/phase2/evidence/repaired-rust-original-campaign-v10-rust-phase2-v16-rust-buffer-shape-pickle-original-p0-v10-failures-forensic-summary.json); **13** real workers completed all **31,237** original cases and observed **1,440** mismatches, **14,853** explicitly verified passes, and **zero** infrastructure failures. Receipt and analysis **PASS** preserve a candidate **FAIL**.
-- [Current independently generated results graph](../docs/evidence/candidate-current-overview-v64.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v64.inputs.json), [current machine-readable results](../docs/evidence/candidate-current-overview-v64.json), and [reproducible current renderer](../tools/render_candidate_current_overview_v64.py); preserve both passing **8,244**-case Python workers, a **PASSING** reference-readiness gate, all **13** real Rust groups, and all **six** genuine failures. Candidate qualification remains **BLOCKED**, compatible replacements **0**, performance **NOT MEASURED**, and the final comparison **NOT OPENED**.
+- [Current independently generated results graph](../docs/evidence/candidate-current-overview-v65.svg), [complete current graph inputs](../docs/evidence/candidate-current-overview-v65.inputs.json), [current machine-readable results](../docs/evidence/candidate-current-overview-v65.json), and [reproducible current renderer](../tools/render_candidate_current_overview_v65.py); preserve the first-party C correction as **SOURCE FROZEN**, **NOT BUILT**, and **NOT TESTED**, both passing **8,244**-case Python workers, the **PASSING** reference gate, all **13** Rust groups, and all **six** genuine failure examples. Candidate qualification remains **BLOCKED**, compatible replacements **0**, performance **NOT MEASURED**, and the final comparison **NOT OPENED**.
+- [Independently written C input-buffer correction](../candidates/c/variants/subject_buffer_ownership_v1/vm_native.c), [frozen C source protocol](../oracle/phase2/C-SUBJECT-BUFFER-OWNERSHIP-V1.md), [exact source contract](../oracle/phase2/c-subject-buffer-ownership-v1.json), and [independent source-only safety verifier](../tools/apply_owned_c_subject_buffer_ownership_v1.py); all four ordinary and clean-environment source checks pass **42** positive controls, reject **78** hostile controls, and block **29** prohibited effects. This is a first-party engine, not a regex-package wrapper. The new source is **NOT BUILT** and **NOT TESTED**; the actual earlier C engine remains **FAIL** with **1,230** differences.
+- [Historical version-64 Python-readiness results graph](../docs/evidence/candidate-current-overview-v64.svg), [exact version-64 graph inputs](../docs/evidence/candidate-current-overview-v64.inputs.json), [historical version-64 machine-readable results](../docs/evidence/candidate-current-overview-v64.json), and [reproducible version-64 renderer](../tools/render_candidate_current_overview_v64.py); preserve the separately committed passing Python-reference gate before the first-party C source correction was frozen.
 - [Complete passing Python-reference readiness protocol](../oracle/phase1/P0-COMPLETENESS-V4.md), [exact separately reconciled readiness certificate](../oracle/phase1/p0-completeness-v4.json), and [independent bounded source verifier](../tools/verify_owned_p0_completeness_v4.py); the four normal and sterile source checks reject **28** hostile controls, authenticate all **61** inherited owners and both genuine passing fuzz references, and authorize candidate evaluation without qualifying a replacement or opening the benchmark.
 - [Historical version-63 actual-reference results graph](../docs/evidence/candidate-current-overview-v63.svg), [historical exact graph inputs](../docs/evidence/candidate-current-overview-v63.inputs.json), [historical actual-reference graph summary](../docs/evidence/candidate-current-overview-v63.json), and [historical version-63 graph renderer](../tools/render_candidate_current_overview_v63.py); preserve the separately pushed state immediately after both real Python workers passed and before the reference certificate was reconciled.
 - [Actual complete two-process Python reference result](../oracle/phase1/evidence/differential-fuzz-reference-v3-cpython-3146-two-worker-8244-v3/two-independent-reference-result.json), [complete first-worker original result](../oracle/phase1/evidence/differential-fuzz-reference-v3-cpython-3146-two-worker-8244-v3/reference-1.json), and [complete second-worker original result](../oracle/phase1/evidence/differential-fuzz-reference-v3-cpython-3146-two-worker-8244-v3/reference-2.json); two real pinned Python processes independently pass **8,244/8,244** with **zero** failures and complete preserved original outputs. Their process IDs are genuine observations, not inferred from a previous result.
@@ -134,6 +136,136 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 - [Full experiment log, build reports, previous graphs, failures, and rejected designs](../docs/EXPERIMENT-LOG.md).
 - [Proposed 4,194,304-case final comparison](../docs/EXPANDED-HOLDOUT-PROTOCOL-V1.md); examples remain **NOT GENERATED** and **NOT OPENED**.
 - [Original objective](../GOAL.md), SHA-256 `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`; [later clarifications](../AMENDMENTS.md).
+
+## Independently reproduce the current first-party C results graph
+
+The current graph reports the genuine C correction as source-only:
+**NOT BUILT**, **NOT TESTED**, and **NOT QUALIFIED**. It retains
+the real **1,230** earlier C differences and **1,440** current Rust
+differences. These four checks do not build an engine, run a
+correctness test, read an archived result, start a reference worker,
+measure performance, or open the final test set.
+
+```sh
+REBAR_REFERENCE_PYTHON=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+REBAR_GRAPH65_SOURCE_SHA256=c31b8d8e2ee91fa5a6e0405a33afc0a015d0f998bd3ed661af3b997263c629a9
+REBAR_GRAPH65_INPUTS_SHA256=423897540b5e8e6952388a699840592985c9fc26417d06bb4da2ea318a018d2d
+REBAR_GRAPH65_RESULTS_SHA256=20258eb7683598687528f93656691dbd4863e0c18c62aac474d60f84f00b206b
+REBAR_GRAPH65_SVG_SHA256=280ff4f0b7f5f1cee13ce78adfe5f85f551dd372826c0e0a1653d43b8b1f3688
+
+sha256sum \
+  tools/render_candidate_current_overview_v65.py \
+  docs/evidence/candidate-current-overview-v65.inputs.json \
+  docs/evidence/candidate-current-overview-v65.json \
+  docs/evidence/candidate-current-overview-v65.svg
+
+"$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v65.py --self-test
+
+env -i PATH=/usr/bin:/bin LC_ALL=C "$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v65.py --self-test
+
+"$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v65.py --verify-frozen-context \
+  --source-sha256 "$REBAR_GRAPH65_SOURCE_SHA256" \
+  --source-bytes 53483 \
+  --previous-source-sha256 6e8364972fe69c4e6074df14ce69369d962773de64bedf576515744cf44e488f \
+  --previous-inputs-sha256 6566c57fe58b501b54b056aae528d1e1087bec279718e5d175d99baca703cd76 \
+  --previous-summary-sha256 feaf43cb6eeeb0d61f60ede20925d559cdafb66d8110f9607192dac542f51ae0 \
+  --previous-svg-sha256 1106fa228c5cf9ed3df94be344c58acf8513ac3be4b01b9c1a0bf058f76bb95f \
+  --feature-variant-sha256 8131aea768a122308716b8a67903794aa03f2fed2e2022f53bb6aa7b7e10e962 \
+  --feature-source-sha256 8262295a9e84c5fa30fe4e83102236fbaa233c914fb0c570d5fce3cdaf8605d2 \
+  --feature-protocol-sha256 997af2edeced019663886aa7e20873506e4b13ee361bf5ce8d533e3ad2ea7393 \
+  --feature-contract-sha256 b2ef8b9f5f9c7262be0e639d17436d0e1e8637d5649741bf2aa1538ebef3eb6a \
+  --readiness-source-sha256 8c73af8913f54e2398e707dc4a44c173ca53e20c1161b84160d841ce2ff7760d \
+  --readiness-protocol-sha256 4a390db825fed994733390be8961a0f709d7f1f22195535e581e71cdea8111f2 \
+  --readiness-contract-sha256 aab7a301f646755cec9956904cd6f97498d8293da454a925bf1f75cdfc85b3b1 \
+  --inputs-sha256 "$REBAR_GRAPH65_INPUTS_SHA256" \
+  --summary-sha256 "$REBAR_GRAPH65_RESULTS_SHA256" \
+  --svg-sha256 "$REBAR_GRAPH65_SVG_SHA256"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C "$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/render_candidate_current_overview_v65.py --verify-frozen-context \
+  --source-sha256 "$REBAR_GRAPH65_SOURCE_SHA256" \
+  --source-bytes 53483 \
+  --previous-source-sha256 6e8364972fe69c4e6074df14ce69369d962773de64bedf576515744cf44e488f \
+  --previous-inputs-sha256 6566c57fe58b501b54b056aae528d1e1087bec279718e5d175d99baca703cd76 \
+  --previous-summary-sha256 feaf43cb6eeeb0d61f60ede20925d559cdafb66d8110f9607192dac542f51ae0 \
+  --previous-svg-sha256 1106fa228c5cf9ed3df94be344c58acf8513ac3be4b01b9c1a0bf058f76bb95f \
+  --feature-variant-sha256 8131aea768a122308716b8a67903794aa03f2fed2e2022f53bb6aa7b7e10e962 \
+  --feature-source-sha256 8262295a9e84c5fa30fe4e83102236fbaa233c914fb0c570d5fce3cdaf8605d2 \
+  --feature-protocol-sha256 997af2edeced019663886aa7e20873506e4b13ee361bf5ce8d533e3ad2ea7393 \
+  --feature-contract-sha256 b2ef8b9f5f9c7262be0e639d17436d0e1e8637d5649741bf2aa1538ebef3eb6a \
+  --readiness-source-sha256 8c73af8913f54e2398e707dc4a44c173ca53e20c1161b84160d841ce2ff7760d \
+  --readiness-protocol-sha256 4a390db825fed994733390be8961a0f709d7f1f22195535e581e71cdea8111f2 \
+  --readiness-contract-sha256 aab7a301f646755cec9956904cd6f97498d8293da454a925bf1f75cdfc85b3b1 \
+  --inputs-sha256 "$REBAR_GRAPH65_INPUTS_SHA256" \
+  --summary-sha256 "$REBAR_GRAPH65_RESULTS_SHA256" \
+  --svg-sha256 "$REBAR_GRAPH65_SVG_SHA256"
+```
+
+Both self-tests must reject exactly **5,384** hostile controls.
+Both complete checks must report predecessor **64**, reference
+readiness **PASS**, candidate qualification **BLOCKED**, all
+**seven** remaining blockers, lower bounds **220 / 225**, and
+the historical Rust version-17 recipe as **BLOCKED**. C remains
+**NOT BUILT**, performance remains **NOT MEASURED**, and all
+**4,194,304** planned final examples remain **NOT GENERATED**
+and **NOT OPENED**.
+
+## Verify the first-party C correction without building it
+
+These checks verify the complete independently written C source and
+its frozen contract. They never compile, import, activate, or run the
+matching engine. The observed previous C result remains **FAIL**:
+**1,230** differences and **7,325** explicitly verified passes.
+
+```sh
+REBAR_REFERENCE_PYTHON=/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14
+REBAR_C_SOURCE_VERIFIER_SHA256=8262295a9e84c5fa30fe4e83102236fbaa233c914fb0c570d5fce3cdaf8605d2
+REBAR_C_SOURCE_PROTOCOL_SHA256=997af2edeced019663886aa7e20873506e4b13ee361bf5ce8d533e3ad2ea7393
+REBAR_C_SOURCE_CONTRACT_SHA256=b2ef8b9f5f9c7262be0e639d17436d0e1e8637d5649741bf2aa1538ebef3eb6a
+
+sha256sum \
+  candidates/c/variants/subject_buffer_ownership_v1/vm_native.c \
+  tools/apply_owned_c_subject_buffer_ownership_v1.py \
+  oracle/phase2/C-SUBJECT-BUFFER-OWNERSHIP-V1.md \
+  oracle/phase2/c-subject-buffer-ownership-v1.json
+
+"$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/apply_owned_c_subject_buffer_ownership_v1.py --self-test \
+  --source-sha256 "$REBAR_C_SOURCE_VERIFIER_SHA256" \
+  --protocol-sha256 "$REBAR_C_SOURCE_PROTOCOL_SHA256" \
+  --contract-sha256 "$REBAR_C_SOURCE_CONTRACT_SHA256"
+
+"$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/apply_owned_c_subject_buffer_ownership_v1.py --verify-frozen-context \
+  --source-sha256 "$REBAR_C_SOURCE_VERIFIER_SHA256" \
+  --protocol-sha256 "$REBAR_C_SOURCE_PROTOCOL_SHA256" \
+  --contract-sha256 "$REBAR_C_SOURCE_CONTRACT_SHA256"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C "$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/apply_owned_c_subject_buffer_ownership_v1.py --self-test \
+  --source-sha256 "$REBAR_C_SOURCE_VERIFIER_SHA256" \
+  --protocol-sha256 "$REBAR_C_SOURCE_PROTOCOL_SHA256" \
+  --contract-sha256 "$REBAR_C_SOURCE_CONTRACT_SHA256"
+
+env -i PATH=/usr/bin:/bin LC_ALL=C "$REBAR_REFERENCE_PYTHON" -I -B \
+  tools/apply_owned_c_subject_buffer_ownership_v1.py --verify-frozen-context \
+  --source-sha256 "$REBAR_C_SOURCE_VERIFIER_SHA256" \
+  --protocol-sha256 "$REBAR_C_SOURCE_PROTOCOL_SHA256" \
+  --contract-sha256 "$REBAR_C_SOURCE_CONTRACT_SHA256"
+```
+
+All four checks must report `PASS`. Both self-tests must accept
+exactly **42** positive controls, reject **78** hostile controls,
+and prevent **29** prohibited operations. The context checks must
+preserve Python-reference readiness **PASS**, replacement
+qualification **BLOCKED**, all original **31,237** cases, the
+historical **1,230** C differences, and the current **1,440** Rust
+differences. C compilation and matching remain **NOT RUN**;
+speed, memory, and undefined behavior remain **NOT MEASURED**;
+the final test examples remain **NOT GENERATED** and **NOT OPENED**.
 
 ## Verify passing Python readiness without qualifying a replacement
 
@@ -307,9 +439,9 @@ candidate workers, and an unopened holdout. The actual two-process
 run is a separately committed experiment; do not confuse these
 checks with an executed baseline.
 
-## Independently reproduce the current phase-one readiness graph
+## Independently reproduce the historical phase-one readiness graph
 
-The current graph independently authenticates the passing Python
+The historical version-64 graph independently authenticates the passing Python
 reference certificate. It preserves candidate qualification as
 **BLOCKED**, and preserves the historical version-17 Rust recipe as
 **BLOCKED** even though a new, correctly pinned candidate build is
