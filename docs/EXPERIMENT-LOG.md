@@ -7,6 +7,28 @@ exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. The new, expanded 4,194,304-case final comparison is
 a different holdout: **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze reproducible Rust compatibility-failure diagnostics
+
+The [version-16 Rust correctness procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V16.md),
+[machine-readable contract](../oracle/phase2/repaired-rust-original-campaign-v16.json),
+and [first-party campaign controller](../tools/run_owned_repaired_rust_original_campaign_v16.py)
+preserve all **31,237** original checks, all **13** original test groups,
+the separate **8,244** extra checks, and Python's existing matching-engine
+and external-package isolation rules. They record the genuine underlying
+details of a future failing worker without replacing, suppressing, or
+reclassifying the original failure.
+
+The source-only tests pass in an ordinary and empty environment under the
+exact, isolated Python **3.14.6**. They preserve the four earlier Rust
+failure receipts and the last actual result: **eight** completed groups,
+**12,942** verified checks, and **five** failed workers. Python object
+cleanup warnings are not presented as an established cause.
+
+No new native build or compatibility campaign has run. The Rust engine is
+**NOT QUALIFIED**, relative speed and memory are **NOT MEASURED**, and
+the final holdout remains **NOT FROZEN**, **NOT GENERATED**, and
+**NOT OPENED**.
+
 ## Freeze a from-scratch, one-pass Rust search experiment
 
 The [complete first-party Rust bridge variant](../candidates/rust/variants/buffer_shape_pickle_findall_v1/py_bridge.c)
