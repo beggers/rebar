@@ -8,6 +8,29 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Build the corrected from-scratch C engine twice
+
+The [portable version-21 C source](../oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-SOURCE-BUILD-V21.md)
+was compiled in **2** genuinely separate private phases. Each phase
+used the complete, independently written C parser, compiler, and
+matching executor. All **14** real compiler and inspection operations
+succeeded, and both phases produced byte-identical native engines.
+
+The [actual build receipt](../oracle/phase2/evidence/native-source-build-v21-c-phase2-v21-c-original-match-semantics-publication-receipt.json)
+proves **4** distinct first-party source files, **14** distinct
+processes, both successful native outputs, and a synchronized recovery
+journal. Its [independent root receipt](../oracle/phase2/evidence/native-source-build-v21-c-phase2-v21-c-original-match-semantics-root-provenance-receipt.json)
+verifies the actual build receipt, both phases, and all compiler
+identities. The original installed C extension remains completely
+unchanged and was never activated.
+
+This experiment compiled the corrected engine; it did **NOT** run its
+compatibility tests. There were **0** candidate workers, **0** native
+loads, **0** archived evidence reads, **0** hidden cases, and **0**
+timing samples. Both earlier real failures are preserved. Compatibility,
+speed, and memory remain **NOT MEASURED**; the **14,155,776**-case
+holdout remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the portable from-scratch C engine rebuild
 
 The [version-21 first-party C build](../oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-SOURCE-BUILD-V21.md)
