@@ -259,7 +259,14 @@ The source-only verifier covers **914** distinct lexical/flag examples and
 classes, byte patterns, nested flag scopes, and both compilation entry
 points without importing Python's matcher or another regular-expression
 engine. Four ordinary and clean-environment gates pass. The adapter has not
-yet been materialized or run.
+yet been run.
+
+The [actual first-party adapter correction](../oracle/phase2/evidence/rust-verbose-named-escape-semantics-v1-application.json)
+has exactly **33,256 bytes** and SHA-256
+`c1d150d467d5732eab4cc589f7e18583e59892592fb48d7d6f37700c00dccda0`.
+It preserves all **324** gross targets, **297** independent failures,
+and both categories of documented overlap. No regular-expression engine
+or candidate was run.
 
 ## Freeze the separate correction for 88 Rust expansion differences
 
