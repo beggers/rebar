@@ -8,6 +8,21 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Combine the measured Rust search and compilation improvements
+
+The [combined first-party Rust source experiment](../oracle/phase2/RUST-COMBINED-SEARCH-COMPILER-FASTPATH-V1.md)
+joins two previously frozen improvements: avoiding unnecessary pattern-parser
+allocations and skipping starting positions that cannot possibly match. Both
+transformation orders produce exactly the same **189,423-byte** Rust engine;
+its independently written vector-search source is **24,305 bytes**. The
+frozen source-only checks verify **111,552** additional modeled outcomes,
+the previous **960** compiler and **11,328** search outcomes, and all exact
+first-party source identities. Four normal and clean-environment checks
+pass without running a candidate, loading native code, touching hidden
+cases, or changing the original **31,237**-case denominator. The combined
+variant has not yet been created, built, correctness-tested, or timed;
+compatibility, final speed, and qualification remain **NOT MEASURED**.
+
 ## Preserve complete Rust and Python timing and native memory evidence
 
 The [complete corrected public profiler run](../oracle/phase3/evidence/rust-public-profile-v2-run-001-publication-receipt.json)
