@@ -296,7 +296,13 @@ private source validation. It preserves the complete rejected predecessor,
 all **1,145** modeled wider-suite corrections, and the original
 **31,237-case** passing result. Four ordinary and clean-environment
 source-only checks pass **19** hostile controls; the combined native build and
-full wider correctness run have **NOT BEEN RUN**.
+full wider correctness run are separately authorized. The [actual complete
+original-and-public Rust build](../oracle/phase2/evidence/native-source-build-v33-rust-phase2-v33-rust-full-public-semantic-source-root-provenance-publication-receipt.json)
+completed **28** offline compilation and inspection processes across two
+independent private source trees. Both engine binaries and both fully
+corrected native bridges were byte-identical; external Cargo and
+regular-expression dependencies remain **zero**. The complete
+**10,434-case** wider correctness test has **NOT BEEN RUN**.
 
 ## Preserve the faster Rust architecture while correcting scoped Unicode matching
 

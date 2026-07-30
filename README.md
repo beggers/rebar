@@ -99,7 +99,9 @@ engine's wider-suite compatibility, runtime no-delegation, and speed remain
 A newly frozen, entirely first-party Rust build combines the validated
 original-suite engine with every known scanner, comment, replacement, and
 Unicode correction from the **10,434-case** wider public suite. Its native
-build and full wider-suite result have **NOT BEEN RUN**.
+engine and bridge have now been independently built twice with **zero**
+external packages; the full wider-suite correctness result remains
+**NOT MEASURED**.
 A separate inspection of both independently built Rust engines, all **18**
 first-party sources, and all **four** native binaries found **zero** external
 regular-expression packages, external engine symbols, or matching delegation.
@@ -233,6 +235,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Frozen fully integrated Rust build combining every original and wider-public compatibility correction](oracle/phase2/RUST-FULL-PUBLIC-SEMANTIC-SOURCE-BUILD-V32.md).
 - [Preserved integrated Rust build rejection before compilation, caused by an inherited stale adapter identity](oracle/phase2/evidence/native-source-build-v32-rust-full-public-preexecution-failure.json).
 - [Corrected fully integrated Rust build freeze preserving the rejected predecessor and every wider-public compatibility correction](oracle/phase2/RUST-FULL-PUBLIC-SEMANTIC-SOURCE-BUILD-V33.md).
+- [Actual fully integrated first-party Rust build: two identical native engines and bridges across 28 offline build and inspection steps](oracle/phase2/evidence/native-source-build-v33-rust-phase2-v33-rust-full-public-semantic-source-root-provenance-publication-receipt.json).
 - [Frozen independent first-party correction for 88 remaining Rust template-expansion and buffer-probe differences](oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md).
 - [Actual isolated Rust bridge source correcting template expansion and outer buffer checks](oracle/phase2/evidence/rust-expand-probe-semantics-v1-application.json).
 - [Frozen combined first-party Rust correction covering all 1,352 known original compatibility failures](oracle/phase2/RUST-COMPLETE-SEMANTIC-CORRECTION-V1.md).
