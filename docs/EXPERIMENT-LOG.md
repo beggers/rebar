@@ -246,6 +246,21 @@ matches its predicted **177,348-byte** first-party source and SHA-256
 It records all **470** gross targets and **15** overlaps without starting
 a candidate. Actual behavior remains **NOT MEASURED** pending compilation.
 
+## Freeze lexical comment handling for 324 public Rust differences
+
+The [first-party named-escape comment correction](../oracle/phase2/RUST-VERBOSE-NAMED-ESCAPE-SEMANTICS-V1.md)
+teaches the Rust adapter to ignore named Unicode escapes inside inline
+comments, global verbose-mode comments, and nested scoped verbose comments.
+Its **324** observed public failures consist of **297** independent lexical
+differences, **15** scanner overlaps, and **12** replacement overlaps.
+
+The source-only verifier covers **914** distinct lexical/flag examples and
+**84** hostile isolation controls. It preserves escaped characters, bracket
+classes, byte patterns, nested flag scopes, and both compilation entry
+points without importing Python's matcher or another regular-expression
+engine. Four ordinary and clean-environment gates pass. The adapter has not
+yet been materialized or run.
+
 ## Freeze the separate correction for 88 Rust expansion differences
 
 The [independent Rust expansion and buffer-probe correction](../oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md)
