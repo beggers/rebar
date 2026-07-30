@@ -26,8 +26,9 @@ qualified replacements. Hidden-test speed: NOT MEASURED. No winner.**
 
 ![Earlier compatibility snapshot: Rust passes all 31,237 original Python checks and all 10,434 broader real-world checks. C passes 16,413 checks; the earlier Zig run passes 4,607. The newer Zig result below was recorded after this historical graph.](docs/evidence/candidate-current-overview-v104.svg)
 
-The newer complete Zig run verifies **18,056 of 31,237** checks and
-records **1,156** remaining differences across all **13** groups.
+The newer complete C run verifies **22,798 of 31,237** checks and
+records **224** differences; Zig verifies **18,056** and records
+**1,156**. Both candidates finish all **13** groups.
 
 Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
@@ -86,7 +87,7 @@ could not start its sampling timer.
 | Engine | Verified Python checks | Current result |
 | --- | --- | --- |
 | Python `re` | 31,237 / 31,237; 100% | Reference baseline. |
-| C | 16,413 / 31,237; 52.5% | FAIL; all 606 observed differences are preserved; interpreter isolation did not finish. |
+| C | 22,798 / 31,237; 73.0% | FAIL; 224 differences remain across three groups; all 13 isolated workers finish. |
 | Rust | 31,237 / 31,237; 100% | The identical build passes all original and wider checks; live independence and final speed remain unqualified. |
 | Zig | 18,056 / 31,237; 57.8% | FAIL; 1,156 differences across six groups; all 13 workers completed and all original files were restored. |
 | C++ | NOT MEASURED | FAIL; 2,308 observed differences and five worker failures. |
@@ -97,15 +98,17 @@ The current public `rebar` import still selects an unqualified Zig
 prototype; **it is not a working replacement**. Complete difference
 counts are **NOT MEASURED** for unfinished runs. No failed candidate
 has established the required runtime no-delegation. The current C
-run preserves all **606** observed failing examples. Its older run
+run preserves all **224** remaining failures and the earlier **606**
+observed failing examples. Its older run
 saved only **92**; those **514** missing historical examples remain
 **NOT RECORDED**. Separate, independently written C source corrections
-now cover all **606** observed failures; the combined engine has been
-compiled independently twice, but its complete matching test has not run.
+now cover all **606** earlier observed failures; the combined engine has
+been compiled independently twice and its new complete run reveals
+**224** remaining public-interface differences.
 
-The latest C run correctly passes all **151** executable original
-Python tests while preserving all **152** test records and their
-one genuine skipped case. Interpreter isolation still fails.
+The latest C run completes all **13** groups without interpreter or
+worker failures. Its remaining differences are **two** original Python
+assertions, **144** public-type cases, and **78** public-interface cases.
 
 The from-scratch Rust engine was independently built twice using
 **28** verified offline processes and **zero external packages**. The same
@@ -228,7 +231,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual exact-build result: 1.24× Python, 95% confidence 1.19–1.30×, 252 faster cases, all 14 substantial slowdowns preserved](oracle/phase2/evidence/rust-corrected-public-performance-v4-v33-corrected-performance-run-001-publication-receipt.json).
 - [Frozen first-party correction removing Rust's unused external-introspection path](oracle/phase2/RUST-NO-EXTERNAL-INTROSPECTION-V1.md).
 - [Actual first-party bridge source with no indirect Python-regex import](oracle/phase2/evidence/rust-no-external-introspection-v1-application.json).
-- [Latest C run, 16,413 verified checks, and all 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json).
+- [Earlier C run, 16,413 verified checks, and all 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json).
 - [Frozen first-party C adapter correction covering 330 witnessed Python-compatibility failures and complete flag aliases](oracle/phase2/C-PUBLIC-ADAPTER-SEMANTICS-V1.md).
 - [Preserved C adapter source-control rejection before candidate access or source creation](oracle/phase2/evidence/c-public-adapter-semantics-v1-preapplication-failure.json).
 - [Corrected C adapter source freeze preserving the failed predecessor and all 330 recorded Python behavior fixes](oracle/phase2/C-PUBLIC-ADAPTER-SEMANTICS-V2.md).
@@ -242,7 +245,8 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Frozen complete 31,237-case original-suite test of the independently corrected C engine; not yet run](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V13.md).
 - [Corrected frozen C test installing the exact newly built native engine and Python interface](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V14.md).
 - [Preserved complete C run failure: results could not be published after Python hit its recursion limit](oracle/phase2/evidence/repaired-c-original-campaign-v14-publication-recursion-failure.json).
-- [Corrected frozen C test fixing its evidence-publisher recursion; not yet run](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V15.md).
+- [Corrected frozen C test fixing its evidence-publisher recursion](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V15.md).
+- [Actual complete corrected C result: 22,798 verified checks, 224 remaining differences, and all 13 groups completed](oracle/phase2/evidence/repaired-c-original-campaign-v15-c-phase2-v23-c-complete-semantics-original-p0-v15-failures-publication-receipt.json).
 - [Frozen C test and complete failure-preservation rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md).
 - [Corrected C test preserving all real records and the genuine skipped case](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md).
 - [Previous C run and its original 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json).
