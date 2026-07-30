@@ -90,6 +90,12 @@ controls. The remaining **88** changing-buffer issues require a separately
 scoped correction. This source freeze has not yet created, built, or tested
 the corrected candidate; its actual compatibility remains **NOT MEASURED**.
 
+The [first root-authorized source-creation attempt](../oracle/phase2/evidence/rust-substitution-event-order-v1-preapplication-failure.json)
+rejected an existing first-party bridge preservation check before creating
+any variant or running any candidate. The exact failure remains preserved;
+a separately frozen successor must correct the source-surface check without
+weakening the no-external-engine protection.
+
 ## Show the latest complete Rust compatibility result clearly
 
 The [updated headline correctness chart](evidence/candidate-current-overview-v101.svg)
