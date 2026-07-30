@@ -268,6 +268,11 @@ Together with the separately materialized Zig adapter, it models corrections
 for all **1,700** previously observed Zig failures. The **128** unfinished
 interpreter checks, the complete Zig build, and actual candidate correctness
 remain **NOT MEASURED**.
+The [actual complete first-party Zig semantic bridge](../oracle/phase2/evidence/zig-replacement-event-semantics-v1-application.json)
+now exists at its predicted **176,765-byte** source identity. Together with
+the separately materialized Zig adapter, its independently modeled fixes
+cover every one of the **1,700** previously observed failures. A complete
+native build and all **31,237** frozen checks are still required.
 
 ## Combine all original Rust fixes with the wider scanner correction
 
