@@ -99,6 +99,31 @@ jq -ce '
 ' oracle/phase2/evidence/candidate-runtime-independence-v4-explicit-provider-proof.json
 ```
 
+## Verify the executable corrected Rust compatibility procedure
+
+The independently frozen version-24 controller can execute the full
+original suite, but this command verifies its source only. It starts
+no candidate, opens no private build directory, and never touches
+the final performance holdout:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/run_owned_repaired_rust_original_campaign_v24.py \
+  --source-sha256 f855f73e320f4ec33063dac1f22c11b1977ba04a02e1f97dfddca1d0670f705d \
+  --protocol-sha256 d482cf8d06f9f328c08fda43a63db79db408e2421bad24e6e047ad507ef70431 \
+  --contract-sha256 605737aa5060b78eb3802c8b3e58954a680bdf08b6f62a402de453552a0cd8f4 \
+  --guard-v4-source-sha256 5b498643fa730dc09090bdc9e189e2d395cbe41a2b14019937eb251fd38240f3 \
+  --guard-v4-protocol-sha256 835473a98f62c9b2cb0dee61736b6cbbab4460f14d8371597e80933c64721a16 \
+  --guard-v4-contract-sha256 30f5c52d5aadfd6e8a7be7c6f355d9628510384d7fd922bcfb609dfe854acea2 \
+  --verify-frozen-context
+```
+
+Replace the final argument with `--self-test` to repeat all **2,053**
+source-only adversarial controls. Both commands also pass outside
+the clean environment. Actual candidate execution requires separate,
+complete native-build, recovery, and first-party ownership authority.
+
 ## Verify the previous version-98 comparison
 
 The preserved version-98 graph records the comparison before the

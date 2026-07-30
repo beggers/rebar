@@ -8,6 +8,23 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the executable corrected Rust compatibility run
+
+The [version-24 Rust compatibility procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V24.md)
+combines the real, twice-built first-party Rust engine with the
+corrected child-interpreter guard. It preserves the unchanged
+**31,237** Python checks, all **13** groups, every previously saved
+Rust failure, and the earlier **14,725** verified checks. The Rust
+engine uses **zero external packages**.
+
+All four ordinary and clean source-only checks passed, including
+**2,053** adversarial controls. These checks loaded no engine,
+started no candidate, opened no private build directory, and never
+accessed the final holdout. The independently authorized full
+candidate run has **NOT RUN** at this source freeze. Compatibility,
+runtime no-delegation, and speed remain **NOT MEASURED** or
+**NOT ESTABLISHED**.
+
 ## Prove a genuine Python child interpreter works
 
 The [actual isolated provider proof](../oracle/phase2/evidence/candidate-runtime-independence-v4-explicit-provider-proof.json)
