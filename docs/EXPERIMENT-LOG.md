@@ -22,9 +22,12 @@ parser comparisons, **42** genuinely distinct scanner-flag outcomes,
 **40** source-ownership scenarios, and **110** hostile controls. The
 **31,237** original checks, all **1,352** existing Rust failures, every
 **1,664** actual public practice observation, and the unopened
-**141,557,760**-case final proposal remain unchanged. The new variant has
-not yet been created, built, or timed; its correctness and improvement are
-**NOT MEASURED**.
+**141,557,760**-case final proposal remain unchanged. After its freeze was
+committed and pushed, [one exclusive source application](../oracle/phase2/evidence/rust-compiler-allocation-fastpath-v1-application.json)
+created the exact **178,021-byte** independent Rust source variant with
+SHA-256 `64228afb698f5326e6a30fd93c2ea27bd81653ecdd4a4a8e2b0dda5983e895b6`.
+Canonical Rust sources remain unchanged; the new variant has not yet been
+built or timed, so its actual correctness and speed are **NOT MEASURED**.
 
 ## Distinguish first-party language bindings from borrowed engines
 
