@@ -95,6 +95,32 @@ matrix SHA-256 is
 `4de04250c99a87d188bf1f8386ad80044ae86d136908ea7aa1bc86e8b7c32ab1`.
 Neither mode records a Python answer or opens the performance holdout.
 
+## Verify the next first-party Rust buffer correction
+
+The proposed Rust correction removes one overbroad replacement-buffer
+branch while preserving the separately observed matching and cleanup
+failures. It verifies the actual **14,725 / 31,237** Rust result and
+all **2,018** observed differences. The corrected Rust engine is
+**NOT BUILT** and **NOT RUN**; its source hash and correctness are
+**NOT MEASURED**.
+
+Run the complete public-evidence-only check in a clean environment:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/apply_owned_rust_capture_shape_semantics_v2.py \
+  --verify-frozen-context \
+  --source-sha256 e285d0c39950f7ffc5929f0c5f5a0708b8c3e8878b655255cb29e1b0725233c2 \
+  --protocol-sha256 999e8cdf9f7a7b0fbaca67759d8c0a13f49c7ca10c753539010d11681a1aaa8d \
+  --contract-sha256 cafb121e38ed738c51d30978a22ddf788eafd729b2a145a8f3564ea97412e673
+```
+
+Replace `--verify-frozen-context` with `--self-test` to reproduce all
+**240** adversarial checks. Repeat without the `env -i` prefix for
+the ordinary environment. Both modes physically block candidate,
+native-library, archive, private-build, clock, and holdout access.
+
 ## Verify the frozen Zig cleanup correction
 
 The actual version-13 Zig engine emitted cleanup warnings in all

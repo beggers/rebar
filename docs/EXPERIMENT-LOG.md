@@ -8,6 +8,31 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a narrower first-party Rust replacement-buffer correction
+
+The [version-2 Rust buffer correction](../oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2.md)
+is based on the actual, fully preserved version-22 regression. The
+earlier Rust change introduced an overly broad early return when a
+replacement buffer raised an error. The new proposal removes only
+that branch and retains the independently observed removal of an
+unnecessary outer length check. It does not replace the first-party
+Rust parser, matcher, compiler, or native bridge with another engine.
+
+The source-only freeze authenticates the complete actual Rust
+failure: **14,725 / 31,237** verified checks; **42**, **352**, and
+**1,624** observed differences; the unfinished interpreter group;
+and the **16** cleanup warnings in the one captured failed worker.
+All **435** current frozen obligations and all **402** inherited
+obligations remain unchanged. It never claims that the proposal
+fixes particular observed cases.
+
+The complete proposed bridge has not been read, created, or built.
+Its conditional **178,860**-byte length is arithmetic, not an
+observed source file. Its actual source hash, matching correctness,
+memory, and speed are **NOT MEASURED**. Both environments pass
+**240** adversarial controls under a new public-evidence-only safety
+wall. The expanded speed comparison remains unopened.
+
 ## Freeze the complete, setter-safe Zig correctness run
 
 The [version-14 Zig correctness procedure](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V14.md)
