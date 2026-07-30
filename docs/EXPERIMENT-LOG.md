@@ -312,6 +312,13 @@ independent private source trees. Both engine binaries and both fully
 corrected native bridges were byte-identical; external Cargo and
 regular-expression dependencies remain **zero**. The complete
 **10,434-case** wider correctness test has **NOT BEEN RUN**.
+The [full wider Rust correctness campaign](../oracle/phase2/RUST-FULL-PUBLIC-CORRECTNESS-V4.md)
+freezes exactly **10,434** text and byte-oriented cases across **111** Python
+operations and two isolated reference/candidate workers. It preserves the
+earlier **1,145** differences, the original-suite **31,237-case** pass, and
+the successful zero-external-engine source inspection. All four ordinary and
+clean-environment source-only checks pass **24** hostile controls; the
+candidate run has **NOT BEEN STARTED**.
 
 ## Preserve the faster Rust architecture while correcting scoped Unicode matching
 
