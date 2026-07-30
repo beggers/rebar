@@ -19,7 +19,7 @@ preserved; runtime no-delegation still requires a separate live proof.
 
 ## Results at a glance
 
-**Six independently written approaches. One Rust engine passes all
+**Six independently written approaches. The Rust family has passed all
 31,237 original checks and all 10,434 wider compatibility checks.
 Zero fully qualified replacements. Final speed: NOT MEASURED. No winner.**
 
@@ -27,7 +27,8 @@ Zero fully qualified replacements. Final speed: NOT MEASURED. No winner.**
 
 Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
-unfinished group are never counted as passing.
+unfinished group are never counted as passing. Rust's latest wider-suite
+build still needs its own repeat of the complete original suite.
 
 ![Five historical directly compared speeds: Python 1.00×, original Rust 0.86×, accelerated Rust search 1.25×, low-allocation Rust compiler 0.80×, and an earlier combined Rust design 1.23×. Those historical designs failed 1,145 wider checks; the newer corrected Rust engine now passes all 10,434 but has not yet been timed.](docs/evidence/rust-architecture-comparison-v2.svg)
 
@@ -73,7 +74,7 @@ could not start its sampling timer.
 | --- | --- | --- |
 | Python `re` | 31,237 / 31,237; 100% | Reference baseline. |
 | C | 16,413 / 31,237; 52.5% | FAIL; all 606 observed differences are preserved; interpreter isolation did not finish. |
-| Rust | 31,237 / 31,237; 100% | PASS on all original checks and all 10,434 wider checks; zero differences. Live no-delegation and final speed remain unqualified. |
+| Rust | 31,237 / 31,237; 100% | The family passes both suites; its latest wider-suite build still needs an original-suite rerun and live independence audit. |
 | Zig | 4,607 / 31,237; 14.7% | FAIL; at least 1,700 differences; cleanup errors in all 13 workers; the corrected rerun stopped before matching. |
 | C++ | NOT MEASURED | FAIL; 2,308 observed differences and five worker failures. |
 | Go | NOT MEASURED | FAIL; 4,518 observed differences and four worker failures. |
@@ -91,13 +92,13 @@ The latest C run correctly passes all **151** executable original
 Python tests while preserving all **152** test records and their
 one genuine skipped case. Interpreter isolation still fails.
 
-The corrected, from-scratch Rust engine was independently built twice using
-**28** verified offline processes and **zero external packages**. Its complete
-original-suite run passed **31,237 of 31,237** checks across all **13** groups,
-with **zero differences** and **13** successful independent workers. This fixes
-all **1,352** differences preserved from its earlier run. The corrected
-engine's wider-suite run also passed **10,434 of 10,434** cases across
-**111** Python operations with **zero differences**. Live runtime
+The from-scratch Rust family was independently built twice using
+**28** verified offline processes and **zero external packages**. One build's
+complete original-suite run passed **31,237 of 31,237** checks across all
+**13** groups, with **zero differences** and **13** successful independent
+workers. A newer build passed **10,434 of 10,434** wider checks across
+**111** Python operations with **zero differences**. The newer build has
+not yet repeated the complete original suite. Live runtime
 no-delegation and the corrected engine's speed remain **NOT ESTABLISHED**
 or **NOT MEASURED**.
 A newly frozen, entirely first-party Rust build combines the validated
@@ -199,6 +200,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Preserved C adapter source-control rejection before candidate access or source creation](oracle/phase2/evidence/c-public-adapter-semantics-v1-preapplication-failure.json).
 - [Corrected C adapter source freeze preserving the failed predecessor and all 330 recorded Python behavior fixes](oracle/phase2/C-PUBLIC-ADAPTER-SEMANTICS-V2.md).
 - [Actual independently written C adapter correcting all 330 recorded Python interface, cache, and flag differences](oracle/phase2/evidence/c-public-adapter-semantics-v2-application.json).
+- [Frozen from-scratch C engine corrections targeting the other 276 observed failures; not yet applied or measured](oracle/phase2/C-COMPLETE-NATIVE-SEMANTICS-V1.md).
 - [Frozen C test and complete failure-preservation rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md).
 - [Corrected C test preserving all real records and the genuine skipped case](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md).
 - [Previous C run and its original 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json).
