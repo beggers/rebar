@@ -241,6 +241,12 @@ opening a candidate, native artifact, archive, final proposal, or hidden
 case. Candidate compilation and actual complete compatibility remain
 **NOT MEASURED** until a separately authenticated full retest.
 
+The [first authorized combined-correction source attempt](../oracle/phase2/evidence/rust-complete-semantic-correction-v1-preapplication-failure.json)
+failed before creating its candidate variant. A source-only hostile test was
+incorrectly repeated after root-only access had been enabled. The failed
+attempt and all predecessor corrections are preserved; an immutable
+successor must separate source-only controls from root-only materialization.
+
 ## Show the latest complete Rust compatibility result clearly
 
 The [updated headline correctness chart](evidence/candidate-current-overview-v101.svg)
