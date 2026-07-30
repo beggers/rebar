@@ -8,6 +8,77 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the complete, independently written C-engine test
+
+The [complete version-10 C failure](../oracle/phase2/evidence/repaired-c-original-campaign-v10-c-phase2-v21-c-original-match-semantics-original-p0-v10-failures-publication-receipt.json)
+records exactly one real run against all **13** original groups and
+the unchanged **31,237**-check denominator. All **13** workers were
+distinct. Eight groups completed, including three fully passing
+groups with **2,854**, **10,240**, and **512** checks. Therefore the
+C engine still verifies exactly **13,606 / 31,237** checks, or
+**43.6%**; it is **not** a Python `re` replacement.
+
+Five completed groups expose **16**, **248**, **224**, **114**, and
+**4** differences, a total of at least **606**. The other five
+groups did not complete. Four original-only test controllers stopped
+before the first candidate check; the interpreter-safety guard
+stopped the fifth. Those failures are not counted as matching
+differences. No infrastructure failure or timeout was observed.
+The complete difference count is **NOT MEASURED**.
+
+The inherited recorder keeps at most **24** individual failing
+examples per group. It actually preserves **16**, **24**, **24**,
+**24**, and **4** examples from those five groups: just **92** of
+the **606** observed failures. The other **514** individual failing
+examples are **NOT RECORDED**: **224** from public types, **200**
+from substitutions, and **90** from the public interface. The
+per-group counts and full-vector hashes do not recover the missing
+examples. A future run must preserve every failure; this report
+does not satisfy that requirement.
+
+Compared with the preserved version-9 run, one more group completed
+and exposed **114** previously unobserved differences. The number
+of verified passing checks did not increase. This is improved
+observation, not improved compatibility or speed.
+
+Both the [published compressed failure report](../oracle/phase2/evidence/repaired-c-original-campaign-v10-c-phase2-v21-c-original-match-semantics-original-p0-v10-failures.json.gz)
+and its small publication receipt are preserved; the report is
+**not** a complete archive of individual counterexamples. The
+original native
+C engine and both source files were independently verified restored
+with their exact original contents and inodes. A successful
+publication means that the evidence was recorded; the candidate
+result is **FAIL**. Runtime no-delegation is **NOT ESTABLISHED**.
+Memory, speed, and undefined-behavior checks are **NOT MEASURED**.
+The final performance holdout remains unopened.
+
+The first version-96 graph verifier was rejected before any graph
+was created. Its source SHA-256 was
+`ae67332a5e025cb7790d0177898f5b943f4e447509637fdd82c8da0ec7bef13e`.
+It incorrectly required the genuine, pretty-printed Zig controller
+failure to have canonical JSON formatting. The corrected verifier
+must authenticate the original receipt bytes and hash without
+rewriting or discarding the real failure.
+
+The [subsequently generated version-96 graph](evidence/candidate-current-overview-v96.svg)
+passed all **14,408** source-verification controls, but independent
+inspection caught another genuine error. Its footer said that
+“all observed losses” were preserved even though **514** observed C
+examples are missing. This graph was therefore rejected as a
+headline. Its exact source, inputs, summary, and generated SVG are
+preserved without editing or deleting them. Passing a graph safety
+check does not make misleading wording correct.
+
+The first replacement version-97 source was also rejected before
+publishing a graph. Source SHA-256
+`dcd040e9a96d106c1592cdbe86832a0198b21d2340739d5ba725b664620ea2f5`
+passed both frozen-context checks but failed both complete tamper
+tests: a case-sensitive test did not remove the corresponding
+lowercase accessibility disclosure. Both independent runs rejected
+it with `V97 accepted misleading evidence: removed genuine visible
+disclosure`. The corrected source must test every visible and
+accessible disclosure without relying on letter case.
+
 ## Preserve the actual setter-safe Zig controller failure
 
 The [complete version-14 pre-publication failure](../oracle/phase2/evidence/zig-original-campaign-v14-setter-safe-prepublication-controller-failure.json)
@@ -156,9 +227,10 @@ group did not finish.
 
 The actual failed interpreter worker, its process, return code,
 complete standard output, standard error, and traceback are all
-preserved. The subprocess is real, but its original interpreter
-test created **0** genuine Python child interpreters, installed
-**0** child guards, and ran **0** child cases. Its
+preserved. The subprocess recorded **0** successfully returned
+child interpreters, **0** installed child guards, and **0** child
+cases. Whether Python transiently created an interpreter before the
+guard rejected its postcondition is **NOT MEASURED**. Its
 **10,183**-byte complete error stream also shows
 **16** genuine native-object cleanup warnings. Those warnings are
 proven for this failed worker only, not silently attributed to all

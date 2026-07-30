@@ -15,11 +15,17 @@ Rust engine passes **14,725**, C **13,606**, and Zig **4,607**. The
 previous Rust result of **15,749** is preserved: the latest attempt
 lost certification of a **1,024**-check group with **42** observed
 differences and has at least **2,018** observed differences overall.
+The latest complete C run reports at least **606** differences and
+**five** unfinished groups without increasing its passing count.
+Its recorder preserves only **92** individual failing examples;
+the other **514** are **NOT RECORDED**.
 No engine is fully compatible.
 
 The one completely captured failed Rust worker produced **16** cleanup
 warnings; warning counts for other Rust workers are **NOT MEASURED**.
-The actual subprocess created **0** verified Python child interpreters.
+The subprocess recorded **0** successfully returned Python child
+interpreters; whether a native interpreter was transiently created
+before its guard failed is **NOT MEASURED**.
 Zig's independently preserved run records warnings from all **13** of
 its workers. The additional **8,244** reference cases remain separate
 from the original **31,237**-check denominator. Speed, memory, and
@@ -28,26 +34,31 @@ statistical confidence are **NOT MEASURED**. The proposed
 **NOT GENERATED**, and **NOT OPENED**.
 
 This pinned, read-only command independently verifies the complete
-version-95 graph, the original version-94 evidence, and the actual
-Rust regression without creating graph files, opening compressed
-evidence, importing an engine, compiling code, or accessing the speed
-holdout:
+version-97 graph, the preserved and rejected version-96 graph, the
+actual C failure, the earlier Rust regression, and the Zig controller
+failure.
+It does not create graph files, open compressed evidence, import an
+engine, compile code, or access the speed holdout:
 
 ```bash
 env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
   /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
-  -I -B -S tools/render_candidate_current_overview_v95.py \
+  -I -B -S tools/render_candidate_current_overview_v97.py \
   --verify-frozen-context \
-  --source-sha256 a0aee36be3b6d12bd00dfa53fa249bcadd5710745eb5d84d6a3e781cf289b3db \
-  --source-bytes 112368 \
-  --previous-source-sha256 f5fc03f33ab5d26edab90538aa58a5bf3f8029685975f31c88a8df70828e5ee3 \
-  --previous-inputs-sha256 59f0c46fc4c4e64f607850a7914bcea496db6652ec5930b7d476a5adf2cb575a \
-  --previous-summary-sha256 1885047737ae4345e0791c4c2b44297cf0edc029ae823640e857eca69c64048e \
-  --previous-svg-sha256 49812bb7857b5b130bf8f9159897016d65bcb150a619e6eb5d9f17ade6e9d0c8 \
-  --rust-source-sha256 e88f242835781e9b70efa18e68a7b06b0b9368e91320ed596995ef0e16370c61 \
-  --rust-protocol-sha256 c6a2a5db9c9c27974c29af01b3d7f7042bae73e254c638fe27813505ef11f396 \
-  --rust-contract-sha256 f1c021049e4bb173be8d47339920354e02c8c0194aead877b8474a128b5e158a \
-  --rust-receipt-sha256 7013c42f6309d94e094dd89cc8e9f24fe245c0cba5ca4791d35ffe5fa2b7dad7
+  --source-sha256 f83e055e2392a1efa193b1726ce9044bfdeadc4236103927be4ed8f2f6b060b9 \
+  --source-bytes 65091 \
+  --previous-source-sha256 9bb191556152393b650b75c0c4e3d584b6df9f3d060571789c1a89411011fd51 \
+  --previous-inputs-sha256 71cc5d77f66901d24c3d8c8db58f2cdc545634ec5da8ff0aaf9f630f3bafde7f \
+  --previous-summary-sha256 b5f7b35e9ec47e4d0793c0b5b38372c391ec1f3aaca37b80655802aa9c2f1ca2 \
+  --previous-svg-sha256 ec8ffd566b7da826441383c1fd44944189c153ffde252b9c8340e3e041770dcd \
+  --c-source-sha256 ad8b8451847b3e5c566c141e829bdf6eecea8ae9f502b608288449022c83c790 \
+  --c-protocol-sha256 ba673181c02daf3a572e3569283a5a4c490ed04e7cd76927e3f2fe1430630179 \
+  --c-contract-sha256 2aad4885fe80b93f61f59c28ed6969fbcf16dda0b8a3457c71b449a9972bb595 \
+  --zig-source-sha256 8757ff2fdda5e8e60ee694b0d803018ddf33ea7266b8d7a5eff6d52d0866569d \
+  --zig-protocol-sha256 691ab654b88ed30f6cd0729d987415162708fdfb90c36d91bf41dcefdbb5fcef \
+  --zig-contract-sha256 1c7326dc2f63635f3e32ec0558b51f21c952d51480f336e3b0d4d49e38428a0a \
+  --c-receipt-sha256 c5c85f828da7e960c90a23b1eb4d74c30a671d030de04ef61b0e4d00d7e5433a \
+  --zig-controller-receipt-sha256 2d1bad717e782b7ed3e0af856f8687e9a29abc93ebf1553adc6d65f668aa5c65
 ```
 
 Replace `--verify-frozen-context` with `--self-test` to reproduce the
@@ -57,15 +68,48 @@ runs an engine or a speed test.
 Expected current graph files:
 
 ```text
-docs/evidence/candidate-current-overview-v95.inputs.json
-1cc29cf050596470ea80149fb55a73090823fb8ee7b1944657ab79d14c011cd6
+docs/evidence/candidate-current-overview-v97.inputs.json
+ebc81ead0b0741e02fdeef13ab9e740877ee1d2dc7d06ec25347a145f98ad916
 
-docs/evidence/candidate-current-overview-v95.summary.json
-50b7347a0421982d0b3bdd922e62d5afce167af0939e3e8745f8bb5c238ff47f
+docs/evidence/candidate-current-overview-v97.summary.json
+ba4ae8d609b94719dc37ff702d5461763ecba8bee94214961e096ee702636c24
 
-docs/evidence/candidate-current-overview-v95.svg
-03a9e03e495fb4ec8362150f02072a4828e13e5f049af430042c435370c6808d
+docs/evidence/candidate-current-overview-v97.svg
+5c8dc279ee76655aa305ee2cb02ae92ea82b5ad36273cdd39a32f2f7ffcda13b
 ```
+
+## Verify which C failures were actually saved
+
+The latest C failure report proves **606** observed differences but
+contains only **92** individual examples. The remaining **514**
+examples are **NOT RECORDED**. Verify the real compressed report
+without printing case contents or running an engine:
+
+```bash
+gzip -dc -- \
+  oracle/phase2/evidence/repaired-c-original-campaign-v10-c-phase2-v21-c-original-match-semantics-original-p0-v10-failures.json.gz |
+  jq -ce '
+    [.suite_results[]
+     | select(.failure_class == "SEMANTIC MISMATCH")
+     | .original_observation.all_mismatches as $m
+     | {suite, observed: .mismatch_count,
+        preserved: $m.prefix_count,
+        missing: ($m.total_count - $m.prefix_count),
+        complete: $m.complete_vector_embedded}] as $rows
+    | select(.schema == "rebar-owned-repaired-c-original-campaign-v10-actual-original-campaign")
+    | select(.case_execution_denominator == 31237)
+    | select(.observed_semantic_mismatch_lower_bound == 606)
+    | select(($rows | map(.preserved) | add) == 92)
+    | select(($rows | map(.missing) | add) == 514)
+    | {observed: .observed_semantic_mismatch_lower_bound,
+       preserved: ($rows | map(.preserved) | add),
+       missing: ($rows | map(.missing) | add), suites: $rows}'
+```
+
+The compressed report SHA-256 is
+`35b36907e699546b77d36bb7c5eea96fee5ce2fc1022b0c0f1eefe652128cc37`.
+It is a complete copy of the original published report, **not**
+a complete record of every observed counterexample.
 
 ## Verify the expanded real-world input questions
 
