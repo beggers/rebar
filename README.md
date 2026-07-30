@@ -96,6 +96,10 @@ with **zero differences** and **13** successful independent workers. This fixes
 all **1,352** differences preserved from its earlier run. The corrected
 engine's wider-suite compatibility, runtime no-delegation, and speed remain
 **NOT MEASURED** or **NOT ESTABLISHED**.
+A newly frozen, entirely first-party Rust build combines the validated
+original-suite engine with every known scanner, comment, replacement, and
+Unicode correction from the **10,434-case** wider public suite. Its native
+build and full wider-suite result have **NOT BEEN RUN**.
 A separate inspection of both independently built Rust engines, all **18**
 first-party sources, and all **four** native binaries found **zero** external
 regular-expression packages, external engine symbols, or matching delegation.
@@ -224,6 +228,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Preserved corrected Rust comment-adapter source-control rejection before any candidate variant was created](oracle/phase2/evidence/rust-corrected-comment-adapter-v1-preapplication-failure.json).
 - [Corrected Rust comment-adapter source freeze, preserving the rejected attempt and all 324 wider cases](oracle/phase2/RUST-CORRECTED-COMMENT-ADAPTER-V2.md).
 - [Actual corrected first-party Rust adapter preserving previous fixes and all 324 wider comment-handling cases](oracle/phase2/evidence/rust-corrected-comment-adapter-v2-application.json).
+- [Frozen fully integrated Rust build combining every original and wider-public compatibility correction](oracle/phase2/RUST-FULL-PUBLIC-SEMANTIC-SOURCE-BUILD-V32.md).
 - [Frozen independent first-party correction for 88 remaining Rust template-expansion and buffer-probe differences](oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md).
 - [Actual isolated Rust bridge source correcting template expansion and outer buffer checks](oracle/phase2/evidence/rust-expand-probe-semantics-v1-application.json).
 - [Frozen combined first-party Rust correction covering all 1,352 known original compatibility failures](oracle/phase2/RUST-COMPLETE-SEMANTIC-CORRECTION-V1.md).

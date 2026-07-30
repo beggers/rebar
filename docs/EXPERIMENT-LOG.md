@@ -258,6 +258,20 @@ candidate source remained inaccessible throughout all **98** hostile
 controls. Its complete native candidate and wider-suite result have
 **NOT BEEN RUN**.
 
+## Freeze the complete original-and-public first-party Rust engine
+
+The [fully integrated first-party Rust build](../oracle/phase2/RUST-FULL-PUBLIC-SEMANTIC-SOURCE-BUILD-V32.md)
+combines the actual **31,237-case** original-suite passing engine with the
+independently materialized complete scanner bridge, corrected comment adapter,
+and scoped-Unicode engine. The earlier **1,145** wider-suite failures divide
+exactly into **470** scanner cases, **376** replacement cases, **297**
+independent comment cases, and **two** Unicode cases.
+
+All four ordinary and clean-environment source-only checks independently
+authenticate **111** owners, reject **18** hostile actions, and open neither
+the final proposal nor hidden cases. The two independent native builds and
+the complete **10,434-case** wider correctness run have **NOT BEEN RUN**.
+
 ## Preserve the faster Rust architecture while correcting scoped Unicode matching
 
 The [combined first-party scoped-Unicode engine](../oracle/phase2/RUST-COMBINED-SCOPED-UNICODE-ENGINE-V1.md)
