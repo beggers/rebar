@@ -19,6 +19,21 @@ buffer-safety correction. The original denominator remains **31,237**. Its
 separate no-delegation audit still has one unresolved finding; final speed
 and candidate qualification remain **NOT MEASURED**.
 
+## Freeze an independent reusable Rust matching-workspace architecture
+
+The [first-party matching-workspace experiment](../oracle/phase2/RUST-VM-WORKSPACE-REUSE-V1.md)
+targets **408** real matching-engine allocations totaling **120,768 bytes**
+in the existing public memory profile. One independently written Rust
+workspace retains overflow guard, repetition, and large capture-snapshot
+storage across attempted starting positions while preserving separate
+workspace for nested assertions and callbacks.
+
+Four ordinary and clean-environment source gates cover **18,144** modeled
+matching behaviors, including **12,096** nested or reentrant checks and
+**16,848** modeled avoided allocations. The source gates run no candidate,
+load no native engine, and leave the larger final test unopened. The actual
+variant has not yet been created, built, correctness-tested, or timed.
+
 ## Freeze the independently accelerated Rust search-engine build
 
 The [version-26 first-party Rust search build](../oracle/phase2/RUST-ANCHOR-SOURCE-BUILD-V26.md)
