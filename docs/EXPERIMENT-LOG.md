@@ -2,6 +2,17 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## Independently rebuild the corrected, from-scratch Zig engine
+
+The [final corrected Zig build](../oracle/phase2/evidence/zig-final-original-source-build-v17-phase2-v17-zig-final-original-build-receipt.json)
+compiled the independently written engine and Python bridge twice using
+**26** isolated compiler processes. Both builds produced identical native
+engine and bridge binaries, with **zero** external regular-expression
+packages or engines. The corrected sources address all **1,156** differences
+recorded by the previous complete Zig run. Compatibility, live independence,
+and performance for these newly built binaries remain **NOT MEASURED** until
+the separately frozen full-suite run completes.
+
 Historical entries describe an earlier, retired benchmark. It opened once,
 exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
 must never be reused. Earlier **4,194,304**-case and **14,155,776**-case
