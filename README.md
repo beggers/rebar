@@ -242,6 +242,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual fully integrated first-party Rust build: two identical native engines and bridges across 28 offline build and inspection steps](oracle/phase2/evidence/native-source-build-v33-rust-phase2-v33-rust-full-public-semantic-source-root-provenance-publication-receipt.json).
 - [Frozen 10,434-case wider Rust compatibility test covering 111 Python operations; not yet run](oracle/phase2/RUST-FULL-PUBLIC-CORRECTNESS-V4.md).
 - [Preserved first wider-suite Rust test rejection before either reference or candidate worker started](oracle/phase2/evidence/rust-full-public-correctness-v4-preworker-failure.json).
+- [Corrected full 10,434-case Rust public compatibility procedure preserving the rejected predecessor](oracle/phase2/RUST-FULL-PUBLIC-CORRECTNESS-V5.md).
 - [Frozen independent first-party correction for 88 remaining Rust template-expansion and buffer-probe differences](oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md).
 - [Actual isolated Rust bridge source correcting template expansion and outer buffer checks](oracle/phase2/evidence/rust-expand-probe-semantics-v1-application.json).
 - [Frozen combined first-party Rust correction covering all 1,352 known original compatibility failures](oracle/phase2/RUST-COMPLETE-SEMANTIC-CORRECTION-V1.md).

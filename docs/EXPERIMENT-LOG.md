@@ -333,6 +333,12 @@ stopped before either worker started because an output-safety assertion
 accepted only the Boolean value `True`, while a nonempty byte buffer was
 merely truthy. No correctness result was created or discarded; the complete
 rejection remains preserved for a corrected successor.
+The [corrected full public Rust correctness procedure](../oracle/phase2/RUST-FULL-PUBLIC-CORRECTNESS-V5.md)
+uses an explicitly Boolean output-safety predicate and independently tests
+that exact root-only path before candidate access. All four ordinary and
+clean-environment checks pass **27** hostile controls while preserving both
+the first failed launch and the full **10,434-case**, **111-operation**
+denominator. The reference and candidate workers have **NOT BEEN RUN**.
 
 ## Preserve the faster Rust architecture while correcting scoped Unicode matching
 
