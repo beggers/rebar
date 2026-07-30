@@ -233,6 +233,15 @@ correctly stopped when an isolated hostile source-control assertion failed.
 No adapter variant was created and no candidate matching ran; the complete
 failure remains preserved while a separately frozen correction is prepared.
 
+## Preserve the faster Rust architecture while correcting scoped Unicode matching
+
+The [combined first-party scoped-Unicode engine](../oracle/phase2/RUST-COMBINED-SCOPED-UNICODE-ENGINE-V1.md)
+adds the final **two** known wider-public Unicode matching corrections to the
+independently optimized Rust search and lower-allocation compiler. Its four
+ordinary and clean-environment source-only checks verify **17,442** synthetic
+cases, repair **1,882** previously unsound models, and reject **45** hostile
+actions. The immutable combined source has **NOT BEEN CREATED OR TESTED**.
+
 ## Freeze the combined fast-search and reusable-workspace architecture
 
 The [independent combined matching-workspace experiment](../oracle/phase2/RUST-COMBINED-VM-WORKSPACE-V1.md)
