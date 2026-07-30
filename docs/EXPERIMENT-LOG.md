@@ -23,9 +23,19 @@ Its frozen source-only self-test passes **235** hostile and **45** clean
 controls in both normal and empty environments. Source verification
 authenticates exactly seven approved owners, including the previous failure;
 neither mode reads candidate source, loads native code, starts a process,
-opens a hidden test, or measures speed. Actual candidate inspection remains
-**NOT RUN**, runtime independence remains **NOT ESTABLISHED**, and final
-performance remains **NOT MEASURED**.
+opens a hidden test, or measures speed.
+
+The subsequent
+[actual read-only source and native-file inspection](../oracle/phase2/evidence/runtime-non-delegation-v3-actual-source-audit-failure.json)
+completed and retained all **seven** findings. One concerns a Rust-only
+introspection helper whose imports can reach Python's regular-expression
+module. The other six show that the stricter policy incorrectly rejects
+Zig's own first-party Python binding and its public facade. The objective
+explicitly permits language bindings; the next policy must authenticate an
+engine's own native library while still rejecting every borrowed engine and
+external regular-expression package. No candidate ran, no native code was
+loaded, and no final test was opened. Runtime independence remains
+**NOT ESTABLISHED**, and final performance remains **NOT MEASURED**.
 
 ## Freeze public-only Rust profiling
 
