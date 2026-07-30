@@ -8,6 +8,22 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected first-party Rust native build
+
+The [version-25 offline Rust build procedure](../oracle/phase2/RUST-CAPTURE-CLAMP-SOURCE-BUILD-V25.md)
+authenticates the exact safety-corrected native source, the unchanged
+first-party Rust engine, a Cargo lockfile with **zero external packages**, and
+the previously complete **1,352**-failure result. Two independently prepared
+source trees must produce identical native engines and Python bridges through
+**28** actual compiler and binary-inspection processes. Original live files
+must be restored afterward; neither an existing external regex engine nor
+Python's matcher may supply production matching.
+
+All four ordinary and empty-environment source-only gates pass, including
+**1,816** hostile controls. No compiler, candidate, archived case, hidden
+test, or final benchmark ran during the source freeze. Actual native builds,
+corrected-candidate compatibility, memory, and speed are **NOT MEASURED**.
+
 ## Freeze safe Rust capture bounds for changing byte buffers
 
 The [frozen first-party Rust capture correction](../oracle/phase2/RUST-CAPTURE-CLAMP-SEMANTICS-V1.md)

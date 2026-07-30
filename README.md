@@ -55,7 +55,8 @@ checks. The remaining **240** replacement and **1,112** changing-
 buffer differences mean it is not yet compatible. Speed is
 **NOT MEASURED**. A separately frozen changing-buffer safety correction
 has produced its own verified first-party source variant; that candidate
-has not yet been built or tested.
+has not yet been built or tested. Its reproducible, offline, zero-package
+native build is independently frozen and ready to run.
 
 A corrected interpreter-isolation guard now recognizes real Python
 child interpreters while blocking borrowed regular-expression engines.
@@ -139,6 +140,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Reproducible first-party Rust build with no external packages](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2-SOURCE-BUILD-V24.md).
 - [Frozen from-scratch Rust changing-buffer capture safety correction](oracle/phase2/RUST-CAPTURE-CLAMP-SEMANTICS-V1.md).
 - [Actual immutable Rust changing-buffer source-variant creation](oracle/phase2/evidence/rust-capture-clamp-semantics-v1-application.json).
+- [Frozen offline first-party build for the corrected Rust engine](oracle/phase2/RUST-CAPTURE-CLAMP-SOURCE-BUILD-V25.md).
 - [Actual successful first-party Rust build; matching not yet tested](oracle/phase2/evidence/native-source-build-v24-rust-phase2-v24-rust-capture-shape-v2-root-provenance-publication-receipt.json).
 - [Corrected interpreter isolation and strict no-external-engine guard](oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V4.md).
 - [Actual successful child-interpreter proof; no candidate or external engine](oracle/phase2/evidence/candidate-runtime-independence-v4-explicit-provider-proof.json).
