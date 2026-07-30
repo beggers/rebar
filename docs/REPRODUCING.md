@@ -57,6 +57,30 @@ docs/evidence/candidate-current-overview-v94.svg
 49812bb7857b5b130bf8f9159897016d65bcb150a619e6eb5d9f17ade6e9d0c8
 ```
 
+## Verify the corrected Rust compatibility procedure
+
+Version 22 fixes the real, preserved Rust activation failure without
+changing Python's tests or running the Rust engine. Its source-only
+self-test rejects **983** adversarial changes. The following
+clean-environment command verifies the entire frozen source,
+protocol, failure evidence, and contract without loading a native
+library, starting a candidate, or accessing the speed holdout:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/run_owned_repaired_rust_original_campaign_v22.py \
+  --verify-frozen-context \
+  --source-sha256 e88f242835781e9b70efa18e68a7b06b0b9368e91320ed596995ef0e16370c61 \
+  --protocol-sha256 c6a2a5db9c9c27974c29af01b3d7f7042bae73e254c638fe27813505ef11f396 \
+  --contract-sha256 f1c021049e4bb173be8d47339920354e02c8c0194aead877b8474a128b5e158a
+```
+
+Replace `--verify-frozen-context` with `--self-test` to reproduce the
+**983** source-only checks. Run each command with and without the
+clean-environment prefix to verify both environments. Neither command
+runs, qualifies, or benchmarks a candidate.
+
 ## Reproduce the preserved version-93 comparison
 
 The current graph reports the actual Rust, C, and Zig results against

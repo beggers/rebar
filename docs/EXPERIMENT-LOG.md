@@ -8,6 +8,39 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the corrected independently written Rust compatibility run
+
+The [version-22 Rust procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V22.md)
+corrects the exact, separately preserved version-21 activation
+failure. Source verification and a real candidate run correctly see
+different values for one source-only safety-wall marker. Version 22
+normalizes **only that marker** when comparing the frozen contract;
+all **402** earlier obligations remain intact.
+
+The original failure record is authenticated byte for byte, including
+its pretty-printed JSON, exact original file identities, and **46**
+caller-authority fields. An actual worker failure remains visible:
+the independently authenticated original classifier preserves the real
+worker, imported candidate, both native libraries, guard, suite, and
+failure. Zero-worker results are allowed only when activation really
+has not happened.
+
+Both independent reviewers reproduced the ordinary- and
+empty-environment source checks. Each self-test rejects **983**
+adversarial changes while preserving all **324** inherited checks,
+**10** path-escape checks, and all **18** zero-effect requirements.
+Verification starts **0** candidates, workers, child interpreters,
+compilers, or timing trials and opens **0** native libraries, private
+archives, or holdout cases.
+
+The corrected Rust candidate run has **NOT STARTED**. Its previous
+**15,749** verified passes and at least **1,296** observed
+differences remain unchanged; the complete mismatch count remains
+**NOT MEASURED**. The **31,237** original checks and separate
+**8,244** reference cases are unchanged. The **14,155,776**-case
+speed comparison remains **NOT FROZEN**, **NOT GENERATED**, and
+**NOT OPENED**.
+
 ## Run the independently written Zig engine against all original groups
 
 The [frozen version-13 Zig procedure](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V13.md)
