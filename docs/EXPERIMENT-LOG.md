@@ -226,6 +226,12 @@ preserve **188** valid newer-protocol controls, and reject **63** hostile
 actions. The projected correction remains **NOT BUILT** and its actual
 public effect remains **NOT MEASURED**.
 
+The [actual first scanner source attempt](../oracle/phase2/evidence/rust-scanner-pickle-semantics-v1-preapplication-failure.json)
+rejected a legitimate capture-clamp statement that appears twice in the
+existing first-party bridge. It created no source variant and ran no
+candidate. The exact failure remains preserved; an immutable successor must
+recognize the unique surrounding capture-clamp context.
+
 ## Freeze the separate correction for 88 Rust expansion differences
 
 The [independent Rust expansion and buffer-probe correction](../oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md)
