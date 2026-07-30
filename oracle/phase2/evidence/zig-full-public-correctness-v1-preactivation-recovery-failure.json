@@ -1,0 +1,23 @@
+{
+  "schema": "rebar-owned-zig-full-public-correctness-v1-actual-preactivation-failure",
+  "status": "FAIL",
+  "family": "zig",
+  "session": "v17-zig-public-v1-run-001",
+  "frozen_commit": "5a0dd9bf135758f5e1b4be898c3f9b0cb0d01ec7",
+  "source_sha256": "5ac635da716a7472b5d5a5bd6865bc2ad519ae354f240e3e6c1a8673f2cab087",
+  "protocol_sha256": "679d6472ac44dd602a5b8aee57fba12b54f46c6ab8b4b5c35a287fe2fa8e9fb6",
+  "contract_sha256": "4efc2b4effc284808e21911c13079890722a6afdefd5ba346c5816b5769ee80f",
+  "error_type": "CampaignError",
+  "error": "reject an unsafe exact recovery target",
+  "cause": "The inherited original-suite recovery guard requires its exact /tmp/rebar-phase2-repaired-zig-original-campaign-v18- prefix, but the wider-suite controller selected /tmp/rebar-zig-public-v1-recovery-.",
+  "candidate_activated": false,
+  "candidate_workers_started": 0,
+  "case_execution_denominator": 10434,
+  "candidate_cases_executed": 0,
+  "all_three_original_candidate_files_preserved": true,
+  "runtime_non_delegation": "NOT ESTABLISHED",
+  "candidate_correctness": "NOT MEASURED",
+  "performance": "NOT MEASURED",
+  "holdout": "NOT OPENED",
+  "winner_selected": false
+}
