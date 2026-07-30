@@ -215,6 +215,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Frozen first-party Rust Unicode-prefix correction for the final two known public matching differences](oracle/phase2/RUST-SCOPED-UNICODE-STARTSET-V1.md).
 - [Actual independent Rust engine source preserving scoped Unicode matching in ASCII-pattern contexts](oracle/phase2/evidence/rust-scoped-unicode-startset-v1-application.json).
 - [Frozen fully optimized Rust engine combining fast search, lower-allocation parsing, and the final two known Unicode matching corrections](oracle/phase2/RUST-COMBINED-SCOPED-UNICODE-ENGINE-V1.md).
+- [Actual combined optimized Rust matching engine with independently implemented scoped Unicode corrections](oracle/phase2/evidence/rust-combined-scoped-unicode-engine-v1-application.json).
 - [Frozen first-party Python adapter correction for 324 ignored-comment regular-expression cases](oracle/phase2/RUST-VERBOSE-NAMED-ESCAPE-SEMANTICS-V1.md).
 - [Actual independently written Python adapter with correct inline and verbose regular-expression comments](oracle/phase2/evidence/rust-verbose-named-escape-semantics-v1-application.json).
 - [Frozen corrected Rust adapter combining all existing compatibility fixes with 324 wider comment-handling cases](oracle/phase2/RUST-CORRECTED-COMMENT-ADAPTER-V1.md).

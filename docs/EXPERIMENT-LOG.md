@@ -240,7 +240,10 @@ adds the final **two** known wider-public Unicode matching corrections to the
 independently optimized Rust search and lower-allocation compiler. Its four
 ordinary and clean-environment source-only checks verify **17,442** synthetic
 cases, repair **1,882** previously unsound models, and reject **45** hostile
-actions. The immutable combined source has **NOT BEEN CREATED OR TESTED**.
+actions. The [actual immutable combined Rust engine](../oracle/phase2/evidence/rust-combined-scoped-unicode-engine-v1-application.json)
+now exists at its predicted **189,493-byte** source identity, with the faster
+search and lower-allocation parser preserved. Its combined native build and
+wider-suite correctness have **NOT BEEN RUN**.
 
 ## Freeze the combined fast-search and reusable-workspace architecture
 
