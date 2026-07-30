@@ -23,6 +23,24 @@ audited process making them. A freshly rekeyed successor is required before
 any final test. Final cases, performance, memory, statistical confidence,
 and a winner remain **NOT GENERATED** or **NOT MEASURED**.
 
+## Propose a freshly rekeyed, broader, practical final test
+
+The [replacement final-test proposal](../oracle/phase3/EXPANDED-SEALED-HOLDOUT-V3.md)
+defines **226,492,416** possible cases across **128** operation profiles,
+**64** regular-expression families, **12** input representations, eight
+lifecycles, nine length ranges, four outcomes, and eight mutation families.
+Two independently selected, nonoverlapping **4,096-case** samples provide
+practical balanced comparisons; an optional full sweep has **55,296**
+separately authorized bounded batches.
+
+The future secret seed does not yet exist and cannot be generated until
+three genuinely independent candidate families are fully qualified. Four
+ordinary and clean-environment isolation gates passed and rejected **20**
+prohibited actions while opening no retired proposal, generating no hidden
+cases, and running no candidate. The new proposal is public planning only:
+**NOT FROZEN**, **NOT GENERATED**, and never suitable for timing before
+independent correctness and no-delegation qualification.
+
 ## Show the latest complete Rust compatibility result clearly
 
 The [updated headline correctness chart](evidence/candidate-current-overview-v101.svg)

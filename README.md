@@ -113,14 +113,18 @@ not report speed or a qualified replacement.
 
 ## The larger speed test
 
-The latest proposed final comparison covered **141,557,760** cases across
-**96** Python operations, **48** types of regular expressions, ten input
-representations, and realistic short-to-large workloads. A delegated
-read-only search was broader than allowed and may have read its configuration.
-Although **no hidden cases were generated or run**, that proposal is now
-**INVALIDATED** and permanently retired. A freshly rekeyed replacement is
-required before any final comparison; its size and speed results are
-**NOT MEASURED**. The previous proposals remain preserved as history.
+The replacement final-test proposal covers **226,492,416** possible cases
+across **128** Python operations, **64** kinds of regular expressions,
+**12** input representations, and eight usage lifecycles. Its practical
+comparison uses two balanced, separate **4,096-case** samples; a complete
+stress sweep is available separately in bounded batches.
+
+Its secret seed **does not exist yet**. It cannot be created until three
+independently implemented candidates pass every compatibility and
+no-delegation requirement. No final case has been generated, opened, or
+run. The previous **141,557,760-case** proposal remains permanently
+**INVALIDATED** after a delegated read-only search may have exposed its
+configuration; all earlier proposals remain preserved as history.
 
 No final test may run until at least three independently written engines
 pass every required correctness and no-delegation test.
@@ -190,7 +194,8 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual successful child-interpreter proof; no candidate or external engine](oracle/phase2/evidence/candidate-runtime-independence-v4-explicit-provider-proof.json).
 - [Executable full Rust compatibility procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V24.md).
 - [Preserved Rust activation failure](oracle/phase2/evidence/rust-original-campaign-v21-v3-preactivation-contract-failure.json).
-- [141,557,760-case unopened final-speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V2.md).
+- [Permanently invalidated earlier 141,557,760-case final-speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V2.md).
+- [Replacement 226,492,416-case rekeyed final-test proposal with two practical 4,096-case samples](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V3.md).
 - [Preserved previous 14,155,776-case speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md).
 - [10,434-case public development and correctness-gated timing suite](oracle/phase3/RUST-PUBLIC-PRACTICE-BENCHMARK-V2.md).
 - [Lossless full public-case Rust correctness recorder](oracle/phase3/RUST-PUBLIC-CORRECTNESS-EVIDENCE-V2.md).
