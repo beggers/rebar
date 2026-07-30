@@ -72,9 +72,9 @@ its own source with **zero external packages**. Its full run passed
 checks. The remaining **240** replacement and **1,112** changing-
 buffer differences mean it is not yet compatible. Speed is
 **NOT MEASURED**. A separately frozen changing-buffer safety correction
-has produced its own verified first-party source variant; that candidate
-has now been built identically twice with no external packages. Its
-corrected behavior has not yet been tested.
+was built identically twice with no external packages and retested against
+all **31,237** checks. It removes a potential unsafe buffer access but does
+not reduce the **1,352** remaining compatibility differences.
 
 A corrected interpreter-isolation guard now recognizes real Python
 child interpreters while blocking borrowed regular-expression engines.
@@ -165,6 +165,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Frozen offline first-party build for the corrected Rust engine](oracle/phase2/RUST-CAPTURE-CLAMP-SOURCE-BUILD-V25.md).
 - [Actual successful corrected Rust build: 28 offline processes and identical native binaries](oracle/phase2/evidence/native-source-build-v25-rust-phase2-v25-rust-capture-clamp-v1-root-provenance-publication-receipt.json).
 - [Frozen full 31,237-case retest of the safety-corrected Rust candidate](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V25.md).
+- [Actual complete corrected Rust retest: all 13 workers, all 1,352 remaining failures](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v25-rust-capture-clamp-v1-root-provenance-original-p0-v25-failures-publication-receipt.json).
 - [Preserved first corrected-Rust retest rejection before any candidate execution](oracle/phase2/evidence/rust-original-campaign-v25-preactivation-locale-failure.json).
 - [Preserved second corrected-Rust retest rejection of excess authority](oracle/phase2/evidence/rust-original-campaign-v25-preactivation-authority-failure.json).
 - [Frozen from-scratch Rust parsing and allocation improvements](oracle/phase2/RUST-COMPILER-ALLOCATION-FASTPATH-V1.md).

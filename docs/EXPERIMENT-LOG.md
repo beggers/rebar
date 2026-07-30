@@ -90,6 +90,19 @@ flags. No worker started, no private build root opened, and no native
 library loaded. Both genuine infrastructure failures are preserved; neither
 changes the previous **1,352** Rust mismatches or the original denominator.
 
+The second clean, minimally authorized retry then completed every
+[original Rust correctness group](../oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v25-rust-capture-clamp-v1-root-provenance-original-p0-v25-failures-publication-receipt.json)
+in **13** real, distinct workers. All **31,237** cases were observed and all
+**1,352** individual failures were
+[preserved completely](../oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v25-rust-capture-clamp-v1-root-provenance-original-p0-v25-failures.json.gz):
+**240** replacement failures and **1,112** changing-buffer failures,
+unchanged from the previous run. There were **15,877** verified passing
+cases, no worker crashes or infrastructure failures, and every original live
+file was restored. The capture clamp corrected a real safety hazard but did
+not fix the remaining observed semantics. The separate strict audit still
+fails on one unused introspection path; the candidate remains **NOT
+QUALIFIED**, with final speed **NOT MEASURED**.
+
 ## Freeze lossless recording for all 10,434 public Rust checks
 
 The [public Rust correctness recorder](../oracle/phase3/RUST-PUBLIC-CORRECTNESS-EVIDENCE-V2.md)
