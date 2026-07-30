@@ -209,6 +209,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Preserved first live Rust audit failure: the strict import guard also rejected Python's own `_io` module](oracle/phase2/evidence/rust-live-non-delegation-v6-actual-runtime-failure.json).
 - [Corrected frozen live Rust independence check](oracle/phase2/RUST-LIVE-NON-DELEGATION-V7.md).
 - [Preserved corrected live-audit failure: the worker was killed before publishing any proof](oracle/phase2/evidence/rust-live-non-delegation-v7-actual-runtime-failure.json).
+- [Frozen isolated-worker Rust independence audit: both complete correctness suites pass; live proof not yet run](oracle/phase2/RUST-LIVE-NON-DELEGATION-V8.md).
 - [Frozen independently written Rust literal-search acceleration](oracle/phase2/RUST-EXACT-LITERAL-FASTPATH-V1.md).
 - [Actual from-scratch Rust literal-search source; not yet built, tested, or timed](oracle/phase2/evidence/rust-exact-literal-fastpath-v1-application.json).
 - [Frozen 31,237-case original-suite retest of the exact Rust build that already passed all 10,434 broader checks](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V27.md).
