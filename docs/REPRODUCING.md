@@ -260,6 +260,36 @@ all **1,310** adversarial controls. Both modes also pass in a
 normal environment; actual run, worker, and recovery modes remain
 blocked until a separately verified first-party build exists.
 
+## Verify the complete corrected first-party Rust source
+
+Verify the genuinely materialized source without importing or
+building a candidate:
+
+```bash
+sha256sum \
+  candidates/rust/variants/buffer_shape_pickle_findall_captures_semantics_v2/py_bridge.c
+```
+
+The exact source SHA-256 is
+`1adb6bcecfa0b2fa80403e1c2caf372916466e8b9d0516980e60aef6a9ac08f0`;
+its exact size is **178,860** bytes. Verify the complete source
+derivation, unchanged matcher, no-dependency build policy, previous
+failures, and sealed holdout:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/reproduce_owned_rust_capture_shape_semantics_v2_source_build_v23.py \
+  --verify-frozen-context \
+  --source-sha256 d4d27b33423fea02cc74529ea279fe02776447f40c5a8d83022004d2af3f771b \
+  --protocol-sha256 3fb90120ff21a6cafe1f6ce24c7e4d1d08e1327b98b980e69c0eb0295ae48520 \
+  --contract-sha256 e4138ea585eefc0a22c254b21f761a2d9795fef4ff914b2368178e7c8e392028
+```
+
+Replace `--verify-frozen-context` with `--self-test` to reproduce
+all **1,304** adversarial controls. Both modes also pass outside
+the clean environment. Neither mode builds or runs an engine.
+
 ## Verify the next first-party Rust buffer correction
 
 The proposed Rust correction removes one overbroad replacement-buffer

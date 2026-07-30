@@ -8,6 +8,28 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Write and verify the complete corrected first-party Rust source
+
+The [materialized version-2 Rust correction](../oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2-SOURCE-BUILD-V23.md)
+is an actual **178,860**-byte source file, not a package wrapper,
+a hypothetical patch, or a reused external engine. Starting from
+our own previous **179,520**-byte source, it removes exactly one
+**660**-byte erroneous buffer check. The original **97**-byte
+replacement path, **17**-line capture path, Rust matcher, and all
+nine existing source owners remain unchanged.
+
+The complete new source has SHA-256
+`1adb6bcecfa0b2fa80403e1c2caf372916466e8b9d0516980e60aef6a9ac08f0`.
+Two independent reviews and both normal and clean Python checks
+verify **1,304** adversarial controls. The frozen build requires
+the exact offline Rust **1.95.0** toolchain, no external crates,
+and two independent build phases.
+
+No native compilation, matching, benchmark, or performance-holdout
+access occurred. A complete source-file check is not a successful
+native build: compiled binaries, full-suite results, runtime
+no-delegation, speed, and memory remain **NOT MEASURED**.
+
 ## Freeze the next Rust test without claiming a repaired build
 
 The [version-23 Rust procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V23.md)

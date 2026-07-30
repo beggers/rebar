@@ -40,6 +40,9 @@ has established the required runtime no-delegation. The C recorder
 saved only **92** of its **606** observed failing examples; the
 other **514** individual examples are **NOT RECORDED**.
 
+A corrected, independently written Rust source now exists. Its
+native build, complete compatibility, and speed are **NOT MEASURED**.
+
 ## What a replacement must pass
 
 The frozen reference includes **31,237** original Python checks in
@@ -96,6 +99,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Next Zig test, correcting the stopped rerun; not yet run](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V15.md).
 - [Frozen Rust correctness procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V22.md) and [next targeted Rust buffer correction; not yet run](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2.md).
 - [Next Rust test, preserving the previous regression; not yet run](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V23.md).
+- [Complete from-scratch Rust correction and offline build plan; not yet built](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2-SOURCE-BUILD-V23.md).
 - [Preserved Rust activation failure](oracle/phase2/evidence/rust-original-campaign-v21-v3-preactivation-contract-failure.json).
 - [Expanded, unopened speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md).
 - [Original objective](GOAL.md), SHA-256
