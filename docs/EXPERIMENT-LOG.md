@@ -219,6 +219,11 @@ The [first C adapter materialization attempt](../oracle/phase2/evidence/c-public
 stopped before opening its candidate input because a root-only control used a
 non-Boolean success value. The complete rejection is preserved; no candidate
 variant was created and no matching behavior was tested.
+The [corrected first-party C adapter source procedure](../oracle/phase2/C-PUBLIC-ADAPTER-SEMANTICS-V2.md)
+preserves the original rejection and reruns the exact root-only control path
+inside every source-only gate. All four checks pass **273** hostile and
+**242** semantic controls while retaining all **330** documented behavior
+corrections and the eight extra public flag-identity obligations.
 
 ## Freeze 312 independent Zig compatibility corrections
 
