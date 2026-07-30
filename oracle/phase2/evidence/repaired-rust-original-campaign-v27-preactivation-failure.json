@@ -1,0 +1,1 @@
+{"candidate_qualified":false,"error_message":"reject stale V19 root, bridge, oracle, producer, guard, or recovery","error_type":"CampaignError","exact_v33_original_correctness":"NOT MEASURED","exit_code":2,"schema":"rebar-owned-repaired-rust-original-campaign-v27-preactivation-failure","status":"FAIL","winner_selected":false}
