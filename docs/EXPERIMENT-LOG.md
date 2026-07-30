@@ -8,6 +8,24 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Distinguish first-party language bindings from borrowed engines
+
+The [version-four source and native-dependency audit](../oracle/phase2/RUNTIME-NON-DELEGATION-V4.md)
+preserves both previous real audit failures and corrects their overly broad
+FFI rule. Zig may load only its own authenticated, fixed-path, independently
+built native library; its public facade is counted as that same candidate,
+never as another independent engine. Arbitrary dynamic paths, external
+regex packages, Python's matcher, substituted libraries, and cross-candidate
+delegation remain forbidden. A candidate-owned Rust introspection helper
+that can reach Python's regex module remains a genuine failing finding.
+
+The source-only self-test passes **279** hostile and **52** clean controls
+in normal and empty environments. Verification authenticates exactly
+**11** immutable public owners, including both earlier real failures, while
+starting no processes, opening no hidden cases, and loading no candidate.
+The latest full actual inspection has **NOT RUN**; runtime independence
+remains **NOT ESTABLISHED**.
+
 ## Preserve the first complete public Rust practice comparison
 
 The [complete first public practice run](../oracle/phase3/evidence/rust-public-profile-v1-run-001-prepublication-failure.json)
