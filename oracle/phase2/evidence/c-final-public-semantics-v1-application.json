@@ -1,0 +1,33 @@
+{
+  "schema": "rebar-owned-c-final-public-semantics-v1-recorded-application",
+  "status": "APPLIED",
+  "frozen_commit": "99881b63d02a92c5c1b2adcaed783b245419855b",
+  "source_sha256": "028899a11fa051c80651a27f2b0365512e4821f6509634223599c4a523e72c5b",
+  "protocol_sha256": "69da3db828b1ef8cf8fd6885031cf485540db6321e86b5691b96ecae33a9b2b5",
+  "contract_sha256": "e31ce572d791a11db8cb6224b3cff4e17f3ae0b5f5cc0b8ae271d96d4bb2aa6b",
+  "created": {
+    "adapter": {
+      "path": "candidates/c/variants/final_public_semantics_v1/vm_candidate.py",
+      "sha256": "e91819b1d6b399954b3384519fdfddb6ccd6d4e4099a34e06d702c9959a79193",
+      "bytes": 62209,
+      "inode": 526585
+    },
+    "native": {
+      "path": "candidates/c/variants/final_public_semantics_v1/vm_native.c",
+      "sha256": "99f45846551705379ccd7365333995ee68fe25e10d101655a17ad45c5e13a5e6",
+      "bytes": 221715,
+      "inode": 526586
+    }
+  },
+  "historical_mismatches_targeted": 224,
+  "candidate_imports": 0,
+  "candidate_processes_started": 0,
+  "external_regex_dependency_count": 0,
+  "stdlib_matching_delegation_count": 0,
+  "hidden_holdout_files_opened": 0,
+  "candidate_correctness": "NOT MEASURED",
+  "performance": "NOT MEASURED",
+  "memory": "NOT MEASURED",
+  "undefined_behavior": "NOT MEASURED",
+  "winner_selected": false
+}

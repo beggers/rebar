@@ -25295,3 +25295,7 @@ The [frozen headline speed graph](../oracle/phase2/RUST-CORRECTED-SPEED-HEADLINE
 ## Frozen independent C correction for all 224 remaining differences
 
 The [frozen final C compatibility correction](../oracle/phase2/C-FINAL-PUBLIC-SEMANTICS-V1.md) accounts for every observed mismatch: **two** original assertions, **62** public-flag-ordering cases, **96** string/bytes-subclass pattern-equality cases, and **64** indexed-flag cases. It independently corrects both the Python interface and the first-party native C matcher; no external package or regular-expression engine is introduced. Four isolated source-only gates pass, including **43** hostile controls, **20,481** public-flag values, **16,385** private pattern-flag values, and **96** equality/hash checks. The corrected source has **NOT YET BEEN MATERIALIZED**, compiled, tested, or timed.
+
+## Materialized independently written final C corrections
+
+The [recorded C source application](../oracle/phase2/evidence/c-final-public-semantics-v1-application.json) independently creates both corrected candidate sources after the complete protocol is committed and pushed. The Python interface has SHA-256 `e91819b1d6b399954b3384519fdfddb6ccd6d4e4099a34e06d702c9959a79193`; the native matching engine has SHA-256 `99f45846551705379ccd7365333995ee68fe25e10d101655a17ad45c5e13a5e6`. All **224** historical differences remain preserved. The corrected engine has **NOT YET BEEN COMPILED**, tested, or timed.

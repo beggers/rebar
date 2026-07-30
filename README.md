@@ -34,7 +34,8 @@ its wider compatibility, live independence, and speed remain
 **NOT MEASURED**.
 
 An independently written C correction now accounts for all **224**
-remaining observed differences. Its rebuilt correctness is **NOT MEASURED**.
+remaining observed differences. Both corrected C sources now exist;
+their rebuilt correctness is **NOT MEASURED**.
 
 A new, independently written Rust/Python boundary optimization targets
 **10 of 14** substantial measured slowdowns. Its corrected behavior and
