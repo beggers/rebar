@@ -6,6 +6,30 @@ below are source-only or read-only unless a command explicitly says otherwise.
 The current results and charts remain in [the project README](../README.md);
 experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
+## Verify the expanded, still-unopened final comparison
+
+The current proposal contains exactly **141,557,760** future cases;
+the older **14,155,776** and **4,194,304** proposals remain intact.
+This command checks only the arithmetic, balanced categories,
+preserved history, and unchanged three-candidate qualification gate.
+It never generates a case, imports a candidate, starts a worker, or
+opens the final holdout:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/verify_expanded_sealed_holdout_v2.py \
+  --verify-source \
+  --source-sha256 48d39e0a39a835c9876344591f8b4b63cfad336c3b4e1b1dd2164255763b33f7 \
+  --protocol-sha256 96c6edae1fe959faa59079ada499bb98173101171c8c377e900eba7bb2673c38 \
+  --contract-sha256 5d9fa3920c1dcabc92a3521d742cd10ec399cff1a979b71ac079daba6f92cba0
+```
+
+Replace `--verify-source` with `--self-test` to repeat all **98**
+adversarial controls. Both commands also pass outside the empty
+environment. The final protocol is **NOT FROZEN**, and its cases
+are **NOT GENERATED** and **NOT OPENED**.
+
 ## Verify the current version-99 comparison
 
 The current chart shows actual compatibility results, never speed:

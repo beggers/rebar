@@ -53,7 +53,7 @@ still **NOT MEASURED**.
 A corrected interpreter-isolation guard now recognizes real Python
 child interpreters while blocking borrowed regular-expression engines.
 An isolated proof created and safely destroyed one real interpreter.
-The full corrected Rust run has **NOT RUN**.
+Its full compatibility result is **NOT MEASURED**.
 
 ## What a replacement must pass
 
@@ -86,10 +86,11 @@ not report speed or a qualified replacement.
 
 ## The larger speed test
 
-The proposed final comparison has **14,155,776** cases covering
-**36** Python operations, **24** types of regular expressions, text,
-and byte-oriented inputs. The previous **4,194,304**-case proposal
-is preserved. Neither proposal has been opened.
+The proposed final comparison now covers **141,557,760** cases across
+**96** Python operations, **48** types of regular expressions, ten
+input representations, and realistic short-to-large workloads. It is
+ten times larger than the previous **14,155,776**-case proposal. That
+proposal and the original **4,194,304**-case proposal are preserved.
 
 The larger test is **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 Speed, memory, and statistical confidence are **NOT MEASURED**. It may
@@ -123,9 +124,10 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual successful first-party Rust build; matching not yet tested](oracle/phase2/evidence/native-source-build-v24-rust-phase2-v24-rust-capture-shape-v2-root-provenance-publication-receipt.json).
 - [Corrected interpreter isolation and strict no-external-engine guard](oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V4.md).
 - [Actual successful child-interpreter proof; no candidate or external engine](oracle/phase2/evidence/candidate-runtime-independence-v4-explicit-provider-proof.json).
-- [Executable full Rust compatibility procedure; independently frozen, not yet run](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V24.md).
+- [Executable full Rust compatibility procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V24.md).
 - [Preserved Rust activation failure](oracle/phase2/evidence/rust-original-campaign-v21-v3-preactivation-contract-failure.json).
-- [Expanded, unopened speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md).
+- [141,557,760-case unopened final-speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V2.md).
+- [Preserved previous 14,155,776-case speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md).
 - [Original objective](GOAL.md), SHA-256
   `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`;
   [later clarifications](AMENDMENTS.md).

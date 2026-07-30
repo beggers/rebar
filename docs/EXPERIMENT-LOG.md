@@ -4,9 +4,29 @@ This log preserves the chronological work behind the concise [README](../README.
 
 Historical entries describe an earlier, retired benchmark. It opened once,
 exposed a Zig `split` mismatch, and remains permanently **FALSIFIED**; it
-must never be reused. The separate **4,194,304**-case proposal and the
-newer **14,155,776**-case proposal are both **NOT FROZEN**,
-**NOT GENERATED**, and **NOT OPENED**.
+must never be reused. The preserved **4,194,304**-case and
+**14,155,776**-case proposals and the current **141,557,760**-case
+proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
+## Expand the unopened final comparison tenfold
+
+The [expanded final-speed-test proposal](../oracle/phase3/EXPANDED-SEALED-HOLDOUT-V2.md)
+contains exactly **141,557,760** prospective cases: **96** Python
+operations, **48** pattern families, **10** input representations,
+**8** object lifecycles, **6** subject sizes, **4** match-density
+classes, and **16** realistic input families. This is exactly ten
+times the unchanged **14,155,776**-case proposal; the original
+**4,194,304**-case proposal remains preserved as well.
+
+Every proposed case uses a type-correct, observable public-operation
+transaction; impossible combinations reject the entire future
+generation instead of inflating the denominator or hiding failures.
+All four ordinary and clean source-only checks passed, including
+**98** adversarial controls. They opened no candidates, cases,
+archives, secrets, or holdout. No final case has been generated;
+three fully qualified independent engines are still required before
+the final comparison may be frozen or opened. Speed, memory, and
+confidence remain **NOT MEASURED**.
 
 ## Freeze the executable corrected Rust compatibility run
 
