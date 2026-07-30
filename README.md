@@ -24,7 +24,10 @@ preserved; runtime no-delegation still requires a separate live proof.
 It is 1.24× faster than Python across 416 public workloads. Zero fully
 qualified replacements. Hidden-test speed: NOT MEASURED. No winner.**
 
-![Current compatibility: Rust passes all 31,237 original Python checks and all 10,434 broader real-world checks, with zero differences and zero external regex engines. C passes 16,413 original checks and Zig passes 4,607; neither is complete. Runtime independence and final speed remain unproven.](docs/evidence/candidate-current-overview-v104.svg)
+![Earlier compatibility snapshot: Rust passes all 31,237 original Python checks and all 10,434 broader real-world checks. C passes 16,413 checks; the earlier Zig run passes 4,607. The newer Zig result below was recorded after this historical graph.](docs/evidence/candidate-current-overview-v104.svg)
+
+The newer complete Zig run verifies **18,056 of 31,237** checks and
+records **1,156** remaining differences across all **13** groups.
 
 Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
@@ -85,7 +88,7 @@ could not start its sampling timer.
 | Python `re` | 31,237 / 31,237; 100% | Reference baseline. |
 | C | 16,413 / 31,237; 52.5% | FAIL; all 606 observed differences are preserved; interpreter isolation did not finish. |
 | Rust | 31,237 / 31,237; 100% | The identical build passes all original and wider checks; live independence and final speed remain unqualified. |
-| Zig | 4,607 / 31,237; 14.7% | FAIL; at least 1,700 differences; cleanup errors in all 13 workers; the corrected rerun stopped before matching. |
+| Zig | 18,056 / 31,237; 57.8% | FAIL; 1,156 differences across six groups; all 13 workers completed and all original files were restored. |
 | C++ | NOT MEASURED | FAIL; 2,308 observed differences and five worker failures. |
 | Go | NOT MEASURED | FAIL; 4,518 observed differences and four worker failures. |
 | Fortran | NOT MEASURED | FAIL; independent builds disagree; matching was not tested. |
@@ -249,7 +252,8 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual fully composed independently written Zig bridge targeting all 1,700 recorded compatibility differences](oracle/phase2/evidence/zig-replacement-event-semantics-v1-application.json).
 - [Frozen independent Zig build combining its complete first-party engine, corrected Python interface, and corrected native bridge](oracle/phase2/ZIG-FULL-SEMANTIC-SOURCE-BUILD-V16.md).
 - [Actual two-build Zig result: 26 verified processes, identical native engines, and all 1,700 historical failures preserved](oracle/phase2/evidence/zig-full-semantic-source-build-v16-phase2-v16-zig-full-semantic-root-provenance-build-receipt.json).
-- [Frozen 31,237-case original-suite test of the fully corrected, independently built Zig engine; not yet run](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V16.md).
+- [Frozen 31,237-case original-suite test of the fully corrected, independently built Zig engine](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V16.md).
+- [Actual complete corrected Zig run: 18,056 checks verified, 1,156 differences, 13 completed groups, and no worker crashes](oracle/phase2/evidence/repaired-zig-original-campaign-v16-phase2-v16-zig-full-semantic-original-p0-v16-failures-publication-receipt.json).
 - [Frozen first-party Zig cleanup correction](oracle/phase2/ZIG-DEALLOCATOR-SETATTR-SOURCE-REPAIR-V2.md) and [preserved Zig rerun that stopped before matching](oracle/phase2/evidence/zig-original-campaign-v14-setter-safe-prepublication-controller-failure.json).
 - [Next Zig test, correcting the stopped rerun; not yet run](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V15.md).
 - [Frozen Rust correctness procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V22.md) and [next targeted Rust buffer correction; not yet run](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2.md).
