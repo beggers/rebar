@@ -17,7 +17,8 @@ Two independently written engines, Rust and Zig, pass all **31,237** original
 Python checks. Rust also passes **10,434** broader compatibility checks and is
 **1.24× faster than Python** across **416** public workloads. C currently passes
 **22,798** original checks and has **224** recorded differences; its corrected
-implementation is awaiting a complete retest.
+implementation has been independently rebuilt twice and is awaiting a
+complete retest.
 
 ![Current compatibility: Rust and Zig each pass all 31,237 original Python checks; Rust also passes 10,434 broader checks; C passes 22,798 checks and has 224 recorded differences. No implementation is fully qualified.](docs/evidence/candidate-current-overview-v108.svg)
 
