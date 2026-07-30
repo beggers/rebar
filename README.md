@@ -19,10 +19,9 @@ removes it, and no external package supplies matching.
 
 ## Results at a glance
 
-**Six independently written approaches. Zero compatible
+**Six independently written approaches. One Rust engine passes all
+31,237 original Python compatibility checks. Zero fully qualified
 replacements. Final speed: NOT MEASURED. No winner.**
-
-![Current compatibility, not speed. Python passes all 31,237 original checks; C verifies 16,413, Rust verifies 15,877, and Zig verifies 4,607. Rust has 1,352 remaining differences after its safety correction.](docs/evidence/candidate-current-overview-v101.svg)
 
 Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
@@ -70,7 +69,7 @@ could not start its sampling timer.
 | --- | --- | --- |
 | Python `re` | 31,237 / 31,237; 100% | Reference baseline. |
 | C | 16,413 / 31,237; 52.5% | FAIL; all 606 observed differences are preserved; interpreter isolation did not finish. |
-| Rust | 15,877 / 31,237; 50.8% | FAIL; exactly 1,352 differences; all 13 test groups completed without worker failures. |
+| Rust | 31,237 / 31,237; 100% | PASS on the original suite; zero differences in all 13 groups. Wider compatibility and no-delegation remain unqualified. |
 | Zig | 4,607 / 31,237; 14.7% | FAIL; at least 1,700 differences; cleanup errors in all 13 workers; the corrected rerun stopped before matching. |
 | C++ | NOT MEASURED | FAIL; 2,308 observed differences and five worker failures. |
 | Go | NOT MEASURED | FAIL; 4,518 observed differences and four worker failures. |
@@ -88,20 +87,13 @@ The latest C run correctly passes all **151** executable original
 Python tests while preserving all **152** test records and their
 one genuine skipped case. Interpreter isolation still fails.
 
-The corrected, from-scratch Rust engine has been built twice from
-its own source with **zero external packages**. Its full run passed
-**11 of 13** groups, including all memory-lifetime and interpreter
-checks. The remaining **240** replacement and **1,112** changing-
-buffer differences mean it is not yet compatible. Speed is
-**NOT MEASURED**. A separately frozen changing-buffer safety correction
-was built identically twice with no external packages and retested against
-all **31,237** checks. It removes a potential unsafe buffer access but does
-not reduce the **1,352** remaining compatibility differences.
-The faster Rust engine and first-party fixes for all **1,352** known
-differences have now been built identically twice using **28** verified
-offline processes and **zero external packages**. The complete corrected
-candidate's **31,237-case** compatibility rerun is independently frozen and
-has **NOT BEEN RUN**.
+The corrected, from-scratch Rust engine was independently built twice using
+**28** verified offline processes and **zero external packages**. Its complete
+original-suite run passed **31,237 of 31,237** checks across all **13** groups,
+with **zero differences** and **13** successful independent workers. This fixes
+all **1,352** differences preserved from its earlier run. The corrected
+engine's wider-suite compatibility, runtime no-delegation, and speed remain
+**NOT MEASURED** or **NOT ESTABLISHED**.
 
 A corrected interpreter-isolation guard now recognizes real Python
 child interpreters while blocking borrowed regular-expression engines.
@@ -152,7 +144,9 @@ run. The previous **141,557,760-case** proposal remains permanently
 configuration; all earlier proposals remain preserved as history.
 
 No final test may run until at least three independently written engines
-pass every required correctness and no-delegation test.
+pass every required correctness and no-delegation test. A **14,155,776-case**
+count appearing inside the latest Rust receipt is inherited historical
+metadata, not the current final-test proposal.
 
 A separate public development suite covers **10,434** equally weighted
 cases across **111** Python operations, with **5,217** text and
@@ -184,7 +178,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Corrected C test preserving all real records and the genuine skipped case](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md).
 - [Previous C run and its original 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json).
 - [Historical C run with 514 missing individual examples](oracle/phase2/evidence/repaired-c-original-campaign-v10-c-phase2-v21-c-original-match-semantics-original-p0-v10-failures-publication-receipt.json).
-- [Latest full Rust run: 15,877 verified checks and all 1,352 preserved differences](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v24-rust-capture-shape-v2-root-provenance-original-p0-v24-failures-publication-receipt.json).
+- [Historical Rust run: 15,877 verified checks and all 1,352 preserved differences](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v24-rust-capture-shape-v2-root-provenance-original-p0-v24-failures-publication-receipt.json).
 - [Previous Rust regression and its preserved failure](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v22-rust-capture-shape-root-provenance-original-p0-v22-failures-publication-receipt.json).
 - [Latest real Zig run and complete observed failure](oracle/phase2/evidence/repaired-zig-original-campaign-v13-phase2-v13-zig-guard-clean-lifetime-v1-original-p0-v13-failures-publication-receipt.json).
 - [Frozen first-party Zig cleanup correction](oracle/phase2/ZIG-DEALLOCATOR-SETATTR-SOURCE-REPAIR-V2.md) and [preserved Zig rerun that stopped before matching](oracle/phase2/evidence/zig-original-campaign-v14-setter-safe-prepublication-controller-failure.json).
@@ -218,7 +212,8 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual complete first-party Rust bridge correction covering all 1,352 known original failures](oracle/phase2/evidence/rust-complete-semantic-correction-v2-application.json).
 - [Frozen independent offline build combining the faster Rust engine with all 1,352 first-party compatibility corrections](oracle/phase2/RUST-COMPLETE-SEMANTIC-SOURCE-BUILD-V30.md).
 - [Actual corrected fast Rust engine: two identical independent builds, 28 offline processes, and zero external dependencies](oracle/phase2/evidence/native-source-build-v30-rust-phase2-v30-rust-complete-semantic-source-root-provenance-publication-receipt.json).
-- [Frozen full 31,237-case correctness test for the fully corrected, faster first-party Rust engine; not yet run](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V26.md).
+- [Frozen full 31,237-case correctness test for the fully corrected, faster first-party Rust engine](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V26.md).
+- [Actual complete Rust result: 31,237 of 31,237 original Python checks pass, with zero mismatches and 13 independent workers](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v30-rust-complete-semantic-source-root-provenance-original-p0-v26-publication-receipt.json).
 - [Preserved first corrected-Rust retest rejection before any candidate execution](oracle/phase2/evidence/rust-original-campaign-v25-preactivation-locale-failure.json).
 - [Preserved second corrected-Rust retest rejection of excess authority](oracle/phase2/evidence/rust-original-campaign-v25-preactivation-authority-failure.json).
 - [Frozen from-scratch Rust parsing and allocation improvements](oracle/phase2/RUST-COMPILER-ALLOCATION-FASTPATH-V1.md).

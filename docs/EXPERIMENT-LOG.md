@@ -179,9 +179,14 @@ The [complete original-suite rerun](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMP
 authenticates both actual native Rust builds and retains the complete,
 unchanged **31,237-case**, **13-group** Python correctness oracle. Its four
 ordinary and clean-environment source-only checks all pass, including
-**2,554** hostile controls in each self-test. Actual candidate matching,
-its final difference count, runtime no-delegation, and qualification remain
-**NOT MEASURED** until the separately authorized full run completes.
+**2,554** hostile controls in each self-test. The [actual complete Rust
+correctness run](../oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v30-rust-complete-semantic-source-root-provenance-original-p0-v26-publication-receipt.json)
+passed all **31,237** cases across all **13** original groups with **zero**
+differences, **13** independently verified workers, and no infrastructure
+failures. All four temporarily activated original source/native targets were
+restored exactly. Runtime no-delegation, wider public-suite compatibility,
+and the corrected engine's speed remain **NOT ESTABLISHED** or
+**NOT MEASURED**; this is an original-suite pass, not full qualification.
 
 ## Freeze the combined fast-search and reusable-workspace architecture
 
