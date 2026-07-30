@@ -224,6 +224,23 @@ has exactly **178,081 bytes** and SHA-256
 Only its already authenticated first-party predecessor was read. No native
 engine was built, no candidate ran, and no hidden case was generated.
 
+## Freeze one Rust bridge correction for every known original difference
+
+The [complete first-party Rust semantic correction](../oracle/phase2/RUST-COMPLETE-SEMANTIC-CORRECTION-V1.md)
+combines the independently frozen replacement-order and template-expansion
+repairs. Its exact historical accounting is **240** replacement differences,
+**1,024** changing-buffer ordering differences, **56** missing outer probes,
+and **32** unnecessary subject reacquisitions: **1,352** distinct known
+original failures. Another **32** overlapping probes are tracked separately
+and never added twice.
+
+The composed **178,270-byte** first-party bridge also preserves safe changing
+buffers and removes all unused external-introspection imports. Four ordinary
+and clean-environment source gates pass **107** hostile controls without
+opening a candidate, native artifact, archive, final proposal, or hidden
+case. Candidate compilation and actual complete compatibility remain
+**NOT MEASURED** until a separately authenticated full retest.
+
 ## Show the latest complete Rust compatibility result clearly
 
 The [updated headline correctness chart](evidence/candidate-current-overview-v101.svg)
