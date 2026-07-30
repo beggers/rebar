@@ -19,7 +19,7 @@ preserved; runtime no-delegation still requires a separate live proof.
 
 ## Results at a glance
 
-**Six independently written approaches. The Rust family has passed all
+**Six independently written approaches. One exact Rust build passes all
 31,237 original checks and all 10,434 wider compatibility checks.
 Zero fully qualified replacements. Final speed: NOT MEASURED. No winner.**
 
@@ -27,8 +27,8 @@ Zero fully qualified replacements. Final speed: NOT MEASURED. No winner.**
 
 Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
-unfinished group are never counted as passing. Rust's latest wider-suite
-build still needs its own repeat of the complete original suite.
+unfinished group are never counted as passing. The same Rust build now
+passes both complete suites with zero differences.
 
 ![Five historical directly compared speeds: Python 1.00×, original Rust 0.86×, accelerated Rust search 1.25×, low-allocation Rust compiler 0.80×, and an earlier combined Rust design 1.23×. Those historical designs failed 1,145 wider checks; the newer corrected Rust engine now passes all 10,434 but has not yet been timed.](docs/evidence/rust-architecture-comparison-v2.svg)
 
@@ -74,7 +74,7 @@ could not start its sampling timer.
 | --- | --- | --- |
 | Python `re` | 31,237 / 31,237; 100% | Reference baseline. |
 | C | 16,413 / 31,237; 52.5% | FAIL; all 606 observed differences are preserved; interpreter isolation did not finish. |
-| Rust | 31,237 / 31,237; 100% | The family passes both suites; its latest wider-suite build still needs an original-suite rerun and live independence audit. |
+| Rust | 31,237 / 31,237; 100% | The identical build passes all original and wider checks; live independence and final speed remain unqualified. |
 | Zig | 4,607 / 31,237; 14.7% | FAIL; at least 1,700 differences; cleanup errors in all 13 workers; the corrected rerun stopped before matching. |
 | C++ | NOT MEASURED | FAIL; 2,308 observed differences and five worker failures. |
 | Go | NOT MEASURED | FAIL; 4,518 observed differences and four worker failures. |
@@ -94,13 +94,13 @@ The latest C run correctly passes all **151** executable original
 Python tests while preserving all **152** test records and their
 one genuine skipped case. Interpreter isolation still fails.
 
-The from-scratch Rust family was independently built twice using
-**28** verified offline processes and **zero external packages**. One build's
-complete original-suite run passed **31,237 of 31,237** checks across all
-**13** groups, with **zero differences** and **13** successful independent
-workers. A newer build passed **10,434 of 10,434** wider checks across
-**111** Python operations with **zero differences**. The newer build has
-not yet repeated the complete original suite. Live runtime
+The from-scratch Rust engine was independently built twice using
+**28** verified offline processes and **zero external packages**. The same
+exact build passed **31,237 of 31,237** original checks across all **13**
+groups, with **zero differences** and **13** successful independent workers.
+That identical engine, native binding, and Python interface also passed
+**10,434 of 10,434** wider checks across **111** Python operations with
+**zero differences**. Live runtime
 no-delegation and the corrected engine's speed remain **NOT ESTABLISHED**
 or **NOT MEASURED**.
 A newly frozen, entirely first-party Rust build combines the validated
@@ -206,6 +206,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Corrected frozen exact-build Rust retest](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V28.md).
 - [Preserved second exact-build rerun failure; detailed worker output was not recorded](oracle/phase2/evidence/repaired-rust-original-campaign-v28-unrecorded-worker-failure.json).
 - [Exact reproduced setup failure: the unchanged test requires its pinned C locale and clean process environment](oracle/phase2/evidence/repaired-rust-original-campaign-v28-exact-reproduction-failure.json).
+- [Actual same-build Rust pass on every original check: 31,237 of 31,237, zero differences, and 13 successful test workers](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v33-rust-full-public-semantic-source-root-provenance-original-p0-v28-publication-receipt.json).
 - [Frozen first-party correction removing Rust's unused external-introspection path](oracle/phase2/RUST-NO-EXTERNAL-INTROSPECTION-V1.md).
 - [Actual first-party bridge source with no indirect Python-regex import](oracle/phase2/evidence/rust-no-external-introspection-v1-application.json).
 - [Latest C run, 16,413 verified checks, and all 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json).
