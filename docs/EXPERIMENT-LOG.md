@@ -23,8 +23,14 @@ The source-only self-test passes **279** hostile and **52** clean controls
 in normal and empty environments. Verification authenticates exactly
 **11** immutable public owners, including both earlier real failures, while
 starting no processes, opening no hidden cases, and loading no candidate.
-The latest full actual inspection has **NOT RUN**; runtime independence
-remains **NOT ESTABLISHED**.
+The [single complete actual inspection](../oracle/phase2/evidence/runtime-non-delegation-v4-actual-source-audit-failure.json)
+correctly reduces the previous **seven** findings to exactly **one**: Rust's
+unused private method-signature getter can import Python's `inspect`, whose
+standard-library dependencies eventually import `re`. Zig's authenticated
+first-party loader and same-family facade now pass. No candidate executed,
+no native code loaded, and no final test opened. Runtime independence
+remains **NOT ESTABLISHED** until the genuine Rust cleanup is removed and
+the audit passes.
 
 ## Preserve the first complete public Rust practice comparison
 

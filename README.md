@@ -13,7 +13,8 @@ project engine does not count. Each candidate must implement its own
 regular-expression engine. Dependency files, native links, import
 paths, and Python-facing wrappers are independently checked. The latest
 audit distinguishes an engine's verified first-party language bindings
-from forbidden external engines; its newest complete inspection has not run.
+from forbidden external engines. Its complete inspection now isolates one
+remaining Rust-only cleanup issue; no external package supplies matching.
 
 ## Results at a glance
 
@@ -136,6 +137,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Corrected strict from-scratch and no-wrapping source audit](oracle/phase2/RUNTIME-NON-DELEGATION-V3.md).
 - [Actual seven-finding audit result, including first-party binding policy errors](oracle/phase2/evidence/runtime-non-delegation-v3-actual-source-audit-failure.json).
 - [Corrected from-scratch audit permitting verified first-party Zig bindings](oracle/phase2/RUNTIME-NON-DELEGATION-V4.md).
+- [Actual corrected audit: one remaining Rust-only introspection finding](oracle/phase2/evidence/runtime-non-delegation-v4-actual-source-audit-failure.json).
 - [Latest C run, 16,413 verified checks, and all 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json).
 - [Frozen C test and complete failure-preservation rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md).
 - [Corrected C test preserving all real records and the genuine skipped case](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md).
