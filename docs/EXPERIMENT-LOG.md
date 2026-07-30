@@ -38,8 +38,17 @@ All four ordinary and empty-environment source gates pass **2,239** hostile
 controls and authenticate **89** first-party evidence owners. The protocol
 preserves the latest actual **1,352**-failure Rust result, all **13** groups,
 all **31,237** original cases, the strict one-finding audit, and every prior
-public timing loss. Actual native compilation, architecture correctness, and
-performance have **NOT RUN** at this freeze; the final proposal is unopened.
+public timing loss.
+
+The [actual independently repeated native build](../oracle/phase2/evidence/native-source-build-v27-rust-phase2-v27-rust-compiler-fast-v1-root-provenance-publication-receipt.json)
+completed **28** verified offline compiler and inspection processes across
+two private source trees. Both produced exactly the same first-party Rust
+engine, SHA-256 `04492763937d0631f162514098ce5d3148e71de21fe7b4cd3f5f876b634f5876`,
+and the same safe native bridge, SHA-256
+`adcb000c036e075a52f43926750648a4610e853e628d5433b1fbcc17e99a89e4`.
+All original source and runtime identities were preserved. This build did
+not run matching or timing: compatibility and speed remain **NOT MEASURED**,
+and the final proposal remains unopened.
 
 ## Combine the measured Rust search and compilation improvements
 
