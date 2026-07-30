@@ -240,6 +240,12 @@ and **66** hostile controls. Its corrected first-party bridge is predicted
 to have exactly **177,348 bytes**; actual scanner behavior remains
 **NOT MEASURED** until materialization and a full retest.
 
+The [actual immutable scanner correction](../oracle/phase2/evidence/rust-scanner-pickle-semantics-v2-application.json)
+matches its predicted **177,348-byte** first-party source and SHA-256
+`e074be7b4a6882f2ac004f027f941240a373c85eb9267c59da4d5d354b8f4bfc`.
+It records all **470** gross targets and **15** overlaps without starting
+a candidate. Actual behavior remains **NOT MEASURED** pending compilation.
+
 ## Freeze the separate correction for 88 Rust expansion differences
 
 The [independent Rust expansion and buffer-probe correction](../oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md)
