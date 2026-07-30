@@ -218,6 +218,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Frozen independent Rust matching-workspace reuse experiment targeting 408 measured allocations](oracle/phase2/RUST-VM-WORKSPACE-REUSE-V1.md).
 - [Actual independently written Rust matching engine with reusable matching workspace](oracle/phase2/evidence/rust-vm-workspace-reuse-v1-application.json).
 - [Frozen combined Rust architecture joining fast search, lower-allocation parsing, and reusable matching workspace](oracle/phase2/RUST-COMBINED-VM-WORKSPACE-V1.md).
+- [Actual independently written Rust source combining accelerated search with reusable matching allocations](oracle/phase2/evidence/rust-combined-vm-workspace-v1-application.json).
 - [Actual successful first-party Rust build; matching not yet tested](oracle/phase2/evidence/native-source-build-v24-rust-phase2-v24-rust-capture-shape-v2-root-provenance-publication-receipt.json).
 - [Corrected interpreter isolation and strict no-external-engine guard](oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V4.md).
 - [Actual successful child-interpreter proof; no candidate or external engine](oracle/phase2/evidence/candidate-runtime-independence-v4-explicit-provider-proof.json).

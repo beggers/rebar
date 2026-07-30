@@ -143,7 +143,13 @@ Four ordinary and clean-environment source gates authenticate **36** owners,
 rerun **110,592** combined semantic checks and **18,144** workspace checks,
 and include **1,728** nested/reentrant controls. The predicted engine has
 **190,103 bytes** and preserves the same independent vector-search helper.
-Its source has not yet been created, built, correctness-tested, or timed.
+
+The [actual exclusively materialized combined sources](../oracle/phase2/evidence/rust-combined-vm-workspace-v1-application.json)
+match the frozen **190,103-byte** engine hash
+`9fcd158da1af49dabf916168472938d00d9dde527a4c877a5281d5829200b4ab`
+and the **24,305-byte** independently written search helper. No existing
+candidate source was modified. This combined engine has not yet been built,
+correctness-tested, or timed.
 
 ## Freeze the correction targeting 1,264 Rust compatibility failures
 
