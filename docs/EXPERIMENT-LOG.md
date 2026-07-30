@@ -8,6 +8,23 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze safe Rust capture bounds for changing byte buffers
+
+The [frozen first-party Rust capture correction](../oracle/phase2/RUST-CAPTURE-CLAMP-SEMANTICS-V1.md)
+changes exactly one owned native function. It clamps both ends of a captured
+byte range to the current real buffer length, copies while that buffer is
+alive, and releases the export exactly once. This matches Python when a
+custom byte buffer shrinks between matching and replacement and removes the
+previous candidate's possible out-of-bounds access. No Python matcher,
+external regular-expression engine, approximation, or fallback is used.
+
+All four ordinary and clean frozen-source gates pass **4,800** bounds cases,
+**50** alias cases, and **125** hostile controls. The source authenticates the
+complete previous Rust result: exactly **1,352** differences across all
+**13** completed groups, comprising **240** replacement and **1,112**
+changing-buffer cases. The corrected variant has not yet been created,
+built, matched, or timed. The final comparison remains unopened.
+
 ## A first-party audit that understands real Rust syntax
 
 The previous stricter source audit failed on Rust's valid `<'a>` lifetime
