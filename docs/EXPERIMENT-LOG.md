@@ -2,6 +2,17 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## Pass every original Python check with three independent engines
+
+The [fully corrected C result](../oracle/phase2/evidence/repaired-c-original-campaign-v16-c-phase2-v24-c-final-public-semantics-original-p0-v16-results-publication-receipt.json)
+passes **31,237 of 31,237** frozen original Python checks with **zero**
+differences. All **13** isolated workers complete, no worker crashes,
+and both original installed files are restored. C now joins the independently
+implemented Rust and Zig engines, which also pass all **31,237** checks.
+The compressed C record preserves every case. Wider C compatibility, live
+independence, memory safety, and speed remain **NOT MEASURED**; three
+original-suite passes do not yet establish three qualified replacements.
+
 ## Preserve a Zig wider-compatibility setup failure before matching
 
 The [first Zig wider-public run](../oracle/phase2/evidence/zig-full-public-correctness-v1-v17-zig-public-v1-run-001-preactivation-failure.json)

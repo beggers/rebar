@@ -13,21 +13,20 @@ count.
 
 ## Results at a glance
 
-Two independently written engines, Rust and Zig, pass all **31,237** original
-Python checks. Rust also passes **10,434** broader compatibility checks and is
-**1.24× faster than Python** across **416** public workloads. C currently passes
-**22,798** original checks and has **224** recorded differences; its corrected
-implementation has been independently rebuilt twice and is awaiting a
-complete retest.
+Three independently written engines—C, Rust, and Zig—each pass all
+**31,237** original Python checks with **zero differences**. Rust also passes
+**10,434** broader compatibility checks and is **1.24× faster than Python**
+across **416** public workloads. Broader C and Zig results are
+**NOT MEASURED**.
 
-![Current compatibility: Rust and Zig each pass all 31,237 original Python checks; Rust also passes 10,434 broader checks; C passes 22,798 checks and has 224 recorded differences. No implementation is fully qualified.](docs/evidence/candidate-current-overview-v108.svg)
+![Historical compatibility snapshot: Rust and Zig pass all 31,237 original Python checks, while C had passed 22,798 before its latest complete 31,237-check success. An updated three-engine chart is being generated.](docs/evidence/candidate-current-overview-v108.svg)
 
 | Implementation | Original Python checks | Broader checks | Public speed |
 | --- | --- | --- | --- |
 | Python `re` | 31,237 / 31,237 | 10,434 / 10,434 | 1.00× baseline |
 | Rust | 31,237 / 31,237 | 10,434 / 10,434 | 1.24× |
 | Zig | 31,237 / 31,237 | NOT MEASURED | NOT MEASURED |
-| C | 22,798 / 31,237 | NOT MEASURED | NOT MEASURED |
+| C | 31,237 / 31,237 | NOT MEASURED | NOT MEASURED |
 | C++, Go, Fortran | NOT MEASURED | NOT MEASURED | NOT MEASURED |
 
 The Rust speed estimate spans **1.19–1.30×** at 95% confidence. It is faster
@@ -39,8 +38,8 @@ on **252 of 416** workloads, slower on **164**, and more than 20% slower on
 No replacement is qualified yet. The available external-engine audit covers
 an older Rust build, not the build shown above: its complete static and live
 independence are **NOT ESTABLISHED**. A Rust native-object lifetime correction
-and the remaining C compatibility corrections have been implemented but not
-fully retested. The public `rebar` import still selects an unqualified Zig
+has been implemented but not fully retested. The public `rebar` import still
+selects an unqualified Zig
 prototype and is **not ready for use**.
 
 ## Compatibility coverage
@@ -80,7 +79,7 @@ Final hidden-test speed: **NOT MEASURED**. Winner: **NOT SELECTED**.
 - [Rust: all 10,434 broader checks](oracle/phase2/evidence/rust-full-public-correctness-v5-v33-full-public-v5-run-001-publication-receipt.json).
 - [Rust: measured public speed and every slowdown](oracle/phase2/evidence/rust-corrected-public-performance-v4-v33-corrected-performance-run-001-publication-receipt.json).
 - [Zig: all 31,237 original checks](oracle/phase2/evidence/repaired-zig-original-campaign-v18-phase2-v18-zig-final-original-p0-v18-success-publication-receipt.json).
-- [C: complete run and all 224 recorded differences](oracle/phase2/evidence/repaired-c-original-campaign-v15-c-phase2-v23-c-complete-semantics-original-p0-v15-failures-publication-receipt.json).
+- [C: all 31,237 original checks](oracle/phase2/evidence/repaired-c-original-campaign-v16-c-phase2-v24-c-final-public-semantics-original-p0-v16-results-publication-receipt.json).
 - [Expanded, unopened final-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V3.md).
 - [Immutable original objective](GOAL.md), SHA-256
   `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`;
