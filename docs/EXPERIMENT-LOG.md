@@ -8,6 +8,44 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the independently written Zig engine against all original groups
+
+The [frozen version-13 Zig procedure](../oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V13.md)
+was run exactly once against all **13** original Python test groups.
+The [complete public failure record](../oracle/phase2/evidence/repaired-zig-original-campaign-v13-phase2-v13-zig-guard-clean-lifetime-v1-original-p0-v13-failures-publication-receipt.json)
+records **13** distinct actual workers, each guarded before the
+independently owned candidate was imported. All groups were attempted;
+**12** completed.
+
+Seven groups pass, accounting for **4,607** of the unchanged
+**31,237** original checks. Five completed groups expose **620**,
+**248**, **64**, **672**, and **96** differences respectively: at
+least **1,700** in total. The interpreter-isolation group did not
+complete. It created **0** verified child interpreters and installed
+**0** child guards, so the complete mismatch count and actual child
+independence remain **NOT MEASURED** and **NOT ESTABLISHED**.
+
+Every one of the **13** actual worker error excerpts also records a
+native-object cleanup failure, including every group that otherwise
+passes. The earlier cleanup change removed the old error message but
+did not fix cleanup: assigning the native handle during Python module
+shutdown still invokes a setter that depends on already-cleared module
+state. The error is a real `TypeError`; the attempted fix must not be
+described as successful.
+
+The record's `PASS` means that the failure was durably preserved;
+the actual Zig candidate status is **FAIL**. The complete compressed
+failure evidence is retained without decompressing or inspecting it.
+The failure record reports all **3** original Zig files restored;
+an immediate, separate physical check verified their original content,
+file identities, ownership, and modes.
+
+The additional **8,244** reference checks were not added to the
+original denominator or run against the candidate. The
+**14,155,776**-case speed test remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**. Speed, memory, safety, and
+full compatibility remain **NOT MEASURED** or **NOT ESTABLISHED**.
+
 ## Preserve the actual Rust failure before any matching
 
 The [complete Rust pre-activation failure](../oracle/phase2/evidence/rust-original-campaign-v21-v3-preactivation-contract-failure.json)

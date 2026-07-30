@@ -8,6 +8,57 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
 ## Reproduce the current headline comparison
 
+The current graph compares unchanged Python with six independently
+written engine families. Its bars measure Python compatibility, not
+speed. Python passes **31,237** original checks; Rust passes **15,749**,
+C **13,606**, and Zig **4,607**. No engine is fully compatible.
+
+The actual Zig run started **13** distinct guarded workers and exposed
+at least **1,700** differences. All **13** workers produced real
+cleanup warnings. The interpreter group did not finish and created
+**0** verified child interpreters. The complete warning and mismatch
+counts are **NOT MEASURED**. The separate **8,244** reference checks
+are not added to the original denominator. Speed and memory are
+**NOT MEASURED**; the proposed **14,155,776**-case comparison is
+**NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
+
+This source-pinned, read-only command verifies the complete version-94
+graph and its published Zig failure record without overwriting graph
+files, importing an engine, opening compressed evidence, compiling
+code, or accessing the final holdout:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/render_candidate_current_overview_v94.py \
+  --verify-frozen-context \
+  --source-sha256 f5fc03f33ab5d26edab90538aa58a5bf3f8029685975f31c88a8df70828e5ee3 \
+  --source-bytes 93969 \
+  --previous-source-sha256 acea17f73861bcd648589a3b43f70db2a13c3c5751daf233ac1c13156cefbb89 \
+  --previous-inputs-sha256 03930c3b2ce8c115187b3229b64bb71b8e1e4f36951ed78ebdd71ae65c41cd8a \
+  --previous-summary-sha256 845c3c7b85aa5e33404aa0085fb97c503a144d686fd7694c59c11f28b4512c5b \
+  --previous-svg-sha256 e53b9f0d834cbc4b8cacc4f32cc54885f591d45fccef09a6e43ad4e01ae394f2 \
+  --zig-source-sha256 fa46d4029f5590adceb22bfe4e612248da5f7f90ed6362d58faa5b631fee7ff8 \
+  --zig-protocol-sha256 6b42893161e37baec1695aefb414fb7179b778f2164018b024bd68b3c9bb5c2c \
+  --zig-contract-sha256 327b14096e36c7a2e4cab977a452fc2477fbf148396f50433cbf1dc8aba31a3f \
+  --zig-receipt-sha256 b3443a647c638cbbbe7905a2c668a734770f38cb678f06a387af497917fc4bca
+```
+
+Expected graph files:
+
+```text
+docs/evidence/candidate-current-overview-v94.inputs.json
+59f0c46fc4c4e64f607850a7914bcea496db6652ec5930b7d476a5adf2cb575a
+
+docs/evidence/candidate-current-overview-v94.summary.json
+1885047737ae4345e0791c4c2b44297cf0edc029ae823640e857eca69c64048e
+
+docs/evidence/candidate-current-overview-v94.svg
+49812bb7857b5b130bf8f9159897016d65bcb150a619e6eb5d9f17ade6e9d0c8
+```
+
+## Reproduce the preserved version-93 comparison
+
 The current graph reports the actual Rust, C, and Zig results against
 the same **31,237** Python checks. Rust passes **15,749**, C
 **13,606**, and Zig **4,607**; none is fully compatible. C has at
