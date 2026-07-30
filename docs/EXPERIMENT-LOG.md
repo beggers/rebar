@@ -8,6 +8,33 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve complete Rust and Python timing and native memory evidence
+
+The [complete corrected public profiler run](../oracle/phase3/evidence/rust-public-profile-v2-run-001-publication-receipt.json)
+first passed all **416** isolated Rust/Python correctness comparisons, then
+recorded **1,664** counterbalanced paired measurements. Its overall elapsed
+ratio was **0.595803047189324×** Python; the dense repeated-character group
+accounted for **104,854,911** of Rust's **164,386,504** total measured
+nanoseconds. Every paired row, original collector stream, allocation report,
+Python-to-native trace, native heap trace, and raw profiler directory is
+retained without selecting a winner or opening the hidden test.
+
+Native Rust allocated **104,211,416 bytes** across **260,204** allocations;
+Python allocated **100,547,111 bytes** across **284,705**. Their respective
+native heap peaks were **53,002,684** and **53,002,716 bytes**. Whole-process
+peak memory was **71,660 KiB** for Rust and **38,172 KiB** for Python;
+Python-only traced allocation peaks were **114,389** and **192,184 bytes**.
+These are different measurements and must not be combined or mislabeled.
+
+Both profiler logs contain the actual error `itimer could not be set`; files
+named `cpu` are sorted by leaked bytes, not CPU time. Consequently
+per-function CPU samples and CPU hotspot timings remain **NOT MEASURED**.
+The allocation call graph nevertheless identifies **984** `run_program`
+allocations totaling **397,248 bytes**, including **576** capture-undo
+allocations and **408** overflow-allocation events. The Rust bridge has
+**80** first-party native boundary markers. Final performance, statistical
+confidence, qualification, and a winner remain **NOT MEASURED**.
+
 ## Freeze removal of Rust's only remaining indirect regex import
 
 The [first-party Rust introspection correction](../oracle/phase2/RUST-NO-EXTERNAL-INTROSPECTION-V1.md)

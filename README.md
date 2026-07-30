@@ -38,6 +38,12 @@ observations and every slower result are preserved. This is exploratory
 practice, not the hidden final test; statistical confidence and final speed
 are **NOT MEASURED**.
 
+A second complete practice run confirms **0.60× Python** across all recorded
+time. Its native allocation totals were **104.2 MB** for Rust and **100.5 MB**
+for Python. Whole-process memory and Python-only memory are recorded
+separately; per-function CPU time is **NOT MEASURED** because the profiler
+could not start its sampling timer.
+
 | Engine | Verified Python checks | Current result |
 | --- | --- | --- |
 | Python `re` | 31,237 / 31,237; 100% | Reference baseline. |
@@ -177,6 +183,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Public-only Rust CPU, allocation, memory, and Python-boundary profiling](oracle/phase3/RUST-PUBLIC-PROFILE-V1.md).
 - [Complete first public-profile interruption and all 1,664 practice measurements](oracle/phase3/evidence/rust-public-profile-v1-run-001-prepublication-failure.json).
 - [Corrected public profiler preserving the real profiler output and all raw measurements](oracle/phase3/RUST-PUBLIC-PROFILE-V2.md).
+- [Actual complete public Rust/Python timing, native allocation, and memory result](oracle/phase3/evidence/rust-public-profile-v2-run-001-publication-receipt.json).
 - [Original objective](GOAL.md), SHA-256
   `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`;
   [later clarifications](AMENDMENTS.md).

@@ -1,0 +1,41 @@
+
+Process With Highest Peak Memory Usage
+-------------------------------------------------------
+Heap size bytes                   53002684
+Experiment Id                     1
+Process Id                        96
+Time of peak                      5.557 (secs.)
+
+Memory Allocations Statistics
+Allocation Size Range             Allocations          
+-------------------------------------------------------
+  0KB - 1KB                       254516
+  1KB - 8KB                       4046
+  8KB - 32KB                      1391
+  32KB - 128KB                    192
+  128KB - 256KB                   33
+  256KB - 512KB                   19
+  512KB - 1000KB                  6
+  10MB - 100MB                    1
+
+Smallest allocation bytes         1
+Largest allocation bytes          33554466
+Total allocations                 260204
+Total bytes                       104211416
+
+Memory Leaks Statistics
+Leak Size Range                   Leaks              
+-------------------------------------------------------
+  0KB - 1KB                       1656
+  1KB - 8KB                       996
+  8KB - 32KB                      217
+  32KB - 128KB                    48
+  128KB - 256KB                   11
+  256KB - 512KB                   9
+  512KB - 1000KB                  4
+
+Smallest leaked bytes             1
+Largest leaked bytes              576291
+Total leaked                      2941 
+Total bytes                       16771634
+
