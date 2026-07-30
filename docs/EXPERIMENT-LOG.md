@@ -2,6 +2,16 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## Publish the current three-engine compatibility comparison
+
+The [updated compatibility headline](evidence/candidate-current-overview-v110.svg)
+shows C, Rust, and Zig each passing **31,237 of 31,237** original Python
+checks with **zero** differences. Rust also passes **10,434** separate
+wider checks; wider C and Zig results remain **NOT MEASURED**. The
+generated chart preserves earlier C and Zig failures, distinguishes the
+older Rust-only independence inspection from the newer tested build, and
+does not claim a qualified candidate or winner.
+
 ## Independently rebuild the optimized, lifetime-safe Rust engine
 
 The [optimized Rust build](../oracle/phase2/evidence/native-source-build-v35-rust-phase2-v35-rust-optimized-safe-source-root-provenance-publication-receipt.json)

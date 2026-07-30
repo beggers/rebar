@@ -19,7 +19,7 @@ Three independently written engines—C, Rust, and Zig—each pass all
 across **416** public workloads. Broader C and Zig results are
 **NOT MEASURED**.
 
-![Historical compatibility snapshot: Rust and Zig pass all 31,237 original Python checks, while C had passed 22,798 before its latest complete 31,237-check success. An updated three-engine chart is being generated.](docs/evidence/candidate-current-overview-v108.svg)
+![Current compatibility: the independent C, Rust, and Zig engines all pass every one of Python's 31,237 original checks; Rust also passes 10,434 broader checks, while broader C and Zig results remain unmeasured.](docs/evidence/candidate-current-overview-v110.svg)
 
 | Implementation | Original Python checks | Broader checks | Public speed |
 | --- | --- | --- | --- |
