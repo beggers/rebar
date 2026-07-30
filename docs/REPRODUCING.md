@@ -9,9 +9,70 @@ experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 ## Reproduce the current headline comparison
 
 The current graph compares unchanged Python with six independently
-written engine families. Its bars measure Python compatibility, not
-speed. Python passes **31,237** original checks; Rust passes **15,749**,
-C **13,606**, and Zig **4,607**. No engine is fully compatible.
+written, from-scratch engine families. Its bars show compatibility,
+not speed. Python passes all **31,237** original checks; the latest
+Rust engine passes **14,725**, C **13,606**, and Zig **4,607**. The
+previous Rust result of **15,749** is preserved: the latest attempt
+lost certification of a **1,024**-check group with **42** observed
+differences and has at least **2,018** observed differences overall.
+No engine is fully compatible.
+
+The one completely captured failed Rust worker produced **16** cleanup
+warnings; warning counts for other Rust workers are **NOT MEASURED**.
+The actual subprocess created **0** verified Python child interpreters.
+Zig's independently preserved run records warnings from all **13** of
+its workers. The additional **8,244** reference cases remain separate
+from the original **31,237**-check denominator. Speed, memory, and
+statistical confidence are **NOT MEASURED**. The proposed
+**14,155,776**-case speed comparison is **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
+This pinned, read-only command independently verifies the complete
+version-95 graph, the original version-94 evidence, and the actual
+Rust regression without creating graph files, opening compressed
+evidence, importing an engine, compiling code, or accessing the speed
+holdout:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/render_candidate_current_overview_v95.py \
+  --verify-frozen-context \
+  --source-sha256 a0aee36be3b6d12bd00dfa53fa249bcadd5710745eb5d84d6a3e781cf289b3db \
+  --source-bytes 112368 \
+  --previous-source-sha256 f5fc03f33ab5d26edab90538aa58a5bf3f8029685975f31c88a8df70828e5ee3 \
+  --previous-inputs-sha256 59f0c46fc4c4e64f607850a7914bcea496db6652ec5930b7d476a5adf2cb575a \
+  --previous-summary-sha256 1885047737ae4345e0791c4c2b44297cf0edc029ae823640e857eca69c64048e \
+  --previous-svg-sha256 49812bb7857b5b130bf8f9159897016d65bcb150a619e6eb5d9f17ade6e9d0c8 \
+  --rust-source-sha256 e88f242835781e9b70efa18e68a7b06b0b9368e91320ed596995ef0e16370c61 \
+  --rust-protocol-sha256 c6a2a5db9c9c27974c29af01b3d7f7042bae73e254c638fe27813505ef11f396 \
+  --rust-contract-sha256 f1c021049e4bb173be8d47339920354e02c8c0194aead877b8474a128b5e158a \
+  --rust-receipt-sha256 7013c42f6309d94e094dd89cc8e9f24fe245c0cba5ca4791d35ffe5fa2b7dad7
+```
+
+Replace `--verify-frozen-context` with `--self-test` to reproduce the
+source-only tamper and evidence-preservation checks. Neither command
+runs an engine or a speed test.
+
+Expected current graph files:
+
+```text
+docs/evidence/candidate-current-overview-v95.inputs.json
+1cc29cf050596470ea80149fb55a73090823fb8ee7b1944657ab79d14c011cd6
+
+docs/evidence/candidate-current-overview-v95.summary.json
+50b7347a0421982d0b3bdd922e62d5afce167af0939e3e8745f8bb5c238ff47f
+
+docs/evidence/candidate-current-overview-v95.svg
+03a9e03e495fb4ec8362150f02072a4828e13e5f049af430042c435370c6808d
+```
+
+## Reproduce the preserved version-94 comparison
+
+The version-94 graph preserves the comparison before the latest Rust
+regression. Its bars measure Python compatibility, not speed. Python
+passes **31,237** original checks; Rust passes **15,749**, C
+**13,606**, and Zig **4,607**. No engine is fully compatible.
 
 The actual Zig run started **13** distinct guarded workers and exposed
 at least **1,700** differences. All **13** workers produced real
@@ -83,8 +144,9 @@ runs, qualifies, or benchmarks a candidate.
 
 ## Reproduce the preserved version-93 comparison
 
-The current graph reports the actual Rust, C, and Zig results against
-the same **31,237** Python checks. Rust passes **15,749**, C
+The preserved version-93 graph reports the Rust, C, and Zig results
+available at that publication against the same **31,237** original
+Python checks. Rust passes **15,749**, C
 **13,606**, and Zig **4,607**; none is fully compatible. C has at
 least **492** observed differences and **6** failed groups. Zig
 has at least **1,700** observed differences and **1** incomplete
@@ -93,7 +155,7 @@ incomplete group. The **8,244** extra reference checks remain
 separate. Speed and memory are **NOT MEASURED**; the **14,155,776**-case
 holdout remains **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
-This source-pinned, read-only command verifies all three current
+This source-pinned, read-only command verifies all three preserved
 version-93 files without overwriting them, importing an engine,
 compiling code, opening an archive, or accessing the final holdout:
 

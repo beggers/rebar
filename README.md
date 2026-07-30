@@ -14,10 +14,10 @@ regular-expression engine.
 
 ## Results at a glance
 
-**Six independently written engine families. Zero compatible
+**Six independently written approaches. Zero compatible
 replacements. Speed: NOT MEASURED. No winner.**
 
-![Compatibility with Python, not speed. Python passes all 31,237 original checks; the best observed Rust run passes 15,749, C passes 13,606, and the latest Zig run passes 4,607. No candidate passes every check.](docs/evidence/candidate-current-overview-v94.svg)
+![Compatibility with Python, not speed. Python passes all 31,237 original checks; the latest Rust run verifies 14,725, C verifies 13,606, and Zig verifies 4,607. Rust now has 1,024 fewer verified checks than its previous run. No candidate passes every check.](docs/evidence/candidate-current-overview-v95.svg)
 
 Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
@@ -26,7 +26,7 @@ unfinished group are never counted as passing.
 | Engine | Verified Python checks | Current result |
 | --- | --- | --- |
 | Python `re` | 31,237 / 31,237; 100% | Reference baseline. |
-| Rust | 15,749 / 31,237; 50.4% | FAIL; at least 1,296 observed differences; latest attempt stopped before matching. |
+| Rust | 14,725 / 31,237; 47.1% | FAIL; at least 2,018 differences; 1,024 fewer verified checks; 16 cleanup errors in its failed worker. |
 | C | 13,606 / 31,237; 43.6% | FAIL; at least 492 observed differences; six groups did not finish. |
 | Zig | 4,607 / 31,237; 14.7% | FAIL; at least 1,700 differences; cleanup errors in all 13 workers; one group did not finish. |
 | C++ | NOT MEASURED | FAIL; 2,308 observed differences and five worker failures. |
@@ -78,6 +78,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Detailed experiment log, rejected designs, and full evidence](docs/EXPERIMENT-LOG.md).
 - [Frozen original Python correctness checks](oracle/phase1/P0-COMPLETENESS-V4.md) and [8,244 independent additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
 - [Six independently authored engines](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and the [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
+- [Latest real Rust run, regression, and complete preserved failure](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v22-rust-capture-shape-root-provenance-original-p0-v22-failures-publication-receipt.json).
 - [Latest real Zig run and complete observed failure](oracle/phase2/evidence/repaired-zig-original-campaign-v13-phase2-v13-zig-guard-clean-lifetime-v1-original-p0-v13-failures-publication-receipt.json).
 - [Corrected, independently written Rust compatibility procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V22.md).
 - [Preserved Rust activation failure](oracle/phase2/evidence/rust-original-campaign-v21-v3-preactivation-contract-failure.json).

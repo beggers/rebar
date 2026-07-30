@@ -1,0 +1,73 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1080" viewBox="0 0 1440 1080" role="img" aria-labelledby="title description">
+<title id="title">How close are from-scratch alternatives to Python re?</title>
+<desc id="description">These bars show verified matching checks, not speed. Standard Python passes all 31,237 original checks. The latest Rust attempt passes 14,725, a regression of 1,024 compared with the separately preserved previous 15,749-check Rust result. It has nine passing groups, three fully observed mismatch groups containing at least 2,018 real differences, and one incomplete interpreter group. The single completely captured failed Rust worker emitted 16 deallocator warnings; no warning claim is made for the other workers. The outer worker subprocess was real, but no genuine nested Python interpreter or child guard was created. C verifies 13,606 checks. Zig verifies 4,607; all 13 Zig workers emitted cleanup warnings, with at least 143 captured examples. C++, Go, and Fortran do not have a fully measured current matching result. Speed and memory are not measured. The separate 8,244 checks are not added to the denominator. The proposed 14,155,776-case comparison remains unfrozen and unopened. No winner.</desc>
+<rect width="1440" height="1080" rx="24" fill="#0b1220"/>
+<text x="46" y="64" fill="#f8fafc" font-size="32" font-family="system-ui,sans-serif" font-weight="740">Building a faster Python re, from scratch</text>
+<text x="47" y="103" fill="#cbd5e1" font-size="17" font-family="system-ui,sans-serif">Six independent approaches · no fully compatible replacement · no winner</text>
+<rect x="44" y="125" width="1352" height="78" rx="13" fill="#172338"/>
+<text x="63" y="156" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="690">The bars measure matching correctness, not speed.</text>
+<text x="63" y="181" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">Every result uses the same 31,237 original Python checks. Failed, unfinished, and unmeasured checks are never counted as passes.</text>
+<text x="48" y="242" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="690">APPROACH</text>
+<text x="154" y="242" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="690">ORIGINAL CHECKS CONFIRMED</text>
+<text x="704" y="242" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="690">WHAT THE TESTS SHOW</text>
+<text x="1128" y="242" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="690">SPEED VS PYTHON</text>
+<text x="1393" y="242" text-anchor="end" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif" font-weight="690">RESULT</text>
+<line x1="44" y1="258" x2="1396" y2="258" stroke="#334155"/>
+<text x="49" y="301" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">Python re</text>
+<rect x="153" y="285" width="314" height="20" rx="6" fill="#1e293b"/>
+<rect x="153" y="285" width="314" height="20" rx="6" fill="#34d399"/>
+<text x="478" y="301" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">31,237 / 31,237 (100%)</text>
+<text x="704" y="301" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">13 of 13 original groups passed</text>
+<text x="1129" y="301" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1393" y="301" text-anchor="end" fill="#34d399" font-size="10" font-family="system-ui,sans-serif" font-weight="730">BASELINE</text>
+<text x="49" y="368" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">Rust</text>
+<rect x="153" y="352" width="314" height="20" rx="6" fill="#1e293b"/>
+<rect x="153" y="352" width="148" height="20" rx="6" fill="#fb7185"/>
+<text x="478" y="368" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">14,725 / 31,237 (47.1%)</text>
+<text x="704" y="368" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">9 passed; 3 differ; 1 unfinished; down 1,024</text>
+<text x="1129" y="368" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1393" y="368" text-anchor="end" fill="#fb7185" font-size="10" font-family="system-ui,sans-serif" font-weight="730">REGRESSED</text>
+<text x="49" y="435" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">C</text>
+<rect x="153" y="419" width="314" height="20" rx="6" fill="#1e293b"/>
+<rect x="153" y="419" width="137" height="20" rx="6" fill="#fbbf24"/>
+<text x="478" y="435" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">13,606 / 31,237 (43.6%)</text>
+<text x="704" y="435" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">3 passed; 4 differ; 6 failed to complete</text>
+<text x="1129" y="435" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1393" y="435" text-anchor="end" fill="#fbbf24" font-size="10" font-family="system-ui,sans-serif" font-weight="730">NOT YET COMPATIBLE</text>
+<text x="49" y="502" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">Zig</text>
+<rect x="153" y="486" width="314" height="20" rx="6" fill="#1e293b"/>
+<rect x="153" y="486" width="46" height="20" rx="6" fill="#fbbf24"/>
+<text x="478" y="502" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">4,607 / 31,237 (14.7%)</text>
+<text x="704" y="502" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">7 passed; 5 differ; 1 unfinished; warnings</text>
+<text x="1129" y="502" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1393" y="502" text-anchor="end" fill="#fbbf24" font-size="10" font-family="system-ui,sans-serif" font-weight="730">NOT YET COMPATIBLE</text>
+<text x="49" y="569" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">C++</text>
+<rect x="153" y="553" width="314" height="20" rx="6" fill="#1e293b"/>
+<text x="478" y="569" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="704" y="569" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Full current matching result not measured</text>
+<text x="1129" y="569" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1393" y="569" text-anchor="end" fill="#94a3b8" font-size="10" font-family="system-ui,sans-serif" font-weight="730">NOT MEASURED</text>
+<text x="49" y="636" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">Go</text>
+<rect x="153" y="620" width="314" height="20" rx="6" fill="#1e293b"/>
+<text x="478" y="636" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="704" y="636" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Full current matching result not measured</text>
+<text x="1129" y="636" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1393" y="636" text-anchor="end" fill="#94a3b8" font-size="10" font-family="system-ui,sans-serif" font-weight="730">NOT MEASURED</text>
+<text x="49" y="703" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="670">Fortran</text>
+<rect x="153" y="687" width="314" height="20" rx="6" fill="#1e293b"/>
+<text x="478" y="703" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="704" y="703" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Builds disagreed; matching not measured</text>
+<text x="1129" y="703" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1393" y="703" text-anchor="end" fill="#fb7185" font-size="10" font-family="system-ui,sans-serif" font-weight="730">BUILD FAILED</text>
+<line x1="44" y1="748" x2="1396" y2="748" stroke="#334155"/>
+<text x="49" y="780" fill="#f8fafc" font-size="17" font-family="system-ui,sans-serif" font-weight="700">What changed in the latest Rust attempt?</text>
+<text x="49" y="806" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">Rust fell from 15,749 to 14,725 confirmed checks: 1,024 fewer. A previously passing 1,024-check group now has 42 real differences.</text>
+<text x="49" y="831" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">Three groups show at least 2,018 differences. The full difference total is NOT MEASURED because one interpreter group could not complete.</text>
+<text x="49" y="856" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">The one fully captured failed Rust worker emitted 16 cleanup warnings. No successful nested interpreter or child guard was created.</text>
+<text x="49" y="881" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">The separate Zig result still contains warnings from all 13 workers, with at least 143 recorded examples. All earlier results are preserved.</text>
+<rect x="44" y="902" width="1352" height="108" rx="13" fill="#172338"/>
+<text x="63" y="932" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="680">Future speed comparison: proposed 14,155,776 cases</text>
+<text x="63" y="957" fill="#cbd5e1" font-size="13" font-family="system-ui,sans-serif">NOT FROZEN · NOT GENERATED · NOT OPENED · NOT RUN. Speed, memory, confidence, and rankings: NOT MEASURED.</text>
+<text x="63" y="982" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">The separate 8,244 reference checks are not included in the 31,237-check original comparison.</text>
+<text x="49" y="1046" fill="#94a3b8" font-size="12" font-family="system-ui,sans-serif">Overview 95 · regression shown · all previous evidence preserved · no winner · no unmeasured speed claim</text>
+</svg>

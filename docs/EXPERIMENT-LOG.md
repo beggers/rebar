@@ -8,6 +8,58 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Run the independently written Rust engine and preserve the regression
+
+The [actual version-22 Rust failure](../oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v22-rust-capture-shape-root-provenance-original-p0-v22-failures-publication-receipt.json)
+was produced by exactly one run of the previously frozen and pushed
+first-party Rust procedure. All **13** original groups were attempted
+by **13** distinct real workers; **12** completed. Nine groups pass,
+accounting for **14,725** of the unchanged **31,237** Python checks.
+
+The result is a real regression. The previous verified Rust run
+certified **15,749** checks; the new engine certifies **1,024 fewer**.
+Three complete groups show **42** managed-buffer differences,
+**352** substitution differences, and **1,624** changing-buffer
+differences: at least **2,018** observed mismatches, up from the
+previous **1,296**. The **1,024**-check managed-buffer group lost its
+whole-group certification because **42** cases actually differ; this
+does not mean **1,024** new semantic differences were observed. The
+full mismatch total remains **NOT MEASURED** because the interpreter
+group did not finish.
+
+The actual failed interpreter worker, its process, return code,
+complete standard output, standard error, and traceback are all
+preserved. The subprocess is real, but its original interpreter
+test created **0** genuine Python child interpreters, installed
+**0** child guards, and ran **0** child cases. Its
+**10,183**-byte complete error stream also shows
+**16** genuine native-object cleanup warnings. Those warnings are
+proven for this failed worker only, not silently attributed to all
+**13** workers. The frozen runtime guard is required, but this
+public receipt does not independently prove guard installation for
+each worker; it must not be described as doing so.
+
+The actual report and a separate complete physical check both verify
+that all **4** original Rust source and native files were restored.
+The public failure record's `PASS` means durable publication only;
+the candidate is **FAIL**. Its older embedded version-86 historical
+snapshot is preserved but is not substituted for the directly
+verified previous version-94 baseline.
+
+The first proposed version-95 graph renderer was rejected before
+publication. Both complete self-tests showed that it accepted a
+forged per-group evidence hash; its revoked source SHA-256 was
+`d3dc23306166b1237e60f6594c64c5e7460324c5c5da5875528c927450be67c6`.
+The corrected renderer independently pins all **13** group hashes
+to the authenticated, complete actual Rust failure record. No
+rejected graph was generated or published, and no test result or
+historical comparison was changed.
+
+The extra **8,244** reference cases remain separate. No timing,
+memory result, winner, or full candidate compatibility was produced.
+The **14,155,776**-case comparison remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
+
 ## Freeze the corrected independently written Rust compatibility run
 
 The [version-22 Rust procedure](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V22.md)
@@ -33,13 +85,14 @@ Verification starts **0** candidates, workers, child interpreters,
 compilers, or timing trials and opens **0** native libraries, private
 archives, or holdout cases.
 
-The corrected Rust candidate run has **NOT STARTED**. Its previous
-**15,749** verified passes and at least **1,296** observed
-differences remain unchanged; the complete mismatch count remains
-**NOT MEASURED**. The **31,237** original checks and separate
-**8,244** reference cases are unchanged. The **14,155,776**-case
-speed comparison remains **NOT FROZEN**, **NOT GENERATED**, and
-**NOT OPENED**.
+When this source was frozen and pushed, the corrected Rust candidate
+run had **NOT STARTED**. The then-current baseline was **15,749**
+verified passes and at least **1,296** observed differences. The later
+actual result and its regression are recorded in the entry above; the
+complete mismatch count remains **NOT MEASURED**. The **31,237**
+original checks and separate **8,244** reference cases are unchanged.
+The **14,155,776**-case speed comparison remains **NOT FROZEN**,
+**NOT GENERATED**, and **NOT OPENED**.
 
 ## Run the independently written Zig engine against all original groups
 
