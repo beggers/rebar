@@ -24,8 +24,12 @@ candidate source; verification authenticates **14** prior public evidence
 owners and the frozen source triple. It preserves the exact one-finding
 audit failure, both successful first-party native builds, all **1,352**
 previous Rust differences, zero external packages, and the unopened final
-proposal. Its corrected **177,146-byte** native bridge has not yet been
-created, built, or retested; audit success and compatibility are
+proposal. Once the source freeze was committed and pushed,
+[one exclusive first-party application](../oracle/phase2/evidence/rust-no-external-introspection-v1-application.json)
+created the exact corrected **177,146-byte** native bridge with SHA-256
+`2dd040dc0337f205134431ebeaafe56ee4fe63cc77c1bb6cb5434742549884b7`.
+The older live bridge was not changed; the new bridge has not yet been
+built or retested. Actual audit success and compatibility remain
 **NOT MEASURED**.
 
 ## Freeze the safety-corrected Rust candidate's complete original retest
