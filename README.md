@@ -185,6 +185,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual first-party bridge source with no indirect Python-regex import](oracle/phase2/evidence/rust-no-external-introspection-v1-application.json).
 - [Latest C run, 16,413 verified checks, and all 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json).
 - [Frozen first-party C adapter correction covering 330 witnessed Python-compatibility failures and complete flag aliases](oracle/phase2/C-PUBLIC-ADAPTER-SEMANTICS-V1.md).
+- [Preserved C adapter source-control rejection before candidate access or source creation](oracle/phase2/evidence/c-public-adapter-semantics-v1-preapplication-failure.json).
 - [Frozen C test and complete failure-preservation rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md).
 - [Corrected C test preserving all real records and the genuine skipped case](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md).
 - [Previous C run and its original 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json).

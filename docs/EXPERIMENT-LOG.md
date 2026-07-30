@@ -215,6 +215,10 @@ aliases and the flag type's public module identity are independently checked
 without changing the **330-case** witnessed denominator. Four ordinary and
 clean-environment source-only checks pass **275** hostile and **244** semantic
 controls; no candidate variant has yet been created or tested.
+The [first C adapter materialization attempt](../oracle/phase2/evidence/c-public-adapter-semantics-v1-preapplication-failure.json)
+stopped before opening its candidate input because a root-only control used a
+non-Boolean success value. The complete rejection is preserved; no candidate
+variant was created and no matching behavior was tested.
 
 ## Combine all original Rust fixes with the wider scanner correction
 
