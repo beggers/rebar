@@ -243,6 +243,11 @@ The [actual corrected first-party Zig adapter](../oracle/phase2/evidence/zig-pub
 now exists at its predicted **67,735-byte** source identity. It preserves the
 cleanup correction and models all **312** recorded interface differences;
 its native build and complete Zig correctness rerun remain **NOT RUN**.
+The [first-party Zig scanner-capture correction](../oracle/phase2/ZIG-SCANNER-CAPTURE-SEMANTICS-V1.md)
+independently fixes the exact native bridge defect responsible for all
+**620** observed scanner mismatches: a correct nested phrase capture was
+being overwritten by the surrounding whole-match span. Its four source-only
+checks pass without creating, compiling, or running a candidate.
 
 ## Combine all original Rust fixes with the wider scanner correction
 
