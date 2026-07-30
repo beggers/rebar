@@ -18,13 +18,23 @@ an engine's own language bindings from a borrowed external engine.
 ## Results at a glance
 
 **Six independently written approaches. Zero compatible
-replacements. Speed: NOT MEASURED. No winner.**
+replacements. Final speed: NOT MEASURED. No winner.**
 
 ![Current compatibility, not speed. Python passes all 31,237 original checks; C verifies 16,413, Rust verifies 15,877, and Zig verifies 4,607. Rust has 1,352 remaining differences.](docs/evidence/candidate-current-overview-v100.svg)
 
 Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
 unfinished group are never counted as passing.
+
+![Public practice only: Rust is 0.849 times Python's typical-case speed and 0.596 times Python's speed across all recorded time. Six workload groups are faster; difficult repeated-character searches are slower.](docs/evidence/rust-public-practice-overall-v1.svg)
+
+In this separate **416-case public practice test**, Rust matched Python's
+answer every time. Its typical-case speed was **0.85× Python**; across all
+recorded time it was **0.60× Python**. Six kinds of work were faster, but
+one repeated-character search was much slower. All **1,664** paired
+observations and every slower result are preserved. This is exploratory
+practice, not the hidden final test; statistical confidence and final speed
+are **NOT MEASURED**.
 
 | Engine | Verified Python checks | Current result |
 | --- | --- | --- |
@@ -151,6 +161,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Preserved previous 14,155,776-case speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md).
 - [10,434-case public development and correctness-gated timing suite](oracle/phase3/RUST-PUBLIC-PRACTICE-BENCHMARK-V2.md).
 - [Public-only Rust CPU, allocation, memory, and Python-boundary profiling](oracle/phase3/RUST-PUBLIC-PROFILE-V1.md).
+- [Complete first public-profile interruption and all 1,664 practice measurements](oracle/phase3/evidence/rust-public-profile-v1-run-001-prepublication-failure.json).
 - [Original objective](GOAL.md), SHA-256
   `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`;
   [later clarifications](AMENDMENTS.md).
