@@ -20,9 +20,18 @@ must be restored afterward; neither an existing external regex engine nor
 Python's matcher may supply production matching.
 
 All four ordinary and empty-environment source-only gates pass, including
-**1,816** hostile controls. No compiler, candidate, archived case, hidden
-test, or final benchmark ran during the source freeze. Actual native builds,
-corrected-candidate compatibility, memory, and speed are **NOT MEASURED**.
+**1,816** hostile controls. After the build freeze was committed and pushed,
+the [single actual complete build](../oracle/phase2/evidence/native-source-build-v25-rust-phase2-v25-rust-capture-clamp-v1-root-provenance-publication-receipt.json)
+ran all **28** real offline compiler and inspection processes. Its two
+independent native engines have identical SHA-256
+`5e79f92b10d47f73919796af2349e44e7d16eceb515cc07571d0beaaec4a405f`;
+both corrected Python bridges have identical SHA-256
+`adcb000c036e075a52f43926750648a4610e853e628d5433b1fbcc17e99a89e4`.
+The complete [private-root provenance](../oracle/phase2/evidence/native-source-build-v25-rust-phase2-v25-rust-capture-clamp-v1-root-provenance-root-provenance-receipt.json)
+and [raw build archive](../oracle/phase2/evidence/native-source-build-v25-rust-phase2-v25-rust-capture-clamp-v1-root-provenance.json.gz)
+are preserved. Every original live owner was restored. No candidate matching,
+native candidate loading, final test, or timing ran; corrected compatibility
+and speed remain **NOT MEASURED**.
 
 ## Freeze safe Rust capture bounds for changing byte buffers
 
