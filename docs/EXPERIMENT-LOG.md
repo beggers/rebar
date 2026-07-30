@@ -224,6 +224,10 @@ preserves the original rejection and reruns the exact root-only control path
 inside every source-only gate. All four checks pass **273** hostile and
 **242** semantic controls while retaining all **330** documented behavior
 corrections and the eight extra public flag-identity obligations.
+The [actual independently corrected C adapter](../oracle/phase2/evidence/c-public-adapter-semantics-v2-application.json)
+now exists at its predicted **61,663-byte** source identity after the root-only
+authorization and all independent controls passed. Its complete native build
+and full original-suite rerun have **NOT BEEN RUN**.
 
 ## Freeze 312 independent Zig compatibility corrections
 
