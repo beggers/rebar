@@ -219,6 +219,16 @@ has been independently materialized at its predicted **178,472-byte** source
 identity. All existing original-suite corrections are preserved. Its wider
 candidate correctness and native build have **NOT BEEN RUN**.
 
+## Preserve every Rust adapter repair while correcting regular-expression comments
+
+The [combined first-party Rust comment-handling adapter](../oracle/phase2/RUST-CORRECTED-COMMENT-ADAPTER-V1.md)
+preserves all **four** existing Python-interface fixes while adding **three**
+independently written comment and named-escape corrections. The wider public
+suite contains **324** targeted rows, including **297** independent failures,
+**15** scanner overlaps, and **12** replacement overlaps. All four source-only
+checks pass **98** hostile controls and **914** independent semantic
+witnesses; the composed candidate source has **NOT BEEN CREATED OR TESTED**.
+
 ## Freeze the combined fast-search and reusable-workspace architecture
 
 The [independent combined matching-workspace experiment](../oracle/phase2/RUST-COMBINED-VM-WORKSPACE-V1.md)
