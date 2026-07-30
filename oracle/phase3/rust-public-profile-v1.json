@@ -1,0 +1,55 @@
+{
+  "approved_output_prefix": "experiments/rust_public_profile_v1",
+  "case_count": 416,
+  "dataset_count": 16,
+  "matrix_sha256": "b13ff74122041ea792774fd5ee2d1f6d38033e94a1a6703c6e48522e461552a7",
+  "operation_count": 26,
+  "pinned_cpython": "3.14.6",
+  "pinned_python": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "profile_configuration": {
+    "batch_iterations": 3,
+    "paired_rounds": 4,
+    "profile_passes": 3,
+    "reports": [
+      "allocations",
+      "cpu",
+      "ffi",
+      "heap"
+    ],
+    "warmup_iterations": 1
+  },
+  "profiler": {
+    "archive_policy": "off",
+    "binaries": {
+      "collector": {
+        "path": "/usr/bin/x86_64-linux-gnu-gp-collect-app",
+        "sha256": "1b12058e818536a7c9febf81d621acf182d261f8464b1aee5d745be5dfcfa2b2"
+      },
+      "dispatcher": {
+        "path": "/usr/bin/x86_64-linux-gnu-gprofng",
+        "sha256": "91e03573aeedded12a3b80e96ba28316968a8a86af78f0434cd7e87b7691df62"
+      },
+      "display": {
+        "path": "/usr/bin/x86_64-linux-gnu-gp-display-text",
+        "sha256": "2d7e0d598c873dc2b7735edc49309b7fab9db821cbb749b5ab8d62d1b9b66112"
+      }
+    },
+    "clock_sampling": "hi",
+    "command": "/usr/bin/gprofng",
+    "descendant_policy": "off",
+    "heap_tracing": "on"
+  },
+  "provenance": {
+    "archive_files_read": 0,
+    "candidate_imports_in_source_modes": 0,
+    "data": "fresh embedded public literals only",
+    "fixture_files_read": 0,
+    "holdout_files_read": 0,
+    "source_mode_clock_samples": 0,
+    "source_mode_workspace_mutations": 0
+  },
+  "published_seed": 5932739705720426289,
+  "schema": "rebar-rust-fresh-public-profile-v1-source-freeze",
+  "source": "tools/rust_public_profile_v1.py",
+  "source_sha256": "ada1e9cfc8684ecb4fcf9294057347018b6058fc1619ae9de6a8b31097aa1562"
+}

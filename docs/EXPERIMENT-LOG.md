@@ -8,6 +8,21 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze public-only Rust profiling
+
+The [first-party public profiling procedure](../oracle/phase3/RUST-PUBLIC-PROFILE-V1.md)
+creates **416** independently authored public cases across **26**
+operations, evenly split between text and bytes. It specifically
+tests difficult literal searches, deep captures, nested assertions,
+scanner callbacks, and Python-to-native boundary costs.
+
+All four ordinary and clean source-only checks passed, including
+**20** adversarial output-path controls. No candidate, profiler,
+clock, process, archive, or final holdout was accessed. An actual
+profile may run only after every public case matches Python; CPU,
+allocation, memory, timing, and profile results are **NOT MEASURED**
+at this source freeze.
+
 ## Publish the current Rust comparison graph
 
 The [updated current comparison](evidence/candidate-current-overview-v100.svg)

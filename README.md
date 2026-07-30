@@ -140,6 +140,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [141,557,760-case unopened final-speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V2.md).
 - [Preserved previous 14,155,776-case speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md).
 - [10,434-case public development and correctness-gated timing suite](oracle/phase3/RUST-PUBLIC-PRACTICE-BENCHMARK-V2.md).
+- [Public-only Rust CPU, allocation, memory, and Python-boundary profiling](oracle/phase3/RUST-PUBLIC-PROFILE-V1.md).
 - [Original objective](GOAL.md), SHA-256
   `e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62`;
   [later clarifications](AMENDMENTS.md).

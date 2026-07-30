@@ -6,6 +6,24 @@ below are source-only or read-only unless a command explicitly says otherwise.
 The current results and charts remain in [the project README](../README.md);
 experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
+## Verify public-only Rust profiling
+
+Check the independent public-only CPU, allocation, and boundary
+profiling source without loading either matching engine or starting
+the profiler:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B tools/rust_public_profile_v1.py --verify-source
+```
+
+Replace `--verify-source` with `--self-test` to validate all **416**
+public cases and **20** denied output paths. The matrix SHA-256 is
+`b13ff74122041ea792774fd5ee2d1f6d38033e94a1a6703c6e48522e461552a7`.
+Actual profiling requires a separately authorized correctness-gated
+run and never accesses the final holdout.
+
 ## Verify the current Rust and Python comparison graph
 
 Validate the complete current graph, preserved C and Rust evidence,
