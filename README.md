@@ -215,6 +215,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual isolated Rust source combining faster searching and lower-allocation compilation](oracle/phase2/evidence/rust-combined-search-compiler-fastpath-v2-application.json).
 - [Frozen offline build combining accelerated Rust search, allocation improvements, and no-external-introspection bindings](oracle/phase2/RUST-COMBINED-SOURCE-BUILD-V28.md).
 - [Actual combined Rust engine and clean bridge, each reproduced identically in two offline zero-dependency builds](oracle/phase2/evidence/native-source-build-v28-rust-phase2-v28-rust-combined-source-root-provenance-publication-receipt.json).
+- [Frozen identical public correctness and timing comparison for the combined Rust engine with clean native bindings](oracle/phase2/RUST-NATIVE-ARCHITECTURE-PUBLIC-GATE-V3.md).
 - [Frozen independent Rust matching-workspace reuse experiment targeting 408 measured allocations](oracle/phase2/RUST-VM-WORKSPACE-REUSE-V1.md).
 - [Actual independently written Rust matching engine with reusable matching workspace](oracle/phase2/evidence/rust-vm-workspace-reuse-v1-application.json).
 - [Frozen reproducible offline build of the standalone Rust reusable-workspace architecture](oracle/phase2/RUST-WORKSPACE-SOURCE-BUILD-V29.md).

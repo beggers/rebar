@@ -131,6 +131,21 @@ Both native artifacts contain **zero** external regular-expression or
 cross-family dependencies, and every original source/runtime identity was
 restored. Matching and speed have not yet been tested for this combined build.
 
+## Freeze a fair comparison for the combined clean-binding Rust engine
+
+The [third isolated Rust architecture comparison](../oracle/phase2/RUST-NATIVE-ARCHITECTURE-PUBLIC-GATE-V3.md)
+adds the genuinely first-party combined engine and its clean native bridge
+to the same **10,434-case** public correctness suite and independently
+correctness-gated **416-case**, **1,664-pair** timing protocol. Its native
+bridge has no external regular-expression or cross-family dependencies and
+does not contain the earlier unused introspection import.
+
+Four ordinary and clean-environment source gates authenticate **44** evidence
+owners, preserve both previously measured architectures, and reject **18**
+hostile actions. The procedure keeps every canonical candidate unchanged and
+records all failures, regressions, memory results, and confidence intervals.
+The combined engine's actual compatibility and speed remain **NOT MEASURED**.
+
 ## Freeze the combined fast-search and reusable-workspace architecture
 
 The [independent combined matching-workspace experiment](../oracle/phase2/RUST-COMBINED-VM-WORKSPACE-V1.md)
