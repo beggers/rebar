@@ -16,11 +16,15 @@ and bridge SHA-256
 `ecb19eb814430aeb571f60dd50ba4de4b3f54e7f57f056d2436c41714a257000`.
 
 The old inspection therefore does **not** prove independence for the
-currently tested build. A newly generated speed graph incorrectly treated
-that older inspection as same-build evidence and was rejected before
-publication. Compatibility and measured speed remain valid; current-build
-static independence and live independence are **NOT ESTABLISHED** until a
-new exact-build inspection and runtime proof are completed.
+currently tested build. The
+[published speed graph's generated data](evidence/candidate-current-overview-v106.json)
+and the
+[subsequent frozen correctness-graph proposal](../oracle/phase2/updated-correctness-headline-v107.json)
+incorrectly treated that older inspection as same-build evidence. Both
+artifacts are preserved but their independence claims are **INVALIDATED**;
+neither may support qualification. Compatibility and measured speed remain
+valid. Current-build static independence and live independence are
+**NOT ESTABLISHED** until an exact-build proof is completed.
 
 ## Pass every original Python check with the from-scratch Zig engine
 
