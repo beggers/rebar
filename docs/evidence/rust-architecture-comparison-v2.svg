@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="1412" viewBox="0 0 1280 1412" role="img" aria-labelledby="title description">
+<title id="title">Rust architecture comparison: search, compiler, and combined public results</title>
+<desc id="description">Python baseline 1.0x; original Rust 0.8649792983684755x; V26 required-character search 1.2520878685068846x, confidence interval 1.1990748170405823 to 1.3083112791522158; V27 compiler 0.7967512788167544x, interval 0.7477430408484538 to 0.8453719226231972; V28 combined 1.2298384265743338x, interval 1.1780942933805956 to 1.2849593897495446. All three optimized designs remain unqualified: each fails the full 10,434-case public gate with 1,145 mismatches. V26 has 247 faster cases and 11 major regressions; V27 has 138 faster and 143 regressions; V28 has 208 faster and eight regressions. Frozen original-suite mismatches remain 1,352; final speed is not measured and no winner was selected.</desc>
+<rect width="1280" height="1412" fill="#f5f7fb"/>
+<rect x="32" y="30" width="1216" height="1350" rx="25" fill="#ffffff" stroke="#d9e1ed" stroke-width="1.5"/>
+<text x="69" y="89" fill="#18253a" font-family="system-ui, sans-serif" font-size="29" font-weight="780">Rust designs compared: gains are real; failures remain</text>
+<text x="69" y="120" fill="#59677d" font-family="system-ui, sans-serif" font-size="15">Public development evidence only. Above Python's 1.0x baseline is faster.</text>
+<rect x="69" y="143" width="596" height="34" rx="17" fill="#eaf0fb"/>
+<text x="86" y="165" fill="#325291" font-family="system-ui, sans-serif" font-size="12.5" font-weight="750">ALL THREE 416-CASE SAMPLES PASSED; ALL THREE FULL GATES FAILED</text>
+<line x1="344.00" y1="211" x2="344.00" y2="738" stroke="#e7ebf2" stroke-width="1"/>
+<text x="344.00" y="201" text-anchor="middle" fill="#66758b" font-family="system-ui, sans-serif" font-size="13">0.0x</text>
+<line x1="595.61" y1="211" x2="595.61" y2="738" stroke="#e7ebf2" stroke-width="1"/>
+<text x="595.61" y="201" text-anchor="middle" fill="#66758b" font-family="system-ui, sans-serif" font-size="13">0.5x</text>
+<line x1="847.23" y1="211" x2="847.23" y2="738" stroke="#8897ac" stroke-width="1.5" stroke-dasharray="6 5"/>
+<text x="847.23" y="201" text-anchor="middle" fill="#66758b" font-family="system-ui, sans-serif" font-size="13">1.0x</text>
+<line x1="1098.84" y1="211" x2="1098.84" y2="738" stroke="#e7ebf2" stroke-width="1"/>
+<text x="1098.84" y="201" text-anchor="middle" fill="#66758b" font-family="system-ui, sans-serif" font-size="13">1.5x</text>
+<text x="69" y="255" fill="#273249" font-family="system-ui, sans-serif" font-size="15.5" font-weight="690">Python standard library</text>
+<text x="69" y="276" fill="#69778a" font-family="system-ui, sans-serif" font-size="12">Reference: same public cases</text>
+<rect x="344" y="240" width="503.23" height="30" rx="7" fill="#8491a5"/>
+<text x="858.23" y="260" fill="#202c42" font-family="system-ui, sans-serif" font-size="16" font-weight="760">1.00x</text>
+<text x="344" y="291" fill="#617086" font-family="ui-monospace, monospace" font-size="11.5">baseline = 1.0</text>
+<text x="69" y="348" fill="#273249" font-family="system-ui, sans-serif" font-size="15.5" font-weight="690">Original Rust</text>
+<text x="69" y="369" fill="#69778a" font-family="system-ui, sans-serif" font-size="12">Frozen public V2 profile</text>
+<rect x="344" y="333" width="435.28" height="30" rx="7" fill="#dc9254"/>
+<text x="790.28" y="353" fill="#202c42" font-family="system-ui, sans-serif" font-size="16" font-weight="760">0.865x</text>
+<text x="344" y="384" fill="#617086" font-family="ui-monospace, monospace" font-size="11.5">exact: 0.8649792983684755</text>
+<text x="69" y="441" fill="#273249" font-family="system-ui, sans-serif" font-size="15.5" font-weight="690">V26: required-character search</text>
+<text x="69" y="462" fill="#69778a" font-family="system-ui, sans-serif" font-size="12">Exploratory 416-case public sample</text>
+<rect x="344" y="426" width="630.08" height="30" rx="7" fill="#2876ca"/>
+<text x="985.08" y="446" fill="#202c42" font-family="system-ui, sans-serif" font-size="16" font-weight="760">1.252x</text>
+<text x="344" y="477" fill="#617086" font-family="ui-monospace, monospace" font-size="11.5">exact: 1.2520878685068846</text>
+<line x1="947.41" y1="416" x2="1002.38" y2="416" stroke="#2876ca" stroke-width="3"/>
+<line x1="947.41" y1="410" x2="947.41" y2="422" stroke="#2876ca" stroke-width="2"/>
+<line x1="1002.38" y1="410" x2="1002.38" y2="422" stroke="#2876ca" stroke-width="2"/>
+<text x="344" y="497" fill="#2876ca" font-family="ui-monospace, monospace" font-size="11.5">95% CI: [1.1990748170405823, 1.3083112791522158]</text>
+<text x="69" y="547" fill="#273249" font-family="system-ui, sans-serif" font-size="15.5" font-weight="690">V27: compiler architecture</text>
+<text x="69" y="568" fill="#69778a" font-family="system-ui, sans-serif" font-size="12">Exploratory 416-case public sample</text>
+<rect x="344" y="532" width="400.95" height="30" rx="7" fill="#b45464"/>
+<text x="755.95" y="552" fill="#202c42" font-family="system-ui, sans-serif" font-size="16" font-weight="760">0.797x</text>
+<text x="344" y="583" fill="#617086" font-family="ui-monospace, monospace" font-size="11.5">exact: 0.7967512788167544</text>
+<line x1="720.28" y1="522" x2="769.41" y2="522" stroke="#b45464" stroke-width="3"/>
+<line x1="720.28" y1="516" x2="720.28" y2="528" stroke="#b45464" stroke-width="2"/>
+<line x1="769.41" y1="516" x2="769.41" y2="528" stroke="#b45464" stroke-width="2"/>
+<text x="344" y="603" fill="#b45464" font-family="ui-monospace, monospace" font-size="11.5">95% CI: [0.7477430408484538, 0.8453719226231972]</text>
+<text x="69" y="653" fill="#273249" font-family="system-ui, sans-serif" font-size="15.5" font-weight="690">V28: combined architecture</text>
+<text x="69" y="674" fill="#69778a" font-family="system-ui, sans-serif" font-size="12">Exploratory 416-case public sample</text>
+<rect x="344" y="638" width="618.89" height="30" rx="7" fill="#298b6c"/>
+<text x="973.89" y="658" fill="#202c42" font-family="system-ui, sans-serif" font-size="16" font-weight="760">1.230x</text>
+<text x="344" y="689" fill="#617086" font-family="ui-monospace, monospace" font-size="11.5">exact: 1.2298384265743338</text>
+<line x1="936.85" y1="628" x2="990.62" y2="628" stroke="#298b6c" stroke-width="3"/>
+<line x1="936.85" y1="622" x2="936.85" y2="634" stroke="#298b6c" stroke-width="2"/>
+<line x1="990.62" y1="622" x2="990.62" y2="634" stroke="#298b6c" stroke-width="2"/>
+<text x="344" y="709" fill="#298b6c" font-family="ui-monospace, monospace" font-size="11.5">95% CI: [1.1780942933805956, 1.2849593897495446]</text>
+<rect x="69" y="754" width="1105" height="92" rx="12" fill="#eef7f3"/>
+<text x="89" y="782" fill="#305746" font-family="system-ui, sans-serif" font-size="13.5" font-weight="760">DENSE SAME-FIRST-BYTE COHORT: 104 PUBLIC CASES</text>
+<text x="89" y="811" fill="#286c48" font-family="ui-monospace, monospace" font-size="12">search: 1.979099276996251x</text>
+<text x="456" y="811" fill="#88414c" font-family="ui-monospace, monospace" font-size="12">compiler: 0.4205648528352947x</text>
+<text x="826" y="811" fill="#286c48" font-family="ui-monospace, monospace" font-size="12">combined: 1.9603621849989858x</text>
+<rect x="69" y="863" width="542" height="181" rx="14" fill="#fff0ef" stroke="#ebb2ab" stroke-width="1.4"/>
+<text x="89" y="893" fill="#982a24" font-family="system-ui, sans-serif" font-size="13" font-weight="790">V26 + V27 + V28 FULL PUBLIC GATES: FAIL</text>
+<text x="89" y="945" fill="#90221b" font-family="system-ui, sans-serif" font-size="39" font-weight="810">1,145 / 10,434</text>
+<text x="89" y="973" fill="#7c3632" font-family="system-ui, sans-serif" font-size="13.5">same public mismatches in all three optimized designs</text>
+<rect x="89" y="986" width="254" height="34" rx="17" fill="#bd352c"/>
+<text x="216" y="1009" text-anchor="middle" fill="#fff" font-family="system-ui, sans-serif" font-size="12.5" font-weight="790">ALL THREE UNQUALIFIED</text>
+<rect x="629" y="863" width="545" height="181" rx="14" fill="#fff8eb" stroke="#edcf99" stroke-width="1.4"/>
+<text x="649" y="893" fill="#875819" font-family="system-ui, sans-serif" font-size="13" font-weight="790">FROZEN ORIGINAL SUITE: STILL FAILING</text>
+<text x="649" y="945" fill="#724817" font-family="system-ui, sans-serif" font-size="38" font-weight="810">1,352 mismatches</text>
+<text x="649" y="973" fill="#765a36" font-family="system-ui, sans-serif" font-size="13.5">V24/V25 unchanged; 31,237 original case executions</text>
+<text x="649" y="1002" fill="#765a36" font-family="system-ui, sans-serif" font-size="12.5">Different cases from the 10,434-case public gate.</text>
+<rect x="69" y="1060" width="1105" height="112" rx="13" fill="#edf4fb"/>
+<line x1="431" y1="1076" x2="431" y2="1157" stroke="#cbdcee"/>
+<line x1="805" y1="1076" x2="805" y2="1157" stroke="#cbdcee"/>
+<text x="88" y="1092" fill="#194575" font-family="system-ui, sans-serif" font-size="15.5" font-weight="750">SEARCH: 247 / 416 faster</text>
+<text x="88" y="1118" fill="#365576" font-family="system-ui, sans-serif" font-size="12.7">169 slower</text>
+<text x="88" y="1142" fill="#365576" font-family="system-ui, sans-serif" font-size="12.7">11 regressions &gt;20% slower</text>
+<text x="451" y="1092" fill="#853d4a" font-family="system-ui, sans-serif" font-size="15.5" font-weight="750">COMPILER: 138 / 416 faster</text>
+<text x="451" y="1118" fill="#853d4a" font-family="system-ui, sans-serif" font-size="12.7">278 slower</text>
+<text x="451" y="1142" fill="#853d4a" font-family="system-ui, sans-serif" font-size="12.7">143 regressions &gt;20% slower</text>
+<text x="825" y="1092" fill="#216b52" font-family="system-ui, sans-serif" font-size="15.5" font-weight="750">COMBINED: 208 / 416 faster</text>
+<text x="825" y="1118" fill="#365a4e" font-family="system-ui, sans-serif" font-size="12.7">208 slower</text>
+<text x="825" y="1142" fill="#365a4e" font-family="system-ui, sans-serif" font-size="12.7">8 regressions &gt;20% slower</text>
+<rect x="69" y="1189" width="1105" height="95" rx="13" fill="#f2f0f8"/>
+<text x="89" y="1222" fill="#463e64" font-family="system-ui, sans-serif" font-size="15" font-weight="770">V3 PUBLIC FINAL PROPOSAL: 226m proposed; SEED ABSENT; NO WINNER</text>
+<text x="89" y="1250" fill="#615975" font-family="system-ui, sans-serif" font-size="12.5">Proposal size and missing seed are user-supplied metadata; proposal and seed files were not opened. Final speed: NOT MEASURED.</text>
+<text x="69" y="1310" fill="#65738a" font-family="system-ui, sans-serif" font-size="11.5">V1 chart preserved and authenticated. Sources: original V2 public profile, immutable V101 inputs, and root-owned V26/V27/V28 publication receipts.</text>
+<text x="69" y="1334" fill="#65738a" font-family="system-ui, sans-serif" font-size="11.5">Speed is exploratory public evidence, not qualification; no candidate worker, proposal, raw archive, native binary, or timer was accessed.</text>
+</svg>
