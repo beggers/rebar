@@ -195,7 +195,8 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual corrected audit: one remaining Rust-only introspection finding](oracle/phase2/evidence/runtime-non-delegation-v4-actual-source-audit-failure.json).
 - [Frozen first-party inspection of the corrected Rust candidate, its native binaries, and zero-external-package build](oracle/phase2/RUST-CLEAN-NON-DELEGATION-V5.md).
 - [Actual clean Rust inspection: 18 first-party sources, four native binaries, zero external engines or packages](oracle/phase2/evidence/rust-clean-non-delegation-v5-actual-source-audit.json).
-- [Frozen live Rust independence check across two separately built engines; not yet run](oracle/phase2/RUST-LIVE-NON-DELEGATION-V6.md).
+- [Frozen live Rust independence check across two separately built engines](oracle/phase2/RUST-LIVE-NON-DELEGATION-V6.md).
+- [Preserved first live Rust audit failure: the strict import guard also rejected Python's own `_io` module](oracle/phase2/evidence/rust-live-non-delegation-v6-actual-runtime-failure.json).
 - [Frozen first-party correction removing Rust's unused external-introspection path](oracle/phase2/RUST-NO-EXTERNAL-INTROSPECTION-V1.md).
 - [Actual first-party bridge source with no indirect Python-regex import](oracle/phase2/evidence/rust-no-external-introspection-v1-application.json).
 - [Latest C run, 16,413 verified checks, and all 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json).
