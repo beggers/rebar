@@ -2,6 +2,14 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## Preserve a missing Rust test-authorization argument
+
+The [first optimized, lifetime-safe Rust retest](../oracle/phase2/evidence/repaired-rust-original-campaign-v29-v35-optimized-safe-missing-authority-failure.json)
+stopped before importing a candidate, opening a native build, or starting
+a worker. Its independently pinned command omitted one inherited
+historical-campaign authority. The frozen test suite and candidate are
+unchanged; corrected authority can retry the same immutable campaign.
+
 ## Preserve an outdated three-engine speed-chart freeze
 
 The [independence-corrected public-speed chart freeze](../oracle/phase2/TRUTHFUL-CURRENT-SPEED-HEADLINE-V109.md)

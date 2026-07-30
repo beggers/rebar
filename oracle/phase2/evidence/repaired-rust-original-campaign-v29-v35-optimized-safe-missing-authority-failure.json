@@ -1,0 +1,23 @@
+{
+  "schema": "rebar-owned-repaired-rust-original-campaign-v29-entry-failure",
+  "status": "FAIL",
+  "failure_stage": "AUTHORITY VALIDATION; BEFORE CANDIDATE ACTIVATION",
+  "frozen_commit": "7e901acdee95d5be4996c93696d29430a7ca2ed8",
+  "source_sha256": "c38c3f4986031a59502378feb781f854733a7a80b45c642c622ac61268686403",
+  "protocol_sha256": "04082728f11ffd3b3b7330732affb9189de0c11cbb2b1c439ae75163735df0a1",
+  "contract_sha256": "df2cca2ed708c3e68f53c5ef954e1c92cfe8105eea58435c5979db3a1c4150af",
+  "error_type": "CampaignError",
+  "error_message": "require independently caller-pinned actual V33 authority: previous_campaign_source_sha256",
+  "actual_candidate_imports": 0,
+  "actual_candidate_workers_started": 0,
+  "actual_private_build_root_opens": 0,
+  "actual_native_libraries_loaded": 0,
+  "actual_build_archive_opens": 0,
+  "actual_clock_samples": 0,
+  "actual_hidden_cases_read": 0,
+  "operational_guard_version": 4,
+  "candidate_correctness": "NOT MEASURED",
+  "performance": "NOT MEASURED",
+  "candidate_qualified": false,
+  "winner_selected": false
+}
