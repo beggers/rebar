@@ -96,9 +96,14 @@ accepts genuine read-only directory access while continuing to reject the
 complete temporary-file flag, unsafe directory flags, and unauthorized
 writes. Four ordinary and clean-environment source gates passed; they cover
 **111,552** combined modeled cases, the original **960** compiler cases,
-**11,328** search cases, and both original unsuccessful attempts. Its target
-is a fresh immutable source directory. The combined candidate has not been
-created, built, correctness-tested, or timed, and the final test remains
+**11,328** search cases, and both original unsuccessful attempts.
+
+The [actual combined source creation](../oracle/phase2/evidence/rust-combined-search-compiler-fastpath-v2-application.json)
+then wrote exactly two exclusive files under a fresh directory: the
+**189,423-byte** combined Rust engine and its **24,305-byte** vector-search
+implementation. Both have the exact previously frozen hashes, and neither
+original candidate source was modified. No engine was built or run; matching,
+speed, and qualification remain **NOT MEASURED**. The final test remains
 unopened.
 
 ## Preserve complete Rust and Python timing and native memory evidence
