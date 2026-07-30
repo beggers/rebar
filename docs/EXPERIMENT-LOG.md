@@ -339,6 +339,14 @@ that exact root-only path before candidate access. All four ordinary and
 clean-environment checks pass **27** hostile controls while preserving both
 the first failed launch and the full **10,434-case**, **111-operation**
 denominator. The reference and candidate workers have **NOT BEEN RUN**.
+The [actual complete wider Rust correctness result](../oracle/phase2/evidence/rust-full-public-correctness-v5-v33-full-public-v5-run-001-publication-receipt.json)
+passes all **10,434** cases across **111** Python operations with **zero**
+mismatches, using one independent reference worker and one independent
+candidate worker. Both complete raw **10,434-case** observation archives
+and their full comparison remain committed. The earlier **1,145** failures,
+all rejected attempts, and the separate **31,237-case** original pass remain
+preserved. Live runtime no-delegation, three-family qualification, and final
+speed remain **NOT ESTABLISHED** or **NOT MEASURED**.
 
 ## Preserve the faster Rust architecture while correcting scoped Unicode matching
 

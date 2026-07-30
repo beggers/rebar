@@ -20,8 +20,8 @@ preserved; runtime no-delegation still requires a separate live proof.
 ## Results at a glance
 
 **Six independently written approaches. One Rust engine passes all
-31,237 original Python compatibility checks. Zero fully qualified
-replacements. Final speed: NOT MEASURED. No winner.**
+31,237 original checks and all 10,434 wider compatibility checks.
+Zero fully qualified replacements. Final speed: NOT MEASURED. No winner.**
 
 ![Current original-suite compatibility: Python and Rust both pass all 31,237 checks, C passes 16,413, and Zig passes 4,607. Rust has zero original-suite differences but is not yet fully qualified.](docs/evidence/candidate-current-overview-v103.svg)
 
@@ -29,7 +29,7 @@ Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
 unfinished group are never counted as passing.
 
-![Five directly compared speeds: Python 1.00×, original Rust 0.86×, accelerated Rust search 1.25×, low-allocation Rust compiler 0.80×, and the combined clean-interface Rust design 1.23×. All optimized designs still fail 1,145 of 10,434 wider compatibility checks and remain unqualified.](docs/evidence/rust-architecture-comparison-v2.svg)
+![Five historical directly compared speeds: Python 1.00×, original Rust 0.86×, accelerated Rust search 1.25×, low-allocation Rust compiler 0.80×, and an earlier combined Rust design 1.23×. Those historical designs failed 1,145 wider checks; the newer corrected Rust engine now passes all 10,434 but has not yet been timed.](docs/evidence/rust-architecture-comparison-v2.svg)
 
 ![Public practice only: Rust is 0.865 times Python's typical-case speed and 0.596 times Python's speed across all recorded time. Six workload groups are faster; difficult repeated-character searches are slower.](docs/evidence/rust-public-practice-overall-v2.svg)
 
@@ -54,10 +54,12 @@ cases. Its difficult-search workload reached only **0.42×** Python and it
 shared the same **1,145** wider compatibility differences. This unsuccessful
 design and all **143** substantial slowdowns remain fully visible.
 
-Combining the fast search and low-allocation compiler with clean first-party
-bindings achieved **1.23× Python** (**95% interval: 1.18–1.28×**), with
-only **eight** substantial slowdowns. It still shares all **1,145** wider
-compatibility differences and remains **unqualified**.
+An earlier combination of the fast search and low-allocation compiler with
+clean first-party bindings achieved **1.23× Python** (**95% interval:
+1.18–1.28×**), with only **eight** substantial slowdowns. That historical
+version had **1,145** wider compatibility differences. Its corrected
+successor passes all **10,434** wider checks, but its own speed is
+**NOT MEASURED** and it remains **unqualified**.
 
 A second complete practice run confirms **0.60× Python** across all recorded
 time. Its native allocation totals were **104.2 MB** for Rust and **100.5 MB**
@@ -71,7 +73,7 @@ could not start its sampling timer.
 | --- | --- | --- |
 | Python `re` | 31,237 / 31,237; 100% | Reference baseline. |
 | C | 16,413 / 31,237; 52.5% | FAIL; all 606 observed differences are preserved; interpreter isolation did not finish. |
-| Rust | 31,237 / 31,237; 100% | PASS on the original suite; zero differences in all 13 groups. Wider compatibility and no-delegation remain unqualified. |
+| Rust | 31,237 / 31,237; 100% | PASS on all original checks and all 10,434 wider checks; zero differences. Live no-delegation and final speed remain unqualified. |
 | Zig | 4,607 / 31,237; 14.7% | FAIL; at least 1,700 differences; cleanup errors in all 13 workers; the corrected rerun stopped before matching. |
 | C++ | NOT MEASURED | FAIL; 2,308 observed differences and five worker failures. |
 | Go | NOT MEASURED | FAIL; 4,518 observed differences and four worker failures. |
@@ -94,14 +96,16 @@ The corrected, from-scratch Rust engine was independently built twice using
 original-suite run passed **31,237 of 31,237** checks across all **13** groups,
 with **zero differences** and **13** successful independent workers. This fixes
 all **1,352** differences preserved from its earlier run. The corrected
-engine's wider-suite compatibility, runtime no-delegation, and speed remain
-**NOT MEASURED** or **NOT ESTABLISHED**.
+engine's wider-suite run also passed **10,434 of 10,434** cases across
+**111** Python operations with **zero differences**. Live runtime
+no-delegation and the corrected engine's speed remain **NOT ESTABLISHED**
+or **NOT MEASURED**.
 A newly frozen, entirely first-party Rust build combines the validated
 original-suite engine with every known scanner, comment, replacement, and
 Unicode correction from the **10,434-case** wider public suite. Its native
-engine and bridge have now been independently built twice with **zero**
-external packages; the independently frozen full wider-suite correctness
-experiment has **NOT BEEN RUN**.
+engine and bridge were independently built twice with **zero** external
+packages before passing every wider-suite check. All individual Python and
+Rust answers remain preserved.
 A separate inspection of both independently built Rust engines, all **18**
 first-party sources, and all **four** native binaries found **zero** external
 regular-expression packages, external engine symbols, or matching delegation.
@@ -164,7 +168,8 @@ metadata, not the current final-test proposal.
 A separate public development suite covers **10,434** equally weighted
 cases across **111** Python operations, with **5,217** text and
 **5,217** byte-oriented cases. It is not the hidden final test;
-expanded-suite Rust compatibility and speed are **NOT MEASURED**.
+the corrected Rust candidate passes all **10,434** cases, while its speed
+on that expanded suite remains **NOT MEASURED**.
 
 A winner must be at least **1.5×** faster overall, faster on at least
 **60%** of measured cases, and explain every slowdown over **20%**.
@@ -240,9 +245,10 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Preserved integrated Rust build rejection before compilation, caused by an inherited stale adapter identity](oracle/phase2/evidence/native-source-build-v32-rust-full-public-preexecution-failure.json).
 - [Corrected fully integrated Rust build freeze preserving the rejected predecessor and every wider-public compatibility correction](oracle/phase2/RUST-FULL-PUBLIC-SEMANTIC-SOURCE-BUILD-V33.md).
 - [Actual fully integrated first-party Rust build: two identical native engines and bridges across 28 offline build and inspection steps](oracle/phase2/evidence/native-source-build-v33-rust-phase2-v33-rust-full-public-semantic-source-root-provenance-publication-receipt.json).
-- [Frozen 10,434-case wider Rust compatibility test covering 111 Python operations; not yet run](oracle/phase2/RUST-FULL-PUBLIC-CORRECTNESS-V4.md).
+- [Frozen historical first 10,434-case wider Rust compatibility test covering 111 Python operations](oracle/phase2/RUST-FULL-PUBLIC-CORRECTNESS-V4.md).
 - [Preserved first wider-suite Rust test rejection before either reference or candidate worker started](oracle/phase2/evidence/rust-full-public-correctness-v4-preworker-failure.json).
 - [Corrected full 10,434-case Rust public compatibility procedure preserving the rejected predecessor](oracle/phase2/RUST-FULL-PUBLIC-CORRECTNESS-V5.md).
+- [Actual full wider Rust result: all 10,434 checks across 111 Python operations pass with zero mismatches](oracle/phase2/evidence/rust-full-public-correctness-v5-v33-full-public-v5-run-001-publication-receipt.json).
 - [Frozen independent first-party correction for 88 remaining Rust template-expansion and buffer-probe differences](oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md).
 - [Actual isolated Rust bridge source correcting template expansion and outer buffer checks](oracle/phase2/evidence/rust-expand-probe-semantics-v1-application.json).
 - [Frozen combined first-party Rust correction covering all 1,352 known original compatibility failures](oracle/phase2/RUST-COMPLETE-SEMANTIC-CORRECTION-V1.md).
