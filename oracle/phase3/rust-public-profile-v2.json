@@ -1,0 +1,94 @@
+{
+  "approved_output_prefix": "experiments/rust_public_profile_v2",
+  "case_count": 416,
+  "collector_output_policy": {
+    "ascii_banner_count": 1,
+    "banner_engine_matches_expected_engine": true,
+    "banner_experiment_matches_expected_engine": true,
+    "banner_positive_decimal_pid_matches_worker_pid": true,
+    "canonical_json_document_count": 1,
+    "forbid_extra_output_control_bytes_and_trailing_data": true,
+    "preserve_complete_raw_stdout": true,
+    "preserve_separate_canonical_worker_json": true
+  },
+  "dataset_count": 16,
+  "matrix_sha256": "b13ff74122041ea792774fd5ee2d1f6d38033e94a1a6703c6e48522e461552a7",
+  "operation_count": 26,
+  "pinned_cpython": "3.14.6",
+  "pinned_python": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+  "preserved_failure": {
+    "collector_stdout": "experiments/rust_public_profile_v1/public-run-001/stdlib.collector.stdout.json",
+    "collector_stdout_bytes": 2200,
+    "collector_stdout_sha256": "057d2eb19a2c24e11688fa0419047e50f6720cbafd41b7ec3bd7ee763691aff0",
+    "collector_target_pid": 91,
+    "directory": "experiments/rust_public_profile_v1/public-run-001",
+    "directory_device": 2064,
+    "directory_inode": 526004,
+    "directory_mode": "0700",
+    "expected_records_sha256": "41f83dc761a93ea8e3203f46cedbba1e10918cf053194c20b37b8c209e992242",
+    "normalized_stdout_bytes": 2139,
+    "normalized_stdout_sha256": "8471fcd2497eba55c4ff69c72475c15ff8c55162f75e9ac240b558720f1602ba",
+    "paired_rows": 1664,
+    "paired_rows_sha256": "ce5ddb143be0d58588d2b18540c0db1b716eebb138cfe32a04690a0efe62c378",
+    "paired_timing": "experiments/rust_public_profile_v1/public-run-001/paired-timing.raw.json",
+    "paired_timing_bytes": 504907,
+    "paired_timing_sha256": "3da06bdb04ace9897d359aaa962ca412f3e9260a5c1a337703e0aa35567b6b85"
+  },
+  "previous": {
+    "manifest": "oracle/phase3/rust-public-profile-v1.json",
+    "manifest_sha256": "b791b141eabbf6eb8a67484f5deb82bb41e324aedbdfe5b53a98ebc1553372c5",
+    "protocol": "oracle/phase3/RUST-PUBLIC-PROFILE-V1.md",
+    "protocol_sha256": "6664f17ddd65c1953782f43b7fe1fa01427f1f510adfbad86fe8efdb135829ba",
+    "source": "tools/rust_public_profile_v1.py",
+    "source_sha256": "ada1e9cfc8684ecb4fcf9294057347018b6058fc1619ae9de6a8b31097aa1562"
+  },
+  "profile_configuration": {
+    "batch_iterations": 3,
+    "paired_rounds": 4,
+    "profile_passes": 3,
+    "reports": [
+      "allocations",
+      "cpu",
+      "ffi",
+      "heap"
+    ],
+    "warmup_iterations": 1
+  },
+  "profiler": {
+    "archive_policy": "off",
+    "binaries": {
+      "collector": {
+        "path": "/usr/bin/x86_64-linux-gnu-gp-collect-app",
+        "sha256": "1b12058e818536a7c9febf81d621acf182d261f8464b1aee5d745be5dfcfa2b2"
+      },
+      "dispatcher": {
+        "path": "/usr/bin/x86_64-linux-gnu-gprofng",
+        "sha256": "91e03573aeedded12a3b80e96ba28316968a8a86af78f0434cd7e87b7691df62"
+      },
+      "display": {
+        "path": "/usr/bin/x86_64-linux-gnu-gp-display-text",
+        "sha256": "2d7e0d598c873dc2b7735edc49309b7fab9db821cbb749b5ab8d62d1b9b66112"
+      }
+    },
+    "clock_sampling": "hi",
+    "command": "/usr/bin/gprofng",
+    "descendant_policy": "off",
+    "heap_tracing": "on"
+  },
+  "protocol": "oracle/phase3/RUST-PUBLIC-PROFILE-V2.md",
+  "protocol_sha256": "aa96b3a2132be6557020a753da8e57e1c210b1a9b9216b6a015f36715e208b9d",
+  "provenance": {
+    "archive_files_read": 0,
+    "candidate_imports_in_source_modes": 0,
+    "data": "fresh embedded public literals only",
+    "fixture_files_read": 0,
+    "holdout_files_read": 0,
+    "preserved_public_failed_runs_mutated": 0,
+    "source_mode_clock_samples": 0,
+    "source_mode_workspace_mutations": 0
+  },
+  "published_seed": 5932739705720426289,
+  "schema": "rebar-rust-fresh-public-profile-v2-source-freeze",
+  "source": "tools/rust_public_profile_v2.py",
+  "source_sha256": "a4eb77c29e06b1a77152ebb2275525bfd75b3fa26fd25f100059c79cfb39437a"
+}

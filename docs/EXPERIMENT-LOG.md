@@ -8,6 +8,24 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a correct, lossless public native profiler
+
+The [version-two public-only profiling procedure](../oracle/phase3/RUST-PUBLIC-PROFILE-V2.md)
+preserves the original failed run and corrects its genuine profiler-output
+handling. It accepts exactly one authenticated profiler announcement and one
+canonical worker result whose process identifiers agree; both original and
+normalized streams are saved separately. Repeated announcements, wrong
+engine or process, malformed JSON, control characters, unsafe output paths,
+and all attempted hidden-test access are rejected.
+
+All four normal and empty-environment source-only gates pass **349** hostile
+profiler-stream controls and **21** unsafe-path controls. The driver
+authenticates the original **416** correct public cases, all **1,664**
+preserved timing rows, the failed Python-only heap trace, and every previous
+source hash. Source verification imports no candidate, starts no process,
+samples no clock, and writes no file. The corrected run has **NOT RUN**;
+final speed, confidence, memory, and qualification remain **NOT MEASURED**.
+
 ## Freeze a first-party fix for the measured slow Rust searches
 
 The [frozen Rust required-character search optimization](../oracle/phase2/RUST-MANDATORY-ANCHOR-SEARCH-V1.md)
