@@ -50,6 +50,10 @@ from its own source with **zero external packages**. The two builds
 produced identical native code. Full compatibility and speed are
 still **NOT MEASURED**.
 
+A corrected interpreter-isolation guard now recognizes real Python
+child interpreters while blocking borrowed regular-expression engines.
+The full corrected Rust run has **NOT RUN**.
+
 ## What a replacement must pass
 
 The frozen reference includes **31,237** original Python checks in
@@ -116,6 +120,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Next Rust test, preserving the previous regression; not yet run](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V23.md).
 - [Reproducible first-party Rust build with no external packages](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2-SOURCE-BUILD-V24.md).
 - [Actual successful first-party Rust build; matching not yet tested](oracle/phase2/evidence/native-source-build-v24-rust-phase2-v24-rust-capture-shape-v2-root-provenance-publication-receipt.json).
+- [Corrected interpreter isolation and strict no-external-engine guard](oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V4.md).
 - [Preserved Rust activation failure](oracle/phase2/evidence/rust-original-campaign-v21-v3-preactivation-contract-failure.json).
 - [Expanded, unopened speed-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V1.md).
 - [Original objective](GOAL.md), SHA-256

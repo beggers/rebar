@@ -8,6 +8,22 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Correct genuine Python interpreter isolation
+
+The [version-4 runtime isolation guard](../oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V4.md)
+fixes a false failure shared by the Rust and Zig runs. Official
+Python **3.14.6** does not report real child-interpreter creation
+through the parent audit event the previous guard required. The
+corrected guard instead authenticates the real built-in call, its
+official caller, and the child-interpreter live sets without opening
+the final speed test or permitting another regex engine.
+
+All four ordinary and clean source-only checks passed, including
+**152** adversarial controls. These checks created no interpreters,
+imported no candidates, and ran no native code. Actual candidate
+compatibility and speed remain **NOT MEASURED**; the separate
+candidate-free interpreter proof has **NOT RUN** at this source freeze.
+
 ## Publish a readable, up-to-date comparison
 
 The [current comparison chart](evidence/candidate-current-overview-v99.svg)

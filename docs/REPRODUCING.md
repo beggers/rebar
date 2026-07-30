@@ -51,6 +51,37 @@ docs/evidence/candidate-current-overview-v99.svg
 c98a398357628201bb7b6d97ec4fd1bb32e8c770b8c5ba74850d6e4e1c0f6821
 ```
 
+## Verify the corrected interpreter-isolation guard
+
+This source-only check verifies the corrected official-Python child
+interpreter guard and its immutable predecessors. It neither starts a
+candidate nor creates an interpreter, opens the holdout, or measures
+speed:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/verify_owned_candidate_runtime_independence_v4.py \
+  --source-sha256 5b498643fa730dc09090bdc9e189e2d395cbe41a2b14019937eb251fd38240f3 \
+  --protocol-sha256 835473a98f62c9b2cb0dee61736b6cbbab4460f14d8371597e80933c64721a16 \
+  --contract-sha256 30f5c52d5aadfd6e8a7be7c6f355d9628510384d7fd922bcfb609dfe854acea2 \
+  --v3-source-sha256 03f051e428ee31bb671d8ced82f02d7a9fe3520f24191aba78d2e8a0697202c2 \
+  --v3-protocol-sha256 d3437b642d322ccccf12851981555cb596ff7f9c5a12e0a6a389d6b80b5a068a \
+  --v3-contract-sha256 31e9a5d2754b5b4b273d4fc30d6a27967e495b57684fdd1e9306bbac3b2caaa7 \
+  --v2-source-sha256 f693b1576b63ae5ebe45663801834c05e7d03671a5d6f2b4beb1b62034d37c0a \
+  --v2-protocol-sha256 2f11a29e08b6616d053269bc99e5283b5548ce88c74b384e1c5979c2e1d2288c \
+  --v2-contract-sha256 813bbab0898d5a65a6b43533f7bfa024c4c215609c4f9fa6eb0f4cbe2791f473 \
+  --producer-source-sha256 b4886f424945d3a182a90737fd965fbc4a6e82cafa1c9ee456a9ea405ee18538 \
+  --producer-protocol-sha256 9cfd1fc189d555a596b84b6073471554dab6bd67c1b343c66b744f4dc7b053a4 \
+  --producer-contract-sha256 c751b8882fa331b4850271e68a1b43f965b5ddcb77c7ad0d0b4d3dec8ba79b53 \
+  --verify-frozen-context
+```
+
+Replace the final argument with `--self-test` to rerun all **152**
+source-only adversarial controls. Both commands also pass outside
+the clean environment. The distinct, explicitly authorized
+`--prove-provider` command is not part of either source-only check.
+
 ## Verify the previous version-98 comparison
 
 The preserved version-98 graph records the comparison before the
