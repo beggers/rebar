@@ -23,6 +23,14 @@ cases, or changing the original **31,237**-case denominator. The combined
 variant has not yet been created, built, correctness-tested, or timed;
 compatibility, final speed, and qualification remain **NOT MEASURED**.
 
+Its [actual exclusive source-creation attempt](../oracle/phase2/evidence/rust-combined-search-compiler-fastpath-v1-application-failure.json)
+failed closed before creating either output. Linux represents temporary-file
+creation with a composite flag that includes the ordinary directory-open
+bit; the source guard incorrectly rejected safe read-only directory access.
+The failure was independently reproduced, no candidate ran, and no final
+case was accessed. A separately frozen successor must fix the flag check
+without weakening temporary-file or write protections.
+
 ## Preserve complete Rust and Python timing and native memory evidence
 
 The [complete corrected public profiler run](../oracle/phase3/evidence/rust-public-profile-v2-run-001-publication-receipt.json)
