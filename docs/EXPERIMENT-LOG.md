@@ -41,6 +41,23 @@ cases, and running no candidate. The new proposal is public planning only:
 **NOT FROZEN**, **NOT GENERATED**, and never suitable for timing before
 independent correctness and no-delegation qualification.
 
+## Freeze one fair public comparison for two Rust architectures
+
+The [corrected common Rust-architecture comparison](../oracle/phase2/RUST-NATIVE-ARCHITECTURE-PUBLIC-GATE-V2.md)
+tests the independently built accelerated-search and low-allocation compiler
+engines under the same isolated Python conditions. Each runs all **10,434**
+public correctness cases; a separate complete **416-case** correctness gate
+must pass before any of **1,664** counterbalanced Python/Rust timing pairs.
+Every mismatch, slowdown, memory result, and confidence interval is retained.
+
+The [previous actual attempt](../oracle/phase2/evidence/rust-native-architecture-public-gate-v1-v26-anchor-public-run-001-preexecution-failure.json)
+stopped before any candidate ran: its frozen snapshot named a nonexistent
+Rust source file. The append-only corrected protocol independently verifies
+the real `search.rs` owner using two existing native-build receipts. Four
+ordinary and clean-environment source gates pass. Actual architecture
+correctness and timing remain **NOT MEASURED** until this corrected procedure
+is run.
+
 ## Show the latest complete Rust compatibility result clearly
 
 The [updated headline correctness chart](evidence/candidate-current-overview-v101.svg)
