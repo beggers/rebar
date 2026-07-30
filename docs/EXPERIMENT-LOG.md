@@ -220,6 +220,17 @@ stopped before opening its candidate input because a root-only control used a
 non-Boolean success value. The complete rejection is preserved; no candidate
 variant was created and no matching behavior was tested.
 
+## Freeze 312 independent Zig compatibility corrections
+
+The [first-party Zig candidate's corrected Python adapter](../oracle/phase2/ZIG-PUBLIC-ADAPTER-SEMANTICS-V1.md)
+preserves the independently written cleanup correction while fixing **312**
+observed Python differences in public error identity, subclass-sensitive
+pattern caching, and exact regular-expression flag representation. The
+remaining **620** scanner, **32** match-pickling, and **736** replacement and
+changing-buffer cases remain separately preserved. All four ordinary and
+clean-environment source-only checks pass without importing, executing, or
+modifying any candidate; the corrected Zig source is **NOT CREATED OR RUN**.
+
 ## Combine all original Rust fixes with the wider scanner correction
 
 The [composed first-party Rust scanner bridge](../oracle/phase2/RUST-COMPLETE-SCANNER-BRIDGE-V1.md)
