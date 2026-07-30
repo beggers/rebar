@@ -8,6 +8,25 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze a first-party fix for the measured slow Rust searches
+
+The [frozen Rust required-character search optimization](../oracle/phase2/RUST-MANDATORY-ANCHOR-SEARCH-V1.md)
+is motivated by the preserved public profile, not hidden benchmark cases:
+the difficult repeated-character group took **102,371,349 ns** in Rust
+versus **21,797,729 ns** in Python, and one real alternative-pattern search
+was approximately **10×** slower. The first-party parser extracts characters
+that every possible match must contain at specific positions. A portable or
+runtime-checked vectorized filter can then skip impossible starting points;
+the original ordered Rust matcher still decides every match and capture.
+
+Two independent reviews and all four normal/empty-environment source gates
+pass **11,328** deterministic checks covering alternatives, conditions,
+overlap, windows, captures, lookarounds, repetition, locale, case folding,
+and Unicode. Ten attempted external-engine imports are rejected. Both
+prospective Rust files remain uncreated and unbuilt at this source freeze;
+actual compatibility and improvement remain **NOT MEASURED**. The
+**141,557,760**-case final proposal remains unopened.
+
 ## Freeze two first-party Rust compilation allocation improvements
 
 A [frozen first-party Rust compiler variant](../oracle/phase2/RUST-COMPILER-ALLOCATION-FASTPATH-V1.md)

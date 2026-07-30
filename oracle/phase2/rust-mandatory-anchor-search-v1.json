@@ -1,0 +1,38 @@
+{
+  "candidate_native_execution": "NOT RUN",
+  "contract": "oracle/phase2/rust-mandatory-anchor-search-v1.json",
+  "derived": {
+    "engine": {
+      "bytes": 189369,
+      "path": "candidates/rust/variants/mandatory_anchor_search_v1/lib.rs",
+      "sha256": "5fa8c47c88c1f5d830a59735946378910374afab6f1558d281f0254207ad5e84"
+    },
+    "search": {
+      "bytes": 24305,
+      "path": "candidates/rust/variants/mandatory_anchor_search_v1/search.rs",
+      "sha256": "4d332a2af446550e29ac81369f8629b47be344f8274b0e83d6d1e2f44ebb8ae7"
+    }
+  },
+  "external_rust_dependency_count": 0,
+  "final_performance": "NOT MEASURED",
+  "goal_sha256": "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62",
+  "holdout": "NOT OPENED",
+  "matching_engine": "FIRST-PARTY ORDERED RUST VM",
+  "phase": "CANDIDATES",
+  "protocol": "oracle/phase2/RUST-MANDATORY-ANCHOR-SEARCH-V1.md",
+  "protocol_sha256": "85d65a26042f8e084f52a4037ad2267dd4f59e1e6166a9694b56703960af148e",
+  "public_practice": {
+    "dense_paired_row_count": 416,
+    "dense_python_elapsed_ns": 21797729,
+    "dense_rust_elapsed_ns": 102371349,
+    "paired_row_count": 1664,
+    "public_case_count": 416,
+    "records_sha256": "41f83dc761a93ea8e3203f46cedbba1e10918cf053194c20b37b8c209e992242",
+    "worst_alternation_python_elapsed_ns": 254724,
+    "worst_alternation_rust_elapsed_ns": 2554459
+  },
+  "schema": "rebar-owned-rust-mandatory-anchor-search-v1",
+  "source": "tools/apply_owned_rust_mandatory_anchor_search_v1.py",
+  "source_sha256": "d118af0c0da3b058fc8d40a59d47090a97fd8838fcbdb0fba36bcd0271da2eff",
+  "version": 1
+}
