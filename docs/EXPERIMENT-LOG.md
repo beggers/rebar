@@ -2,15 +2,25 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
-## Publish a readable overall speed comparison against Python
+## Reject a Rust independence claim tied to the wrong build
 
-The [generated baseline comparison](evidence/candidate-current-overview-v106.svg)
-shows Python at **1.00×** and the fully compatibility-tested Rust engine
-at **1.24×**, with its complete **1.19–1.30×** measured range. All
-**416** public workloads, **1,664** paired timings, **164** slower cases,
-and **14** slowdowns greater than 20% remain visible in the accompanying
-generated data. Historical approaches that fail wider compatibility are
-labeled accordingly. This is not a hidden-test result or a winner.
+The [existing Rust source-and-binary inspection](../oracle/phase2/evidence/rust-clean-non-delegation-v5-actual-source-audit.json)
+passes for an older engine with SHA-256
+`3c952a1a9eee234f646bdbd119978d8fb18c223ac71b63db1ed0eada9aed1237`
+and an older bridge with SHA-256
+`ee63273fe7fc79934004db26a5c8df5b94ec3d0083837aed4bee701a7ed52256`.
+The engine that actually passes all **31,237** original checks and
+**10,434** wider checks has engine SHA-256
+`e692633896b61141734d4bb6ddce4a66b2c93bbeaa29b940fcf85904cf6a42e8`
+and bridge SHA-256
+`ecb19eb814430aeb571f60dd50ba4de4b3f54e7f57f056d2436c41714a257000`.
+
+The old inspection therefore does **not** prove independence for the
+currently tested build. A newly generated speed graph incorrectly treated
+that older inspection as same-build evidence and was rejected before
+publication. Compatibility and measured speed remain valid; current-build
+static independence and live independence are **NOT ESTABLISHED** until a
+new exact-build inspection and runtime proof are completed.
 
 ## Pass every original Python check with the from-scratch Zig engine
 
@@ -25309,3 +25319,7 @@ The [frozen final C compatibility correction](../oracle/phase2/C-FINAL-PUBLIC-SE
 ## Materialized independently written final C corrections
 
 The [recorded C source application](../oracle/phase2/evidence/c-final-public-semantics-v1-application.json) independently creates both corrected candidate sources after the complete protocol is committed and pushed. The Python interface has SHA-256 `e91819b1d6b399954b3384519fdfddb6ccd6d4e4099a34e06d702c9959a79193`; the native matching engine has SHA-256 `99f45846551705379ccd7365333995ee68fe25e10d101655a17ad45c5e13a5e6`. All **224** historical differences remain preserved. The corrected engine has **NOT YET BEEN COMPILED**, tested, or timed.
+
+## Frozen current correctness graph for Rust, Zig, and C
+
+The [frozen current compatibility graph](../oracle/phase2/UPDATED-CORRECTNESS-HEADLINE-V107.md) authenticates the latest complete results without opening a candidate or hidden test: Rust and Zig each pass all **31,237** original Python checks, Rust separately passes all **10,434** wider checks, and C has passed **22,798** original checks with **224** preserved differences. Four independent source-only gates pass, including **811** hostile controls per self-test. The graph is **NOT RENDERED** until this freeze is committed and pushed.

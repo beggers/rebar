@@ -10,12 +10,11 @@ import rebar as re
 
 Wrapping Python, an existing regular-expression package, or another
 project engine does not count. Each candidate must implement its own
-regular-expression engine. Dependency files, native links, import
-paths, and Python-facing wrappers are independently checked. The corrected
-Rust engine, its Python bindings, all first-party sources, and both native
-builds now pass an independent inspection with **zero external
-regular-expression packages or engines**. Its older failed inspection is
-preserved; runtime no-delegation still requires a separate live proof.
+regular-expression engine. An older Rust build passed a static inspection
+for external regular-expression packages, but that inspection does not
+cover the newer Rust build that passed the compatibility and speed tests.
+Static and live independence for the exact current Rust build remain
+**NOT ESTABLISHED**.
 
 ## Results at a glance
 
@@ -46,7 +45,7 @@ These results measure compatibility, **not speed**. Checks in an
 unfinished group are never counted as passing. The same Rust build now
 passes both complete suites with zero differences.
 
-![Overall speed compared with Python: the fully compatibility-tested Rust engine runs 1.24 times as fast across 416 public workloads; earlier experimental versions include both faster and slower results and failed broader compatibility checks.](docs/evidence/candidate-current-overview-v106.svg)
+![Historical Rust approaches compared with Python; the exact current, fully compatibility-tested Rust build separately measures 1.24 times Python's speed.](docs/evidence/rust-architecture-comparison-v2.svg)
 
 The exact Rust build passing both complete compatibility suites is
 **1.24× faster than Python** across **416** public workloads (**95%
@@ -136,10 +135,10 @@ Unicode correction from the **10,434-case** wider public suite. Its native
 engine and bridge were independently built twice with **zero** external
 packages before passing every wider-suite check. All individual Python and
 Rust answers remain preserved.
-A separate inspection of both independently built Rust engines, all **18**
-first-party sources, and all **four** native binaries found **zero** external
-regular-expression packages, external engine symbols, or matching delegation.
-This is a source/native inspection; live runtime non-delegation remains
+A separate inspection found no external regular-expression packages or
+engine symbols in an **older Rust build**. Its audited native engine and
+bridge differ from the exact current build that passed both correctness
+suites, so static and live independence for the current build remain
 **NOT ESTABLISHED**.
 
 A corrected interpreter-isolation guard now recognizes real Python
@@ -163,8 +162,6 @@ not any replacement. The original **31,237**-case scores do not
 change. Candidate results on the additional cases are **NOT MEASURED**.
 
 ## More detailed correctness graphs
-
-![Earlier Rust architectures compared with Python, including rejected slower designs and their compatibility failures.](docs/evidence/rust-architecture-comparison-v2.svg)
 
 ![Two independent Python processes each pass all 48,416 additional real-world compatibility cases; no candidate or speed is measured.](docs/evidence/public-buffer-carriers-reference-overview-v1.svg)
 
