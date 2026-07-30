@@ -157,6 +157,20 @@ faster, and all **eight** slowdowns exceeding 20% remain visible. The engine
 is faster overall but still **unqualified**; final speed and a winner are
 **NOT MEASURED**.
 
+## Freeze the faster Rust engine with every known original-suite correction
+
+The [fully corrected first-party Rust build procedure](../oracle/phase2/RUST-COMPLETE-SEMANTIC-SOURCE-BUILD-V30.md)
+combines the previously measured faster Rust search and compiler with the
+independently written bridge correction covering all **1,352** observed
+differences in the original **31,237-case** suite. Two separate offline
+builds must produce identical native engines and bridges without external
+packages or regular-expression implementations.
+
+All four ordinary and clean-environment source-only safety gates pass.
+The historical **1,352** differences remain preserved; the corrected
+architecture's actual build, original-suite result, wider-suite result,
+runtime no-delegation, and speed are **NOT MEASURED**.
+
 ## Freeze the combined fast-search and reusable-workspace architecture
 
 The [independent combined matching-workspace experiment](../oracle/phase2/RUST-COMBINED-VM-WORKSPACE-V1.md)
