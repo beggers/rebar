@@ -8,6 +8,21 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Publish a readable, up-to-date comparison
+
+The [current comparison chart](evidence/candidate-current-overview-v99.svg)
+shows the actual verified original Python checks: Python **31,237**,
+C **16,413**, Rust **14,725**, and Zig **4,607**. The C result preserves
+all **606** observed differences and all **21** evidence chunks. Its
+previous chart showed **16,262** C checks; the current independently
+verified increase is **151**.
+
+Four source-only checks passed, including **49** adversarial controls
+in both ordinary and clean environments. The chart does not run any
+candidate, open compressed results, change score denominators, or
+access the sealed speed test. Speed and memory remain **NOT MEASURED**;
+no candidate is fully compatible.
+
 ## Build the corrected Rust engine twice from first-party source
 
 The [actual version-24 Rust build receipt](../oracle/phase2/evidence/native-source-build-v24-rust-phase2-v24-rust-capture-shape-v2-root-provenance-publication-receipt.json)

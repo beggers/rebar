@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="970" viewBox="0 0 1440 970" role="img" aria-labelledby="title description">
+<title id="title">Original Python regular-expression correctness; speed not measured</title>
+<desc id="description">C failed after verifying 16,413 of 31,237 original checks, an increase of 151. Twelve of thirteen suites completed using thirteen distinct workers. All 606 observed mismatch records are preserved in 21 chunks. Rust verified 14,725 checks and Zig verified 4,607 checks. These bars measure correctness, never speed. Performance, memory, and holdout are not measured; no candidate qualifies and no winner is selected.</desc>
+<rect width="1440" height="970" rx="24" fill="#0b1220"/>
+<text x="50" y="68" fill="#f8fafc" font-size="32" font-family="system-ui,sans-serif" font-weight="740">Building a faster Python re, from scratch</text>
+<text x="51" y="105" fill="#cbd5e1" font-size="17" font-family="system-ui,sans-serif">C improved by 151 original checks; compatibility is incomplete; speed is not measured</text>
+<rect x="46" y="129" width="1348" height="76" rx="12" fill="#172338"/>
+<text x="67" y="159" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif" font-weight="680">Bars show verified original correctness checks, not speed.</text>
+<text x="67" y="185" fill="#cbd5e1" font-size="14" font-family="system-ui,sans-serif">The fixed denominator is 31,237; supplemental checks are separate.</text>
+<text x="55" y="248" fill="#94a3b8" font-size="12">APPROACH</text>
+<text x="171" y="248" fill="#94a3b8" font-size="12">VERIFIED ORIGINAL CHECKS</text>
+<text x="691" y="248" fill="#94a3b8" font-size="12">ACTUAL OUTCOME</text>
+<text x="1220" y="248" fill="#94a3b8" font-size="12">SPEED</text>
+<text x="55" y="300" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif">Python re</text>
+<rect x="170" y="283" width="306" height="20" rx="6" fill="#1e293b"/>
+<rect x="170" y="283" width="306" height="20" rx="6" fill="#34d399"/>
+<text x="487" y="300" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">31,237 / 31,237 (100%)</text>
+<text x="691" y="300" fill="#cbd5e1" font-size="11" font-family="system-ui,sans-serif">All 13 original groups passed</text>
+<text x="1220" y="300" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1387" y="319" text-anchor="end" fill="#34d399" font-size="10" font-family="system-ui,sans-serif">BASELINE</text>
+<text x="55" y="370" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif">C</text>
+<rect x="170" y="353" width="306" height="20" rx="6" fill="#1e293b"/>
+<rect x="170" y="353" width="161" height="20" rx="6" fill="#fbbf24"/>
+<text x="487" y="370" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">16,413 / 31,237 (52.5%)</text>
+<text x="691" y="370" fill="#cbd5e1" font-size="11" font-family="system-ui,sans-serif">7 passed; 5 differ; 1 genuine execution failure</text>
+<text x="1220" y="370" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1387" y="389" text-anchor="end" fill="#fbbf24" font-size="10" font-family="system-ui,sans-serif">NOT YET COMPATIBLE</text>
+<text x="55" y="440" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif">Rust</text>
+<rect x="170" y="423" width="306" height="20" rx="6" fill="#1e293b"/>
+<rect x="170" y="423" width="144" height="20" rx="6" fill="#fb7185"/>
+<text x="487" y="440" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">14,725 / 31,237 (47.1%)</text>
+<text x="691" y="440" fill="#cbd5e1" font-size="11" font-family="system-ui,sans-serif">Earlier measured correctness; 1 incomplete original group</text>
+<text x="1220" y="440" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1387" y="459" text-anchor="end" fill="#fb7185" font-size="10" font-family="system-ui,sans-serif">NOT YET COMPATIBLE</text>
+<text x="55" y="510" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif">Zig</text>
+<rect x="170" y="493" width="306" height="20" rx="6" fill="#1e293b"/>
+<rect x="170" y="493" width="45" height="20" rx="6" fill="#fbbf24"/>
+<text x="487" y="510" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">4,607 / 31,237 (14.7%)</text>
+<text x="691" y="510" fill="#cbd5e1" font-size="11" font-family="system-ui,sans-serif">Earlier measured correctness; newer matching not measured</text>
+<text x="1220" y="510" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1387" y="529" text-anchor="end" fill="#fbbf24" font-size="10" font-family="system-ui,sans-serif">NOT YET COMPATIBLE</text>
+<text x="55" y="580" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif">C++</text>
+<rect x="170" y="563" width="306" height="20" rx="6" fill="#1e293b"/>
+<text x="487" y="580" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="691" y="580" fill="#cbd5e1" font-size="11" font-family="system-ui,sans-serif">Full current matching result not measured</text>
+<text x="1220" y="580" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1387" y="599" text-anchor="end" fill="#94a3b8" font-size="10" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="55" y="650" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif">Go</text>
+<rect x="170" y="633" width="306" height="20" rx="6" fill="#1e293b"/>
+<text x="487" y="650" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="691" y="650" fill="#cbd5e1" font-size="11" font-family="system-ui,sans-serif">Full current matching result not measured</text>
+<text x="1220" y="650" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1387" y="669" text-anchor="end" fill="#94a3b8" font-size="10" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="55" y="720" fill="#f8fafc" font-size="16" font-family="system-ui,sans-serif">Fortran</text>
+<rect x="170" y="703" width="306" height="20" rx="6" fill="#1e293b"/>
+<text x="487" y="720" fill="#e2e8f0" font-size="12" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="691" y="720" fill="#cbd5e1" font-size="11" font-family="system-ui,sans-serif">Full current matching result not measured</text>
+<text x="1220" y="720" fill="#94a3b8" font-size="11" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<text x="1387" y="739" text-anchor="end" fill="#94a3b8" font-size="10" font-family="system-ui,sans-serif">NOT MEASURED</text>
+<line x1="48" y1="785" x2="1390" y2="785" stroke="#334155"/>
+<text x="53" y="812" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Actual C12 candidate status: FAIL; 12 completed suites; 13 distinct workers; 1 execution failure.</text>
+<text x="53" y="836" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">All 606 observed mismatch records and all 21 chunks are preserved; total mismatch count is NOT MEASURED.</text>
+<text x="53" y="860" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Original source counts remain distinct: 165 source methods; 152 public records; 151 executed cases.</text>
+<text x="53" y="884" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Earlier C11: 16,262 verified checks. Current C12: 16,413 verified checks (+151).</text>
+<text x="53" y="908" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">Holdout: NOT FROZEN, NOT GENERATED, NOT OPENED. Speed and memory: NOT MEASURED.</text>
+<text x="53" y="932" fill="#cbd5e1" font-size="12" font-family="system-ui,sans-serif">No fully compatible candidate; runtime independence not established; no winner.</text>
+</svg>

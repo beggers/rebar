@@ -6,6 +6,51 @@ below are source-only or read-only unless a command explicitly says otherwise.
 The current results and charts remain in [the project README](../README.md);
 experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
+## Verify the current version-99 comparison
+
+The current chart shows actual compatibility results, never speed:
+Python **31,237 / 31,237**, C **16,413 / 31,237**, Rust
+**14,725 / 31,237**, and Zig **4,607 / 31,237**. It authenticates
+all **606** preserved C differences and **21** evidence chunks
+without opening their compressed report. The speed comparison is
+**NOT MEASURED**, and its final holdout remains unopened.
+
+Verify the frozen source, previous published comparison, and current
+C evidence without modifying files or running any candidate:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/render_candidate_current_overview_v99.py \
+  --verify-frozen-context \
+  --source-sha256 f4e1e69dcd0e6e5c068165a4893d89ccc183c03eee59c0c99a654bc47ea88196 \
+  --previous-source-sha256 39c7d058e0462f614ff81e9240f9c19690b8b43582a75a0fe80b460ba85a21ac \
+  --previous-inputs-sha256 e8dbcf9271fc39690739f6d93b1832181a0125abf65bd7ce14d6fb3fe248e102 \
+  --previous-summary-sha256 5eb2cb4146c608a0c2593d5fd7056bf5aa822ca6cbe4e7f70c972b62b4ed96d6 \
+  --previous-svg-sha256 937c8cd420dbafdc7906d749288e1b56ed376617e6304c8fa61ce364acb87fa0 \
+  --c-source-sha256 80af52f1df9c2787df858afef4addb1597fb87845225554d258f4c9173dabb17 \
+  --c-protocol-sha256 6f7c81007f78eb6435204521548f238b531d6bcb9f517f1c35e395e0e2b82344 \
+  --c-contract-sha256 758578965291c0b8cf251d7ec46267de7400935e30d4388a126c22821b85090b \
+  --c-receipt-sha256 a3f4b90b8f289df9dfe49f776266e3c290edb2c21c62713137f501a5f997c21b
+```
+
+Replace `--verify-frozen-context` with `--self-test` to repeat all
+**49** source-only adversarial checks. Both commands also pass in an
+ordinary environment and never access the holdout.
+
+Expected current graph files:
+
+```text
+docs/evidence/candidate-current-overview-v99.inputs.json
+f922882c1a00ae0fb8cd4dc81f498c6f5d785274246f1014759585d86e3387bd
+
+docs/evidence/candidate-current-overview-v99.summary.json
+bbd38c44616adb8e35c3c98d64ed15e55560f938123c8c42569b30fc7597d5af
+
+docs/evidence/candidate-current-overview-v99.svg
+c98a398357628201bb7b6d97ec4fd1bb32e8c770b8c5ba74850d6e4e1c0f6821
+```
+
 ## Verify the previous version-98 comparison
 
 The preserved version-98 graph records the comparison before the

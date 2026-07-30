@@ -17,10 +17,7 @@ regular-expression engine.
 **Six independently written approaches. Zero compatible
 replacements. Speed: NOT MEASURED. No winner.**
 
-![Previous compatibility snapshot, not speed. Python passes all 31,237 original checks; the previous C run verified 16,262, Rust verified 14,725, and Zig verified 4,607.](docs/evidence/candidate-current-overview-v98.svg)
-
-The graph is the previous saved snapshot. The latest C run improved
-to **16,413** checks; the current results are in the table below.
+![Current compatibility, not speed. Python passes all 31,237 original checks; C verifies 16,413, Rust verifies 14,725, and Zig verifies 4,607. No replacement is fully compatible.](docs/evidence/candidate-current-overview-v99.svg)
 
 Every percentage uses the same **31,237** original Python checks.
 These results measure compatibility, **not speed**. Checks in an
