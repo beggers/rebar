@@ -22,8 +22,12 @@ All four ordinary and clean frozen-source gates pass **4,800** bounds cases,
 **50** alias cases, and **125** hostile controls. The source authenticates the
 complete previous Rust result: exactly **1,352** differences across all
 **13** completed groups, comprising **240** replacement and **1,112**
-changing-buffer cases. The corrected variant has not yet been created,
-built, matched, or timed. The final comparison remains unopened.
+changing-buffer cases. After that freeze was committed and pushed, one
+[actual exclusive source application](../oracle/phase2/evidence/rust-capture-clamp-semantics-v1-application.json)
+created the immutable **178,805-byte** first-party variant with the exact
+predicted source hash. The original source remains unchanged. The corrected
+variant has not yet been built, matched, or timed; the final comparison
+remains unopened.
 
 ## A first-party audit that understands real Rust syntax
 
