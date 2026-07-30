@@ -232,6 +232,11 @@ The [first root-only creation attempt](../oracle/phase2/evidence/rust-corrected-
 correctly stopped when an isolated hostile source-control assertion failed.
 No adapter variant was created and no candidate matching ran; the complete
 failure remains preserved while a separately frozen correction is prepared.
+The [corrected independent comment-adapter freeze](../oracle/phase2/RUST-CORRECTED-COMMENT-ADAPTER-V2.md)
+keeps the candidate source inaccessible until all **98** hostile controls
+finish. It preserves the earlier rejected freeze and failure, all **914**
+semantic checks, and the same **324** targeted wider cases. No candidate has
+yet been created or run under the corrected procedure.
 
 ## Preserve the faster Rust architecture while correcting scoped Unicode matching
 
