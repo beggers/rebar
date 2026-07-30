@@ -216,6 +216,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual independently written C adapter correcting all 330 recorded Python interface, cache, and flag differences](oracle/phase2/evidence/c-public-adapter-semantics-v2-application.json).
 - [Frozen from-scratch C engine corrections targeting the other 276 observed failures](oracle/phase2/C-COMPLETE-NATIVE-SEMANTICS-V1.md).
 - [Actual independently written C engine source covering buffer ownership, replacements, scanners, and legacy Match pickling](oracle/phase2/evidence/c-complete-native-semantics-v1-application.json).
+- [Frozen independently reproduced C build combining all 606 first-party engine and Python-interface corrections; not yet built](oracle/phase2/C-COMPLETE-SEMANTIC-SOURCE-BUILD-V22.md).
 - [Frozen C test and complete failure-preservation rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md).
 - [Corrected C test preserving all real records and the genuine skipped case](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md).
 - [Previous C run and its original 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json).

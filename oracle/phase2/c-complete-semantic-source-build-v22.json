@@ -1,0 +1,264 @@
+{
+  "schema": "rebar-owned-c-complete-semantic-source-build-v22-source-freeze",
+  "version": 22,
+  "status": "SOURCE FROZEN; INTEGRATED NATIVE BUILD NOT RUN",
+  "phase": "CANDIDATES; REPRODUCIBLE FIRST-PARTY C BUILD",
+  "source": {
+    "path": "tools/reproduce_owned_c_complete_semantic_source_build_v22.py",
+    "sha256": "c52d88c9f0124a85de2a573822a40b87486568da0dbc5353f2dde997c0c2d932"
+  },
+  "protocol": {
+    "path": "oracle/phase2/C-COMPLETE-SEMANTIC-SOURCE-BUILD-V22.md",
+    "sha256": "463845709a50fd9b539d2443af84d7722269c97b02ba00a5f281ce97055158ed"
+  },
+  "pinned_cpython": {
+    "path": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+    "version": "3.14.6",
+    "required_flags": ["-I", "-B", "-S"]
+  },
+  "original_correctness_oracle": {
+    "case_execution_denominator": 31237,
+    "suite_count": 13,
+    "named_private_waiver_count": 13,
+    "separate_reference_case_count": 8244,
+    "supplemental_cases_counted_in_denominator": false,
+    "expanded_holdout_proposed_case_count": 14155776,
+    "holdout": "NOT GENERATED; NOT OPENED"
+  },
+  "latest_actual_c12_failure": {
+    "receipt": {
+      "path": "oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json",
+      "sha256": "a3f4b90b8f289df9dfe49f776266e3c290edb2c21c62713137f501a5f997c21b",
+      "bytes": 10943, "inode": 525645, "device": 2064, "mode": "0600", "nlink": 1
+    },
+    "candidate_status": "FAIL",
+    "verified_passing_case_count": 16413,
+    "observed_mismatch_count": 606,
+    "exact_total_mismatch_count": "NOT MEASURED",
+    "completed_suite_count": 12,
+    "unfinished_child_interpreter_suite": true
+  },
+  "historical_c21_build": {
+    "owners": [
+      {
+        "path": "tools/reproduce_owned_c_original_match_semantics_source_build_v21.py",
+        "sha256": "a1879dfefab15e91bfec95a74c4665d44e9894bef881c4945bccb3121be04726",
+        "bytes": 32001, "inode": 429061, "device": 2064, "mode": "0600", "nlink": 1
+      },
+      {
+        "path": "oracle/phase2/C-ORIGINAL-MATCH-SEMANTICS-SOURCE-BUILD-V21.md",
+        "sha256": "20844ff1c5a4b4908bc903d1a3c3e31e72c7f397b863741fce528ecd8b20d226",
+        "bytes": 7097, "inode": 524815, "device": 2064, "mode": "0600", "nlink": 1
+      },
+      {
+        "path": "oracle/phase2/c-original-match-semantics-source-build-v21.json",
+        "sha256": "a32651018f9c60cfa5963768ffd0cb4463e6c691556958dfd3cd3bea0a42a382",
+        "bytes": 18982, "inode": 524816, "device": 2064, "mode": "0600", "nlink": 1
+      }
+    ],
+    "actual_build_receipt": {
+      "path": "oracle/phase2/evidence/native-source-build-v21-c-phase2-v21-c-original-match-semantics-publication-receipt.json",
+      "sha256": "9475dd0c441a0440136f12425f94e6a4244e4cdc52d49f803e891f6663a647df",
+      "bytes": 11878, "inode": 524817, "device": 2064, "mode": "0600", "nlink": 1
+    },
+    "actual_root_receipt": {
+      "path": "oracle/phase2/evidence/native-source-build-v21-c-phase2-v21-c-original-match-semantics-root-provenance-receipt.json",
+      "sha256": "8f913d623bf5bb4aec3669e9b3daa882df16aad6f2f1bc3db1f02f4988a8afa2",
+      "bytes": 10837, "inode": 524818, "device": 2064, "mode": "0600", "nlink": 1
+    },
+    "historical_native_source_sha256": "fe5bd423cb93b982bce79c584f19ad6eb254ab927008b21b37427de9e6ecf3c2",
+    "historical_native_artifact_sha256": "7a5f8db27154cdcbd4203d727e02c0828ba1f9bf3fa2fdc1a86223ee57825f60",
+    "historical_c19_failure_preserved": true,
+    "historical_c20_entropy_failure_preserved": true
+  },
+  "corrected_native": {
+    "source_freeze": [
+      {
+        "path": "tools/apply_owned_c_complete_native_semantics_v1.py",
+        "sha256": "378b3941b3038f8af7b9a42199044517973b2c23012c11faa504a645123341f9",
+        "bytes": 76523, "inode": 430482, "device": 2064, "mode": "0600", "nlink": 1
+      },
+      {
+        "path": "oracle/phase2/C-COMPLETE-NATIVE-SEMANTICS-V1.md",
+        "sha256": "2dcea6c1d7e03f56bc4662e459f97162b9061041052b0f6459138ae5a55f067e",
+        "bytes": 10382, "inode": 525542, "device": 2064, "mode": "0600", "nlink": 1
+      },
+      {
+        "path": "oracle/phase2/c-complete-native-semantics-v1.json",
+        "sha256": "46f0f7e409bf60c5271bf84819f88b551bcc2b852a88b69f1045bb7f3a656f0e",
+        "bytes": 7427, "inode": 525548, "device": 2064, "mode": "0600", "nlink": 1
+      }
+    ],
+    "actual_materialization": {
+      "path": "oracle/phase2/evidence/c-complete-native-semantics-v1-application.json",
+      "sha256": "1ac3c69067e7b76968fe852e35be7d689149d6de90a48c25a254ff9e9f287a9c",
+      "bytes": 1746, "inode": 525632, "device": 2064, "mode": "0600", "nlink": 1
+    },
+    "materialized_source": {
+      "path": "candidates/c/variants/complete_native_semantics_v1/vm_native.c",
+      "sha256": "0654fe3a970760cc3efb08d819c8a4d8abadb152c35f370e662123e4de20e31f",
+      "bytes": 221557, "inode": 525629, "device": 2064, "mode": "0600", "nlink": 1
+    },
+    "targeted_observed_native_mismatches": 276,
+    "source_only_candidate_source_opened": false
+  },
+  "corrected_public_adapter": {
+    "source_freeze": [
+      {
+        "path": "tools/apply_owned_c_public_adapter_semantics_v2.py",
+        "sha256": "13173033914a706f4d80e76dc8c95ee016a125f7d3261fdf252ed404a60ebb55",
+        "bytes": 55674, "inode": 429225, "device": 2064, "mode": "0600", "nlink": 1
+      },
+      {
+        "path": "oracle/phase2/C-PUBLIC-ADAPTER-SEMANTICS-V2.md",
+        "sha256": "ad91932c5b60cace2a632d11ff62e80d3890de4e4018e8e9ed7e6a4b466436a2",
+        "bytes": 7529, "inode": 524903, "device": 2064, "mode": "0600", "nlink": 1
+      },
+      {
+        "path": "oracle/phase2/c-public-adapter-semantics-v2.json",
+        "sha256": "ed5421ca2ab6a99c59945529cd8ae640636bad2ad42806bd7f36c8cf3ef584ce",
+        "bytes": 3806, "inode": 524904, "device": 2064, "mode": "0600", "nlink": 1
+      }
+    ],
+    "actual_materialization": {
+      "path": "oracle/phase2/evidence/c-public-adapter-semantics-v2-application.json",
+      "sha256": "e3e63acfde8f1eef32f81d48bddc613fb386880a5f1974b898e36b211ab55476",
+      "bytes": 1459, "inode": 525121, "device": 2064, "mode": "0600", "nlink": 1
+    },
+    "materialized_source": {
+      "path": "candidates/c/variants/public_adapter_semantics_v2/vm_candidate.py",
+      "sha256": "4a62cb318592600d53e5ed6b9f8b9edf4edf2068fb2453892ca2130bb203410a",
+      "bytes": 61663, "inode": 525120, "device": 2064, "mode": "0600", "nlink": 1
+    },
+    "targeted_observed_public_adapter_mismatches": 330,
+    "source_only_candidate_source_opened": false
+  },
+  "corrected_runtime_guard": {
+    "owners": [
+      {
+        "path": "tools/verify_owned_candidate_runtime_independence_v4.py",
+        "sha256": "5b498643fa730dc09090bdc9e189e2d395cbe41a2b14019937eb251fd38240f3",
+        "bytes": 48687, "inode": 429243, "device": 2064, "mode": "0600", "nlink": 1
+      },
+      {
+        "path": "oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V4.md",
+        "sha256": "835473a98f62c9b2cb0dee61736b6cbbab4460f14d8371597e80933c64721a16",
+        "bytes": 4492, "inode": 525890, "device": 2064, "mode": "0600", "nlink": 1
+      },
+      {
+        "path": "oracle/phase2/candidate-runtime-independence-v4.json",
+        "sha256": "30f5c52d5aadfd6e8a7be7c6f355d9628510384d7fd922bcfb609dfe854acea2",
+        "bytes": 9352, "inode": 525891, "device": 2064, "mode": "0600", "nlink": 1
+      }
+    ],
+    "version": 4,
+    "candidate_matching": "NOT RUN",
+    "runtime_non_delegation": "NOT ESTABLISHED",
+    "future_execution_requires_canonical_module_identities": true,
+    "future_execution_requires_separate_dual_target_activation": true
+  },
+  "canonical_original_preservation": {
+    "native_engine_source": {
+      "path": "candidates/_vm_native.c",
+      "sha256": "bc937bdd3945a111d7929439dfd4a660a55b70593b19ee807c82325d9e6f1e55",
+      "bytes": 218185, "inode": 428072, "device": 2064, "mode": "0600", "nlink": 1
+    },
+    "python_adapter": {
+      "path": "candidates/vm_candidate.py",
+      "sha256": "b37d3e634b10c37ded2de3c59af9ef477e1d12125ab1b52cfc57915305ff7096",
+      "bytes": 60707, "inode": 428074, "device": 2064, "mode": "0600", "nlink": 1
+    },
+    "installed_native": {
+      "path": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+      "sha256": "075350a17d4909cd6f8dbe5e808e7b6444760f54bb60af013e0f812e22cfb7fd",
+      "bytes": 149976, "inode": 430300, "device": 2064, "mode": "0755", "nlink": 1
+    },
+    "existing_candidate_sources_modified": 0,
+    "installed_native_activated": false,
+    "installed_original_inode_preserved": true
+  },
+  "future_actual_build": {
+    "authorization": "--authorize-first-party-complete-native-build-v22",
+    "frozen_commit_must_equal_pushed_commit": true,
+    "root_prefix": "rebar-phase2-c-complete-native-semantics-v22-",
+    "root_mode": "0700",
+    "private_root_entropy": "os.urandom(16)",
+    "private_journal_entropy": "os.urandom(12)",
+    "private_root_retained_on_success_or_failure": true,
+    "phase_names": ["reference-a", "reference-b"],
+    "phase_mode": "0700",
+    "phase_source_mode": "0600",
+    "phase_count": 2,
+    "phase_source_owner_count": 4,
+    "independent_native_artifact_count": 2,
+    "byte_identical_native_artifacts_required": true,
+    "native_artifact_sha256": "NOT MEASURED",
+    "native_artifact_bytes": "NOT MEASURED",
+    "native_extension_name": "_vm_native.cpython-314-x86_64-linux-gnu.so",
+    "file_prefix_map_destination": "/rebar/c-complete-v22",
+    "process_launcher": "DIRECT POSIX SPAWN; NO SHELL OR SUBPROCESS",
+    "process_roles_per_phase": [
+      "readelf_version", "gcc_version", "build_c_extension",
+      "extension_dynamic", "extension_symbols", "extension_sections", "extension_notes"
+    ],
+    "compiler_process_count_per_phase": 7,
+    "expected_compiler_process_count": 14,
+    "distinct_process_ids_required": true,
+    "toolchains": [
+      {
+        "role": "gcc", "path": "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "sha256": "1b99826121ae6682a634e5efe09bd3e3df58ce58e0b28f849114ab5b89139c26",
+        "bytes": 1023032, "version": "GCC 13", "executable": true
+      },
+      {
+        "role": "python", "path": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14",
+        "sha256": "255e900f44ce87c630e83b637a79435f9ae7778dd72f6e2a2f18a486e501d016",
+        "bytes": 32387816, "version": "CPython 3.14.6", "executable": true
+      },
+      {
+        "role": "python_header", "path": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/include/python3.14/Python.h",
+        "sha256": "e39aad93d70c3ea1a63b77ec5795ff59a5c177745aedace6f83bbf4275a20d9f",
+        "bytes": 4399, "version": "CPython 3.14.6", "executable": false
+      },
+      {
+        "role": "python_patchlevel", "path": "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/include/python3.14/patchlevel.h",
+        "sha256": "1c61b149e1ce72a7f6328c58057970d37fcafb02bec805be071dc0ed4cf39a95",
+        "bytes": 1773, "version": "CPython 3.14.6", "executable": false
+      },
+      {
+        "role": "readelf", "path": "/usr/bin/x86_64-linux-gnu-readelf",
+        "sha256": "64c58e15274bbbb5153f31078e455e9e77ee5f51489e709bba5bb788ce9df2b0",
+        "bytes": 789280, "version": "GNU readelf", "executable": true
+      }
+    ],
+    "recovery_journal": "PRIVATE ATOMIC 0600; FILE AND DIRECTORY FSYNC",
+    "receipts": "TWO EXCLUSIVE 0600 FILES; FILE AND DIRECTORY FSYNC",
+    "external_regex_engine": "FORBIDDEN",
+    "stdlib_regex_engine": "FORBIDDEN",
+    "cross_candidate_engine": "FORBIDDEN",
+    "fallback": "FORBIDDEN",
+    "candidate_matching": "NOT RUN",
+    "candidate_correctness": "NOT MEASURED"
+  },
+  "source_only_effects": {
+    "bootstrap_plaintext_owner_reads": 1,
+    "verified_plaintext_owner_count": 20,
+    "candidate_source_files_read": 0,
+    "candidate_imports": 0,
+    "candidate_executions": 0,
+    "compiler_processes": 0,
+    "native_libraries_loaded": 0,
+    "private_roots_created": 0,
+    "private_roots_opened": 0,
+    "compressed_archives_opened": 0,
+    "hidden_cases_read": 0,
+    "entropy_requests": 0,
+    "clock_samples": 0,
+    "workspace_mutations": 0,
+    "candidate_correctness": "NOT MEASURED",
+    "performance": "NOT MEASURED",
+    "memory": "NOT MEASURED",
+    "undefined_behavior": "NOT MEASURED",
+    "winner_selected": false
+  }
+}
