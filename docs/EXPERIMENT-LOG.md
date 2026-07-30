@@ -131,6 +131,20 @@ Both native artifacts contain **zero** external regular-expression or
 cross-family dependencies, and every original source/runtime identity was
 restored. Matching and speed have not yet been tested for this combined build.
 
+## Freeze the combined fast-search and reusable-workspace architecture
+
+The [independent combined matching-workspace experiment](../oracle/phase2/RUST-COMBINED-VM-WORKSPACE-V1.md)
+joins three independently written improvements in one Rust engine: required-
+character search, lower-allocation pattern compilation, and reusable matching
+workspace. The previously measured search design reached **1.25×** Python;
+workspace reuse separately targets **408** observed matching allocations.
+
+Four ordinary and clean-environment source gates authenticate **36** owners,
+rerun **110,592** combined semantic checks and **18,144** workspace checks,
+and include **1,728** nested/reentrant controls. The predicted engine has
+**190,103 bytes** and preserves the same independent vector-search helper.
+Its source has not yet been created, built, correctness-tested, or timed.
+
 ## Freeze the correction targeting 1,264 Rust compatibility failures
 
 The [first-party replacement-order correction](../oracle/phase2/RUST-SUBSTITUTION-EVENT-ORDER-V1.md)
