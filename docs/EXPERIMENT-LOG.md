@@ -8,6 +8,35 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Independently verify all 48,416 additional Python answers
+
+Two separately started official Python **3.14.6** processes each
+executed all **48,416** additional real-world cases. Process **81**
+and process **82** returned the same complete ordered answer digest,
+`c5730292aae072aa24ea2a155ae33cc18e0d6d93205f0797ab4ddc8fe0195e26`.
+All **96,832** individually observed outcomes passed. The cases
+cover **86** real memory-mapped, typed-array, replacement, scanner,
+and buffer-lifetime input types.
+
+Each worker recorded **41,786** successful per-case cleanup returns,
+**three** successful private cleanup events, **100,888,113** bytes
+of standard output, and no standard-error output. An independent,
+constant-memory review verified the complete **470,813,612**-byte
+uncompressed evidence stream, both workers, every case, every cleanup
+event, and its SHA-256,
+`8051f2f67778f55f4c4d5b1fe929f5a26b0dcb59e66626ff26cae5ddfbfaf518`.
+The [small actual-results receipt](../oracle/phase1/evidence/public-buffer-carriers-reference-v1-cpython-3.14.6-publication-receipt.json)
+and [complete compressed Python answers](../oracle/phase1/evidence/public-buffer-carriers-reference-v1-cpython-3.14.6.json.gz)
+are both preserved.
+
+The [additional-case chart](evidence/public-buffer-carriers-reference-overview-v1.svg)
+shows the two actual Python results. Its input-category bars count
+frozen questions; they do not claim per-category candidate matching
+or measured speed. The chart authenticates the small receipt without
+opening the large evidence archive. The original **31,237**-case
+candidate denominator stays unchanged. No candidate was started,
+no speed was measured, and the final holdout was not opened.
+
 ## Run the corrected C engine and preserve every observed failure
 
 The [actual version-11 C result](../oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json)
@@ -108,10 +137,11 @@ lossless evidence; two complete worker reports require at least
 controls without importing a matching engine, mapping a file, or
 starting a reference worker.
 
-Neither reference process has run. All **48,416** answers remain
-**NOT RECORDED**. The original **31,237**-case denominator is
-unchanged, and the **14,155,776**-case speed proposal remains
-sealed.
+At the time of this source freeze, neither reference process had
+run and all **48,416** answers were **NOT RECORDED**. The subsequent
+actual two-process result is recorded above. The original
+**31,237**-case denominator remains unchanged, and the
+**14,155,776**-case speed proposal remains sealed.
 
 ## Freeze the corrected from-scratch Zig rerun
 

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="850" viewBox="0 0 1120 850" role="img" aria-labelledby="overview-title overview-description">
+  <title id="overview-title">Two independent Python references answered all 48,416 new regular-expression questions</title>
+  <desc id="overview-description">Actual Python processes 81 and 82 each answered 48,416 of 48,416 frozen buffer-carrier questions. Five bars describe the question categories only. Candidates have not run. Speed has not been measured.</desc>
+  <rect width="1120" height="850" fill="#f5f8fc"/>
+  <rect x="36" y="32" width="1048" height="786" rx="20" fill="#ffffff" stroke="#dce5ef"/>
+  <text x="76" y="91" fill="#10243a" font-family="Arial, sans-serif" font-size="31" font-weight="700">Python reference: all new questions answered</text>
+  <text x="76" y="127" fill="#526579" font-family="Arial, sans-serif" font-size="17">Two independently run Python processes; one unchanged frozen test set.</text>
+  <rect x="76" y="151" width="427" height="34" rx="17" fill="#e6f5ec"/>
+  <text x="94" y="174" fill="#126744" font-family="Arial, sans-serif" font-size="15" font-weight="700">ACTUAL REFERENCE PASS • 86 kinds of buffer inputs</text>
+  <text x="76" y="226" fill="#10243a" font-family="Arial, sans-serif" font-size="20" font-weight="700">Questions answered by each Python process</text>
+  <text x="76" y="282" fill="#24364b" font-family="Arial, sans-serif" font-size="16" font-weight="600">Python process 81</text>
+  <rect x="261" y="253" width="614" height="42" rx="9" fill="#edf2f8"/>
+  <rect x="261" y="253" width="614" height="42" rx="9" fill="#2763d1"/>
+  <text x="890" y="281" fill="#10243a" font-family="Arial, sans-serif" font-size="16" font-weight="700">48,416 / 48,416</text>
+  <text x="76" y="354" fill="#24364b" font-family="Arial, sans-serif" font-size="16" font-weight="600">Python process 82</text>
+  <rect x="261" y="325" width="614" height="42" rx="9" fill="#edf2f8"/>
+  <rect x="261" y="325" width="614" height="42" rx="9" fill="#128b77"/>
+  <text x="890" y="353" fill="#10243a" font-family="Arial, sans-serif" font-size="16" font-weight="700">48,416 / 48,416</text>
+  <line x1="76" y1="400" x2="1044" y2="400" stroke="#dce5ef"/>
+  <text x="76" y="445" fill="#10243a" font-family="Arial, sans-serif" font-size="20" font-weight="700">What the 48,416 new questions cover</text>
+  <text x="76" y="471" fill="#526579" font-family="Arial, sans-serif" font-size="15">These are counts of frozen questions, not speed or category-by-category results.</text>
+  <text x="76" y="511" fill="#24364b" font-family="Arial, sans-serif" font-size="15">Search inputs</text>
+  <rect x="261" y="489" width="520" height="29" rx="6" fill="#edf2f8"/>
+  <rect x="261" y="489" width="520" height="29" rx="6" fill="#6497e8"/>
+  <text x="795" y="510" fill="#10243a" font-family="Arial, sans-serif" font-size="15" font-weight="600">28,294</text>
+  <text x="76" y="556" fill="#24364b" font-family="Arial, sans-serif" font-size="15">Pattern inputs</text>
+  <rect x="261" y="534" width="520" height="29" rx="6" fill="#edf2f8"/>
+  <rect x="261" y="534" width="71" height="29" rx="6" fill="#6497e8"/>
+  <text x="795" y="555" fill="#10243a" font-family="Arial, sans-serif" font-size="15" font-weight="600">3,870</text>
+  <text x="76" y="601" fill="#24364b" font-family="Arial, sans-serif" font-size="15">Replacement inputs</text>
+  <rect x="261" y="579" width="520" height="29" rx="6" fill="#edf2f8"/>
+  <rect x="261" y="579" width="59" height="29" rx="6" fill="#6497e8"/>
+  <text x="795" y="600" fill="#10243a" font-family="Arial, sans-serif" font-size="15" font-weight="600">3,184</text>
+  <text x="76" y="646" fill="#24364b" font-family="Arial, sans-serif" font-size="15">Escaping inputs</text>
+  <rect x="261" y="624" width="520" height="29" rx="6" fill="#edf2f8"/>
+  <rect x="261" y="624" width="6" height="29" rx="6" fill="#6497e8"/>
+  <text x="795" y="645" fill="#10243a" font-family="Arial, sans-serif" font-size="15" font-weight="600">344</text>
+  <text x="76" y="691" fill="#24364b" font-family="Arial, sans-serif" font-size="15">Buffer lifetime</text>
+  <rect x="261" y="669" width="520" height="29" rx="6" fill="#edf2f8"/>
+  <rect x="261" y="669" width="234" height="29" rx="6" fill="#6497e8"/>
+  <text x="795" y="690" fill="#10243a" font-family="Arial, sans-serif" font-size="15" font-weight="600">12,724</text>
+  <rect x="76" y="733" width="968" height="54" rx="10" fill="#fff6e8" stroke="#f3ddb6"/>
+  <text x="95" y="756" fill="#76500b" font-family="Arial, sans-serif" font-size="15" font-weight="700">Python reference only; candidates NOT RUN; speed NOT MEASURED.</text>
+  <text x="95" y="777" fill="#76500b" font-family="Arial, sans-serif" font-size="13">The original 31,237-question baseline remains separate. No per-category mismatches or timings are claimed.</text>
+</svg>

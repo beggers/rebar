@@ -86,6 +86,89 @@ docs/evidence/candidate-current-overview-v98.svg
 937c8cd420dbafdc7906d749288e1b56ed376617e6304c8fa61ce364acb87fa0
 ```
 
+## Verify all 48,416 actual Python reference answers
+
+Two separate official Python **3.14.6** processes each completed
+all **48,416** additional real-world cases and recorded the same
+ordered answers. These results validate the expanded Python
+reference; they do not qualify a candidate or change the original
+**31,237**-case score.
+
+Check the complete, digest-bound actual-results receipt without
+starting Python, running a candidate, or opening the large archive:
+
+```bash
+jq -ce '
+  select(.schema == "rebar-owned-public-buffer-carriers-reference-v1-durable-publication-receipt")
+  | select(.publication_status == "PASS" and .reference_status == "PASS")
+  | select(.original_case_execution_denominator == 31237)
+  | select(.additive_case_count == 48416 and .carrier_count == 86)
+  | select(.actual_reference_worker_count == 2)
+  | select((.actual_distinct_reference_process_ids | unique | length) == 2)
+  | select(.actual_failure_count == 0)
+  | select(.matrix_sha256 == "4de04250c99a87d188bf1f8386ad80044ae86d136908ea7aa1bc86e8b7c32ab1")
+  | select(.records_sha256 == "c5730292aae072aa24ea2a155ae33cc18e0d6d93205f0797ab4ddc8fe0195e26")
+  | select(.candidate_workers_started == 0)
+  | select(.performance == "NOT MEASURED")
+  | {reference_status, actual_reference_worker_count,
+     actual_distinct_reference_process_ids, additive_case_count,
+     actual_failure_count, candidate_workers_started, performance,
+     holdout}' \
+  oracle/phase1/evidence/public-buffer-carriers-reference-v1-cpython-3.14.6-publication-receipt.json
+```
+
+The actual receipt SHA-256 is
+`946daf4c428a2e37a42e1c351a161095a0aa85ab64a69fae012f4ddeddd741b6`.
+The separately preserved compressed evidence SHA-256 is
+`f0d32fae77ff8c2cd82561fbe876aa4cb7deeafc14427622563430ef34f93452`.
+Optionally verify the complete **470,813,612**-byte uncompressed
+evidence stream without printing its case contents:
+
+```bash
+gzip -dc -- \
+  oracle/phase1/evidence/public-buffer-carriers-reference-v1-cpython-3.14.6.json.gz |
+  sha256sum
+```
+
+The expected uncompressed SHA-256 is
+`8051f2f67778f55f4c4d5b1fe929f5a26b0dcb59e66626ff26cae5ddfbfaf518`.
+This optional command reads the full large archive; the small-receipt
+and graph checks do not.
+
+Independently verify the published additional-case graph, its frozen
+Python-reference contract, and its original score denominator
+without rerendering the graph or opening the archive:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/render_public_buffer_carriers_reference_overview_v1.py \
+  --verify-frozen-context \
+  --source-sha256 1d653e24a8c49daed81f9752ae1fc6d7ce834ae512085e96b680031955720f82 \
+  --receipt-sha256 946daf4c428a2e37a42e1c351a161095a0aa85ab64a69fae012f4ddeddd741b6 \
+  --reference-contract-sha256 857a330b26f1441d7f16b3adbd28f11fa63021b8b671451b2c0ddc3ca96230a3 \
+  --matrix-sha256 4de04250c99a87d188bf1f8386ad80044ae86d136908ea7aa1bc86e8b7c32ab1 \
+  --original-case-count 31237
+```
+
+Replace `--verify-frozen-context` with `--self-test` to reproduce all
+**112** adversarial controls. Both checks also pass outside the
+clean environment. The chart's five category bars describe frozen
+question counts, not candidate passes, losses, or speed.
+
+Expected independently reproducible graph files:
+
+```text
+docs/evidence/public-buffer-carriers-reference-overview-v1.inputs.json
+d0403de1838d0c5998b644f269725fed585cd8ee6366a24a1dc7539e36f16e3c
+
+docs/evidence/public-buffer-carriers-reference-overview-v1.summary.json
+ad4a5b370d2f236dcc29b95ca60ce7ab1f607623297c4eeae9b52f400563ef68
+
+docs/evidence/public-buffer-carriers-reference-overview-v1.svg
+ec8fea1acc51776587e07047345f50ec77872c8ef291effa2b9e6e12c846ac5e
+```
+
 ## Verify all current C failures were actually saved
 
 The real version-11 C result proves **16,262 / 31,237** passing
@@ -240,9 +323,12 @@ worker options to source-only commands.
 
 The additional matrix contains **48,416** separately identified
 questions across **86** typed-array, memory-map, scanner,
-replacement, and buffer-lifetime carriers. Every expected answer is
-**NOT RECORDED**. It does not change the original **31,237** checks
-or run a Python reference or candidate.
+replacement, and buffer-lifetime carriers. At the time this
+source-only matrix was frozen, the answers were **NOT RECORDED**.
+The subsequently executed and independently verified Python
+answers are documented above. This frozen-matrix check does not
+change the original **31,237** checks or run a Python reference or
+candidate.
 
 Verify its complete frozen source, canonical matrix, upstream Python
 tests, and unchanged original evidence in a clean environment:
@@ -266,10 +352,11 @@ Neither mode records a Python answer or opens the performance holdout.
 
 ## Verify the two-process Python reference procedure
 
-This independent procedure is frozen before either Python reference
-worker runs. All **48,416** answers remain **NOT RECORDED**. Check
-its complete source, protocol, and canonical contract in a clean
-environment:
+This independent procedure preserves the original source freeze
+from before either Python reference worker ran. The subsequently
+recorded answers and complete evidence are verified above. Check
+the preserved procedure's complete source, protocol, and canonical
+contract in a clean environment:
 
 ```bash
 env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \

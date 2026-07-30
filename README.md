@@ -53,13 +53,16 @@ extra points added to the original denominator. Candidates must also
 pass large-input, public-interface, cleanup, interpreter-isolation,
 and no-delegation checks.
 
-A further **48,416** separately frozen questions cover real
-memory-mapped inputs, typed arrays, replacement callbacks, scanners,
-and buffer lifetimes. Their independently generated Python answers
-do not change the original score. Candidate results on those
-additional cases are **NOT MEASURED**.
+A further **48,416** real-world cases cover memory-mapped inputs,
+typed arrays, replacement callbacks, scanners, and buffer lifetimes.
+Two independent Python processes each passed all **48,416** and
+recorded exactly the same answers. This confirms the larger test,
+not any replacement. The original **31,237**-case scores do not
+change. Candidate results on the additional cases are **NOT MEASURED**.
 
 ## More detailed correctness graphs
+
+![Two independent Python processes each pass all 48,416 additional real-world compatibility cases; no candidate or speed is measured.](docs/evidence/public-buffer-carriers-reference-overview-v1.svg)
 
 These historical graphs show individual correctness checks. They do
 not report speed or a qualified replacement.
@@ -92,6 +95,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Frozen original Python correctness checks](oracle/phase1/P0-COMPLETENESS-V4.md) and [8,244 independent additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
 - [48,416 additional real-world buffer and memory-mapping questions](oracle/phase1/P0-PUBLIC-BUFFER-CARRIERS-SUPPLEMENT-V1.md).
 - [Frozen two-process Python reference for those 48,416 cases](oracle/phase1/P0-PUBLIC-BUFFER-CARRIERS-REFERENCE-V1.md).
+- [Actual two-process Python results for all 48,416 cases](oracle/phase1/evidence/public-buffer-carriers-reference-v1-cpython-3.14.6-publication-receipt.json).
 - [Six independently authored engines](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and the [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Latest C run and all 606 completely preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json).
 - [Frozen C test and complete failure-preservation rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md).
