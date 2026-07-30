@@ -8,6 +8,33 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze the correction for Zig's observed cleanup failure
+
+The actual, independently written Zig engine produced cleanup warnings
+in all **13** original workers, including the **7** workers whose
+matching otherwise passed. Its earlier repair still called a custom
+attribute setter after Python had cleared the module state that the
+setter needs. This is a measured first-party bug, not an external
+engine failure.
+
+The [version-2 shutdown correction](../oracle/phase2/ZIG-DEALLOCATOR-SETATTR-SOURCE-REPAIR-V2.md)
+captures Python's ordinary object setter before shutdown, clears the
+native handle directly, and releases it once. It changes exactly the
+one previously failing finalizer. Isolated synthetic checks reproduce
+the old failure and verify repeated cleanup, partial initialization,
+cleared module globals, reentrant release, and honest propagation of
+native release errors. Both ordinary and clean source-only checks pass
+**139** hostile controls while preserving all **25** zero-effect
+boundaries.
+
+The corrected adapter exists **only in memory** during verification;
+it has not been installed, built, or tested against Python. The
+verified Zig result remains **4,607 / 31,237**, with at least
+**1,700** actual differences and the original **13** workers'
+cleanup warnings. Removal of warnings in a real corrected engine is
+**NOT MEASURED**. The speed holdout remains unopened, and the
+candidate remains unqualified.
+
 ## Run the independently written Rust engine and preserve the regression
 
 The [actual version-22 Rust failure](../oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v22-rust-capture-shape-root-provenance-original-p0-v22-failures-publication-receipt.json)

@@ -67,6 +67,40 @@ docs/evidence/candidate-current-overview-v95.svg
 03a9e03e495fb4ec8362150f02072a4828e13e5f049af430042c435370c6808d
 ```
 
+## Verify the frozen Zig cleanup correction
+
+The actual version-13 Zig engine emitted cleanup warnings in all
+**13** workers. The proposed version-2 correction captures the normal
+object setter before Python module shutdown. Its **139** source-only
+checks do not create a candidate, build native code, measure matching,
+or prove that real-engine warnings are fixed.
+
+Verify the complete frozen source, protocol, original failure record,
+previous repair, and unchanged adapter in a clean environment:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/apply_owned_zig_deallocator_setattr_source_repair_v2.py \
+  --verify-frozen-context \
+  --source-sha256 42d9ceea51f8a8cb4ba980580ccbc5b079134bc8330bc65b3c05e2f1ec83395b \
+  --protocol-sha256 5aad1504d2b834b2d794cff3659462bff89c573cb8f108010fd7f413683fc359 \
+  --contract-sha256 b0b87af889a9147975ccfefc8d3f9cf03f5200a6e6ad90cfaa8679c8c9b5d084 \
+  --v1-source-sha256 2d2be05fb04d43c453b7e4cd47dc8f55542eeb06b18058c996751b7e8a476e4e \
+  --v1-protocol-sha256 88dbdad010617a1930bb7e701b8dca02078ab8b6310257bf7f404fc540f3a1bb \
+  --v1-contract-sha256 2021cca12e9c04ab421dca4fd7cc81e23ffe3b649317eb184dba21e47c6aad4e \
+  --v13-source-sha256 fa46d4029f5590adceb22bfe4e612248da5f7f90ed6362d58faa5b631fee7ff8 \
+  --v13-protocol-sha256 6b42893161e37baec1695aefb414fb7179b778f2164018b024bd68b3c9bb5c2c \
+  --v13-contract-sha256 327b14096e36c7a2e4cab977a452fc2477fbf148396f50433cbf1dc8aba31a3f \
+  --receipt-sha256 b3443a647c638cbbbe7905a2c668a734770f38cb678f06a387af497917fc4bca \
+  --adapter-sha256 e9e052fdd50bcec54145b828b1353cf082c6bc13869176486bcfa41d1624ab50
+```
+
+Replace `--verify-frozen-context` with `--self-test` to reproduce all
+**139** source-only checks. Repeat without the `env -i` prefix to
+verify the normal environment. No mode builds, installs, or runs the
+corrected Zig engine.
+
 ## Reproduce the preserved version-94 comparison
 
 The version-94 graph preserves the comparison before the latest Rust
