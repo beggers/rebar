@@ -249,6 +249,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual fully composed independently written Zig bridge targeting all 1,700 recorded compatibility differences](oracle/phase2/evidence/zig-replacement-event-semantics-v1-application.json).
 - [Frozen independent Zig build combining its complete first-party engine, corrected Python interface, and corrected native bridge](oracle/phase2/ZIG-FULL-SEMANTIC-SOURCE-BUILD-V16.md).
 - [Actual two-build Zig result: 26 verified processes, identical native engines, and all 1,700 historical failures preserved](oracle/phase2/evidence/zig-full-semantic-source-build-v16-phase2-v16-zig-full-semantic-root-provenance-build-receipt.json).
+- [Frozen 31,237-case original-suite test of the fully corrected, independently built Zig engine; not yet run](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V16.md).
 - [Frozen first-party Zig cleanup correction](oracle/phase2/ZIG-DEALLOCATOR-SETATTR-SOURCE-REPAIR-V2.md) and [preserved Zig rerun that stopped before matching](oracle/phase2/evidence/zig-original-campaign-v14-setter-safe-prepublication-controller-failure.json).
 - [Next Zig test, correcting the stopped rerun; not yet run](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V15.md).
 - [Frozen Rust correctness procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V22.md) and [next targeted Rust buffer correction; not yet run](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2.md).
