@@ -45,6 +45,12 @@ It was faster on **247 of 416** cases. However, the wider **10,434-case**
 test found **1,145** compatibility differences; the engine remains
 **unqualified**, and this improvement is not a final result.
 
+The separate low-allocation compiler architecture scored only **0.80×
+Python** (**95% interval: 0.75–0.85×**) and was faster on **138 of 416**
+cases. Its difficult-search workload reached only **0.42×** Python and it
+shared the same **1,145** wider compatibility differences. This unsuccessful
+design and all **143** substantial slowdowns remain fully visible.
+
 A second complete practice run confirms **0.60× Python** across all recorded
 time. Its native allocation totals were **104.2 MB** for Rust and **100.5 MB**
 for Python. Whole-process memory and Python-only memory are recorded
@@ -195,6 +201,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Frozen identical 10,434-case correctness and 1,664-pair public timing comparison for both optimized Rust designs](oracle/phase2/RUST-NATIVE-ARCHITECTURE-PUBLIC-GATE-V2.md).
 - [Preserved first architecture-comparison failure before any candidate or timing ran](oracle/phase2/evidence/rust-native-architecture-public-gate-v1-v26-anchor-public-run-001-preexecution-failure.json).
 - [Actual accelerated Rust search result: 1.25× Python on 416 gated cases; 1,145 differences across 10,434 wider checks](oracle/phase2/evidence/rust-native-architecture-public-gate-v2-v26-anchor-public-run-001-publication-receipt.json).
+- [Actual low-allocation Rust compiler result: 0.80× Python, all 143 substantial slowdowns preserved](oracle/phase2/evidence/rust-native-architecture-public-gate-v2-v27-compiler-public-run-001-publication-receipt.json).
 - [Frozen combined first-party Rust search and compilation improvements](oracle/phase2/RUST-COMBINED-SEARCH-COMPILER-FASTPATH-V1.md).
 - [Preserved combined-optimization source-creation failure before any candidate was built](oracle/phase2/evidence/rust-combined-search-compiler-fastpath-v1-application-failure.json).
 - [Corrected combined Rust search and compilation experiment, independently verified against 111,552 modeled cases](oracle/phase2/RUST-COMBINED-SEARCH-COMPILER-FASTPATH-V2.md).

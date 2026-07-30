@@ -74,6 +74,21 @@ the original **1,352** differences remain, and runtime no-delegation is not
 yet established; the architecture remains **unqualified** and no final
 winner exists.
 
+## Preserve the slower low-allocation Rust compiler architecture
+
+The [independently measured compiler-allocation architecture](../oracle/phase2/evidence/rust-native-architecture-public-gate-v2-v27-compiler-public-run-001-publication-receipt.json)
+used the same **10,434-case** correctness suite, separate **416-case** timing
+gate, and **1,664** counterbalanced comparisons as the accelerated search
+architecture. Its wider suite failed the same **1,145** checks while all
+**416** timed cases matched Python.
+
+Its typical-case speed was **0.7968×** Python, with a **0.7477–0.8454×**
+95% interval. It was faster on **138 of 416** cases; dense repeated-character
+searches reached only **0.4206×**. All **143** slowdowns exceeding 20%, the
+complete raw timing rows, both memory profiles, and every mismatch are
+preserved. This isolated compiler change is materially slower than the
+accelerated search design; neither architecture is qualified.
+
 ## Freeze the correction targeting 1,264 Rust compatibility failures
 
 The [first-party replacement-order correction](../oracle/phase2/RUST-SUBSTITUTION-EVENT-ORDER-V1.md)
