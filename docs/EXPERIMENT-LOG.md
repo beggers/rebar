@@ -2,6 +2,16 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## Publish a readable overall speed comparison against Python
+
+The [generated baseline comparison](evidence/candidate-current-overview-v106.svg)
+shows Python at **1.00×** and the fully compatibility-tested Rust engine
+at **1.24×**, with its complete **1.19–1.30×** measured range. All
+**416** public workloads, **1,664** paired timings, **164** slower cases,
+and **14** slowdowns greater than 20% remain visible in the accompanying
+generated data. Historical approaches that fail wider compatibility are
+labeled accordingly. This is not a hidden-test result or a winner.
+
 ## Pass every original Python check with the from-scratch Zig engine
 
 The [fully corrected Zig result](../oracle/phase2/evidence/repaired-zig-original-campaign-v18-phase2-v18-zig-final-original-p0-v18-success-publication-receipt.json)

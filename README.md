@@ -46,7 +46,7 @@ These results measure compatibility, **not speed**. Checks in an
 unfinished group are never counted as passing. The same Rust build now
 passes both complete suites with zero differences.
 
-![Five historical directly compared speeds: Python 1.00×, original Rust 0.86×, accelerated Rust search 1.25×, low-allocation Rust compiler 0.80×, and an earlier combined Rust design 1.23×. These earlier Rust designs failed 1,145 wider checks. The current, fully correctness-tested build separately measures 1.24×.](docs/evidence/rust-architecture-comparison-v2.svg)
+![Overall speed compared with Python: the fully compatibility-tested Rust engine runs 1.24 times as fast across 416 public workloads; earlier experimental versions include both faster and slower results and failed broader compatibility checks.](docs/evidence/candidate-current-overview-v106.svg)
 
 The exact Rust build passing both complete compatibility suites is
 **1.24× faster than Python** across **416** public workloads (**95%
@@ -163,6 +163,8 @@ not any replacement. The original **31,237**-case scores do not
 change. Candidate results on the additional cases are **NOT MEASURED**.
 
 ## More detailed correctness graphs
+
+![Earlier Rust architectures compared with Python, including rejected slower designs and their compatibility failures.](docs/evidence/rust-architecture-comparison-v2.svg)
 
 ![Two independent Python processes each pass all 48,416 additional real-world compatibility cases; no candidate or speed is measured.](docs/evidence/public-buffer-carriers-reference-overview-v1.svg)
 
