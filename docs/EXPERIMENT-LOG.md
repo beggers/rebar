@@ -8,6 +8,19 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Prove a genuine Python child interpreter works
+
+The [actual isolated provider proof](../oracle/phase2/evidence/candidate-runtime-independence-v4-explicit-provider-proof.json)
+created exactly **one** real Python child interpreter and destroyed
+exactly **one**. Its genuine built-in call passed the corrected
+guard, the original interpreter live set was fully restored, and
+the parent saw **zero** fictional creation audit events.
+
+The proof imported no candidate, loaded no candidate-native library,
+opened no compressed results or private build directory, and left
+the final holdout unopened. It does not establish full candidate
+compatibility or runtime independence. Speed remains **NOT MEASURED**.
+
 ## Correct genuine Python interpreter isolation
 
 The [version-4 runtime isolation guard](../oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V4.md)

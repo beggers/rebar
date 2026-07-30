@@ -80,7 +80,24 @@ env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
 Replace the final argument with `--self-test` to rerun all **152**
 source-only adversarial controls. Both commands also pass outside
 the clean environment. The distinct, explicitly authorized
-`--prove-provider` command is not part of either source-only check.
+`--prove-provider` command is not part of either source-only check;
+it intentionally creates and destroys one real child interpreter.
+
+Validate the actual saved candidate-free proof without creating
+another interpreter:
+
+```bash
+jq -ce '
+  select(.status == "PASS")
+  | select(.actual_interpreters_created == 1)
+  | select(.actual_interpreters_destroyed == 1)
+  | select(.actual_creation_audit_events == 0)
+  | select(.initial_live_set_restored == true)
+  | select(.candidate_imports == 0)
+  | select(.candidate_native_libraries_loaded == 0)
+  | select(.holdout == "NOT OPENED")
+' oracle/phase2/evidence/candidate-runtime-independence-v4-explicit-provider-proof.json
+```
 
 ## Verify the previous version-98 comparison
 
