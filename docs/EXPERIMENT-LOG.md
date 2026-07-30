@@ -8,6 +8,30 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Correct the C test without dropping its real skipped case
+
+The [version-12 C procedure](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md)
+corrects the actual counting failure recorded by version 11. The
+unchanged Python source has **165** test methods: **13** named
+private waivers and **152** public result records. One public
+record is Python's genuine debug-build skip, leaving exactly
+**151** executed checks. The new first-party result recorder keeps
+every public record, including the skip and every real failure,
+instead of rejecting **152** records because **151** checks ran.
+
+The correction does not edit a Python test, replace the C matching
+engine, force the candidate answers to equal Python's, wrap an
+external package, or reopen old compressed evidence. All **606**
+actual version-11 failures and the unchanged **31,237**-case
+denominator remain preserved. Both ordinary and clean source-only
+verification and self-tests pass, including **184** adversarial
+controls and **16** zero side-effect counters.
+
+This is an independently frozen, runnable test correction, not a
+new candidate result. The corrected C run, compatibility, runtime
+no-delegation, and performance are **NOT MEASURED**. The speed
+holdout remains unopened.
+
 ## Independently verify all 48,416 additional Python answers
 
 Two separately started official Python **3.14.6** processes each

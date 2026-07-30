@@ -210,6 +210,34 @@ The public-interface group has **114** lossless transport records;
 the original observer does not supply an original canonical digest
 for that one group.
 
+## Verify the corrected complete-record C test
+
+The corrected version-12 procedure preserves all **165** original
+Python test methods, **13** named private waivers, **152** public
+result records, **151** executed checks, and the one genuine
+debug-build skip. It preserves all **606** previously observed C
+failures. Source verification is not a new C correctness result.
+
+Verify the exact frozen source, protocol, and contract without
+running a candidate, opening an evidence archive, or touching the
+performance holdout:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/run_owned_repaired_c_original_campaign_v12.py \
+  --verify-frozen-context \
+  --source-sha256 80af52f1df9c2787df858afef4addb1597fb87845225554d258f4c9173dabb17 \
+  --protocol-sha256 6f7c81007f78eb6435204521548f238b531d6bcb9f517f1c35e395e0e2b82344 \
+  --contract-sha256 758578965291c0b8cf251d7ec46267de7400935e30d4388a126c22821b85090b
+```
+
+Replace `--verify-frozen-context` with `--self-test` to reproduce
+all **184** adversarial controls. Both checks also pass outside
+the clean environment. The original C result remains
+**16,262 / 31,237**. The corrected C12 candidate run and speed are
+**NOT MEASURED**.
+
 ## Verify which historical C failures were saved
 
 The older version-10 C failure report proves **606** differences but

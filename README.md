@@ -41,6 +41,10 @@ run preserves all **606** observed failing examples. Its older run
 saved only **92**; those **514** missing historical examples remain
 **NOT RECORDED**.
 
+A corrected C test now distinguishes **152** real Python test
+records from **151** executed checks and one genuine skipped test.
+The corrected C rerun has **NOT RUN**.
+
 A corrected, independently written Rust source now exists. Its
 native build, complete compatibility, and speed are **NOT MEASURED**.
 
@@ -99,6 +103,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Six independently authored engines](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and the [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Latest C run and all 606 completely preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json).
 - [Frozen C test and complete failure-preservation rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md).
+- [Corrected C test preserving all real records and the genuine skipped case; not yet run](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md).
 - [Historical C run with 514 missing individual examples](oracle/phase2/evidence/repaired-c-original-campaign-v10-c-phase2-v21-c-original-match-semantics-original-p0-v10-failures-publication-receipt.json).
 - [Latest real Rust run, regression, and complete preserved failure](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v22-rust-capture-shape-root-provenance-original-p0-v22-failures-publication-receipt.json).
 - [Latest real Zig run and complete observed failure](oracle/phase2/evidence/repaired-zig-original-campaign-v13-phase2-v13-zig-guard-clean-lifetime-v1-original-p0-v13-failures-publication-receipt.json).

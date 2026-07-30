@@ -1,0 +1,1611 @@
+#!/usr/bin/env python3
+"""Freeze the genuine C11 controller and repair only its original case transport.
+
+Source-only modes inherit the complete authenticated C11 physical source wall.
+They never run a candidate or a reference, open an archive or a holdout, load
+native code, start a worker, take a clock sample, or modify the workspace.
+An actual run remains separately authorized and is never a source-only gate.
+"""
+
+from __future__ import annotations
+
+import ast
+import hashlib
+import os
+import stat
+import sys
+import types
+
+
+ROOT = "/home/dev-user/src/rebar"
+PYTHON = "/tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14"
+SOURCE = "tools/run_owned_repaired_c_original_campaign_v12.py"
+PROTOCOL = "oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md"
+CONTRACT = "oracle/phase2/repaired-c-original-campaign-v12.json"
+SCHEMA = "rebar-owned-repaired-c-original-campaign-v12"
+LABEL = "phase2-v21-c-original-match-semantics-original-p0-v12"
+DEVICE = 2064
+MAX_OWNER = 8 * 1024 * 1024
+GOAL_SHA256 = "e5935060b44fe5f6b4e19ac2d01f3ce63182cf6a1d3b416502a4441cde345b62"
+MATRIX_SHA256 = "93f0fe07cf6cc0fbe0332b748ca61768f3b966bd5c0fdd81d024520a7deff240"
+REFERENCE_SHA256 = "b6f23860b340ff326347bdd103505c04bb2b84c21fc874758bd278bc90390276"
+ORIGINAL_SOURCE_SHA256 = "8e499c03d076cec59da44a2d7dac15bdec6eb49bfec562cbd3dd4893cf3bdfce"
+ORIGINAL_SUITE = "original_bounded_v5"
+SOURCE_METHOD_COUNT = 165
+PUBLIC_RECORD_COUNT = 152
+EXECUTED_CASE_COUNT = 151
+DEBUG_SKIP_COUNT = 1
+SKIPPED_TEST = "ReTests.test_memory_leaks"
+SKIP_REASONS = ["requires debug build"]
+PRIVATE_WAIVER_NAMES = (
+    "DebugTests.test_debug_flag",
+    "DebugTests.test_atomic_group",
+    "DebugTests.test_possesive_repeat_one",
+    "DebugTests.test_possesive_repeat",
+    "ImplementationTest.test_immutable",
+    "ImplementationTest.test_overlap_table",
+    "ImplementationTest.test_signedness",
+    "ImplementationTest.test_disallow_instantiation",
+    "ImplementationTest.test_deprecated_modules",
+    "ImplementationTest.test_case_helpers",
+    "ImplementationTest.test_dealloc",
+    "ImplementationTest.test_repeat_minmax_overflow_maxrepeat",
+    "ImplementationTest.test_sre_template_invalid_group_index",
+)
+RECORD_KEYS = frozenset((
+    "test", "source_ast_sha256", "status", "tests_run",
+    "failure_count", "error_count", "skip_count",
+    "failure_tracebacks", "error_tracebacks", "skip_reasons",
+))
+
+C11 = (
+    ("tools/run_owned_repaired_c_original_campaign_v11.py",
+     "b2871592ad3c2138e4a7a9dbea034fc50c699fb34c44f6ff6185087a144e52c2",
+     128680, 431190),
+    ("oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md",
+     "cfddebcfb5b481a495b86ed7958f2563ad5ffecc3aebcc94820cae5e0612ed39",
+     10493, 525492),
+    ("oracle/phase2/repaired-c-original-campaign-v11.json",
+     "e2396ea5a51fbe6ad0b34f2831461d3c6c362d4076a931791ce23820ca810b93",
+     58479, 525493),
+)
+C11_RECEIPT = (
+    "oracle/phase2/evidence/"
+    "repaired-c-original-campaign-v11-c-phase2-v21-c-"
+    "original-match-semantics-original-p0-v11-failures-publication-receipt.json",
+    "3db5daf9352f5c9837f4f7134bead6c0a05b2bddf9815a9cf134ea953b0ecd3e",
+    10404, 525589,
+)
+V5 = (
+    ("tools/run_owned_six_family_original_p0_producer_v5.py",
+     "b4886f424945d3a182a90737fd965fbc4a6e82cafa1c9ee456a9ea405ee18538",
+     102286, 431370),
+    ("oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md",
+     "9cfd1fc189d555a596b84b6073471554dab6bd67c1b343c66b744f4dc7b053a4",
+     5270, 524884),
+    ("oracle/phase2/six-family-p0-producer-v5.json",
+     "c751b8882fa331b4850271e68a1b43f965b5ddcb77c7ad0d0b4d3dec8ba79b53",
+     21036, 524885),
+)
+V3 = (
+    ("tools/verify_owned_candidate_runtime_independence_v3.py",
+     "03f051e428ee31bb671d8ced82f02d7a9fe3520f24191aba78d2e8a0697202c2",
+     59765, 430856),
+    ("oracle/phase2/CANDIDATE-RUNTIME-INDEPENDENCE-V3.md",
+     "d3437b642d322ccccf12851981555cb596ff7f9c5a12e0a6a389d6b80b5a068a",
+     5297, 525096),
+    ("oracle/phase2/candidate-runtime-independence-v3.json",
+     "31e9a5d2754b5b4b273d4fc30d6a27967e495b57684fdd1e9306bbac3b2caaa7",
+     9157, 525114),
+)
+ORIGINAL_HARNESS = (
+    "tools/rust_original_cpython_suite_v1.py",
+    "cf0267e3766fb849891d182e5b57ced569a0634831dd494d8135e703844b6c95",
+    67175, 430765,
+)
+ORIGINAL_EVALUATOR = (
+    "tools/independent_original_cpython_suite_v5.py",
+    ORIGINAL_SOURCE_SHA256, 123750, 431594,
+)
+
+C11_OUTCOMES = (
+    ("original_bounded_v5", 151, "FAIL", "CANDIDATE EXECUTION FAILURE", None),
+    ("public_v3", 864, "PASS", "PASS", 0),
+    ("scanner_v3", 1024, "PASS", "PASS", 0),
+    ("buffer_v3", 768, "PASS", "PASS", 0),
+    ("managed_v1", 1024, "FAIL", "SEMANTIC MISMATCH", 16),
+    ("scanner_verbose_v1", 2854, "PASS", "PASS", 0),
+    ("public_types_v1", 6912, "FAIL", "SEMANTIC MISMATCH", 248),
+    ("substitution_v2", 5120, "FAIL", "SEMANTIC MISMATCH", 224),
+    ("shape_v2", 10240, "PASS", "PASS", 0),
+    ("public_surface_v19", 1376, "FAIL", "SEMANTIC MISMATCH", 114),
+    ("subinterpreter_v2", 128, "FAIL", "CANDIDATE EXECUTION FAILURE", None),
+    ("pep688_v4", 264, "FAIL", "SEMANTIC MISMATCH", 4),
+    ("threaded_pattern_v1", 512, "PASS", "PASS", 0),
+)
+C11_FINGERPRINTS = (
+    ("public_v3", 864, 0, 0,
+     "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"),
+    ("scanner_v3", 1024, 0, 0,
+     "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"),
+    ("buffer_v3", 768, 0, 0,
+     "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"),
+    ("managed_v1", 1024, 16, 1,
+     "3488267b9c2a5aff58a0917adb142d26d482526536b71ceb8e3a39e5d5ed4352"),
+    ("scanner_verbose_v1", 2854, 0, 0,
+     "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"),
+    ("public_types_v1", 6912, 248, 8,
+     "b278976e7d01f2c56359bcdc442fefa1ee6cef899275f1cf5ef00de2fd7e2eff"),
+    ("substitution_v2", 5120, 224, 7,
+     "2ba4b132a4f84ba43fb1a87b1b5c0ab2c8cceffc8f5937bebc285af9da11044a"),
+    ("shape_v2", 10240, 0, 0,
+     "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"),
+    ("public_surface_v19", 1376, 114, 4,
+     "443312e6ef63ea99dcf0553ec2e251a40f7221f75697139d85c52084cd0fee22"),
+    ("pep688_v4", 264, 4, 1,
+     "9377c56ba63c694fd0ce4839ad802cbc1e821ce708c4fbde5f5d7c8d7e5c26cc"),
+    ("threaded_pattern_v1", 512, 0, 0,
+     "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"),
+)
+
+REPLACEMENTS = {
+    C11[0][0]: SOURCE,
+    C11[1][0]: PROTOCOL,
+    C11[2][0]: CONTRACT,
+    "rebar-owned-repaired-c-original-campaign-v11": SCHEMA,
+    "phase2-v21-c-original-match-semantics-original-p0-v11": LABEL,
+    "/tmp/rebar-phase2-repaired-c-original-campaign-v11":
+        "/tmp/rebar-phase2-repaired-c-original-campaign-v12",
+    ".rebar-c-original-campaign-v11-original-native":
+        ".rebar-c-original-campaign-v12-original-native",
+    ".rebar-c-original-campaign-v11-staged-native":
+        ".rebar-c-original-campaign-v12-staged-native",
+    "original-native-recovery-journal-v11.json":
+        "original-native-recovery-journal-v12.json",
+    "repaired-c-original-campaign-v11-c-":
+        "repaired-c-original-campaign-v12-c-",
+    "SOURCE FROZEN; ACTUAL C21 V11 ORIGINAL CAMPAIGN NOT RUN":
+        "SOURCE FROZEN; ACTUAL C21 V12 ORIGINAL CAMPAIGN NOT RUN",
+    "SOURCE FREEZE, PRESERVED ACTUAL V6, V7, AND V9 FAILURES; "
+    "NOT A V11 CANDIDATE RESULT":
+        "SOURCE FREEZE, PRESERVED ACTUAL V6, V7, V9, V10, AND V11 "
+        "FAILURES; NOT A V12 CANDIDATE RESULT",
+    "LATEST P0 V4 AND EXPLICIT C21 V11 ONLY":
+        "LATEST P0 V4 AND EXPLICIT C21 V12 ONLY",
+    "NOT RUN BY V11": "NOT RUN BY V12",
+    "v11_candidate_correctness": "v12_candidate_correctness",
+    "-v11": "-v12",
+    "v11-original-native": "v12-original-native",
+    "v11-staged-native": "v12-staged-native",
+    "_rebar_owned_c_v11_authenticated_v8":
+        "_rebar_owned_c_v12_authenticated_v8",
+    "_rebar_owned_c_v11_authenticated_complete_v9":
+        "_rebar_owned_c_v12_authenticated_complete_v9",
+    "_rebar_owned_actual_c_v11_runtime_guard_v3":
+        "_rebar_owned_actual_c_v12_runtime_guard_v3",
+    "C21 original campaign V11: ": "C21 original campaign V12: ",
+    "EXPLICIT INDEPENDENTLY PINNED C21 C11 --run ONLY":
+        "EXPLICIT INDEPENDENTLY PINNED C21 C12 --run ONLY",
+    "exclusively create one owner-only C11 evidence inode":
+        "exclusively create one owner-only C12 evidence inode",
+    "reject incomplete or substituted durable C11 evidence":
+        "reject incomplete or substituted durable C12 evidence",
+    "require every genuine complete or unfinished original C11 suite":
+        "require every genuine complete or unfinished original C12 suite",
+    "strictly round-trip the entire actual lossless C11 worker":
+        "strictly round-trip the entire actual lossless C12 worker",
+}
+
+
+class CampaignError(Exception):
+    """A source owner, historical receipt, or complete case vector is false."""
+
+
+def need(condition: object, reason: str) -> None:
+    if not condition:
+        raise CampaignError(reason)
+
+
+def clean_runtime() -> None:
+    need(
+        sys.implementation.name == "cpython"
+        and tuple(sys.version_info[:3]) == (3, 14, 6)
+        and os.path.abspath(sys.executable) == PYTHON
+        and sys.flags.isolated == 1
+        and sys.flags.no_site == 1
+        and sys.dont_write_bytecode is True
+        and "re" not in sys.modules
+        and "_sre" not in sys.modules
+        and "ctypes" not in sys.modules
+        and not any(name == "candidates" or name.startswith("candidates.")
+                    for name in sys.modules),
+        "require the exact matcher-free stable CPython 3.14.6 -I -B -S",
+    )
+
+
+def exact_owner(owner: tuple) -> bytes:
+    permitted = C11 + V5 + V3 + (C11_RECEIPT, ORIGINAL_HARNESS,
+                                  ORIGINAL_EVALUATOR)
+    need(type(owner) is tuple and len(owner) == 4
+         and any(owner == item for item in permitted),
+         "reject an invented or unapproved complete plaintext source owner")
+    relative, expected, size, inode = owner
+    need(type(relative) is str and not relative.startswith(
+        ("/", "candidates/", "docs/evidence/")
+    ) and not any(word in relative.lower()
+                  for word in ("holdout", "benchmark"))
+         and not relative.endswith((".gz", ".xz", ".zip", ".tar", ".so"))
+         and type(expected) is str and len(expected) == 64
+         and all(letter in "0123456789abcdef" for letter in expected)
+         and type(size) is int and 0 < size <= MAX_OWNER
+         and type(inode) is int and inode > 0,
+         "physically exclude candidate, archive, native, private, and holdout")
+    descriptor = os.open(
+        ROOT + "/" + relative,
+        os.O_RDONLY | getattr(os, "O_CLOEXEC", 0)
+        | getattr(os, "O_NOFOLLOW", 0),
+    )
+    try:
+        before = os.fstat(descriptor)
+        need(stat.S_ISREG(before.st_mode)
+             and before.st_dev == DEVICE
+             and before.st_ino == inode
+             and before.st_size == size
+             and before.st_uid == os.geteuid()
+             and before.st_nlink == 1
+             and stat.S_IMODE(before.st_mode) == 0o600,
+             "reject a substituted immutable plaintext owner: " + relative)
+        blocks = []
+        remaining = size
+        while remaining:
+            block = os.read(descriptor, min(remaining, 262144))
+            need(bool(block), "reject a truncated immutable plaintext owner")
+            blocks.append(block)
+            remaining -= len(block)
+        need(not os.read(descriptor, 1),
+             "reject an expanded immutable plaintext owner")
+        raw = b"".join(blocks)
+        after = os.fstat(descriptor)
+        need(hashlib.sha256(raw).hexdigest() == expected
+             and (before.st_dev, before.st_ino, before.st_size,
+                  before.st_mtime_ns, before.st_ctime_ns, before.st_nlink)
+             == (after.st_dev, after.st_ino, after.st_size,
+                 after.st_mtime_ns, after.st_ctime_ns, after.st_nlink),
+             "reject a changed complete immutable plaintext owner: " + relative)
+        return raw
+    finally:
+        os.close(descriptor)
+
+
+def owner_record(owner: tuple) -> dict:
+    return {
+        "path": owner[0], "sha256": owner[1], "bytes": owner[2],
+        "device": DEVICE, "inode": owner[3], "mode": "0600", "nlink": 1,
+    }
+
+
+def hex_digest(value: object) -> bool:
+    return (type(value) is str and len(value) == 64
+            and all(character in "0123456789abcdef" for character in value))
+
+
+class ExactV11ToV12(ast.NodeTransformer):
+    """Retarget the entire genuine C11 and exactly its post-observation encoder."""
+
+    def __init__(self) -> None:
+        self.identities = {identity: 0 for identity in REPLACEMENTS}
+        self.functions: list[str] = []
+        self.worker_definitions = 0
+        self.vector_assignments = 0
+        self.denominator_guards = 0
+        self.complete_flag_assignments = 0
+        self.truncation_flag_assignments = 0
+        self.decoded_return_guards = 0
+        self.install_extensions = 0
+        self.inner_version_assignments = 0
+        self.transformer_version_assignments = 0
+        self.receipt_version_fields = 0
+        self.contract_version_checks = 0
+        self.receipt_extensions = 0
+
+    def visit_Constant(self, node: ast.Constant) -> ast.AST:
+        if type(node.value) is str and node.value in REPLACEMENTS:
+            self.identities[node.value] += 1
+            return ast.copy_location(
+                ast.Constant(REPLACEMENTS[node.value]), node,
+            )
+        return node
+
+    def visit_FunctionDef(self, node: ast.FunctionDef) -> ast.AST:
+        if node.name == "lossless_c11_protected_worker":
+            need(node.lineno == 1471,
+                 "reject a relocated immutable C11 original worker")
+            self.worker_definitions += 1
+        self.functions.append(node.name)
+        try:
+            return self.generic_visit(node)
+        finally:
+            self.functions.pop()
+
+    def visit_Assign(self, node: ast.Assign) -> ast.AST:
+        node = self.generic_visit(node)
+        if (len(node.targets) == 1
+                and isinstance(node.value, ast.Constant)
+                and type(node.value.value) is int
+                and node.value.value == 11
+                and isinstance(node.targets[0], ast.Attribute)
+                and node.targets[0].attr == "value"):
+            target = node.targets[0].value
+            if (isinstance(target, ast.Attribute)
+                    and target.attr == "value"
+                    and isinstance(target.value, ast.Name)
+                    and target.value.id == "node"):
+                node.value.value = 12
+                self.inner_version_assignments += 1
+            elif isinstance(target, ast.Name) and target.id == "value":
+                node.value.value = 12
+                self.transformer_version_assignments += 1
+
+        if (len(node.targets) != 1
+                or not isinstance(node.targets[0], ast.Subscript)
+                or not isinstance(node.targets[0].slice, ast.Constant)
+                or not self.functions
+                or self.functions[-1] != "lossless_c11_protected_worker"):
+            return node
+
+        target = node.targets[0]
+        key = target.slice.value
+        if (key == "candidate_records"
+                and isinstance(target.value, ast.Name)
+                and target.value.id == "compact"):
+            need(node.lineno == 1488
+                 and isinstance(node.value, ast.Call)
+                 and isinstance(node.value.func, ast.Attribute)
+                 and isinstance(node.value.func.value, ast.Name)
+                 and node.value.func.value.id == "history"
+                 and node.value.func.attr == "lossless_vector",
+                 "reject a replaced immutable original candidate encoder")
+            node.value = ast.copy_location(ast.Call(
+                func=ast.Name("_c12_encode_candidate_records", ast.Load()),
+                args=[ast.Name("records", ast.Load()),
+                      ast.Name("compact", ast.Load()),
+                      ast.Name("producer", ast.Load()),
+                      ast.Name("history", ast.Load()),
+                      ast.Call(ast.Attribute(
+                          ast.Name("parsed", ast.Load()), "get", ast.Load(),
+                      ), [ast.Constant("--suite")], [])],
+                keywords=[],
+            ), node.value)
+            self.vector_assignments += 1
+        elif (key == "all_original_records_and_mismatches_preserved"
+              and isinstance(target.value, ast.Name)
+              and target.value.id == "row"):
+            need(node.lineno == 1545,
+                 "reject relocated original full-record preservation flag")
+            node.value = ast.copy_location(ast.Call(
+                ast.Name("_c12_complete_records_preserved", ast.Load()),
+                [ast.Name("records", ast.Load()),
+                 ast.Name("compact", ast.Load()),
+                 ast.Name("history", ast.Load())], [],
+            ), node.value)
+            self.complete_flag_assignments += 1
+        elif (key == "original_record_prefix_explicitly_truncated"
+              and isinstance(target.value, ast.Name)
+              and target.value.id == "row"):
+            need(node.lineno == 1550,
+                 "reject relocated original full-record truncation flag")
+            node.value = ast.copy_location(ast.Call(
+                ast.Name("_c12_record_prefix_truncated", ast.Load()),
+                [ast.Name("records", ast.Load()),
+                 ast.Name("compact", ast.Load()),
+                 ast.Name("history", ast.Load())], [],
+            ), node.value)
+            self.truncation_flag_assignments += 1
+        return node
+
+    def visit_Call(self, node: ast.Call) -> ast.AST:
+        node = self.generic_visit(node)
+        if (self.functions
+                and self.functions[-1] == "lossless_c11_protected_worker"
+                and isinstance(node.func, ast.Name)
+                and node.func.id == "need"
+                and len(node.args) == 2
+                and isinstance(node.args[1], ast.Constant)
+                and node.args[1].value
+                == "preserve the genuine complete original case denominator"):
+            need(node.lineno == 1493
+                 and isinstance(node.args[0], ast.Compare)
+                 and len(node.args[0].ops) == 1
+                 and isinstance(node.args[0].ops[0], ast.Eq),
+                 "reject a replaced immutable C11 original denominator guard")
+            node.args[0] = ast.copy_location(ast.Call(
+                ast.Name("_c12_validate_candidate_record_counts", ast.Load()),
+                [ast.Name("compact", ast.Load()),
+                 ast.Name("records", ast.Load()),
+                 ast.Call(ast.Attribute(
+                     ast.Name("parsed", ast.Load()), "get", ast.Load(),
+                 ), [ast.Constant("--suite")], []),
+                 ast.Name("producer", ast.Load()),
+                 ast.Name("history", ast.Load())], [],
+            ), node.args[0])
+            self.denominator_guards += 1
+        return node
+
+    def visit_Return(self, node: ast.Return) -> ast.AST | list[ast.stmt]:
+        node = self.generic_visit(node)
+        if (self.functions
+                and self.functions[-1] == "lossless_c11_protected_worker"
+                and isinstance(node.value, ast.Name)
+                and node.value.id == "decoded"):
+            need(node.lineno == 1621,
+                 "reject a relocated complete original worker round trip")
+            check = ast.copy_location(ast.Expr(ast.Call(
+                ast.Name("_c12_validate_decoded_original", ast.Load()),
+                [ast.Name("decoded", ast.Load()),
+                 ast.Call(ast.Attribute(
+                     ast.Name("parsed", ast.Load()), "get", ast.Load(),
+                 ), [ast.Constant("--suite")], []),
+                 ast.Name("producer", ast.Load()),
+                 ast.Name("history", ast.Load())], [],
+            )), node)
+            self.decoded_return_guards += 1
+            return [check, node]
+        return node
+
+    def visit_Expr(self, node: ast.Expr) -> ast.AST | list[ast.stmt]:
+        node = self.generic_visit(node)
+        if (len(self.functions) >= 2
+                and self.functions[-2:] == ["main", "install_all"]
+                and isinstance(node.value, ast.Call)
+                and isinstance(node.value.func, ast.Name)
+                and node.value.func.id == "install_v11"):
+            need(node.lineno == 2767
+                 and len(node.value.args) == 4,
+                 "reject a replaced genuine whole-source C11 installer")
+            extension = ast.copy_location(ast.Expr(ast.Call(
+                ast.Name("_c12_install_v12", ast.Load()),
+                [ast.Name("historical", ast.Load()),
+                 ast.Name("history", ast.Load()),
+                 ast.Name("module", ast.Load()),
+                 ast.Name("transform", ast.Load())], [],
+            )), node)
+            self.install_extensions += 1
+            return [node, extension]
+        return node
+
+    def visit_Compare(self, node: ast.Compare) -> ast.AST:
+        node = self.generic_visit(node)
+        if (len(node.ops) == 1 and isinstance(node.ops[0], ast.Eq)
+                and len(node.comparators) == 1
+                and isinstance(node.comparators[0], ast.Constant)
+                and type(node.comparators[0].value) is int
+                and node.comparators[0].value == 11
+                and isinstance(node.left, ast.Call)
+                and isinstance(node.left.func, ast.Attribute)
+                and isinstance(node.left.func.value, ast.Name)
+                and node.left.func.value.id == "base"
+                and node.left.func.attr == "get"
+                and len(node.left.args) == 1
+                and isinstance(node.left.args[0], ast.Constant)
+                and node.left.args[0].value == "version"):
+            node.comparators[0].value = 12
+            self.contract_version_checks += 1
+        return node
+
+    def visit_Dict(self, node: ast.Dict) -> ast.AST:
+        node = self.generic_visit(node)
+        for key, value in zip(node.keys, node.values, strict=True):
+            if (isinstance(key, ast.Constant)
+                    and key.value == "version"
+                    and isinstance(value, ast.Constant)
+                    and type(value.value) is int and value.value == 11):
+                value.value = 12
+                self.receipt_version_fields += 1
+        if (self.functions
+                and self.functions[-1] == "publish_lossless_c11_evidence"
+                and any(isinstance(key, ast.Constant)
+                        and key.value == "publication_pass_means"
+                        for key in node.keys)):
+            additions = (
+                ("preserved_actual_v11_failure_receipt_sha256",
+                 ast.Name("_c12_previous_failure_receipt_sha256", ast.Load())),
+                ("complete_original_case_records_preserved",
+                 ast.Call(ast.Attribute(
+                     ast.Name("document", ast.Load()), "get", ast.Load(),
+                 ), [ast.Constant("complete_original_case_records_preserved"),
+                     ast.Constant(False)], [])),
+                ("complete_original_public_record_count",
+                 ast.Call(ast.Attribute(
+                     ast.Name("document", ast.Load()), "get", ast.Load(),
+                 ), [ast.Constant("complete_original_public_record_count"),
+                     ast.Constant("NOT MEASURED")], [])),
+                ("complete_original_executed_case_count",
+                 ast.Call(ast.Attribute(
+                     ast.Name("document", ast.Load()), "get", ast.Load(),
+                 ), [ast.Constant("complete_original_executed_case_count"),
+                     ast.Constant("NOT MEASURED")], [])),
+                ("complete_original_source_method_count",
+                 ast.Call(ast.Attribute(
+                     ast.Name("document", ast.Load()), "get", ast.Load(),
+                 ), [ast.Constant("complete_original_source_method_count"),
+                     ast.Constant("NOT MEASURED")], [])),
+                ("complete_original_case_vector_sha256",
+                 ast.Call(ast.Attribute(
+                     ast.Name("document", ast.Load()), "get", ast.Load(),
+                 ), [ast.Constant("complete_original_case_vector_sha256"),
+                     ast.Constant("NOT MEASURED")], [])),
+            )
+            existing = {key.value for key in node.keys
+                        if isinstance(key, ast.Constant)}
+            need(all(key not in existing for key, _ in additions),
+                 "reject replaced original complete-case receipt fields")
+            for key, value in additions:
+                node.keys.append(ast.Constant(key))
+                node.values.append(value)
+            self.receipt_extensions += 1
+        return node
+
+
+def validate_original_record(record: object) -> None:
+    need(type(record) is dict and set(record) == RECORD_KEYS,
+         "preserve all ten authentic original test-result fields")
+    need(type(record["test"]) is str and bool(record["test"])
+         and hex_digest(record["source_ast_sha256"])
+         and record["tests_run"] == 1
+         and type(record["failure_count"]) is int
+         and type(record["error_count"]) is int
+         and type(record["skip_count"]) is int
+         and type(record["failure_tracebacks"]) is list
+         and type(record["error_tracebacks"]) is list
+         and type(record["skip_reasons"]) is list
+         and record["failure_count"] == len(record["failure_tracebacks"])
+         and record["error_count"] == len(record["error_tracebacks"])
+         and record["skip_count"] == len(record["skip_reasons"])
+         and all(type(item) is str for item in record["failure_tracebacks"])
+         and all(type(item) is str for item in record["error_tracebacks"])
+         and all(type(item) is str for item in record["skip_reasons"]),
+         "reject omitted or fabricated genuine original result details")
+    failures = record["failure_count"] + record["error_count"]
+    skip = record["skip_count"]
+    need(skip in (0, 1) and not (skip and failures)
+         and record["status"]
+         == ("FAIL" if failures else "SKIP" if skip else "PASS"),
+         "never convert a real original failure, error, or debug skip")
+
+
+def validate_original_observation(observed: object, records: object,
+                                  producer: types.ModuleType) -> str:
+    need(type(observed) is dict and type(records) in (list, tuple)
+         and len(records) == PUBLIC_RECORD_COUNT,
+         "retain all 152 original public records in immutable source order")
+    need(observed.get("suite") == ORIGINAL_SUITE
+         and observed.get("source_relative") == ORIGINAL_EVALUATOR[0]
+         and observed.get("source_sha256") == ORIGINAL_SOURCE_SHA256
+         and observed.get("matrix_sha256") == MATRIX_SHA256
+         and observed.get("reference_records_sha256") == REFERENCE_SHA256
+         and observed.get("case_execution_denominator") == EXECUTED_CASE_COUNT
+         and observed.get("actual_candidate_case_count") == EXECUTED_CASE_COUNT
+         and observed.get("actual_public_record_count") == PUBLIC_RECORD_COUNT
+         and observed.get("actual_debug_skip_count") == DEBUG_SKIP_COUNT
+         and observed.get("named_private_waiver_count")
+         == len(PRIVATE_WAIVER_NAMES)
+         and type(observed.get("named_private_waivers")) in (list, tuple)
+         and tuple(observed["named_private_waivers"]) == PRIVATE_WAIVER_NAMES,
+         "preserve exact independent 165-method, 152-record, 151-case originals")
+    identities = set()
+    skipped = []
+    for record in records:
+        validate_original_record(record)
+        identity = record["test"]
+        need(identity not in identities
+             and identity not in PRIVATE_WAIVER_NAMES,
+             "reject duplicated public methods or private-waiver observations")
+        identities.add(identity)
+        if record["status"] == "SKIP":
+            skipped.append(record)
+    need(len(identities) == PUBLIC_RECORD_COUNT
+         and len(skipped) == DEBUG_SKIP_COUNT
+         and skipped[0]["test"] == SKIPPED_TEST
+         and skipped[0]["skip_reasons"] == SKIP_REASONS,
+         "retain exactly the authentic original release-build debug skip")
+    expected = observed.get("candidate_records_sha256")
+    raw = producer.canonical(records)
+    need(hex_digest(expected) and raw.endswith(b"\n")
+         and hashlib.sha256(raw).hexdigest() == expected,
+         "bind all actual candidate records, including real failure tracebacks")
+    return expected
+
+
+def validate_complete_original_cases(vector: object,
+                                     producer: types.ModuleType,
+                                     campaign: types.ModuleType) -> dict:
+    need(type(vector) is dict
+         and vector.get("schema")
+         == SCHEMA + "-lossless-original-public-case-vector"
+         and vector.get("suite") == ORIGINAL_SUITE
+         and vector.get("vector_kind") == "ORIGINAL PUBLIC CASE OBSERVATIONS"
+         and vector.get("all_observed_records_preserved") is True
+         and vector.get("complete_vector_embedded") is True
+         and vector.get("truncated") is False
+         and vector.get("source_method_count") == SOURCE_METHOD_COUNT
+         and vector.get("public_record_count") == PUBLIC_RECORD_COUNT
+         and vector.get("complete_record_count") == PUBLIC_RECORD_COUNT
+         and vector.get("total_count") == PUBLIC_RECORD_COUNT
+         and vector.get("case_execution_denominator") == EXECUTED_CASE_COUNT
+         and vector.get("actual_debug_skip_count") == DEBUG_SKIP_COUNT
+         and vector.get("named_private_waiver_count")
+         == len(PRIVATE_WAIVER_NAMES)
+         and vector.get("matrix_sha256") == MATRIX_SHA256
+         and vector.get("reference_records_sha256") == REFERENCE_SHA256
+         and hex_digest(vector.get("actual_candidate_records_sha256"))
+         and vector.get("source_complete_vector_sha256")
+         == vector.get("actual_candidate_records_sha256")
+         and vector.get("transport_complete_vector_sha256")
+         == vector.get("actual_candidate_records_sha256")
+         and vector.get("source_comparison_modified") is False,
+         "reject guessed, prefix-only, crossed, or normalized original cases")
+    bridge = dict(vector)
+    bridge["schema"] = SCHEMA + "-lossless-original-mismatch-vector"
+    checked = campaign.validate_complete_c_mismatches(
+        bridge, producer, ORIGINAL_SUITE, PUBLIC_RECORD_COUNT,
+    )
+    need(checked["record_count"] == PUBLIC_RECORD_COUNT
+         and checked["transport_complete_vector_sha256"]
+         == vector["actual_candidate_records_sha256"]
+         and checked["all_observed_records_preserved"] is True,
+         "reject a missing, reordered, or forged full original case chunk")
+    return checked
+
+
+def encode_candidate_records(records: object, observed: dict,
+                             producer: types.ModuleType,
+                             history: types.ModuleType,
+                             suite: object,
+                             campaign: types.ModuleType) -> dict:
+    if suite != ORIGINAL_SUITE:
+        return history.lossless_vector(
+            records, producer,
+            expected=observed.get("candidate_records_sha256"),
+            suite_name=suite,
+        )
+    actual_digest = validate_original_observation(observed, records, producer)
+    summary = history.lossless_vector(
+        records, producer, expected=actual_digest, suite_name=ORIGINAL_SUITE,
+    )
+    need(summary.get("total_count") == PUBLIC_RECORD_COUNT
+         and summary.get("source_complete_vector_sha256") == actual_digest
+         and summary.get("transport_complete_vector_sha256") == actual_digest,
+         "reject a false canonical full original public-record digest")
+    full = campaign.encode_complete_c_mismatches(
+        records, producer, history, ORIGINAL_SUITE, PUBLIC_RECORD_COUNT,
+    )
+    full.update({
+        "schema": SCHEMA + "-lossless-original-public-case-vector",
+        "vector_kind": "ORIGINAL PUBLIC CASE OBSERVATIONS",
+        "source_method_count": SOURCE_METHOD_COUNT,
+        "public_record_count": PUBLIC_RECORD_COUNT,
+        "case_execution_denominator": EXECUTED_CASE_COUNT,
+        "actual_debug_skip_count": DEBUG_SKIP_COUNT,
+        "named_private_waiver_count": len(PRIVATE_WAIVER_NAMES),
+        "matrix_sha256": MATRIX_SHA256,
+        "reference_records_sha256": REFERENCE_SHA256,
+        "actual_candidate_records_sha256": actual_digest,
+    })
+    validate_complete_original_cases(full, producer, campaign)
+    return full
+
+
+def validate_candidate_record_counts(compact: dict, records: object,
+                                     suite: object,
+                                     producer: types.ModuleType,
+                                     history: types.ModuleType,
+                                     campaign: types.ModuleType) -> bool:
+    vector = compact.get("candidate_records")
+    need(type(vector) is dict and type(records) in (list, tuple),
+         "require the actual complete post-observation candidate case vector")
+    if suite == ORIGINAL_SUITE:
+        expected = validate_original_observation(compact, records, producer)
+        full = validate_complete_original_cases(vector, producer, campaign)
+        need(full["record_count"] == PUBLIC_RECORD_COUNT
+             and vector["actual_candidate_records_sha256"] == expected
+             and compact["actual_candidate_case_count"] == EXECUTED_CASE_COUNT,
+             "preserve all 152 observed original records and 151 executions")
+        return True
+    need(vector.get("total_count")
+         == compact.get("actual_candidate_case_count",
+                        vector.get("total_count")),
+         "preserve the genuine complete non-original case denominator")
+    return True
+
+
+def complete_records_preserved(records: object, compact: dict,
+                               history: types.ModuleType) -> bool:
+    if type(records) not in (list, tuple):
+        return True
+    vector = compact.get("candidate_records")
+    return bool(type(vector) is dict
+                and vector.get("complete_vector_embedded") is True
+                and vector.get("truncated") is False
+                or len(records) <= history.MAX_VECTOR_PREFIX)
+
+
+def record_prefix_truncated(records: object, compact: dict,
+                            history: types.ModuleType) -> bool:
+    if type(records) not in (list, tuple):
+        return False
+    vector = compact.get("candidate_records")
+    return bool(len(records) > history.MAX_VECTOR_PREFIX
+                and not (type(vector) is dict
+                         and vector.get("complete_vector_embedded") is True
+                         and vector.get("truncated") is False))
+
+
+def validate_decoded_original(decoded: dict, suite: object,
+                              producer: types.ModuleType,
+                              history: types.ModuleType,
+                              campaign: types.ModuleType) -> None:
+    if suite != ORIGINAL_SUITE:
+        return
+    observed = decoded.get("original_observation")
+    need(type(observed) is dict
+         and decoded.get("all_original_records_and_mismatches_preserved")
+         is True
+         and decoded.get("original_record_prefix_explicitly_truncated")
+         is False,
+         "never publish a preview as complete original observations")
+    vector = observed.get("candidate_records")
+    validate_complete_original_cases(vector, producer, campaign)
+    need(observed.get("actual_candidate_case_count") == EXECUTED_CASE_COUNT
+         and observed.get("actual_public_record_count") == PUBLIC_RECORD_COUNT
+         and observed.get("actual_debug_skip_count") == DEBUG_SKIP_COUNT
+         and observed.get("matrix_sha256") == MATRIX_SHA256
+         and observed.get("reference_records_sha256") == REFERENCE_SHA256
+         and vector["actual_candidate_records_sha256"]
+         == observed.get("candidate_records_sha256"),
+         "preserve all original observation identities after JSON round trip")
+
+
+def validate_v5(document: object) -> dict:
+    need(type(document) is dict
+         and document.get("schema")
+         == "rebar-owned-six-family-original-p0-producer-v5-source-freeze"
+         and document.get("version") == 5
+         and document.get("goal_sha256") == GOAL_SHA256
+         and document.get("suite_count") == 13
+         and document.get("case_execution_denominator") == 31237
+         and document.get("named_private_waiver_count")
+         == len(PRIVATE_WAIVER_NAMES)
+         and tuple(document.get("named_private_waivers", ()))
+         == PRIVATE_WAIVER_NAMES
+         and document.get("source", {}).get("sha256") == V5[0][1]
+         and document.get("protocol", {}).get("sha256") == V5[1][1]
+         and document.get("performance") == "NOT MEASURED"
+         and document.get("memory") == "NOT MEASURED"
+         and document.get("holdout") == "NOT OPENED",
+         "preserve the complete immutable independent original V5 producer")
+    upstream = document.get("original_upstream")
+    need(type(upstream) is dict
+         and upstream.get("all_source_ordered_method_count")
+         == SOURCE_METHOD_COUNT
+         and upstream.get("public_record_count") == PUBLIC_RECORD_COUNT
+         and upstream.get("runnable_public_method_count")
+         == EXECUTED_CASE_COUNT
+         and upstream.get("release_debug_skip_count") == DEBUG_SKIP_COUNT
+         and upstream.get("private_waiver_count")
+         == len(PRIVATE_WAIVER_NAMES)
+         and tuple(upstream.get("named_private_waivers", ()))
+         == PRIVATE_WAIVER_NAMES
+         and upstream.get("matrix_sha256") == MATRIX_SHA256
+         and upstream.get("reference_records_sha256") == REFERENCE_SHA256
+         and upstream.get("original_evaluator") == owner_record(
+             ORIGINAL_EVALUATOR
+         )
+         and upstream.get("harness") == owner_record(ORIGINAL_HARNESS),
+         "never merge original matrix, observed records, and runnable cases")
+    suites = document.get("suites")
+    need(type(suites) is list and len(suites) == 13
+         and sum(item.get("case_execution_count", -1)
+                 for item in suites if type(item) is dict) == 31237,
+         "preserve all 13 real suites and all 31,237 original obligations")
+    original = suites[0]
+    need(type(original) is dict
+         and original.get("id") == ORIGINAL_SUITE
+         and original.get("case_execution_count") == EXECUTED_CASE_COUNT
+         and original.get("matrix_sha256") == MATRIX_SHA256
+         and original.get("reference_records_sha256") == REFERENCE_SHA256
+         and original.get("source_relative") == ORIGINAL_EVALUATOR[0]
+         and original.get("source_sha256") == ORIGINAL_SOURCE_SHA256,
+         "reject a replaced immutable original suite or reference vector")
+    return document
+
+
+def validate_c11_receipt(receipt: object) -> dict:
+    need(type(receipt) is dict
+         and receipt.get("schema")
+         == "rebar-owned-repaired-c-original-campaign-v11-"
+            "durable-publication-receipt"
+         and receipt.get("version") == 11
+         and receipt.get("status") == "PASS"
+         and receipt.get("publication_status") == "PASS"
+         and receipt.get("publication_pass_means")
+         == "DURABLE CORRECTNESS PUBLICATION ONLY"
+         and receipt.get("family") == "c"
+         and receipt.get("label")
+         == "phase2-v21-c-original-match-semantics-original-p0-v11"
+         and receipt.get("source_sha256") == C11[0][1]
+         and receipt.get("protocol_sha256") == C11[1][1]
+         and receipt.get("contract_sha256") == C11[2][1]
+         and receipt.get("candidate_status") == "FAIL"
+         and receipt.get("candidate_qualified") is False
+         and receipt.get("suite_count") == 13
+         and receipt.get("attempted_suite_count") == 13
+         and receipt.get("completed_suite_count") == 11
+         and receipt.get("case_execution_denominator") == 31237
+         and receipt.get("actual_candidate_workers") == 13
+         and receipt.get("actual_worker_process_ids_are_distinct") is True
+         and receipt.get("candidate_execution_failure_count") == 2
+         and receipt.get("infrastructure_failure_count") == 0
+         and receipt.get("worker_timeout_count") == 0
+         and receipt.get("verified_passing_case_count") == 16262
+         and receipt.get("semantic_mismatch_count") == "NOT MEASURED"
+         and receipt.get("observed_semantic_mismatch_lower_bound") == 606
+         and receipt.get("complete_observed_semantic_mismatch_record_count")
+         == 606
+         and receipt.get("complete_mismatch_suite_count") == 11
+         and receipt.get("complete_mismatch_chunk_count") == 21
+         and receipt.get("all_observed_semantic_mismatch_records_preserved")
+         is True
+         and receipt.get("counterexample_normalization_before_original_comparison")
+         is False
+         and receipt.get("counterexample_preview_only") is False
+         and receipt.get("named_private_waiver_count")
+         == len(PRIVATE_WAIVER_NAMES)
+         and receipt.get("hidden_cases_read") == 0
+         and receipt.get("benchmark_files_read") == 0
+         and receipt.get("clock_samples") == 0
+         and receipt.get("timing_trials_run") == 0
+         and receipt.get("performance") == "NOT MEASURED"
+         and receipt.get("holdout") == "NOT OPENED"
+         and receipt.get("winner_selected") is False,
+         "preserve the genuine failed C11 campaign and every observed mismatch")
+    archive = receipt.get("archive")
+    need(type(archive) is dict
+         and archive.get("path")
+         == "oracle/phase2/evidence/repaired-c-original-campaign-v11-c-"
+            "phase2-v21-c-original-match-semantics-original-p0-v11-"
+            "failures.json.gz"
+         and archive.get("sha256")
+         == "2d580a5d321767b1753a645961d717cbc4345f1151c7a0d34304d6e6579cc609"
+         and archive.get("bytes") == 195101
+         and archive.get("device") == DEVICE
+         and archive.get("inode") == 525588
+         and archive.get("mode") == "0600"
+         and archive.get("nlink") == 1
+         and archive.get("exclusive_creation") is True
+         and archive.get("file_fsync_completed") is True
+         and archive.get("directory_fsync_completed") is True,
+         "pin historical archive metadata without opening the archive")
+    outcomes = receipt.get("suite_outcomes")
+    processes = receipt.get("actual_worker_process_ids")
+    need(type(outcomes) is list and len(outcomes) == 13
+         and type(processes) is list and len(processes) == 13
+         and all(type(number) is int and number > 0 for number in processes)
+         and len(set(processes)) == 13,
+         "preserve all 13 real distinct, separately guarded C11 workers")
+    mismatch_total = 0
+    verified = 0
+    unfinished = 0
+    for row, expected, pid in zip(outcomes, C11_OUTCOMES,
+                                  processes, strict=True):
+        name, denominator, status, category, mismatches = expected
+        need(type(row) is dict
+             and row.get("suite") == name
+             and row.get("case_execution_denominator") == denominator
+             and row.get("status") == status
+             and row.get("failure_class") == category
+             and row.get("actual_candidate_workers") == 1
+             and row.get("worker_process_id") == pid,
+             "preserve the genuine complete or unfinished C11 suite: " + name)
+        if mismatches is None:
+            need(row.get("mismatch_count") == "NOT MEASURED",
+                 "never fabricate an unfinished genuine C11 observation")
+            unfinished += 1
+        else:
+            need(row.get("mismatch_count") == mismatches,
+                 "never discard an observed genuine C11 mismatch")
+            mismatch_total += mismatches
+            if mismatches == 0:
+                verified += denominator
+        if name == ORIGINAL_SUITE:
+            need(row.get("error_type") == "CampaignError"
+                 and row.get("failure_phase")
+                 == "ENCODE COMPLETE GUARDED RESULT"
+                 and row.get("plain_failure_diagnostic")
+                 == "preserve the genuine complete original case denominator",
+                 "preserve the real failed C11 original encoder")
+        if name == "subinterpreter_v2":
+            need(row.get("error_type") == "ActualSuiteFailure"
+                 and row.get("failure_phase")
+                 == "OBSERVE COMPLETE ORIGINAL SUITE"
+                 and row.get("plain_failure_diagnostic")
+                 == "preserve the actual guarded original child lifecycle failure",
+                 "never claim the unfinished guarded child failure was fixed")
+    need(mismatch_total == 606 and verified == 16262 and unfinished == 2,
+         "preserve the exact C11 completion and mismatch denominators")
+    fingerprints = receipt.get("complete_mismatch_suite_vector_fingerprints")
+    need(type(fingerprints) is list
+         and len(fingerprints) == len(C11_FINGERPRINTS),
+         "retain all 11 independently published original mismatch vectors")
+    for actual, expected in zip(fingerprints, C11_FINGERPRINTS, strict=True):
+        name, denominator, records, chunks, digest = expected
+        need(type(actual) is dict
+             and actual.get("suite") == name
+             and actual.get("case_execution_denominator") == denominator
+             and actual.get("complete_record_count") == records
+             and actual.get("complete_chunk_count") == chunks
+             and actual.get("complete_vector_sha256") == digest
+             and actual.get("all_observed_records_preserved") is True,
+             "reject an omitted or replaced C11 full mismatch vector: " + name)
+    need(sum(item[2] for item in C11_FINGERPRINTS) == 606
+         and sum(item[3] for item in C11_FINGERPRINTS) == 21,
+         "preserve all 606 genuinely recorded mismatch records and 21 chunks")
+    return receipt
+
+
+def synthetic_original(producer: types.ModuleType) -> tuple[dict, list]:
+    records = []
+    for index in range(PUBLIC_RECORD_COUNT):
+        skipped = index == 37
+        failed = index == 51
+        identity = SKIPPED_TEST if skipped else "ReTests.synthetic_" + str(index)
+        records.append({
+            "test": identity,
+            "source_ast_sha256": hashlib.sha256(
+                ("frozen-source-control-" + str(index)).encode("ascii")
+            ).hexdigest(),
+            "status": "SKIP" if skipped else "FAIL" if failed else "PASS",
+            "tests_run": 1,
+            "failure_count": 1 if failed else 0,
+            "error_count": 0,
+            "skip_count": 1 if skipped else 0,
+            "failure_tracebacks": ["authentic-shaped source-only FAILURE"]
+            if failed else [],
+            "error_tracebacks": [],
+            "skip_reasons": list(SKIP_REASONS) if skipped else [],
+        })
+    observed = {
+        "suite": ORIGINAL_SUITE,
+        "source_relative": ORIGINAL_EVALUATOR[0],
+        "source_sha256": ORIGINAL_SOURCE_SHA256,
+        "matrix_sha256": MATRIX_SHA256,
+        "reference_records_sha256": REFERENCE_SHA256,
+        "candidate_records_sha256": hashlib.sha256(
+            producer.canonical(records)
+        ).hexdigest(),
+        "case_execution_denominator": EXECUTED_CASE_COUNT,
+        "actual_candidate_case_count": EXECUTED_CASE_COUNT,
+        "actual_public_record_count": PUBLIC_RECORD_COUNT,
+        "actual_debug_skip_count": DEBUG_SKIP_COUNT,
+        "named_private_waiver_count": len(PRIVATE_WAIVER_NAMES),
+        "named_private_waivers": list(PRIVATE_WAIVER_NAMES),
+    }
+    return observed, records
+
+
+def original_case_hostile_controls(producer: types.ModuleType,
+                                   history: types.ModuleType,
+                                   campaign: types.ModuleType) -> list[str]:
+    controls: list[str] = []
+    observed, records = synthetic_original(producer)
+    vector = encode_candidate_records(
+        records, observed, producer, history, ORIGINAL_SUITE, campaign,
+    )
+    compact = {**observed, "candidate_records": vector}
+    need(validate_candidate_record_counts(
+        compact, records, ORIGINAL_SUITE, producer, history, campaign,
+    ) is True
+         and validate_complete_original_cases(
+             vector, producer, campaign
+         )["record_count"] == PUBLIC_RECORD_COUNT
+         and vector["complete_chunk_count"] > 1
+         and vector["preview_truncated"] is True
+         and vector["truncated"] is False
+         and complete_records_preserved(records, compact, history) is True
+         and record_prefix_truncated(records, compact, history) is False
+         and any(record["status"] == "FAIL" for record in records)
+         and vector["actual_candidate_records_sha256"] != REFERENCE_SHA256,
+         "preserve all 152 source-only synthetic records including a real-shaped loss")
+    controls.append("preserve 165 source methods, 152 full public records, and 151 cases")
+    controls.append("preserve exactly one authentic-shaped original debug skip")
+    controls.append("preserve candidate failure tracebacks without forcing reference equality")
+    controls.append("embed and round-trip every original public case chunk")
+    controls.append("reject the old 24-record preview as complete observation")
+
+    def cloned() -> dict:
+        return {
+            **vector,
+            "complete_chunks": [dict(chunk)
+                                for chunk in vector["complete_chunks"]],
+        }
+
+    def reject_vector(label: str, changed: object) -> None:
+        refused = False
+        try:
+            validate_complete_original_cases(changed, producer, campaign)
+        except (CampaignError, campaign.CampaignError, ValueError,
+                TypeError, producer.ProducerError, KeyError):
+            refused = True
+        need(refused, "accept incomplete original public case vector: " + label)
+        controls.append(label)
+
+    def reject_observation(label: str, changed: dict,
+                           actual: object = None) -> None:
+        refused = False
+        try:
+            validate_original_observation(
+                changed, records if actual is None else actual, producer,
+            )
+        except (CampaignError, campaign.CampaignError, ValueError,
+                TypeError, producer.ProducerError, KeyError):
+            refused = True
+        need(refused, "accept a forged original public observation: " + label)
+        controls.append(label)
+
+    for key, bad in (
+        ("source_method_count", 152),
+        ("public_record_count", 151),
+        ("complete_record_count", 151),
+        ("total_count", 165),
+        ("case_execution_denominator", 152),
+        ("actual_debug_skip_count", 0),
+        ("named_private_waiver_count", 0),
+        ("matrix_sha256", "0" * 64),
+        ("reference_records_sha256", "0" * 64),
+        ("actual_candidate_records_sha256", "0" * 64),
+        ("source_complete_vector_sha256", "0" * 64),
+        ("transport_complete_vector_sha256", "0" * 64),
+        ("complete_vector_embedded", False),
+        ("all_observed_records_preserved", False),
+        ("truncated", True),
+        ("source_comparison_modified", True),
+        ("schema", SCHEMA + "-lossless-original-mismatch-vector"),
+        ("suite", "public_v3"),
+        ("vector_kind", "ORIGINAL MISMATCHES"),
+    ):
+        changed = cloned()
+        changed[key] = bad
+        reject_vector("reject forged complete original case " + key, changed)
+
+    preview_only = history.lossless_vector(
+        records, producer,
+        expected=observed["candidate_records_sha256"],
+        suite_name=ORIGINAL_SUITE,
+    )
+    reject_vector("reject digest-and-preview-only original candidate records",
+                  preview_only)
+    missing = cloned()
+    missing["complete_chunks"] = missing["complete_chunks"][:-1]
+    missing["complete_chunk_count"] = len(missing["complete_chunks"])
+    reject_vector("reject a dropped complete original public-case chunk", missing)
+    duplicate = cloned()
+    duplicate["complete_chunks"][1] = dict(duplicate["complete_chunks"][0])
+    reject_vector("reject a duplicated original public-case chunk", duplicate)
+    reordered = cloned()
+    reordered["complete_chunks"][0], reordered["complete_chunks"][1] = (
+        reordered["complete_chunks"][1], reordered["complete_chunks"][0]
+    )
+    reject_vector("reject reordered original public-case chunks", reordered)
+    for field, bad in (
+        ("first_record_index", 1),
+        ("record_count", 31),
+        ("uncompressed_sha256", "0" * 64),
+        ("compressed_sha256", "0" * 64),
+        ("complete_compressed_base64", ""),
+        ("codec", "EXTERNAL REGEX PACKAGE"),
+    ):
+        broken = cloned()
+        broken["complete_chunks"][0][field] = bad
+        reject_vector("reject substituted complete original case " + field,
+                      broken)
+
+    for key, bad in (
+        ("matrix_sha256", "0" * 64),
+        ("reference_records_sha256", "0" * 64),
+        ("source_sha256", "0" * 64),
+        ("source_relative", "tools/invented_original.py"),
+        ("case_execution_denominator", 152),
+        ("actual_candidate_case_count", 152),
+        ("actual_public_record_count", 151),
+        ("actual_debug_skip_count", 0),
+        ("named_private_waiver_count", 12),
+        ("candidate_records_sha256", "0" * 64),
+    ):
+        changed = dict(observed)
+        changed[key] = bad
+        reject_observation("reject forged original observation " + key,
+                           changed)
+    fewer = [dict(item) for item in records[:-1]]
+    reject_observation("reject a truncated 151-record original observation",
+                       dict(observed), fewer)
+    reordered_records = [dict(item) for item in records]
+    reordered_records[0], reordered_records[1] = (
+        reordered_records[1], reordered_records[0]
+    )
+    reject_observation("reject reordered source-ordered original public cases",
+                       dict(observed), reordered_records)
+    duplicate_records = [dict(item) for item in records]
+    duplicate_records[1] = dict(duplicate_records[0])
+    reject_observation("reject a duplicated original public case identity",
+                       dict(observed), duplicate_records)
+    missing_skip = [dict(item) for item in records]
+    missing_skip[37] = {**missing_skip[37], "status": "PASS",
+                        "skip_count": 0, "skip_reasons": []}
+    reject_observation("reject an omitted authentic original debug-build skip",
+                       dict(observed), missing_skip)
+    substituted_skip = [dict(item) for item in records]
+    substituted_skip[37] = {**substituted_skip[37],
+                             "skip_reasons": ["invented skip"]}
+    reject_observation("reject an invented original debug-build skip reason",
+                       dict(observed), substituted_skip)
+    erased_failure = [dict(item) for item in records]
+    erased_failure[51] = {**erased_failure[51], "status": "PASS",
+                          "failure_count": 0, "failure_tracebacks": []}
+    reject_observation("reject normalization or removal of an original failure",
+                       dict(observed), erased_failure)
+    crossed_private = [dict(item) for item in records]
+    crossed_private[0] = {**crossed_private[0],
+                          "test": PRIVATE_WAIVER_NAMES[0]}
+    reject_observation("reject a named private waiver as a public original case",
+                       dict(observed), crossed_private)
+    need("re" not in sys.modules and "_sre" not in sys.modules
+         and "ctypes" not in sys.modules
+         and not any(name == "candidates" or name.startswith("candidates.")
+                     for name in sys.modules),
+         "all complete-case controls must remain genuinely matcher-free")
+    controls.append("run full original case controls without loading a matcher")
+    return controls
+
+
+def install_v12(campaign: types.ModuleType, history: types.ModuleType,
+                module: types.ModuleType, transform: dict) -> None:
+    historical_configure = module.configure_previous
+    historical_contract = module.contract_document
+    historical_controls = module.source_controls
+
+    def configure(previous: types.ModuleType) -> tuple:
+        old, original = historical_configure(previous)
+        existing = {item[0]: item for item in old.STATIC_OWNERS}
+        for owner in C11 + V5 + V3 + (
+                C11_RECEIPT, ORIGINAL_HARNESS, ORIGINAL_EVALUATOR):
+            before = existing.get(owner[0])
+            need(before is None or before == owner,
+                 "reject a crossed authentic C11, V5, or original source owner")
+            if before is None:
+                existing[owner[0]] = owner
+        for relative in existing:
+            need(not relative.startswith(("/", "candidates/", "docs/evidence/"))
+                 and not any(word in relative.lower()
+                             for word in ("holdout", "benchmark"))
+                 and not relative.endswith(
+                     (".so", ".gz", ".xz", ".zip", ".tar")
+                 ),
+                 "physically exclude native, candidate, archive, and holdout")
+        old.STATIC_OWNERS = tuple(existing.values())
+        old.OWNED_PATHS = frozenset(existing) | {SOURCE, PROTOCOL, CONTRACT}
+
+        previous_authority = previous.actual_authority
+
+        def authority() -> dict:
+            actual = previous_authority()
+            actual.update({
+                "previous_v11_failure_receipt_sha256": C11_RECEIPT[1],
+                "v11_source_sha256": C11[0][1],
+                "v11_protocol_sha256": C11[1][1],
+                "v11_contract_sha256": C11[2][1],
+            })
+            return actual
+
+        previous.actual_authority = authority
+        previous_collect = previous.collect_context
+
+        def context(selected: types.ModuleType, parsed: dict,
+                    *, controls: bool = False) -> tuple:
+            producer, state, result = previous_collect(
+                selected, parsed, controls=controls,
+            )
+            if parsed["mode"] == "--run":
+                prior_publisher = module.publish_evidence
+
+                def publish_full(document: dict,
+                                 live_producer: types.ModuleType,
+                                 live_previous: types.ModuleType) -> dict:
+                    need(live_producer is producer
+                         and live_previous is previous,
+                         "reject a crossed original C12 complete-case publisher")
+                    rows = document.get("suite_results")
+                    need(type(rows) is list and len(rows) == 13,
+                         "retain all original C12 suites before publication")
+                    original_row = rows[0]
+                    need(type(original_row) is dict
+                         and original_row.get("suite") == ORIGINAL_SUITE,
+                         "retain the first source-ordered genuine original suite")
+                    observation = original_row.get("original_observation")
+                    if type(observation) is dict:
+                        vector = observation.get("candidate_records")
+                        validate_complete_original_cases(
+                            vector, producer, campaign,
+                        )
+                        need(original_row.get(
+                            "all_original_records_and_mismatches_preserved"
+                        ) is True
+                             and original_row.get(
+                                 "original_record_prefix_explicitly_truncated"
+                             ) is False,
+                             "never publish a prefix-only original case result")
+                        document.update({
+                            "complete_original_case_records_preserved": True,
+                            "complete_original_public_record_count":
+                            PUBLIC_RECORD_COUNT,
+                            "complete_original_executed_case_count":
+                            EXECUTED_CASE_COUNT,
+                            "complete_original_source_method_count":
+                            SOURCE_METHOD_COUNT,
+                            "complete_original_case_vector_sha256":
+                            vector["actual_candidate_records_sha256"],
+                        })
+                    else:
+                        document.update({
+                            "complete_original_case_records_preserved": False,
+                            "complete_original_public_record_count":
+                            "NOT MEASURED",
+                            "complete_original_executed_case_count":
+                            "NOT MEASURED",
+                            "complete_original_source_method_count":
+                            "NOT MEASURED",
+                            "complete_original_case_vector_sha256":
+                            "NOT MEASURED",
+                        })
+                    return prior_publisher(
+                        document, live_producer, live_previous,
+                    )
+
+                module.publish_evidence = publish_full
+            return producer, state, result
+
+        previous.collect_context = context
+        return old, original
+
+    def contract_document(parsed: dict, old: types.ModuleType,
+                          state: dict, previous: types.ModuleType,
+                          original_contract: object) -> dict:
+        base = historical_contract(
+            parsed, old, state, previous, original_contract,
+        )
+        producer = old.load_producer(state["producer_raw"])
+        for owner in C11 + V5 + V3 + (
+                C11_RECEIPT, ORIGINAL_HARNESS, ORIGINAL_EVALUATOR):
+            raw = old.read_owner(owner)
+            need(hashlib.sha256(raw).hexdigest() == owner[1],
+                 "retain each exact authenticated complete V12 source owner")
+        v5 = validate_v5(previous.parse_document(
+            producer, old.read_owner(V5[2]),
+            "complete immutable original C12 V5 producer contract",
+        ))
+        prior_contract = previous.parse_document(
+            producer, old.read_owner(C11[2]),
+            "complete immutable C11 source-freeze contract",
+        )
+        need(type(prior_contract) is dict
+             and prior_contract.get("schema")
+             == "rebar-owned-repaired-c-original-campaign-v11-source-freeze"
+             and prior_contract.get("version") == 11
+             and prior_contract.get("goal_sha256") == GOAL_SHA256
+             and prior_contract.get("source", {}).get("sha256") == C11[0][1]
+             and prior_contract.get("protocol", {}).get("sha256") == C11[1][1]
+             and prior_contract.get("qualified_candidate_count") == 0
+             and prior_contract.get("holdout") == "NOT OPENED"
+             and prior_contract.get("performance") == "NOT MEASURED",
+             "preserve the exact complete immutable C11 source-only contract")
+        receipt = validate_c11_receipt(previous.parse_document(
+            producer, old.read_owner(C11_RECEIPT),
+            "complete genuine small C11 original failure publication receipt",
+        ))
+        need(base.get("schema") == SCHEMA + "-source-freeze"
+             and base.get("version") == 12
+             and base.get("family") == "c"
+             and base.get("label") == LABEL
+             and base.get("goal_sha256") == GOAL_SHA256
+             and base.get("phase_one_v4", {}).get(
+                 "original_case_execution_denominator"
+             ) == 31237
+             and base.get("qualified_candidate_count") == 0
+             and base.get("holdout") == "NOT OPENED"
+             and base.get("performance") == "NOT MEASURED",
+             "reject a guessed, prematurely qualified, or crossed C12 contract")
+        policy = dict(base["actual_operation_policy"])
+        policy.update({
+            "authorization":
+            "EXPLICIT INDEPENDENTLY PINNED C21 C12 --run ONLY",
+            "required_authority": previous.actual_authority(),
+            "previous_actual_v11_receipt_sha256": C11_RECEIPT[1],
+            "previous_actual_v11_candidate_status": "FAIL",
+            "previous_actual_v11_candidate_qualified": False,
+            "previous_actual_v11_completed_original_suites": 11,
+            "previous_actual_v11_original_candidate_execution_failures": 2,
+            "previous_actual_v11_verified_passing_case_count": 16262,
+            "previous_actual_v11_observed_mismatch_lower_bound": 606,
+            "previous_actual_v11_exact_total_semantic_mismatches":
+            "NOT MEASURED",
+            "previous_actual_v11_complete_mismatch_record_count": 606,
+            "previous_actual_v11_complete_mismatch_chunk_count": 21,
+            "previous_actual_v11_archive_opened_in_source_mode": False,
+            "source_method_count": SOURCE_METHOD_COUNT,
+            "public_record_count": PUBLIC_RECORD_COUNT,
+            "executed_case_count": EXECUTED_CASE_COUNT,
+            "authentic_debug_skip_count": DEBUG_SKIP_COUNT,
+            "candidate_case_vector_fully_embedded": True,
+            "candidate_case_vector_prefix_only": False,
+            "candidate_case_vector_reference_equality_required": False,
+            "candidate_case_failure_normalization": "FORBIDDEN",
+            "candidate_case_codec": "PURE FIRST-PARTY C11 BOUNDED LZ1",
+            "candidate_case_encoding_stage":
+            "ONLY AFTER COMPLETE IMMUTABLE ORIGINAL COMPARISON",
+            "original_or_reference_source_changes": 0,
+            "source_freeze_runs_candidate": False,
+        })
+        base["actual_operation_policy"] = policy
+        base["authenticated_complete_v11_controller_transform"] = transform
+        base["preserved_full_v11_reporting_freeze"] = {
+            "owners": [owner_record(owner) for owner in C11],
+            "status": prior_contract["status"],
+            "source_only_effects": prior_contract["source_only_effects"],
+            "candidate_correctness": "NOT MEASURED",
+            "historical_archive_opened": False,
+            "frozen_original_source_changes": 0,
+        }
+        base["preserved_actual_c_v11_campaign"] = {
+            "actual_failure_receipt": owner_record(C11_RECEIPT),
+            "publication_status": receipt["publication_status"],
+            "publication_pass_means": receipt["publication_pass_means"],
+            "candidate_status": receipt["candidate_status"],
+            "candidate_qualified": receipt["candidate_qualified"],
+            "suite_count": receipt["suite_count"],
+            "attempted_suite_count": receipt["attempted_suite_count"],
+            "completed_suite_count": receipt["completed_suite_count"],
+            "case_execution_denominator": receipt["case_execution_denominator"],
+            "actual_candidate_workers": receipt["actual_candidate_workers"],
+            "actual_worker_process_ids": receipt["actual_worker_process_ids"],
+            "actual_worker_process_ids_are_distinct":
+            receipt["actual_worker_process_ids_are_distinct"],
+            "suite_outcomes": receipt["suite_outcomes"],
+            "candidate_execution_failure_count":
+            receipt["candidate_execution_failure_count"],
+            "infrastructure_failure_count":
+            receipt["infrastructure_failure_count"],
+            "worker_timeout_count": receipt["worker_timeout_count"],
+            "semantic_mismatch_count": receipt["semantic_mismatch_count"],
+            "observed_semantic_mismatch_lower_bound":
+            receipt["observed_semantic_mismatch_lower_bound"],
+            "verified_passing_case_count": receipt["verified_passing_case_count"],
+            "all_observed_semantic_mismatch_records_preserved":
+            receipt["all_observed_semantic_mismatch_records_preserved"],
+            "complete_observed_semantic_mismatch_record_count":
+            receipt["complete_observed_semantic_mismatch_record_count"],
+            "complete_mismatch_suite_count":
+            receipt["complete_mismatch_suite_count"],
+            "complete_mismatch_chunk_count":
+            receipt["complete_mismatch_chunk_count"],
+            "complete_mismatch_suite_vector_fingerprints":
+            receipt["complete_mismatch_suite_vector_fingerprints"],
+            "archive_metadata": dict(receipt["archive"]),
+            "archive_opened_in_source_mode": False,
+            "holdout": receipt["holdout"],
+            "performance": receipt["performance"],
+        }
+        base["lossless_original_public_case_evidence_v12"] = {
+            "status": "SOURCE FROZEN; NO ORIGINAL CASE EXECUTED",
+            "source_method_count": SOURCE_METHOD_COUNT,
+            "public_record_count": PUBLIC_RECORD_COUNT,
+            "case_execution_denominator": EXECUTED_CASE_COUNT,
+            "authentic_debug_skip_count": DEBUG_SKIP_COUNT,
+            "authentic_debug_skip": SKIPPED_TEST,
+            "named_private_waiver_count": len(PRIVATE_WAIVER_NAMES),
+            "named_private_waivers": list(PRIVATE_WAIVER_NAMES),
+            "original_matrix_sha256": MATRIX_SHA256,
+            "original_reference_records_sha256": REFERENCE_SHA256,
+            "original_producer": owner_record(V5[0]),
+            "original_producer_contract": owner_record(V5[2]),
+            "original_harness": owner_record(ORIGINAL_HARNESS),
+            "original_evaluator": owner_record(ORIGINAL_EVALUATOR),
+            "upstream_original": dict(v5["original_upstream"]),
+            "candidate_vector_schema":
+            SCHEMA + "-lossless-original-public-case-vector",
+            "candidate_case_codec": "PURE FIRST-PARTY C11 BOUNDED LZ1",
+            "complete_candidate_records_required": True,
+            "all_complete_case_chunks_digest_bound": True,
+            "prefix_only_or_digest_only": False,
+            "candidate_failure_tracebacks_preserved": True,
+            "actual_candidate_digest_forced_to_reference": False,
+            "normalization_before_original_comparison": False,
+            "frozen_original_or_reference_source_mutations": 0,
+            "actual_candidate_workers": 0,
+            "actual_reference_workers": 0,
+            "actual_candidate_records": 0,
+            "historical_archives_opened": 0,
+            "holdout": "NOT OPENED",
+            "performance": "NOT MEASURED",
+            "memory": "NOT MEASURED",
+            "undefined_behavior": "NOT MEASURED",
+            "candidate_matching": "NOT RUN",
+            "candidate_correctness": "NOT MEASURED",
+            "candidate_qualified": False,
+        }
+        base["source_wall"]["owner_count"] = len(old.STATIC_OWNERS)
+        return base
+
+    def controls(previous: types.ModuleType, wall: object,
+                 old: types.ModuleType) -> list:
+        answers = historical_controls(previous, wall, old)
+        producer = old.load_producer(old.read_owner(old.PRODUCER[0]))
+        answers.extend(original_case_hostile_controls(
+            producer, history, campaign,
+        ))
+
+        def reject(label: str, function: object) -> None:
+            rejected = False
+            try:
+                function()
+            except Exception:
+                rejected = True
+            need(rejected, "accept a forbidden original C12 operation: " + label)
+            answers.append(label)
+
+        for path in (
+            ROOT + "/candidates/vm_candidate.py",
+            ROOT + "/candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+            ROOT + "/oracle/phase2/evidence/repaired-c-original-campaign-v11-c-"
+            "phase2-v21-c-original-match-semantics-original-p0-v11-failures.json.gz",
+            ROOT + "/oracle/phase3/expanded-sealed-holdout-v1.json",
+            "/tmp/rebar-phase2-repaired-c-original-campaign-v12",
+        ):
+            reject("physically deny C12 " + path.rsplit("/", 1)[-1],
+                   lambda target=path: os.open(
+                       target, os.O_RDONLY
+                       | getattr(os, "O_CLOEXEC", 0)
+                       | getattr(os, "O_NOFOLLOW", 0),
+                   ))
+        need(len(answers) >= 155
+             and "re" not in sys.modules and "_sre" not in sys.modules
+             and "ctypes" not in sys.modules
+             and not any(name == "candidates"
+                         or name.startswith("candidates.")
+                         for name in sys.modules),
+             "preserve all historical hostile controls and zero matcher effects")
+        return answers
+
+    module.configure_previous = configure
+    module.contract_document = contract_document
+    module.source_controls = controls
+
+
+def bootstrap_v11() -> tuple[types.ModuleType, dict]:
+    clean_runtime()
+    raw = exact_owner(C11[0])
+    tree = ast.parse(raw.decode("utf-8", "strict"),
+                     filename=ROOT + "/" + C11[0][0])
+    change = ExactV11ToV12()
+    corrected = ast.fix_missing_locations(change.visit(tree))
+    need(all(count >= 1 for count in change.identities.values())
+         and change.worker_definitions == 1
+         and change.vector_assignments == 1
+         and change.denominator_guards == 1
+         and change.complete_flag_assignments == 1
+         and change.truncation_flag_assignments == 1
+         and change.decoded_return_guards == 1
+         and change.install_extensions == 1
+         and change.inner_version_assignments == 1
+         and change.transformer_version_assignments == 1
+         and change.receipt_version_fields == 1
+         and change.contract_version_checks == 1
+         and change.receipt_extensions == 1,
+         "reject a broadened, omitted, or partial whole-source C11 repair")
+    campaign = types.ModuleType("_rebar_owned_c_v12_authenticated_complete_v11")
+    campaign.__file__ = ROOT + "/" + SOURCE
+    campaign.__package__ = ""
+    campaign.__dict__.update({
+        "_c12_previous_failure_receipt_sha256": C11_RECEIPT[1],
+        "_c12_encode_candidate_records":
+        lambda records, observed, producer, history, suite:
+        encode_candidate_records(
+            records, observed, producer, history, suite, campaign,
+        ),
+        "_c12_validate_candidate_record_counts":
+        lambda observed, records, suite, producer, history:
+        validate_candidate_record_counts(
+            observed, records, suite, producer, history, campaign,
+        ),
+        "_c12_complete_records_preserved": complete_records_preserved,
+        "_c12_record_prefix_truncated": record_prefix_truncated,
+        "_c12_validate_decoded_original":
+        lambda decoded, suite, producer, history:
+        validate_decoded_original(
+            decoded, suite, producer, history, campaign,
+        ),
+        "_c12_install_v12": install_v12,
+    })
+    exec(compile(corrected, campaign.__file__, "exec", dont_inherit=True),
+         campaign.__dict__)
+    need(campaign.SOURCE == SOURCE
+         and campaign.PROTOCOL == PROTOCOL
+         and campaign.CONTRACT == CONTRACT
+         and campaign.SCHEMA == SCHEMA
+         and campaign.LABEL == LABEL
+         and campaign.C9[0][1]
+         == "4796ba3c5e03a1341aa35f700679107a8bf835f0ebf582b02be59955ae211563"
+         and campaign.V3[0][1] == V3[0][1]
+         and callable(campaign.main)
+         and callable(campaign.install_v11)
+         and callable(campaign.encode_complete_c_mismatches)
+         and callable(campaign.validate_complete_c_mismatches),
+         "reject an incomplete authentic C11 original controller or first-party codec")
+    clean_runtime()
+    return campaign, {
+        "historical_complete_source": owner_record(C11[0]),
+        "exact_identity_replacements": dict(change.identities),
+        "exact_original_worker_definition_count": change.worker_definitions,
+        "exact_original_case_vector_encoder_count": change.vector_assignments,
+        "exact_original_case_denominator_guard_count":
+        change.denominator_guards,
+        "exact_original_case_full_preservation_flag_count":
+        change.complete_flag_assignments,
+        "exact_original_case_truncation_flag_count":
+        change.truncation_flag_assignments,
+        "exact_decoded_original_case_validator_count":
+        change.decoded_return_guards,
+        "exact_historical_installer_extension_count":
+        change.install_extensions,
+        "exact_inner_version_assignments": change.inner_version_assignments,
+        "exact_transformer_version_assignments":
+        change.transformer_version_assignments,
+        "exact_receipt_version_fields": change.receipt_version_fields,
+        "exact_contract_version_checks": change.contract_version_checks,
+        "exact_complete_case_receipt_extensions": change.receipt_extensions,
+        "frozen_original_source_modifications": 0,
+        "frozen_reference_source_modifications": 0,
+        "frozen_guard_v3_source_modifications": 0,
+        "frozen_producer_v5_source_modifications": 0,
+        "candidate_source_modifications": 0,
+        "candidate_imports": 0,
+        "candidate_workers": 0,
+        "reference_workers": 0,
+        "private_roots_opened": 0,
+        "archives_opened": 0,
+        "holdout": "NOT OPENED",
+        "performance": "NOT MEASURED",
+    }
+
+
+def main(arguments: list[str]) -> int:
+    campaign, transform = bootstrap_v11()
+    campaign._c12_transform = transform
+    original_install = campaign._c12_install_v12
+
+    def install_with_provenance(historical: types.ModuleType,
+                                history: types.ModuleType,
+                                module: types.ModuleType,
+                                _prior_transform: dict) -> None:
+        original_install(campaign, history, module, transform)
+
+    campaign._c12_install_v12 = install_with_provenance
+    return campaign.main(arguments)
+
+
+if __name__ == "__main__":
+    try:
+        raise SystemExit(main(sys.argv[1:]))
+    except Exception as error:
+        os.write(2, (
+            "C21 original campaign V12: "
+            + type(error).__qualname__ + ": " + str(error) + "\n"
+        ).encode("utf-8", "backslashreplace"))
+        raise SystemExit(2)
