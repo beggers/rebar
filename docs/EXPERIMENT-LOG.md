@@ -8,6 +8,24 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze two first-party Rust compilation allocation improvements
+
+A [frozen first-party Rust compiler variant](../oracle/phase2/RUST-COMPILER-ALLOCATION-FASTPATH-V1.md)
+removes two avoidable allocations: it safely borrows pattern code points
+during synchronous compilation and allocates alternation storage only when
+an actual `|` exists. Both ordinary and scanner compilation preserve the
+source lifetime, parser errors, flags, group ordering, and regular-expression
+semantics. The independent engine still has **zero external packages**.
+
+All four normal and empty-environment source gates pass **960** old-versus-new
+parser comparisons, **42** genuinely distinct scanner-flag outcomes,
+**40** source-ownership scenarios, and **110** hostile controls. The
+**31,237** original checks, all **1,352** existing Rust failures, every
+**1,664** actual public practice observation, and the unopened
+**141,557,760**-case final proposal remain unchanged. The new variant has
+not yet been created, built, or timed; its correctness and improvement are
+**NOT MEASURED**.
+
 ## Distinguish first-party language bindings from borrowed engines
 
 The [version-four source and native-dependency audit](../oracle/phase2/RUNTIME-NON-DELEGATION-V4.md)
