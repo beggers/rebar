@@ -128,6 +128,12 @@ candidate files, archives, hidden cases, or native binaries. Candidate
 correctness, timing, and qualification remain **NOT MEASURED** until a
 separately authorized build and complete retest.
 
+The [actual exclusively materialized bridge correction](../oracle/phase2/evidence/rust-expand-probe-semantics-v1-application.json)
+has exactly **178,081 bytes** and SHA-256
+`d0f0422a08592390619138d072cb831d6d446f38e2b67750798a221e7693d822`.
+Only its already authenticated first-party predecessor was read. No native
+engine was built, no candidate ran, and no hidden case was generated.
+
 ## Show the latest complete Rust compatibility result clearly
 
 The [updated headline correctness chart](evidence/candidate-current-overview-v101.svg)
