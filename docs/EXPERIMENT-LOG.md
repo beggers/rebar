@@ -25200,3 +25200,7 @@ The [exact-literal Rust execution experiment](../oracle/phase2/RUST-EXACT-LITERA
 ## Corrected live Rust independence audit
 
 The [corrected live Rust audit](../oracle/phase2/RUST-LIVE-NON-DELEGATION-V7.md) preserves the first audit's actual `_io` false-positive failure while permitting only the necessary built-in Python support modules. Python's regex engine, third-party regex packages, imports used for hidden delegation, and other project candidates remain forbidden. Four independent source-only gates pass **108** hostile controls and **63** valid controls. The [actual corrected audit attempt](../oracle/phase2/evidence/rust-live-non-delegation-v7-actual-runtime-failure.json) was terminated with exit **137** before emitting any output or publishing a proof. No successful runtime-independence result is claimed.
+
+## Frozen original-suite rerun for the exact current Rust build
+
+The [exact-build Rust original-suite campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V27.md) freezes all **31,237** original CPython checks across **13** groups for the identical independently built Rust engine that already passes all **10,434** wider public checks. It preserves the older Rust build's complete original-suite pass without incorrectly assigning that result to the newer binary. Four source-only gates pass, including **2,841** hostile controls. The exact current build's original-suite result remains **NOT MEASURED** until this separately authorized campaign runs.

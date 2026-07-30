@@ -201,6 +201,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Preserved corrected live-audit failure: the worker was killed before publishing any proof](oracle/phase2/evidence/rust-live-non-delegation-v7-actual-runtime-failure.json).
 - [Frozen independently written Rust literal-search acceleration](oracle/phase2/RUST-EXACT-LITERAL-FASTPATH-V1.md).
 - [Actual from-scratch Rust literal-search source; not yet built, tested, or timed](oracle/phase2/evidence/rust-exact-literal-fastpath-v1-application.json).
+- [Frozen 31,237-case original-suite retest of the exact Rust build that already passed all 10,434 broader checks; not yet run](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V27.md).
 - [Frozen first-party correction removing Rust's unused external-introspection path](oracle/phase2/RUST-NO-EXTERNAL-INTROSPECTION-V1.md).
 - [Actual first-party bridge source with no indirect Python-regex import](oracle/phase2/evidence/rust-no-external-introspection-v1-application.json).
 - [Latest C run, 16,413 verified checks, and all 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json).
