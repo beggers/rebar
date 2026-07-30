@@ -32,6 +32,13 @@ candidate compatibility result. A retry requires the exact independently
 prepared C locale and clean execution path. Corrected compatibility and
 final speed remain **NOT MEASURED**.
 
+The first clean-environment retry also
+[failed closed before any candidate execution](../oracle/phase2/evidence/rust-original-campaign-v25-preactivation-authority-failure.json):
+its inherited controller rejected **12** unnecessary historical authority
+flags. No worker started, no private build root opened, and no native
+library loaded. Both genuine infrastructure failures are preserved; neither
+changes the previous **1,352** Rust mismatches or the original denominator.
+
 ## Freeze lossless recording for all 10,434 public Rust checks
 
 The [public Rust correctness recorder](../oracle/phase3/RUST-PUBLIC-CORRECTNESS-EVIDENCE-V2.md)
