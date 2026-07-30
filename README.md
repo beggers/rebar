@@ -216,6 +216,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Preserved isolated-worker audit failure: process termination recurred, disproving the proposed fix](oracle/phase2/evidence/rust-live-non-delegation-v8-actual-runtime-failure.json).
 - [Frozen independently written Rust literal-search acceleration](oracle/phase2/RUST-EXACT-LITERAL-FASTPATH-V1.md).
 - [Actual from-scratch Rust literal-search source; not yet built, tested, or timed](oracle/phase2/evidence/rust-exact-literal-fastpath-v1-application.json).
+- [Frozen independent build of the first-party literal-search Rust architecture; not yet built](oracle/phase2/RUST-EXACT-LITERAL-SOURCE-BUILD-V34.md).
 - [Frozen 31,237-case original-suite retest of the exact Rust build that already passed all 10,434 broader checks](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V27.md).
 - [Preserved exact-build rerun failure: an inherited setup check rejected its newer build before matching](oracle/phase2/evidence/repaired-rust-original-campaign-v27-preactivation-failure.json).
 - [Corrected frozen exact-build Rust retest](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V28.md).
