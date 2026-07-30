@@ -290,6 +290,13 @@ The [first integrated native-build attempt](../oracle/phase2/evidence/native-sou
 stopped before starting any compiler because an inherited build kernel still
 expected the previous Python-adapter source identity. Its complete failure is
 preserved; no candidate matching or native compilation took place.
+The [corrected fully integrated Rust native-build procedure](../oracle/phase2/RUST-FULL-PUBLIC-SEMANTIC-SOURCE-BUILD-V33.md)
+explicitly updates both inherited first-party adapter identity checks before
+private source validation. It preserves the complete rejected predecessor,
+all **1,145** modeled wider-suite corrections, and the original
+**31,237-case** passing result. Four ordinary and clean-environment
+source-only checks pass **19** hostile controls; the combined native build and
+full wider correctness run have **NOT BEEN RUN**.
 
 ## Preserve the faster Rust architecture while correcting scoped Unicode matching
 

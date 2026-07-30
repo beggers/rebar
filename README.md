@@ -232,6 +232,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual corrected first-party Rust adapter preserving previous fixes and all 324 wider comment-handling cases](oracle/phase2/evidence/rust-corrected-comment-adapter-v2-application.json).
 - [Frozen fully integrated Rust build combining every original and wider-public compatibility correction](oracle/phase2/RUST-FULL-PUBLIC-SEMANTIC-SOURCE-BUILD-V32.md).
 - [Preserved integrated Rust build rejection before compilation, caused by an inherited stale adapter identity](oracle/phase2/evidence/native-source-build-v32-rust-full-public-preexecution-failure.json).
+- [Corrected fully integrated Rust build freeze preserving the rejected predecessor and every wider-public compatibility correction](oracle/phase2/RUST-FULL-PUBLIC-SEMANTIC-SOURCE-BUILD-V33.md).
 - [Frozen independent first-party correction for 88 remaining Rust template-expansion and buffer-probe differences](oracle/phase2/RUST-EXPAND-PROBE-SEMANTICS-V1.md).
 - [Actual isolated Rust bridge source correcting template expansion and outer buffer checks](oracle/phase2/evidence/rust-expand-probe-semantics-v1-application.json).
 - [Frozen combined first-party Rust correction covering all 1,352 known original compatibility failures](oracle/phase2/RUST-COMPLETE-SEMANTIC-CORRECTION-V1.md).
