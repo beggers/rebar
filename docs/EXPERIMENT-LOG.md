@@ -175,6 +175,14 @@ dependencies**. The historical **1,352** differences remain preserved;
 the corrected architecture's original-suite result, wider-suite result,
 runtime no-delegation, and speed are **NOT MEASURED**.
 
+The [complete original-suite rerun](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V26.md)
+authenticates both actual native Rust builds and retains the complete,
+unchanged **31,237-case**, **13-group** Python correctness oracle. Its four
+ordinary and clean-environment source-only checks all pass, including
+**2,554** hostile controls in each self-test. Actual candidate matching,
+its final difference count, runtime no-delegation, and qualification remain
+**NOT MEASURED** until the separately authorized full run completes.
+
 ## Freeze the combined fast-search and reusable-workspace architecture
 
 The [independent combined matching-workspace experiment](../oracle/phase2/RUST-COMBINED-VM-WORKSPACE-V1.md)

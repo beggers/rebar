@@ -100,7 +100,8 @@ not reduce the **1,352** remaining compatibility differences.
 The faster Rust engine and first-party fixes for all **1,352** known
 differences have now been built identically twice using **28** verified
 offline processes and **zero external packages**. The complete corrected
-candidate's **31,237-case** compatibility rerun has **NOT BEEN RUN**.
+candidate's **31,237-case** compatibility rerun is independently frozen and
+has **NOT BEEN RUN**.
 
 A corrected interpreter-isolation guard now recognizes real Python
 child interpreters while blocking borrowed regular-expression engines.
@@ -217,6 +218,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual complete first-party Rust bridge correction covering all 1,352 known original failures](oracle/phase2/evidence/rust-complete-semantic-correction-v2-application.json).
 - [Frozen independent offline build combining the faster Rust engine with all 1,352 first-party compatibility corrections](oracle/phase2/RUST-COMPLETE-SEMANTIC-SOURCE-BUILD-V30.md).
 - [Actual corrected fast Rust engine: two identical independent builds, 28 offline processes, and zero external dependencies](oracle/phase2/evidence/native-source-build-v30-rust-phase2-v30-rust-complete-semantic-source-root-provenance-publication-receipt.json).
+- [Frozen full 31,237-case correctness test for the fully corrected, faster first-party Rust engine; not yet run](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V26.md).
 - [Preserved first corrected-Rust retest rejection before any candidate execution](oracle/phase2/evidence/rust-original-campaign-v25-preactivation-locale-failure.json).
 - [Preserved second corrected-Rust retest rejection of excess authority](oracle/phase2/evidence/rust-original-campaign-v25-preactivation-authority-failure.json).
 - [Frozen from-scratch Rust parsing and allocation improvements](oracle/phase2/RUST-COMPILER-ALLOCATION-FASTPATH-V1.md).
