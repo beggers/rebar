@@ -1,0 +1,1 @@
+{"candidate_qualified":false,"error_message":"first-party V22 actual-build wall rejected unticketed candidate, source, evidence, or build artifact","error_type":"BuildError","exit_code":2,"schema":"rebar-owned-c-complete-semantic-source-build-v22-actual-build-failure","status":"FAIL","winner_selected":false}
