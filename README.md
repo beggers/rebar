@@ -86,7 +86,9 @@ counts are **NOT MEASURED** for unfinished runs. No failed candidate
 has established the required runtime no-delegation. The current C
 run preserves all **606** observed failing examples. Its older run
 saved only **92**; those **514** missing historical examples remain
-**NOT RECORDED**.
+**NOT RECORDED**. Separate, independently written C source corrections
+now cover all **606** observed failures; the combined build has not
+been compiled or tested.
 
 The latest C run correctly passes all **151** executable original
 Python tests while preserving all **152** test records and their
@@ -200,7 +202,8 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Preserved C adapter source-control rejection before candidate access or source creation](oracle/phase2/evidence/c-public-adapter-semantics-v1-preapplication-failure.json).
 - [Corrected C adapter source freeze preserving the failed predecessor and all 330 recorded Python behavior fixes](oracle/phase2/C-PUBLIC-ADAPTER-SEMANTICS-V2.md).
 - [Actual independently written C adapter correcting all 330 recorded Python interface, cache, and flag differences](oracle/phase2/evidence/c-public-adapter-semantics-v2-application.json).
-- [Frozen from-scratch C engine corrections targeting the other 276 observed failures; not yet applied or measured](oracle/phase2/C-COMPLETE-NATIVE-SEMANTICS-V1.md).
+- [Frozen from-scratch C engine corrections targeting the other 276 observed failures](oracle/phase2/C-COMPLETE-NATIVE-SEMANTICS-V1.md).
+- [Actual independently written C engine source covering buffer ownership, replacements, scanners, and legacy Match pickling](oracle/phase2/evidence/c-complete-native-semantics-v1-application.json).
 - [Frozen C test and complete failure-preservation rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md).
 - [Corrected C test preserving all real records and the genuine skipped case](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md).
 - [Previous C run and its original 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json).
