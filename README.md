@@ -11,11 +11,11 @@ import rebar as re
 Wrapping Python, an existing regular-expression package, or another
 project engine does not count. Each candidate must implement its own
 regular-expression engine. Dependency files, native links, import
-paths, and Python-facing wrappers are independently checked. The latest
-audit distinguishes an engine's verified first-party language bindings
-from forbidden external engines. Its complete inspection now isolates one
-remaining Rust-only cleanup issue; a separate first-party source variant
-removes it, and no external package supplies matching.
+paths, and Python-facing wrappers are independently checked. The corrected
+Rust engine, its Python bindings, all first-party sources, and both native
+builds now pass an independent inspection with **zero external
+regular-expression packages or engines**. Its older failed inspection is
+preserved; runtime no-delegation still requires a separate live proof.
 
 ## Results at a glance
 
@@ -94,9 +94,11 @@ with **zero differences** and **13** successful independent workers. This fixes
 all **1,352** differences preserved from its earlier run. The corrected
 engine's wider-suite compatibility, runtime no-delegation, and speed remain
 **NOT MEASURED** or **NOT ESTABLISHED**.
-A separate inspection of both independently built Rust engines, their native
-bindings, and all first-party sources is frozen; its actual external-engine
-and package audit has **NOT BEEN RUN**.
+A separate inspection of both independently built Rust engines, all **18**
+first-party sources, and all **four** native binaries found **zero** external
+regular-expression packages, external engine symbols, or matching delegation.
+This is a source/native inspection; live runtime non-delegation remains
+**NOT ESTABLISHED**.
 
 A corrected interpreter-isolation guard now recognizes real Python
 child interpreters while blocking borrowed regular-expression engines.
@@ -174,7 +176,8 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual seven-finding audit result, including first-party binding policy errors](oracle/phase2/evidence/runtime-non-delegation-v3-actual-source-audit-failure.json).
 - [Corrected from-scratch audit permitting verified first-party Zig bindings](oracle/phase2/RUNTIME-NON-DELEGATION-V4.md).
 - [Actual corrected audit: one remaining Rust-only introspection finding](oracle/phase2/evidence/runtime-non-delegation-v4-actual-source-audit-failure.json).
-- [Frozen first-party inspection of the corrected Rust candidate, its native binaries, and zero-external-package build; not yet run](oracle/phase2/RUST-CLEAN-NON-DELEGATION-V5.md).
+- [Frozen first-party inspection of the corrected Rust candidate, its native binaries, and zero-external-package build](oracle/phase2/RUST-CLEAN-NON-DELEGATION-V5.md).
+- [Actual clean Rust inspection: 18 first-party sources, four native binaries, zero external engines or packages](oracle/phase2/evidence/rust-clean-non-delegation-v5-actual-source-audit.json).
 - [Frozen first-party correction removing Rust's unused external-introspection path](oracle/phase2/RUST-NO-EXTERNAL-INTROSPECTION-V1.md).
 - [Actual first-party bridge source with no indirect Python-regex import](oracle/phase2/evidence/rust-no-external-introspection-v1-application.json).
 - [Latest C run, 16,413 verified checks, and all 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json).

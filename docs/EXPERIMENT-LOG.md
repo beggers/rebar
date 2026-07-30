@@ -196,8 +196,14 @@ first-party source files, all **four** native binaries, the zero-dependency
 Cargo build, and the separately preserved earlier global inspection failure.
 Its four ordinary and clean-environment source-only checks pass **99** hostile
 and **22** positive controls without reading any candidate or native file.
-The corrected Rust-specific source inspection has **NOT BEEN RUN**;
-runtime no-delegation remains **NOT ESTABLISHED**.
+The [actual corrected-Rust source and native inspection](../oracle/phase2/evidence/rust-clean-non-delegation-v5-actual-source-audit.json)
+checked **38** authenticated owners across both build phases and found
+**zero** external regular-expression packages, borrowed engine symbols,
+cross-family dependencies, or old private-introspection paths. Both native
+engines and both native bridges match across independent builds. The earlier
+global inspection failure remains unchanged; this newer result is specific to
+the corrected Rust candidate, and live runtime no-delegation remains
+**NOT ESTABLISHED**.
 
 ## Freeze the combined fast-search and reusable-workspace architecture
 
