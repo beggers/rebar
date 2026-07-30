@@ -229,7 +229,11 @@ pattern caching, and exact regular-expression flag representation. The
 remaining **620** scanner, **32** match-pickling, and **736** replacement and
 changing-buffer cases remain separately preserved. All four ordinary and
 clean-environment source-only checks pass without importing, executing, or
-modifying any candidate; the corrected Zig source is **NOT CREATED OR RUN**.
+modifying any candidate before separate root-only source authorization.
+The [actual corrected first-party Zig adapter](../oracle/phase2/evidence/zig-public-adapter-semantics-v1-application.json)
+now exists at its predicted **67,735-byte** source identity. It preserves the
+cleanup correction and models all **312** recorded interface differences;
+its native build and complete Zig correctness rerun remain **NOT RUN**.
 
 ## Combine all original Rust fixes with the wider scanner correction
 
