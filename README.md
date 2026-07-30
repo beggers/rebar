@@ -261,6 +261,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual two-build Zig result: 26 verified processes, identical native engines, and all 1,700 historical failures preserved](oracle/phase2/evidence/zig-full-semantic-source-build-v16-phase2-v16-zig-full-semantic-root-provenance-build-receipt.json).
 - [Frozen 31,237-case original-suite test of the fully corrected, independently built Zig engine](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V16.md).
 - [Actual complete corrected Zig run: 18,056 checks verified, 1,156 differences, 13 completed groups, and no worker crashes](oracle/phase2/evidence/repaired-zig-original-campaign-v16-phase2-v16-zig-full-semantic-original-p0-v16-failures-publication-receipt.json).
+- [Frozen independent Zig corrections targeting all 1,156 remaining scanner and flag differences; not yet applied](oracle/phase2/ZIG-FINAL-ORIGINAL-SEMANTICS-V1.md).
 - [Frozen first-party Zig cleanup correction](oracle/phase2/ZIG-DEALLOCATOR-SETATTR-SOURCE-REPAIR-V2.md) and [preserved Zig rerun that stopped before matching](oracle/phase2/evidence/zig-original-campaign-v14-setter-safe-prepublication-controller-failure.json).
 - [Next Zig test, correcting the stopped rerun; not yet run](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V15.md).
 - [Frozen Rust correctness procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V22.md) and [next targeted Rust buffer correction; not yet run](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2.md).
