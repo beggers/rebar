@@ -242,6 +242,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Frozen complete 31,237-case original-suite test of the independently corrected C engine; not yet run](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V13.md).
 - [Corrected frozen C test installing the exact newly built native engine and Python interface](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V14.md).
 - [Preserved complete C run failure: results could not be published after Python hit its recursion limit](oracle/phase2/evidence/repaired-c-original-campaign-v14-publication-recursion-failure.json).
+- [Corrected frozen C test fixing its evidence-publisher recursion; not yet run](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V15.md).
 - [Frozen C test and complete failure-preservation rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md).
 - [Corrected C test preserving all real records and the genuine skipped case](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md).
 - [Previous C run and its original 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json).
