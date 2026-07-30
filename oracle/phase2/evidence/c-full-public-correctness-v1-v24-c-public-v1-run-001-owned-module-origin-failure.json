@@ -1,0 +1,41 @@
+{
+  "schema": "rebar-owned-c-full-public-correctness-v1-observed-root-failure",
+  "status": "FAIL",
+  "family": "c",
+  "frozen_commit": "05a8310da96b01899be649b7f7a84f09e10572b9",
+  "source_sha256": "ea4b3b121d95506ae60fb7677d24b5e69263fccf22c6fa2b93e40a082123ffff",
+  "protocol_sha256": "def84f4016219db98d3328a12a22426d6c872775c46ff3e588748fff7d72bfdd",
+  "contract_sha256": "5afdeead12eab34c380735c08c89376d471a64948d52f9fc54b537711bfb122f",
+  "session": "v24-c-public-v1-run-001",
+  "process_exit_code": 2,
+  "failure_phase": "candidate import provenance audit",
+  "error_type": "PublicPracticeError",
+  "error_message": "an exact owned first-party runtime candidates module origin was substituted",
+  "stderr": "full first-party C public correctness rejected: PublicError: complete authentic strict-V4 C candidate worker failed: Traceback (most recent call last):\n  File \"/home/dev-user/src/rebar/tools/run_owned_c_full_public_correctness_v1.py\", line 1537, in <module>\n    raise SystemExit(main(sys.argv[1:]))\n                     ~~~~^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/tools/run_owned_c_full_public_correctness_v1.py\", line 1526, in main\n    result = isolated_candidate(options, state)\n  File \"/home/dev-user/src/rebar/tools/run_owned_c_full_public_correctness_v1.py\", line 1151, in isolated_candidate\n    observed = harness.observe_worker(\"c-public-v1-candidate\", \"rust\")\n  File \"/home/dev-user/src/rebar/tools/rust_public_practice_benchmark_v2.py\", line 1376, in observe_worker\n    engine = load_engine(engine_name, harness_regex)\n  File \"/home/dev-user/src/rebar/tools/rust_public_practice_benchmark_v2.py\", line 1368, in load_engine\n    audit_candidate_runtime(engine, harness_regex, phase=\"candidate import\")\n    ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/tools/rust_public_practice_benchmark_v2.py\", line 729, in audit_candidate_runtime\n    origin = owned_origin(module, description=\"first-party runtime \" + name)\n  File \"/home/dev-user/src/rebar/tools/rust_public_practice_benchmark_v2.py\", line 658, in owned_origin\n    require(type(origin) is str and os.path.isabs(origin)\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            and os.path.abspath(origin) == origin\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            and os.path.realpath(origin) == origin\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            and os.path.commonpath((str(ROOT), origin)) == str(ROOT),\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n            \"an exact owned \" + description + \" module origin was substituted\")\n            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/dev-user/src/rebar/tools/rust_public_practice_benchmark_v2.py\", line 189, in require\n    raise PublicPracticeError(message)\n_rebar_owned_c_full_public_v1_worker.PublicPracticeError: an exact owned first-party runtime candidates module origin was substituted\n",
+  "public_case_denominator": 10434,
+  "public_operation_count": 111,
+  "stdlib_reference_case_count": 10434,
+  "candidate_case_count": "NOT MEASURED",
+  "candidate_semantic_mismatch_count": "NOT MEASURED",
+  "candidate_runtime_guard_version": 4,
+  "candidate_guard_installed_before_candidate_import": true,
+  "candidate_imported": true,
+  "candidate_result_published_by_runner": false,
+  "original_adapter": {
+    "relative": "candidates/vm_candidate.py",
+    "sha256": "b37d3e634b10c37ded2de3c59af9ef477e1d12125ab1b52cfc57915305ff7096",
+    "bytes": 60707,
+    "inode": 428074
+  },
+  "original_native": {
+    "relative": "candidates/_vm_native.cpython-314-x86_64-linux-gnu.so",
+    "sha256": "075350a17d4909cd6f8dbe5e808e7b6444760f54bb60af013e0f812e22cfb7fd",
+    "bytes": 149976,
+    "inode": 430300
+  },
+  "all_original_candidate_inodes_restored": true,
+  "wider_c_correctness": "NOT MEASURED",
+  "holdout": "NOT OPENED",
+  "candidate_qualified": false,
+  "winner_selected": false
+}
