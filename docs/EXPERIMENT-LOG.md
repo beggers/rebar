@@ -132,7 +132,12 @@ actual implementation. The corrected bridge itself is unchanged from the
 original prediction: **177,335 bytes**, with all **1,264** target event
 models preserved. Four ordinary and clean-environment source gates pass **93**
 hostile controls while preserving the earlier failed attempt. Its source
-variant has not yet been created, built, or tested.
+variant has now been [exclusively created from the authenticated first-party bridge](../oracle/phase2/evidence/rust-substitution-event-order-v2-application.json).
+It has exactly **177,335 bytes** and SHA-256
+`c69e24a87c251a332b79c4f4b5ed1a9f232847e446518930473a2ec871f020ab`.
+It preserves the existing buffer safety correction and removes all external
+introspection imports. The corrected candidate has not yet been built or
+retested; actual compatibility remains **NOT MEASURED**.
 
 ## Freeze the separate correction for 88 Rust expansion differences
 
