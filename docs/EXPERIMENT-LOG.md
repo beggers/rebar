@@ -89,8 +89,17 @@ failed closed before creating either output. Linux represents temporary-file
 creation with a composite flag that includes the ordinary directory-open
 bit; the source guard incorrectly rejected safe read-only directory access.
 The failure was independently reproduced, no candidate ran, and no final
-case was accessed. A separately frozen successor must fix the flag check
-without weakening temporary-file or write protections.
+case was accessed.
+
+The [independently frozen corrected successor](../oracle/phase2/RUST-COMBINED-SEARCH-COMPILER-FASTPATH-V2.md)
+accepts genuine read-only directory access while continuing to reject the
+complete temporary-file flag, unsafe directory flags, and unauthorized
+writes. Four ordinary and clean-environment source gates passed; they cover
+**111,552** combined modeled cases, the original **960** compiler cases,
+**11,328** search cases, and both original unsuccessful attempts. Its target
+is a fresh immutable source directory. The combined candidate has not been
+created, built, correctness-tested, or timed, and the final test remains
+unopened.
 
 ## Preserve complete Rust and Python timing and native memory evidence
 
