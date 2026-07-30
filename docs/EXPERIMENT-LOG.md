@@ -74,6 +74,22 @@ the original **1,352** differences remain, and runtime no-delegation is not
 yet established; the architecture remains **unqualified** and no final
 winner exists.
 
+## Freeze the correction targeting 1,264 Rust compatibility failures
+
+The [first-party replacement-order correction](../oracle/phase2/RUST-SUBSTITUTION-EVENT-ORDER-V1.md)
+addresses the shared cause of all **240** replacement-suite differences and
+**1,024** changing-buffer differences. Python validates replacement inputs
+before acquiring the searched input; the existing Rust bridge did the reverse.
+For literal replacements it also retained the searched input too long.
+
+The independently written correction changes one first-party bridge function,
+preserves its existing buffer-safety fix, and removes the unused external
+introspection path. Four ordinary and clean-environment source gates pass
+all **1,264** corresponding historical event models and **91** hostile
+controls. The remaining **88** changing-buffer issues require a separately
+scoped correction. This source freeze has not yet created, built, or tested
+the corrected candidate; its actual compatibility remains **NOT MEASURED**.
+
 ## Show the latest complete Rust compatibility result clearly
 
 The [updated headline correctness chart](evidence/candidate-current-overview-v101.svg)
