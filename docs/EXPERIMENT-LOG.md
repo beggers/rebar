@@ -403,14 +403,16 @@ remain **NOT MEASURED**.
 
 ## Show the latest complete Rust compatibility result clearly
 
-The [updated headline correctness chart](evidence/candidate-current-overview-v101.svg)
-is regenerated entirely from its [authenticated inputs](evidence/candidate-current-overview-v101.inputs.json)
-and [complete public result](evidence/candidate-current-overview-v101.json).
-It includes the latest fully completed Rust retest: **15,877** verified checks,
-all **13** completed groups, and **1,352** preserved differences after the
-buffer-safety correction. The original denominator remains **31,237**. Its
-separate no-delegation audit still has one unresolved finding; final speed
-and candidate qualification remain **NOT MEASURED**.
+The [updated headline correctness chart](evidence/candidate-current-overview-v103.svg)
+is regenerated entirely from its [authenticated inputs](evidence/candidate-current-overview-v103.inputs.json)
+and [complete generated result](evidence/candidate-current-overview-v103.json).
+It includes the actual corrected Rust result: **31,237** verified checks,
+all **13** completed groups, **zero** differences, and **13** distinct
+successful workers. C remains at **16,413** verified checks and Zig at
+**4,607**, without changing the shared **31,237-case** denominator.
+The earlier **1,352** Rust failures remain preserved as history. Final speed,
+live runtime no-delegation, and full candidate qualification remain
+**NOT MEASURED** or **NOT ESTABLISHED**.
 
 ## Freeze an independent reusable Rust matching-workspace architecture
 
