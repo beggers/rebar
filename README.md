@@ -238,6 +238,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Preserved complete C build failure: its safety guard rejected an unticketed file access before compilation](oracle/phase2/evidence/c-complete-semantic-source-build-v22-actual-build-failure.json).
 - [Corrected frozen C build: narrowly permits Python's required `/dev/urandom` access](oracle/phase2/C-COMPLETE-SEMANTIC-SOURCE-BUILD-V23.md).
 - [Actual independent complete C build: two byte-identical native engines and 14 verified compiler and inspection processes](oracle/phase2/evidence/native-source-build-v23-c-phase2-v23-c-complete-semantics-publication-receipt.json).
+- [Frozen complete 31,237-case original-suite test of the independently corrected C engine; not yet run](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V13.md).
 - [Frozen C test and complete failure-preservation rules](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V11.md).
 - [Corrected C test preserving all real records and the genuine skipped case](oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V12.md).
 - [Previous C run and its original 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v11-c-phase2-v21-c-original-match-semantics-original-p0-v11-failures-publication-receipt.json).

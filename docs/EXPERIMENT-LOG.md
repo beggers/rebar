@@ -25236,3 +25236,7 @@ The [corrected complete C build](../oracle/phase2/C-COMPLETE-SEMANTIC-SOURCE-BUI
 ## Frozen independent build of Rust's literal-search architecture
 
 The [first-party exact-literal Rust build](../oracle/phase2/RUST-EXACT-LITERAL-SOURCE-BUILD-V34.md) freezes two independent compilations of a new matching-engine architecture designed to skip unnecessary work for ordinary literal searches. It combines the separately created Rust optimization with the already compatible Python interface and native binding; no external regular-expression package or matching engine is used. All previous **31,237-case**, **10,434-case**, and **1.24×** results remain attributed only to the earlier Rust build. The new architecture has **NOT YET BEEN BUILT**, correctness-tested, or timed.
+
+## Frozen original-suite campaign for the complete C engine
+
+The [complete corrected C correctness campaign](../oracle/phase2/REPAIRED-C-ORIGINAL-CAMPAIGN-V13.md) freezes all **31,237** original Python checks across **13** independent workers for the twice-built first-party C matcher and corrected Python interface. It preserves all **606** previous observed differences, safely journals both original installed files, installs the strict version-4 isolation guard before importing the candidate, and restores both original file identities after testing. Four isolated source-only gates pass **184** hostile controls; corrected C compatibility remains **NOT MEASURED**.
