@@ -204,6 +204,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Frozen independent Zig adapter correction covering 312 documented error, cache, and flag-compatibility failures](oracle/phase2/ZIG-PUBLIC-ADAPTER-SEMANTICS-V1.md).
 - [Actual independently written Zig adapter correcting 312 recorded Python error, cache, and flag behaviors](oracle/phase2/evidence/zig-public-adapter-semantics-v1-application.json).
 - [Frozen first-party Zig scanner bridge correction for all 620 documented scanner mismatches](oracle/phase2/ZIG-SCANNER-CAPTURE-SEMANTICS-V1.md).
+- [Actual independently written Zig native bridge correcting all 620 recorded scanner differences](oracle/phase2/evidence/zig-scanner-capture-semantics-v1-application.json).
 - [Frozen first-party Zig cleanup correction](oracle/phase2/ZIG-DEALLOCATOR-SETATTR-SOURCE-REPAIR-V2.md) and [preserved Zig rerun that stopped before matching](oracle/phase2/evidence/zig-original-campaign-v14-setter-safe-prepublication-controller-failure.json).
 - [Next Zig test, correcting the stopped rerun; not yet run](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V15.md).
 - [Frozen Rust correctness procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V22.md) and [next targeted Rust buffer correction; not yet run](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2.md).

@@ -248,6 +248,10 @@ independently fixes the exact native bridge defect responsible for all
 **620** observed scanner mismatches: a correct nested phrase capture was
 being overwritten by the surrounding whole-match span. Its four source-only
 checks pass without creating, compiling, or running a candidate.
+The [actual corrected first-party Zig scanner bridge](../oracle/phase2/evidence/zig-scanner-capture-semantics-v1-application.json)
+now exists at its predicted **173,082-byte** source identity. All **620**
+scanner cases remain a source-level model until the independently built Zig
+candidate passes the full frozen correctness suite.
 
 ## Combine all original Rust fixes with the wider scanner correction
 
