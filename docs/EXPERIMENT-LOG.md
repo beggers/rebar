@@ -25204,3 +25204,7 @@ The [corrected live Rust audit](../oracle/phase2/RUST-LIVE-NON-DELEGATION-V7.md)
 ## Frozen original-suite rerun for the exact current Rust build
 
 The [exact-build Rust original-suite campaign](../oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V27.md) freezes all **31,237** original CPython checks across **13** groups for the identical independently built Rust engine that already passes all **10,434** wider public checks. It preserves the older Rust build's complete original-suite pass without incorrectly assigning that result to the newer binary. Four source-only gates pass, including **2,841** hostile controls. Its [actual first run](../oracle/phase2/evidence/repaired-rust-original-campaign-v27-preactivation-failure.json) rejects the newer build as stale before running any matching checks. The exact current build's original-suite result remains **NOT MEASURED**.
+
+## Frozen independently written complete Zig build
+
+The [complete first-party Zig build](../oracle/phase2/ZIG-FULL-SEMANTIC-SOURCE-BUILD-V16.md) freezes two independently compiled copies of the corrected Zig matching engine, Python interface, and native binding. The sources account for all **1,700** preserved observed failures, use no outside regex package or matching engine, and permit only Python's required `copyreg` compatibility import. Four isolated source-only gates pass **182** hostile controls. Its planned **26** compiler and verification processes have **NOT YET RUN**; compatibility and speed remain **NOT MEASURED**.
