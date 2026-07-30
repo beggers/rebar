@@ -104,6 +104,17 @@ candidate. The original **31,237**-case denominator and all **1,352** known
 Rust failures remain preserved. Actual combined native compilation,
 compatibility, speed, and runtime no-delegation remain **NOT MEASURED**.
 
+The [actual combined architecture build](../oracle/phase2/evidence/native-source-build-v28-rust-phase2-v28-rust-combined-source-root-provenance-publication-receipt.json)
+completed **28** authenticated offline compilation and inspection processes
+across two independent private source trees. Both produced exactly the same
+accelerated Rust engine, SHA-256
+`3c952a1a9eee234f646bdbd119978d8fb18c223ac71b63db1ed0eada9aed1237`,
+and the same clean first-party bridge, SHA-256
+`831d48942d04bd211e42702abbb19789ddead6564df4f817ea35900bf3931d82`.
+Both native artifacts contain **zero** external regular-expression or
+cross-family dependencies, and every original source/runtime identity was
+restored. Matching and speed have not yet been tested for this combined build.
+
 ## Freeze the correction targeting 1,264 Rust compatibility failures
 
 The [first-party replacement-order correction](../oracle/phase2/RUST-SUBSTITUTION-EVENT-ORDER-V1.md)
