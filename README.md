@@ -19,20 +19,19 @@ preserved; runtime no-delegation still requires a separate live proof.
 
 ## Results at a glance
 
-**Six independently written approaches. One exact Rust build passes all
-31,237 original checks and all 10,434 wider compatibility checks.
+**Six independently written approaches. Independent Rust and Zig engines
+both pass all 31,237 original Python checks; Rust also passes all 10,434
+wider compatibility checks.
 It is 1.24× faster than Python across 416 public workloads. Zero fully
 qualified replacements. Hidden-test speed: NOT MEASURED. No winner.**
 
 ![Earlier compatibility snapshot: Rust passes all 31,237 original Python checks and all 10,434 broader real-world checks. C passes 16,413 checks; the earlier Zig run passes 4,607. The newer Zig result below was recorded after this historical graph.](docs/evidence/candidate-current-overview-v104.svg)
 
 The newer complete C run verifies **22,798 of 31,237** checks and
-records **224** differences; Zig verifies **18,056** and records
-**1,156**. Both candidates finish all **13** groups.
-
-An updated Zig implementation addressing all **1,156** recorded
-differences has now been independently compiled twice. Its compatibility
-after those changes is **NOT MEASURED**.
+records **224** differences. The independently rebuilt Zig engine now
+passes **31,237 of 31,237** original checks with **zero** differences;
+its wider compatibility, live independence, and speed remain
+**NOT MEASURED**.
 
 A new, independently written Rust/Python boundary optimization targets
 **10 of 14** substantial measured slowdowns. Its corrected behavior and
@@ -97,7 +96,7 @@ could not start its sampling timer.
 | Python `re` | 31,237 / 31,237; 100% | Reference baseline. |
 | C | 22,798 / 31,237; 73.0% | FAIL; 224 differences remain across three groups; all 13 isolated workers finish. |
 | Rust | 31,237 / 31,237; 100% | The identical build passes all original and wider checks; live independence and final speed remain unqualified. |
-| Zig | 18,056 / 31,237; 57.8% | FAIL; 1,156 differences across six groups; all 13 workers completed and all original files were restored. |
+| Zig | 31,237 / 31,237; 100% | Passes every original check; wider compatibility, live independence, and speed remain unmeasured. |
 | C++ | NOT MEASURED | FAIL; 2,308 observed differences and five worker failures. |
 | Go | NOT MEASURED | FAIL; 4,518 observed differences and four worker failures. |
 | Fortran | NOT MEASURED | FAIL; independent builds disagree; matching was not tested. |
@@ -275,7 +274,8 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Frozen 31,237-case original-suite test of the fully corrected, independently built Zig engine](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V16.md).
 - [Actual complete corrected Zig run: 18,056 checks verified, 1,156 differences, 13 completed groups, and no worker crashes](oracle/phase2/evidence/repaired-zig-original-campaign-v16-phase2-v16-zig-full-semantic-original-p0-v16-failures-publication-receipt.json).
 - [Frozen independent Zig corrections targeting all 1,156 remaining scanner and flag differences](oracle/phase2/ZIG-FINAL-ORIGINAL-SEMANTICS-V1.md).
-- [Actual first-party Zig adapter and bridge corrections accounting for all 1,156 documented failures; not yet rebuilt or retested](oracle/phase2/evidence/zig-final-original-semantics-v1-application.json).
+- [Actual first-party Zig adapter and bridge corrections accounting for all 1,156 documented historical failures](oracle/phase2/evidence/zig-final-original-semantics-v1-application.json).
+- [Complete corrected Zig original-suite result: all 31,237 checks pass, zero differences, and all 13 isolated workers complete](oracle/phase2/evidence/repaired-zig-original-campaign-v18-phase2-v18-zig-final-original-p0-v18-success-publication-receipt.json).
 - [Frozen first-party Zig cleanup correction](oracle/phase2/ZIG-DEALLOCATOR-SETATTR-SOURCE-REPAIR-V2.md) and [preserved Zig rerun that stopped before matching](oracle/phase2/evidence/zig-original-campaign-v14-setter-safe-prepublication-controller-failure.json).
 - [Next Zig test, correcting the stopped rerun; not yet run](oracle/phase2/REPAIRED-ZIG-ORIGINAL-CAMPAIGN-V15.md).
 - [Frozen Rust correctness procedure](oracle/phase2/REPAIRED-RUST-ORIGINAL-CAMPAIGN-V22.md) and [next targeted Rust buffer correction; not yet run](oracle/phase2/RUST-CAPTURE-SHAPE-SEMANTICS-V2.md).

@@ -2,6 +2,18 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## Pass every original Python check with the from-scratch Zig engine
+
+The [fully corrected Zig result](../oracle/phase2/evidence/repaired-zig-original-campaign-v18-phase2-v18-zig-final-original-p0-v18-success-publication-receipt.json)
+passes **31,237 of 31,237** frozen original Python checks with **zero**
+differences. All **13** isolated workers complete, no worker crashes or
+times out, and all three temporarily installed source files are restored.
+The complete compressed raw record is preserved. The independently
+implemented engine and bridge were each built twice without an external
+regular-expression package or borrowed engine. Wider compatibility, live
+independence, memory safety, and performance remain **NOT MEASURED**;
+the implementation is not yet fully qualified.
+
 ## Independently rebuild the corrected, from-scratch Zig engine
 
 The [final corrected Zig build](../oracle/phase2/evidence/zig-final-original-source-build-v17-phase2-v17-zig-final-original-build-receipt.json)
