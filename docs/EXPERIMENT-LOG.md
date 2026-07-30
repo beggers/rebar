@@ -188,6 +188,17 @@ restored exactly. Runtime no-delegation, wider public-suite compatibility,
 and the corrected engine's speed remain **NOT ESTABLISHED** or
 **NOT MEASURED**; this is an original-suite pass, not full qualification.
 
+## Freeze a complete first-party inspection of the corrected Rust candidate
+
+The [corrected Rust source and native-link inspection](../oracle/phase2/RUST-CLEAN-NON-DELEGATION-V5.md)
+authenticates both independently built Rust phases, all **18** private
+first-party source files, all **four** native binaries, the zero-dependency
+Cargo build, and the separately preserved earlier global inspection failure.
+Its four ordinary and clean-environment source-only checks pass **99** hostile
+and **22** positive controls without reading any candidate or native file.
+The corrected Rust-specific source inspection has **NOT BEEN RUN**;
+runtime no-delegation remains **NOT ESTABLISHED**.
+
 ## Freeze the combined fast-search and reusable-workspace architecture
 
 The [independent combined matching-workspace experiment](../oracle/phase2/RUST-COMBINED-VM-WORKSPACE-V1.md)

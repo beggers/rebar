@@ -94,6 +94,9 @@ with **zero differences** and **13** successful independent workers. This fixes
 all **1,352** differences preserved from its earlier run. The corrected
 engine's wider-suite compatibility, runtime no-delegation, and speed remain
 **NOT MEASURED** or **NOT ESTABLISHED**.
+A separate inspection of both independently built Rust engines, their native
+bindings, and all first-party sources is frozen; its actual external-engine
+and package audit has **NOT BEEN RUN**.
 
 A corrected interpreter-isolation guard now recognizes real Python
 child interpreters while blocking borrowed regular-expression engines.
@@ -171,6 +174,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Actual seven-finding audit result, including first-party binding policy errors](oracle/phase2/evidence/runtime-non-delegation-v3-actual-source-audit-failure.json).
 - [Corrected from-scratch audit permitting verified first-party Zig bindings](oracle/phase2/RUNTIME-NON-DELEGATION-V4.md).
 - [Actual corrected audit: one remaining Rust-only introspection finding](oracle/phase2/evidence/runtime-non-delegation-v4-actual-source-audit-failure.json).
+- [Frozen first-party inspection of the corrected Rust candidate, its native binaries, and zero-external-package build; not yet run](oracle/phase2/RUST-CLEAN-NON-DELEGATION-V5.md).
 - [Frozen first-party correction removing Rust's unused external-introspection path](oracle/phase2/RUST-NO-EXTERNAL-INTROSPECTION-V1.md).
 - [Actual first-party bridge source with no indirect Python-regex import](oracle/phase2/evidence/rust-no-external-introspection-v1-application.json).
 - [Latest C run, 16,413 verified checks, and all 606 preserved failures](oracle/phase2/evidence/repaired-c-original-campaign-v12-c-phase2-v21-c-original-match-semantics-original-p0-v12-failures-publication-receipt.json).
