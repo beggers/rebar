@@ -6,6 +6,46 @@ below are source-only or read-only unless a command explicitly says otherwise.
 The current results and charts remain in [the project README](../README.md);
 experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
+## Verify the current Rust and Python comparison graph
+
+Validate the complete current graph, preserved C and Rust evidence,
+previous comparison, and still-unopened final-test proposal without
+rerunning any candidate or opening compressed results:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/render_candidate_current_overview_v100.py \
+  --verify-frozen-context \
+  --source-sha256 c6514b88fafe06c18ee52a129a9b90f3a689ad74f3aa59ec6505d5405c866ed8 \
+  --previous-source-sha256 f4e1e69dcd0e6e5c068165a4893d89ccc183c03eee59c0c99a654bc47ea88196 \
+  --previous-inputs-sha256 f922882c1a00ae0fb8cd4dc81f498c6f5d785274246f1014759585d86e3387bd \
+  --previous-summary-sha256 bbd38c44616adb8e35c3c98d64ed15e55560f938123c8c42569b30fc7597d5af \
+  --previous-svg-sha256 c98a398357628201bb7b6d97ec4fd1bb32e8c770b8c5ba74850d6e4e1c0f6821 \
+  --rust-source-sha256 f855f73e320f4ec33063dac1f22c11b1977ba04a02e1f97dfddca1d0670f705d \
+  --rust-protocol-sha256 d482cf8d06f9f328c08fda43a63db79db408e2421bad24e6e047ad507ef70431 \
+  --rust-contract-sha256 605737aa5060b78eb3802c8b3e58954a680bdf08b6f62a402de453552a0cd8f4 \
+  --rust-receipt-sha256 5acd8dee2a515af56306e61f6ae8774c567f1f47e0ef1930a17e6809c2aafa09 \
+  --c-receipt-sha256 a3f4b90b8f289df9dfe49f776266e3c290edb2c21c62713137f501a5f997c21b \
+  --proposal-source-sha256 48d39e0a39a835c9876344591f8b4b63cfad336c3b4e1b1dd2164255763b33f7 \
+  --proposal-protocol-sha256 96c6edae1fe959faa59079ada499bb98173101171c8c377e900eba7bb2673c38 \
+  --proposal-contract-sha256 5d9fa3920c1dcabc92a3521d742cd10ec399cff1a979b71ac079daba6f92cba0
+```
+
+Replace `--verify-frozen-context` with `--self-test` to repeat all
+**91** source-only adversarial checks. Expected output hashes are:
+
+```text
+docs/evidence/candidate-current-overview-v100.inputs.json
+5285437e8004f95c69806b482c08f40736ab03aff498c6047d3235ae444b064b
+
+docs/evidence/candidate-current-overview-v100.summary.json
+249304de2735ec5a1c6602f888b9543a181c7c63fa84cca58285b807b3cd299b
+
+docs/evidence/candidate-current-overview-v100.svg
+d8847686c8da69902cb9089e79d607028b4fceeb8919e8ac2ad8d8f3d1629fd1
+```
+
 ## Verify the preserved first-party audit failure
 
 Confirm the authentic infrastructure failure without rerunning the

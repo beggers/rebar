@@ -8,6 +8,21 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Publish the current Rust comparison graph
+
+The [updated current comparison](evidence/candidate-current-overview-v100.svg)
+shows official Python **31,237**, C **16,413**, Rust **15,877**,
+and Zig **4,607** verified original checks. Rust gained **1,152**
+verified checks, completed all **13** groups, and retained all
+**1,352** observed replacement and changing-buffer differences.
+
+The source authenticates the preceding complete graph, the exact
+C and Rust results, and the independently preserved
+**141,557,760**-case unopened final-test proposal. All four ordinary
+and clean source-only checks passed, including **91** adversarial
+controls. No candidate, native engine, archive, or holdout was
+opened while creating the graph. Speed remains **NOT MEASURED**.
+
 ## Preserve the strict audit's genuine Rust-lexer failure
 
 The [actual version-2 source-audit failure](../oracle/phase2/evidence/runtime-non-delegation-v2-actual-source-lexer-failure.json)
