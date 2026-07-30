@@ -2,6 +2,16 @@
 
 This log preserves the chronological work behind the concise [README](../README.md). Every linked report keeps its raw measurements, generated charts, losses, and reproduction details.
 
+## Preserve an outdated three-engine speed-chart freeze
+
+The [independence-corrected public-speed chart freeze](../oracle/phase2/TRUTHFUL-CURRENT-SPEED-HEADLINE-V109.md)
+accurately reports the measured Rust-versus-Python timing and corrects the
+older-build audit attribution. However, it was frozen before C's latest
+complete **31,237**-check success, so its generated C correctness fields
+still describe the historical **22,798**-check result. The freeze remains
+preserved; its outdated generated chart is **NOT PUBLISHED** or used as a
+current headline. An append-only successor must bind the latest C result.
+
 ## Publish the current three-engine compatibility comparison
 
 The [updated compatibility headline](evidence/candidate-current-overview-v110.svg)
