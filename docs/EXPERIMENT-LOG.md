@@ -8,6 +8,31 @@ must never be reused. The separate **4,194,304**-case proposal and the
 newer **14,155,776**-case proposal are both **NOT FROZEN**,
 **NOT GENERATED**, and **NOT OPENED**.
 
+## Freeze 48,416 additional real-world Python input questions
+
+The [separate buffer and memory-mapping matrix](../oracle/phase1/P0-PUBLIC-BUFFER-CARRIERS-SUPPLEMENT-V1.md)
+freezes **48,416** additional questions covering **86** typed-array,
+memory-mapped, byte-oriented, writable, readonly, released, stepped,
+reversed, and differently ordered carriers. It preserves the original
+**31,237**-case, **13**-group comparison, all **73** obligations,
+all **34** mappings, all **13** named private waivers, the separate
+**8,244** differential cases, and the **50** signature cases.
+
+The five disjoint groups contain **28,294** subject and scanner
+questions, **3,870** pattern questions, **3,184** substitution and
+callback questions, **344** escaping questions, and **12,724**
+applicable owner and buffer-lifetime questions. The frozen matrix
+excludes physically impossible combinations; it never predicts that
+a released or non-contiguous buffer is accepted.
+
+All **48,416** official Python answers are **NOT RECORDED**. The
+source freeze has not created a memory mapping, run a Python
+reference, imported a regular-expression engine, or tested a
+candidate. Both independent environments pass **53** positive and
+**564** hostile controls. The future two-reference run must be
+separately frozen and executed before any replacement claims this
+coverage. The performance holdout remains unopened.
+
 ## Freeze the correction for Zig's observed cleanup failure
 
 The actual, independently written Zig engine produced cleanup warnings

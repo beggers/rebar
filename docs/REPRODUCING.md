@@ -67,6 +67,34 @@ docs/evidence/candidate-current-overview-v95.svg
 03a9e03e495fb4ec8362150f02072a4828e13e5f049af430042c435370c6808d
 ```
 
+## Verify the expanded real-world input questions
+
+The additional matrix contains **48,416** separately identified
+questions across **86** typed-array, memory-map, scanner,
+replacement, and buffer-lifetime carriers. Every expected answer is
+**NOT RECORDED**. It does not change the original **31,237** checks
+or run a Python reference or candidate.
+
+Verify its complete frozen source, canonical matrix, upstream Python
+tests, and unchanged original evidence in a clean environment:
+
+```bash
+env -i PATH=/usr/bin:/bin LC_ALL=C PYTHONDONTWRITEBYTECODE=1 \
+  /tmp/rebar-cpython/cpython-3.14.6-linux-x86_64-gnu/bin/python3.14 \
+  -I -B -S tools/verify_owned_public_buffer_carriers_supplement_v1.py \
+  --verify-frozen-context \
+  --source-sha256 ac3ffc76fb0ea8af97715ddc6bd55833dcb0d7e85231b0d9ef37eb7bb46c0d15 \
+  --protocol-sha256 da5854c7f9befc54076a8032d0723baf60f53e446f1cb15724bb2d37c71a790d \
+  --contract-sha256 0086959c29967beb40d1b153a52aafffeb3eacbda98d5c7cf40a3b9890cb9db2
+```
+
+Replace `--verify-frozen-context` with `--self-test` to reproduce the
+**53** positive and **564** hostile checks. Repeat without `env -i`
+for the ordinary environment. The deterministic, newline-delimited
+matrix SHA-256 is
+`4de04250c99a87d188bf1f8386ad80044ae86d136908ea7aa1bc86e8b7c32ab1`.
+Neither mode records a Python answer or opens the performance holdout.
+
 ## Verify the frozen Zig cleanup correction
 
 The actual version-13 Zig engine emitted cleanup warnings in all

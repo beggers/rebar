@@ -46,6 +46,11 @@ extra points added to the original denominator. Candidates must also
 pass large-input, public-interface, cleanup, interpreter-isolation,
 and no-delegation checks.
 
+A further **48,416** separately frozen questions cover real
+memory-mapped inputs, typed arrays, replacement callbacks, scanners,
+and buffer lifetimes. Their Python reference answers are
+**NOT RECORDED**; they do not change the original score.
+
 ## More detailed correctness graphs
 
 These historical graphs show individual correctness checks. They do
@@ -77,6 +82,7 @@ A winner must be at least **1.5×** faster overall, faster on at least
 - [Reproduce and audit the headline graph](docs/REPRODUCING.md).
 - [Detailed experiment log, rejected designs, and full evidence](docs/EXPERIMENT-LOG.md).
 - [Frozen original Python correctness checks](oracle/phase1/P0-COMPLETENESS-V4.md) and [8,244 independent additional checks](oracle/phase1/P0-DIFFERENTIAL-FUZZ-REFERENCE-V3.md).
+- [48,416 additional real-world buffer and memory-mapping questions](oracle/phase1/P0-PUBLIC-BUFFER-CARRIERS-SUPPLEMENT-V1.md).
 - [Six independently authored engines](oracle/phase2/SIX-FAMILY-P0-PRODUCER-V5.md) and the [no-wrapping audit](oracle/phase2/CANDIDATE-INDEPENDENCE-V2.md).
 - [Latest real Rust run, regression, and complete preserved failure](oracle/phase2/evidence/repaired-rust-original-campaign-v16-rust-phase2-v22-rust-capture-shape-root-provenance-original-p0-v22-failures-publication-receipt.json).
 - [Latest real Zig run and complete observed failure](oracle/phase2/evidence/repaired-zig-original-campaign-v13-phase2-v13-zig-guard-clean-lifetime-v1-original-p0-v13-failures-publication-receipt.json).
