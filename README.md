@@ -16,17 +16,21 @@ count.
 Three independently written engines—C, Rust, and Zig—each pass all
 **31,237** original Python checks with **zero differences**. An earlier Rust
 version also passed **10,434** broader checks and was **1.24× faster than
-Python** across **416** public workloads. Broader checks and speed for the
-newer, safer Rust version and the C and Zig engines are **NOT MEASURED**.
+Python** across **416** public workloads. Zig passes **10,120 of 10,434**
+broader checks, exposing **314** real compatibility differences. Broader
+checks for the newer, safer Rust version and C are **NOT MEASURED**.
 
-![Current compatibility: the independent C, Rust, and Zig engines all pass every one of Python's 31,237 original checks; Rust also passes 10,434 broader checks, while broader C and Zig results remain unmeasured.](docs/evidence/candidate-current-overview-v110.svg)
+![Earlier original-compatibility graph: all three independently written engines pass the original 31,237 checks.](docs/evidence/candidate-current-overview-v110.svg)
+
+This older graph predates Zig's newly measured **314** broader differences;
+the current results are shown in the table below.
 
 | Implementation | Original Python checks | Broader checks | Public speed |
 | --- | --- | --- | --- |
 | Python `re` | 31,237 / 31,237 | 10,434 / 10,434 | 1.00× baseline |
 | Current Rust | 31,237 / 31,237 | NOT MEASURED | NOT MEASURED |
 | Earlier Rust | 31,237 / 31,237 | 10,434 / 10,434 | 1.24× |
-| Zig | 31,237 / 31,237 | NOT MEASURED | NOT MEASURED |
+| Zig | 31,237 / 31,237 | 10,120 / 10,434; 314 differences | NOT MEASURED |
 | C | 31,237 / 31,237 | NOT MEASURED | NOT MEASURED |
 | C++, Go, Fortran | NOT MEASURED | NOT MEASURED | NOT MEASURED |
 
@@ -80,6 +84,7 @@ Final hidden-test speed: **NOT MEASURED**. Winner: **NOT SELECTED**.
 - [Earlier Rust: all 10,434 broader checks](oracle/phase2/evidence/rust-full-public-correctness-v5-v33-full-public-v5-run-001-publication-receipt.json).
 - [Earlier Rust: public speed and every slowdown](oracle/phase2/evidence/rust-corrected-public-performance-v4-v33-corrected-performance-run-001-publication-receipt.json).
 - [Zig: all 31,237 original checks](oracle/phase2/evidence/repaired-zig-original-campaign-v18-phase2-v18-zig-final-original-p0-v18-success-publication-receipt.json).
+- [Zig: all 10,434 broader checks and 314 differences](oracle/phase2/evidence/zig-full-public-correctness-v4-v17-zig-public-v4-run-001-publication-receipt.json).
 - [C: all 31,237 original checks](oracle/phase2/evidence/repaired-c-original-campaign-v16-c-phase2-v24-c-final-public-semantics-original-p0-v16-results-publication-receipt.json).
 - [Expanded, unopened final-test proposal](oracle/phase3/EXPANDED-SEALED-HOLDOUT-V3.md).
 - [Immutable original objective](GOAL.md), SHA-256
