@@ -6,6 +6,21 @@ below are source-only or read-only unless a command explicitly says otherwise.
 The current results and charts remain in [the project README](../README.md);
 experiment history remains in [the experiment log](EXPERIMENT-LOG.md).
 
+## Verify the preserved first-party audit failure
+
+Confirm the authentic infrastructure failure without rerunning the
+source audit or loading a candidate:
+
+```bash
+jq -ce '
+  select(.schema == "rebar-phase2-first-party-runtime-non-delegation-v2-entry-failure")
+  | select(.status == "FAIL" and .error_type == "AuditError")
+  | select(.message == "candidates/rust/src/lib.rs:252: unterminated native literal")
+  | select(.candidate_executions == 0 and .candidate_workers == 0)
+  | select(.native_library_loads == 0 and .holdout == "NOT OPENED")
+' oracle/phase2/evidence/runtime-non-delegation-v2-actual-source-lexer-failure.json
+```
+
 ## Verify the strict first-party no-delegation policy
 
 Independently authenticate the audit source, its plain-language

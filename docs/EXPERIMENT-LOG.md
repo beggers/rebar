@@ -8,6 +8,20 @@ must never be reused. The preserved **4,194,304**-case and
 **14,155,776**-case proposals and the current **141,557,760**-case
 proposal are all **NOT FROZEN**, **NOT GENERATED**, and **NOT OPENED**.
 
+## Preserve the strict audit's genuine Rust-lexer failure
+
+The [actual version-2 source-audit failure](../oracle/phase2/evidence/runtime-non-delegation-v2-actual-source-lexer-failure.json)
+occurred before the candidate audit could finish. Its first-party
+source scanner misread the valid Rust lifetime in
+`struct BorrowedText<'a>` as an unterminated character literal at
+`candidates/rust/src/lib.rs:252`.
+
+No candidate ran, no native library loaded, and the final holdout
+remained unopened. This is an audit-tool failure, not evidence that
+Rust delegates matching or imports an external engine. The failed
+result is preserved unchanged; runtime no-delegation remains
+**NOT ESTABLISHED** until a corrected complete audit succeeds.
+
 ## Harden the from-scratch, no-external-engine audit
 
 The [version-2 first-party source audit](../oracle/phase2/RUNTIME-NON-DELEGATION-V2.md)
